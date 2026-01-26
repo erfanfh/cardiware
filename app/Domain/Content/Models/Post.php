@@ -3,6 +3,7 @@
 namespace App\Domain\Content\Models;
 
 use App\Domain\Content\Enums\StatusEnum;
+use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use Sluggable, SoftDeletes;
+    use Sluggable, SoftDeletes, HasTaxonomyTerms;
 
     protected $fillable = [
         'author_id',
