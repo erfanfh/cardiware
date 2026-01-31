@@ -1,0 +1,102 @@
+:root {
+    --bg: #fff8f7;
+    --muted: #64748b;
+
+    --text-invert: #f9fafb;
+    --text-muted: #6b7280;
+    --darker-text-muted: #9ca3af;
+    --text-main: #0f172a;
+    --text-vod-ready: #166534;
+    --text-dark-gray: #4b5563;
+    --text-dark: #374151;
+
+    --brand-50: #fff1f2;
+    --brand-100: #ffe4e6;
+    --brand-200: #fecdd3;
+    --brand-300: #fda4af;
+    --brand-400: #fb7185;
+    --brand-500: #f43f5e;
+    --brand-600: #e11d48;
+    --brand-700: #be123c;
+    --brand-800: #9f1239;
+    --brand-900: #881337;
+
+    --blue-50: #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-200: #bfdbfe;
+    --blue-300: #93c5fd;
+    --blue-400: #60a5fa;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --blue-800: #1e40af;
+    --blue-900: #1e3a8a;
+    --blue: var(--blue-500);
+    --blue-soft: var(--blue-50);
+    --blue-hover: var(--blue-600);
+    --blue-active: var(--blue-700);
+
+    --red-500: #f97373;
+
+    --yellow-500: #facc15;
+
+    --orange-500: #d97706;
+
+    --green-600: #15803d;
+
+    --border-strong: #d1d5db;
+    --border-subtle: #e5e7eb;
+    --border-vod-ready: #bbf7d0;
+
+    --bg-body: #f3f4f6;
+    --bg-input: #f9fafb;
+    --bg-sidebar-hover: #111827;
+    --bg-topbar: #ffffff;
+    --bg-card: #ffffff;
+    --bg-chip: #fee2e2;
+    --bg-vod-ready: #f0fdf4;
+    --bg-page: #f8fafc;
+    --bg-soft: #f1f5f9;
+
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+
+    --brand: var(--brand-500);
+    --brand-soft: var(--brand-100);
+    --brand-hover: var(--brand-600);
+    --brand-active: var(--brand-700);
+
+    --line: #fce7e7;
+    --radius-xl: 22px;
+    --radius-lg: 16px;
+    --radius: 12px;
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, .05);
+
+    --transition-fast: 0.18s ease-out;
+
+    --radius-sm: 5px;
+    --radius-md: 10px;
+    --sidebar-width: 260px;
+    --topbar-height: 64px;
+    --shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.06);
+
+    --fs-2xs: 0.6875rem;
+    --fs-xs: 0.75rem;
+    --fs-sm: 0.875rem;
+    --fs-md: 1rem;
+    --fs-lg: 1.125rem;
+    --fs-xl: 1.25rem;
+    --fs-2xl: 1.5rem;
+    --fs-3xl: 1.875rem;
+    --fs-4xl: 2.25rem;
+
+    --fw-light: 300;
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+    --fw-extrabold: 800;
+
+    --plyr-color-main: #e11d48;
+}
