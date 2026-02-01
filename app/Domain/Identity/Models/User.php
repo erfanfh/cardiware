@@ -2,8 +2,9 @@
 
 namespace App\Domain\Identity\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -23,6 +24,9 @@ class User extends Authenticatable
         'mobile',
         'email',
         'password',
+        'mobile_verified_at',
+        'role_id',
+        'active',
     ];
 
     /**
@@ -45,6 +49,24 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'active' => 'boolean',
         ];
+    }
+
+    /**
+     * Role relationship
+     *
+     * @return BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            fn() => $this->first_name . ' ' . $this->last_name
+        );
     }
 }

@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'notifications' => [
+        'sms' => [
+            'providers' => [
+                'smsir' => [
+                    'class' => \App\Infrastructure\Services\Sms\Providers\SmsirProvider::class,
+                    'sms_template_id' => env('SMS_TEMPLATE_ID'),
+                    'sms_api_token' => env('SMS_API_TOKEN'),
+                ],
+            ]
+        ],
+    ],
+
 ];
