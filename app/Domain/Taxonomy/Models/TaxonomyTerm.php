@@ -110,4 +110,60 @@ class TaxonomyTerm extends Model
             'taxonomable_id'
         );
     }
+
+    public function generatePath(): string
+    {
+        if (!$this->parent) {
+            return $this->slug;
+        }
+
+        return $this->parent->generatePath() . '/' . $this->slug;
+    }
+
+    /**
+     * regenerate itself + children
+     */
+    public function regeneratePathAndDescendants(): void
+    {
+        $this->path = $this->generatePath();
+        $this->saveQuietly();
+
+        $this->children()->each(function (self $child) {
+            $child->regeneratePathAndDescendants();
+        });
+    }
+
+    /**
+     * save history of slug when it changes.
+     */
+    public function recordSlugHistory(string $oldSlug): void
+    {
+        if (empty($oldSlug) || $oldSlug === $this->slug) {
+            return;
+        }
+
+        $this->slugs()->where('is_current', true)->update(['is_current' => false]);
+
+        $this->slugs()->updateOrCreate(
+            [
+                'route_key' => $oldSlug,
+                'type' => $this->type->value,
+            ],
+            [
+                'is_current' => false,
+                'taxonomy_term_id' => $this->id,
+            ]
+        );
+
+        $this->slugs()->updateOrCreate(
+            [
+                'route_key' => $this->slug,
+                'type' => $this->type->value,
+            ],
+            [
+                'is_current' => true,
+                'taxonomy_term_id' => $this->id,
+            ]
+        );
+    }
 }
