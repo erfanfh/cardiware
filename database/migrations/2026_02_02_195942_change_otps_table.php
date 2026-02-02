@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('otps', function (Blueprint $table) {
             $table->string('type')->change();
+            $table->renameColumn('mobile', 'key');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('otps', function (Blueprint $table) {
             $table->enum('type', ['REGISTER', 'FORGOT_PASSWORD'])->change();
+            $table->renameColumn('key', 'mobile');
         });
     }
 };

@@ -38,7 +38,7 @@
     <div
         class="rounded-3xl bg-gradient-to-br from-white to-orange-50/50 shadow-lg shadow-orange-200/30 ring-1 ring-orange-200/60 overflow-hidden">
         <div class="p-6 sm:p-8">
-            @if($step === 'enter-mobile')
+            @if($step === 'enter-username')
                 <div class="mb-8 text-center">
                     <h1 class="text-2xl iransans-b tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                         خوش آمدید
@@ -48,20 +48,20 @@
                     </p>
                 </div>
 
-                <form wire:submit.prevent="submitMobile" class="space-y-6" novalidate>
+                <form wire:submit.prevent="submitUsername" class="space-y-6" novalidate>
                     <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="mobile">
+                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="username">
                             شماره موبایل
                         </label>
                         <div class="relative group">
                             <div class="relative">
                                 <input
-                                    id="mobile"
+                                    id="username"
                                     type="tel"
                                     inputmode="numeric"
                                     dir="ltr"
                                     placeholder="09123456789"
-                                    wire:model.defer="mobile"
+                                    wire:model.defer="username"
                                     class="w-full h-14 pr-14 pl-5 rounded-xl bg-white
                                        border border-orange-200 text-[15px] placeholder:text-slate-400
                                        focus:outline-none focus:ring-2 focus:ring-orange-200
@@ -82,7 +82,7 @@
             @endif
 
             @if($step === 'login')
-                <button wire:click.prevent="resetToMobile"
+                <button wire:click.prevent="resetToUsername"
                         class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -97,7 +97,7 @@
                         رمز عبور حساب کاربری خود را وارد کنید.
                     </p>
                     <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
                     </div>
                 </div>
 
@@ -154,7 +154,7 @@
                         کد ارسال‌شده به شماره زیر را وارد کنید
                     </p>
                     <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
                     </div>
                 </div>
 
@@ -218,7 +218,7 @@
             @endif
 
             @if($step === 'register')
-                <button wire:click.prevent="resetToMobile"
+                <button wire:click.prevent="resetToUsername"
                         class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -233,7 +233,7 @@
                         اطلاعات خود را برای ایجاد حساب وارد کنید
                     </p>
                     <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
                     </div>
                 </div>
 
@@ -303,7 +303,7 @@
             @endif
 
             @if($step === 'forgot-password')
-                <button wire:click.prevent="resetToMobile"
+                <button wire:click.prevent="resetToUsername"
                         class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -318,7 +318,7 @@
                         کد تایید و رمز جدید خود را وارد کنید
                     </p>
                     <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
                     </div>
                 </div>
 

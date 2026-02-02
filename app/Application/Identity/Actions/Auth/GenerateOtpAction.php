@@ -9,13 +9,23 @@ use App\Infrastructure\Services\Sms\SmsService;
 class GenerateOtpAction
 {
     /**
-     * @param $mobile
+     * @param string $username
      * @param OtpTypeEnum $otpType
      * @return bool
      */
-    public function execute($mobile, OtpTypeEnum $otpType): bool
+    public function execute(string $username, OtpTypeEnum $otpType): bool
     {
-        $lastOtp = Otp::where('mobile', $mobile)->where('is_used', 0)->latest()->first();
+        $isEmail = filter_var($username, FILTER_VALIDATE_EMAIL);
+        $isMobile = preg_match('/^09\d{9}$/', $username);
+
+        if (!$isEmail && !$isMobile) {
+            return false;
+        }
+
+        $lastOtp = Otp::where('key', $username)
+            ->where('is_used', 0)
+            ->latest()
+            ->first();
 
         if ($lastOtp && $lastOtp->created_at > now()->subSeconds(60)) {
             return false;
@@ -24,12 +34,19 @@ class GenerateOtpAction
         $code = rand(100000, 999999);
 
         Otp::create([
-            'mobile' => $mobile,
+            'key' => $username,
             'code' => $code,
             'expired_at' => now()->addMinutes(5),
             'type' => $otpType,
         ]);
-        (new SmsService())->send($mobile, $code);
+
+        if ($isMobile) {
+            (new SmsService())->send($username, $code);
+        }
+
+        if ($isEmail) {
+            //send email
+        }
 
         return true;
     }

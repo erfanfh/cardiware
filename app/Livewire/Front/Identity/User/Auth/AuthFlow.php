@@ -16,11 +16,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Livewire\Component;
+use function PHPUnit\Framework\isFalse;
 
 class AuthFlow extends Component
 {
-    public string $step = 'enter-mobile';
-    public string $mobile = '';
+    public string $step = 'enter-username';
+    public string $username = '';
     public ?string $first_name = null;
     public ?string $last_name = null;
     public ?string $password = null;
@@ -41,20 +42,20 @@ class AuthFlow extends Component
     /**
      * @return void
      */
-    public function submitMobile(): void
+    public function submitUsername(): void
     {
-        $this->mobile = $this->normalizeMobile($this->mobile);
+        $this->username = $this->normalizeUsername($this->username);
 
         $this->validate([
-            'mobile' => ['required', 'regex:/^09\d{9}$/'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
         ], [
-            'mobile.required' => 'شماره موبایل را وارد کنید',
-            'mobile.regex' => 'شماره موبایل خود را به طور صحیح وارد کنید',
+            'username.required' => 'شماره موبایل را وارد کنید',
+            'username.regex' => 'شماره موبایل خود را به طور صحیح وارد کنید',
         ]);
 
-        $mobile = $this->mobile;
+        $username = $this->username;
 
-        if (User::where('mobile', $mobile)->exists()) {
+        if (User::where('mobile', $username)->orWhere('email', $username)->exists()) {
             $this->step = 'login';
             return;
         }
@@ -70,12 +71,12 @@ class AuthFlow extends Component
     {
         $this->resetErrorBag();
 
-        if (!User::where('mobile', $this->mobile)->exists()) {
-            $this->addError('mobile', 'کاربری با این شماره موبایل ثبت نشده است.');
+        if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
+            $this->addError('username', 'کاربری با این شماره موبایل ثبت نشده است.');
             return;
         }
 
-        $sent = (new GenerateOtpAction())->execute($this->mobile, OtpTypeEnum::LOGIN);
+        $sent = (new GenerateOtpAction())->execute($this->username, OtpTypeEnum::LOGIN);
 
         if (!$sent) {
             $this->addError('otp_code', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
@@ -95,18 +96,26 @@ class AuthFlow extends Component
         if ($this->rateLimit('request.login'))
             return null;
 
-        $this->mobile = $this->normalizeMobile($this->mobile);
+        $this->username = $this->normalizeUsername($this->username);
 
         $this->validate([
-            'mobile' => ['required'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
             'password' => ['required'],
         ], [
-            'mobile.required' => 'شماره موبایل را وارد کنید',
-            'mobile.regex' => 'شماره موبایل اشتباه می باشد',
+            'username.required' => 'شماره موبایل را وارد کنید',
+            'username.regex' => 'شماره موبایل اشتباه می باشد',
             'password.required' => 'رمز عبور را وارد کنید',
         ]);
 
-        if (Auth::attempt(['mobile' => $this->mobile, 'password' => $this->password])) {
+        $loginField = filter_var($this->username, FILTER_VALIDATE_EMAIL)
+            ? 'email'
+            : 'mobile';
+
+        if (Auth::attempt([
+            $loginField => $this->username,
+            'password' => $this->password
+        ])) {
+
             $this->handleSuccessfulLogin();
             return redirect('/');
         }
@@ -120,7 +129,7 @@ class AuthFlow extends Component
      */
     public function verifyOtp(): RedirectResponse|Redirector|null
     {
-        $this->mobile = $this->normalizeMobile($this->mobile);
+        $this->username = $this->normalizeUsername($this->username);
 
         $this->validate([
             'otp_code' => 'required',
@@ -128,11 +137,11 @@ class AuthFlow extends Component
             'otp_code.required' => 'کد تایید را وارد کنید',
         ]);
 
-        if (!$this->validateOtp($this->mobile, $this->otp_code, OtpTypeEnum::LOGIN)) {
+        if (!$this->validateOtp($this->username, $this->otp_code, OtpTypeEnum::LOGIN)) {
             return null;
         }
 
-        $user = User::where('mobile', $this->mobile)->firstOrFail();
+        $user = User::where('mobile', $this->username)->orWhere('email', $this->username)->firstOrFail();
         $user->update(['password' => Hash::make($this->password)]);
 
         Auth::login($user);
@@ -172,7 +181,7 @@ class AuthFlow extends Component
         $user = app(RegisterUserAction::class)->execute(
             firstName: $this->first_name,
             lastName: $this->last_name,
-            mobile: $this->mobile,
+            username: $this->username,
             password: $this->password
         );
 
@@ -189,12 +198,12 @@ class AuthFlow extends Component
     {
         $this->resetErrorBag();
 
-        if (!User::where('mobile', $this->mobile)->exists()) {
-            $this->addError('mobile', 'کاربری با این شماره موبایل ثبت نشده است.');
+        if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
+            $this->addError('username', 'کاربری با این شماره موبایل ثبت نشده است.');
             return;
         }
 
-        $sent = (new GenerateOtpAction())->execute($this->mobile, OtpTypeEnum::FORGOT_PASSWORD);
+        $sent = (new GenerateOtpAction())->execute($this->username, OtpTypeEnum::FORGOT_PASSWORD);
 
         if (!$sent) {
             $this->addError('otp_code', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
@@ -214,10 +223,10 @@ class AuthFlow extends Component
         if ($this->rateLimit('request.forgot-password'))
             return null;
 
-        $this->mobile = $this->normalizeMobile($this->mobile);
+        $this->username = $this->normalizeUsername($this->username);
 
         $this->validate([
-            'mobile' => ['required', 'regex:/^09\d{9}$/'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
             'otp_code' => ['required'],
             'password' => [
                 'required',
@@ -227,8 +236,8 @@ class AuthFlow extends Component
             ],
             'password_confirmation' => ['required'],
         ], [
-            'mobile.required' => 'شماره موبایل را وارد کنید',
-            'mobile.regex' => 'شماره موبایل اشتباه می باشد',
+            'username.required' => 'شماره موبایل را وارد کنید',
+            'username.regex' => 'شماره موبایل اشتباه می باشد',
             'otp_code.required' => 'کد تایید را وارد کنید',
             'password.required' => 'رمز عبور را وارد کنید',
             'password.min' => 'حداقل طول رمز عبور 6 حرف می باشد',
@@ -236,10 +245,10 @@ class AuthFlow extends Component
             'password.confirmed' => 'رمزعبور و تکرار رمزعبور مطابقت ندارد',
         ]);
 
-        if (!$this->validateOtp($this->mobile, $this->otp_code, OtpTypeEnum::FORGOT_PASSWORD))
+        if (!$this->validateOtp($this->username, $this->otp_code, OtpTypeEnum::FORGOT_PASSWORD))
             return null;
 
-        $user = User::where('mobile', $this->mobile)->firstOrFail();
+        $user = User::where('mobile', $this->username)->orWhere('email', $this->username)->firstOrFail();
         $user->update(['password' => Hash::make($this->password)]);
 
         Auth::login($user);
@@ -255,13 +264,13 @@ class AuthFlow extends Component
     {
         $this->resetErrorBag();
 
-        if (!$this->mobile || !$this->otpType) {
+        if (!$this->username || !$this->otpType) {
             $this->addError('otp_code', 'شماره موبایل معتبر نیست');
             return;
         }
 
         $type = OtpTypeEnum::from($this->otpType);
-        $sent = (new GenerateOtpAction())->execute($this->mobile, $type);
+        $sent = (new GenerateOtpAction())->execute($this->username, $type);
 
         if (!$sent) {
             $this->addError('otp_code', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
@@ -274,7 +283,7 @@ class AuthFlow extends Component
     /**
      * @return void
      */
-    public function resetToMobile(): void
+    public function resetToUsername(): void
     {
         $this->resetValidation();
         $this->reset([
@@ -285,20 +294,20 @@ class AuthFlow extends Component
             'otp_code',
             'otpType',
         ]);
-        $this->step = 'enter-mobile';
+        $this->step = 'enter-username';
     }
 
     /**
-     * @param string $mobile
+     * @param string $username
      * @param string|int $code
      * @param OtpTypeEnum $type
      * @return bool
      */
-    private function validateOtp(string $mobile, string|int $code, OtpTypeEnum $type): bool
+    private function validateOtp(string $username, string|int $code, OtpTypeEnum $type): bool
     {
         $this->resetErrorBag();
 
-        $otp = Otp::where('mobile', $mobile)
+        $otp = Otp::where('key', $username)
             ->where('type', $type)
             ->latest()
             ->first();
@@ -326,7 +335,8 @@ class AuthFlow extends Component
         $user = auth()->user();
 
         if ($user->role->title === RoleEnum::SUPER_ADMIN->value)
-            (new SmsService())->send($user->mobile, 'ضیافت' . "\n" . 'ورود به پنل');
+            if($user->mobile)
+                (new SmsService())->send($user->mobile, 'ضیافت' . "\n" . 'ورود به پنل');
     }
 
     /**
@@ -354,7 +364,7 @@ class AuthFlow extends Component
      * @param string|null $value
      * @return string|null
      */
-    private function normalizeMobile(string|null $value): string|null
+    private function normalizeUsername(string|null $value): string|null
     {
         if ($value === null) {
             return null;

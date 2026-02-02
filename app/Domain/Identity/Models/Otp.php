@@ -10,7 +10,7 @@ class Otp extends Model
     protected $fillable = [
         'expired_at',
         'code',
-        'mobile',
+        'key',
         'type',
         'is_used',
     ];
