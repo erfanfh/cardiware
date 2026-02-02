@@ -1,7 +1,7 @@
 <div wire:loading.class="opacity-60" class="transition font-sans">
     @if (session()->has('success'))
         <div
-            class="mb-6 rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-5 py-4 text-sm text-amber-800 shadow-sm">
+            class="mb-6 rounded-2xl border border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 px-5 py-4 text-sm text-amber-800">
             <div class="flex items-center gap-2">
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -15,7 +15,7 @@
 
     @if ($errors->any())
         <div
-            class="mb-6 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4 text-sm text-red-700 shadow-sm">
+            class="mb-6 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4 text-sm text-red-700">
             <div class="flex items-center gap-2 font-bold mb-3">
                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
@@ -36,7 +36,7 @@
     @endif
 
     <div
-        class="rounded-3xl bg-gradient-to-br from-white to-orange-50/50 shadow-xl shadow-orange-200/40 ring-1 ring-orange-200/60 overflow-hidden backdrop-blur-sm">
+        class="rounded-3xl bg-gradient-to-br from-white to-orange-50/50 shadow-lg shadow-orange-200/30 ring-1 ring-orange-200/60 overflow-hidden">
         <div class="p-6 sm:p-8">
             @if($step === 'enter-mobile')
                 <div class="mb-8 text-center">
@@ -54,8 +54,6 @@
                             شماره موبایل
                         </label>
                         <div class="relative group">
-                            <div
-                                class="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
                             <div class="relative">
                                 <input
                                     id="mobile"
@@ -64,9 +62,10 @@
                                     dir="ltr"
                                     placeholder="09123456789"
                                     wire:model.defer="mobile"
-                                    class="w-full iransans-r text-sm h-14 pr-14 pl-5 rounded-xl bg-white/80 border border-orange-100 text-[15px] placeholder:text-slate-400
-                                           focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                           shadow-sm backdrop-blur-sm"
+                                    class="w-full h-14 pr-14 pl-5 rounded-xl bg-white
+                                       border border-orange-200 text-[15px] placeholder:text-slate-400
+                                       focus:outline-none focus:ring-2 focus:ring-orange-200
+                                       focus:border-orange-400 transition"
                                 />
                             </div>
                         </div>
@@ -74,7 +73,7 @@
 
                     <button type="submit"
                             class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35
+                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
                                    hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
                                    transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
                         <span>ادامه</span>
@@ -109,8 +108,6 @@
                             رمز عبور
                         </label>
                         <div class="relative group">
-                            <div
-                                class="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
                             <div class="relative">
                                 <input
                                     id="login-password"
@@ -118,9 +115,10 @@
                                     wire:model.defer="password"
                                     autocomplete="off"
                                     dir="ltr"
-                                    class="w-full h-14 px-4 rounded-xl bg-white/80 border border-orange-100 text-[15px] placeholder:text-slate-400
-                                           focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                           shadow-sm backdrop-blur-sm"
+                                    class="w-full h-14 px-4 rounded-xl bg-white
+                                       border border-orange-200 text-[15px] placeholder:text-slate-400
+                                       focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400
+                                       transition"
                                     placeholder="رمز عبور شما"
                                 />
                             </div>
@@ -129,7 +127,7 @@
 
                     <button type="submit"
                             class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35
+                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
                                    hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
                                    transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
                         <span>ورود</span>
@@ -140,11 +138,16 @@
                                 class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-2 cursor-pointer">
                             رمز عبور را فراموش کرده‌اید؟
                         </button>
+                        <span>/</span>
+                        <button type="button" wire:click="goToLoginByOtp"
+                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-2 cursor-pointer">
+                            ورود به کد یکبار مصرف
+                        </button>
                     </div>
                 </form>
             @endif
 
-            @if($step === 'verify-otp')
+            @if($step === 'otp-login')
                 <div class="mb-8 text-center">
                     <h2 class="text-xl font-bold text-slate-800">تایید شماره موبایل</h2>
                     <p class="mt-2 text-sm text-slate-600">
@@ -161,8 +164,6 @@
                             کد تایید ۶ رقمی
                         </label>
                         <div class="relative group">
-                            <div
-                                class="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
                             <div class="relative">
                                 <input
                                     id="otp_code"
@@ -171,9 +172,11 @@
                                     autocomplete="off"
                                     wire:model.defer="otp_code"
                                     placeholder="_ _ _ _ _ _"
-                                    class="w-full h-14 px-5 rounded-xl bg-white/80 border border-orange-100 text-center text-xl tracking-[0.4em]
-                                           focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                           shadow-sm backdrop-blur-sm placeholder:tracking-normal placeholder:text-slate-300"
+                                    class="w-full h-14 px-5 rounded-xl bg-white
+                                           border border-orange-200 text-center text-xl tracking-[0.35em]
+                                           focus:outline-none focus:ring-2 focus:ring-orange-200
+                                           focus:border-orange-400 transition
+                                           placeholder:text-slate-300"
                                     maxlength="6"
                                 />
                             </div>
@@ -182,7 +185,7 @@
 
                     <button type="submit"
                             class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35
+                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
                                    hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
                                    transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
                         <span>تایید و ادامه</span>
@@ -239,53 +242,59 @@
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700" for="first_name">نام</label>
                             <input id="first_name" type="text" wire:model.defer="first_name"
-                                   class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                          focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                          shadow-sm placeholder:text-slate-400"
+                                   class="w-full h-12 px-4 rounded-xl bg-white
+                                           border border-orange-200 text-[14px]
+                                           focus:outline-none focus:ring-2 focus:ring-orange-200
+                                           focus:border-orange-400 transition
+                                           placeholder:text-slate-400"
                                    placeholder="مانند: محمد"/>
                         </div>
 
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700" for="last_name">نام خانوادگی</label>
                             <input id="last_name" type="text" wire:model.defer="last_name"
-                                   class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                          focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                          shadow-sm placeholder:text-slate-400"
+                                   class="w-full h-12 px-4 rounded-xl bg-white
+                                       border border-orange-200 text-[14px]
+                                       focus:outline-none focus:ring-2 focus:ring-orange-200
+                                       focus:border-orange-400 transition
+                                       placeholder:text-slate-400"
                                    placeholder="مانند: محمدی"/>
                         </div>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="grid gap-5 sm:grid-cols-2">
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
                                 رمز عبور
                             </label>
-                            <div class="grid gap-4 sm:grid-cols-2">
-                                <div class="relative">
-                                    <input id="reg-password" :type="show1 ? 'text':'password'"
-                                           wire:model.defer="password" dir="ltr" autocomplete="off"
-                                           class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                                  focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                                  shadow-sm placeholder:text-slate-400"
-                                           placeholder="حداقل ۸ کاراکتر"/>
-                                </div>
-
-                                <div class="relative">
-                                    <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
-                                           wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
-                                           class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                                  focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                                  shadow-sm placeholder:text-slate-400"
-                                           placeholder="تکرار رمز عبور"/>
-                                </div>
-                            </div>
+                            <input id="reg-password" :type="show1 ? 'text':'password'"
+                                   wire:model.defer="password" dir="ltr" autocomplete="off"
+                                   class="w-full h-12 px-4 rounded-xl bg-white
+                                       border border-orange-200 text-[14px]
+                                       focus:outline-none focus:ring-2 focus:ring-orange-200
+                                       focus:border-orange-400 transition
+                                       placeholder:text-slate-400"
+                                   placeholder="حداقل ۸ کاراکتر"/>
+                            <p class="text-[11px] text-slate-400">رمز عبور باید حداقل ۸ کاراکتر و شامل حروف و اعداد باشد</p>
                         </div>
-                        <p class="text-[11px] text-slate-400">رمز عبور باید حداقل ۸ کاراکتر و شامل حروف و اعداد باشد</p>
+                        <div class="space-y-2">
+                            <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                تکرار رمز عبور
+                            </label>
+                            <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
+                                   wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
+                                   class="w-full h-12 px-4 rounded-xl bg-white
+                                       border border-orange-200 text-[14px]
+                                       focus:outline-none focus:ring-2 focus:ring-orange-200
+                                       focus:border-orange-400 transition
+                                       placeholder:text-slate-400"
+                                   placeholder="تکرار رمز عبور"/>
+                        </div>
                     </div>
 
                     <button type="submit"
                             class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35
+                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
                                    hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
                                    transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
                         <span>ایجاد حساب کاربری</span>
@@ -318,18 +327,20 @@
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700" for="fp-pass">رمز عبور جدید</label>
                             <input id="fp-pass" type="password" dir="ltr" autocomplete="off" wire:model.defer="password"
-                                   class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                          focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                          shadow-sm placeholder:text-slate-400"
+                                   class="w-full h-14 px-4 rounded-xl bg-white
+                                           border border-orange-200 text-[15px] placeholder:text-slate-400
+                                           focus:outline-none focus:ring-2 focus:ring-orange-200
+                                           focus:border-orange-400 transition"
                                    placeholder="رمز جدید"/>
                         </div>
                         <div class="space-y-2">
                             <label class="text-sm font-semibold text-slate-700" for="fp-pass2">تکرار رمز عبور</label>
                             <input id="fp-pass2" type="password" dir="ltr" autocomplete="off"
                                    wire:model.defer="password_confirmation"
-                                   class="w-full h-12 px-4 rounded-xl bg-white/80 border border-orange-100 text-[14px]
-                                          focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                          shadow-sm placeholder:text-slate-400"
+                                   class="w-full h-14 px-4 rounded-xl bg-white
+                                           border border-orange-200 text-[15px] placeholder:text-slate-400
+                                           focus:outline-none focus:ring-2 focus:ring-orange-200
+                                           focus:border-orange-400 transition"
                                    placeholder="تکرار رمز جدید"/>
                         </div>
                     </div>
@@ -339,13 +350,13 @@
                             کد تایید ۶ رقمی
                         </label>
                         <div class="relative group">
-                            <div
-                                class="absolute -inset-0.5 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl blur opacity-20 group-hover:opacity-30 transition duration-500"></div>
                             <div class="relative">
                                 <input id="fp-otp" type="text" dir="ltr" autocomplete="off" wire:model.defer="otp_code"
-                                       class="w-full h-14 px-5 rounded-xl bg-white/80 border border-orange-100 text-center text-xl tracking-[0.4em]
-                                              focus:outline-none focus:ring-4 focus:ring-orange-200/60 focus:border-transparent
-                                              shadow-sm backdrop-blur-sm placeholder:tracking-normal placeholder:text-slate-300"
+                                       class="w-full h-14 px-5 rounded-xl bg-white
+                                               border border-orange-200 text-center text-xl tracking-[0.35em]
+                                               focus:outline-none focus:ring-2 focus:ring-orange-200
+                                               focus:border-orange-400 transition
+                                               placeholder:text-slate-300"
                                        placeholder="_ _ _ _ _ _"
                                        maxlength="6"/>
                             </div>
@@ -354,7 +365,7 @@
 
                     <button type="submit"
                             class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/35
+                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
                                    hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
                                    transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
                         <span>تغییر رمز عبور</span>

@@ -59,15 +59,31 @@ class AuthFlow extends Component
             return;
         }
 
-        $sent = (new GenerateOtpAction())->execute($mobile, OtpTypeEnum::REGISTER);
+        $this->step = 'register';
+        session()->flash('success', 'کد تایید با موفقیت ارسال شد.');
+    }
 
-        if (!$sent) {
-            $this->addError('mobile', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
+    /**
+     * @return void
+     */
+    public function goToLoginByOtp(): void
+    {
+        $this->resetErrorBag();
+
+        if (!User::where('mobile', $this->mobile)->exists()) {
+            $this->addError('mobile', 'کاربری با این شماره موبایل ثبت نشده است.');
             return;
         }
 
-        $this->otpType = OtpTypeEnum::REGISTER->value;
-        $this->step = 'verify-otp';
+        $sent = (new GenerateOtpAction())->execute($this->mobile, OtpTypeEnum::LOGIN);
+
+        if (!$sent) {
+            $this->addError('otp_code', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
+            return;
+        }
+
+        $this->otpType = OtpTypeEnum::LOGIN->value;
+        $this->step = 'otp-login';
         session()->flash('success', 'کد تایید با موفقیت ارسال شد.');
     }
 
@@ -100,21 +116,29 @@ class AuthFlow extends Component
     }
 
     /**
-     * @return void
+     * @return RedirectResponse|Redirector|null
      */
-    public function verifyOtp(): void
+    public function verifyOtp(): RedirectResponse|Redirector|null
     {
+        $this->mobile = $this->normalizeMobile($this->mobile);
+
         $this->validate([
             'otp_code' => 'required',
         ], [
             'otp_code.required' => 'کد تایید را وارد کنید',
         ]);
 
-        if (!$this->validateOtp($this->mobile, $this->otp_code, OtpTypeEnum::REGISTER)) {
-            return;
+        if (!$this->validateOtp($this->mobile, $this->otp_code, OtpTypeEnum::LOGIN)) {
+            return null;
         }
 
-        $this->step = 'register';
+        $user = User::where('mobile', $this->mobile)->firstOrFail();
+        $user->update(['password' => Hash::make($this->password)]);
+
+        Auth::login($user);
+        $this->handleSuccessfulLogin();
+
+        return redirect('/');
     }
 
     /**
