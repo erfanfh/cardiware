@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Taxonomy;
 
+use App\Application\Taxonomy\Actions\BuildTreeAction;
+use App\Application\Taxonomy\Actions\BulkDeleteAction;
+use App\Application\Taxonomy\Actions\GeneratePathAction;
+use App\Application\Taxonomy\Actions\RecordSlugHistoryAction;
+use App\Application\Taxonomy\Actions\RegeneratePathAndDescendantsAction;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Taxonomy\StoreTaxonomyTermRequest;
 use App\Http\Requests\Admin\Taxonomy\UpdateTaxonomyTermRequest;
@@ -13,12 +17,29 @@ use Illuminate\View\View;
 
 class TaxonomyTermController extends Controller
 {
+    protected RecordSlugHistoryAction $recordSlugHistoryAction;
+    protected RegeneratePathAndDescendantsAction $regeneratePathAction;
+    protected BuildTreeAction $buildTreeAction;
+    protected BulkDeleteAction $bulkDeleteAction;
+
+    public function __construct(
+        RecordSlugHistoryAction            $recordSlugHistoryAction,
+        RegeneratePathAndDescendantsAction $regeneratePathAction,
+        BuildTreeAction                    $buildTreeAction,
+        BulkDeleteAction                   $bulkDeleteAction
+    )
+    {
+        $this->recordSlugHistoryAction = $recordSlugHistoryAction;
+        $this->regeneratePathAction = $regeneratePathAction;
+        $this->buildTreeAction = $buildTreeAction;
+        $this->bulkDeleteAction = $bulkDeleteAction;
+    }
+
     public function index(Request $request): View
     {
         $editingId = $request->query('edit');
         $search = $request->query('search');
 
-        //search
         $query = TaxonomyTerm::with('children')->orderBy('title');
 
         if ($search) {
@@ -30,25 +51,12 @@ class TaxonomyTermController extends Controller
         }
 
         $terms = $query->get();
-        $tree = $this->buildTree($terms->whereNull('parent_id'));
+        $tree = $this->buildTreeAction->execute($terms->whereNull('parent_id'));
+
 
         $editingTerm = $editingId ? TaxonomyTerm::findOrFail($editingId) : null;
 
         return view('admin.taxonomy.terms.index', compact('tree', 'terms', 'editingTerm', 'search'));
-    }
-
-    private function buildTree($items, $level = 0): array
-    {
-        $result = [];
-        foreach ($items as $item) {
-            $item->level = $level;
-            $result[] = $item;
-
-            if ($item->children->isNotEmpty()) {
-                $result = array_merge($result, $this->buildTree($item->children, $level + 1));
-            }
-        }
-        return $result;
     }
 
     public function create(): View
@@ -59,9 +67,23 @@ class TaxonomyTermController extends Controller
 
     public function store(StoreTaxonomyTermRequest $request): RedirectResponse
     {
-        $term = TaxonomyTerm::create($request->validated());
+        $data = $request->validated();
+        $originalSlug = $request->input('slug');
 
-        $term->path = $term->generatePath();
+        if (empty(trim($originalSlug))) {
+            $data['slug'] = null; // Sluggable خودش تولید می‌کنه
+        }
+
+        $term = TaxonomyTerm::create($data);
+
+        if ($originalSlug && $originalSlug !== $term->slug) {
+            return redirect()->route('admin.taxonomy.terms.index')
+                ->with('success', 'دسته‌بندی ایجاد شد.')
+                ->with('warning', "اسلاگ '{$originalSlug}' از قبل وجود داشت. اسلاگ '{$term->slug}' به صورت خودکار تنظیم شد.");
+        }
+
+        $generatePathAction = app(GeneratePathAction::class);
+        $term->path = $generatePathAction->execute($term);
         $term->saveQuietly();
 
         return redirect()->route('admin.taxonomy.terms.index')
@@ -74,54 +96,45 @@ class TaxonomyTermController extends Controller
         return view('admin.taxonomy.terms.edit', compact('term', 'parents'));
     }
 
-    public function update(UpdateTaxonomyTermRequest $request, TaxonomyTerm $term): RedirectResponse
+    public function update(UpdateTaxonomyTermRequest $request, TaxonomyTerm $taxonomy_term): RedirectResponse
     {
-        $oldSlug = $term->slug;
+        $oldSlug = $taxonomy_term->slug;
         $newSlug = $request->input('slug', $oldSlug);
+        $oldParent = $taxonomy_term->parent_id;
 
         if ($newSlug !== $oldSlug && $request->input('slug_change_confirmed') !== '1') {
             return redirect()
                 ->back()
                 ->withInput()
-                ->withErrors([
-                    'slug' => 'برای تغییر اسلاگ باید از طریق پیام هشدار تأیید کنید.'
-                ])
+                ->withErrors(['slug' => 'برای تغییر اسلاگ باید از طریق پیام هشدار تأیید کنید.'])
                 ->with('slug_change_warning', true);
         }
 
-        if ($newSlug !== $oldSlug) {
-            $existsInTerms = TaxonomyTerm::where('slug', $newSlug)
-                ->where('id', '!=', $term->id)
-                ->exists();
 
-            $existsInSlugs = TaxonomyTermSlug::where('route_key', $newSlug)
-                ->where('type', $term->type->value)
-                ->where('taxonomy_term_id', '!=', $term->id)
-                ->exists();
+        $taxonomy_term->update($request->validated());
 
-            if ($existsInTerms || $existsInSlugs) {
-                return redirect()
-                    ->back()
-                    ->withInput()
-                    ->withErrors([
-                        'slug' => 'این اسلاگ قبلاً برای دسته‌بندی دیگری استفاده شده است.'
-                    ]);
-            }
+        //check for sluggable package
+        $slugWasChangedBySluggable = ($newSlug && $newSlug !== $taxonomy_term->slug);
+
+        if ($oldSlug !== $taxonomy_term->slug) {
+            $this->recordSlugHistoryAction->execute($taxonomy_term, $oldSlug);
         }
 
-        $oldParent = $term->parent_id;
-        $term->update($request->validated());
-
-        if ($oldSlug !== $term->slug) {
-            $term->recordSlugHistory($oldSlug);
+        if ($oldSlug !== $taxonomy_term->slug || $oldParent !== $taxonomy_term->parent_id) {
+            $this->regeneratePathAction->execute($taxonomy_term);
         }
 
-        if ($oldSlug !== $term->slug || $oldParent !== $term->parent_id) {
-            $term->regeneratePathAndDescendants();
+        $message = 'دسته‌بندی با موفقیت بروزرسانی شد.';
+
+        //show message if slug changes by sluggable
+        if ($slugWasChangedBySluggable) {
+            return redirect()->route('admin.taxonomy.terms.index')
+                ->with('success', $message)
+                ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$taxonomy_term->slug}' به صورت خودکار تنظیم شد.");
         }
 
         return redirect()->route('admin.taxonomy.terms.index')
-            ->with('success', 'دسته‌بندی با موفقیت بروزرسانی شد.');
+            ->with('success', $message);
     }
 
     public function destroy(TaxonomyTerm $term): RedirectResponse
@@ -137,6 +150,7 @@ class TaxonomyTermController extends Controller
             ->with('success', 'دسته‌بندی حذف شد.');
     }
 
+    //Handle bulk operations (delete) on selected taxonomy terms.
     public function bulkAction(Request $request): RedirectResponse
     {
         $request->validate([
@@ -145,15 +159,8 @@ class TaxonomyTermController extends Controller
             'ids.*' => 'exists:taxonomy_terms,id',
         ]);
 
-        foreach ($request->ids as $id) {
-            $term = TaxonomyTerm::find($id);
+        $deletedCount = $this->bulkDeleteAction->execute($request->ids);
 
-            if ($term && $term->children()->exists()) {
-                $term->children()->update(['parent_id' => null]);
-            }
-        }
-
-        $deletedCount = TaxonomyTerm::whereIn('id', $request->ids)->delete();
         return redirect()->route('admin.taxonomy.terms.index')
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }

@@ -8,7 +8,23 @@
 
 @section('content')
     <div class="p-6 bg-gray-50 min-h-screen">
-        <div class="flex items-center justify-between mb-8">
+
+        <div class="p-6 bg-gray-50 min-h-screen">
+            <!-- نمایش پیام هشدار اگه اسلاگ تغییر کرده باشه -->
+            @if(session('warning'))
+                <div class="mb-6 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-lg">
+                    <p class="font-medium">{{ session('warning') }}</p>
+                </div>
+            @endif
+
+            <!-- نمایش پیام موفقیت -->
+            @if(session('success'))
+                <div class="mb-6 bg-green-50 border-l-4 border-green-400 text-green-700 p-4 rounded-lg">
+                    <p class="font-medium">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-900">دسته‌بندی‌ها</h1>
         </div>
 
@@ -183,35 +199,9 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // ========== checkbox management (select all) ==========
-            const selectAllCheckbox = document.getElementById('select-all');
-            const itemCheckboxes = document.querySelectorAll('input[name="ids[]"]');
-
-            if (selectAllCheckbox) {
-                selectAllCheckbox.addEventListener('change', function () {
-                    itemCheckboxes.forEach(checkbox => {
-                        checkbox.checked = this.checked;
-                    });
-                });
-            }
-
-            // when on of the checkbox changed
-            itemCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-                    const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
-
-                    if (selectAllCheckbox) {
-                        selectAllCheckbox.checked = allChecked;
-                        selectAllCheckbox.indeterminate = someChecked && !allChecked;
-                    }
-                });
-            });
-
-            // ========== change slug alert (editing)  ==========
+            // ========== Slug Change Alert ==========
             const form = document.getElementById('term-form');
             const slugInput = document.getElementById('slug');
             const confirmInput = document.getElementById('slug-change-confirmed');
@@ -224,41 +214,12 @@
 
                     if (originalSlug && currentSlug !== originalSlug) {
                         e.preventDefault();
-
-                        Swal.fire({
-                            title: '⚠️ تأیید تغییر اسلاگ',
-                            html: `
-                                <div class="text-right">
-                                    <p class="mb-3">آیا مطمئن هستید که می‌خواهید اسلاگ را تغییر دهید؟</p>
-                                    <p class="font-medium mb-2">اسلاگ قبلی: <span class="text-gray-600">${originalSlug}</span></p>
-                                    <p class="font-medium mb-3">اسلاگ جدید: <span class="text-blue-600">${currentSlug}</span></p>
-                                    <p class="text-sm text-red-600">
-                                        ⚠️ تغییر اسلاگ باعث تغییر آدرس این دسته‌بندی و تمام زیرمجموعه‌های آن می‌شود.<br>
-                                        ممکن است لینک‌های قدیمی شکسته شوند و روی سئو تأثیر بگذارد.
-                                    </p>
-                                </div>
-                            `,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'بله، تغییر بده',
-                            cancelButtonText: 'لغو',
-                            reverseButtons: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            customClass: {
-                                popup: 'rtl-popup'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                confirmInput.value = '1';
-                                form.submit();
-                            }
-                        });
+                        window.confirmSlugChange(originalSlug, currentSlug, form, confirmInput);
                     }
                 });
             }
 
-            // ========== delete group action ==========
+            // ========== Bulk Delete Alert ==========
             const bulkForm = document.querySelector('form[action="{{ route("admin.taxonomy.terms.bulk") }}"]');
 
             if (bulkForm) {
@@ -266,84 +227,18 @@
                     const actionSelect = this.querySelector('select[name="action"]');
                     const selectedAction = actionSelect.value;
 
-                    // find selected checkboxes
                     const checkedCheckboxes = document.querySelectorAll('input[name="ids[]"]:checked');
                     const checkedCount = checkedCheckboxes.length;
 
-                    // if a checkbox selected to deleting
                     if (selectedAction === 'delete' && checkedCount > 0) {
                         e.preventDefault();
-
-                        Swal.fire({
-                            title: '⚠️ تأیید حذف گروهی',
-                            html: `
-                    <div class="text-right">
-                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید <strong>${checkedCount}</strong> دسته‌بندی انتخاب‌شده را حذف کنید؟</p>
-                        <p class="text-sm text-red-600">
-                            ⚠️ این عملیات غیرقابل بازگشت است!<br>
-                            تمام دسته‌بندی‌های انتخاب‌شده به همراه زیرمجموعه‌هایشان حذف خواهند شد.
-                        </p>
-                    </div>
-                `,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonText: 'بله، حذف کن',
-                            cancelButtonText: 'لغو',
-                            reverseButtons: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            customClass: {
-                                popup: 'rtl-popup'
-                            }
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                // dynamic
-                                checkedCheckboxes.forEach(checkbox => {
-                                    const hiddenInput = document.createElement('input');
-                                    hiddenInput.type = 'hidden';
-                                    hiddenInput.name = 'ids[]';
-                                    hiddenInput.value = checkbox.value;
-                                    bulkForm.appendChild(hiddenInput);
-                                });
-
-                                bulkForm.submit();
-                            }
-                        });
-                    }
-                    // if no item
-                    else if (selectedAction === 'delete' && checkedCount === 0) {
+                        window.confirmBulkDelete(checkedCount, checkedCheckboxes, bulkForm);
+                    } else if (selectedAction === 'delete' && checkedCount === 0) {
                         e.preventDefault();
-
-                        Swal.fire({
-                            title: '❌ هشدار',
-                            text: 'لطفاً حداقل یک دسته‌بندی انتخاب کنید.',
-                            icon: 'warning',
-                            confirmButtonColor: '#3085d6',
-                            customClass: {
-                                popup: 'rtl-popup'
-                            }
-                        });
+                        window.showNoItemsSelected();
                     }
                 });
             }
         });
     </script>
-    <style>
-        .rtl-popup {
-            direction: rtl;
-            text-align: right;
-        }
-
-        .rtl-popup .swal2-title {
-            text-align: right;
-        }
-
-        .rtl-popup .swal2-html-container {
-            text-align: right;
-        }
-
-        .rtl-popup .swal2-actions {
-            text-align: center;
-        }
-    </style>
 @endpush

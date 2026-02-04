@@ -100,6 +100,140 @@
     </script>
 @endif
 
+{{-- SweetAlert2 CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{-- SweetAlert2 Modals --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // ========== Checkbox Management (Select All) ==========
+        const selectAllCheckbox = document.getElementById('select-all');
+        const itemCheckboxes = document.querySelectorAll('input[name="ids[]"]');
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function () {
+                itemCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+        }
+
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
+                const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
+
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.checked = allChecked;
+                    selectAllCheckbox.indeterminate = someChecked && !allChecked;
+                }
+            });
+        });
+
+        // ========== Slug Change Confirmation ==========
+        window.confirmSlugChange = function (originalSlug, currentSlug, form, confirmInput) {
+            Swal.fire({
+                title: '⚠️ تأیید تغییر اسلاگ',
+                html: `
+                    <div class="text-right">
+                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید اسلاگ را تغییر دهید؟</p>
+                        <p class="font-medium mb-2">اسلاگ قبلی: <span class="text-gray-600">${originalSlug}</span></p>
+                        <p class="font-medium mb-3">اسلاگ جدید: <span class="text-blue-600">${currentSlug}</span></p>
+                        <p class="text-sm text-red-600">
+                            ⚠️ تغییر اسلاگ باعث تغییر آدرس این دسته‌بندی و تمام زیرمجموعه‌های آن می‌شود.<br>
+                            ممکن است لینک‌های قدیمی شکسته شوند و روی سئو تأثیر بگذارد.
+                        </p>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، تغییر بده',
+                cancelButtonText: 'لغو',
+                reverseButtons: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    confirmInput.value = '1';
+                    form.submit();
+                }
+            });
+        };
+
+        // ========== Bulk Delete Confirmation ==========
+        window.confirmBulkDelete = function (checkedCount, checkedCheckboxes, bulkForm) {
+            Swal.fire({
+                title: '⚠️ تأیید حذف گروهی',
+                html: `
+                    <div class="text-right">
+                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید <strong>${checkedCount}</strong> دسته‌بندی انتخاب‌شده را حذف کنید؟</p>
+                        <p class="text-sm text-red-600">
+                            ⚠️ این عملیات غیرقابل بازگشت است!<br>
+                            تمام دسته‌بندی‌های انتخاب‌شده به همراه زیرمجموعه‌هایشان حذف خواهند شد.
+                        </p>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، حذف کن',
+                cancelButtonText: 'لغو',
+                reverseButtons: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    checkedCheckboxes.forEach(checkbox => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'ids[]';
+                        hiddenInput.value = checkbox.value;
+                        bulkForm.appendChild(hiddenInput);
+                    });
+                    bulkForm.submit();
+                }
+            });
+        };
+
+        // ========== No Items Selected Warning ==========
+        window.showNoItemsSelected = function () {
+            Swal.fire({
+                title: '❌ هشدار',
+                text: 'لطفاً حداقل یک دسته‌بندی انتخاب کنید.',
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            });
+        };
+    });
+</script>
+
+<style>
+    .rtl-popup {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .rtl-popup .swal2-title {
+        text-align: right;
+    }
+
+    .rtl-popup .swal2-html-container {
+        text-align: right;
+    }
+
+    .rtl-popup .swal2-actions {
+        text-align: center;
+    }
+</style>
+
 <div id="confirm-backdrop"
      class="fixed inset-0 bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] flex items-center justify-center z-[9998] transition-opacity duration-200 ease-out opacity-0 pointer-events-none"
      data-confirm-backdrop>

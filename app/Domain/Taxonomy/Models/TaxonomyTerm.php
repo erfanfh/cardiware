@@ -38,9 +38,10 @@ class TaxonomyTerm extends Model
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'slug',
                 'unique' => true,
-                'includeTrashed' => true
+                'includeTrashed' => true,
+                'onUpdate' => true,
             ]
         ];
     }
@@ -111,59 +112,14 @@ class TaxonomyTerm extends Model
         );
     }
 
-    public function generatePath(): string
+    protected static function boot()
     {
-        if (!$this->parent) {
-            return $this->slug;
-        }
+        parent::boot();
 
-        return $this->parent->generatePath() . '/' . $this->slug;
-    }
-
-    /**
-     * regenerate itself + children
-     */
-    public function regeneratePathAndDescendants(): void
-    {
-        $this->path = $this->generatePath();
-        $this->saveQuietly();
-
-        $this->children()->each(function (self $child) {
-            $child->regeneratePathAndDescendants();
+        static::saving(function ($term) {
+            if (empty(trim($term->slug ?? ''))) {
+                $term->slug = $term->title;
+            }
         });
-    }
-
-    /**
-     * save history of slug when it changes.
-     */
-    public function recordSlugHistory(string $oldSlug): void
-    {
-        if (empty($oldSlug) || $oldSlug === $this->slug) {
-            return;
-        }
-
-        $this->slugs()->where('is_current', true)->update(['is_current' => false]);
-
-        $this->slugs()->updateOrCreate(
-            [
-                'route_key' => $oldSlug,
-                'type' => $this->type->value,
-            ],
-            [
-                'is_current' => false,
-                'taxonomy_term_id' => $this->id,
-            ]
-        );
-
-        $this->slugs()->updateOrCreate(
-            [
-                'route_key' => $this->slug,
-                'type' => $this->type->value,
-            ],
-            [
-                'is_current' => true,
-                'taxonomy_term_id' => $this->id,
-            ]
-        );
     }
 }
