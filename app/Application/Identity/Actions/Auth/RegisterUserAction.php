@@ -14,7 +14,8 @@ class RegisterUserAction
      *
      * @param string $firstName
      * @param string $lastName
-     * @param string $username
+     * @param string $mobile
+     * @param string $email
      * @param string $password
      * @param bool $active
      * @param int|null $roleId
@@ -23,7 +24,8 @@ class RegisterUserAction
     public function execute(
         string $firstName,
         string $lastName,
-        string $username,
+        string $mobile,
+        string $email,
         string $password,
         bool   $active = true,
         ?int   $roleId = null
@@ -31,28 +33,15 @@ class RegisterUserAction
     {
         $roleId = Role::find($roleId)?->id ?? Role::defaultRole()->id;
 
-        $isEmail  = filter_var($username, FILTER_VALIDATE_EMAIL);
-        $isMobile = preg_match('/^09\d{9}$/', $username);
-
-        if (! $isEmail && ! $isMobile) {
-            throw new InvalidArgumentException('ایمیل یا شماره موبایل معتبر نیست');
-        }
-
         $data = [
             'first_name' => $firstName,
-            'last_name'  => $lastName,
-            'password'   => Hash::make($password),
-            'active'     => $active,
-            'role_id'    => $roleId,
+            'last_name' => $lastName,
+            'mobile' => $mobile,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'active' => $active,
+            'role_id' => $roleId,
         ];
-
-        if ($isEmail) {
-            $data['email'] = $username;
-            $data['email_verified_at'] = now();
-        } else {
-            $data['mobile'] = $username;
-            $data['mobile_verified_at'] = now();
-        }
 
         return User::create($data);
     }

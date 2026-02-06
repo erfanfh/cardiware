@@ -8,7 +8,7 @@
                     </svg>
                 </span>
                 <div class="leading-tight">
-                    <div class="text-[14px] font-extrabold text-orange-800">MotoFit Mag</div>
+                    <div class="text-[14px] font-extrabold text-orange-800">Moddingway</div>
                     <div class="text-[11px] text-slate-600">ورود به حساب کاربری</div>
                 </div>
             </a>
