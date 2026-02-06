@@ -11,12 +11,14 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Taxonomy\StoreTaxonomyTermRequest;
 use App\Http\Requests\Admin\Taxonomy\UpdateTaxonomyTermRequest;
+use App\Infrastructure\Traits\Searchable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TaxonomyTermController extends Controller
 {
+    use Searchable;
     protected RecordSlugHistoryAction $recordSlugHistoryAction;
     protected RegeneratePathAndDescendantsAction $regeneratePathAction;
     protected BuildTreeAction $buildTreeAction;
@@ -42,13 +44,11 @@ class TaxonomyTermController extends Controller
 
         $query = TaxonomyTerm::with('children')->orderBy('title');
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('slug', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%');
-            });
-        }
+        $query = $this->applySearch($query, $search, [
+            'title',
+            'slug',
+            'description',
+        ]);
 
         $terms = $query->get();
         $tree = $this->buildTreeAction->execute($terms->whereNull('parent_id'));

@@ -106,7 +106,7 @@
 {{-- SweetAlert2 Modals --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // ========== Checkbox Management (Select All) ==========
+        // ========== Select All Checkbox (کاربرد برای همه صفحات) ==========
         const selectAllCheckbox = document.getElementById('select-all');
         const itemCheckboxes = document.querySelectorAll('input[name="ids[]"]');
 
@@ -129,9 +129,25 @@
                 }
             });
         });
+        // ========== Helper: Get item type text ==========
+        function getItemTypeText(itemType) {
+            const texts = {
+                category: {
+                    singular: 'دسته‌بندی',
+                    plural: 'دسته‌بندی‌ها'
+                },
+                tag: {
+                    singular: 'برچسب',
+                    plural: 'برچسب‌ها'
+                }
+            };
+            return texts[itemType] || texts.category;
+        }
 
         // ========== Slug Change Confirmation ==========
-        window.confirmSlugChange = function (originalSlug, currentSlug, form, confirmInput) {
+        window.confirmSlugChange = function (originalSlug, currentSlug, form, confirmInput, itemType = 'category') {
+            const texts = getItemTypeText(itemType);
+
             Swal.fire({
                 title: '⚠️ تأیید تغییر اسلاگ',
                 html: `
@@ -140,7 +156,7 @@
                         <p class="font-medium mb-2">اسلاگ قبلی: <span class="text-gray-600">${originalSlug}</span></p>
                         <p class="font-medium mb-3">اسلاگ جدید: <span class="text-blue-600">${currentSlug}</span></p>
                         <p class="text-sm text-red-600">
-                            ⚠️ تغییر اسلاگ باعث تغییر آدرس این دسته‌بندی و تمام زیرمجموعه‌های آن می‌شود.<br>
+                            ⚠️ تغییر اسلاگ باعث تغییر آدرس این ${texts.singular} می‌شود.<br>
                             ممکن است لینک‌های قدیمی شکسته شوند و روی سئو تأثیر بگذارد.
                         </p>
                     </div>
@@ -164,15 +180,17 @@
         };
 
         // ========== Bulk Delete Confirmation ==========
-        window.confirmBulkDelete = function (checkedCount, checkedCheckboxes, bulkForm) {
+        window.confirmBulkDelete = function (checkedCount, checkedCheckboxes, bulkForm, itemType = 'category') {
+            const texts = getItemTypeText(itemType);
+
             Swal.fire({
                 title: '⚠️ تأیید حذف گروهی',
                 html: `
                     <div class="text-right">
-                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید <strong>${checkedCount}</strong> دسته‌بندی انتخاب‌شده را حذف کنید؟</p>
+                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید <strong>${checkedCount}</strong> ${texts.singular} انتخاب‌شده را حذف کنید؟</p>
                         <p class="text-sm text-red-600">
                             ⚠️ این عملیات غیرقابل بازگشت است!<br>
-                            تمام دسته‌بندی‌های انتخاب‌شده به همراه زیرمجموعه‌هایشان حذف خواهند شد.
+                            تمام ${texts.plural} انتخاب‌شده حذف خواهند شد.
                         </p>
                     </div>
                 `,
@@ -201,10 +219,12 @@
         };
 
         // ========== No Items Selected Warning ==========
-        window.showNoItemsSelected = function () {
+        window.showNoItemsSelected = function (itemType = 'category') {
+            const texts = getItemTypeText(itemType);
+
             Swal.fire({
                 title: '❌ هشدار',
-                text: 'لطفاً حداقل یک دسته‌بندی انتخاب کنید.',
+                text: `لطفاً حداقل یک ${texts.singular} انتخاب کنید.`,
                 icon: 'warning',
                 confirmButtonColor: '#3085d6',
                 customClass: {

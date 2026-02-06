@@ -198,47 +198,46 @@
     </div>
 @endsection
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // ========== Slug Change Alert ==========
-            const form = document.getElementById('term-form');
-            const slugInput = document.getElementById('slug');
-            const confirmInput = document.getElementById('slug-change-confirmed');
+        @push('scripts')
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // ========== Slug Change Alert ==========
+                    const form = document.getElementById('term-form');
+                    const slugInput = document.getElementById('slug');
+                    const confirmInput = document.getElementById('slug-change-confirmed');
 
-            if (form && slugInput) {
-                const originalSlug = '{{ $editingTerm->slug ?? '' }}';
+                    if (form && slugInput) {
+                        const originalSlug = '{{ $editingTerm->slug ?? '' }}';
 
-                form.addEventListener('submit', function (e) {
-                    const currentSlug = slugInput.value.trim();
+                        form.addEventListener('submit', function (e) {
+                            const currentSlug = slugInput.value.trim();
 
-                    if (originalSlug && currentSlug !== originalSlug) {
-                        e.preventDefault();
-                        window.confirmSlugChange(originalSlug, currentSlug, form, confirmInput);
+                            if (originalSlug && currentSlug !== originalSlug) {
+                                e.preventDefault();
+                                window.confirmSlugChange(originalSlug, currentSlug, form, confirmInput, 'category');
+                            }
+                        });
+                    }
+
+                    // ========== Bulk Delete Alert ==========
+                    const bulkForm = document.querySelector('form[action="{{ route("admin.taxonomy_terms.bulk") }}"]');
+
+                    if (bulkForm) {
+                        bulkForm.addEventListener('submit', function (e) {
+                            const actionSelect = this.querySelector('select[name="action"]');
+                            const selectedAction = actionSelect.value;
+                            const checkedCheckboxes = document.querySelectorAll('input[name="ids[]"]:checked');
+                            const checkedCount = checkedCheckboxes.length;
+
+                            if (selectedAction === 'delete' && checkedCount > 0) {
+                                e.preventDefault();
+                                window.confirmBulkDelete(checkedCount, checkedCheckboxes, bulkForm, 'category');
+                            } else if (selectedAction === 'delete' && checkedCount === 0) {
+                                e.preventDefault();
+                                window.showNoItemsSelected('category');
+                            }
+                        });
                     }
                 });
-            }
-
-            // ========== Bulk Delete Alert ==========
-            const bulkForm = document.querySelector('form[action="{{ route("admin.taxonomy_terms.bulk") }}"]');
-
-            if (bulkForm) {
-                bulkForm.addEventListener('submit', function (e) {
-                    const actionSelect = this.querySelector('select[name="action"]');
-                    const selectedAction = actionSelect.value;
-
-                    const checkedCheckboxes = document.querySelectorAll('input[name="ids[]"]:checked');
-                    const checkedCount = checkedCheckboxes.length;
-
-                    if (selectedAction === 'delete' && checkedCount > 0) {
-                        e.preventDefault();
-                        window.confirmBulkDelete(checkedCount, checkedCheckboxes, bulkForm);
-                    } else if (selectedAction === 'delete' && checkedCount === 0) {
-                        e.preventDefault();
-                        window.showNoItemsSelected();
-                    }
-                });
-            }
-        });
-    </script>
-@endpush
+            </script>
+    @endpush
