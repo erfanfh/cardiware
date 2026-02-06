@@ -8,6 +8,12 @@ class RegeneratePathAndDescendantsAction
 {
     protected GeneratePathAction $generatePathAction;
 
+    /**
+     * Constructor with GeneratePathAction dependency.
+     *
+     * @param GeneratePathAction $generatePathAction
+     */
+
     public function __construct(GeneratePathAction $generatePathAction)
     {
         $this->generatePathAction = $generatePathAction;
@@ -15,6 +21,8 @@ class RegeneratePathAndDescendantsAction
 
     /**
      * Regenerate path for term and all its descendants
+     * @param TaxonomyTerm $term The taxonomy term
+     * @return void
      */
     public function execute(TaxonomyTerm $term): void
     {

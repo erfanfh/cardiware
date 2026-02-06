@@ -8,6 +8,9 @@ class GeneratePathAction
 {
     /**
      * Generate path for a taxonomy term
+     *
+     * @param TaxonomyTerm $term The taxonomy term
+     * @return string Generated path (e.g., "parent/child/grandchild")
      */
     public function execute(TaxonomyTerm $term): string
     {

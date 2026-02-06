@@ -4,11 +4,17 @@ namespace App\Application\Taxonomy\Actions;
 
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
+use Illuminate\Validation\ValidationException;
 
 class RecordSlugHistoryAction
 {
     /**
      * Save history of slug when it changes
+     *
+     * @param TaxonomyTerm $term The taxonomy term
+     * @param string $oldSlug The previous slug value
+     * @return void
+     * @throws ValidationException If new slug already exists
      */
     public function execute(TaxonomyTerm $term, string $oldSlug): void
     {
@@ -27,7 +33,7 @@ class RecordSlugHistoryAction
             ->exists();
 
         if ($existsInTerms || $existsInSlugs) {
-            throw new \Illuminate\Validation\ValidationException(
+            throw new ValidationException(
                 validator(['slug' => $term->slug], [
                     'slug' => 'unique:taxonomy_terms,slug'
                 ])

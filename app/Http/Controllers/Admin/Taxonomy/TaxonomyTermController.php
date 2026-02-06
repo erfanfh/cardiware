@@ -56,13 +56,13 @@ class TaxonomyTermController extends Controller
 
         $editingTerm = $editingId ? TaxonomyTerm::findOrFail($editingId) : null;
 
-        return view('admin.taxonomy.terms.index', compact('tree', 'terms', 'editingTerm', 'search'));
+        return view('admin.taxonomy_terms.index', compact('tree', 'terms', 'editingTerm', 'search'));
     }
 
     public function create(): View
     {
         $parents = TaxonomyTerm::orderBy('title')->get();
-        return view('admin.taxonomy.terms.create', compact('parents'));
+        return view('admin.taxonomy_terms.create', compact('parents'));
     }
 
     public function store(StoreTaxonomyTermRequest $request): RedirectResponse
@@ -77,7 +77,7 @@ class TaxonomyTermController extends Controller
         $term = TaxonomyTerm::create($data);
 
         if ($originalSlug && $originalSlug !== $term->slug) {
-            return redirect()->route('admin.taxonomy.terms.index')
+            return redirect()->route('admin.taxonomy_terms.index')
                 ->with('success', 'دسته‌بندی ایجاد شد.')
                 ->with('warning', "اسلاگ '{$originalSlug}' از قبل وجود داشت. اسلاگ '{$term->slug}' به صورت خودکار تنظیم شد.");
         }
@@ -86,14 +86,14 @@ class TaxonomyTermController extends Controller
         $term->path = $generatePathAction->execute($term);
         $term->saveQuietly();
 
-        return redirect()->route('admin.taxonomy.terms.index')
+        return redirect()->route('admin.taxonomy_terms.index')
             ->with('success', 'دسته‌بندی ایجاد شد.');
     }
 
     public function edit(TaxonomyTerm $term): View
     {
         $parents = TaxonomyTerm::where('id', '!=', $term->id)->orderBy('title')->get();
-        return view('admin.taxonomy.terms.edit', compact('term', 'parents'));
+        return view('admin.taxonomy_terms.edit', compact('term', 'parents'));
     }
 
     public function update(UpdateTaxonomyTermRequest $request, TaxonomyTerm $taxonomy_term): RedirectResponse
@@ -128,12 +128,12 @@ class TaxonomyTermController extends Controller
 
         //show message if slug changes by sluggable
         if ($slugWasChangedBySluggable) {
-            return redirect()->route('admin.taxonomy.terms.index')
+            return redirect()->route('admin.taxonomy_terms.index')
                 ->with('success', $message)
                 ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$taxonomy_term->slug}' به صورت خودکار تنظیم شد.");
         }
 
-        return redirect()->route('admin.taxonomy.terms.index')
+        return redirect()->route('admin.taxonomy_terms.index')
             ->with('success', $message);
     }
 
@@ -146,7 +146,7 @@ class TaxonomyTermController extends Controller
         $term->delete();
 
         return redirect()
-            ->route('admin.taxonomy.terms.index')
+            ->route('admin.taxonomy_terms.index')
             ->with('success', 'دسته‌بندی حذف شد.');
     }
 
@@ -161,7 +161,7 @@ class TaxonomyTermController extends Controller
 
         $deletedCount = $this->bulkDeleteAction->execute($request->ids);
 
-        return redirect()->route('admin.taxonomy.terms.index')
+        return redirect()->route('admin.taxonomy_terms.index')
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }
 }
