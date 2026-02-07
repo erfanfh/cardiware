@@ -1,12 +1,12 @@
 @extends('admin.layout')
 
-@section('title', 'مقالات')
+@section('title', 'نوشته ها')
 
 @section('content')
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
-                مدیریت و جستجوی مقالات
+                مدیریت و جستجوی نوشته ها
             </p>
         </div>
 

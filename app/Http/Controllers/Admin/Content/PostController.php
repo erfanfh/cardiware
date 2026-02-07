@@ -5,14 +5,21 @@ namespace App\Http\Controllers\Admin\Content;
 use App\Domain\Content\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Content\Post\StoreRequest;
+use App\Http\Requests\Content\Post\UpdateRequest;
+
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
+     *
+     * @param Request $request
+     * @return View
      */
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $posts = Post::query();
 
@@ -42,53 +49,69 @@ class PostController extends Controller
         return view('admin.content.posts.index', compact('posts'));
     }
 
+
     /**
      * Show the form for creating a new resource.
+     *
+     * @return View
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.content.posts.create');
     }
 
+
     /**
      * Store a newly created resource in storage.
+     *
+     * @param StoreRequest $request
+     * @return RedirectResponse
      */
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): RedirectResponse
     {
         $post = Post::create($request->validated());
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param Post $post
+     * @return View
      */
-    public function edit(string $id)
+    public function edit(Post $post): View
     {
-        //
+        return view('admin.content.posts.edit', compact('post'));
     }
+
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param UpdateRequest $request
+     * @param Post $post
+     * @return RedirectResponse
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateRequest $request, Post $post): RedirectResponse
     {
-        //
+        $post->update($request->validated());
+
+        return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }
+
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param Post $post
+     * @return RedirectResponse
      */
-    public function destroy(string $id)
+    public function destroy(Post $post): RedirectResponse
     {
-        //
+        $post->delete();
+
+        return redirect()->route('admin.posts.index')->with('success', 'نوشته موردنظر با موفقیت حذف شد');
     }
 }

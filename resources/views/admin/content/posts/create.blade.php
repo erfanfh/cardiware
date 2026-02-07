@@ -7,7 +7,7 @@
         title="ایجاد نوشته جدید"
         subtitle="اطلاعات نوشته جدید را وارد نمایید."
         :back-route="route('admin.posts.index')"
-        back-label="بازگشت به لیست مقالات"
+        back-label="بازگشت به لیست نوشته ها"
     >
         <x-slot:aside>
             <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 shadow">
