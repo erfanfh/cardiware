@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'داشبورد')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ asset('css/jalalidatepicker.min.css') }}">
+    <script src="{{ asset('js/jalalidatepicker.min.js') }}"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/admin/admin.css', 'resources/js/admin/admin.js'])
 
@@ -28,6 +31,14 @@
 
     <x-admin.flash-modal/>
 </div>
+
+<script>
+    jalaliDatepicker.startWatch({
+        time: true,
+        hasSecond: false,
+        showTodayBtn: true,
+    });
+</script>
 
 @stack('scripts')
 </body>

@@ -3,9 +3,11 @@
 namespace App\Domain\Content\Models;
 
 use App\Domain\Content\Enums\StatusEnum;
+use App\Domain\Identity\Models\User;
 use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -59,5 +61,13 @@ class Post extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
