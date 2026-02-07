@@ -55,7 +55,7 @@
 
         <form wire:submit.prevent="login" class="space-y-6" novalidate x-data="{ show:false }">
             <div class="space-y-2">
-                <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="username">
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="username">
                     شماره موبایل یا ایمیل
                 </label>
                 <div class="relative group">
@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2"
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm"
                            for="login-password">
                         رمز عبور
                     </label>
@@ -99,7 +99,7 @@
                 </button>
 
                 <div class="text-center pt-4 border-t border-orange-100">
-                    <a href="#"
+                    <a href="{{ route('auth.reset-password') }}"
                        class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-2 cursor-pointer">
                         رمز عبور را فراموش کرده‌اید؟
                     </a>
@@ -137,7 +137,7 @@
         <form wire:submit.prevent="register" class="space-y-6" novalidate x-data="{ show1:false, show2:false }">
             <div class="grid gap-5">
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700" for="mobile">موبایل</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="mobile">موبایل</label>
                     <input id="mobile" type="text" wire:model.defer="mobile"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                    outline-none transition focus:border-slate-400"
@@ -145,7 +145,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700" for="email">ایمیل</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="email">ایمیل</label>
                     <input id="email" type="text" wire:model.defer="email"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                    outline-none transition focus:border-slate-400"
@@ -153,7 +153,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700" for="first_name">نام</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="first_name">نام</label>
                     <input id="first_name" type="text" wire:model.defer="first_name"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                    outline-none transition focus:border-slate-400"
@@ -161,7 +161,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700" for="last_name">نام خانوادگی</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="last_name">نام خانوادگی</label>
                     <input id="last_name" type="text" wire:model.defer="last_name"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                    outline-none transition focus:border-slate-400"
@@ -169,7 +169,7 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
                         رمز عبور
                     </label>
                     <input id="reg-password" :type="show1 ? 'text':'password'"
@@ -181,7 +181,7 @@
                         باشد</p>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
                         تکرار رمز عبور
                     </label>
                     <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
@@ -211,9 +211,9 @@
         </button>
 
         <div class="mb-8 text-center">
-            <h1 class="text-2xl iransans-b tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+            <h2 class="text-xl font-bold text-slate-800">
                 ورود به حساب کاربری
-            </h1>
+            </h2>
             <p class="mt-4 text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
                 برای ورود به حساب کاربری، شماره موبایل خود را وارد کنید.
             </p>
@@ -221,7 +221,7 @@
 
         <form wire:submit.prevent="sendOtp" class="space-y-6" novalidate>
             <div class="space-y-2">
-                <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="username">
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="username">
                     شماره موبایل
                 </label>
                 <div class="relative group">
@@ -254,8 +254,6 @@
                 </button>
             </div>
         </form>
-
-
     @endif
 
     @if($step === 'otp-login-verify')
@@ -280,7 +278,7 @@
 
         <form wire:submit.prevent="verifyOtp" class="space-y-6" novalidate>
             <div class="space-y-2">
-                <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="otp_code">
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="otp_code">
                     کد تایید ۶ رقمی
                 </label>
                 <div class="relative group">

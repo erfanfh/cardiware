@@ -35,377 +35,138 @@
         </div>
     @endif
 
-    <div
-        class="rounded-3xl bg-gradient-to-br from-white to-orange-50/50 shadow-lg shadow-orange-200/30 ring-1 ring-orange-200/60 overflow-hidden">
-        <div class="p-6 sm:p-8">
-            @if($step === 'enter-username')
-                <div class="mb-8 text-center">
-                    <h1 class="text-2xl iransans-b tracking-tight bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                        خوش آمدید
-                    </h1>
-                    <p class="mt-4 text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
-                        برای ورود به حساب کاربری، شماره موبایل خود را وارد کنید.
-                    </p>
-                </div>
+    @if($step === 'enter-mobile')
+        <a href="{{ route('auth.index') }}"
+                class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
+            </svg>
+            بازگشت
+        </a>
 
-                <form wire:submit.prevent="submitUsername" class="space-y-6" novalidate>
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="username">
-                            شماره موبایل
-                        </label>
-                        <div class="relative group">
-                            <div class="relative">
-                                <input
-                                    id="username"
-                                    type="tel"
-                                    inputmode="numeric"
-                                    dir="ltr"
-                                    placeholder="09123456789"
-                                    wire:model.defer="username"
-                                    class="w-full h-14 pr-14 pl-5 rounded-xl bg-white
-                                       border border-orange-200 text-[15px] placeholder:text-slate-400
-                                       focus:outline-none focus:ring-2 focus:ring-orange-200
-                                       focus:border-orange-400 transition"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                            class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
-                                   hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
-                                   transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>ادامه</span>
-                    </button>
-                </form>
-            @endif
-
-            @if($step === 'login')
-                <button wire:click.prevent="resetToUsername"
-                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-                    </svg>
-                    بازگشت
-                </button>
-
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-bold text-slate-800">ورود به حساب کاربری</h2>
-                    <p class="mt-2 text-sm text-slate-600">
-                        رمز عبور حساب کاربری خود را وارد کنید.
-                    </p>
-                    <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
-                    </div>
-                </div>
-
-                <form wire:submit.prevent="login" class="space-y-6" novalidate x-data="{ show:false }">
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2"
-                               for="login-password">
-                            رمز عبور
-                        </label>
-                        <div class="relative group">
-                            <div class="relative">
-                                <input
-                                    id="login-password"
-                                    :type="show ? 'text' : 'password'"
-                                    wire:model.defer="password"
-                                    autocomplete="off"
-                                    dir="ltr"
-                                    class="w-full h-14 px-4 rounded-xl bg-white
-                                       border border-orange-200 text-[15px] placeholder:text-slate-400
-                                       focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-400
-                                       transition"
-                                    placeholder="رمز عبور شما"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                            class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
-                                   hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
-                                   transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>ورود</span>
-                    </button>
-
-                    <div class="text-center pt-4 border-t border-orange-100">
-                        <button type="button" wire:click="goToForgotPassword"
-                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-2 cursor-pointer">
-                            رمز عبور را فراموش کرده‌اید؟
-                        </button>
-                        <span>/</span>
-                        <button type="button" wire:click="goToLoginByOtp"
-                                class="text-sm font-medium text-orange-600 hover:text-orange-700 transition-colors inline-flex items-center gap-2 cursor-pointer">
-                            ورود به کد یکبار مصرف
-                        </button>
-                    </div>
-                </form>
-            @endif
-
-            @if($step === 'otp-login')
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-bold text-slate-800">تایید شماره موبایل</h2>
-                    <p class="mt-2 text-sm text-slate-600">
-                        کد ارسال‌شده به شماره زیر را وارد کنید
-                    </p>
-                    <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
-                    </div>
-                </div>
-
-                <form wire:submit.prevent="verifyOtp" class="space-y-6" novalidate>
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="otp_code">
-                            کد تایید ۶ رقمی
-                        </label>
-                        <div class="relative group">
-                            <div class="relative">
-                                <input
-                                    id="otp_code"
-                                    type="text"
-                                    dir="ltr"
-                                    autocomplete="off"
-                                    wire:model.defer="otp_code"
-                                    placeholder="_ _ _ _ _ _"
-                                    class="w-full h-14 px-5 rounded-xl bg-white
-                                           border border-orange-200 text-center text-xl tracking-[0.35em]
-                                           focus:outline-none focus:ring-2 focus:ring-orange-200
-                                           focus:border-orange-400 transition
-                                           placeholder:text-slate-300"
-                                    maxlength="6"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                            class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
-                                   hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
-                                   transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>تایید و ادامه</span>
-                    </button>
-                </form>
-
-                <div class="mt-8 pt-6 border-t border-orange-100 text-center"
-                     x-data="{ seconds: 60, timer: null, start(){ this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
-                     x-init="start()"
-                >
-                    <p class="text-sm text-slate-500 mb-3">کد دریافت نکرده‌اید؟</p>
-                    <button
-                        :disabled="seconds > 0"
-                        @click="$wire.resendOtp(); start();"
-                        class="text-sm font-medium transition-all inline-flex items-center gap-2"
-                        :class="seconds > 0
-                            ? 'text-slate-400 cursor-not-allowed'
-                            : 'text-orange-600 hover:text-orange-700 hover:gap-3 cursor-pointer'"
-                    >
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                        </svg>
-                        <span x-show="seconds === 0">درخواست کد جدید</span>
-                        <span x-show="seconds > 0" class="inline-flex items-center gap-1">
-                            <span x-text="seconds"></span> ثانیه تا ارسال مجدد
-                        </span>
-                    </button>
-                </div>
-            @endif
-
-            @if($step === 'register')
-                <button wire:click.prevent="resetToUsername"
-                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-                    </svg>
-                    بازگشت به مرحله قبل
-                </button>
-
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-bold text-slate-800">تکمیل ثبت‌نام</h2>
-                    <p class="mt-2 text-sm text-slate-600">
-                        اطلاعات خود را برای ایجاد حساب وارد کنید
-                    </p>
-                    <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
-                    </div>
-                </div>
-
-                <form wire:submit.prevent="register" class="space-y-6" novalidate x-data="{ show1:false, show2:false }">
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700" for="first_name">نام</label>
-                            <input id="first_name" type="text" wire:model.defer="first_name"
-                                   class="w-full h-12 px-4 rounded-xl bg-white
-                                           border border-orange-200 text-[14px]
-                                           focus:outline-none focus:ring-2 focus:ring-orange-200
-                                           focus:border-orange-400 transition
-                                           placeholder:text-slate-400"
-                                   placeholder="مانند: محمد"/>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700" for="last_name">نام خانوادگی</label>
-                            <input id="last_name" type="text" wire:model.defer="last_name"
-                                   class="w-full h-12 px-4 rounded-xl bg-white
-                                       border border-orange-200 text-[14px]
-                                       focus:outline-none focus:ring-2 focus:ring-orange-200
-                                       focus:border-orange-400 transition
-                                       placeholder:text-slate-400"
-                                   placeholder="مانند: محمدی"/>
-                        </div>
-                    </div>
-
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                رمز عبور
-                            </label>
-                            <input id="reg-password" :type="show1 ? 'text':'password'"
-                                   wire:model.defer="password" dir="ltr" autocomplete="off"
-                                   class="w-full h-12 px-4 rounded-xl bg-white
-                                       border border-orange-200 text-[14px]
-                                       focus:outline-none focus:ring-2 focus:ring-orange-200
-                                       focus:border-orange-400 transition
-                                       placeholder:text-slate-400"
-                                   placeholder="حداقل ۸ کاراکتر"/>
-                            <p class="text-[11px] text-slate-400">رمز عبور باید حداقل ۸ کاراکتر و شامل حروف و اعداد باشد</p>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-                                تکرار رمز عبور
-                            </label>
-                            <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
-                                   wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
-                                   class="w-full h-12 px-4 rounded-xl bg-white
-                                       border border-orange-200 text-[14px]
-                                       focus:outline-none focus:ring-2 focus:ring-orange-200
-                                       focus:border-orange-400 transition
-                                       placeholder:text-slate-400"
-                                   placeholder="تکرار رمز عبور"/>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                            class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
-                                   hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
-                                   transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>ایجاد حساب کاربری</span>
-                    </button>
-                </form>
-            @endif
-
-            @if($step === 'forgot-password')
-                <button wire:click.prevent="resetToUsername"
-                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                              stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-                    </svg>
-                    تغییر شماره موبایل
-                </button>
-
-                <div class="mb-8 text-center">
-                    <h2 class="text-xl font-bold text-slate-800">بازیابی رمز عبور</h2>
-                    <p class="mt-2 text-sm text-slate-600">
-                        کد تایید و رمز جدید خود را وارد کنید
-                    </p>
-                    <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                        <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
-                    </div>
-                </div>
-
-                <form wire:submit.prevent="forgotPassword" class="space-y-6" novalidate>
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700" for="fp-pass">رمز عبور جدید</label>
-                            <input id="fp-pass" type="password" dir="ltr" autocomplete="off" wire:model.defer="password"
-                                   class="w-full h-14 px-4 rounded-xl bg-white
-                                           border border-orange-200 text-[15px] placeholder:text-slate-400
-                                           focus:outline-none focus:ring-2 focus:ring-orange-200
-                                           focus:border-orange-400 transition"
-                                   placeholder="رمز جدید"/>
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-sm font-semibold text-slate-700" for="fp-pass2">تکرار رمز عبور</label>
-                            <input id="fp-pass2" type="password" dir="ltr" autocomplete="off"
-                                   wire:model.defer="password_confirmation"
-                                   class="w-full h-14 px-4 rounded-xl bg-white
-                                           border border-orange-200 text-[15px] placeholder:text-slate-400
-                                           focus:outline-none focus:ring-2 focus:ring-orange-200
-                                           focus:border-orange-400 transition"
-                                   placeholder="تکرار رمز جدید"/>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-sm font-semibold text-slate-700 flex items-center gap-2" for="fp-otp">
-                            کد تایید ۶ رقمی
-                        </label>
-                        <div class="relative group">
-                            <div class="relative">
-                                <input id="fp-otp" type="text" dir="ltr" autocomplete="off" wire:model.defer="otp_code"
-                                       class="w-full h-14 px-5 rounded-xl bg-white
-                                               border border-orange-200 text-center text-xl tracking-[0.35em]
-                                               focus:outline-none focus:ring-2 focus:ring-orange-200
-                                               focus:border-orange-400 transition
-                                               placeholder:text-slate-300"
-                                       placeholder="_ _ _ _ _ _"
-                                       maxlength="6"/>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button type="submit"
-                            class="w-full h-14 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold text-sm
-                                   shadow-lg shadow-orange-500/20 hover:shadow-lg hover:shadow-orange-500/25
-                                   hover:from-orange-600 hover:to-amber-600 active:scale-[0.97] active:shadow-inner
-                                   transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer">
-                        <span>تغییر رمز عبور</span>
-                    </button>
-                </form>
-
-                <div class="mt-8 pt-6 border-t border-orange-100 text-center"
-                     x-data="{ seconds: 60, timer: null, start(){ this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
-                     x-init="start()"
-                >
-                    <p class="text-sm text-slate-500 mb-3">کد دریافت نکرده‌اید؟</p>
-                    <button
-                        :disabled="seconds > 0"
-                        @click="$wire.resendOtp(); start();"
-                        class="text-sm font-medium transition-all inline-flex items-center gap-2"
-                        :class="seconds > 0
-                            ? 'text-slate-400 cursor-not-allowed'
-                            : 'text-orange-600 hover:text-orange-700 hover:gap-3 cursor-pointer'"
-                    >
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path
-                                d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                        </svg>
-                        <span x-show="seconds === 0">درخواست کد جدید</span>
-                        <span x-show="seconds > 0" class="inline-flex items-center gap-1">
-                            <span x-text="seconds"></span> ثانیه تا ارسال مجدد
-                        </span>
-                    </button>
-                </div>
-            @endif
-        </div>
-
-        <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-amber-50 border-t border-orange-100">
-            <p class="text-center text-[11px] text-slate-400">
-                با ورود یا ثبت‌نام، با
-                <a href="#" class="text-orange-600 hover:text-orange-700 font-medium">شرایط استفاده</a>
-                و
-                <a href="#" class="text-orange-600 hover:text-orange-700 font-medium">حریم خصوصی</a>
-                موافقت می‌کنید
+        <div class="mb-8 text-center">
+            <h2 class="text-xl font-bold text-slate-800">
+                فراموشی رمز عبور
+            </h2>
+            <p class="mt-4 text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
+                برای ورود به حساب کاربری، شماره موبایل خود را وارد کنید.
             </p>
         </div>
-    </div>
+
+        <form wire:submit.prevent="sendOtp" class="space-y-6" novalidate>
+            <div class="space-y-2">
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="mobile">
+                    شماره موبایل
+                </label>
+                <div class="relative group">
+                    <div class="relative">
+                        <input
+                            id="mobile"
+                            type="tel"
+                            inputmode="numeric"
+                            dir="ltr"
+                            placeholder="09123456789"
+                            wire:model.defer="mobile"
+                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                               outline-none transition focus:border-slate-400"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                       hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
+                <span>ادامه</span>
+            </button>
+
+        </form>
+    @endif
+
+    @if($step === 'forgot-password')
+        <button wire:click.prevent="goToEnterMobile"
+                class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
+            </svg>
+            تغییر شماره موبایل
+        </button>
+
+        <div class="mb-8 text-center">
+            <h2 class="text-xl font-bold text-slate-800">بازیابی رمز عبور</h2>
+            <p class="mt-2 text-sm text-slate-600">
+                کد تایید و رمز جدید خود را وارد کنید
+            </p>
+            <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
+                <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+            </div>
+        </div>
+
+        <form wire:submit.prevent="forgotPassword" class="space-y-6" novalidate>
+            <div class="grid gap-5 sm:grid-cols-2">
+                <div class="space-y-2">
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="fp-pass">رمز عبور جدید</label>
+                    <input id="fp-pass" type="password" dir="ltr" autocomplete="off" wire:model.defer="password"
+                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                               outline-none transition focus:border-slate-400"
+                           placeholder="رمز جدید"/>
+                </div>
+                <div class="space-y-2">
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="fp-pass2">تکرار رمز عبور</label>
+                    <input id="fp-pass2" type="password" dir="ltr" autocomplete="off"
+                           wire:model.defer="password_confirmation"
+                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                               outline-none transition focus:border-slate-400"
+                           placeholder="تکرار رمز جدید"/>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="fp-otp">
+                    کد تایید ۶ رقمی
+                </label>
+                <div class="relative group">
+                    <div class="relative">
+                        <input id="fp-otp" type="text" dir="ltr" autocomplete="off" wire:model.defer="otp_code"
+                               class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                               outline-none transition focus:border-slate-400 text-center"
+                               placeholder="_ _ _ _ _ _"
+                               maxlength="6"/>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                       hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
+                <span>تغییر رمز عبور</span>
+            </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-orange-100 text-center"
+             x-data="{ seconds: 60, timer: null, start(){ this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
+             x-init="start()"
+        >
+            <p class="text-sm text-slate-500 mb-3">کد دریافت نکرده‌اید؟</p>
+            <button
+                :disabled="seconds > 0"
+                @click="$wire.resendOtp(); start();"
+                class="text-sm font-medium transition-all inline-flex items-center gap-2"
+                :class="seconds > 0
+                        ? 'text-slate-400 cursor-not-allowed'
+                        : 'text-orange-600 hover:text-orange-700 hover:gap-3 cursor-pointer'"
+            >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path
+                        d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                </svg>
+                <span x-show="seconds === 0">درخواست کد جدید</span>
+                <span x-show="seconds > 0" class="inline-flex items-center gap-1">
+                        <span x-text="seconds"></span> ثانیه تا ارسال مجدد
+                    </span>
+            </button>
+        </div>
+    @endif
 </div>
