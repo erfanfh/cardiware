@@ -10,11 +10,11 @@
         back-label="بازگشت به لیست نوشته ها"
     >
         <x-slot:aside>
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 shadow">
-                <h3 class="text-base font-bold text-gray-800 dark:text-gray-200 mb-3">نکات ساخت نوشته</h3>
+            <div class="bg-[var(--bg-card)] rounded-[var(--radius-xl)] pt-[18px] pb-[16px] px-[20px] border border-solid border-[var(--border-subtle)] shadow-[var(--shadow-soft)]">
+                <h3 class="text-[0.9rem] font-bold text-[var(--text-main)] mb-[12px]">نکات ساخت نوشته</h3>
                 <ul class="list-disc pr-5 space-y-2">
-                    <li class="text-sm text-gray-600 dark:text-gray-400">عنوان و متن نوشته الزامی می باشند.</li>
-                    <li class="text-sm text-gray-600 dark:text-gray-400">برای بهبود تجربه کاربری، حجم تصاویر مورد استفاده را کم کنید.</li>
+                    <li class="text-[0.75rem] text-[var(--text-main)] mb-[8px] relative text-justify" style="list-style: circle">عنوان و متن نوشته الزامی می باشند.</li>
+                    <li class="text-[0.75rem] text-[var(--text-main)] mb-[8px] relative text-justify" style="list-style: circle">برای بهبود تجربه کاربری، حجم تصاویر مورد استفاده را کم کنید.</li>
                 </ul>
             </div>
         </x-slot:aside>

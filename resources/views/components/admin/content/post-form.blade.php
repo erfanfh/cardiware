@@ -21,22 +21,22 @@
     $published_at = old('published_at', isset($post?->published_at) ? $post->published_at : '');
 @endphp
 
-<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-2xl shadow border border-gray-200 dark:border-gray-700 p-5 mb-12">
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-12">
     @csrf
     @if($isEdit)
         @method('PUT')
     @endif
 
     <div class="space-y-6">
-        <div class="pb-6 border-b border-dashed border-gray-200 dark:border-gray-700">
+        <div>
             <div class="mb-4">
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-1">محتوای نوشته</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400">عنوان، تصویر، محتوا و تاریخ انتشار را تعیین کنید.</p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1">
-                    <label for="title" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="title" class="text-[0.85rem] text-[var(--text-main)]">
                         <span class="text-red-500">*</span>
                         عنوان نوشته
                     </label>
@@ -45,27 +45,26 @@
                         id="title"
                         name="title"
                         value="{{ $title }}"
-                        class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-colors"
-                        placeholder="مثلاً: چگونه آشپر خوبی باشیم؟"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="published_at" class="text-sm font-medium text-gray-700 dark:text-gray-300">تاریخ انتشار</label>
+                    <label for="published_at" class="text-[0.85rem] text-[var(--text-main)]">تاریخ انتشار</label>
                     <input
                         data-jdp
                         autocomplete="off"
                         id="published_at"
                         name="published_at"
                         value="{{ $published_at ? jalali_date($published_at) : '' }}"
-                        class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-colors"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="categories" class="text-sm font-medium text-gray-700 dark:text-gray-300">دسته بندی</label>
+                    <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
                     <select name="categories[]" multiple autocomplete="off" id="categories"
-                            class="ts-multiple px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500">
+                            class="ts-multiple w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                         @foreach ([] as $category)
                             <option @if($post and $post->categories->contains($category->id)) selected
                                     @endif value="{{ $category->id }}">
@@ -76,7 +75,7 @@
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="title" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <label for="title" class="text-[0.85rem] text-[var(--text-main)]">
                         <span class="text-red-500">*</span>
                         برچسب ها
                     </label>
@@ -85,28 +84,27 @@
                         id="title"
                         name="title"
                         value="{{ $title }}"
-                        class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-colors"
-                        placeholder="مثلاً: چگونه آشپر خوبی باشیم؟"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
 
-                <div class="col-span-2 flex flex-col gap-1">
-                    <label for="body" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div class="md:col-span-2 flex flex-col gap-1">
+                    <label for="body" class="text-[0.85rem] text-[var(--text-main)]">
                         <span class="text-red-500">*</span>
                         متن نوشته
                     </label>
                     <textarea
                         id="body"
                         name="body"
-                        class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-colors editor"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         rows="6"
                     >{{ $body }}</textarea>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="status" class="text-sm font-medium text-gray-700 dark:text-gray-300">وضعیت</label>
+                    <label for="status" class="text-[0.85rem] text-[var(--text-main)]">وضعیت</label>
                     <select name="status" autocomplete="off" id="status"
-                            class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500">
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                         @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                             <option @if($post and $post->status === $status->value) selected @endif value="{{ $status->value }}">
                                 {{ $status->value }}
@@ -118,10 +116,5 @@
         </div>
     </div>
 
-    <div class="flex justify-end gap-3 mt-5 pt-5 border-t border-gray-200 dark:border-gray-700">
-        <button type="submit"
-                class="px-5 py-2.5 rounded-full bg-gradient-to-r from-orange-500 to-orange-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-            {{ $submitLabel }}
-        </button>
-    </div>
+    <x-admin.save-button :label="$submitLabel"/>
 </form>

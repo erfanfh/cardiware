@@ -12,7 +12,7 @@
 
 <div class="space-y-6">
     {{-- هدر صفحه --}}
-    <div class="flex items-start justify-between gap-4 mb-6">
+    <div class="flex flex-col md:flex-row items-start justify-between gap-4 mb-6">
         <div>
             <h1 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">{{ $title }}</h1>
 
@@ -25,10 +25,9 @@
 
         @if($backRoute)
             <div class="flex items-center gap-2">
-                <a href="{{ $backRoute }}" class="px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-transparent text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <a href="{{ $backRoute }}" class="inline-flex items-center justify-center py-[7px] px-[14px] gap-[6px] rounded-full text-[0.75rem] font-normal transition text-[var(--text-main)] border border-[var(--border-strong)] cursor-pointer hover:bg-gray-300">
                     {{ $backLabel }}
                 </a>
-
                 @if($showCourse)
                     <a href="{{ $showCourse }}" class="px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
                         مشاهده دوره
@@ -39,15 +38,15 @@
     </div>
 
     {{-- بدنه صفحه --}}
-    <div class="grid gap-6 {{ $hasAside ? 'lg:grid-cols-3' : '' }}">
+    <div class="grid gap-6" style="{{ $hasAside ? 'grid-template-columns: minmax(0, 2.5fr) minmax(200px, 1fr)' : 'grid-template-columns: minmax(0, 1fr)' }}">
         {{-- ستون اصلی فرم --}}
-        <div class="{{ $hasAside ? 'lg:col-span-2' : '' }}">
+        <div class="w-full">
             {{ $slot }}
         </div>
 
         {{-- ستون ساید (اختیاری) --}}
         @if($hasAside)
-            <aside class="{{ $hasAside ? 'lg:col-span-1 sticky top-6 self-start' : '' }}">
+            <aside>
                 {{ $aside }}
             </aside>
         @endif
