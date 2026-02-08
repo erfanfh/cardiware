@@ -62,6 +62,34 @@
                     >
                 </div>
 
+                <div class="flex flex-col gap-1">
+                    <label for="categories" class="text-sm font-medium text-gray-700 dark:text-gray-300">دسته بندی</label>
+                    <select name="categories[]" multiple autocomplete="off" id="categories"
+                            class="ts-multiple px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500">
+                        @foreach ([] as $category)
+                            <option @if($post and $post->categories->contains($category->id)) selected
+                                    @endif value="{{ $category->id }}">
+                                {{ $category->title }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label for="title" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <span class="text-red-500">*</span>
+                        برچسب ها
+                    </label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        value="{{ $title }}"
+                        class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 outline-none transition-colors"
+                        placeholder="مثلاً: چگونه آشپر خوبی باشیم؟"
+                    >
+                </div>
+
                 <div class="col-span-2 flex flex-col gap-1">
                     <label for="body" class="text-sm font-medium text-gray-700 dark:text-gray-300">
                         <span class="text-red-500">*</span>
@@ -75,26 +103,16 @@
                     >{{ $body }}</textarea>
                 </div>
 
-                <div class="col-span-2 grid grid-cols-2 gap-4">
-                    <div class="col-span-2 flex flex-col gap-1">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">وضعیت انتشار</label>
-                        <div class="flex items-center gap-3 cursor-pointer select-none" onclick="document.getElementById('is_active').click()">
-                            <div class="relative">
-                                <input
-                                    type="checkbox"
-                                    id="is_active"
-                                    name="is_active"
-                                    value="1"
-                                    {{ $is_active ? 'checked' : '' }}
-                                    class="sr-only peer"
-                                >
-                                <div class="w-10 h-6 rounded-full bg-gray-300 dark:bg-gray-600 transition-colors duration-300 ease-in-out peer-checked:bg-gradient-to-r peer-checked:from-orange-500 peer-checked:to-orange-500">
-                                    <div class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transform transition-transform duration-300 ease-in-out peer-checked:translate-x-4"></div>
-                                </div>
-                            </div>
-                            <span class="text-sm text-gray-700 dark:text-gray-300">انتشار نوشته</span>
-                        </div>
-                    </div>
+                <div class="flex flex-col gap-1">
+                    <label for="status" class="text-sm font-medium text-gray-700 dark:text-gray-300">وضعیت</label>
+                    <select name="status" autocomplete="off" id="status"
+                            class="px-3 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-500">
+                        @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
+                            <option @if($post and $post->status === $status->value) selected @endif value="{{ $status->value }}">
+                                {{ $status->value }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>

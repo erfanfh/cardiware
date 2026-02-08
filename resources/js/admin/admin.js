@@ -1,3 +1,6 @@
+import TomSelect from "tom-select";
+import "tom-select/dist/css/tom-select.css";
+
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('Sidebar');
     const toggleBtn = document.getElementById('SidebarToggle');
@@ -33,5 +36,23 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebar.classList.remove('sidebar--open');
             backdrop.classList.remove('sidebar-backdrop--visible');
         }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.ts-multiple').forEach((el) => {
+        new TomSelect(el, {
+            create: false,
+            plugins: {
+                'checkbox_options': {
+                    'checkedClassNames': ['ts-checked'],
+                    'uncheckedClassNames': ['ts-unchecked'],
+                }
+            },
+            sortField: {
+                field: "text",
+                direction: "asc"
+            }
+        });
     });
 });
