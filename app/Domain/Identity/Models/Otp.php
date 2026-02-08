@@ -11,6 +11,7 @@ class Otp extends Model
         'expired_at',
         'code',
         'key',
+        'key_type',
         'type',
         'is_used',
     ];

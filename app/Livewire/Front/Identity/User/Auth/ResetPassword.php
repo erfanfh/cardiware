@@ -57,7 +57,7 @@ class ResetPassword extends Component
 
     public function sendOtp(): void
     {
-        $this->mobile = $this->normalizemobile($this->mobile);
+        $this->mobile = normalize_number($this->mobile);
 
         $this->validate([
             'mobile' => ['required', 'regex:/^09\d{9}$/'],
@@ -89,8 +89,8 @@ class ResetPassword extends Component
      */
     public function forgotPassword(): RedirectResponse|Redirector|null
     {
-        $this->mobile = $this->normalizemobile($this->mobile);
-        $this->otp_code = $this->normalizemobile($this->otp_code);
+        $this->mobile = normalize_number($this->mobile);
+        $this->otp_code = normalize_number($this->otp_code);
 
         if ($this->rateLimit('request.forgot-password'))
             return null;
@@ -212,24 +212,5 @@ class ResetPassword extends Component
         }
 
         return false;
-    }
-
-    /**
-     * @param string|null $value
-     * @return string|null
-     */
-    private function normalizemobile(string|null $value): string|null
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-        $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-        return str_replace($persian, $english,
-            str_replace($arabic, $english, $value)
-        );
     }
 }

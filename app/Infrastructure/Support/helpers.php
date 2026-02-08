@@ -53,3 +53,22 @@ if (!function_exists('gregorian_date')) {
         );
     }
 }
+
+if (!function_exists('normalize_number')) {
+    /**
+     * @param string|null $number
+     * @return string|null
+     */
+    function normalize_number(?string $number): string|null
+    {
+        if ($number === null) {
+            return null;
+        }
+
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        return str_replace($persian, $english,str_replace($arabic, $english, $number));
+    }
+}

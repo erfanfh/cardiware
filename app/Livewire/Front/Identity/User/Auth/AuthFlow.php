@@ -113,7 +113,7 @@ class AuthFlow extends Component
         if ($this->rateLimit('request.login'))
             return null;
 
-        $this->username = $this->normalizeUsername($this->username);
+        $this->username = normalize_number($this->username);
 
         $this->validate([
             'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
@@ -146,7 +146,7 @@ class AuthFlow extends Component
      */
     public function verifyOtp(): RedirectResponse|Redirector|null
     {
-        $this->username = $this->normalizeUsername($this->username);
+        $this->username = normalize_number($this->username);
 
         $this->validate([
             'otp_code' => 'required',
@@ -344,24 +344,5 @@ class AuthFlow extends Component
         }
 
         return false;
-    }
-
-    /**
-     * @param string|null $value
-     * @return string|null
-     */
-    private function normalizeUsername(string|null $value): string|null
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-        $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-        $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-        return str_replace($persian, $english,
-            str_replace($arabic, $english, $value)
-        );
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Application\Identity\Actions\Auth;
 
+use App\Domain\Identity\Enums\OtpKeyTypeEnum;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Infrastructure\Services\Sms\SmsService;
@@ -31,20 +32,19 @@ class GenerateOtpAction
             return false;
         }
 
-        $code = rand(100000, 999999);
+        $code = rand(config('auth.otp.min'), config('auth.otp.max'));
 
         Otp::create([
             'key' => $username,
+            'key_type' => $isEmail ? OtpKeyTypeEnum::EMAIL->value : OtpKeyTypeEnum::MOBILE->value,
             'code' => $code,
-            'expired_at' => now()->addMinutes(5),
+            'expired_at' => now()->addMinutes(config('auth.otp.expire')),
             'type' => $otpType,
         ]);
 
         if ($isMobile) {
             (new SmsService())->send($username, $code);
-        }
-
-        if ($isEmail) {
+        } elseif ($isEmail) {
             //send email
         }
 
