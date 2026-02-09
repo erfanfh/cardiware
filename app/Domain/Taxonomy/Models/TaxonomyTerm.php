@@ -38,9 +38,10 @@ class TaxonomyTerm extends Model
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'slug',
                 'unique' => true,
-                'includeTrashed' => true
+                'includeTrashed' => true,
+                'onUpdate' => true,
             ]
         ];
     }
@@ -109,5 +110,16 @@ class TaxonomyTerm extends Model
             'taxonomy_term_id',
             'taxonomable_id'
         );
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($term) {
+            if (empty(trim($term->slug ?? ''))) {
+                $term->slug = $term->title;
+            }
+        });
     }
 }
