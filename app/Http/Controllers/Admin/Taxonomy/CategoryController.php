@@ -11,6 +11,7 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Taxonomy\StoreCategoryRequest;
 use App\Http\Requests\Admin\Taxonomy\UpdateCategoryRequest;
+use App\Infrastructure\Traits\Searchable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
