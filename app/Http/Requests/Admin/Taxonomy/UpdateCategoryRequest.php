@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateTaxonomyTermRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,34 +26,12 @@ class UpdateTaxonomyTermRequest extends FormRequest
      */
     public function rules(): array
     {
-        $termId = $this->route('term')?->id;
-        $term = TaxonomyTerm::find($termId);
-
+        $categoryId = $this->route('category')?->id;
 
         $rules = [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255',
-                //check both tables
-                function ($attribute, $value, $fail) use ($termId, $term) {
-                    if (empty($value)) {
-                        return;
-                    }
-
-                    $existsInTerms = TaxonomyTerm::where('slug', $value)
-                        ->where('id', '!=', $termId)
-                        ->exists();
-
-                    $existsInSlugs = TaxonomyTermSlug::where('route_key', $value)
-                        ->where('type', $term->type->value ?? TaxonomyTermTypeEnum::CATEGORY)
-                        ->where('taxonomy_term_id', '!=', $termId)
-                        ->exists();
-
-                    if ($existsInTerms || $existsInSlugs) {
-                        $fail('این اسلاگ قبلاً استفاده شده است.');
-                    }
-                }
-            ],
-            'parent_id' => ['nullable', 'exists:taxonomy_terms,id', 'not_in:' . $termId,],
+            'slug' => ['nullable', 'string', 'max:255'],
+            'parent_id' => ['nullable', 'exists:taxonomy_terms,id', 'not_in:' . $categoryId,],
             'description' => ['nullable', 'string'],
             'type' => ['sometimes', Rule::enum(TaxonomyTermTypeEnum::class)],
         ];

@@ -9,13 +9,14 @@ use App\Application\Taxonomy\Actions\RecordSlugHistoryAction;
 use App\Application\Taxonomy\Actions\RegeneratePathAndDescendantsAction;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Taxonomy\StoreTaxonomyTermRequest;
-use App\Http\Requests\Admin\Taxonomy\UpdateTaxonomyTermRequest;
+use App\Http\Requests\Admin\Taxonomy\StoreCategoryRequest;
+use App\Http\Requests\Admin\Taxonomy\UpdateCategoryRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-class TaxonomyTermController extends Controller
+class CategoryController extends Controller
 {
     protected RecordSlugHistoryAction $recordSlugHistoryAction;
     protected RegeneratePathAndDescendantsAction $regeneratePathAction;
@@ -35,6 +36,12 @@ class TaxonomyTermController extends Controller
         $this->bulkDeleteAction = $bulkDeleteAction;
     }
 
+    /**
+     * Display a listing of categories.
+     *
+     * @param Request $request
+     * @return View
+     */
     public function index(Request $request): View
     {
         $editingId = $request->query('edit');
@@ -56,16 +63,16 @@ class TaxonomyTermController extends Controller
 
         $editingTerm = $editingId ? TaxonomyTerm::findOrFail($editingId) : null;
 
-        return view('admin.taxonomy_terms.index', compact('tree', 'terms', 'editingTerm', 'search'));
+        return view('admin.taxonomies.category.index', compact('tree', 'terms', 'editingTerm', 'search'));
     }
 
-    public function create(): View
-    {
-        $parents = TaxonomyTerm::orderBy('title')->get();
-        return view('admin.taxonomy_terms.create', compact('parents'));
-    }
-
-    public function store(StoreTaxonomyTermRequest $request): RedirectResponse
+    /**
+     * Store a newly created category in storage.
+     *
+     * @param StoreCategoryRequest $request
+     * @return RedirectResponse
+     */
+    public function store(StoreCategoryRequest $request): RedirectResponse
     {
         $data = $request->validated();
         $originalSlug = $request->input('slug');
@@ -77,7 +84,7 @@ class TaxonomyTermController extends Controller
         $term = TaxonomyTerm::create($data);
 
         if ($originalSlug && $originalSlug !== $term->slug) {
-            return redirect()->route('admin.taxonomy_terms.index')
+            return redirect()->route('admin.taxonomies.category.index')
                 ->with('success', 'دسته‌بندی ایجاد شد.')
                 ->with('warning', "اسلاگ '{$originalSlug}' از قبل وجود داشت. اسلاگ '{$term->slug}' به صورت خودکار تنظیم شد.");
         }
@@ -86,21 +93,23 @@ class TaxonomyTermController extends Controller
         $term->path = $generatePathAction->execute($term);
         $term->saveQuietly();
 
-        return redirect()->route('admin.taxonomy_terms.index')
+        return redirect()->route('admin.taxonomies.category.index')
             ->with('success', 'دسته‌بندی ایجاد شد.');
     }
 
-    public function edit(TaxonomyTerm $term): View
+    /**
+     * Update the specified category in storage.
+     *
+     * @param UpdateCategoryRequest $request
+     * @param TaxonomyTerm $taxonomy_term
+     * @return RedirectResponse
+     * @throws ValidationException
+     */
+    public function update(UpdateCategoryRequest $request, TaxonomyTerm $category): RedirectResponse
     {
-        $parents = TaxonomyTerm::where('id', '!=', $term->id)->orderBy('title')->get();
-        return view('admin.taxonomy_terms.edit', compact('term', 'parents'));
-    }
-
-    public function update(UpdateTaxonomyTermRequest $request, TaxonomyTerm $taxonomy_term): RedirectResponse
-    {
-        $oldSlug = $taxonomy_term->slug;
+        $oldSlug = $category->slug;
         $newSlug = $request->input('slug', $oldSlug);
-        $oldParent = $taxonomy_term->parent_id;
+        $oldParent = $category->parent_id;
 
         if ($newSlug !== $oldSlug && $request->input('slug_change_confirmed') !== '1') {
             return redirect()
@@ -111,32 +120,38 @@ class TaxonomyTermController extends Controller
         }
 
 
-        $taxonomy_term->update($request->validated());
+        $category->update($request->validated());
 
         //check for sluggable package
-        $slugWasChangedBySluggable = ($newSlug && $newSlug !== $taxonomy_term->slug);
+        $slugWasChangedBySluggable = ($newSlug && $newSlug !== $category->slug);
 
-        if ($oldSlug !== $taxonomy_term->slug) {
-            $this->recordSlugHistoryAction->execute($taxonomy_term, $oldSlug);
+        if ($oldSlug !== $category->slug) {
+            $this->recordSlugHistoryAction->execute($category, $oldSlug);
         }
 
-        if ($oldSlug !== $taxonomy_term->slug || $oldParent !== $taxonomy_term->parent_id) {
-            $this->regeneratePathAction->execute($taxonomy_term);
+        if ($oldSlug !== $category->slug || $oldParent !== $category->parent_id) {
+            $this->regeneratePathAction->execute($category);
         }
 
         $message = 'دسته‌بندی با موفقیت بروزرسانی شد.';
 
         //show message if slug changes by sluggable
         if ($slugWasChangedBySluggable) {
-            return redirect()->route('admin.taxonomy_terms.index')
+            return redirect()->route('admin.taxonomies.category.index')
                 ->with('success', $message)
-                ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$taxonomy_term->slug}' به صورت خودکار تنظیم شد.");
+                ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$category->slug}' به صورت خودکار تنظیم شد.");
         }
 
-        return redirect()->route('admin.taxonomy_terms.index')
+        return redirect()->route('admin.taxonomies.category.index')
             ->with('success', $message);
     }
 
+    /**
+     * Remove the specified category from storage.
+     *
+     * @param TaxonomyTerm $term
+     * @return RedirectResponse
+     */
     public function destroy(TaxonomyTerm $term): RedirectResponse
     {
         if ($term->children()->exists()) {
@@ -146,11 +161,16 @@ class TaxonomyTermController extends Controller
         $term->delete();
 
         return redirect()
-            ->route('admin.taxonomy_terms.index')
+            ->route('admin.taxonomies.category.index')
             ->with('success', 'دسته‌بندی حذف شد.');
     }
 
-    //Handle bulk operations (delete) on selected taxonomy terms.
+    /**
+     * Handle bulk operations on selected categories.
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     */
     public function bulkAction(Request $request): RedirectResponse
     {
         $request->validate([
@@ -161,7 +181,7 @@ class TaxonomyTermController extends Controller
 
         $deletedCount = $this->bulkDeleteAction->execute($request->ids);
 
-        return redirect()->route('admin.taxonomy_terms.index')
+        return redirect()->route('admin.taxonomies.category.index')
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }
 }
