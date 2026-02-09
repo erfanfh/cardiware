@@ -3,11 +3,13 @@
 namespace App\Http\Requests\Admin\Taxonomy;
 
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateTaxonomyTermRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +26,12 @@ class UpdateTaxonomyTermRequest extends FormRequest
      */
     public function rules(): array
     {
-        $termId = $this->route('term')?->id;
+        $categoryId = $this->route('category')?->id;
 
         $rules = [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255'],
-            'parent_id' => ['nullable', 'exists:taxonomy_terms,id', 'not_in:' . $termId,],
+            'parent_id' => ['nullable', 'exists:taxonomy_terms,id', 'not_in:' . $categoryId,],
             'description' => ['nullable', 'string'],
             'type' => ['sometimes', Rule::enum(TaxonomyTermTypeEnum::class)],
         ];

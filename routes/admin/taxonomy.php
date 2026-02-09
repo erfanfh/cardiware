@@ -1,8 +1,8 @@
 <?php
 
-use App\Http\Controllers\Admin\Taxonomy\TaxonomyTermController;
+use App\Http\Controllers\Admin\Taxonomy\CategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('taxonomy-terms', TaxonomyTermController::class)->names('admin.taxonomy_terms')
-    ->except(['create', 'show', 'edit']);
-Route::post('taxonomy-terms/bulk', [TaxonomyTermController::class, 'bulkAction'])->name('admin.taxonomy_terms.bulk');
+Route::resource('category', CategoryController::class)->names('admin.taxonomies.category')
+    ->except(['show', 'create', 'edit']);
+Route::post('category/bulk', [CategoryController::class, 'bulkAction'])->name('admin.taxonomies.category.bulk');

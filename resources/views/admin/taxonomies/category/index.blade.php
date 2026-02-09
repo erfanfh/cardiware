@@ -37,7 +37,7 @@
 
                 <!-- index form -->
                 <form id="term-form"
-                      action="{{ $editingTerm ? route('admin.taxonomy_terms.update', $editingTerm) : route('admin.taxonomy_terms.store') }}"
+                      action="{{ $editingTerm ? route('admin.taxonomies.category.update', $editingTerm) : route('admin.taxonomies.category.store') }}"
                       method="POST">
                     @csrf
                     @if($editingTerm)
@@ -97,7 +97,7 @@
                         </button>
 
                         @if($editingTerm)
-                            <a href="{{ route('admin.taxonomy_terms.index') }}"
+                            <a href="{{ route('admin.taxonomies.category.index') }}"
                                class="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-lg font-medium text-center transition">
                                 لغو ویرایش
                             </a>
@@ -108,7 +108,7 @@
             <div class="lg:col-span-8 order-1 lg:order-1">
                 <!-- group action -->
                 <div class="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
-                    <form action="{{ route('admin.taxonomy_terms.bulk') }}" method="POST"
+                    <form action="{{ route('admin.taxonomies.category.bulk') }}" method="POST"
                           class="flex-1 flex gap-3 items-center">
                         @csrf
                         <select name="action"
@@ -122,7 +122,7 @@
                         </button>
                     </form>
 
-                    <form method="GET" action="{{ route('admin.taxonomy_terms.index') }}" class="flex-1">
+                    <form method="GET" action="{{ route('admin.taxonomies.category.index') }}" class="flex-1">
                         <div class="flex gap-2">
                             <input type="search"
                                    name="search"
@@ -168,10 +168,10 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ Str::limit($term->description ?? '—', 60) }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600 font-mono">{{ $term->path ?? '—' }}</td>
                                     <td class="px-6 py-4 text-sm text-right space-x-3">
-                                        <a href="{{ route('admin.taxonomy_terms.index', ['edit' => $term->id]) }}"
+                                        <a href="{{ route('admin.taxonomies.category.index', ['edit' => $term->id]) }}"
                                            class="text-blue-600 hover:text-blue-800 font-medium">ویرایش</a>
                                         <span class="text-gray-300">|</span>
-                                        <form action="{{ route('admin.taxonomy_terms.destroy', $term) }}" method="POST"
+                                        <form action="{{ route('admin.taxonomies.category.destroy', $term) }}" method="POST"
                                               class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -198,46 +198,47 @@
     </div>
 @endsection
 
-        @push('scripts')
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // ========== Slug Change Alert ==========
-                    const form = document.getElementById('term-form');
-                    const slugInput = document.getElementById('slug');
-                    const confirmInput = document.getElementById('slug-change-confirmed');
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // ========== Slug Change Alert ==========
+            const form = document.getElementById('term-form');
+            const slugInput = document.getElementById('slug');
+            const confirmInput = document.getElementById('slug-change-confirmed');
 
-                    if (form && slugInput) {
-                        const originalSlug = '{{ $editingTerm->slug ?? '' }}';
+            if (form && slugInput) {
+                const originalSlug = '{{ $editingTerm->slug ?? '' }}';
 
-                        form.addEventListener('submit', function (e) {
-                            const currentSlug = slugInput.value.trim();
+                form.addEventListener('submit', function (e) {
+                    const currentSlug = slugInput.value.trim();
 
-                            if (originalSlug && currentSlug !== originalSlug) {
-                                e.preventDefault();
-                                window.confirmSlugChange(originalSlug, currentSlug, form, confirmInput, 'category');
-                            }
-                        });
-                    }
-
-                    // ========== Bulk Delete Alert ==========
-                    const bulkForm = document.querySelector('form[action="{{ route("admin.taxonomy_terms.bulk") }}"]');
-
-                    if (bulkForm) {
-                        bulkForm.addEventListener('submit', function (e) {
-                            const actionSelect = this.querySelector('select[name="action"]');
-                            const selectedAction = actionSelect.value;
-                            const checkedCheckboxes = document.querySelectorAll('input[name="ids[]"]:checked');
-                            const checkedCount = checkedCheckboxes.length;
-
-                            if (selectedAction === 'delete' && checkedCount > 0) {
-                                e.preventDefault();
-                                window.confirmBulkDelete(checkedCount, checkedCheckboxes, bulkForm, 'category');
-                            } else if (selectedAction === 'delete' && checkedCount === 0) {
-                                e.preventDefault();
-                                window.showNoItemsSelected('category');
-                            }
-                        });
+                    if (originalSlug && currentSlug !== originalSlug) {
+                        e.preventDefault();
+                        window.confirmSlugChange(originalSlug, currentSlug, form, confirmInput);
                     }
                 });
-            </script>
-    @endpush
+            }
+
+            // ========== Bulk Delete Alert ==========
+            const bulkForm = document.querySelector('form[action="{{ route("admin.taxonomies.category.bulk") }}"]');
+
+            if (bulkForm) {
+                bulkForm.addEventListener('submit', function (e) {
+                    const actionSelect = this.querySelector('select[name="action"]');
+                    const selectedAction = actionSelect.value;
+
+                    const checkedCheckboxes = document.querySelectorAll('input[name="ids[]"]:checked');
+                    const checkedCount = checkedCheckboxes.length;
+
+                    if (selectedAction === 'delete' && checkedCount > 0) {
+                        e.preventDefault();
+                        window.confirmBulkDelete(checkedCount, checkedCheckboxes, bulkForm);
+                    } else if (selectedAction === 'delete' && checkedCount === 0) {
+                        e.preventDefault();
+                        window.showNoItemsSelected();
+                    }
+                });
+            }
+        });
+    </script>
+@endpush
