@@ -2,6 +2,7 @@
 
 namespace App\Domain\Taxonomy\Models;
 
+use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
 use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use Cviebrock\EloquentSluggable\Sluggable;
@@ -38,9 +39,10 @@ class TaxonomyTerm extends Model
     {
         return [
             'slug' => [
-                'source' => 'title',
-                'unique' => true,
-                'includeTrashed' => true
+                'source' => 'slug',
+                'unique' => false, //We handle uniqueness manually via GenerateUniqueSlugAction
+                'includeTrashed' => true,
+                'onUpdate' => true,
             ]
         ];
     }
@@ -109,5 +111,27 @@ class TaxonomyTerm extends Model
             'taxonomy_term_id',
             'taxonomable_id'
         );
+    }
+
+    /**
+     * @return void
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::saving(function ($term) {
+            if (empty(trim($term->slug ?? ''))) {
+                $term->slug = $term->title;
+            }
+
+            //Generate unique slug using dedicated action
+            $generateUniqueSlugAction = app(GenerateUniqueSlugAction::class);
+            $term->slug = $generateUniqueSlugAction->execute(
+                $term->slug,
+                $term->type,
+                $term->id ?? null // Exclude current term when updating
+            );
+        });
     }
 }
