@@ -14,9 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::prefix('identity')->name('admin.identity.')->group(function () {
 
-    Route::prefix('roles')->name('roles.')->group(function () {
-        Route::get('/', [RoleController::class, 'index'])->name('index');
-    });
+    Route::resource('roles', RoleController::class)
+        ->names('roles')->except(['show', 'destroy']);
 
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');

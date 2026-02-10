@@ -11,6 +11,11 @@
                     مدیریت نقش‌های کاربران و دسترسی‌ها
                 </p>
             </div>
+
+            <a href="{{ route('admin.identity.roles.create') }}"
+               class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white rounded-lg font-medium transition-colors duration-150 ease-out shadow-sm">
+                <span>ایجاد نقش جدید</span>
+            </a>
         </div>
     </div>
 @endsection
@@ -19,7 +24,8 @@
     <div class="bg-white rounded-lg border border-[var(--border-subtle)] overflow-hidden">
         <!-- Filters -->
         <div class="p-4 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-            <form method="GET" action="{{ route('admin.identity.roles.index') }}" class="flex flex-wrap items-center gap-4">
+            <form method="GET" action="{{ route('admin.identity.roles.index') }}"
+                  class="flex flex-wrap items-center gap-4">
                 <div class="flex-1 min-w-[200px]">
                     <label for="search" class="sr-only">جستجو</label>
                     <div class="relative">
@@ -85,6 +91,7 @@
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">شناسه</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">عنوان</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تعداد کاربران</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">عملیات</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-[var(--border-subtle)]">
@@ -97,30 +104,56 @@
                                 <span class="font-medium text-[var(--text-main)]">{{ $role->title }}</span>
 
                                 @if($role->is_default)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             پیش‌فرض
                                         </span>
                                 @endif
 
                                 @if($role->is_super_admin)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                             سوپر ادمین
                                         </span>
                                 @endif
                             </div>
                         </td>
 
-                        <td class="px-10 py-4">
-                            <a href="{{ route('admin.identity.users.index', ['role_id' => $role->id]) }}"
-                               class="inline-flex items-center gap-1 text-sm font-medium text-[var(--brand-500)] hover:text-[var(--brand-600)] hover:underline transition-colors duration-150">
-                                <span>{{ $role->users_count }}</span>
-                                <span>کاربر</span>
-                            </a>
+                        <td class="px-6 py-4">
+                                <span
+                                    class="inline-flex items-center gap-1 text-sm font-medium text-[var(--text-muted)]">
+                                    <span>{{ $role->users_count }}</span>
+                                    <span>کاربر</span>
+                                </span>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                @if(!$role->is_default && !$role->is_super_admin)
+                                    <a href="{{ route('admin.identity.roles.edit', $role) }}"
+                                       class="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors duration-150"
+                                       title="ویرایش نقش">
+                                        ✏️
+                                    </a>
+                                @else
+                                    <button
+                                        type="button"
+                                        onclick="showNonEditableRoleError('{{ $role->is_default ? 'پیش‌فرض' : 'سوپر ادمین' }}')"
+                                        class="p-2 text-[var(--text-muted)] hover:text-red-500 cursor-pointer transition-colors duration-150 relative group"
+                                        title="{{ $role->is_default ? 'نقش پیش‌فرض قابل ویرایش نیست' : 'نقش سوپر ادمین قابل ویرایش نیست' }}">
+                                        ✏️
+                                        <span
+                                            class="absolute left-full top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                            {{ $role->is_default ? 'غیرقابل ویرایش' : 'غیرقابل ویرایش' }}
+                                        </span>
+                                    </button>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-6 py-12 text-center text-[var(--text-muted)]">
+                        <td colspan="4" class="px-6 py-12 text-center text-[var(--text-muted)]">
                             <div class="flex flex-col items-center gap-2">
                                 <div class="text-4xl">📭</div>
                                 <p class="text-sm">هیچ نقشی یافت نشد.</p>
@@ -152,9 +185,9 @@
         .page-item.active .page-link {
             @apply bg-[var(--brand-500)] text-white border-[var(--brand-500)];
         }
+
         .page-link {
             @apply text-[var(--text-main)] hover:bg-[var(--bg-hover)] border-[var(--border-subtle)];
         }
     </style>
 @endpush
-
