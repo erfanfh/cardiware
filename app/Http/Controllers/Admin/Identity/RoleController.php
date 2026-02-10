@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin\Identity;
 use App\Domain\Identity\Models\Permission;
 use App\Domain\Identity\Models\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Identity\AssignNewRoleRequest;
 use App\Http\Requests\Admin\Identity\StoreRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 
 /**
@@ -117,5 +119,102 @@ class RoleController extends Controller
         return Redirect::route('admin.identity.roles.index')
             ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')
             ->with('success_title', 'عملیات موفق');
+    }
+
+    /**
+     * Delete a role after validation
+     * Prevents deletion of default or super admin roles
+     * Redirects to assign new role page if role has users
+     *
+     * @param Role $role The role to delete
+     * @return RedirectResponse
+     */
+    public function destroy(Role $role): RedirectResponse
+    {
+        // Prevent deleting default or super admin roles
+        if ($role->is_default) {
+            return back()->with('error', 'نقش پیش‌فرض قابل حذف نیست.')
+                ->with('error_title', 'خطا');
+        }
+
+        if ($role->is_super_admin) {
+            return back()->with('error', 'نقش سوپر ادمین قابل حذف نیست.')
+                ->with('error_title', 'خطا');
+        }
+
+        // Check if role has users
+        $userCount = $role->users()->count();
+
+        if ($userCount > 0) {
+            // Redirect to assign new role page
+            return redirect()->route('admin.identity.roles.assign-new-role.form', $role)
+                ->with('warning', "این نقش {$userCount} کاربر دارد. لطفاً یک نقش جدید برای آن‌ها انتخاب کنید.")
+                ->with('warning_title', 'هشدار');
+        }
+
+        // Delete role directly if no users
+        $role->delete();
+
+        return redirect()->route('admin.identity.roles.index')
+            ->with('success', "نقش '{$role->title}' با موفقیت حذف شد.")
+            ->with('success_title', 'حذف موفق');
+    }
+
+    /**
+     * Show form to assign new role to users before deleting
+     *
+     * @param Role $role The role to be deleted
+     * @return View
+     */
+    public function showAssignNewRoleForm(Role $role): View
+    {
+        // Get all roles except the one being deleted
+        $availableRoles = Role::query()
+            ->where('id', '!=', $role->id)
+            ->where('is_super_admin', false) // Optional: exclude super admin
+            ->get();
+
+        $userCount = $role->users()->count();
+
+        return view('admin.identity.roles.assign-new-role', [
+            'role' => $role,
+            'availableRoles' => $availableRoles,
+            'userCount' => $userCount,
+        ]);
+    }
+
+    /**
+     * Assign new role to users and delete the old role
+     *
+     * @param AssignNewRoleRequest $request The validation request
+     * @param Role $role The role to be deleted
+     * @return RedirectResponse
+     */
+    public function assignNewRole(AssignNewRoleRequest $request, Role $role): RedirectResponse
+    {
+        $newRoleId = $request->validated()['new_role_id'];
+        $userCount = $role->users()->count();
+
+        DB::beginTransaction();
+
+        try {
+            // Update all users with this role to new role
+            $role->users()->update(['role_id' => $newRoleId]);
+
+            // Delete the old role
+            $role->delete();
+
+            DB::commit();
+
+            return redirect()->route('admin.identity.roles.index')
+                ->with('success', "نقش '{$role->title}' حذف شد و {$userCount} کاربر به نقش جدید منتقل شدند.")
+                ->with('success_title', 'حذف موفق');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()->withInput()
+                ->with('error', 'خطا در حذف نقش. لطفاً دوباره تلاش کنید.')
+                ->with('error_title', 'خطا');
+        }
     }
 }

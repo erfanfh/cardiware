@@ -308,14 +308,16 @@
         const cancelBtns = backdrop.querySelectorAll('[data-confirm-cancel]');
 
         function openModal({title, text}) {
+            if (!backdrop) return;
             titleEl.textContent = title;
             textEl.textContent = text;
             backdrop.classList.remove('opacity-0 pointer-events-none');
-            backdrop.classList.add('opacity-1 pointer-events-auto');
+            backdrop.classList.add('opacity-100 pointer-events-auto');
         }
 
         function closeModal() {
-            backdrop.classList.remove('opacity-1 pointer-events-auto');
+            if (!backdrop) return;
+            backdrop.classList.remove('opacity-100 pointer-events-auto');
             backdrop.classList.add('opacity-0 pointer-events-none');
             activeForm = null;
         }
@@ -330,7 +332,7 @@
 
             openModal({
                 title: form.dataset.confirmTitle || 'آیا اطمینان دارید؟',
-                text: form.dataset.confirmText
+                text: form.dataset.confirmText || 'این عملیات قابل بازگشت نیست.'
             });
         });
 

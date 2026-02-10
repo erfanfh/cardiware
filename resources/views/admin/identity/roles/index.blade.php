@@ -35,10 +35,9 @@
                             name="search"
                             value="{{ request('search') }}"
                             placeholder="جستجو بر اساس نام نقش..."
-                            class="w-full pl-10 pr-4 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm"
-                        >
+                            class="w-full pl-10 pr-4 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm">
                         <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
-                            🔍
+                            🔎
                         </div>
                     </div>
                 </div>
@@ -61,8 +60,7 @@
                             name="super_admin"
                             value="1"
                             {{ request('super_admin') ? 'checked' : '' }}
-                            class="w-4 h-4 rounded border-[var(--border-subtle)] text-[var(--brand-500)] focus:ring-[var(--brand-500)]"
-                        >
+                            class="w-4 h-4 rounded border-[var(--border-subtle)] text-[var(--brand-500)] focus:ring-[var(--brand-500)]">
                         <span class="text-sm text-[var(--text-muted)]">سوپر ادمین</span>
                     </label>
                 </div>
@@ -91,7 +89,8 @@
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">شناسه</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">عنوان</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تعداد کاربران</th>
-                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">عملیات</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ویرایش</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">حذف</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-[var(--border-subtle)]">
@@ -133,15 +132,15 @@
                                     <a href="{{ route('admin.identity.roles.edit', $role) }}"
                                        class="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors duration-150"
                                        title="ویرایش نقش">
-                                        ✏️
+                                        🖊
                                     </a>
                                 @else
                                     <button
                                         type="button"
                                         onclick="showNonEditableRoleError('{{ $role->is_default ? 'پیش‌فرض' : 'سوپر ادمین' }}')"
-                                        class="p-2 text-[var(--text-muted)] hover:text-red-500 cursor-pointer transition-colors duration-150 relative group"
+                                        class="p-2 text-[var(--text-muted)] hover:text-red-500 cursor-not-allowed transition-colors duration-150 relative group"
                                         title="{{ $role->is_default ? 'نقش پیش‌فرض قابل ویرایش نیست' : 'نقش سوپر ادمین قابل ویرایش نیست' }}">
-                                        ✏️
+                                        🖊
                                         <span
                                             class="absolute left-full top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
                                             {{ $role->is_default ? 'غیرقابل ویرایش' : 'غیرقابل ویرایش' }}
@@ -150,10 +149,42 @@
                                 @endif
                             </div>
                         </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                @if(!$role->is_default && !$role->is_super_admin)
+                                    <form id="delete-form-{{ $role->id }}"
+                                          action="{{ route('admin.identity.roles.destroy', $role) }}"
+                                          method="POST"
+                                          class="inline-block">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                                onclick="confirmDelete('{{ $role->id }}', '{{ $role->title }}')"
+                                                class="p-2 text-[var(--text-muted)] hover:text-red-500 hover:bg-[var(--bg-hover)] rounded-lg transition-colors duration-150"
+                                                title="حذف نقش">
+                                            🗑
+                                        </button>
+                                    </form>
+                                @else
+                                    <button
+                                        type="button"
+                                        onclick="showNonDeletableRoleError('{{ $role->is_default ? 'پیش‌فرض' : 'سوپر ادمین' }}')"
+                                        class="p-2 text-[var(--text-muted)] hover:text-red-500 cursor-not-allowed transition-colors duration-150 relative group"
+                                        title="{{ $role->is_default ? 'نقش پیش‌فرض قابل حذف نیست' : 'نقش سوپر ادمین قابل حذف نیست' }}">
+                                        🗑
+                                        <span
+                                            class="absolute left-full top-1/2 -translate-y-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                                            {{ $role->is_default ? 'غیرقابل حذف' : 'غیرقابل حذف' }}
+                                        </span>
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-[var(--text-muted)]">
+                        <td colspan="5" class="px-6 py-12 text-center text-[var(--text-muted)]">
                             <div class="flex flex-col items-center gap-2">
                                 <div class="text-4xl">📭</div>
                                 <p class="text-sm">هیچ نقشی یافت نشد.</p>
@@ -179,6 +210,46 @@
         @endif
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        function showNonDeletableRoleError(roleType) {
+            Swal.fire({
+                title: '❌ امکان حذف وجود ندارد',
+                html: `
+                <div class="text-right">
+                    <p class="mb-3">نقش ${roleType} قابل حذف نیست.</p>
+                    <p class="text-sm text-gray-600">
+                        این نقش به دلیل اهمیت سیستمی، قابلیت حذف ندارد.
+                    </p>
+                </div>
+            `,
+                icon: 'error',
+                confirmButtonText: 'متوجه شدم',
+                confirmButtonColor: '#3085d6',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            });
+        }
+
+        function confirmDelete(roleId, roleTitle) {
+            Swal.fire({
+                title: '❕ تأیید حذف نقش',
+                text: `آیا از حذف نقش "${roleTitle}" مطمئن هستید؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، حذف کن',
+                cancelButtonText: 'لغو',
+                confirmButtonColor: '#d33',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById(`delete-form-${roleId}`).submit();
+                }
+            });
+        }
+    </script>
+@endpush
 
 @push('styles')
     <style>
