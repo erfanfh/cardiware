@@ -16,12 +16,9 @@ Route::prefix('identity')->name('admin.identity.')->group(function () {
 
     //roles
     Route::resource('roles', RoleController::class)->names('roles');
-    Route::get('roles/{role}/assign-new-role', [RoleController::class, 'showAssignNewRoleForm'])
-        ->name('roles.assign-new-role.form');
-    Route::post('roles/{role}/assign-new-role', [RoleController::class, 'assignNewRole'])
-        ->name('roles.assign-new-role');
+    Route::get('roles/{role}/assign-new-role', [RoleController::class, 'showAssignNewRoleForm'])->name('roles.assign-new-role.form');
+    Route::post('roles/{role}/assign-new-role', [RoleController::class, 'assignNewRole'])->name('roles.assign-new-role');
+
     //users
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('index');
-    });
+    Route::resource('users', UserController::class)->names('users');
 });

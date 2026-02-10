@@ -24,12 +24,12 @@
                     <label for="search" class="sr-only">جستجو</label>
                     <div class="relative">
                         <input
-                            type="text"
-                            id="search"
-                            name="search"
-                            value="{{ request('search') }}"
-                            placeholder="جستجو بر اساس نام، نام خانوادگی یا ایمیل..."
-                            class="w-full pl-10 pr-4 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm"
+                                type="text"
+                                id="search"
+                                name="search"
+                                value="{{ request('search') }}"
+                                placeholder="جستجو بر اساس نام، نام خانوادگی، نام نمایشی، ایمیل یا موبایل..."
+                                class="w-full pl-10 pr-4 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm"
                         >
                         <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]">
                             🔍
@@ -37,10 +37,25 @@
                     </div>
                 </div>
 
+                <div class="min-w-[200px]">
+                    <label for="role_id" class="sr-only">نقش</label>
+                    <select
+                            id="role_id"
+                            name="role_id"
+                            class="w-full pl-3 pr-10 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm bg-white">
+                        <option value="">همه نقش‌ها</option>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->id }}" {{ request('role_id') == $role->id ? 'selected' : '' }}>
+                                {{ $role->title }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div class="flex items-center gap-2">
                     <button
-                        type="submit"
-                        class="px-4 py-2 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
+                            type="submit"
+                            class="px-4 py-2 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                         اعمال فیلتر
                     </button>
                     @if(request()->hasAny(['search', 'role_id']))
@@ -58,22 +73,39 @@
             <table class="w-full">
                 <thead class="bg-[var(--bg-surface)] border-b border-[var(--border-subtle)]">
                 <tr>
-                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">شناسه</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تصویر</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نام نمایشی</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نام کامل</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">موبایل</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ایمیل</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نقش</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نوشته‌ها</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تاریخ عضویت</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-[var(--border-subtle)]">
                 @forelse($users as $user)
                     <tr class="hover:bg-[var(--bg-hover)] transition-colors duration-150">
-                        <td class="px-6 py-4 text-sm text-[var(--text-muted)] font-mono">{{ $user->id }}</td>
+                        <td class="px-6 py-4">
+                            <div class="w-10 h-10 rounded-full bg-[var(--bg-chip)] flex items-center justify-center text-[var(--text-muted)]">
+                                {{ strtoupper(substr($user->first_name, 0, 1)) }}
+                            </div>
+                        </td>
 
                         <td class="px-6 py-4">
                                 <span class="font-medium text-[var(--text-main)]">
+                                    {{ $user->display_name ?? '—' }}
+                                </span>
+                        </td>
+
+                        <td class="px-6 py-4">
+                                <span class="text-sm text-[var(--text-muted)]">
                                     {{ $user->first_name }} {{ $user->last_name }}
                                 </span>
+                        </td>
+
+                        <td class="px-6 py-4 text-sm text-[var(--text-muted)] font-mono">
+                            {{ $user->mobile ?? '—' }}
                         </td>
 
                         <td class="px-6 py-4 text-sm text-[var(--text-muted)]">
@@ -93,13 +125,21 @@
                                 </span>
                         </td>
 
+                        <td class="px-6 py-4">
+                            <a href="#"
+                               class="inline-flex items-center gap-1 text-sm font-medium text-[var(--brand-500)] hover:text-[var(--brand-600)] hover:underline transition-colors duration-150">
+                                <span>0</span>
+                                <span>نوشته</span>
+                            </a>
+                        </td>
+
                         <td class="px-6 py-4 text-sm text-[var(--text-muted)]">
-                            {{ $user->created_at->format('Y/m/d H:i') }}
+                            {{ $user->created_at->format('Y/m/d') }}
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-[var(--text-muted)]">
+                        <td colspan="8" class="px-6 py-12 text-center text-[var(--text-muted)]">
                             <div class="flex flex-col items-center gap-2">
                                 <div class="text-4xl">📭</div>
                                 <p class="text-sm">هیچ کاربری یافت نشد.</p>

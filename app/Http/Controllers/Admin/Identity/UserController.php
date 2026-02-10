@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
+use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -21,13 +22,19 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
+        // Get all roles for filter dropdown
+        $roles = Role::query()
+            ->orderBy('title')
+            ->get();
+
         $users = User::query()
             ->with('role')
-            ->when($request->search, fn($q, $search) =>
-            $q->where(function ($query) use ($search) {
+            ->when($request->search, fn($q, $search) => $q->where(function ($query) use ($search) {
                 $query->where('first_name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('display_name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('mobile', 'like', "%{$search}%");
             })
             )
             ->when($request->role_id, fn($q, $roleId) => $q->where('role_id', $roleId))
@@ -35,6 +42,6 @@ class UserController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.identity.users.index', compact('users'));
+        return view('admin.identity.users.index', compact('users', 'roles'));
     }
 }
