@@ -44,7 +44,9 @@ class AssignNewRoleRequest extends FormRequest
      */
     public function attributes(): array
     {
-        return trans('roles.attributes');
+        return [
+            'new_role_id' => 'نقش جدید',
+        ];
     }
 
     /**
@@ -54,6 +56,10 @@ class AssignNewRoleRequest extends FormRequest
      */
     public function messages(): array
     {
-        return trans('roles.validation');
+        return [
+            'new_role_id.required' => 'لطفاً یک نقش جدید انتخاب کنید.',
+            'new_role_id.exists' => 'نقش انتخاب‌شده معتبر نیست.',
+            'new_role_id.not_in' => 'نمی‌توانید همان نقش فعلی را انتخاب کنید.',
+        ];
     }
 }
