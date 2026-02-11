@@ -17,6 +17,6 @@
     "dependencies": {
         "tailwind": "^4.0.0",
         "tom-select": "^2.4.6",
-        "sweetalert2": "^11.26.17",
+        "sweetalert2": "^11.26.17"
     }
 }

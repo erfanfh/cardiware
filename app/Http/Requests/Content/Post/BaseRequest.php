@@ -15,8 +15,10 @@ abstract class BaseRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'excerpt' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'published_at' => ['nullable', 'date'],
+            'author_id' => ['required', 'exists:users,id'],
         ];
     }
 
@@ -30,6 +32,7 @@ abstract class BaseRequest extends FormRequest
             'published_at' => $this->published_at
                 ? gregorian_date($this->published_at)
                 : now(),
+            'author_id' => 1,
         ]);
     }
 

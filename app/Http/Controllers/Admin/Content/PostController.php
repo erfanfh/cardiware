@@ -34,16 +34,10 @@ class PostController extends Controller
                 $query->whereRaw('CONCAT(first_name, " ", last_name) LIKE ?', ["%$request->author%"]);
             });
 
-        if ($request->is_active) {
-            if ($request->is_active == 'true') {
-                $posts = $posts->where('is_active', true);
-            } else {
-                $posts = $posts->where('is_active', false);
-            }
-        }
+        if ($request->status)
+            $posts = $posts->where('status', $request->status);
 
         $posts = $posts
-            ->with('picture')
             ->paginate(10);
 
         return view('admin.content.posts.index', compact('posts'));
@@ -71,6 +65,8 @@ class PostController extends Controller
     {
         $post = Post::create($request->validated());
 
+        $post->categories()->sync($request->categories);
+
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
     }
 
@@ -97,6 +93,8 @@ class PostController extends Controller
     public function update(UpdateRequest $request, Post $post): RedirectResponse
     {
         $post->update($request->validated());
+
+        $post->categories()->sync($request->categories);
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }

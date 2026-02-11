@@ -22,7 +22,7 @@
         <x-admin.validation-errors/>
 
         <x-admin.content.post-form
-            :article="$post"
+            :post="$post"
             mode="edit"
         />
     </x-admin.form-page>

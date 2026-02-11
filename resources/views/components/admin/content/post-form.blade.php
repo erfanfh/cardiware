@@ -10,12 +10,13 @@
     $isEdit = $mode === 'edit';
 
     $action = $isEdit
-        ? route('admin.posts.update', $post)
+            ? route('admin.posts.update', $post)
         : route('admin.posts.store');
 
     $submitLabel = $isEdit ? 'ذخیره تغییرات' : 'ذخیره نوشته';
 
     $title = old('title', $post->title ?? '');
+    $excerpt = old('excerpt', $post->excerpt ?? '');
     $body = old('body', $post->body ?? '');
     $is_active = old('is_active', $post->is_active ?? false);
     $published_at = old('published_at', isset($post?->published_at) ? $post->published_at : '');
@@ -65,7 +66,7 @@
                     <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
                     <select name="categories[]" multiple autocomplete="off" id="categories"
                             class="ts-multiple w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                        @foreach ([] as $category)
+                        @foreach (\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
                             <option @if($post and $post->categories->contains($category->id)) selected
                                     @endif value="{{ $category->id }}">
                                 {{ $category->title }}
@@ -75,15 +76,15 @@
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="title" class="text-[0.85rem] text-[var(--text-main)]">
+                    <label for="tags" class="text-[0.85rem] text-[var(--text-main)]">
                         <span class="text-red-500">*</span>
                         برچسب ها
                     </label>
                     <input
                         type="text"
-                        id="title"
-                        name="title"
-                        value="{{ $title }}"
+                        id="tags"
+                        name="tags[]"
+{{--                        value="{{ $title }}"--}}
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
@@ -99,6 +100,20 @@
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         rows="6"
                     >{{ $body }}</textarea>
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label for="excerpt" class="text-[0.85rem] text-[var(--text-main)]">
+                        <span class="text-red-500">*</span>
+                        خلاصه نوشته
+                    </label>
+                    <input
+                        type="text"
+                        id="excerpt"
+                        name="excerpt"
+                        value="{{ $excerpt }}"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                    >
                 </div>
 
                 <div class="flex flex-col gap-1">

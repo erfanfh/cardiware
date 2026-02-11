@@ -12,7 +12,7 @@
 
         <div class="flex gap-2">
             <button type="button"
-                    class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                     onclick="toggleFilters()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                     <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -25,7 +25,7 @@
             </button>
 
             <a href="{{ route('admin.posts.create') }}"
-               class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-500 text-white rounded-full shadow-lg hover:shadow-xl text-sm font-medium transition-all hover:-translate-y-0.5">
+               class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">
                 <span class="text-lg">+</span>
                 <span>ایجاد مقاله جدید</span>
             </a>
@@ -39,7 +39,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
-                       class="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 outline-none transition-colors"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        placeholder="مثلاً ۱۲۳"
                        value="{{ request('id') }}">
             </div>
@@ -47,7 +47,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="title">عنوان</label>
                 <input type="text" name="title"
-                       class="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 outline-none transition-colors"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        placeholder="مثلاً چگونه آشپر خوبی باشیم؟"
                        value="{{ request('title') }}">
             </div>
@@ -55,18 +55,19 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="author">نویسنده</label>
                 <input type="text" name="author"
-                       class="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 outline-none transition-colors"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        placeholder="مثلاً راضیه ملکی"
                        value="{{ request('author') }}">
             </div>
 
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">وضعیت</label>
-                <select name="is_active"
-                        class="h-9 px-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 dark:focus:ring-orange-500 outline-none transition-colors appearance-none">
+                <select name="status"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     <option value="">همه وضعیت‌ها</option>
-                    <option @selected(request('is_active') === 'true') value="true">منتشر شده</option>
-                    <option @selected(request('is_active') === 'false') value="false">منتشر نشده</option>
+                    @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
+                        <option @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->value }}</option>
+                    @endforeach
                 </select>
             </div>
         </div>
@@ -81,7 +82,7 @@
                 </a>
 
                 <button type="submit"
-                        class="px-4 py-2 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 text-orange-600 dark:text-orange-400 text-sm font-medium hover:bg-orange-100 dark:hover:bg-orange-900/30 transition-colors text-center">
+                        class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">
                     جستجو
                 </button>
             </div>
@@ -106,7 +107,7 @@
                 @forelse($posts as $post)
                     <tr class="even:bg-gray-50/50 dark:even:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                         <td class="p-3">
-                            <a href="{{ route('posts.show', $post) }}" target="_blank"
+                            <a href="#" target="_blank"
                                class="flex items-center gap-3 group">
                                 <div class="w-8 h-8 min-w-8 rounded-lg bg-gradient-to-r from-orange-500 to-orange-500 text-white flex items-center justify-center text-sm font-semibold overflow-hidden">
                                     @if($post->picture?->url)
@@ -129,13 +130,17 @@
                         <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
 
                         <td class="p-3">
-                            @if($post->is_active)
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    منتشر شده
-                                </span>
-                            @else
+                            @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    منتشر نشده
+                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->value }}
+                                </span>
+                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->value }}
+                                </span>
+                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->value }}
                                 </span>
                             @endif
                         </td>
@@ -157,14 +162,14 @@
 
                                 <form method="POST"
                                       action="{{ route('admin.posts.destroy', $post) }}"
-                                      class="js-confirm inline-block"
+                                      class="inline-block"
                                       data-confirm-title="حذف مقاله"
                                       data-confirm-text="مقاله برای همیشه حذف خواهد شد."
                                 >
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors cursor-pointer">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                              viewBox="0 0 24 24">
                                             <path fill="none" stroke="currentColor" stroke-linecap="round"
