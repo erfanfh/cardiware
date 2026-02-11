@@ -12,6 +12,11 @@
                     مدیریت کاربران سامانه
                 </p>
             </div>
+
+            <a href="{{ route('admin.identity.users.create') }}"
+               class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white rounded-lg font-medium transition-colors duration-150 ease-out shadow-sm">
+                <span>ایجاد کاربر جدید</span>
+            </a>
         </div>
     </div>
 @endsection
@@ -82,8 +87,8 @@
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ایمیل</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نقش</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نوشته‌ها</th>
-                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تغییر وضعیت کاربر
-                    </th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تغییر وضعیت کاربر</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ویرایش</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-[var(--border-subtle)]">
@@ -137,7 +142,7 @@
                             </a>
                         </td>
 
-                        <td class="px-6 py-4">
+                        <td class="px-15 py-4">
                             <div class="flex items-center">
                                 @if($user->role->is_super_admin)
                                     <div class="relative inline-flex items-center cursor-not-allowed group">
@@ -180,6 +185,14 @@
                                 @endif
                             </div>
                         </td>
+
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('admin.identity.users.edit', $user) }}"
+                                   class="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors duration-150"
+                                   title="ویرایش کاربر">
+                                    ✎
+                                </a>
 
                 @empty
                     <tr>

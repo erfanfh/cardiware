@@ -6,10 +6,12 @@ use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Identity\StoreUserRequest;
 use App\Http\Requests\Admin\Identity\UpdateUserRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Controller for managing users in admin panel
@@ -49,6 +51,55 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for creating a new user
+     *
+     * @return View
+     */
+    public function create(): View
+    {
+        $roles = Role::query()
+            ->orderBy('title')
+            ->get();
+
+        return view('admin.identity.users.create', compact('roles'));
+    }
+
+    /**
+     * Store a newly created user in storage
+     *
+     * @param StoreUserRequest $request The validation request
+     * @return RedirectResponse
+     */
+    public function store(StoreUserRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $data['password'] = Hash::make($data['password']);
+        $data['status'] = ($data['status'] ?? false)
+        ? UserStatusEnum::ACTIVE->value : UserStatusEnum::INACTIVE->value;
+
+        User::create($data);
+
+        return redirect()->route('admin.identity.users.index')
+            ->with('success', "کاربر '{$data['first_name']}' با موفقیت ایجاد شد.")
+            ->with('success_title', 'ایجاد موفق');
+    }
+
+    /**
+     * Show the form for editing the specified user
+     *
+     * @param User $user The user to edit
+     * @return View
+     */
+    public function edit(User $user): View
+    {
+        $roles = Role::query()
+            ->orderBy('title')
+            ->get();
+
+        return view('admin.identity.users.edit', compact('user', 'roles'));
+    }
+
+    /**
      * Update user status (activate/deactivate)
      * Only status field is allowed to be updated via this endpoint
      *
@@ -58,24 +109,44 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        // Prevent deactivating super admin users
-        if ($user->role->is_super_admin && !$request->boolean('status')) {
-            return back()->with('error', 'نمی‌توانید کاربر سوپر ادمین را غیرفعال کنید.')
-                ->with('error_title', 'خطا');
-        }
+        $data = $request->validated();
 
-        $user->update([
-            'status' => $request->boolean('status') ? UserStatusEnum::ACTIVE : UserStatusEnum::INACTIVE,
-        ]);
+        $isStatusToggle = $request->has('status') && !$request->has('first_name');
+
+        if ($isStatusToggle) {
+            // Prevent deactivating super admin users
+            if ($user->role->is_super_admin && !$request->boolean('status')) {
+                return back()->with('error', 'نمی‌توانید کاربر سوپر ادمین را غیرفعال کنید.')
+                    ->with('error_title', 'خطا');
+            }
+
+            $user->update([
+                'status' => $request->boolean('status') ? UserStatusEnum::ACTIVE : UserStatusEnum::INACTIVE,
+            ]);
 
         $name = $user->display_name ?? $user->first_name;
 
-        $message = $request->boolean('status')
-            ? "کاربر '{$name}' فعال شد."
-            : "کاربر '{$name}' غیرفعال شد.";
+            $message = $request->boolean('status')
+                ? "کاربر '{$name}' فعال شد."
+                : "کاربر '{$name}' غیرفعال شد.";
 
+            return back()->with('success', $message)
+                ->with('success_title', 'عملیات موفق');
+        }
 
-        return back()->with('success', $message)
-            ->with('success_title', 'عملیات موفق');
+        if (!empty($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
+        } else {
+            unset($data['password']);
+        }
+
+        $data['status'] = filter_var($data['status'] ?? false, FILTER_VALIDATE_BOOLEAN)
+            ? UserStatusEnum::ACTIVE->value : UserStatusEnum::INACTIVE->value;
+
+        $user->update($data);
+
+        return redirect()->route('admin.identity.users.index')
+            ->with('success', "کاربر '{$user->first_name}' با موفقیت به‌روزرسانی شد.")
+            ->with('success_title', 'به‌روزرسانی موفق');
     }
 }
