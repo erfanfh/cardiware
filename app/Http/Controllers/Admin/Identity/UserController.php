@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
+use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Identity\UpdateUserRequest;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -43,5 +46,36 @@ class UserController extends Controller
             ->withQueryString();
 
         return view('admin.identity.users.index', compact('users', 'roles'));
+    }
+
+    /**
+     * Update user status (activate/deactivate)
+     * Only status field is allowed to be updated via this endpoint
+     *
+     * @param UpdateUserRequest $request The validation request
+     * @param User $user The user to update
+     * @return RedirectResponse
+     */
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
+    {
+        // Prevent deactivating super admin users
+        if ($user->role->is_super_admin && !$request->boolean('status')) {
+            return back()->with('error', 'نمی‌توانید کاربر سوپر ادمین را غیرفعال کنید.')
+                ->with('error_title', 'خطا');
+        }
+
+        $user->update([
+            'status' => $request->boolean('status') ? UserStatusEnum::ACTIVE : UserStatusEnum::INACTIVE,
+        ]);
+
+        $name = $user->display_name ?? $user->first_name;
+
+        $message = $request->boolean('status')
+            ? "کاربر '{$name}' فعال شد."
+            : "کاربر '{$name}' غیرفعال شد.";
+
+
+        return back()->with('success', $message)
+            ->with('success_title', 'عملیات موفق');
     }
 }
