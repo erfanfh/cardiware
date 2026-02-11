@@ -3,6 +3,7 @@
 namespace App\Domain\Identity\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Role extends Model
@@ -33,5 +34,13 @@ class Role extends Model
     public static function defaultRole(): Role
     {
         return Role::where('is_default', true)->first();
+    }
+
+    /**
+     * @return BelongsToMany
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class);
     }
 }
