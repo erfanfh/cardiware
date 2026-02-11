@@ -15,7 +15,7 @@ class FarazSmsProvider implements SmsProviderInterface
     {
         $payload = [
             'sending_type' => 'pattern',
-            'from_number' => '+981000',
+            'from_number' => config('services.notifications.sms.providers.farazsms.sms_from'),
             'code' => (int) config('services.notifications.sms.providers.farazsms.sms_template_id'),
             'recipients' => [
                 (string) preg_replace('/^0/', '', $mobile)
