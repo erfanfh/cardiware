@@ -2,6 +2,7 @@
 
 namespace App\Application\Identity\Actions\Auth;
 
+use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +28,6 @@ class RegisterUserAction
         string $mobile,
         string $email,
         string $password,
-        bool   $active = true,
         ?int   $roleId = null
     ): User
     {
@@ -36,10 +36,11 @@ class RegisterUserAction
         $data = [
             'first_name' => $firstName,
             'last_name' => $lastName,
+            'display_name' => $firstName . ' ' . $lastName,
             'mobile' => $mobile,
             'email' => $email,
             'password' => Hash::make($password),
-            'active' => $active,
+            'status' => UserStatusEnum::ACTIVE,
             'role_id' => $roleId,
         ];
 

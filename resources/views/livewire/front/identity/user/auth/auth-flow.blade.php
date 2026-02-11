@@ -200,7 +200,7 @@
         </form>
     @endif
 
-    @if($step === 'otp-login-mobile')
+    @if($step === 'otp-login-username')
         <button wire:click.prevent="goToLogin"
                 class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
@@ -222,7 +222,7 @@
         <form wire:submit.prevent="sendOtp" class="space-y-6" novalidate>
             <div class="space-y-2">
                 <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="username">
-                    شماره موبایل
+                    شماره موبایل یا ایمیل
                 </label>
                 <div class="relative group">
                     <div class="relative">
@@ -231,7 +231,6 @@
                             type="tel"
                             inputmode="numeric"
                             dir="ltr"
-                            placeholder="09123456789"
                             wire:model.defer="username"
                             class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                    outline-none transition focus:border-slate-400"

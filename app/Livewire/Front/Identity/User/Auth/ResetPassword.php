@@ -19,9 +19,8 @@ use Livewire\Component;
 
 class ResetPassword extends Component
 {
-    public string $step = 'enter-mobile';
-    public string $mobile = '';
-    public string $email = '';
+    public string $step = 'enter-username';
+    public string $username = '';
     public ?string $first_name = null;
     public ?string $last_name = null;
     public ?string $password = null;
@@ -39,42 +38,40 @@ class ResetPassword extends Component
         return view('livewire.front.identity.user.auth.reset-password');
     }
 
-    public function goToEnterMobile(): void
+    public function goToEnterUsername(): void
     {
         $this->resetValidation();
         $this->reset([
-            'mobile',
-            'mobile',
-            'email',
+            'username',
             'first_name',
             'last_name',
             'password',
             'password_confirmation',
         ]);
 
-        $this->step = 'enter-mobile';
+        $this->step = 'enter-username';
     }
 
     public function sendOtp(): void
     {
-        $this->mobile = normalize_number($this->mobile);
+        $this->username = normalize_number($this->username);
 
         $this->validate([
-            'mobile' => ['required', 'regex:/^09\d{9}$/'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
         ], [
-            'mobile.required' => 'شماره موبایل را وارد کنید',
-            'mobile.regex' => 'شماره موبایل معتبر نیست',
+            'username.required' => 'شماره موبایل یا ایمیل را وارد کنید',
+            'username.regex' => 'شماره موبایل یا ایمیل معتبر نیست',
         ]);
 
-        if (!User::where('mobile', $this->mobile)->exists()) {
-            $this->addError('mobile', 'کاربری با این شماره موبایل ثبت نشده است');
+        if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
+            $this->addError('username', 'کاربری با این شماره موبایل یا ایمیل ثبت نشده است');
             return;
         }
 
-        $sent = (new GenerateOtpAction())->execute($this->mobile, OtpTypeEnum::RESET_PASSWORD);
+        $sent = (new GenerateOtpAction())->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
 
         if (!$sent) {
-            $this->addError('mobile', 'برای ارسال مجدد کد باید کمی صبر کنید');
+            $this->addError('username', 'برای ارسال مجدد کد باید کمی صبر کنید');
             return;
         }
 
@@ -89,14 +86,14 @@ class ResetPassword extends Component
      */
     public function forgotPassword(): RedirectResponse|Redirector|null
     {
-        $this->mobile = normalize_number($this->mobile);
+        $this->username = normalize_number($this->username);
         $this->otp_code = normalize_number($this->otp_code);
 
         if ($this->rateLimit('request.forgot-password'))
             return null;
 
         $this->validate([
-            'mobile' => ['required', 'regex:/^09\d{9}$/'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
             'otp_code' => ['required'],
             'password' => [
                 'required',
@@ -106,8 +103,8 @@ class ResetPassword extends Component
             ],
             'password_confirmation' => ['required'],
         ], [
-            'mobile.required' => 'شماره موبایل را وارد کنید',
-            'mobile.regex' => 'شماره موبایل اشتباه می باشد',
+            'username.required' => 'شماره موبایل یا ایمیل را وارد کنید',
+            'username.regex' => 'شماره موبایل یا ایمیل اشتباه می باشد',
             'otp_code.required' => 'کد تایید را وارد کنید',
             'password.required' => 'رمز عبور را وارد کنید',
             'password_confirmation.required' => 'تکرار رمز عبور را وارد کنید',
@@ -116,14 +113,14 @@ class ResetPassword extends Component
             'password.confirmed' => 'رمزعبور و تکرار رمزعبور مطابقت ندارد',
         ]);
 
-        if (!$this->validateOtp($this->mobile, $this->otp_code, OtpTypeEnum::RESET_PASSWORD))
+        if (!$this->validateOtp($this->username, $this->otp_code, OtpTypeEnum::RESET_PASSWORD))
             return null;
 
-        $user = User::where('mobile', $this->mobile)->firstOrFail();
+        $user = User::where('mobile', $this->username)->orWhere('email', $this->username)->firstOrFail();
         $user->update(['password' => Hash::make($this->password)]);
 
         Auth::login($user);
-        $this->handleSuccessfulLogin();
+        request()->session()->regenerate();
 
         return redirect('/');
     }
@@ -135,13 +132,13 @@ class ResetPassword extends Component
     {
         $this->resetErrorBag();
 
-        if (!$this->mobile || !$this->otpType) {
-            $this->addError('otp_code', 'شماره موبایل معتبر نیست');
+        if (!$this->username || !$this->otpType) {
+            $this->addError('otp_code', 'شماره موبایل یا ایمیل معتبر نیست');
             return;
         }
 
         $type = OtpTypeEnum::from($this->otpType);
-        $sent = (new GenerateOtpAction())->execute($this->mobile, $type);
+        $sent = (new GenerateOtpAction())->execute($this->username, $type);
 
         if (!$sent) {
             $this->addError('otp_code', 'برای ارسال مجدد کد تایید باید 60 ثانیه صبر کنید');
@@ -177,20 +174,6 @@ class ResetPassword extends Component
         ]);
 
         return true;
-    }
-
-    /**
-     * @return void
-     */
-    private function handleSuccessfulLogin(): void
-    {
-        request()->session()->regenerate();
-
-        $user = auth()->user();
-
-        if ($user->role->title === RoleEnum::SUPER_ADMIN->value)
-            if($user->mobile)
-                (new SmsService())->send($user->mobile, 'ضیافت' . "\n" . 'ورود به پنل');
     }
 
     /**

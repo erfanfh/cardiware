@@ -78,7 +78,7 @@ class AuthFlow extends Component
         $this->resetValidation();
         $this->reset(['otp_code']);
 
-        $this->step = 'otp-login-mobile';
+        $this->step = 'otp-login-username';
     }
 
     /**
@@ -89,7 +89,7 @@ class AuthFlow extends Component
         $this->resetErrorBag();
 
         if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
-            $this->addError('username', 'کاربری با این شماره موبایل ثبت نشده است.');
+            $this->addError('username', 'کاربری با این شماره موبایل یا ایمیل ثبت نشده است.');
             return;
         }
 
@@ -176,7 +176,7 @@ class AuthFlow extends Component
             return null;
 
         $this->validate([
-            'mobile' => 'required', 'regex:/^09\d{9}$/',
+            'mobile' => 'required|regex:/^09\d{9}$/',
             'email' => 'required|email',
             'first_name' => 'required',
             'last_name' => 'required',
@@ -218,14 +218,14 @@ class AuthFlow extends Component
     public function sendOtp(): void
     {
         $this->validate([
-            'username' => ['required', 'regex:/^09\d{9}$/'],
+            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
         ], [
-            'username.required' => 'شماره موبایل را وارد کنید',
-            'username.regex' => 'شماره موبایل معتبر نیست',
+            'username.required' => 'شماره موبایل یا ایمیل را وارد کنید',
+            'username.regex' => 'شماره موبایل یا ایمیل معتبر نیست',
         ]);
 
-        if (!User::where('mobile', $this->username)->exists()) {
-            $this->addError('username', 'کاربری با این شماره موبایل ثبت نشده است');
+        if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
+            $this->addError('username', 'کاربری با این شماره موبایل یا ایمیل ثبت نشده است');
             return;
         }
 
@@ -251,7 +251,7 @@ class AuthFlow extends Component
         $this->resetErrorBag();
 
         if (!$this->username || !$this->otpType) {
-            $this->addError('otp_code', 'شماره موبایل معتبر نیست');
+            $this->addError('otp_code', 'شماره موبایل یا ایمیل معتبر نیست');
             return;
         }
 

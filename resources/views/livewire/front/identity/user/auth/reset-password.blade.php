@@ -35,7 +35,7 @@
         </div>
     @endif
 
-    @if($step === 'enter-mobile')
+    @if($step === 'enter-username')
         <a href="{{ route('auth.index') }}"
                 class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
@@ -50,24 +50,23 @@
                 فراموشی رمز عبور
             </h2>
             <p class="mt-4 text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
-                برای ورود به حساب کاربری، شماره موبایل خود را وارد کنید.
+                برای تغییر رمزعبور، شماره موبایل یا ایمیل خود را وارد کنید.
             </p>
         </div>
 
         <form wire:submit.prevent="sendOtp" class="space-y-6" novalidate>
             <div class="space-y-2">
-                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="mobile">
-                    شماره موبایل
+                <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="username">
+                    شماره موبایل یا ایمیل
                 </label>
                 <div class="relative group">
                     <div class="relative">
                         <input
-                            id="mobile"
-                            type="tel"
+                            id="username"
+                            type="text"
                             inputmode="numeric"
                             dir="ltr"
-                            placeholder="09123456789"
-                            wire:model.defer="mobile"
+                            wire:model.defer="username"
                             class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
                                outline-none transition focus:border-slate-400"
                         />
@@ -85,13 +84,13 @@
     @endif
 
     @if($step === 'forgot-password')
-        <button wire:click.prevent="goToEnterMobile"
+        <button wire:click.prevent="goToEnterUsername"
                 class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                 <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
                       stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
             </svg>
-            تغییر شماره موبایل
+             تغییر شماره موبایل یا ایمیل
         </button>
 
         <div class="mb-8 text-center">
@@ -100,7 +99,7 @@
                 کد تایید و رمز جدید خود را وارد کنید
             </p>
             <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
-                <span class="text-sm font-medium text-slate-700">{{ $mobile }}</span>
+                <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
             </div>
         </div>
 

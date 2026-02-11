@@ -21,7 +21,7 @@ class RoleSeeder extends Seeder
                     'title' => $roleEnum->value
                 ],
                 [
-                    'label' => $roleEnum->label(),
+                    'title' => $roleEnum->label(),
                     'is_default' => $roleEnum === $defaultRole,
                 ]
             );

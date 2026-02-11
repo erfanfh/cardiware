@@ -6,6 +6,8 @@ use App\Domain\Identity\Enums\OtpKeyTypeEnum;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Infrastructure\Services\Sms\SmsService;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
 
 class GenerateOtpAction
 {
@@ -45,7 +47,7 @@ class GenerateOtpAction
         if ($isMobile) {
             (new SmsService())->send($username, $code);
         } elseif ($isEmail) {
-            //send email
+            Mail::to($username)->send(new OtpMail($code));
         }
 
         return true;
