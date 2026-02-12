@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
 {
-    use Sluggable, SoftDeletes, HasTaxonomyTerms;
+    use SoftDeletes, HasTaxonomyTerms;
 
     protected $fillable = [
         'author_id',
@@ -38,22 +38,6 @@ class Post extends Model
     public function slugs(): MorphMany
     {
         return $this->morphMany(ContentSlug::class, 'sluggable');
-    }
-
-    /**
-     * configs of sluggable package
-     *
-     * @return array[]
-     */
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'title',
-                'unique' => true,
-                'includeTrashed' => true
-            ]
-        ];
     }
 
     /**

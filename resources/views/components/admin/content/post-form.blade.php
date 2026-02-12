@@ -37,17 +37,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="flex flex-col gap-1">
-                    <label for="title" class="text-[0.85rem] text-[var(--text-main)]">
-                        <span class="text-red-500">*</span>
-                        عنوان نوشته
-                    </label>
-                    <input
-                        type="text"
-                        id="title"
-                        name="title"
-                        value="{{ $title }}"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                    >
+                    <livewire:admin.content.slug-generator
+                        :initialTitle="$title"
+                        :initialSlug="old('slug', $post->slug ?? '')"
+                        :postId="$post->id ?? null"
+                    />
+
                 </div>
 
                 <div class="flex flex-col gap-1">

@@ -11,6 +11,7 @@
     @vite(['resources/css/admin/admin.css', 'resources/js/admin/admin.js'])
 
     @stack('styles')
+    @livewireStyles
 </head>
 <body>
 
@@ -41,5 +42,6 @@
 </script>
 
 @stack('scripts')
+@livewireScripts
 </body>
 </html>

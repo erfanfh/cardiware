@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Content\Post;
 
+use Illuminate\Validation\Rule;
+
 class UpdateRequest extends BaseRequest
 {
     /**
@@ -9,6 +11,18 @@ class UpdateRequest extends BaseRequest
      */
     public function rules(): array
     {
-        return $this->baseRules();
+        $postId = $this->route('post')?->id
+            ?? $this->route('post')?->id;
+
+        return [
+            ...$this->baseRules(),
+
+            'slug' => [
+                'required',
+                'max:255',
+                'alpha_dash',
+                Rule::unique('posts', 'slug')->ignore($postId),
+            ],
+        ];
     }
 }

@@ -9,7 +9,16 @@ class StoreRequest extends BaseRequest
      */
     public function rules(): array
     {
-        return $this->baseRules();
+        return [
+            ...$this->baseRules(),
+
+            'slug' => [
+                'required',
+                'unique:posts,slug',
+                'max:255',
+                'alpha_dash',
+            ],
+        ];
     }
 
     /**
