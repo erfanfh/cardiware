@@ -59,13 +59,13 @@
 
                 <div class="flex flex-col gap-1">
                     <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
-                    <select name="categories[]" multiple autocomplete="off" id="categories"
-                            class="ts-multiple w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                        @foreach (\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
-                            <option @if($post and $post->categories->contains($category->id)) selected
-                                    @endif value="{{ $category->id }}">
-                                {{ $category->title }}
-                            </option>
+                    <select name="categories[]"
+                            id="category-select"
+                            multiple
+                            autocomplete="off"
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                        @foreach($post->categories as $category)
+                            <option selected value="{{ $category->id }}">{{ $category->title }}</option>
                         @endforeach
                     </select>
                 </div>

@@ -56,3 +56,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const select = document.querySelector('#category-select');
+
+    const ts = new TomSelect(select, {
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        create: false,
+        plugins: {
+            'checkbox_options': {
+                'checkedClassNames': ['ts-checked'],
+                'uncheckedClassNames': ['ts-unchecked'],
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(json => {
+                    callback(json);
+                }).catch(() => {
+                callback();
+            });
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const parentSelect = document.querySelector('#parent-category-select');
+
+    const ts = new TomSelect(parentSelect, {
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        create: false,
+        plugins: {
+            'checkbox_options': {
+                'checkedClassNames': ['ts-checked'],
+                'uncheckedClassNames': ['ts-unchecked'],
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(json => {
+                    callback(json);
+                }).catch(() => {
+                callback();
+            });
+        }
+    });
+});

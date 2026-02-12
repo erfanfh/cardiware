@@ -17,6 +17,12 @@
                     <li class="text-[0.75rem] text-[var(--text-main)] mb-[8px] relative text-justify" style="list-style: circle">برای بهبود تجربه کاربری، حجم تصاویر مورد استفاده را کم کنید.</li>
                 </ul>
             </div>
+
+            <div class="bg-[var(--bg-card)] rounded-[var(--radius-xl)] pt-[18px] pb-[16px] mt-3 px-[20px] border border-solid border-[var(--border-subtle)] shadow-[var(--shadow-soft)]">
+                <h3 class="text-[0.9rem] font-bold text-[var(--text-main)] mb-[12px]">افزودن دسته</h3>
+                <livewire:admin.content.quick-category/>
+            </div>
+
         </x-slot:aside>
 
         <x-admin.validation-errors/>
