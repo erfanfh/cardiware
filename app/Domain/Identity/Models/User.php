@@ -2,8 +2,8 @@
 
 namespace App\Domain\Identity\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Domain\Content\Enums\StatusEnum;
+use App\Domain\Identity\Enums\UserStatusEnum;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +11,6 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -23,11 +22,14 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'display_name',
-        'role_id',
         'mobile',
         'email',
         'status',
         'password',
+        'mobile_verified_at',
+        'email_verified_at',
+        'role_id',
+        'active',
     ];
 
     /**
@@ -41,14 +43,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * @return BelongsTo
-     */
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -58,7 +52,24 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'status' => StatusEnum::class,
+            'status' => UserStatusEnum::class,
         ];
+    }
+
+    /**
+     * Role relationship
+     *
+     * @return BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            fn() => $this->first_name . ' ' . $this->last_name
+        );
     }
 }

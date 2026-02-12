@@ -28,6 +28,15 @@ class Role extends Model
     }
 
     /**
+    * Get the default role assigned to newly created users
+     * @return Role
+     */
+    public static function defaultRole(): Role
+    {
+        return Role::where('is_default', true)->first();
+    }
+
+    /**
      * @return BelongsToMany
      */
     public function permissions(): BelongsToMany

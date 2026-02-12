@@ -9,6 +9,7 @@ return Application::configure(basePath: dirname(__DIR__))
         web: [
             __DIR__ . '/../routes/web.php',
             __DIR__ . '/../routes/admin/admin.php',
+            __DIR__ . '/../routes/front/identity.php',
             __DIR__ . '/../routes/admin/taxonomy.php',
             __DIR__ . '/../routes/admin/tags.php',
         ],

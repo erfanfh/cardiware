@@ -112,4 +112,9 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    'otp' => [
+        'min' => env('OTP_MIN_LENGTH', 100000),
+        'max' => env('OTP_MAX_LENGTH', 999999),
+        'expire' => env('OTP_AUTH_EXPIRATION_TIME', 5) //minute,
+    ]
 ];
