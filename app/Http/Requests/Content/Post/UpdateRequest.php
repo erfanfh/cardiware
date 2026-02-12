@@ -11,8 +11,7 @@ class UpdateRequest extends BaseRequest
      */
     public function rules(): array
     {
-        $postId = $this->route('post')?->id
-            ?? $this->route('post')?->id;
+        $slugId = $this->route('post')->slugs()->where('is_current', true)->first()->id;
 
         return [
             ...$this->baseRules(),
@@ -21,7 +20,7 @@ class UpdateRequest extends BaseRequest
                 'required',
                 'max:255',
                 'alpha_dash',
-                Rule::unique('posts', 'slug')->ignore($postId),
+                Rule::unique('content_slugs', 'slug')->ignore($slugId),
             ],
         ];
     }

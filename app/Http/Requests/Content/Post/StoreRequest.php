@@ -14,7 +14,7 @@ class StoreRequest extends BaseRequest
 
             'slug' => [
                 'required',
-                'unique:posts,slug',
+                'unique:content_slugs,slug',
                 'max:255',
                 'alpha_dash',
             ],

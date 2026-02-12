@@ -1,22 +1,24 @@
 <?php
 
+use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Post;
 use Livewire\Component;
 
 new class extends Component {
 
-    public $title = '';
-    public $slug = '';
+    public string $title = '';
+    public string $slug = '';
     public ?int $postId = null;
     public bool $manualEdit = false;
 
-    public function mount($initialTitle = '', $initialSlug = '', $postId = null) {
+    public function mount($initialTitle = '', $initialSlug = '', $postId = null)
+    {
         $this->title = $initialTitle;
         $this->slug = $initialSlug ?: $this->generatePersianSlug($initialTitle);
         $this->postId = $postId;
     }
 
-    public function updatedTitle($value)
+    public function updatedTitle($value): void
     {
         if (!$this->manualEdit) {
             $this->slug = $this->generatePersianSlug($value);
@@ -24,23 +26,25 @@ new class extends Component {
         }
     }
 
-    public function updatedSlug($value)
+    public function updatedSlug($value): void
     {
         $this->manualEdit = true;
         $this->slug = $this->cleanPersianSlug($value);
         $this->checkUnique();
     }
 
-    private function checkUnique()
+    private function checkUnique(): void
     {
-        if (!$this->slug) return;
+        if (!$this->slug)
+            return;
 
         $original = $this->slug;
         $count = 1;
 
         while (
-        Post::where('slug', $this->slug)
-            ->when($this->postId, fn($q) => $q->where('id', '!=', $this->postId)) // 👈 این خط
+        ContentSlug::where('sluggable_type', Post::class)
+            ->where('slug', $this->slug)
+            ->when($this->postId, fn($q) => $q->where('id', '!=', $this->postId))
             ->exists()
         ) {
             $this->slug = $original . '-' . $count;
