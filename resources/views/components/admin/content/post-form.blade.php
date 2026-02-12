@@ -158,7 +158,7 @@
         function tagInput() {
             return {
                 newTags: '',
-                tags: @json($post->tags->pluck('title')->toArray() ?? []),
+                tags: @json($post?->tags->pluck('title')->toArray() ?? []),
                 suggestions: [],
                 selectedSuggestion: null,
 
