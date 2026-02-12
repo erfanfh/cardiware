@@ -64,24 +64,50 @@
                             multiple
                             autocomplete="off"
                             class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                        @foreach($post->categories as $category)
+                        @foreach($post ? $post->categories : [] as $category)
                             <option selected value="{{ $category->id }}">{{ $category->title }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <div class="flex flex-col gap-1">
+                <div class="flex flex-col gap-1" x-data="tagInput()">
                     <label for="tags" class="text-[0.85rem] text-[var(--text-main)]">
                         <span class="text-red-500">*</span>
                         برچسب ها
                     </label>
-                    <input
-                        type="text"
-                        id="tags"
-                        name="tags[]"
-{{--                        value="{{ $title }}"--}}
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                    >
+                    <div class="relative flex gap-2">
+                        <input
+                            type="text"
+                            id="tags"
+                            x-model="newTags"
+                            @input.debounce.300ms="searchTags()"
+                            @keydown.enter.prevent="addTags(selectedSuggestion ?? newTags)"
+                            placeholder="تگ‌ها را با کاما جدا کنید"
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                        >
+                        <button type="button" @click="addTags()" class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">افزودن</button>
+
+                        <ul x-show="suggestions.length > 0" class="absolute top-full left-0 right-0 bg-white border border-gray-200 mt-1 rounded shadow z-50 max-h-40 overflow-auto">
+                            <template x-for="(tag, index) in suggestions" :key="index">
+                                <li
+                                    @click="addTags(tag)"
+                                    class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
+                                    x-text="tag"
+                                ></li>
+                            </template>
+                        </ul>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <template x-for="(tag, index) in tags" :key="index">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                                <span x-text="tag"></span>
+                                <button type="button" @click="removeTag(index)" class="text-red-500 hover:text-red-700 font-bold cursor-pointer">&times;</button>
+                            </span>
+                        </template>
+                    </div>
+
+                    <input type="hidden" name="tags" :value="tags.join(',')">
                 </div>
 
                 <div class="md:col-span-2 flex flex-col gap-1">
@@ -127,4 +153,51 @@
     </div>
 
     <x-admin.save-button :label="$submitLabel"/>
+
+    <script>
+        function tagInput() {
+            return {
+                newTags: '',
+                tags: @json($post->tags->pluck('title')->toArray() ?? []),
+                suggestions: [],
+                selectedSuggestion: null,
+
+                addTags(tag = null) {
+                    tag = tag ?? this.newTags;
+                    if (!tag) return;
+
+                    let splitTags = tag.split(',').map(t => t.trim()).filter(t => t);
+
+                    splitTags.forEach(t => {
+                        if (!this.tags.includes(t)) {
+                            this.tags.push(t);
+                        }
+                    });
+
+                    this.newTags = '';
+                    this.suggestions = [];
+                    this.selectedSuggestion = null;
+                },
+
+                removeTag(index) {
+                    this.tags.splice(index, 1);
+                },
+
+                async searchTags() {
+                    if (!this.newTags.trim()) {
+                        this.suggestions = [];
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/admin/tags/search?query=${encodeURIComponent(this.newTags)}`);
+                        const data = await response.json();
+                        this.suggestions = data.filter(t => !this.tags.includes(t));
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+            }
+        }
+    </script>
 </form>

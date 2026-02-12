@@ -2,6 +2,7 @@
 
 namespace App\Domain\Content\Models;
 
+use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
 use App\Domain\Content\Enums\StatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Post extends Model
 {
@@ -58,30 +60,35 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * @return BelongsToMany
-     */
-    public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function categories(): BelongsToMany
     {
-        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')->where('type', TaxonomyTermTypeEnum::CATEGORY->value)->withTimestamps();
+        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
+            ->withPivot('type')
+            ->wherePivot('type', TaxonomyTermTypeEnum::CATEGORY->value)
+            ->withTimestamps();
     }
 
-    // app/Models/Post.php
-    public function syncTags(array|string $tags): static
+    public function tags(): BelongsToMany
     {
-        if (is_string($tags)) {
-            $tags = array_map('trim', explode(',', $tags));
-            $tags = array_filter($tags);
-        }
+        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
+            ->withPivot('type')
+            ->wherePivot('type', TaxonomyTermTypeEnum::TAG->value)
+            ->withTimestamps();
+    }
 
-        $tagIds = [];
-        foreach ($tags as $tagName) {
-            $tag = TaxonomyTerm::firstOrCreate(['title' => $tagName]);
-            $tagIds[] = $tag->id;
-        }
+    public function syncTags(array|string|null $tags)
+    {
+        $tagIds = collect($tags)->map(function ($tagName) {
+            return TaxonomyTerm::firstOrCreate(
+                ['title' => $tagName, 'type' => TaxonomyTermTypeEnum::TAG->value],
+                ['slug' => (new GenerateUniqueSlugAction())->execute($tagName, TaxonomyTermTypeEnum::TAG)]
+            )->id;
+        });
 
-        $this->tags()->sync($tagIds);
-
-        return $this;
+        $this->tags()->sync(
+            $tagIds->mapWithKeys(fn($id) => [
+                $id => ['type' => TaxonomyTermTypeEnum::TAG->value]
+            ])
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Content;
 
 use App\Domain\Content\Models\Post;
+use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Content\Post\StoreRequest;
 use App\Http\Requests\Content\Post\UpdateRequest;
@@ -65,7 +66,12 @@ class PostController extends Controller
     {
         $post = Post::create($request->validated());
 
-        $post->categories()->sync($request->categories);
+        $post->categories()->sync(
+            collect($request->categories)->mapWithKeys(fn($id) => [
+                $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
+            ])
+        );
+        $post->syncTags($request->tags);
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
     }
@@ -94,7 +100,12 @@ class PostController extends Controller
     {
         $post->update($request->validated());
 
-        $post->categories()->sync($request->categories);
+        $post->categories()->sync(
+            collect($request->categories)->mapWithKeys(fn($id) => [
+                $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
+            ])
+        );
+        $post->syncTags($request->tags);
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }

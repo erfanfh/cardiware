@@ -15,6 +15,8 @@ abstract class BaseRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'tags'  => ['nullable', 'array'],
+            'tags.*' => ['string', 'max:255'],
             'excerpt' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'published_at' => ['nullable', 'date'],
@@ -34,6 +36,19 @@ abstract class BaseRequest extends FormRequest
                 : now(),
             'author_id' => 1,
         ]);
+
+        if ($this->tags) {
+            $tags = collect(explode(',', $this->tags))
+                ->map(fn ($tag) => trim($tag))
+                ->filter()
+                ->unique()
+                ->values()
+                ->toArray();
+
+            $this->merge([
+                'tags' => $tags
+            ]);
+        }
     }
 
     /**
