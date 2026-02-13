@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
             __DIR__ . '/../routes/front/identity.php',
             __DIR__ . '/../routes/admin/taxonomy.php',
             __DIR__ . '/../routes/admin/tags.php',
+            __DIR__ . '/../routes/admin/content.php',
         ],
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
