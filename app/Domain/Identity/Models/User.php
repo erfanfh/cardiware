@@ -4,6 +4,7 @@ namespace App\Domain\Identity\Models;
 
 use App\Domain\Identity\Enums\UserStatusEnum;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -28,6 +29,10 @@ class User extends Authenticatable
         'email',
         'status',
         'password',
+        'mobile_verified_at',
+        'email_verified_at',
+        'role_id',
+        'active',
     ];
 
     /**
@@ -41,14 +46,6 @@ class User extends Authenticatable
     ];
 
     /**
-     * @return BelongsTo
-     */
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -60,5 +57,22 @@ class User extends Authenticatable
             'password' => 'hashed',
             'status' => UserStatusEnum::class,
         ];
+    }
+
+    /**
+     * Role relationship
+     *
+     * @return BelongsTo
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            fn() => $this->first_name . ' ' . $this->last_name
+        );
     }
 }

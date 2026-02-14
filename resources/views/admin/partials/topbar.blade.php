@@ -11,7 +11,7 @@
         </button>
 
         <div class="flex flex-col">
-            <h1>
+            <h1 class="text-[1rem] font-bold text-black">
                 @yield('title')
             </h1>
         </div>

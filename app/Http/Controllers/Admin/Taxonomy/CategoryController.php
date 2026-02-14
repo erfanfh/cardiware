@@ -184,4 +184,15 @@ class CategoryController extends Controller
         return redirect()->route('admin.taxonomies.category.index')
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }
+
+    public function categoriesFetch(Request $request)
+    {
+        $query = $request->get('q', '');
+
+        $categories = TaxonomyTerm::where('type', 'category')
+            ->where('title', 'like', "%{$query}%")
+            ->get(['id', 'title']);
+
+        return response()->json($categories);
+    }
 }

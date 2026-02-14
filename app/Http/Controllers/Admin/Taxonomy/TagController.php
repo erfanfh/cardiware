@@ -169,4 +169,15 @@ class TagController extends Controller
         return redirect()->route('admin.taxonomies.tags.index')
             ->with('success', $deletedCount . ' برچسب با موفقیت حذف شد.');
     }
+
+    public function tagsFetch(Request $request)
+    {
+        $query = $request->query('query', '');
+
+        $tags = TaxonomyTerm::where('type', TaxonomyTermTypeEnum::TAG->value)
+            ->where('title', 'like', "%{$query}%")
+            ->pluck('title');
+
+        return response()->json($tags);
+    }
 }
