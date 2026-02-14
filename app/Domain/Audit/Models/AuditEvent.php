@@ -16,6 +16,7 @@ class AuditEvent extends Model
         'user_agent',
         'old_data',
         'new_data',
+        'meta',
     ];
     protected $casts = [
         'type' => AuditEventTypeEnum::class

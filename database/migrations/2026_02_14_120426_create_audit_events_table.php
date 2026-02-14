@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->string('user_agent')->nullable();
             $table->json('old_data')->nullable();
             $table->json('new_data')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
 
             $table->index(['subject_type', 'subject_id', 'created_at'], 'audit_events_subject_created_at_index');
