@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
+use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
@@ -70,14 +71,18 @@ class UserController extends Controller
      * @param StoreUserRequest $request The validation request
      * @return RedirectResponse
      */
-    public function store(StoreUserRequest $request): RedirectResponse
+    public function store(StoreUserRequest $request, RegisterUserAction $registerUserAction): RedirectResponse
     {
         $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-        $data['status'] = ($data['status'] ?? false)
-        ? UserStatusEnum::ACTIVE->value : UserStatusEnum::INACTIVE->value;
 
-        User::create($data);
+        $registerUserAction->execute(
+            firstName: $data['first_name'],
+            lastName: $data['last_name'],
+            mobile: $data['mobile'],
+            email: $data['email'],
+            password: $data['password'],
+            roleId: $data['role_id']
+        );
 
         return redirect()->route('admin.identity.users.index')
             ->with('success', "کاربر '{$data['first_name']}' با موفقیت ایجاد شد.")
