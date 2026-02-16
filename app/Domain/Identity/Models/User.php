@@ -3,6 +3,7 @@
 namespace App\Domain\Identity\Models;
 
 use App\Domain\Identity\Enums\UserStatusEnum;
+use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -22,6 +24,7 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'display_name',
+        'role_id',
         'mobile',
         'email',
         'status',
