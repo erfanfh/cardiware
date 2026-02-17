@@ -7,9 +7,10 @@ use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Content\Post\StoreRequest;
 use App\Http\Requests\Content\Post\UpdateRequest;
-
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PostController extends Controller
@@ -25,6 +26,44 @@ class PostController extends Controller
         return view('admin.content.posts.index');
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param StoreRequest $request
+     * @return RedirectResponse
+     */
+    public function store(StoreRequest $request, AuditService $auditService): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $auditService, &$post) {
+            $post = Post::create($request->validated());
+
+            $resultCategory = $post->categories()->sync(
+                collect($request->categories)->mapWithKeys(fn($id) => [
+                    $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
+                ])
+            );
+
+            $auditService->recordSync(
+                $post,
+                'taxonomy_terms',
+                $resultCategory,
+                'taxonomy_term_id',
+                ['type' => 'category']
+            );
+
+            $resultTags = $post->syncTags($request->tags);
+
+            $auditService->recordSync(
+                $post,
+                'taxonomy_terms',
+                $resultTags,
+                'taxonomy_term_id',
+                ['type' => 'tag']
+            );
+        });
+
+        return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -35,28 +74,6 @@ class PostController extends Controller
     {
         return view('admin.content.posts.create');
     }
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreRequest $request
-     * @return RedirectResponse
-     */
-    public function store(StoreRequest $request): RedirectResponse
-    {
-        $post = Post::create($request->validated());
-
-        $post->categories()->sync(
-            collect($request->categories)->mapWithKeys(fn($id) => [
-                $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
-            ])
-        );
-        $post->syncTags($request->tags);
-
-        return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
-    }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -77,16 +94,35 @@ class PostController extends Controller
      * @param Post $post
      * @return RedirectResponse
      */
-    public function update(UpdateRequest $request, Post $post): RedirectResponse
+    public function update(UpdateRequest $request, Post $post, AuditService $auditService): RedirectResponse
     {
-        $post->update($request->validated());
+        DB::transaction(function () use ($request, $post, $auditService) {
+            $post->update($request->validated());
 
-        $post->categories()->sync(
-            collect($request->categories)->mapWithKeys(fn($id) => [
-                $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
-            ])
-        );
-        $post->syncTags($request->tags);
+            $resultCategory = $post->categories()->sync(
+                collect($request->categories)->mapWithKeys(fn($id) => [
+                    $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
+                ])
+            );
+
+            $auditService->recordSync(
+                $post,
+                'taxonomy_terms',
+                $resultCategory,
+                'taxonomy_term_id',
+                ['type' => 'category']
+            );
+
+            $resultTags = $post->syncTags($request->tags);
+
+            $auditService->recordSync(
+                $post,
+                'taxonomy_terms',
+                $resultTags,
+                'taxonomy_term_id',
+                ['type' => 'tag']
+            );
+        });
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }
