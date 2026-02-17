@@ -61,6 +61,64 @@
             </div>
 
             <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">دسته بندی</label>
+                <select name="category"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                    <option value="">همه دسته ها</option>
+                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
+                        <option @selected(request('category') == $category->id) value="{{ $category->id }}">{{ $category->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">برچسب</label>
+                <select name="tag"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                    <option value="">همه برچسب ها</option>
+                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::tag()->get() as $tag)
+                        <option @selected(request('tag') == $tag->id) value="{{ $tag->id }}">{{ $tag->title }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
+                <input type="text" name="comment"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('comment') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید</label>
+                <input type="text" name="views"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">انتشار از</label>
+                <input
+                    data-jdp
+                    autocomplete="off"
+                    name="from_published_at"
+                    value="{{ request('from_published_at') ? request('from_published_at') : '' }}"
+                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                >
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">انتشار تا</label>
+                <input
+                    data-jdp
+                    autocomplete="off"
+                    name="to_published_at"
+                    value="{{ request('to_published_at') ? request('to_published_at') : '' }}"
+                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                >
+            </div>
+
+            <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">وضعیت</label>
                 <select name="status"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
@@ -76,7 +134,7 @@
             <div class="order-2 md:order-1"></div>
 
             <div class="order-1 md:order-2 flex flex-col sm:flex-row gap-2">
-                <a href="{{ route('admin.posts.index') }}"
+                <a href="{{ route('admin.posts.history') }}"
                    class="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
                     حذف فیلترها
                 </a>
@@ -94,11 +152,16 @@
             <table class="w-full text-sm border-collapse">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">تصویر</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">مقاله</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">شناسه</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">نویسنده</th>
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">دسته ها</th>
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">برچسب ها</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[100px]">وضعیت</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تاریخ انتشار</th>
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تعداد بازدید</th>
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تعداد کامنت ها</th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">عملیات</th>
                 </tr>
                 </thead>
@@ -106,6 +169,8 @@
                 <tbody>
                 @forelse($posts as $post)
                     <tr class="even:bg-gray-50/50 dark:even:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                        <td></td>
+
                         <td class="p-3">
                             <a href="#" target="_blank"
                                class="flex items-center gap-3 group">
@@ -129,6 +194,10 @@
 
                         <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
 
+                        <td>{{ $post->categories->pluck('title')->implode(', ') }}</td>
+
+                        <td>{{ $post->tags->pluck('title')->implode(', ') }}</td>
+
                         <td class="p-3">
                             @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
@@ -148,6 +217,10 @@
                         <td class="p-3 text-gray-600 dark:text-gray-300">
                             {{ jalali_date($post->published_at, 'Y/m/d H:i') }}
                         </td>
+
+                        <td></td>
+
+                        <td></td>
 
                         <td class="p-3">
                             <div class="flex gap-1.5 justify-start">
