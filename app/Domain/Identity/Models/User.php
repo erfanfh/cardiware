@@ -69,6 +69,9 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    /**
+     * @return Attribute
+     */
     public function fullName(): Attribute
     {
         return Attribute::make(

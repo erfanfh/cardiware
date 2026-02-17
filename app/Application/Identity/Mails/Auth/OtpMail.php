@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail;
+namespace App\Application\Identity\Mails\Auth;
 
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
