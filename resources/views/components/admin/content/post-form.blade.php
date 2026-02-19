@@ -201,4 +201,27 @@
             }
         }
     </script>
+
+    <script>
+        let formChanged = false;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+
+            form.addEventListener('input', function () {
+                formChanged = true;
+            });
+
+            form.addEventListener('submit', function () {
+                formChanged = false;
+            });
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
 </form>
