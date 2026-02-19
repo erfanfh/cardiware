@@ -91,7 +91,7 @@ new class extends Component {
     }
 @endphp
 
-<div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
     <div class="overflow-x-auto -mx-0.5">
         <table class="w-full text-sm border-collapse">
             <thead class="bg-gray-50 dark:bg-gray-700/50">
@@ -162,9 +162,9 @@ new class extends Component {
 
                     <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
 
-                    <td>{{ $post->categories->pluck('title')->implode(', ') }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->categories->pluck('title')->implode(', ') }}</td>
 
-                    <td>{{ $post->tags->pluck('title')->implode(', ') }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->tags->pluck('title')->implode(', ') }}</td>
 
                     <td class="p-3">
                         @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)

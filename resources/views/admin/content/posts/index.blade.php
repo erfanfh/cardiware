@@ -14,7 +14,7 @@
 
         <div class="flex gap-2">
             <button type="button"
-                    class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-full shadow-sm border border-gray-300 dark:border-gray-700 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
                     onclick="toggleFilters()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                     <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -27,7 +27,7 @@
             </button>
 
             <a href="{{ route('admin.posts.create') }}"
-               class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">
+               class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:scale-105 transition-all duration-200">
                 <span class="text-lg">+</span>
                 <span>ایجاد مقاله جدید</span>
             </a>
@@ -35,7 +35,7 @@
     </div>
 
     <form method="GET" action="{{ route('admin.posts.index') }}"
-          class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-5 shadow border border-gray-100 dark:border-gray-700 mb-5 {{ request()->hasAny('title', 'id', 'author', 'category', 'tag', 'comments', 'views', 'from_published_at', 'to_published_at', 'status') ? 'block' : 'hidden' }}"
+          class="bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 dark:border-gray-700 mb-5 {{ request()->hasAny('title', 'id', 'author', 'category', 'tag', 'comments', 'views', 'from_published_at', 'to_published_at', 'status') ? 'block' : 'hidden' }}"
           id="filtersBox">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
             @if(request('sort'))
@@ -49,7 +49,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        placeholder="مثلاً ۱۲۳"
                        value="{{ request('id') }}">
             </div>
@@ -57,7 +57,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="title">عنوان</label>
                 <input type="text" name="title"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        placeholder="مثلاً چگونه آشپر خوبی باشیم؟"
                        value="{{ request('title') }}">
             </div>
@@ -65,14 +65,14 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="author">نویسنده</label>
                 <input type="text" name="author"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        value="{{ request('author') }}">
             </div>
 
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">دسته بندی</label>
                 <select name="category"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     <option value="">همه دسته ها</option>
                     @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
                         <option
@@ -84,7 +84,7 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">برچسب</label>
                 <select name="tag"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     <option value="">همه برچسب ها</option>
                     @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::tag()->get() as $tag)
                         <option @selected(request('tag') == $tag->id) value="{{ $tag->id }}">{{ $tag->title }}</option>
@@ -95,14 +95,14 @@
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
                 <input type="text" name="comments"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        value="{{ request('comments') }}">
             </div>
 
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید</label>
                 <input type="text" name="views"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                        value="{{ request('views') }}">
             </div>
 
@@ -113,7 +113,7 @@
                     autocomplete="off"
                     name="from_published_at"
                     value="{{ request('from_published_at') ? request('from_published_at') : '' }}"
-                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                 >
             </div>
 
@@ -124,14 +124,14 @@
                     autocomplete="off"
                     name="to_published_at"
                     value="{{ request('to_published_at') ? request('to_published_at') : '' }}"
-                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                    class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                 >
             </div>
 
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">وضعیت</label>
                 <select name="status"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     <option value="">همه وضعیت‌ها</option>
                     @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                         <option
@@ -147,12 +147,12 @@
 
             <div class="order-1 md:order-2 flex flex-col sm:flex-row gap-2">
                 <a href="{{ route('admin.posts.index') }}"
-                   class="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center">
+                   class="px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-sm font-medium text-center hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                     حذف فیلترها
                 </a>
 
                 <button type="submit"
-                        class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">
+                        class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:scale-105 transition-all duration-200">
                     جستجو
                 </button>
             </div>

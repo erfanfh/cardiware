@@ -1,8 +1,8 @@
 <header
-    class="h-[var(--topbar-height)] bg-[var(--bg-topbar)] flex items-center justify-between px-5 py-[10px] shadow-[0_1px_0_var(--border-subtle)] sticky top-0 z-20 ps-[12px] pe-[14px] lg:px-5">
+    class="h-[var(--topbar-height)] bg-white dark:bg-gray-900 flex items-center justify-between px-5 py-[10px] shadow-[0_1px_0_var(--border-subtle)] dark:shadow-[0_1px_0_rgb(75_85_99/0.3)] sticky top-0 z-20 ps-[12px] pe-[14px] lg:px-5">
     <div class="flex items-center gap-3 min-w-0">
         <button
-            class=" inline-flex lg:hidden items-center justify-center p-[6px] rounded-full bg-[#efefef] cursor-pointer border-0 outline-none transition-transform duration-150 hover:bg-[var(--brand-50)]"
+            class="inline-flex lg:hidden items-center justify-center p-[6px] rounded-full bg-[#efefef] dark:bg-gray-800 cursor-pointer border-0 outline-none transition-transform duration-150 hover:bg-[var(--brand-50)] dark:hover:bg-[var(--brand-600)]"
             aria-label="باز کردن منو" id="SidebarToggle">
             <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M4 7h16M4 12h16M4 17h16"
@@ -11,7 +11,7 @@
         </button>
 
         <div class="flex flex-col">
-            <h1 class="text-[1rem] font-bold text-black">
+            <h1 class="text-[1rem] font-bold text-black dark:text-white">
                 @yield('title')
             </h1>
         </div>
@@ -19,33 +19,33 @@
 
     <div class="flex items-center gap-3 relative">
         <div
-            class="flex items-center gap-2 ps-3 pe-[5px] py-[5px] rounded-full bg-[#f1f1f1] transition-transform duration-150 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)] hover:-translate-y-[1px] cursor-pointer"
+            class="flex items-center gap-2 ps-3 pe-[5px] py-[5px] rounded-full bg-[#f1f1f1] dark:bg-gray-800 transition-transform duration-150 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)] dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-[1px] cursor-pointer"
             id="userMenuButton">
             <div
-                class="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--orange-500))] flex items-center justify-center text-white text-sm font-semibold">
+                class="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--orange-500))] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--orange-400))] flex items-center justify-center text-white text-sm font-semibold">
                 {{ mb_substr('کاربر', 0, 1) }}
             </div>
             <div class="flex flex-col">
-                <div class="text-xs font-semibold">
+                <div class="text-xs font-semibold dark:text-white">
                     کاربر
                 </div>
             </div>
         </div>
 
         <ul id="userMenu"
-            class="hidden absolute top-full left-0 mt-2 w-48 bg-white/90 backdrop-blur-sm border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden transition-all duration-200 origin-top scale-y-0">
+            class="hidden absolute top-full left-0 mt-2 w-48 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 overflow-hidden transition-all duration-200 origin-top scale-y-0">
             <li>
                 <a href="#"
-                   class="block px-4 py-2 text-gray-800 hover:bg-gray-100 transition-colors">
+                   class="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     حساب کاربری
                 </a>
             </li>
             <li>
-                <hr class="my-1 border-gray-200">
+                <hr class="my-1 border-gray-200 dark:border-gray-700">
             </li>
             <li>
                 <a href="#"
-                   class="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-red-500 hover:text-white transition-colors font-medium">
+                   class="flex items-center gap-2 px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-500 dark:hover:bg-red-600 hover:text-white transition-colors font-medium">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                         <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke-width="1.5"

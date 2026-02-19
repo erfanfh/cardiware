@@ -132,7 +132,7 @@ new class extends Component {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col gap-1">
                         <div>
-                            <label for="title" class="text-[0.85rem] text-[var(--text-main)]">
+                            <label for="title" class="text-xs font-medium text-gray-500 dark:text-gray-400">
                                 <span class="text-red-500">*</span>
                                 عنوان نوشته
                             </label>
@@ -141,11 +141,11 @@ new class extends Component {
                                 id="title"
                                 wire:model.live="title"
                                 name="title"
-                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                             >
 
                             <div class="mt-4">
-                                <label for="slug" class="text-[0.85rem] text-[var(--text-main)] block mb-1">
+                                <label for="slug" class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1">
                                     لینک یکتا
                                 </label>
                                 <div class="flex flex-col gap-2">
@@ -156,7 +156,7 @@ new class extends Component {
                                             id="slug"
                                             name="slug"
                                             wire:model.blur="slug"
-                                            class="flex-1 rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                                             dir="ltr"
                                         >
                                     </div>
@@ -167,25 +167,25 @@ new class extends Component {
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label for="published_at" class="text-[0.85rem] text-[var(--text-main)]">تاریخ انتشار</label>
+                        <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ انتشار</label>
                         <input
                             data-jdp
                             autocomplete="off"
                             id="published_at"
                             wire:model="published_at"
                             value="{{ $post->published_at ? jalali_date($post->published_at) : '' }}"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         >
                     </div>
 
                     <div class="flex flex-col gap-1" wire:ignore>
-                        <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
+                        <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                         <select wire:model="categories"
                                 placeholder="جستجو کنید..."
                                 id="category-select"
                                 multiple
                                 autocomplete="off"
-                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                             @foreach($post ? $post->categories : [] as $category)
                                 <option selected value="{{ $category->id }}">{{ $category->title }}</option>
                             @endforeach
@@ -193,9 +193,9 @@ new class extends Component {
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label for="status" class="text-[0.85rem] text-[var(--text-main)]">وضعیت</label>
+                        <label for="status" class="text-xs font-medium text-gray-500 dark:text-gray-400">وضعیت</label>
                         <select wire:model="status" autocomplete="off" id="status"
-                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                                class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                             @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                                 <option @if($post and $post->status === $status->value) selected
                                         @endif value="{{ $status->value }}">
@@ -208,7 +208,7 @@ new class extends Component {
 
                 <div class="flex gap-2 my-3">
                     <button type="button" wire:click="hideForm"
-                            class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow border border-gray-200 dark:border-gray-700 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                            class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-full shadow-sm border border-gray-300 dark:border-gray-700 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
                         انصراف
                     </button>
 

@@ -15,8 +15,8 @@
 </head>
 <body>
 
-<div class="flex min-h-[100vh] bg-[var(--bg-body)]">
-    <div class="fixed inset-0 bg-[rgba(15,23,42,0.45)] opacity-0 pointer-events-none z-20 transition-all" id="SidebarBackdrop"></div>
+<div class="flex min-h-[100vh] bg-[var(--bg-body)] dark:bg-gray-900">
+    <div class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] opacity-0 pointer-events-none z-20 transition-all" id="SidebarBackdrop"></div>
 
     @include('admin.partials.sidebar')
 

@@ -3,7 +3,7 @@
     'subtitle' => null,
     'backRoute' => null,
     'backLabel' => 'بازگشت',
-    'showCourse' => null,
+    'showPost' => null,
 ])
 
 @php
@@ -25,11 +25,11 @@
 
         @if($backRoute)
             <div class="flex items-center gap-2">
-                <a href="{{ $backRoute }}" class="inline-flex items-center justify-center py-[7px] px-[14px] gap-[6px] rounded-full text-[0.75rem] font-normal transition text-[var(--text-main)] border border-[var(--border-strong)] cursor-pointer hover:bg-gray-300">
+                <a href="{{ $backRoute }}" class="inline-flex items-center justify-center py-[7px] px-[14px] gap-[6px] rounded-full text-[0.75rem] font-normal transition text-[var(--text-main)] dark:text-gray-100 border border-[var(--border-strong)] dark:border-gray-700 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-700">
                     {{ $backLabel }}
                 </a>
-                @if($showCourse)
-                    <a href="{{ $showCourse }}" class="px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-500 text-white text-sm font-medium shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                @if($showPost)
+                    <a href="{{ $showPost }}" class="px-4 py-2 rounded-full bg-gradient-to-r from-orange-500 to-orange-500 text-white text-sm font-medium shadow-lg dark:shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all">
                         مشاهده دوره
                     </a>
                 @endif
