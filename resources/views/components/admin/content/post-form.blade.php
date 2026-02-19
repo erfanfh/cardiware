@@ -60,6 +60,7 @@
                 <div class="flex flex-col gap-1">
                     <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
                     <select name="categories[]"
+                            placeholder="جستجو کنید..."
                             id="category-select"
                             multiple
                             autocomplete="off"

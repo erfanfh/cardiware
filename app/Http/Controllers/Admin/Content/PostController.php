@@ -22,31 +22,7 @@ class PostController extends Controller
      */
     public function index(Request $request): View
     {
-        $posts = Post::query()->withTrashed()->whereNull('deleted_at')
-            ->when($request->filled('title'), function ($query) use ($request) {
-                $query->where('title', 'like', '%' . $request->title . '%');
-            })->when($request->filled('id'), function ($query) use ($request) {
-                $query->where('id', $request->id);
-            })->when($request->filled('category'), function ($query) use ($request) {
-                $query->whereHas('categories', function ($q) use ($request) {
-                    $q->where('id', $request->category);
-                });
-            })->when($request->filled('tag'), function ($query) use ($request) {
-                $query->whereHas('tags', function ($q) use ($request) {
-                    $q->where('id', $request->tag);
-                });
-            })->when($request->filled('author'), function ($query) use ($request) {
-                $query->whereHas('author', function ($q) use ($request) {
-                    $q->whereRaw('CONCAT(first_name, " ", last_name) LIKE ?', ['%' . $request->author . '%']);
-                });
-            })->when($request->filled('from_published_at'), function ($query) use ($request) {
-                $query->where('created_at', '>=', gregorian_date($request->from_published_at));
-            })->when($request->filled('to_published_at'), function ($query) use ($request) {
-                $query->where('created_at', '<=', gregorian_date($request->to_published_at));
-            })->when($request->filled('status'), function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })->paginate(10);
-        return view('admin.content.posts.index', compact('posts'));
+        return view('admin.content.posts.index');
     }
 
 
