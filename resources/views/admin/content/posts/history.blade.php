@@ -3,6 +3,35 @@
 @section('title', 'نوشته های حذف شده')
 
 @section('content')
+    @php
+        function sortLink($column): string
+        {
+            $currentSort = request('sort');
+            $currentDirection = request('direction', 'asc');
+
+            $direction = ($currentSort === $column && $currentDirection === 'asc')
+                ? 'desc'
+                : 'asc';
+
+            return route(
+                request()->route()->getName(),
+                array_merge(request()->query(), [
+                    'sort' => $column,
+                    'direction' => $direction,
+                ])
+            );
+        }
+
+        function sortIcon($column): string
+        {
+            if (request('sort') !== $column) return '';
+
+            return request('direction') === 'asc'
+                ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><!-- Icon from Huge Icons by Hugeicons - undefined --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><!-- Icon from Huge Icons by Hugeicons - undefined --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/></svg>';
+        }
+    @endphp
+
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -27,9 +56,17 @@
     </div>
 
     <form method="GET" action="{{ route('admin.posts.history') }}"
-          class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-5 shadow border border-gray-100 dark:border-gray-700 mb-5 {{ request()->getQueryString() ? 'block' : 'hidden' }}"
+          class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-5 shadow border border-gray-100 dark:border-gray-700 mb-5 {{ request()->hasAny('title', 'id', 'author', 'category', 'tag', 'comments', 'views', 'from_published_at', 'to_published_at', 'status') ? 'block' : 'hidden' }}"
           id="filtersBox">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
+            @if(request('sort'))
+                <input type="hidden" name="sort" value="{{ request('sort') }}">
+            @endif
+
+            @if(request('direction'))
+                <input type="hidden" name="direction" value="{{ request('direction') }}">
+            @endif
+
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
@@ -153,7 +190,9 @@
                         تصویر
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
-                        مقاله
+                        <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
+                            مقاله {!! sortIcon('title') !!}
+                        </a>
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">
                         شناسه
@@ -171,7 +210,9 @@
                         وضعیت
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
-                        تاریخ انتشار
+                        <a href="{{ sortLink('published_at') }}" class="flex items-center gap-1">
+                            تاریخ انتشار {!! sortIcon('published_at') !!}
+                        </a>
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
                         تعداد بازدید

@@ -11,6 +11,20 @@ new class extends Component {
     public function posts()
     {
         $request = request();
+
+        $sort = $request->get('sort', 'published_at');
+        $direction = $request->get('direction', 'desc');
+
+        $allowedSorts = ['title', 'published_at'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'published_at';
+        }
+
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'desc';
+        }
+
         return Post::query()->withTrashed()->whereNull('deleted_at')
             ->when($request->filled('title'), function ($query) use ($request) {
                 $query->where('title', 'like', '%' . $request->title . '%');
@@ -34,7 +48,10 @@ new class extends Component {
                 $query->where('created_at', '<=', gregorian_date($request->to_published_at));
             })->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);
-            })->paginate(10);;
+            })
+            ->orderBy($sort, $direction)
+            ->paginate(10)
+            ->withQueryString();
     }
 
     #[On('post-updated')]
@@ -45,6 +62,35 @@ new class extends Component {
 };
 ?>
 
+@php
+    function sortLink($column): string
+    {
+        $currentSort = request('sort');
+        $currentDirection = request('direction', 'asc');
+
+        $direction = ($currentSort === $column && $currentDirection === 'asc')
+            ? 'desc'
+            : 'asc';
+
+        return route(
+            request()->route()->getName(),
+            array_merge(request()->query(), [
+                'sort' => $column,
+                'direction' => $direction,
+            ])
+        );
+    }
+
+    function sortIcon($column): string
+    {
+        if (request('sort') !== $column) return '';
+
+        return request('direction') === 'asc'
+            ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><!-- Icon from Huge Icons by Hugeicons - undefined --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/></svg>'
+            : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><!-- Icon from Huge Icons by Hugeicons - undefined --><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/></svg>';
+    }
+@endphp
+
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700 overflow-hidden">
     <div class="overflow-x-auto -mx-0.5">
         <table class="w-full text-sm border-collapse">
@@ -52,7 +98,10 @@ new class extends Component {
             <tr>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">تصویر
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">مقاله
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
+                    <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
+                        مقاله {!! sortIcon('title') !!}
+                    </a>
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">شناسه
                 </th>
@@ -67,8 +116,10 @@ new class extends Component {
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[100px]">وضعیت
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تاریخ
-                    انتشار
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
+                    <a href="{{ sortLink('published_at') }}" class="flex items-center gap-1">
+                        تاریخ انتشار {!! sortIcon('published_at') !!}
+                    </a>
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تعداد
                     بازدید

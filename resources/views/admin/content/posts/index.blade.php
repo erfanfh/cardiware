@@ -35,9 +35,17 @@
     </div>
 
     <form method="GET" action="{{ route('admin.posts.index') }}"
-          class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-5 shadow border border-gray-100 dark:border-gray-700 mb-5 {{ request()->getQueryString() ? 'block' : 'hidden' }}"
+          class="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-5 shadow border border-gray-100 dark:border-gray-700 mb-5 {{ request()->hasAny('title', 'id', 'author', 'category', 'tag', 'comments', 'views', 'from_published_at', 'to_published_at', 'status') ? 'block' : 'hidden' }}"
           id="filtersBox">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-4">
+            @if(request('sort'))
+                <input type="hidden" name="sort" value="{{ request('sort') }}">
+            @endif
+
+            @if(request('direction'))
+                <input type="hidden" name="direction" value="{{ request('direction') }}">
+            @endif
+
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
@@ -86,9 +94,9 @@
 
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
-                <input type="text" name="comment"
+                <input type="text" name="comments"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('comment') }}">
+                       value="{{ request('comments') }}">
             </div>
 
             <div class="flex flex-col gap-1">

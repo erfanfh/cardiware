@@ -111,6 +111,19 @@ class PostController extends Controller
      */
     public function history(Request $request): View
     {
+        $sort = $request->get('sort', 'published_at');
+        $direction = $request->get('direction', 'desc');
+
+        $allowedSorts = ['title', 'published_at'];
+
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'published_at';
+        }
+
+        if (!in_array($direction, ['asc', 'desc'])) {
+            $direction = 'desc';
+        }
+
         $posts = Post::query()->withTrashed()->whereNotNull('deleted_at')
             ->when($request->filled('title'), function ($query) use ($request) {
                 $query->where('title', 'like', '%' . $request->title . '%');
@@ -134,7 +147,11 @@ class PostController extends Controller
                 $query->where('created_at', '<=', gregorian_date($request->to_published_at));
             })->when($request->filled('status'), function ($query) use ($request) {
                 $query->where('status', $request->status);
-            })->paginate(10);
+            })
+            ->orderBy($sort, $direction)
+            ->paginate(10)
+            ->withQueryString();
+
         return view('admin.content.posts.history', compact('posts'));
     }
 

@@ -27,8 +27,6 @@ new class extends Component {
         $this->slug = $this->post->slug;
         $this->published_at = jalali_date($this->post->published_at);
         $this->categories = $this->post->categories->pluck('id');
-        $this->body = $this->post->body;
-        $this->excerpt = $this->post->excerpt;
         $this->status = $this->post->status;
         $this->show = true;
 
@@ -46,8 +44,6 @@ new class extends Component {
 
         $this->validate([
             'title' => ['required', 'string', 'max:255'],
-            'excerpt' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string'],
             'published_at' => ['nullable', 'date'],
             'slug' => [
                 'required',
@@ -58,8 +54,6 @@ new class extends Component {
         ]);
         $this->post->update([
             'title' => $this->title,
-            'excerpt' => $this->excerpt,
-            'body' => $this->body,
             'published_at' => $this->published_at ? gregorian_date($this->published_at) : now(),
             'author_id' => 1,
             'slug' => $this->slug
@@ -196,33 +190,6 @@ new class extends Component {
                                 <option selected value="{{ $category->id }}">{{ $category->title }}</option>
                             @endforeach
                         </select>
-                    </div>
-
-                    <div class="md:col-span-2 flex flex-col gap-1">
-                        <label for="body" class="text-[0.85rem] text-[var(--text-main)]">
-                            <span class="text-red-500">*</span>
-                            متن نوشته
-                        </label>
-                        <textarea
-                            id="body"
-                            wire:model="body"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                            rows="6"
-                        >{{ $post->body }}</textarea>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <label for="excerpt" class="text-[0.85rem] text-[var(--text-main)]">
-                            <span class="text-red-500">*</span>
-                            خلاصه نوشته
-                        </label>
-                        <input
-                            type="text"
-                            id="excerpt"
-                            wire:model="excerpt"
-                            value="{{ $post->excerpt }}"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                        >
                     </div>
 
                     <div class="flex flex-col gap-1">
