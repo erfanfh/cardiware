@@ -2,7 +2,6 @@
 
 namespace Database\Seeders\Identity;
 
-use App\Domain\Identity\Enums\RoleEnum;
 use App\Domain\Identity\Models\Role;
 use Illuminate\Database\Seeder;
 
@@ -13,16 +12,23 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $defaultRole = RoleEnum::STUDENT;
+        $roles = [
+            [
+                'title' => 'ادمین کل',
+                'is_super_admin' => true,
+            ],
+            [
+                'title' => 'کاربر عادی',
+                'is_default' => true
+            ]
+        ];
 
-        foreach (RoleEnum::cases() as $roleEnum) {
+        foreach ($roles as $role) {
             Role::updateOrCreate(
+                ['title' => $role['title']],
                 [
-                    'title' => $roleEnum->value
-                ],
-                [
-                    'title' => $roleEnum->label(),
-                    'is_default' => $roleEnum === $defaultRole,
+                    'is_default' => $role['is_default'] ?? false,
+                    'is_super_admin' => $role['is_super_admin'] ?? false,
                 ]
             );
         }
