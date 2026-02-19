@@ -40,10 +40,10 @@
 
 
         <div
-            class="flex items-center gap-2 ps-3 pe-[5px] py-[5px] rounded-full bg-[#f1f1f1] dark:bg-gray-800 transition-transform duration-150 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)] dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-[1px] cursor-pointer"
+            class="flex items-center gap-2 ps-[5px] pe-[12px] py-[5px] rounded-full bg-[#f1f1f1] dark:bg-gray-800 transition-transform duration-150 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)] dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-[1px] cursor-pointer"
             id="userMenuButton">
             <div
-                class="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--orange-500))] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--orange-400))] flex items-center justify-center text-white text-sm font-semibold">
+                class="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--orange-500))] flex items-center justify-center text-white text-sm font-semibold">
                 {{ mb_substr('کاربر', 0, 1) }}
             </div>
             <div class="flex flex-col">

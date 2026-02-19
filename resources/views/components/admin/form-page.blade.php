@@ -37,18 +37,16 @@
         @endif
     </div>
 
-    {{-- بدنه صفحه --}}
-    <div class="grid gap-6" style="{{ $hasAside ? 'grid-template-columns: minmax(0, 2.5fr) minmax(200px, 1fr)' : 'grid-template-columns: minmax(0, 1fr)' }}">
-        {{-- ستون اصلی فرم --}}
-        <div class="w-full">
+    <div class="grid gap-6  grid-cols-1 lg:grid-cols-[minmax(0,2.5fr)_minmax(200px,1fr)]">
+        <div class="w-full order-2 lg:order-1 mb-0 md:mb-12">
             {{ $slot }}
         </div>
 
-        {{-- ستون ساید (اختیاری) --}}
         @if($hasAside)
-            <aside>
+            <aside class="w-full order-1 lg:order-2">
                 {{ $aside }}
             </aside>
         @endif
     </div>
+
 </div>
