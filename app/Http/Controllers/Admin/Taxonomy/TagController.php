@@ -12,6 +12,7 @@ use App\Http\Requests\Admin\Taxonomy\StoreTagRequest;
 use App\Http\Requests\Admin\Taxonomy\UpdateTagRequest;
 use App\Infrastructure\Traits\Searchable;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -173,7 +174,11 @@ class TagController extends Controller
             ->with('success', $deletedCount . ' برچسب با موفقیت حذف شد.');
     }
 
-    public function tagsFetch(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function tagsFetch(Request $request): JsonResponse
     {
         $query = $request->query('query', '');
 

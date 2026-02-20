@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
         new TomSelect(el, {
             create: false,
             plugins: {
+                'remove_button' :{
+                    title:'حذف',
+                },
                 'checkbox_options': {
                     'checkedClassNames': ['ts-checked'],
                     'uncheckedClassNames': ['ts-unchecked'],
@@ -52,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             sortField: {
                 field: "text",
                 direction: "asc"
-            }
+            },
         });
     });
 });
@@ -66,6 +69,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchField: 'title',
         create: false,
         plugins: {
+            'remove_button' :{
+                title:'حذف',
+            },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
@@ -93,6 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchField: 'title',
         create: false,
         plugins: {
+            'remove_button' :{
+                title:'حذف',
+            },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
@@ -109,4 +118,39 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
+});
+
+Livewire.on('init-category-select', () => {
+
+    const el = document.getElementById('category-select');
+
+    if (el.tomselect) {
+        el.tomselect.destroy();
+    }
+
+    new TomSelect(el, {
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        plugins: {
+            'remove_button' :{
+                title:'حذف',
+            },
+            'checkbox_options': {
+                'checkedClassNames': ['ts-checked'],
+                'uncheckedClassNames': ['ts-unchecked'],
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(json => {
+                    callback(json);
+                }).catch(() => {
+                callback();
+            });
+        }
+    });
+
 });

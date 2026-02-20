@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Taxonomy\StoreCategoryRequest;
 use App\Http\Requests\Admin\Taxonomy\UpdateCategoryRequest;
 use App\Infrastructure\Traits\Searchable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -186,7 +187,11 @@ class CategoryController extends Controller
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }
 
-    public function categoriesFetch(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function categoriesFetch(Request $request): JsonResponse
     {
         $query = $request->get('q', '');
 
