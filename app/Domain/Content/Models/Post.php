@@ -60,6 +60,9 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsToMany
+     */
     public function categories(): BelongsToMany
     {
         return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
@@ -68,6 +71,9 @@ class Post extends Model
             ->withTimestamps();
     }
 
+    /**
+     * @return BelongsToMany
+     */
     public function tags(): BelongsToMany
     {
         return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
@@ -76,7 +82,11 @@ class Post extends Model
             ->withTimestamps();
     }
 
-    public function syncTags(array|string|null $tags)
+    /**
+     * @param array|string|null $tags
+     * @return void
+     */
+    public function syncTags(array|string|null $tags): void
     {
         $tagIds = collect($tags)->map(function ($tagName) {
             return TaxonomyTerm::firstOrCreate(

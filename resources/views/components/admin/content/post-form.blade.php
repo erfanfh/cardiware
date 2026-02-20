@@ -22,7 +22,7 @@
     $published_at = old('published_at', isset($post?->published_at) ? $post->published_at : '');
 @endphp
 
-<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-12">
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
     @csrf
     @if($isEdit)
         @method('PUT')
@@ -46,24 +46,25 @@
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="published_at" class="text-[0.85rem] text-[var(--text-main)]">تاریخ انتشار</label>
+                    <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ انتشار</label>
                     <input
                         data-jdp
                         autocomplete="off"
                         id="published_at"
                         name="published_at"
                         value="{{ $published_at ? jalali_date($published_at) : '' }}"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="categories" class="text-[0.85rem] text-[var(--text-main)]">دسته بندی</label>
+                    <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                     <select name="categories[]"
+                            placeholder="جستجو کنید..."
                             id="category-select"
                             multiple
                             autocomplete="off"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                         @foreach($post ? $post->categories : [] as $category)
                             <option selected value="{{ $category->id }}">{{ $category->title }}</option>
                         @endforeach
@@ -71,7 +72,7 @@
                 </div>
 
                 <div class="flex flex-col gap-1" x-data="tagInput()">
-                    <label for="tags" class="text-[0.85rem] text-[var(--text-main)]">
+                    <label for="tags" class="text-xs font-medium text-gray-500 dark:text-gray-400">
                         <span class="text-red-500">*</span>
                         برچسب ها
                     </label>
@@ -83,15 +84,15 @@
                             @input.debounce.300ms="searchTags()"
                             @keydown.enter.prevent="addTags(selectedSuggestion ?? newTags)"
                             placeholder="تگ‌ها را با کاما جدا کنید"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         >
-                        <button type="button" @click="addTags()" class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:transform">افزودن</button>
+                        <button type="button" @click="addTags()" class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] dark:hover:bg-[var(--brand-400)] transition-transform">افزودن</button>
 
-                        <ul x-show="suggestions.length > 0" class="absolute top-full left-0 right-0 bg-white border border-gray-200 mt-1 rounded shadow z-50 max-h-40 overflow-auto">
+                        <ul x-show="suggestions.length > 0" class="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mt-1 rounded shadow z-50 max-h-40 overflow-auto">
                             <template x-for="(tag, index) in suggestions" :key="index">
                                 <li
                                     @click="addTags(tag)"
-                                    class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
+                                    class="px-3 py-1 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
                                     x-text="tag"
                                 ></li>
                             </template>
@@ -100,9 +101,9 @@
 
                     <div class="flex flex-wrap gap-2 mt-2">
                         <template x-for="(tag, index) in tags" :key="index">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-700 flex items-center gap-1">
                                 <span x-text="tag"></span>
-                                <button type="button" @click="removeTag(index)" class="text-red-500 hover:text-red-700 font-bold cursor-pointer">&times;</button>
+                                <button type="button" @click="removeTag(index)" class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold cursor-pointer">&times;</button>
                             </span>
                         </template>
                     </div>
@@ -111,20 +112,20 @@
                 </div>
 
                 <div class="md:col-span-2 flex flex-col gap-1">
-                    <label for="body" class="text-[0.85rem] text-[var(--text-main)]">
+                    <label for="body" class="text-xs font-medium text-gray-500 dark:text-gray-400">
                         <span class="text-red-500">*</span>
                         متن نوشته
                     </label>
                     <textarea
                         id="body"
                         name="body"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         rows="6"
                     >{{ $body }}</textarea>
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="excerpt" class="text-[0.85rem] text-[var(--text-main)]">
+                    <label for="excerpt" class="text-xs font-medium text-gray-500 dark:text-gray-400">
                         <span class="text-red-500">*</span>
                         خلاصه نوشته
                     </label>
@@ -133,14 +134,14 @@
                         id="excerpt"
                         name="excerpt"
                         value="{{ $excerpt }}"
-                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                     >
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="status" class="text-[0.85rem] text-[var(--text-main)]">وضعیت</label>
+                    <label for="status" class="text-xs font-medium text-gray-500 dark:text-gray-400">وضعیت</label>
                     <select name="status" autocomplete="off" id="status"
-                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] bg-white outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                            class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                         @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                             <option @if($post and $post->status === $status->value) selected @endif value="{{ $status->value }}">
                                 {{ $status->value }}
@@ -199,5 +200,28 @@
                 }
             }
         }
+    </script>
+
+    <script>
+        let formChanged = false;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+
+            form.addEventListener('input', function () {
+                formChanged = true;
+            });
+
+            form.addEventListener('submit', function () {
+                formChanged = false;
+            });
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
     </script>
 </form>
