@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Content\Enums\StatusEnum;
 use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
@@ -17,7 +18,7 @@ new class extends Component {
     public Collection $categories;
     public string $body;
     public string $excerpt;
-    public string $status;
+    public StatusEnum $status;
     public bool $manualEdit = false;
 
     /**
@@ -229,7 +230,7 @@ new class extends Component {
                         <label for="status" class="text-xs font-medium text-gray-500 dark:text-gray-400">وضعیت</label>
                         <select wire:model="status" autocomplete="off" id="status"
                                 class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                            @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
+                            @foreach (StatusEnum::cases() as $status)
                                 <option @if($post and $post->status === $status->value) selected
                                         @endif value="{{ $status->value }}">
                                     {{ $status->value }}
