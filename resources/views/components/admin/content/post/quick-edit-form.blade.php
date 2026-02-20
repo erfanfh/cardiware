@@ -3,6 +3,7 @@
 use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -10,15 +11,19 @@ use Livewire\Component;
 new class extends Component {
     public Post $post;
     public bool $show = false;
-    public $title;
-    public $slug;
-    public $published_at;
-    public $categories;
-    public $body;
-    public $excerpt;
-    public $status;
+    public string $title;
+    public string $slug;
+    public string $published_at;
+    public Collection $categories;
+    public string $body;
+    public string $excerpt;
+    public string $status;
     public bool $manualEdit = false;
 
+    /**
+     * @param int $id
+     * @return void
+     */
     #[On('quick-edit-post')]
     public function showForm(int $id): void
     {
@@ -33,12 +38,18 @@ new class extends Component {
         $this->dispatch('init-category-select');
     }
 
-    public function hideForm()
+    /**
+     * @return void
+     */
+    public function hideForm(): void
     {
         $this->show = false;
     }
 
-    public function updatePost()
+    /**
+     * @return void
+     */
+    public function updatePost(): void
     {
         $slugId = $this->post->slugs()->where('is_current', true)->first()->id;
 
@@ -69,7 +80,11 @@ new class extends Component {
         $this->reset();
     }
 
-    public function updatedTitle($value): void
+    /**
+     * @param string $value
+     * @return void
+     */
+    public function updatedTitle(string $value): void
     {
         if (!$this->manualEdit) {
             $this->slug = $this->generatePersianSlug($value);
@@ -77,13 +92,20 @@ new class extends Component {
         }
     }
 
-    public function updatedSlug($value): void
+    /**
+     * @param string $value
+     * @return void
+     */
+    public function updatedSlug(string $value): void
     {
         $this->manualEdit = true;
         $this->slug = $this->cleanPersianSlug($value);
         $this->checkUnique();
     }
 
+    /**
+     * @return void
+     */
     private function checkUnique(): void
     {
         if (!$this->slug)
@@ -103,13 +125,21 @@ new class extends Component {
         }
     }
 
-    private function generatePersianSlug($title): string
+    /**
+     * @param string $title
+     * @return string
+     */
+    private function generatePersianSlug(string $title): string
     {
         $slug = str_replace(' ', '-', $title);
         return $this->cleanPersianSlug($slug);
     }
 
-    private function cleanPersianSlug($slug): string
+    /**
+     * @param string $slug
+     * @return string
+     */
+    private function cleanPersianSlug(string $slug): string
     {
         $slug = preg_replace('/[^\p{Arabic}a-zA-Z0-9\-]/u', '', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
@@ -145,7 +175,8 @@ new class extends Component {
                             >
 
                             <div class="mt-4">
-                                <label for="slug" class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1">
+                                <label for="slug"
+                                       class="text-xs font-medium text-gray-500 dark:text-gray-400 block mb-1">
                                     لینک یکتا
                                 </label>
                                 <div class="flex flex-col gap-2">
@@ -167,7 +198,8 @@ new class extends Component {
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ انتشار</label>
+                        <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ
+                            انتشار</label>
                         <input
                             data-jdp
                             autocomplete="off"
@@ -179,7 +211,8 @@ new class extends Component {
                     </div>
 
                     <div class="flex flex-col gap-1" wire:ignore>
-                        <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
+                        <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته
+                            بندی</label>
                         <select wire:model="categories"
                                 placeholder="جستجو کنید..."
                                 id="category-select"

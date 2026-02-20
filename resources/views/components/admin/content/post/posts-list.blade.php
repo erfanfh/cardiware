@@ -2,13 +2,17 @@
 
 use App\Domain\Content\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 
 new class extends Component {
+    /**
+     * @return LengthAwarePaginator
+     */
     #[Computed]
-    public function posts()
+    public function posts(): LengthAwarePaginator
     {
         $request = request();
 
@@ -54,8 +58,11 @@ new class extends Component {
             ->withQueryString();
     }
 
+    /**
+     * @return void
+     */
     #[On('post-updated')]
-    public function postUpdated()
+    public function postUpdated(): void
     {
         $this->posts();
     }

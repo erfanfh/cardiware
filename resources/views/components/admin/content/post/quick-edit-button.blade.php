@@ -6,7 +6,10 @@ new class extends Component
 {
     public int $postId;
 
-    public function sendId()
+    /**
+     * @return void
+     */
+    public function sendId(): void
     {
         $this->dispatch('quick-edit-post', $this->postId);
     }
