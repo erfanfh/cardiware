@@ -2,12 +2,13 @@
 
 namespace App\Application\Identity\Actions\Auth;
 
+use App\Application\Identity\Mails\Auth\OtpMail;
 use App\Domain\Identity\Enums\OtpKeyTypeEnum;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Infrastructure\Services\Sms\SmsService;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail;
+use Random\RandomException;
 
 class GenerateOtpAction
 {
@@ -15,6 +16,7 @@ class GenerateOtpAction
      * @param string $username
      * @param OtpTypeEnum $otpType
      * @return bool
+     * @throws RandomException
      */
     public function execute(string $username, OtpTypeEnum $otpType): bool
     {
@@ -34,7 +36,7 @@ class GenerateOtpAction
             return false;
         }
 
-        $code = rand(config('auth.otp.min'), config('auth.otp.max'));
+        $code = random_int(10 ** (config('auth.otp.length') - 1), (10 ** config('auth.otp.length')) - 1);
 
         Otp::create([
             'key' => $username,
