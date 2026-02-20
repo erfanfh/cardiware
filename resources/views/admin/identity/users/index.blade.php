@@ -13,7 +13,7 @@
                 </p>
             </div>
 
-            <a href="{{ route('admin.identity.users.create') }}"
+            <a href="{{ route('admin.users.create') }}"
                class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white rounded-lg font-medium transition-colors duration-150 ease-out shadow-sm">
                 <span>ایجاد کاربر جدید</span>
             </a>
@@ -25,7 +25,7 @@
     <div class="bg-white rounded-lg border border-[var(--border-subtle)] overflow-hidden">
         <!-- Filters -->
         <div class="p-4 border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]">
-            <form method="GET" action="{{ route('admin.identity.users.index') }}"
+            <form method="GET" action="{{ route('admin.users.index') }}"
                   class="flex flex-wrap items-center gap-4">
                 <div class="flex-1 min-w-[200px]">
                     <label for="search" class="sr-only">جستجو</label>
@@ -66,7 +66,7 @@
                         اعمال فیلتر
                     </button>
                     @if(request()->hasAny(['search', 'role_id']))
-                        <a href="{{ route('admin.identity.users.index') }}"
+                        <a href="{{ route('admin.users.index') }}"
                            class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                             پاک کردن فیلترها
                         </a>
@@ -87,7 +87,8 @@
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ایمیل</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نقش</th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">نوشته‌ها</th>
-                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تغییر وضعیت کاربر</th>
+                    <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">تغییر وضعیت کاربر
+                    </th>
                     <th class="px-6 py-4 text-right text-sm font-semibold text-[var(--text-muted)]">ویرایش</th>
                 </tr>
                 </thead>
@@ -147,18 +148,21 @@
                                 @if($user->role->is_super_admin)
                                     <div class="relative inline-flex items-center cursor-not-allowed group">
                                         <div class="w-10 h-5 bg-gray-200 rounded-full transition-colors duration-200">
-                                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
+                                            <div
+                                                class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform duration-200"></div>
                                         </div>
                                         <!-- پیام هنگام موس‌اور (با ::after) -->
-                                        <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                                            <div class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap">
+                                        <div
+                                            class="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                                            <div
+                                                class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap">
                                                 کاربر سوپر ادمین قابل غیرفعال‌سازی نیست
                                             </div>
                                         </div>
                                     </div>
                                 @else
                                     <form
-                                        action="{{ route('admin.identity.users.update', $user) }}"
+                                        action="{{ route('admin.users.update', $user) }}"
                                         method="POST"
                                         class="inline-block">
                                         @csrf
@@ -188,27 +192,27 @@
 
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-2">
-                                <a href="{{ route('admin.identity.users.edit', $user) }}"
+                                <a href="{{ route('admin.users.edit', $user) }}"
                                    class="p-2 text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-hover)] rounded-lg transition-colors duration-150"
                                    title="ویرایش کاربر">
                                     ✎
                                 </a>
 
-                @empty
-                    <tr>
-                        <td colspan="8" class="px-6 py-12 text-center text-[var(--text-muted)]">
-                            <div class="flex flex-col items-center gap-2">
-                                <div class="text-4xl">📭</div>
-                                <p class="text-sm">هیچ کاربری یافت نشد.</p>
-                                @if(request()->hasAny(['search', 'role_id']))
-                                    <a href="{{ route('admin.identity.users.index') }}"
-                                       class="mt-2 text-sm text-[var(--brand-500)] hover:text-[var(--brand-600)] hover:underline">
-                                        نمایش همه کاربران
-                                    </a>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="px-6 py-12 text-center text-[var(--text-muted)]">
+                                            <div class="flex flex-col items-center gap-2">
+                                                <div class="text-4xl">📭</div>
+                                                <p class="text-sm">هیچ کاربری یافت نشد.</p>
+                                                @if(request()->hasAny(['search', 'role_id']))
+                                                    <a href="{{ route('admin.users.index') }}"
+                                                       class="mt-2 text-sm text-[var(--brand-500)] hover:text-[var(--brand-600)] hover:underline">
+                                                        نمایش همه کاربران
+                                                    </a>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
                 @endforelse
                 </tbody>
             </table>

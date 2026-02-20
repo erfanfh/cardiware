@@ -12,7 +12,7 @@
                 </p>
             </div>
 
-            <a href="{{ route('admin.identity.users.index') }}"
+            <a href="{{ route('admin.users.index') }}"
                class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                 بازگشت به لیست کاربران
             </a>
@@ -23,7 +23,7 @@
 @section('content')
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-lg border border-[var(--border-subtle)] overflow-hidden">
-            <form method="POST" action="{{ route('admin.identity.users.update', $user) }}" class="p-6">
+            <form method="POST" action="{{ route('admin.users.update', $user) }}" class="p-6">
                 @csrf
                 @method('PUT')
 
@@ -147,7 +147,8 @@
                                 class="w-full px-3 py-2 border border-[var(--border-subtle)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--brand-500)] focus:border-transparent text-sm bg-white @error('role_id') border-red-500 @enderror">
                                 <option value="">انتخاب نقش</option>
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                                    <option
+                                        value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
                                         {{ $role->title }}
                                     </option>
                                 @endforeach
@@ -224,7 +225,8 @@
                         </div>
 
                         <div class="relative">
-                            <label for="password_confirmation" class="block text-sm font-medium text-[var(--text-main)] mb-2">
+                            <label for="password_confirmation"
+                                   class="block text-sm font-medium text-[var(--text-main)] mb-2">
                                 تکرار رمز عبور جدید
                             </label>
                             <div class="relative">
@@ -253,7 +255,7 @@
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-6 border-t border-[var(--border-subtle)]">
-                    <a href="{{ route('admin.identity.users.index') }}"
+                    <a href="{{ route('admin.users.index') }}"
                        class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                         انصراف
                     </a>

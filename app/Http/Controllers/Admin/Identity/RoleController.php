@@ -30,9 +30,7 @@ class RoleController extends Controller
     {
         $roles = Role::query()
             ->withCount('users')
-            ->when($request->search, fn($q, $search) =>
-            $q->where('title', 'like', "%{$search}%")
-            )
+            ->when($request->search, fn($q, $search) => $q->where('title', 'like', "%{$search}%"))
             ->when($request->id, fn($q, $id) => $q->where('id', $id))
             ->when($request->default, fn($q) => $q->where('is_default', true))
             ->when($request->super_admin, fn($q) => $q->where('is_super_admin', true))
@@ -41,6 +39,22 @@ class RoleController extends Controller
             ->withQueryString();
 
         return view('admin.identity.roles.index', compact('roles'));
+    }
+
+    /**
+     * Store a newly created role in storage
+     *
+     * @param StoreRoleRequest $request The validated request
+     * @return RedirectResponse
+     */
+    public function store(StoreRoleRequest $request): RedirectResponse
+    {
+        $role = Role::create($request->validated());
+        $role->permissions()->sync($request->permissions ?? []);
+
+        return Redirect::route('admin.roles.index')
+            ->with('success', 'نقش با موفقیت ایجاد شد.')
+            ->with('success_title', 'عملیات موفق');
     }
 
     /**
@@ -58,22 +72,6 @@ class RoleController extends Controller
     }
 
     /**
-     * Store a newly created role in storage
-     *
-     * @param StoreRoleRequest $request The validated request
-     * @return RedirectResponse
-     */
-    public function store(StoreRoleRequest $request): RedirectResponse
-    {
-        $role = Role::create($request->validated());
-        $role->permissions()->sync($request->permissions ?? []);
-
-        return Redirect::route('admin.identity.roles.index')
-            ->with('success', 'نقش با موفقیت ایجاد شد.')
-            ->with('success_title', 'عملیات موفق');
-    }
-
-    /**
      * Show the form for editing the specified role
      *
      * @param Role $role The role to edit
@@ -83,7 +81,7 @@ class RoleController extends Controller
     {
         // Check if role is editable
         if ($role->is_default || $role->is_super_admin) {
-            return Redirect::route('admin.identity.roles.index')
+            return Redirect::route('admin.roles.index')
                 ->with('error', 'این نقش قابل ویرایش نیست.')
                 ->with('error_title', 'خطا');
         }
@@ -95,30 +93,6 @@ class RoleController extends Controller
         $selectedPermissions = $role->permissions->pluck('id')->toArray();
 
         return view('admin.identity.roles.edit', compact('role', 'permissionGroups', 'selectedPermissions'));
-    }
-
-    /**
-     * Update the specified role in storage
-     *
-     * @param UpdateRoleRequest $request The validated request
-     * @param Role $role The role to update
-     * @return RedirectResponse
-     */
-    public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
-    {
-        // Check if role is editable
-        if ($role->is_default || $role->is_super_admin) {
-            return Redirect::route('admin.identity.roles.index')
-                ->with('error', 'این نقش قابل ویرایش نیست.')
-                ->with('error_title', 'خطا');
-        }
-
-        $role->update($request->validated());
-        $role->permissions()->sync($request->permissions ?? []);
-
-        return Redirect::route('admin.identity.roles.index')
-            ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')
-            ->with('success_title', 'عملیات موفق');
     }
 
     /**
@@ -147,7 +121,7 @@ class RoleController extends Controller
 
         if ($userCount > 0) {
             // Redirect to assign new role page
-            return redirect()->route('admin.identity.roles.assign-new-role.form', $role)
+            return redirect()->route('admin.roles.assign-new-role.form', $role)
                 ->with('warning', "این نقش {$userCount} کاربر دارد. لطفاً یک نقش جدید برای آن‌ها انتخاب کنید.")
                 ->with('warning_title', 'هشدار');
         }
@@ -155,7 +129,7 @@ class RoleController extends Controller
         // Delete role directly if no users
         $role->delete();
 
-        return redirect()->route('admin.identity.roles.index')
+        return redirect()->route('admin.roles.index')
             ->with('success', "نقش '{$role->title}' با موفقیت حذف شد.")
             ->with('success_title', 'حذف موفق');
     }
@@ -206,7 +180,7 @@ class RoleController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.identity.roles.index')
+            return redirect()->route('admin.roles.index')
                 ->with('success', "نقش '{$role->title}' حذف شد و {$userCount} کاربر به نقش جدید منتقل شدند.")
                 ->with('success_title', 'حذف موفق');
         } catch (\Exception $e) {
@@ -216,5 +190,29 @@ class RoleController extends Controller
                 ->with('error', 'خطا در حذف نقش. لطفاً دوباره تلاش کنید.')
                 ->with('error_title', 'خطا');
         }
+    }
+
+    /**
+     * Update the specified role in storage
+     *
+     * @param UpdateRoleRequest $request The validated request
+     * @param Role $role The role to update
+     * @return RedirectResponse
+     */
+    public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
+    {
+        // Check if role is editable
+        if ($role->is_default || $role->is_super_admin) {
+            return Redirect::route('admin.roles.index')
+                ->with('error', 'این نقش قابل ویرایش نیست.')
+                ->with('error_title', 'خطا');
+        }
+
+        $role->update($request->validated());
+        $role->permissions()->sync($request->permissions ?? []);
+
+        return Redirect::route('admin.roles.index')
+            ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')
+            ->with('success_title', 'عملیات موفق');
     }
 }

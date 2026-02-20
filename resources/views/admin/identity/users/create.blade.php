@@ -12,7 +12,7 @@
                 </p>
             </div>
 
-            <a href="{{ route('admin.identity.users.index') }}"
+            <a href="{{ route('admin.users.index') }}"
                class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                 بازگشت به لیست کاربران
             </a>
@@ -23,7 +23,7 @@
 @section('content')
     <div class="max-w-3xl mx-auto">
         <div class="bg-white rounded-lg border border-[var(--border-subtle)] overflow-hidden">
-            <form method="POST" action="{{ route('admin.identity.users.store') }}" class="p-6">
+            <form method="POST" action="{{ route('admin.users.store') }}" class="p-6">
                 @csrf
 
                 <!-- Personal Information -->
@@ -220,7 +220,8 @@
                         </div>
 
                         <div class="relative">
-                            <label for="password_confirmation" class="block text-sm font-medium text-[var(--text-main)] mb-2">
+                            <label for="password_confirmation"
+                                   class="block text-sm font-medium text-[var(--text-main)] mb-2">
                                 تکرار رمز عبور <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
@@ -249,7 +250,7 @@
 
                 <!-- Actions -->
                 <div class="flex items-center justify-end gap-3 pt-6 border-t border-[var(--border-subtle)]">
-                    <a href="{{ route('admin.identity.users.index') }}"
+                    <a href="{{ route('admin.users.index') }}"
                        class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                         انصراف
                     </a>

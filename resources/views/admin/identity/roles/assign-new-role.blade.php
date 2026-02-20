@@ -9,7 +9,7 @@
                 <h1 class="text-2xl font-bold text-[var(--text-main)]">انتساب نقش جدید</h1>
             </div>
 
-            <a href="{{ route('admin.identity.roles.index') }}"
+            <a href="{{ route('admin.roles.index') }}"
                class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                 بازگشت به لیست نقش‌ها
             </a>
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.identity.roles.assign-new-role', $role) }}" class="p-6">
+            <form method="POST" action="{{ route('admin.roles.assign-new-role', $role) }}" class="p-6">
                 @csrf
 
                 <div class="mb-6">
@@ -50,7 +50,8 @@
 
                     <div class="space-y-3 max-h-64 overflow-y-auto pr-2">
                         @forelse($availableRoles as $availableRole)
-                            <label class="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-500)] hover:bg-[var(--bg-hover)] cursor-pointer transition-all duration-150">
+                            <label
+                                class="flex items-center gap-3 p-3 rounded-lg border border-[var(--border-subtle)] hover:border-[var(--brand-500)] hover:bg-[var(--bg-hover)] cursor-pointer transition-all duration-150">
                                 <input
                                     type="radio"
                                     name="new_role_id"
@@ -60,10 +61,12 @@
                                     {{ old('new_role_id') == $availableRole->id ? 'checked' : '' }}>
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2">
-                                        <span class="font-medium text-[var(--text-main)]">{{ $availableRole->title }}</span>
+                                        <span
+                                            class="font-medium text-[var(--text-main)]">{{ $availableRole->title }}</span>
 
                                         @if($availableRole->is_default)
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            <span
+                                                class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                                 پیش‌فرض
                                             </span>
                                         @endif
@@ -86,7 +89,7 @@
                 </div>
 
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border-subtle)]">
-                    <a href="{{ route('admin.identity.roles.index') }}"
+                    <a href="{{ route('admin.roles.index') }}"
                        class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out text-sm">
                         انصراف
                     </a>

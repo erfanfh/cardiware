@@ -17,7 +17,7 @@
 
 @section('content')
     <div class="bg-white rounded-lg border border-[var(--border-subtle)] overflow-hidden">
-        <form method="POST" action="{{ route('admin.identity.roles.update', $role) }}" class="p-6">
+        <form method="POST" action="{{ route('admin.roles.update', $role) }}" class="p-6">
             @csrf
             @method('PUT')
 
@@ -69,7 +69,7 @@
 
             <!-- Submit Button -->
             <div class="flex justify-end gap-3 mt-8">
-                <a href="{{ route('admin.identity.roles.index') }}"
+                <a href="{{ route('admin.roles.index') }}"
                    class="px-4 py-2 bg-[var(--bg-chip)] hover:bg-[var(--bg-hover)] text-[var(--text-muted)] rounded-lg font-medium transition-colors duration-150 ease-out">
                     انصراف
                 </a>

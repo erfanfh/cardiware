@@ -84,7 +84,7 @@ class UserController extends Controller
             roleId: $data['role_id']
         );
 
-        return redirect()->route('admin.identity.users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', "کاربر '{$data['first_name']}' با موفقیت ایجاد شد.")
             ->with('success_title', 'ایجاد موفق');
     }
@@ -129,7 +129,7 @@ class UserController extends Controller
                 'status' => $request->boolean('status') ? UserStatusEnum::ACTIVE : UserStatusEnum::INACTIVE,
             ]);
 
-        $name = $user->display_name ?? $user->first_name;
+            $name = $user->display_name ?? $user->first_name;
 
             $message = $request->boolean('status')
                 ? "کاربر '{$name}' فعال شد."
@@ -150,7 +150,7 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.identity.users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', "کاربر '{$user->first_name}' با موفقیت به‌روزرسانی شد.")
             ->with('success_title', 'به‌روزرسانی موفق');
     }

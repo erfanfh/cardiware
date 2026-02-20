@@ -20,6 +20,7 @@ use Illuminate\View\View;
 class CategoryController extends Controller
 {
     use Searchable;
+
     protected RecordSlugHistoryAction $recordSlugHistoryAction;
     protected RegeneratePathAndDescendantsAction $regeneratePathAction;
     protected BuildTreeAction $buildTreeAction;
@@ -84,7 +85,7 @@ class CategoryController extends Controller
         $term = TaxonomyTerm::create($data);
 
         if ($originalSlug && $originalSlug !== $term->slug) {
-            return redirect()->route('admin.taxonomies.category.index')
+            return redirect()->route('admin.categories.index')
                 ->with('success', 'دسته‌بندی ایجاد شد.')
                 ->with('warning', "اسلاگ '{$originalSlug}' از قبل وجود داشت. اسلاگ '{$term->slug}' به صورت خودکار تنظیم شد.");
         }
@@ -93,8 +94,27 @@ class CategoryController extends Controller
         $term->path = $generatePathAction->execute($term);
         $term->saveQuietly();
 
-        return redirect()->route('admin.taxonomies.category.index')
+        return redirect()->route('admin.categories.index')
             ->with('success', 'دسته‌بندی ایجاد شد.');
+    }
+
+    /**
+     * Remove the specified category from storage.
+     *
+     * @param TaxonomyTerm $term
+     * @return RedirectResponse
+     */
+    public function destroy(TaxonomyTerm $term): RedirectResponse
+    {
+        if ($term->children()->exists()) {
+            $term->children()->update(['parent_id' => null]);
+        }
+
+        $term->delete();
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'دسته‌بندی حذف شد.');
     }
 
     /**
@@ -137,32 +157,13 @@ class CategoryController extends Controller
 
         //show message if slug changes by sluggable
         if ($slugWasChangedBySluggable) {
-            return redirect()->route('admin.taxonomies.category.index')
+            return redirect()->route('admin.categories.index')
                 ->with('success', $message)
                 ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$category->slug}' به صورت خودکار تنظیم شد.");
         }
 
-        return redirect()->route('admin.taxonomies.category.index')
+        return redirect()->route('admin.categories.index')
             ->with('success', $message);
-    }
-
-    /**
-     * Remove the specified category from storage.
-     *
-     * @param TaxonomyTerm $term
-     * @return RedirectResponse
-     */
-    public function destroy(TaxonomyTerm $term): RedirectResponse
-    {
-        if ($term->children()->exists()) {
-            $term->children()->update(['parent_id' => null]);
-        }
-
-        $term->delete();
-
-        return redirect()
-            ->route('admin.taxonomies.category.index')
-            ->with('success', 'دسته‌بندی حذف شد.');
     }
 
     /**
@@ -181,7 +182,7 @@ class CategoryController extends Controller
 
         $deletedCount = $this->bulkDeleteAction->execute($request->ids);
 
-        return redirect()->route('admin.taxonomies.category.index')
+        return redirect()->route('admin.categories.index')
             ->with('success', $deletedCount . ' دسته‌بندی با موفقیت حذف شد.');
     }
 

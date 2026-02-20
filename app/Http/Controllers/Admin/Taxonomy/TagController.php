@@ -19,16 +19,19 @@ use Illuminate\Validation\ValidationException;
 class TagController extends Controller
 {
     use Searchable;
+
     protected RecordSlugHistoryAction $recordSlugHistoryAction;
     protected BulkDeleteAction $bulkDeleteAction;
 
     public function __construct(
         RecordSlugHistoryAction $recordSlugHistoryAction,
-        BulkDeleteAction $bulkDeleteAction
-    ) {
+        BulkDeleteAction        $bulkDeleteAction
+    )
+    {
         $this->recordSlugHistoryAction = $recordSlugHistoryAction;
         $this->bulkDeleteAction = $bulkDeleteAction;
     }
+
     /**
      * Display a listing of tags.
      *
@@ -78,7 +81,7 @@ class TagController extends Controller
 
         //Check if slug was changed by Sluggable
         if ($originalSlug && $originalSlug !== $tag->slug) {
-            return redirect()->route('admin.taxonomies.tags.index')
+            return redirect()->route('admin.tags.index')
                 ->with('success', 'برچسب ایجاد شد.')
                 ->with('warning', "اسلاگ '{$originalSlug}' از قبل وجود داشت. اسلاگ '{$tag->slug}' به صورت خودکار تنظیم شد.");
         }
@@ -87,7 +90,7 @@ class TagController extends Controller
         $tag->path = $generatePathAction->execute($tag);
         $tag->saveQuietly();
 
-        return redirect()->route('admin.taxonomies.tags.index')
+        return redirect()->route('admin.tags.index')
             ->with('success', 'برچسب ایجاد شد.');
     }
 
@@ -126,12 +129,12 @@ class TagController extends Controller
         $message = 'برچسب با موفقیت بروزرسانی شد.';
 
         if ($slugWasChangedBySluggable) {
-            return redirect()->route('admin.taxonomies.tags.index')
+            return redirect()->route('admin.tags.index')
                 ->with('success', $message)
                 ->with('warning', "اسلاگ '{$newSlug}' از قبل وجود داشت. اسلاگ '{$tag->slug}' به صورت خودکار تنظیم شد.");
         }
 
-        return redirect()->route('admin.taxonomies.tags.index')
+        return redirect()->route('admin.tags.index')
             ->with('success', $message);
     }
 
@@ -146,7 +149,7 @@ class TagController extends Controller
         $tag->delete();
 
         return redirect()
-            ->route('admin.taxonomies.tags.index')
+            ->route('admin.tags.index')
             ->with('success', 'برچسب حذف شد.');
     }
 
@@ -166,7 +169,7 @@ class TagController extends Controller
 
         $deletedCount = $this->bulkDeleteAction->execute($request->ids);
 
-        return redirect()->route('admin.taxonomies.tags.index')
+        return redirect()->route('admin.tags.index')
             ->with('success', $deletedCount . ' برچسب با موفقیت حذف شد.');
     }
 
