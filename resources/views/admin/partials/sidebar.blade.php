@@ -45,6 +45,15 @@
                 </svg>
                 <span>نوشته ها</span>
             </a>
+            <a href="{{ route('admin.pages.index') }}"
+               class="flex items-center gap-[10px] px-[14px] py-[10px] rounded-[10px] text-[var(--blue-50)] no-underline text-[0.85rem] transition-colors duration-150 ease-in-out hover:bg-white/6 hover:text-white {{ request()->routeIs('admin.pages.*') ? 'bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-white hover:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--brand-500)_95%,white_5%),color-mix(in_srgb,var(--brand-600)_95%,white_5%))] hover:text-white' : '' }}">
+                <svg style="width: 18px; height: 18px;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="M3 11c0-3.75 0-5.625.955-6.939A5 5 0 0 1 5.06 2.955C6.375 2 8.251 2 12 2s5.625 0 6.939.955a5 5 0 0 1 1.106 1.106C21 5.375 21 7.251 21 11v2c0 3.75 0 5.625-.955 6.939a5 5 0 0 1-1.106 1.106C17.625 22 15.749 22 12 22s-5.625 0-6.939-.955a5 5 0 0 1-1.106-1.106C3 18.625 3 16.749 3 13zm12-4H7m3 5H7"/>
+                </svg>
+                <span>صفحات</span>
+            </a>
         </div>
     </nav>
 </aside>
