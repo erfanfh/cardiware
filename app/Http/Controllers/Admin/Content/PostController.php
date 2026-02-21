@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Admin\Content;
 
 use App\Domain\Content\Models\Post;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Content\Post\StoreRequest;
 use App\Http\Requests\Content\Post\UpdateRequest;
-use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,34 +30,14 @@ class PostController extends Controller
      * @param StoreRequest $request
      * @return RedirectResponse
      */
-    public function store(StoreRequest $request, AuditService $auditService): RedirectResponse
+    public function store(StoreRequest $request): RedirectResponse
     {
-        DB::transaction(function () use ($request, $auditService, &$post) {
+        DB::transaction(function () use ($request, &$post) {
             $post = Post::create($request->validated());
 
-            $resultCategory = $post->categories()->sync(
-                collect($request->categories)->mapWithKeys(fn($id) => [
-                    $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
-                ])
-            );
+            $post->syncCategoriesWithAudit($request->categories);
 
-            $auditService->recordSync(
-                $post,
-                'taxonomy_terms',
-                $resultCategory,
-                'taxonomy_term_id',
-                ['type' => 'category']
-            );
-
-            $resultTags = $post->syncTags($request->tags);
-
-            $auditService->recordSync(
-                $post,
-                'taxonomy_terms',
-                $resultTags,
-                'taxonomy_term_id',
-                ['type' => 'tag']
-            );
+            $post->syncTagsWithAudit($request->tags);
         });
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
@@ -94,34 +72,14 @@ class PostController extends Controller
      * @param Post $post
      * @return RedirectResponse
      */
-    public function update(UpdateRequest $request, Post $post, AuditService $auditService): RedirectResponse
+    public function update(UpdateRequest $request, Post $post): RedirectResponse
     {
-        DB::transaction(function () use ($request, $post, $auditService) {
+        DB::transaction(function () use ($request, $post) {
             $post->update($request->validated());
 
-            $resultCategory = $post->categories()->sync(
-                collect($request->categories)->mapWithKeys(fn($id) => [
-                    $id => ['type' => TaxonomyTermTypeEnum::CATEGORY->value]
-                ])
-            );
+            $post->syncCategoriesWithAudit($request->categories);
 
-            $auditService->recordSync(
-                $post,
-                'taxonomy_terms',
-                $resultCategory,
-                'taxonomy_term_id',
-                ['type' => 'category']
-            );
-
-            $resultTags = $post->syncTags($request->tags);
-
-            $auditService->recordSync(
-                $post,
-                'taxonomy_terms',
-                $resultTags,
-                'taxonomy_term_id',
-                ['type' => 'tag']
-            );
+            $post->syncTagsWithAudit($request->tags);
         });
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
