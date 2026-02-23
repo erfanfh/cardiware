@@ -8,12 +8,11 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 @font-face {
-    font-family: "iransans-r";
+    font-family: "main-font";
     src: url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2") format("woff2"),
     url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff") format("woff");
     font-weight: 400;
@@ -23,7 +22,7 @@
 }
 
 @font-face {
-    font-family: "iransans-b";
+    font-family: "main-font";
     src: url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2") format("woff2"),
     url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff") format("woff");
     font-weight: 700;
@@ -32,16 +31,8 @@
     unicode-range: U+0000-00FF, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
 }
 
-.iransans-r {
-    font-family: 'iransans-r', serif;
-}
-
-.iransans-b {
-    font-family: 'iransans-b', serif;
-}
-
 body {
-    font-family: 'iransans-r', serif;
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 ::-webkit-scrollbar {
