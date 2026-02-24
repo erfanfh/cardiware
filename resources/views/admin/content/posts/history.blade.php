@@ -191,7 +191,7 @@
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
                         <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
-                            مقاله {!! sortIcon('title') !!}
+                            نوشته {!! sortIcon('title') !!}
                         </a>
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">
@@ -238,7 +238,7 @@
                                         <img src="{{ $post->picture->url }}" alt="{{ $post->title }}"
                                              class="w-full h-full object-cover">
                                     @else
-                                        {{ mb_substr($post->title ?? 'مقاله', 0, 1) }}
+                                        {{ mb_substr($post->title ?? 'نوشته', 0, 1) }}
                                     @endif
                                 </div>
                                 <div>
@@ -305,8 +305,8 @@
                                 <form method="POST"
                                       action="{{ route('admin.posts.force-delete', $post->id) }}"
                                       class="inline-block"
-                                      data-confirm-title="حذف مقاله"
-                                      data-confirm-text="مقاله برای همیشه حذف خواهد شد."
+                                      data-confirm-title="حذف نوشته"
+                                      data-confirm-text="نوشته برای همیشه حذف خواهد شد."
                                 >
                                     @csrf
                                     @method('DELETE')
@@ -327,7 +327,7 @@
                 @empty
                     <tr>
                         <td colspan="6" class="p-4 text-center">
-                            <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ مقاله ای یافت نشد!</h3>
+                            <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                         </td>
                     </tr>
                 @endforelse

@@ -29,7 +29,7 @@
             <a href="{{ route('admin.posts.create') }}"
                class="w-1/2 md:w-auto bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:scale-105 transition-all duration-200">
                 <span class="text-lg">+</span>
-                <span>ایجاد مقاله جدید</span>
+                <span>ایجاد نوشته جدید</span>
             </a>
         </div>
     </div>

@@ -107,7 +107,21 @@ new class extends Component {
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                     <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
-                        مقاله {!! sortIcon('title') !!}
+                        نوشته {!! sortIcon('title') !!}
+                        @if(request('sort') !== 'title')
+                            <div class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="1.5"
+                                          d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="1.5"
+                                          d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
+                                </svg>
+                            </div>
+                        @endif
                     </a>
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">شناسه
@@ -126,6 +140,20 @@ new class extends Component {
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                     <a href="{{ sortLink('published_at') }}" class="flex items-center gap-1">
                         تاریخ انتشار {!! sortIcon('published_at') !!}
+                        @if(request('sort') !== 'published_at')
+                            <div class="flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="1.5"
+                                          d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
+                                </svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="1.5"
+                                          d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
+                                </svg>
+                            </div>
+                        @endif
                     </a>
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تعداد
@@ -167,18 +195,18 @@ new class extends Component {
                     <td class="p-3 break-words whitespace-normal">
                         @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
                             <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->value }}
+                                class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->label() }}
                                 </span>
                         @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
                             <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->value }}
+                                class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->label() }}
                                 </span>
                         @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
                             <span
-                                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->value }}
+                                class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->label() }}
                                 </span>
                         @endif
                     </td>
@@ -207,8 +235,8 @@ new class extends Component {
                             <form method="POST"
                                   action="{{ route('admin.posts.destroy', $post) }}"
                                   class="inline-block"
-                                  data-confirm-title="حذف مقاله"
-                                  data-confirm-text="مقاله برای همیشه حذف خواهد شد."
+                                  data-confirm-title="حذف نوشته"
+                                  data-confirm-text="نوشته برای همیشه حذف خواهد شد."
                             >
                                 @csrf
                                 @method('DELETE')
@@ -228,7 +256,7 @@ new class extends Component {
             @empty
                 <tr>
                     <td colspan="6" class="p-4 text-center">
-                        <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ مقاله ای یافت نشد!</h3>
+                        <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                     </td>
                 </tr>
             @endforelse
