@@ -50,7 +50,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً ۱۲۳"
                        value="{{ request('id') }}">
             </div>
 
@@ -58,7 +57,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="title">عنوان</label>
                 <input type="text" name="title"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً چگونه آشپر خوبی باشیم؟"
                        value="{{ request('title') }}">
             </div>
 
@@ -70,25 +68,28 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">دسته بندی</label>
+                <label for="category" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="category"
+                        placeholder="جستجو کنید..."
+                        id="category-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه دسته ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
-                        <option
-                            @selected(request('category') == $category->id) value="{{ $category->id }}">{{ $category->title }}</option>
-                    @endforeach
+                    @if(request('category'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('category'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">برچسب</label>
+                <label for="tag" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="tag"
+                        placeholder="جستجو کنید..."
+                        id="tag-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه برچسب ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::tag()->get() as $tag)
-                        <option @selected(request('tag') == $tag->id) value="{{ $tag->id }}">{{ $tag->title }}</option>
-                    @endforeach
+                    @if(request('tag'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('tag'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
@@ -161,7 +162,8 @@
 
     <livewire:admin.content.post.posts-list/>
 
-    <a href="{{ route('admin.posts.history') }}" class="text-xs text-gray-400 my-3 inline-flex items-center gap-2 underline">
+    <a href="{{ route('admin.posts.history') }}"
+       class="text-xs text-gray-400 my-3 inline-flex items-center gap-2 underline">
         <span>
             مشاهده مواد حذف شده
         </span>
