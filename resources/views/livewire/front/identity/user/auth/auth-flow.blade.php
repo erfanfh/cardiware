@@ -36,15 +36,30 @@
     @endif
 
     @if($step === 'login')
-        <button wire:click.prevent="goToRegister"
-                class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M13.5 16v-1.938c1.78-1.393 3-3.062 3-6.645C16.5 5.097 16.077 3 13.539 3c0 0-.896-1-3.047-1C7.455 2 5.5 3.827 5.5 7.417c0 3.583 1.22 5.252 3 6.645V16l-3.716 1.118a4.07 4.07 0 0 0-2.76 2.892c-.136.536.327.99.882.99h10.188m5.406 1v-7M15 18.5h7"/>
-            </svg>
-            ثبت نام
-        </button>
+        <div class="flex justify-between">
+            <button wire:click.prevent="goToRegister"
+                    class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="M13.5 16v-1.938c1.78-1.393 3-3.062 3-6.645C16.5 5.097 16.077 3 13.539 3c0 0-.896-1-3.047-1C7.455 2 5.5 3.827 5.5 7.417c0 3.583 1.22 5.252 3 6.645V16l-3.716 1.118a4.07 4.07 0 0 0-2.76 2.892c-.136.536.327.99.882.99h10.188m5.406 1v-7M15 18.5h7"/>
+                </svg>
+                ثبت نام
+            </button>
+
+            <a href="/"
+               class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                       stroke-width="1.5">
+                        <path
+                            d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99"/>
+                        <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1"/>
+                    </g>
+                </svg>
+                بازگشت به صفحه اصلی
+            </a>
+        </div>
 
         <div class="mb-8 text-center">
             <h2 class="text-xl font-bold text-slate-800">ورود به حساب کاربری</h2>
@@ -93,9 +108,25 @@
                 </div>
 
                 <button type="submit"
-                        class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
-                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
-                    <span>ورود</span>
+                        wire:loading.attr="disabled"
+                        class="relative w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer
+                           flex items-center justify-center">
+
+                    <span wire:loading.remove wire:target="login">
+                        ورود
+                    </span>
+
+                    <svg wire:loading wire:target="login" aria-hidden="true"
+                         class="w-5 h-5 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                            fill="currentColor"/>
+                        <path
+                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                            fill="currentFill"/>
+                    </svg>
                 </button>
 
                 <div class="text-center pt-4 border-t border-orange-100">
@@ -136,66 +167,96 @@
 
         <form wire:submit.prevent="register" class="space-y-6" novalidate x-data="{ show1:false, show2:false }">
             <div class="grid gap-5">
+
+                <!-- موبایل -->
                 <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="mobile">موبایل</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm"
+                           for="mobile">موبایل</label>
                     <input id="mobile" type="text" wire:model.defer="mobile"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder=""/>
+                      outline-none transition focus:border-slate-400"/>
                 </div>
 
+                <!-- ایمیل -->
                 <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="email">ایمیل</label>
+                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm"
+                           for="email">ایمیل</label>
                     <input id="email" type="text" wire:model.defer="email"
                            class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder=""/>
+                      outline-none transition focus:border-slate-400"/>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="first_name">نام</label>
-                    <input id="first_name" type="text" wire:model.defer="first_name"
-                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder="مانند: محمد"/>
+                <!-- نام و نام خانوادگی -->
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                        <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm"
+                               for="first_name">نام</label>
+                        <input id="first_name" type="text" wire:model.defer="first_name"
+                               class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                          outline-none transition focus:border-slate-400"
+                               placeholder="مانند: محمد"/>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm"
+                               for="last_name">نام خانوادگی</label>
+                        <input id="last_name" type="text" wire:model.defer="last_name"
+                               class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                          outline-none transition focus:border-slate-400"
+                               placeholder="مانند: محمدی"/>
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm" for="last_name">نام خانوادگی</label>
-                    <input id="last_name" type="text" wire:model.defer="last_name"
-                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder="مانند: محمدی"/>
+                <!-- رمز و تکرار رمز -->
+                <div class="grid md:grid-cols-2 gap-5">
+                    <div class="space-y-2">
+                        <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
+                            رمز عبور
+                        </label>
+                        <input id="reg-password" :type="show1 ? 'text':'password'"
+                               wire:model.defer="password" dir="ltr" autocomplete="off"
+                               class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                          outline-none transition focus:border-slate-400"
+                               placeholder="حداقل ۸ کاراکتر"/>
+                        <p class="text-[11px] text-slate-400">
+                            رمز عبور باید حداقل ۸ کاراکتر و شامل حروف و اعداد باشد
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
+                            تکرار رمز عبور
+                        </label>
+                        <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
+                               wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
+                               class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
+                          outline-none transition focus:border-slate-400"
+                               placeholder="تکرار رمز عبور"/>
+                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
-                        رمز عبور
-                    </label>
-                    <input id="reg-password" :type="show1 ? 'text':'password'"
-                           wire:model.defer="password" dir="ltr" autocomplete="off"
-                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder="حداقل ۸ کاراکتر"/>
-                    <p class="text-[11px] text-slate-400">رمز عبور باید حداقل ۸ کاراکتر و شامل حروف و اعداد
-                        باشد</p>
-                </div>
-                <div class="space-y-2">
-                    <label class="flex font-semibold gap-2 items-center text-slate-700 text-sm">
-                        تکرار رمز عبور
-                    </label>
-                    <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
-                           wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
-                           class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
-                                   outline-none transition focus:border-slate-400"
-                           placeholder="تکرار رمز عبور"/>
-                </div>
             </div>
 
             <button type="submit"
-                    class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
-                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
-                <span>ایجاد حساب کاربری</span>
+                    wire:loading.attr="disabled"
+                    class="relative w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer
+                           flex items-center justify-center">
+
+                    <span wire:loading.remove wire:target="register">
+                        ایجاد حساب کاربری
+                    </span>
+
+                <svg wire:loading wire:target="register" aria-hidden="true"
+                     class="w-5 h-5 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"/>
+                    <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"/>
+                </svg>
             </button>
         </form>
     @endif
@@ -212,10 +273,10 @@
 
         <div class="mb-8 text-center">
             <h2 class="text-xl font-bold text-slate-800">
-                ورود به حساب کاربری
+                دریافت کد تایید
             </h2>
             <p class="mt-4 text-sm text-slate-600 leading-relaxed max-w-xs mx-auto">
-                برای ورود به حساب کاربری، شماره موبایل خود را وارد کنید.
+                برای دریافت کد تایید، شماره موبایل یا ایمیل خود را وارد کنید.
             </p>
         </div>
 
@@ -240,9 +301,25 @@
             </div>
 
             <button type="submit"
-                    class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
-                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
-                <span>ادامه</span>
+                    wire:loading.attr="disabled"
+                    class="relative w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer
+                           flex items-center justify-center">
+
+                    <span wire:loading.remove wire:target="sendOtp">
+                        ادامه
+                    </span>
+
+                <svg wire:loading wire:target="sendOtp" aria-hidden="true"
+                     class="w-5 h-5 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"/>
+                    <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"/>
+                </svg>
             </button>
 
             <div class="text-center pt-4 border-t border-orange-100">
@@ -298,9 +375,25 @@
             </div>
 
             <button type="submit"
-                    class="w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
-                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer">
-                <span>تایید و ادامه</span>
+                    wire:loading.attr="disabled"
+                    class="relative w-full rounded-2xl bg-orange-500 px-4 py-3 text-sm text-white shadow-soft
+                           hover:bg-orange-600 active:bg-orange-700 transition cursor-pointer
+                           flex items-center justify-center">
+
+                    <span wire:loading.remove wire:target="verifyOtp">
+                        ادامه
+                    </span>
+
+                <svg wire:loading wire:target="verifyOtp" aria-hidden="true"
+                     class="w-5 h-5 text-neutral-tertiary animate-spin fill-brand" viewBox="0 0 100 101" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"/>
+                    <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"/>
+                </svg>
             </button>
         </form>
 
