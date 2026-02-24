@@ -99,39 +99,39 @@ new class extends Component {
 @endphp
 
 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-    <div class="overflow-x-auto -mx-0.5">
-        <table class="w-full text-sm border-collapse">
+    <div class="-mx-0.5">
+        <table class="w-full text-sm border-collapse table-auto">
             <thead class="bg-gray-50 dark:bg-gray-700/50">
             <tr>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">تصویر
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تصویر
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                     <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
                         مقاله {!! sortIcon('title') !!}
                     </a>
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">شناسه
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">شناسه
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                     نویسنده
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">دسته
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">دسته
                     ها
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">برچسب
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">برچسب
                     ها
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[100px]">وضعیت
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">وضعیت
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                     <a href="{{ sortLink('published_at') }}" class="flex items-center gap-1">
                         تاریخ انتشار {!! sortIcon('published_at') !!}
                     </a>
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تعداد
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تعداد
                     بازدید
                 </th>
-                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">تعداد
+                <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تعداد
                     کامنت ها
                 </th>
                 <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">عملیات</th>
@@ -144,18 +144,9 @@ new class extends Component {
                     class="even:bg-gray-50/50 dark:even:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                     <td></td>
 
-                    <td class="p-3">
+                    <td class="p-3 break-words whitespace-normal">
                         <a href="#" target="_blank"
-                           class="flex items-center gap-3 group">
-                            <div
-                                class="w-8 h-8 min-w-8 rounded-lg bg-gradient-to-r from-orange-500 to-orange-500 text-white flex items-center justify-center text-sm font-semibold overflow-hidden">
-                                @if($post->picture?->url)
-                                    <img src="{{ $post->picture->url }}" alt="{{ $post->title }}"
-                                         class="w-full h-full object-cover">
-                                @else
-                                    {{ mb_substr($post->title ?? 'مقاله', 0, 1) }}
-                                @endif
-                            </div>
+                           class="flex items-start gap-3 group">
                             <div>
                                 <div
                                     class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
@@ -165,15 +156,15 @@ new class extends Component {
                         </a>
                     </td>
 
-                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->id }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">{{ $post->id }}</td>
 
-                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
 
-                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->categories->pluck('title')->implode(', ') }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->categories->pluck('title')->implode(', ') }}</td>
 
-                    <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->tags->pluck('title')->implode(', ') }}</td>
+                    <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->tags->pluck('title')->implode(', ') }}</td>
 
-                    <td class="p-3">
+                    <td class="p-3 break-words whitespace-normal">
                         @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
@@ -192,7 +183,7 @@ new class extends Component {
                         @endif
                     </td>
 
-                    <td class="p-3 text-gray-600 dark:text-gray-300">
+                    <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">
                         {{ jalali_date($post->published_at, 'Y/m/d H:i') }}
                     </td>
 
@@ -200,8 +191,8 @@ new class extends Component {
 
                     <td></td>
 
-                    <td class="p-3">
-                        <div class="flex gap-1.5 justify-start">
+                    <td class="p-3 break-words whitespace-normal">
+                        <div class="flex flex-wrap gap-1.5 justify-start">
                             <livewire:admin.content.post.quick-edit-button :post-id="$post->id"/>
 
                             <a href="{{ route('admin.posts.edit', $post) }}"
