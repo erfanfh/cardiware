@@ -94,17 +94,31 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
-                <input type="text" name="comments"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت از</label>
+                <input type="text" name="comments_from"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('comments') }}">
+                       value="{{ request('comments_from') }}">
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید</label>
-                <input type="text" name="views"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت تا</label>
+                <input type="text" name="comments_to"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('views') }}">
+                       value="{{ request('comments_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید از</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید تا</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
             </div>
 
             <div class="flex flex-col gap-1">
@@ -136,7 +150,7 @@
                     <option value="">همه وضعیت‌ها</option>
                     @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                         <option
-                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->value }}</option>
+                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->label() }}</option>
                     @endforeach
                 </select>
             </div>
