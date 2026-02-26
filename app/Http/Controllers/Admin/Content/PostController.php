@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Content;
 
+use App\Domain\Content\Actions\CreatePostAction;
+use App\Domain\Content\Actions\UpdatePostAction;
 use App\Domain\Content\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Content\Post\StoreRequest;
 use App\Http\Requests\Content\Post\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PostController extends Controller
@@ -30,15 +31,9 @@ class PostController extends Controller
      * @param StoreRequest $request
      * @return RedirectResponse
      */
-    public function store(StoreRequest $request): RedirectResponse
+    public function store(StoreRequest $request, CreatePostAction $action): RedirectResponse
     {
-        DB::transaction(function () use ($request, &$post) {
-            $post = Post::create($request->validated());
-
-            $post->syncCategoriesWithAudit($request->categories);
-
-            $post->syncTagsWithAudit($request->tags);
-        });
+        $post = $action->execute($request->validated());
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
     }
@@ -72,15 +67,9 @@ class PostController extends Controller
      * @param Post $post
      * @return RedirectResponse
      */
-    public function update(UpdateRequest $request, Post $post): RedirectResponse
+    public function update(UpdateRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
     {
-        DB::transaction(function () use ($request, $post) {
-            $post->update($request->validated());
-
-            $post->syncCategoriesWithAudit($request->categories);
-
-            $post->syncTagsWithAudit($request->tags);
-        });
+        $action->execute($request->validated(), $post);
 
         return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }

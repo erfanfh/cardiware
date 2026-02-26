@@ -36,6 +36,10 @@ class AuditService
      */
     public function recordSync(Model $model, string $relation, array $result, string $foreignKeyName, array $extraMeta = []): void
     {
+        if (empty($result['attached']) && empty($result['detached'])) {
+            return;
+        }
+
         if (!empty($result['attached'])) {
             foreach ($result['attached'] as $id) {
                 $this->record($model, AuditEventTypeEnum::ATTACHED, array_merge([
