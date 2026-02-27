@@ -29,7 +29,7 @@
             <a href="{{ route('admin.posts.create') }}"
                class="w-1/2 md:w-auto bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] hover:scale-105 transition-all duration-200">
                 <span class="text-lg">+</span>
-                <span>ایجاد مقاله جدید</span>
+                <span>ایجاد نوشته جدید</span>
             </a>
         </div>
     </div>
@@ -50,7 +50,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً ۱۲۳"
                        value="{{ request('id') }}">
             </div>
 
@@ -58,7 +57,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="title">عنوان</label>
                 <input type="text" name="title"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً چگونه آشپر خوبی باشیم؟"
                        value="{{ request('title') }}">
             </div>
 
@@ -70,40 +68,57 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">دسته بندی</label>
+                <label for="category" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="category"
+                        placeholder="جستجو کنید..."
+                        id="category-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه دسته ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
-                        <option
-                            @selected(request('category') == $category->id) value="{{ $category->id }}">{{ $category->title }}</option>
-                    @endforeach
+                    @if(request('category'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('category'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">برچسب</label>
+                <label for="tag" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="tag"
+                        placeholder="جستجو کنید..."
+                        id="tag-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه برچسب ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::tag()->get() as $tag)
-                        <option @selected(request('tag') == $tag->id) value="{{ $tag->id }}">{{ $tag->title }}</option>
-                    @endforeach
+                    @if(request('tag'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('tag'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
-                <input type="text" name="comments"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت از</label>
+                <input type="text" name="comments_from"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('comments') }}">
+                       value="{{ request('comments_from') }}">
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید</label>
-                <input type="text" name="views"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت تا</label>
+                <input type="text" name="comments_to"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('views') }}">
+                       value="{{ request('comments_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید از</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید تا</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
             </div>
 
             <div class="flex flex-col gap-1">
@@ -135,7 +150,7 @@
                     <option value="">همه وضعیت‌ها</option>
                     @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                         <option
-                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->value }}</option>
+                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->label() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -161,7 +176,8 @@
 
     <livewire:admin.content.post.posts-list/>
 
-    <a href="{{ route('admin.posts.history') }}" class="text-xs text-gray-400 my-3 inline-flex items-center gap-2 underline">
+    <a href="{{ route('admin.posts.history') }}"
+       class="text-xs text-gray-400 my-3 inline-flex items-center gap-2 underline">
         <span>
             مشاهده مواد حذف شده
         </span>
