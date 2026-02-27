@@ -41,6 +41,11 @@ class AuthFlow extends Component
         return view('livewire.front.identity.user.auth.auth-flow');
     }
 
+    public function updatedUsername(): void
+    {
+        $this->resetErrorBag('username');
+    }
+
     public function goToRegister(): void
     {
         $this->resetValidation();

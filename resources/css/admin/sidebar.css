@@ -1,12 +1,5 @@
-.sidebar-backdrop--visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-
 .sidebar {
     width: var(--sidebar-width);
-    background: var(--text-main);
-    color: var(--text-invert);
     padding: 16px 16px 24px;
     display: flex;
     flex-direction: column;
@@ -25,7 +18,7 @@
         inset-inline-start: 0;
         width: 260px;
         transform: translateX(105%);
-        transition: transform var(--transition-fast);
+        transition: transform 0.3s ease-in-out;
     }
 
     .sidebar--open {
