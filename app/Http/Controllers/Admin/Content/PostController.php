@@ -11,6 +11,7 @@ use App\Http\Requests\Content\Post\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class PostController extends Controller
 {
@@ -29,7 +30,9 @@ class PostController extends Controller
      * Store a newly created resource in storage.
      *
      * @param StoreRequest $request
+     * @param CreatePostAction $action
      * @return RedirectResponse
+     * @throws Throwable
      */
     public function store(StoreRequest $request, CreatePostAction $action): RedirectResponse
     {
@@ -65,6 +68,7 @@ class PostController extends Controller
      *
      * @param UpdateRequest $request
      * @param Post $post
+     * @param UpdatePostAction $action
      * @return RedirectResponse
      */
     public function update(UpdateRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
