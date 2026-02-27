@@ -2,17 +2,18 @@
 
 namespace App\Domain\Taxonomy\Concerns;
 
+use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 trait HasTaxonomyTerms
 {
-    /**
-     * @return MorphToMany
-     */
     public function categories(): MorphToMany
     {
-        return $this->taxonomyTerms()->where('type', 'category');
+        return $this->taxonomyTerms()
+            ->withPivot('type')
+            ->wherePivot('type', TaxonomyTermTypeEnum::CATEGORY->value)
+            ->withTimestamps();
     }
 
     /**
@@ -34,6 +35,9 @@ trait HasTaxonomyTerms
      */
     public function tags(): MorphToMany
     {
-        return $this->taxonomyTerms()->where('type', 'tag');
+        return $this->taxonomyTerms()
+            ->withPivot('type')
+            ->wherePivot('type', TaxonomyTermTypeEnum::TAG->value)
+            ->withTimestamps();
     }
 }
