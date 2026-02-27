@@ -11,7 +11,6 @@ use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -57,17 +56,6 @@ class Post extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function categories(): BelongsToMany
-    {
-        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
-            ->withPivot('type')
-            ->wherePivot('type', TaxonomyTermTypeEnum::CATEGORY->value)
-            ->withTimestamps();
     }
 
     /**
