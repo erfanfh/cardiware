@@ -6,6 +6,7 @@ use App\Domain\Audit\Actions\SyncRelationsAction;
 use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 /**
  * Action responsible for creating a Post along with
@@ -27,6 +28,7 @@ class CreatePostAction
      *
      * @param array<string, mixed> $data
      * @return Post
+     * @throws Throwable
      */
     public function execute(array $data): Post
     {
@@ -38,7 +40,7 @@ class CreatePostAction
             $this->syncRelation->execute(
                 model: $post,
                 relation: 'categories',
-                items: $data['categories'],
+                items: $data['categories'] ?? [],
                 pivotBuilder: fn($id) => [
                     'type' => TaxonomyTermTypeEnum::CATEGORY->value,
                 ],
