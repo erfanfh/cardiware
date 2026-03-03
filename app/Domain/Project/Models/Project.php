@@ -25,6 +25,16 @@ class Project extends Model
     ];
 
     /**
+     * Get the route key name for Laravel route model binding.
+     *
+     * @return string
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /**
      * @return HasMany
      */
     public function changelogs(): HasMany
