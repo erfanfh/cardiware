@@ -1,5 +1,6 @@
 import TomSelect from "tom-select";
 import "tom-select/dist/css/tom-select.css";
+import collapse from '@alpinejs/collapse'
 
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('Sidebar');
@@ -44,8 +45,8 @@ document.addEventListener('DOMContentLoaded', () => {
         new TomSelect(el, {
             create: false,
             plugins: {
-                'remove_button' :{
-                    title:'حذف',
+                'remove_button': {
+                    title: 'حذف',
                 },
                 'checkbox_options': {
                     'checkedClassNames': ['ts-checked'],
@@ -69,15 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
         searchField: 'title',
         create: false,
         plugins: {
-            'remove_button' :{
-                title:'حذف',
+            'remove_button': {
+                title: 'حذف',
             },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
             }
         },
-        load: function(query, callback) {
+        load: function (query, callback) {
             if (!query.length) return callback();
             fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
@@ -99,15 +100,15 @@ document.addEventListener('DOMContentLoaded', () => {
         searchField: 'title',
         create: false,
         plugins: {
-            'remove_button' :{
-                title:'حذف',
+            'remove_button': {
+                title: 'حذف',
             },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
             }
         },
-        load: function(query, callback) {
+        load: function (query, callback) {
             if (!query.length) return callback();
             fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
@@ -133,15 +134,15 @@ Livewire.on('init-category-select', () => {
         labelField: 'title',
         searchField: 'title',
         plugins: {
-            'remove_button' :{
-                title:'حذف',
+            'remove_button': {
+                title: 'حذف',
             },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
             }
         },
-        load: function(query, callback) {
+        load: function (query, callback) {
             if (!query.length) return callback();
             fetch(`/admin/categories/fetch?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
@@ -164,15 +165,15 @@ document.addEventListener('DOMContentLoaded', () => {
         searchField: 'title',
         create: false,
         plugins: {
-            'remove_button' :{
-                title:'حذف',
+            'remove_button': {
+                title: 'حذف',
             },
             'checkbox_options': {
                 'checkedClassNames': ['ts-checked'],
                 'uncheckedClassNames': ['ts-unchecked'],
             }
         },
-        load: function(query, callback) {
+        load: function (query, callback) {
             if (!query.length) return callback();
             fetch(`/admin/tags/search?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
@@ -184,3 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+document.addEventListener('alpine:init', () => {
+    Alpine.plugin(collapse)
+})
