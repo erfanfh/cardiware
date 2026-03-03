@@ -36,4 +36,22 @@ return [
             ],
         ],
     ],
+
+    [
+        'label' => 'پروژه‌ها',
+        'route' => 'admin.projects.index',
+        'icon' => 'icons.folder-management',
+        'children' => [
+            [
+                'label' => 'لیست پروژه‌ها',
+                'route' => 'admin.projects.index',
+                'icon' => 'icons.menu-01'
+            ],
+            [
+                'label' => 'ایجاد پروژه',
+                'route' => 'admin.projects.create',
+                'icon' => 'icons.plus-sign'
+            ]
+        ],
+    ],
 ];
