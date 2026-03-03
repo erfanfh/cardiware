@@ -1,2 +1,6 @@
 @import '../variables.css';
 @import './sidebar.css';
+
+[x-cloak] {
+    display: none !important
+}
