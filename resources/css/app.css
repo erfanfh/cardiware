@@ -79,3 +79,7 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
 }
+
+.direction-ltr {
+    direction: ltr;
+}
