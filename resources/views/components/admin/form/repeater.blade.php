@@ -6,6 +6,8 @@
     'addText' => 'افزودن',
     'emptyText' => 'موردی ثبت نشده',
     'sortable' => true,
+    'headingKey' => 'title',
+    'headingPlaceholder' => 'بدون عنوان',
 ])
 
 <div
@@ -55,8 +57,19 @@
                             ☰
                         </div>
 
-                        <div class="text-xs font-extrabold text-slate-700">
-                            مورد <span x-text="i + 1"></span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 truncate max-w-[520px]">
+                                <span
+                                    x-text="(it['{{ $headingKey }}'] && String(it['{{ $headingKey }}']).trim().length)
+                                        ? it['{{ $headingKey }}']
+                                        : '{{ $headingPlaceholder }}'"
+                                    :class="(!it['{{ $headingKey }}'] || !String(it['{{ $headingKey }}']).trim().length) ? 'text-slate-400 font-semibold' : ''"
+                                ></span>
+                            </div>
+
+                            <div class="text-[11px] text-slate-500 truncate max-w-[520px]" x-show="!it._open" x-cloak>
+                                برای مشاهده/ویرایش کلیک کنید
+                            </div>
                         </div>
                     </div>
 
