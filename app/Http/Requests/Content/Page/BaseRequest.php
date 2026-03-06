@@ -15,8 +15,6 @@ abstract class BaseRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'tags'  => ['nullable', 'array'],
-            'tags.*' => ['string', 'max:255'],
             'excerpt' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'published_at' => ['nullable', 'date'],

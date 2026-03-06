@@ -29,7 +29,7 @@ class StoreRequest extends BaseRequest
     public function validated($key = null, $default = null): array
     {
         $data = parent::validated($key, $default);
-        $data['active'] = 0;
+        $data['active'] = 1;
 
         return $data;
     }
