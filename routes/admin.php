@@ -14,4 +14,5 @@ Route::middleware(['web', 'auth:web'])
         require __DIR__ . '/admin/taxonomy.php';
         require __DIR__ . '/admin/project.php';
         require __DIR__ . '/admin/system.php';
+        require __DIR__ . '/admin/discussion.php';
     });
