@@ -10,4 +10,5 @@ Route::get('categories/fetch', [CategoryController::class, 'categoriesFetch'])->
 
 Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
 Route::post('tags/bulk', [TagController::class, 'bulkAction'])->name('tags.bulk');
-Route::get('tags/search', [TagController::class, 'tagsFetch'])->name('tags.search');
+Route::get('tags/search', [TagController::class, 'tagsSearch'])->name('tags.search');
+Route::get('tags/fatch', [TagController::class, 'tagsFetch'])->name('tags.fetch');

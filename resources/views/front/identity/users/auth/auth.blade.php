@@ -1,4 +1,4 @@
-@extends('front.master')
+@extends('front.identity.users.auth.master')
 
 @section('title', 'ورود / ثبت‌نام')
 
@@ -6,10 +6,6 @@
     <main class="min-h-screen flex">
 
         <section class="relative flex-1 overflow-hidden">
-            <img id="heroImg" alt=""
-                 class="absolute inset-0 h-full w-full object-cover opacity-80"
-                 src="" />
-
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/75 via-slate-950/45 to-slate-950/15"></div>
 
             <div class="absolute -top-24 -left-24 h-80 w-80 rounded-[90px] bg-orange-500/25 blur-3xl"></div>
@@ -64,7 +60,7 @@
 
         <aside class="relative hidden md:block bg-slate-50">
             <div class="w-[620px] max-w-[55vw] h-full flex items-center justify-center px-10">
-                <div class="w-full max-w-lg rounded-2xl bg-white shadow-soft2 border border-slate-200 p-8">
+                <div class="w-full max-w-lg rounded-2xl bg-white shadow-soft2 border border-slate-200 p-8 my-4">
                     <livewire:front.identity.user.auth.auth-flow/>
                 </div>
             </div>

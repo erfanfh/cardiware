@@ -10,7 +10,7 @@
     @yield('head')
     @livewireStyles
 </head>
-<body dir="rtl" class="pb-10 md:py-0" style="font-family: 'iransans-r', sans-serif">
+<body dir="rtl" class="pb-10 md:py-0">
 @include('front.layouts.header')
 @yield('content')
 @include('front.layouts.footer')

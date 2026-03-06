@@ -71,7 +71,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="id">شناسه</label>
                 <input type="text" name="id"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً ۱۲۳"
                        value="{{ request('id') }}">
             </div>
 
@@ -79,7 +78,6 @@
                 <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="title">عنوان</label>
                 <input type="text" name="title"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       placeholder="مثلاً چگونه آشپر خوبی باشیم؟"
                        value="{{ request('title') }}">
             </div>
 
@@ -91,40 +89,57 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">دسته بندی</label>
+                <label for="category" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="category"
+                        placeholder="جستجو کنید..."
+                        id="category-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه دسته ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::category()->get() as $category)
-                        <option
-                            @selected(request('category') == $category->id) value="{{ $category->id }}">{{ $category->title }}</option>
-                    @endforeach
+                    @if(request('category'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('category'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="is_active">برچسب</label>
+                <label for="tag" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
                 <select name="tag"
+                        placeholder="جستجو کنید..."
+                        id="tag-select"
+                        autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                    <option value="">همه برچسب ها</option>
-                    @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::tag()->get() as $tag)
-                        <option @selected(request('tag') == $tag->id) value="{{ $tag->id }}">{{ $tag->title }}</option>
-                    @endforeach
+                    @if(request('tag'))
+                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('tag'))->title }}</option>
+                    @endif
                 </select>
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت</label>
-                <input type="text" name="comment"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت از</label>
+                <input type="text" name="comments_from"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('comment') }}">
+                       value="{{ request('comments_from') }}">
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید</label>
-                <input type="text" name="views"
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد کامنت تا</label>
+                <input type="text" name="comments_to"
                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('views') }}">
+                       value="{{ request('comments_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید از</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-gray-500 dark:text-gray-400">تعداد بازدید تا</label>
+                <input type="text" name="views_to"
+                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
+                       value="{{ request('views_to') }}">
             </div>
 
             <div class="flex flex-col gap-1">
@@ -156,7 +171,7 @@
                     <option value="">همه وضعیت‌ها</option>
                     @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
                         <option
-                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->value }}</option>
+                            @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->label() }}</option>
                     @endforeach
                 </select>
             </div>
@@ -183,42 +198,67 @@
     <div
         class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
         <div class="overflow-x-auto -mx-0.5">
-            <table class="w-full text-sm border-collapse">
+            <table class="w-full text-sm border-collapse table-auto">
                 <thead class="bg-gray-50 dark:bg-gray-700/50">
                 <tr>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
-                        تصویر
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تصویر
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[200px]">
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                         <a href="{{ sortLink('title') }}" class="flex items-center gap-1">
-                            مقاله {!! sortIcon('title') !!}
+                            نوشته {!! sortIcon('title') !!}
+                            @if(request('sort') !== 'title')
+                                <div class="flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                              stroke-width="1.5"
+                                              d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                              stroke-width="1.5"
+                                              d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
+                                    </svg>
+                                </div>
+                            @endif
                         </a>
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[50px]">
-                        شناسه
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">شناسه
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                         نویسنده
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">دسته
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">دسته
                         ها
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[110px]">
-                        برچسب ها
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">برچسب
+                        ها
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[100px]">
-                        وضعیت
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">وضعیت
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">
                         <a href="{{ sortLink('published_at') }}" class="flex items-center gap-1">
                             تاریخ انتشار {!! sortIcon('published_at') !!}
+                            @if(request('sort') !== 'published_at')
+                                <div class="flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                              stroke-width="1.5"
+                                              d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                              stroke-width="1.5"
+                                              d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
+                                    </svg>
+                                </div>
+                            @endif
                         </a>
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
-                        تعداد بازدید
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تعداد
+                        بازدید
                     </th>
-                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs min-w-[135px]">
-                        تعداد کامنت ها
+                    <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">تعداد
+                        کامنت ها
                     </th>
                     <th class="text-right p-3 font-semibold text-gray-500 dark:text-gray-400 text-xs">عملیات</th>
                 </tr>
@@ -226,21 +266,13 @@
 
                 <tbody>
                 @forelse($posts as $post)
-                    <tr class="even:bg-gray-50/50 dark:even:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                    <tr wire:key="{{ $post->id }}"
+                        class="even:bg-gray-50/50 dark:even:bg-gray-900/20 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                         <td></td>
 
-                        <td class="p-3">
+                        <td class="p-3 break-words whitespace-normal">
                             <a href="#" target="_blank"
-                               class="flex items-center gap-3 group">
-                                <div
-                                    class="w-8 h-8 min-w-8 rounded-lg bg-gradient-to-r from-orange-500 to-orange-500 text-white flex items-center justify-center text-sm font-semibold overflow-hidden">
-                                    @if($post->picture?->url)
-                                        <img src="{{ $post->picture->url }}" alt="{{ $post->title }}"
-                                             class="w-full h-full object-cover">
-                                    @else
-                                        {{ mb_substr($post->title ?? 'مقاله', 0, 1) }}
-                                    @endif
-                                </div>
+                               class="flex items-start gap-3 group">
                                 <div>
                                     <div
                                         class="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
@@ -250,34 +282,34 @@
                             </a>
                         </td>
 
-                        <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->id }}</td>
+                        <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">{{ $post->id }}</td>
 
-                        <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
+                        <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">{{ $post->author->first_name . ' ' . $post->author->last_name }}</td>
 
-                        <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->categories->pluck('title')->implode(', ') }}</td>
+                        <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->categories->pluck('title')->implode(', ') }}</td>
 
-                        <td class="p-3 text-gray-600 dark:text-gray-300">{{ $post->tags->pluck('title')->implode(', ') }}</td>
+                        <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->tags->pluck('title')->implode(', ') }}</td>
 
-                        <td class="p-3">
+                        <td class="p-3 break-words whitespace-normal">
                             @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->value }}
+                                    class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->label() }}
                                 </span>
                             @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->value }}
+                                    class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->label() }}
                                 </span>
                             @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
                                 <span
-                                    class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->value }}
+                                    class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->label() }}
                                 </span>
                             @endif
                         </td>
 
-                        <td class="p-3 text-gray-600 dark:text-gray-300">
+                        <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal">
                             {{ jalali_date($post->published_at, 'Y/m/d H:i') }}
                         </td>
 
@@ -285,7 +317,7 @@
 
                         <td></td>
 
-                        <td class="p-3">
+                        <td class="p-3 break-words whitespace-normal">
                             <div class="flex gap-1.5 justify-start">
                                 <a href="{{ route('admin.posts.restore', $post->id) }}"
                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
@@ -305,8 +337,8 @@
                                 <form method="POST"
                                       action="{{ route('admin.posts.force-delete', $post->id) }}"
                                       class="inline-block"
-                                      data-confirm-title="حذف مقاله"
-                                      data-confirm-text="مقاله برای همیشه حذف خواهد شد."
+                                      data-confirm-title="حذف نوشته"
+                                      data-confirm-text="نوشته برای همیشه حذف خواهد شد."
                                 >
                                     @csrf
                                     @method('DELETE')
@@ -327,7 +359,7 @@
                 @empty
                     <tr>
                         <td colspan="6" class="p-4 text-center">
-                            <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ مقاله ای یافت نشد!</h3>
+                            <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                         </td>
                     </tr>
                 @endforelse

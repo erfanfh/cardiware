@@ -195,7 +195,7 @@ class CategoryController extends Controller
     {
         $query = $request->get('q', '');
 
-        $categories = TaxonomyTerm::where('type', 'category')
+        $categories = TaxonomyTerm::category()
             ->where('title', 'like', "%{$query}%")
             ->get(['id', 'title']);
 

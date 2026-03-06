@@ -1,5 +1,18 @@
 @import 'tailwindcss';
 
+@theme {
+    --color-brand-50: #fff7ed;
+    --color-brand-100: #ffedd5;
+    --color-brand-200: #fed7aa;
+    --color-brand-300: #fdba74;
+    --color-brand-400: #fb923c;
+    --color-brand-500: #f97316;
+    --color-brand-600: #ea580c;
+    --color-brand-700: #c2410c;
+    --color-brand-800: #9a3412;
+    --color-brand-900: #7c2d12;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -8,12 +21,11 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 @font-face {
-    font-family: "iransans-r";
+    font-family: "main-font";
     src: url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2") format("woff2"),
     url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff") format("woff");
     font-weight: 400;
@@ -23,7 +35,7 @@
 }
 
 @font-face {
-    font-family: "iransans-b";
+    font-family: "main-font";
     src: url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2") format("woff2"),
     url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff") format("woff");
     font-weight: 700;
@@ -32,16 +44,8 @@
     unicode-range: U+0000-00FF, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
 }
 
-.iransans-r {
-    font-family: 'iransans-r', serif;
-}
-
-.iransans-b {
-    font-family: 'iransans-b', serif;
-}
-
 body {
-    font-family: 'iransans-r', serif;
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 ::-webkit-scrollbar {
@@ -74,4 +78,8 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
+}
+
+.direction-ltr {
+    direction: ltr;
 }

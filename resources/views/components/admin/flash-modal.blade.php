@@ -100,9 +100,6 @@
     </script>
 @endif
 
-{{-- SweetAlert2 CDN --}}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 {{-- SweetAlert2 Modals --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -129,6 +126,7 @@
                 }
             });
         });
+
         // ========== Helper: Get item type text ==========
         function getItemTypeText(itemType) {
             const texts = {
@@ -273,7 +271,8 @@
         </div>
 
         <div class="text-center py-0 px-[6px]">
-            <h2 class="m-0 mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100" data-confirm-title>
+            <h2 class="m-0 mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100"
+                data-confirm-title>
                 تأیید عملیات
             </h2>
             <p class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400" data-confirm-text>

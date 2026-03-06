@@ -3,22 +3,20 @@
 namespace App\Domain\Content\Models;
 
 use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
+use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\StatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Str;
 
 class Post extends Model
 {
-    use SoftDeletes, HasTaxonomyTerms;
+    use SoftDeletes, HasTaxonomyTerms, Auditable;
 
     protected $fillable = [
         'author_id',
@@ -61,44 +59,16 @@ class Post extends Model
     }
 
     /**
-     * @return BelongsToMany
-     */
-    public function categories(): BelongsToMany
-    {
-        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
-            ->withPivot('type')
-            ->wherePivot('type', TaxonomyTermTypeEnum::CATEGORY->value)
-            ->withTimestamps();
-    }
-
-    /**
-     * @return BelongsToMany
-     */
-    public function tags(): BelongsToMany
-    {
-        return $this->morphToMany(TaxonomyTerm::class, 'taxonomable')
-            ->withPivot('type')
-            ->wherePivot('type', TaxonomyTermTypeEnum::TAG->value)
-            ->withTimestamps();
-    }
-
-    /**
      * @param array|string|null $tags
-     * @return void
+     * @return array
      */
-    public function syncTags(array|string|null $tags): void
+    public function resolveTagIds(array|string|null $tags): array
     {
-        $tagIds = collect($tags)->map(function ($tagName) {
+        return collect($tags)->map(function ($tagName) {
             return TaxonomyTerm::firstOrCreate(
                 ['title' => $tagName, 'type' => TaxonomyTermTypeEnum::TAG->value],
                 ['slug' => (new GenerateUniqueSlugAction())->execute($tagName, TaxonomyTermTypeEnum::TAG)]
             )->id;
-        });
-
-        $this->tags()->sync(
-            $tagIds->mapWithKeys(fn($id) => [
-                $id => ['type' => TaxonomyTermTypeEnum::TAG->value]
-            ])
-        );
+        })->all();
     }
 }

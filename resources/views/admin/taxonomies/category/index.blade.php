@@ -2,10 +2,6 @@
 
 @section('title', 'مدیریت دسته‌بندی‌ها')
 
-@push('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-@endpush
-
 @section('content')
     <div class="p-6 bg-gray-50 min-h-screen">
 

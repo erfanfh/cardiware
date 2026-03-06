@@ -19,6 +19,9 @@ class AuditEvent extends Model
         'meta',
     ];
     protected $casts = [
-        'type' => AuditEventTypeEnum::class
+        'type' => AuditEventTypeEnum::class,
+        'old_data' => 'array',
+        'new_data' => 'array',
+        'meta' => 'array',
     ];
 }
