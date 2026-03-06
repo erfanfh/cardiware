@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Content\PageController;
 use App\Http\Controllers\Admin\Content\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,3 +11,5 @@ Route::prefix('posts')->name('posts.')->controller(PostController::class)->group
     Route::get('{id}/restore', 'restore')->name('restore');
     Route::delete('{id}/force-delete', 'forceDelete')->name('force-delete');
 });
+
+Route::resource('pages', PageController::class)->except(['show']);
