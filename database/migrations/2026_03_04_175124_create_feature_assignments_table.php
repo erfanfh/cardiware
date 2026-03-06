@@ -18,7 +18,6 @@ return new class extends Migration {
             $table->timestamps();
 
             $table->unique(['feature_definition_id', 'subject_type', 'subject_id'], 'feature_assignments_definition_id_subject_unique');
-            $table->index(['subject_type', 'subject_id']);
         });
     }
 
