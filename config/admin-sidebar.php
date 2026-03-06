@@ -38,6 +38,24 @@ return [
     ],
 
     [
+        'label' => 'برگه‌ها',
+        'route' => 'admin.pages.index',
+        'icon' => 'icons.folder-with-files-outline',
+        'children' => [
+            [
+                'label' => 'لیست برگه‌ها',
+                'route' => 'admin.pages.index',
+                'icon' => 'icons.menu-01'
+            ],
+            [
+                'label' => 'ایجاد برگه',
+                'route' => 'admin.pages.create',
+                'icon' => 'icons.plus-sign'
+            ]
+        ],
+    ],
+
+    [
         'label' => 'پروژه‌ها',
         'route' => 'admin.projects.index',
         'icon' => 'icons.folder-management',
