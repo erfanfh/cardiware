@@ -56,6 +56,12 @@ return [
     ],
 
     [
+        'label' => 'دیدگاه‌ها',
+        'route' => 'admin.comments.index',
+        'icon' => 'icons.comment-01',
+    ],
+
+    [
         'label' => 'پروژه‌ها',
         'route' => 'admin.projects.index',
         'icon' => 'icons.folder-management',
