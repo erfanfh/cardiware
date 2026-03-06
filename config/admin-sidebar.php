@@ -40,7 +40,7 @@ return [
     [
         'label' => 'برگه‌ها',
         'route' => 'admin.pages.index',
-        'icon' => 'icons.folder-with-files-outline',
+        'icon' => 'icons.file-empty-02',
         'children' => [
             [
                 'label' => 'لیست برگه‌ها',
@@ -82,27 +82,27 @@ return [
     [
         'label' => 'تنظیمات سایت',
         'route' => 'admin.settings.general',
-        'icon' => 'icons.settings-linear',
+        'icon' => 'icons.settings-02',
         'children' => [
             [
                 'label' => 'عمومی',
                 'route' => 'admin.settings.general',
-                'icon' => 'icons.settings-linear'
+                'icon' => 'icons.settings-02'
             ],
             [
                 'label' => 'هدر (سربرگ)',
                 'route' => 'admin.settings.header',
-                'icon' => 'icons.settings-linear'
+                'icon' => 'icons.settings-02'
             ],
             [
                 'label' => 'فوتر (پابرگ)',
                 'route' => 'admin.settings.footer',
-                'icon' => 'icons.settings-linear'
+                'icon' => 'icons.settings-02'
             ],
             [
                 'label' => 'صفحه اصلی',
                 'route' => 'admin.settings.home',
-                'icon' => 'icons.settings-linear'
+                'icon' => 'icons.settings-02'
             ],
         ],
     ],
