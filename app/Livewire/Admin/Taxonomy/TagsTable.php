@@ -8,6 +8,7 @@ use App\Application\Taxonomy\Actions\RecordSlugHistoryAction;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Infrastructure\Traits\Searchable;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -29,7 +30,12 @@ class TagsTable extends Component
 
     protected $listeners = ['tagCreated' => '$refresh', 'tagUpdated' => '$refresh'];
 
-    public function mount($editingId = null, $search = '')
+    /**
+     * @param $editingId
+     * @param $search
+     * @return void
+     */
+    public function mount($editingId = null, $search = ''): void
     {
         $this->editingId = $editingId;
         $this->search = $search;
@@ -61,12 +67,18 @@ class TagsTable extends Component
         return $this->editingId ? TaxonomyTerm::find($this->editingId) : null;
     }
 
-    public function updatedSearch()
+    /**
+     * @return void
+     */
+    public function updatedSearch(): void
     {
         $this->resetPage();
     }
 
-    public function save()
+    /**
+     * @return void
+     */
+    public function save(): void
     {
         $this->validate([
             'title' => 'required|string|max:255',
@@ -123,7 +135,11 @@ class TagsTable extends Component
         }
     }
 
-    public function edit($id)
+    /**
+     * @param $id
+     * @return void
+     */
+    public function edit($id): void
     {
         $this->editingId = $id;
         $term = TaxonomyTerm::findOrFail($id);
@@ -134,13 +150,20 @@ class TagsTable extends Component
         $this->slugChangeConfirmed = false;
     }
 
-    public function cancelEdit()
+    /**
+     * @return void
+     */
+    public function cancelEdit(): void
     {
         $this->resetForm();
         $this->editingId = null;
     }
 
-    public function delete($id)
+    /**
+     * @param $id
+     * @return void
+     */
+    public function delete($id): void
     {
         $tag = TaxonomyTerm::findOrFail($id);
         $tag->delete();
@@ -148,7 +171,10 @@ class TagsTable extends Component
         $this->dispatch('tagUpdated');
     }
 
-    public function bulkDelete()
+    /**
+     * @return void
+     */
+    public function bulkDelete(): void
     {
         if (empty($this->selectedIds)) {
             session()->flash('error', 'هیچ آیتمی انتخاب نشده است.');
@@ -162,12 +188,20 @@ class TagsTable extends Component
         $this->dispatch('tagUpdated');
     }
 
-    public function toggleSelectAll($value)
+    /**
+     * @param $value
+     * @return void
+     */
+    public function toggleSelectAll($value): void
     {
         $this->selectedIds = $value ? $this->tags->pluck('id')->toArray() : [];
     }
 
-    public function toggleSelect($id)
+    /**
+     * @param $id
+     * @return void
+     */
+    public function toggleSelect($id): void
     {
         if (in_array($id, $this->selectedIds)) {
             $this->selectedIds = array_filter($this->selectedIds, fn($i) => $i !== $id);
@@ -176,25 +210,37 @@ class TagsTable extends Component
         }
     }
 
+    /**
+     * @return void
+     */
     #[On('confirmSlugChange')]
-    public function proceedWithSlugChange()
+    public function proceedWithSlugChange(): void
     {
         $this->slugChangeConfirmed = true;
         $this->save();
     }
 
+    /**
+     * @return void
+     */
     #[On('confirmBulkDelete')]
-    public function proceedWithBulkDelete()
+    public function proceedWithBulkDelete(): void
     {
         $this->bulkDelete();
     }
 
-    private function resetForm()
+    /**
+     * @return void
+     */
+    private function resetForm(): void
     {
         $this->reset('title', 'slug', 'description', 'slugChangeConfirmed', 'originalSlug');
     }
 
-    public function render()
+    /**
+     * @return View
+     */
+    public function render(): View
     {
         return view('livewire.admin.taxonomy.tags-table');
     }
