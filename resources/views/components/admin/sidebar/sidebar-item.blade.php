@@ -26,13 +26,13 @@
 
 @if($allowed)
     <li
-            x-data="{ open: {{ $hasChildren && $isActive ? 'true' : 'false' }} }"
-            class="select-none"
+        x-data="{ open: {{ $hasChildren && $isActive ? 'true' : 'false' }} }"
+        class="select-none"
     >
         @if(!$hasChildren)
             <a
-                    href="{{ $href }}"
-                    class="
+                href="{{ $href }}"
+                class="
                 flex items-center px-4 py-2 rounded-md transition-colors duration-200
                 {{ $isActive ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-700' }}
                 hover:text-gray-700 dark:hover:text-gray-200
@@ -53,13 +53,13 @@
         @else
             {{-- Parent (toggle) --}}
             <button
-                    type="button"
-                    class="
-                w-full flex items-center px-4 py-2 rounded-md transition-colors duration-200 text-right
+                type="button"
+                class="
+                cursor-pointer w-full flex items-center px-4 py-2 rounded-md transition-colors duration-200 text-right
                 {{ $isActive ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-700' }}
                 hover:text-gray-700 dark:hover:text-gray-200
             "
-                    @click="open = !open"
+                @click="open = !open"
             >
             <span class="shrink-0">
                 @if($iconView)
@@ -84,9 +84,9 @@
 
             {{-- Children --}}
             <div
-                    x-show="open"
-                    x-transition
-                    class="mt-1 mr-4 pr-2 border-r border-gray-100 dark:border-gray-800"
+                x-show="open"
+                x-transition
+                class="mt-1 mr-4 pr-2 border-r border-gray-100 dark:border-gray-800"
             >
                 <ul class="space-y-1">
                     @foreach($children as $child)
