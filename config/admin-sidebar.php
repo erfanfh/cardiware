@@ -54,4 +54,32 @@ return [
             ]
         ],
     ],
+
+    [
+        'label' => 'تنظیمات سایت',
+        'route' => 'admin.settings.general',
+        'icon' => 'icons.settings-linear',
+        'children' => [
+            [
+                'label' => 'عمومی',
+                'route' => 'admin.settings.general',
+                'icon' => 'icons.settings-linear'
+            ],
+            [
+                'label' => 'هدر (سربرگ)',
+                'route' => 'admin.settings.header',
+                'icon' => 'icons.settings-linear'
+            ],
+            [
+                'label' => 'فوتر (پابرگ)',
+                'route' => 'admin.settings.footer',
+                'icon' => 'icons.settings-linear'
+            ],
+            [
+                'label' => 'صفحه اصلی',
+                'route' => 'admin.settings.home',
+                'icon' => 'icons.settings-linear'
+            ],
+        ],
+    ],
 ];
