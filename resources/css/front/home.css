@@ -1,0 +1,25 @@
+.ticker-fade {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+}
+
+.ticker-fade.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.physicalSwiper .swiper-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.heroSwiper {
+    width: 100%;
+    height: 100%;
+}
+
+.heroSwiper .swiper-slide {
+    position: relative;
+    height: 100%;
+}

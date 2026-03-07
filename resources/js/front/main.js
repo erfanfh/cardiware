@@ -1,0 +1,20 @@
+(function () {
+    const items = [
+        "• نسخه جدید پچ لیگ ایران منتشر شد (FC26)",
+        "• آموزش رفع ارورهای رایج نصب به‌روزرسانی شد",
+        "• پک گرافیک PES 2026 با لینک‌های جدید قرار گرفت",
+        "• بخش دانلودهای چندسروره فعال شد (آزمایشی)"
+    ];
+    const el = document.getElementById("newsTicker");
+    if (!el) return;
+
+    let i = 0;
+    setInterval(() => {
+        el.classList.remove("show");
+        setTimeout(() => {
+            i = (i + 1) % items.length;
+            el.textContent = items[i];
+            el.classList.add("show");
+        }, 380);
+    }, 2600);
+})();
