@@ -3,26 +3,47 @@
 namespace App\Http\Controllers\Admin\System;
 
 use App\Http\Controllers\Controller;
+use Illuminate\View\View;
 
 class SettingController extends Controller
 {
-    public function general()
+    /**
+     * General settings page
+     *
+     * @return View
+     */
+    public function general(): View
     {
-
+        return view('admin.system.settings.general');
     }
 
-    public function header()
+    /**
+     * Header settings page
+     *
+     * @return View
+     */
+    public function header(): View
     {
-
+        return view('admin.system.settings.header');
     }
 
-    public function footer()
+    /**
+     * Footer settings page
+     *
+     * @return View
+     */
+    public function footer(): View
     {
-
+        return view('admin.system.settings.footer');
     }
 
-    public function home()
+    /**
+     * Home settings page
+     *
+     * @return View
+     */
+    public function home(): View
     {
-
+        return view('admin.system.settings.home');
     }
 }
