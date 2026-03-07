@@ -8,4 +8,6 @@ Route::middleware(['web'])
         Route::get('/', HomeController::class)->name('home');
 
         require __DIR__ . '/front/identity.php';
+        require __DIR__ . '/front/project.php';
+        require __DIR__ . '/front/content.php'; // This must be the last
     });
