@@ -6,14 +6,12 @@
     <x-admin.page>
         <div class="space-y-6">
 
-            <x-admin.metabox
-                title="اطلاعات پایه سایت"
-            >
+            <x-admin.metabox title="اطلاعات پایه سایت">
                 <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                     <x-admin.field
                         label="عنوان سایت"
+                        hint="این عنوان در بخش‌های مختلف سایت نمایش داده می‌شود."
                         required
-                        hint="این عنوان در بخش‌های اصلی سایت نمایش داده می‌شود."
                     >
                         <x-admin.form.input
                             name="site_title"
@@ -23,7 +21,7 @@
 
                     <x-admin.field
                         label="عنوان فرعی"
-                        hint="توضیح کوتاه یا شعار برند."
+                        hint="شعار یا توضیح کوتاه برند."
                     >
                         <x-admin.form.input
                             name="site_subtitle"
@@ -34,7 +32,7 @@
                     <div class="lg:col-span-2">
                         <x-admin.field
                             label="فاوآیکون"
-                            hint="ترجیحاً تصویر مربعی با ابعاد مناسب."
+                            hint="ترجیحاً تصویر مربعی و سبک."
                         >
                             <x-admin.form.input
                                 type="file"
@@ -45,48 +43,47 @@
                 </div>
             </x-admin.metabox>
 
-            <x-admin.metabox
-                title="سامانه‌های پیامکی"
-            >
+            <x-admin.metabox title="سامانه‌های پیامکی">
                 <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                     <x-admin.field
-                        label="سرویس پیامکی پیش‌فرض"
-                        hint="فعلاً نمایشی است و بعداً به بک‌اند متصل می‌شود."
+                        label="سرویس پیش‌فرض"
+                        hint="فعلاً فقط نمای ظاهری فرم است."
                     >
                         <x-admin.form.select
                             name="default_sms_provider"
+                            placeholder="انتخاب سرویس"
                             :options="[
-                            ['value' => 'kavenegar', 'label' => 'کاوه نگار'],
-                            ['value' => 'ippanel', 'label' => 'IPPanel'],
-                            ['value' => 'smsir', 'label' => 'SMS.ir'],
+                            'kavenegar' => 'کاوه نگار',
+                            'ippanel' => 'IPPanel',
+                            'smsir' => 'SMS.ir',
                         ]"
                         />
                     </x-admin.field>
 
                     <x-admin.field
-                        label="وضعیت"
+                        label="فعال بودن سامانه پیامکی"
                     >
                         <x-admin.form.switch
                             name="sms_enabled"
+                            :checked="true"
                         />
                     </x-admin.field>
                 </div>
             </x-admin.metabox>
 
-            <x-admin.metabox
-                title="درگاه‌های پرداخت"
-            >
+            <x-admin.metabox title="درگاه‌های پرداخت">
                 <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                     <x-admin.field
                         label="درگاه پیش‌فرض"
-                        hint="فعلاً نمایشی است."
+                        hint="فعلاً نمایشی است و بعداً به بک‌اند وصل می‌شود."
                     >
                         <x-admin.form.select
                             name="default_payment_gateway"
+                            placeholder="انتخاب درگاه"
                             :options="[
-                            ['value' => 'zarinpal', 'label' => 'زرین پال'],
-                            ['value' => 'nextpay', 'label' => 'نکست پی'],
-                            ['value' => 'idpay', 'label' => 'آیدی پی'],
+                            'zarinpal' => 'زرین‌پال',
+                            'nextpay' => 'نکست‌پی',
+                            'idpay' => 'آیدی‌پی',
                         ]"
                         />
                     </x-admin.field>
@@ -96,6 +93,7 @@
                     >
                         <x-admin.form.switch
                             name="payment_enabled"
+                            :checked="true"
                         />
                     </x-admin.field>
                 </div>
