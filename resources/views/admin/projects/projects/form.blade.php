@@ -2,50 +2,8 @@
     $isEdit = isset($project) && $project;
 @endphp
 
-<div class="grid grid-cols-12 gap-5">
-    <div class="col-span-12 lg:col-span-9 space-y-5">
-        <x-admin.form.wp-title-slug
-            titleName="title"
-            slugName="slug"
-            :titleValue="$project->title ?? ''"
-            :slugValue="$project->slug ?? ''"
-            basePath="{{ route('home') }}/projects/"
-            :checkUrl="route('admin.projects.check-slug')"
-            :currentId="$project->id ?? null"
-        />
-
-        <x-admin.metabox title="توضیحات">
-            <x-admin.field required>
-                <x-admin.form.textarea name="body" rows="10"
-                                       placeholder="توضیحات کامل پروژه ...">{{ old('body', $project->body ?? '') }}</x-admin.form.textarea>
-            </x-admin.field>
-        </x-admin.metabox>
-
-        <x-admin.metabox title="خلاصه">
-            <x-admin.field required
-                           hint="این فیلد اختیاری است. درصورتی که تکمیل نشود، خلاصه توضیحات پروژه در نظر گرفته خواهد شد.">
-                <x-admin.form.textarea name="excerpt" rows="4"
-                                       placeholder="یک خلاصه کوتاه از پروژه ...">{{ old('excerpt', $project->excerpt ?? '') }}</x-admin.form.textarea>
-            </x-admin.field>
-        </x-admin.metabox>
-
-        <x-admin.metabox title="نقشه راه">
-            <x-admin.project.roadmap-repeater
-                name="roadmap"
-                :items="old('roadmap', $roadmapItems ?? [])"
-            />
-        </x-admin.metabox>
-
-        <x-admin.metabox title="آپدیت‌ها و تغییرات">
-            <x-admin.project.changelog-repeater
-                name="changelogs"
-                :items="old('changelogs', $changelogs ?? [])"
-            />
-        </x-admin.metabox>
-    </div>
-
-    <div class="col-span-12 lg:col-span-3 space-y-5">
-
+<x-admin.page columns="2">
+    <x-slot:sidebar>
         <x-admin.metabox title="انتشار">
             <div class="space-y-3">
                 <div class="flex items-center justify-between text-sm">
@@ -146,5 +104,44 @@
                 <x-admin.button type="button" variant="danger">حذف</x-admin.button>
             </div>
         </x-admin.metabox>
-    </div>
-</div>
+    </x-slot:sidebar>
+
+    <x-admin.form.wp-title-slug
+        titleName="title"
+        slugName="slug"
+        :titleValue="$project->title ?? ''"
+        :slugValue="$project->slug ?? ''"
+        basePath="{{ route('home') }}/projects/"
+        :checkUrl="route('admin.projects.check-slug')"
+        :currentId="$project->id ?? null"
+    />
+
+    <x-admin.metabox title="توضیحات">
+        <x-admin.field required>
+            <x-admin.form.textarea name="body" rows="10"
+                                   placeholder="توضیحات کامل پروژه ...">{{ old('body', $project->body ?? '') }}</x-admin.form.textarea>
+        </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="خلاصه">
+        <x-admin.field required
+                       hint="این فیلد اختیاری است. درصورتی که تکمیل نشود، خلاصه توضیحات پروژه در نظر گرفته خواهد شد.">
+            <x-admin.form.textarea name="excerpt" rows="4"
+                                   placeholder="یک خلاصه کوتاه از پروژه ...">{{ old('excerpt', $project->excerpt ?? '') }}</x-admin.form.textarea>
+        </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="نقشه راه">
+        <x-admin.project.roadmap-repeater
+            name="roadmap"
+            :items="old('roadmap', $roadmapItems ?? [])"
+        />
+    </x-admin.metabox>
+
+    <x-admin.metabox title="آپدیت‌ها و تغییرات">
+        <x-admin.project.changelog-repeater
+            name="changelogs"
+            :items="old('changelogs', $changelogs ?? [])"
+        />
+    </x-admin.metabox>
+</x-admin.page>
