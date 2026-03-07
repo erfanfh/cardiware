@@ -80,6 +80,29 @@ return [
     ],
 
     [
+        'label' => 'کاربران',
+        'route' => 'admin.users.index',
+        'icon' => 'icons.user',
+        'children' => [
+            [
+                'label' => 'لیست کاربران',
+                'route' => 'admin.users.index',
+                'icon' => 'icons.menu-01'
+            ],
+            [
+                'label' => 'ایجاد کاربر',
+                'route' => 'admin.users.create',
+                'icon' => 'icons.plus-sign'
+            ],
+            [
+                'label' => 'لیست نقش‌ها',
+                'route' => 'admin.roles.index',
+                'icon' => 'icons.square-unlock-02'
+            ]
+        ],
+    ],
+
+    [
         'label' => 'تنظیمات سایت',
         'route' => 'admin.settings.general',
         'icon' => 'icons.settings-02',
