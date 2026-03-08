@@ -6,10 +6,8 @@ use App\Application\Identity\Actions\Auth\GenerateOtpAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Application\System\RateLimiterAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
-use App\Domain\Identity\Enums\RoleEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
-use App\Infrastructure\Services\Sms\SmsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
@@ -155,7 +153,7 @@ class AuthFlow extends Component
             'password' => $this->password
         ])) {
 
-            $this->handleSuccessfulLogin();
+            request()->session()->regenerate();
             return redirect('/');
         }
 
@@ -184,7 +182,7 @@ class AuthFlow extends Component
         $user->update(['password' => Hash::make($this->password)]);
 
         Auth::login($user);
-        $this->handleSuccessfulLogin();
+        request()->session()->regenerate();
 
         return redirect('/');
     }
@@ -232,7 +230,7 @@ class AuthFlow extends Component
         );
 
         Auth::login($user);
-        $this->handleSuccessfulLogin();
+        request()->session()->regenerate();
 
         return redirect('/');
     }
@@ -331,20 +329,6 @@ class AuthFlow extends Component
         ]);
 
         return true;
-    }
-
-    /**
-     * @return void
-     */
-    private function handleSuccessfulLogin(): void
-    {
-        request()->session()->regenerate();
-
-        $user = auth()->user();
-
-        if ($user->role->title === RoleEnum::SUPER_ADMIN->value)
-            if($user->mobile)
-                (new SmsService())->send($user->mobile, 'ضیافت' . "\n" . 'ورود به پنل');
     }
 
     /**
