@@ -58,7 +58,7 @@
                             <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1"/>
                         </g>
                     </svg>
-                    بازگشت به صفحه اصلی
+                    بازگشت به خانه
                 </a>
             </div>
 
@@ -147,18 +147,33 @@
         @endif
 
         @if($step === 'register')
-            <button wire:click.prevent="goToLogin"
-                    class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                       stroke-width="1.5">
-                        <path
-                            d="M8 8c0-.575 0-.822.045-1.075A2.98 2.98 0 0 1 9.833 4.7c.24-.1.523-.165 1.09-.294l2.728-.623c3.39-.774 5.084-1.161 6.217-.27C21 4.405 21 6.126 21 9.568v4.864c0 3.442 0 5.164-1.132 6.055c-1.133.891-2.827.504-6.217-.27l-2.728-.623c-.567-.13-.85-.194-1.09-.294a2.98 2.98 0 0 1-1.788-2.225C8 16.822 8 16.575 8 16"/>
-                        <path d="M13 9s3 2.21 3 3s-3 3-3 3m2.5-3H3"/>
-                    </g>
-                </svg>
-                ورود
-            </button>
+            <div class="flex justify-between">
+                <button wire:click.prevent="goToLogin"
+                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                           stroke-width="1.5">
+                            <path
+                                d="M8 8c0-.575 0-.822.045-1.075A2.98 2.98 0 0 1 9.833 4.7c.24-.1.523-.165 1.09-.294l2.728-.623c3.39-.774 5.084-1.161 6.217-.27C21 4.405 21 6.126 21 9.568v4.864c0 3.442 0 5.164-1.132 6.055c-1.133.891-2.827.504-6.217-.27l-2.728-.623c-.567-.13-.85-.194-1.09-.294a2.98 2.98 0 0 1-1.788-2.225C8 16.822 8 16.575 8 16"/>
+                            <path d="M13 9s3 2.21 3 3s-3 3-3 3m2.5-3H3"/>
+                        </g>
+                    </svg>
+                    ورود
+                </button>
+
+                <a href="/"
+                   class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                           stroke-width="1.5">
+                            <path
+                                d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99"/>
+                            <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1"/>
+                        </g>
+                    </svg>
+                    بازگشت به خانه
+                </a>
+            </div>
 
             <div class="mb-8 text-center">
                 <h2 class="text-xl font-bold text-slate-800">ثبت‌نام</h2>
@@ -264,14 +279,29 @@
         @endif
 
         @if($step === 'otp-login-username')
-            <button wire:click.prevent="goToLogin"
-                    class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-                </svg>
-                بازگشت
-            </button>
+            <div class="flex justify-between">
+                <button wire:click.prevent="goToLogin"
+                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
+                    </svg>
+                    بازگشت
+                </button>
+
+                <a href="/"
+                   class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                           stroke-width="1.5">
+                            <path
+                                d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99"/>
+                            <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1"/>
+                        </g>
+                    </svg>
+                    بازگشت به خانه
+                </a>
+            </div>
 
             <div class="mb-8 text-center">
                 <h2 class="text-xl font-bold text-slate-800">
@@ -345,9 +375,9 @@
             </button>
 
             <div class="mb-8 text-center">
-                <h2 class="text-xl font-bold text-slate-800">تایید شماره موبایل</h2>
+                <h2 class="text-xl font-bold text-slate-800">تایید اطلاعات</h2>
                 <p class="mt-2 text-sm text-slate-600">
-                    کد ارسال‌شده به شماره زیر را وارد کنید
+                    کد ارسال‌شده به شماره موبایل/ایمیل زیر را وارد کنید
                 </p>
                 <div class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full">
                     <span class="text-sm font-medium text-slate-700">{{ $username }}</span>
@@ -425,14 +455,29 @@
         @endif
 
         @if($step === 'enter-username')
-            <button type="button" wire:click="goToLogin"
-               class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                          stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-                </svg>
-                بازگشت
-            </button>
+            <div class="flex justify-between">
+                <button type="button" wire:click="goToLogin"
+                        class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
+                    </svg>
+                    بازگشت
+                </button>
+
+                <a href="/"
+                   class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                           stroke-width="1.5">
+                            <path
+                                d="M3 11.99v2.51c0 3.3 0 4.95 1.025 5.975S6.7 21.5 10 21.5h4c3.3 0 4.95 0 5.975-1.025S21 17.8 21 14.5v-2.51c0-1.682 0-2.522-.356-3.25s-1.02-1.244-2.346-2.276l-2-1.555C14.233 3.303 13.2 2.5 12 2.5s-2.233.803-4.298 2.409l-2 1.555C4.375 7.496 3.712 8.012 3.356 8.74S3 10.308 3 11.99"/>
+                            <path d="M15 17c-.8.622-1.85 1-3 1s-2.2-.378-3-1"/>
+                        </g>
+                    </svg>
+                    بازگشت به خانه
+                </a>
+            </div>
 
             <div class="mb-8 text-center">
                 <h2 class="text-xl font-bold text-slate-800">
