@@ -32,9 +32,4 @@ class AuthController extends Controller
 
         return redirect()->route('auth.index');
     }
-
-    public function resetPassword()
-    {
-        return view('front.identity.users.auth.reset-password');
-    }
 }
