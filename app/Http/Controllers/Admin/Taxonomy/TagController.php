@@ -178,21 +178,6 @@ class TagController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function tagsSearch(Request $request): JsonResponse
-    {
-        $query = $request->query('query', '');
-
-        $tags = TaxonomyTerm::where('type', TaxonomyTermTypeEnum::TAG->value)
-            ->where('title', 'like', "%{$query}%")
-            ->pluck('title');
-
-        return response()->json($tags);
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
     public function tagsFetch(Request $request): JsonResponse
     {
         $query = $request->get('q', '');
