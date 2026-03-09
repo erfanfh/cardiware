@@ -191,7 +191,7 @@
                     }
 
                     try {
-                        const response = await fetch(`/admin/tags/search?query=${encodeURIComponent(this.newTags)}`);
+                        const response = await fetch(`/admin/tags/fetch?query=${encodeURIComponent(this.newTags)}`);
                         const data = await response.json();
                         this.suggestions = data.filter(t => !this.tags.includes(t));
                     } catch (err) {

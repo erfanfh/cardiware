@@ -5,16 +5,15 @@ namespace App\Livewire\Front\Identity\User\Auth;
 use App\Application\Identity\Actions\Auth\GenerateOtpAction;
 use App\Application\System\RateLimiterAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
-use App\Domain\Identity\Enums\RoleEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
-use App\Infrastructure\Services\Sms\SmsService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use Livewire\Component;
+use Random\RandomException;
 
 
 class ResetPassword extends Component
@@ -52,6 +51,11 @@ class ResetPassword extends Component
         $this->step = 'enter-username';
     }
 
+
+    /**
+     * @return void
+     * @throws RandomException
+     */
     public function sendOtp(): void
     {
         $this->username = normalize_number($this->username);
@@ -127,6 +131,7 @@ class ResetPassword extends Component
 
     /**
      * @return void
+     * @throws RandomException
      */
     public function resendOtp(): void
     {

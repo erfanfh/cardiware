@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         load: function (query, callback) {
             if (!query.length) return callback();
-            fetch(`/admin/tags/search?q=${encodeURIComponent(query)}`)
+            fetch(`/admin/tags/fetch?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(json => {
                     callback(json);
