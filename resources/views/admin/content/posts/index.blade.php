@@ -61,10 +61,16 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label class="text-xs font-medium text-gray-500 dark:text-gray-400" for="author">نویسنده</label>
-                <input type="text" name="author"
-                       class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
-                       value="{{ request('author') }}">
+                <label for="author" class="text-xs font-medium text-gray-500 dark:text-gray-400">نویسنده</label>
+                <select name="author"
+                        placeholder="جستجو کنید..."
+                        id="author-select"
+                        autocomplete="off"
+                        class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
+                    @if(request('author'))
+                        <option selected value="{{ request('author') }}">{{ \App\Domain\Identity\Models\User::findOrFail(request('author'))->full_name }}</option>
+                    @endif
+                </select>
             </div>
 
             <div class="flex flex-col gap-1">
@@ -81,7 +87,7 @@
             </div>
 
             <div class="flex flex-col gap-1">
-                <label for="tag" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
+                <label for="tag" class="text-xs font-medium text-gray-500 dark:text-gray-400">برچسب</label>
                 <select name="tag"
                         placeholder="جستجو کنید..."
                         id="tag-select"

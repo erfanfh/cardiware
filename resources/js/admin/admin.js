@@ -187,6 +187,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const select = document.querySelector('#author-select');
+
+    const ts = new TomSelect(select, {
+        valueField: 'id',
+        labelField: 'title',
+        searchField: 'title',
+        create: false,
+        plugins: {
+            'remove_button': {
+                title: 'حذف',
+            },
+            'checkbox_options': {
+                'checkedClassNames': ['ts-checked'],
+                'uncheckedClassNames': ['ts-unchecked'],
+            }
+        },
+        load: function (query, callback) {
+            if (!query.length) return callback();
+            fetch(`/admin/users/fetch?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(json => {
+                    callback(json);
+                }).catch(() => {
+                callback();
+            });
+        }
+    });
+});
+
 document.addEventListener('alpine:init', () => {
     Alpine.plugin(collapse)
 })
