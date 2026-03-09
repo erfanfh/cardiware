@@ -69,6 +69,28 @@ if (!function_exists('normalize_number')) {
         $arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
         $english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-        return str_replace($persian, $english,str_replace($arabic, $english, $number));
+        return str_replace($persian, $english, str_replace($arabic, $english, $number));
+    }
+}
+
+if (!function_exists('get_setting')) {
+    /**
+     * Returns value of the given setting
+     *
+     * @param string $group
+     * @param string $key
+     * @param mixed $default
+     * @return null
+     */
+    function get_setting(string $group, string $key, mixed $default = null): mixed
+    {
+        try {
+            $settingsClass = '\\App\\Infrastructure\\Services\\Setting\\Groups\\' . ucfirst($group) . 'Settings';
+            $settings = App::make($settingsClass);
+            return $settings->get($key, $default);
+        } catch (Throwable $e) {
+            Log::info($e->getMessage());
+            return null;
+        }
     }
 }
