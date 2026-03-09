@@ -122,7 +122,7 @@ class CategoryController extends Controller
      * Update the specified category in storage.
      *
      * @param UpdateCategoryRequest $request
-     * @param TaxonomyTerm $taxonomy_term
+     * @param TaxonomyTerm $category
      * @return RedirectResponse
      * @throws ValidationException
      */
