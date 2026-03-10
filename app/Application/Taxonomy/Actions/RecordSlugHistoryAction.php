@@ -44,7 +44,7 @@ class RecordSlugHistoryAction
         $term->slugs()->where('is_current', true)->update(['is_current' => false]);
 
         // Create or update old slug record
-        $term->slugs()->updateOrCreate(
+        TaxonomyTermSlug::updateOrCreate(
             [
                 'route_key' => $oldSlug,
                 'type' => $term->type->value,
