@@ -5,8 +5,8 @@ namespace App\Application\Media\DTOs;
 class MediaFileDTO
 {
     public function __construct(
-        public ?int    $id,
-        public ?string $path
+        public ?int    $id = null,
+        public ?string $path = null,
     )
     {
     }
