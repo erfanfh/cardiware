@@ -10,10 +10,10 @@ use JsonException;
 
 class MediaFileCast implements CastsAttributes
 {
-    public function get(Model $model, string $key, mixed $value, array $attributes): ?MediaFileDTO
+    public function get(Model $model, string $key, mixed $value, array $attributes): MediaFileDTO
     {
         if ($value === null)
-            return null;
+            return new MediaFileDTO();
 
         try {
             $decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
