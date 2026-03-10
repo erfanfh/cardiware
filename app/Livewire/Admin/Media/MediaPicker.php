@@ -22,6 +22,8 @@ class MediaPicker extends Component
     use WithPagination;
     use WithFileUploads;
 
+    public string $name;
+
     public ?int $selectedMediaFileId = null;
     public ?string $selectedUrl = null;
 

@@ -217,6 +217,8 @@
                             loading="lazy"
                             decoding="async"
                         >
+                        <input type="hidden" name="{{ $name }}[id]" :value="selectedId">
+                        <input type="hidden" name="{{ $name }}[path]" :value="selectedUrl">
                     </div>
                 </template>
 
@@ -1427,6 +1429,10 @@
         /* loaded */
         .mfip-imgSlot.is-loaded > img {
             opacity: 1;
+        }
+
+        .mfip-pickerBtn .mfip-imgSlot > img {
+            opacity: 1 !important;
         }
 
         .mfip-imgSlot.is-loaded::before,
