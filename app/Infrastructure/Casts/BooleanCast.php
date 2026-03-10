@@ -12,7 +12,7 @@ class BooleanCast implements CastsAttributes
         if ($value === null)
             return null;
 
-        return (bool)$value;
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): ?string
