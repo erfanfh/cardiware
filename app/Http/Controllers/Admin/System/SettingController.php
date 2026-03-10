@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers\Admin\System;
 
+use App\Application\System\Actions\UpdateSettingAction;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class SettingController extends Controller
@@ -15,6 +19,27 @@ class SettingController extends Controller
     public function general(): View
     {
         return view('admin.system.settings.general');
+    }
+
+    /**
+     * Store general settings
+     *
+     * @param Request $request
+     * @param UpdateSettingAction $action
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeGeneral(Request $request, UpdateSettingAction $action): RedirectResponse
+    {
+        $fields = ['title', 'subtitle', 'favicon'];
+        
+        foreach ($fields as $field) {
+            $action->execute('general', $field, $request->get($field));
+        }
+
+        return redirect()
+            ->route('admin.settings.general')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 
     /**
