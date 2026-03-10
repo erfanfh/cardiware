@@ -1,5 +1,13 @@
 @extends('front.master')
 
+@php
+    $title = get_setting('general', 'title');
+    $subTitle = get_setting('general', 'subtitle');
+    if($subTitle) $title = "$title | $subTitle";
+@endphp
+
+@section('title', $title)
+
 @section('content')
     @include('front.home.partials.story')
 
