@@ -9,7 +9,7 @@ class GeneralSettings extends BaseSettings
     protected string $group = 'general';
     protected array $allowedKeys = [
         'title',
-        'sub_title',
+        'subtitle',
         'favicon',
     ];
 }
