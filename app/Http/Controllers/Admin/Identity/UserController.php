@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\StoreUserRequest;
 use App\Http\Requests\Admin\Identity\UpdateUserRequest;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -69,6 +70,7 @@ class UserController extends Controller
      * Store a newly created user in storage
      *
      * @param StoreUserRequest $request The validation request
+     * @param RegisterUserAction $registerUserAction
      * @return RedirectResponse
      */
     public function store(StoreUserRequest $request, RegisterUserAction $registerUserAction): RedirectResponse
@@ -153,5 +155,19 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')
             ->with('success', "کاربر '{$user->first_name}' با موفقیت به‌روزرسانی شد.")
             ->with('success_title', 'به‌روزرسانی موفق');
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function usersFetch(Request $request): JsonResponse
+    {
+        $query = $request->get('q', '');
+
+        $users = User::whereRaw('CONCAT(first_name, " ", last_name) LIKE ?', ["%$query%"])
+            ->get(['id', 'full_name']);
+
+        return response()->json($users);
     }
 }

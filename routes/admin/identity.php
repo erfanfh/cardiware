@@ -9,3 +9,4 @@ Route::get('roles/{role}/assign-new-role', [RoleController::class, 'showAssignNe
 Route::post('roles/{role}/assign-new-role', [RoleController::class, 'assignNewRole'])->name('roles.assign-new-role');
 
 Route::resource('users', UserController::class)->names('users');
+Route::get('/users/fetch', [UserController::class, 'usersFetch'])->name('users.fetch');
