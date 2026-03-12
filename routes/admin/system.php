@@ -8,5 +8,6 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::get('header', 'header')->name('header');
     Route::put('header', 'storeHeader')->name('header.store');
     Route::get('footer', 'footer')->name('footer');
+    Route::put('footer', 'storeFooter')->name('footer.store');
     Route::get('home', 'home')->name('home');
 });
