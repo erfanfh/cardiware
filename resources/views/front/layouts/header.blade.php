@@ -12,14 +12,15 @@
             <a href="{{ route('home') }}" class="flex items-center gap-2">
                 <div class="h-10 w-10 grid place-items-center">
                     <img
-                        src="https://moddingway.ir/wp-content/uploads/2025/12/mw-150x138-1.png"
-                        alt="Moddingway Logo"
-                        class="h-8 w-auto object-contain"
+                        src="{{ get_setting('header', 'logo')->path }}"
+                        alt="{{ get_setting('general', 'title') }}"
+                        title="{{ get_setting('general', 'title') }}"
+                        class="max-h-11 h-auto object-contain"
                     />
                 </div>
                 <div class="leading-tight">
-                    <div class="font-extrabold text-lg">مودینگ وی</div>
-                    <div class="text-xs text-slate-500">دانلود پچ و ماد بازی‌ها</div>
+                    <div class="font-extrabold text-lg">{{ get_setting('general', 'title') }}</div>
+                    <div class="text-xs text-slate-500">{{ get_setting('general', 'subtitle') }}</div>
                 </div>
             </a>
 
