@@ -10,11 +10,19 @@ class HeaderSettings extends BaseSettings
 {
     protected string $group = 'header';
     protected array $allowedKeys = [
+        'announcement_active',
+        'announcement_text',
+        'announcement_button_text',
+        'announcement_button_url',
+        'announcement_background_image',
+        'announcement_background_color',
+        'announcement_text_color',
         'logo',
         'ajax_search',
     ];
 
     protected array $casts = [
+        'announcement_background_image' => MediaFileCast::class,
         'logo' => MediaFileCast::class,
         'ajax_search' => BooleanCast::class,
     ];
