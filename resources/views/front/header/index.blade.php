@@ -1,10 +1,4 @@
-<!-- Top announcement -->
-<div class="bg-brand-600 text-white">
-    <div class="mx-auto max-w-7xl px-4 py-2 flex items-center justify-between gap-3">
-        <p class="text-sm/6 opacity-95">نسخه‌های جدید پچ‌ها و آپدیت‌ها منتشر شد — دانلود سریع و امن</p>
-        <a href="#" class="text-sm font-semibold underline underline-offset-4 hover:opacity-90">مشاهده</a>
-    </div>
-</div>
+@include('front.header.announcement')
 
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="mx-auto max-w-7xl px-4 py-4">
