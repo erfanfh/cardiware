@@ -4,7 +4,7 @@
     'defaultItem' => [],
     'title' => null,
     'addText' => 'افزودن',
-    'emptyText' => 'موردی ثبت نشده',
+    'emptyText' => 'هنوز آیتمی اضافه نشده است.',
     'sortable' => true,
     'headingKey' => 'title',
     'headingPlaceholder' => 'بدون عنوان',
