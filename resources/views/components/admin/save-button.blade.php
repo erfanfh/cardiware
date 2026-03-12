@@ -2,6 +2,8 @@
     'label' => 'ذخیره',
 ])
 
+<div class="w-full h-16"></div>
+
 <footer
     class="fixed bottom-0 left-0 w-full z-10 bg-white dark:bg-gray-900 flex justify-end gap-[8px] mt-[20px] p-[14px] border-t border-t-[var(--border-subtle)] dark:border-t-gray-700">
     <button type="submit"
