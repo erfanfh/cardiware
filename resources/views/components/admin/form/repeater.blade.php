@@ -59,7 +59,7 @@
     </template>
 
     <div x-ref="list" class="space-y-3">
-        <template x-for="(it, i) in items" :key="it.__key">
+        <template x-for="(it, i) in items" :key="`${it.__key}-${__renderNonce}`">
             <div
                 data-repeater-item
                 class="rounded-2xl border border-slate-200 bg-white overflow-hidden"

@@ -14,16 +14,15 @@ window.mwRepeater = function (opts = {}) {
     }
 
     return {
-        items: Array.isArray(opts.items) ? opts.items : [],
+        items: Array.isArray(opts.items) ? deepClone(opts.items) : [],
         name: opts.name || 'items',
         defaultItem: opts.defaultItem || {},
         sortable: opts.sortable !== false,
 
         __sortableInstance: null,
+        __renderNonce: 0,
 
         init() {
-            this.items = JSON.parse(JSON.stringify(this.items))
-
             this.items = this.items.map((it, index) => {
                 const item = (typeof it === 'object' && it !== null) ? deepClone(it) : {}
 
@@ -75,6 +74,7 @@ window.mwRepeater = function (opts = {}) {
                     this.items.splice(evt.newIndex, 0, moved)
 
                     this.reorder()
+                    this.refreshDom()
                 },
             })
         },
@@ -88,28 +88,28 @@ window.mwRepeater = function (opts = {}) {
 
             this.items.push(item)
             this.reorder()
-
-            this.$nextTick(() => {
-                if (this.sortable) {
-                    this.initSortable()
-                }
-            })
+            this.refreshDom()
         },
 
         remove(index) {
             this.items.splice(index, 1)
             this.reorder()
-
-            this.$nextTick(() => {
-                if (this.sortable) {
-                    this.initSortable()
-                }
-            })
+            this.refreshDom()
         },
 
         reorder() {
             this.items.forEach((item, index) => {
                 item.sort_order = index
+            })
+        },
+
+        refreshDom() {
+            this.__renderNonce++
+
+            this.$nextTick(() => {
+                if (this.sortable) {
+                    this.initSortable()
+                }
             })
         },
 
@@ -121,12 +121,16 @@ window.mwRepeater = function (opts = {}) {
             this.items.forEach((item) => {
                 item._open = false
             })
+
+            this.refreshDom()
         },
 
         expandAll() {
             this.items.forEach((item) => {
                 item._open = true
             })
+
+            this.refreshDom()
         },
 
         field(index, key = null) {
