@@ -98,7 +98,23 @@ class SettingController extends Controller
     {
         return view('admin.system.settings.home');
     }
-    
+
+    /**
+     * Store home settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeHome(Request $request): RedirectResponse
+    {
+        $this->storeSettings($request, 'home');
+
+        return redirect()
+            ->route('admin.settings.home')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
     /**
      * @param Request $request
      * @param string $group
