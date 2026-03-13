@@ -217,8 +217,10 @@
                             loading="lazy"
                             decoding="async"
                         >
-                        <input type="hidden" name="{{ $name }}[id]" :value="selectedId">
-                        <input type="hidden" name="{{ $name }}[path]" :value="selectedUrl">
+                        @if($mode === 'field' && $name)
+                            <input type="hidden" name="{{ $name }}[id]" :value="selectedId">
+                            <input type="hidden" name="{{ $name }}[path]" :value="selectedUrl">
+                        @endif
                     </div>
                 </template>
 
