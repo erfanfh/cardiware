@@ -236,14 +236,14 @@
                                 <div class="grid grid-cols-12 gap-3">
                                     <div class="col-span-6">
                                         <x-admin.field label="عنوان" required>
-                                            <x-admin.form.input x-model="it.title" x-bind:name="field('title')"/>
+                                            <x-admin.form.input x-model="it.title" x-bind:name="field(i, 'title')"/>
                                         </x-admin.field>
                                     </div>
 
                                     <div class="col-span-6">
                                         <x-admin.field label="لینک" required>
                                             <x-admin.form.input x-model="it.url"
-                                                                x-bind:name="field('url')"
+                                                                x-bind:name="field(i, 'url')"
                                                                 class="direction-ltr"/>
                                         </x-admin.field>
                                     </div>
@@ -279,14 +279,14 @@
                                 <div class="grid grid-cols-12 gap-3">
                                     <div class="col-span-6">
                                         <x-admin.field label="عنوان" required>
-                                            <x-admin.form.input x-model="it.title" x-bind:name="field('title')"/>
+                                            <x-admin.form.input x-model="it.title" x-bind:name="field(i, 'title')"/>
                                         </x-admin.field>
                                     </div>
 
                                     <div class="col-span-6">
                                         <x-admin.field label="لینک" required>
                                             <x-admin.form.input x-model="it.url"
-                                                                x-bind:name="field('url')"
+                                                                x-bind:name="field(i, 'url')"
                                                                 class="direction-ltr"/>
                                         </x-admin.field>
                                     </div>

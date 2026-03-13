@@ -16,14 +16,14 @@
             <x-admin.field label="عنوان" required>
                 <x-admin.form.input
                     x-model="it.title"
-                    x-bind:name="field('title')"
+                    x-bind:name="field(i, 'title')"
                 />
             </x-admin.field>
         </div>
 
         <div class="col-span-12 sm:col-span-6 lg:col-span-3">
             <x-admin.field label="وضعیت">
-                <x-admin.select x-model="it.status" x-bind:name="field('status')">
+                <x-admin.select x-model="it.status" x-bind:name="field(i, 'status')">
                     <option value="planned">برنامه‌ریزی</option>
                     <option value="in_progress">در حال انجام</option>
                     <option value="done">انجام شده</option>
@@ -35,7 +35,7 @@
             <x-admin.field label="درصد پیشرفت">
                 <x-admin.form.input type="number" min="0" max="100"
                                     x-model.number="it.progress_percent"
-                                    x-bind:name="field('progress_percent')"
+                                    x-bind:name="field(i, 'progress_percent')"
                 />
             </x-admin.field>
         </div>
@@ -44,7 +44,7 @@
             <x-admin.field label="excerpt">
                 <x-admin.form.textarea rows="2"
                                        x-model="it.excerpt"
-                                       x-bind:name="field('excerpt')"
+                                       x-bind:name="field(i, 'excerpt')"
                 />
             </x-admin.field>
         </div>
