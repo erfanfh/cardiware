@@ -32,9 +32,10 @@
         <button
             type="button"
             class="w-full rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-slate-300 hover:bg-slate-50 {{ $buttonClass }}"
-            @click="$dispatch('mfip-open-singleton', {
+            @click="$dispatch('mfip-open-requested', {
                 itemKey: it.__key,
-                selectedMediaFileId: it['{{ $idField }}'] ?? null
+                selectedMediaFileId: it['{{ $idField }}'] ?? null,
+                selectedMediaPath: it['{{ $pathField }}'] ?? null
             })"
         >
             <template x-if="it['{{ $pathField }}']">
@@ -139,9 +140,10 @@
         <button
             type="button"
             class="w-full rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-slate-300 hover:bg-slate-50 {{ $buttonClass }}"
-            @click="$dispatch('mfip-open-singleton', {
+            @click="$dispatch('mfip-open-requested', {
                 itemKey: itemKey,
-                selectedMediaFileId: selectedId ?? null
+                selectedMediaFileId: selectedId ?? null,
+                selectedMediaPath: selectedPath ?? null
             })"
         >
             <template x-if="selectedPath">

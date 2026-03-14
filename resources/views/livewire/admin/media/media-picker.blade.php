@@ -134,6 +134,53 @@
             this.$wire.updateSelectedTitle(this.titleDraft);
         },
 
+        openModal(itemKey, selectedMediaFileId = null, selectedMediaPath = null) {
+            this.open = true;
+            this.tab = 'library';
+
+            // پاک کردن state قبلی modal سراسری
+            this.optimisticInfo = null;
+            this.titleDraft = '';
+
+            // از اول state را بر اساس trigger جدید prime کن
+            this.selectedId = selectedMediaFileId ?? null;
+            this.pendingId = selectedMediaFileId ?? null;
+            this.selectedUrl = selectedMediaPath ?? null;
+            this.selectedInfo = this.emptySelectedInfo();
+
+            if (selectedMediaFileId && selectedMediaPath) {
+                this.optimisticInfo = {
+                    id: selectedMediaFileId,
+                    title: null,
+                    url: selectedMediaPath,
+                    path: selectedMediaPath,
+                    size_bytes: null,
+                    size_human: null,
+                    uploaded_at: null,
+                    uploaded_by: null,
+                    width: null,
+                    height: null,
+                };
+            }
+
+            this.$wire.openSingleton(itemKey, selectedMediaFileId);
+        },
+
+        emptySelectedInfo() {
+            return {
+                id: null,
+                title: null,
+                url: null,
+                path: null,
+                size_bytes: null,
+                size_human: null,
+                uploaded_at: null,
+                uploaded_by: null,
+                width: null,
+                height: null,
+            };
+        },
+
         ensureImgLoaded(el){
             const img = el?.querySelector('img');
             if(!img) return;
@@ -182,9 +229,12 @@
             navigator.clipboard?.writeText(text);
         }
     }"
-    x-on:mfip-modal-opened.window="
-        open = true;
-        if (previewUrl) tab = 'library';
+    x-on:mfip-open-requested.window="
+        openModal(
+            $event.detail.itemKey,
+            $event.detail.selectedMediaFileId ?? null,
+            $event.detail.selectedMediaPath ?? null
+        )
     "
     x-on:mfip-close-modal.window="open = false"
     x-on:mfip-switch-tab.window="tab = $event.detail.tab"
