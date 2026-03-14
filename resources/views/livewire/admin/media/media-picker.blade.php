@@ -215,17 +215,6 @@
         applySelection() {
             if (!this.pendingId) return;
 
-            const info = this.previewInfo ?? this.selectedInfo ?? null;
-            const mediaPath = info?.url ?? this.previewUrl ?? null;
-
-            window.dispatchEvent(new CustomEvent('mfip-selected', {
-                detail: {
-                    itemKey: this.itemKey,
-                    mediaId: this.pendingId,
-                    mediaPath: mediaPath,
-                }
-            }));
-
             this.open = false;
             this.$wire.confirmSelection();
         },
