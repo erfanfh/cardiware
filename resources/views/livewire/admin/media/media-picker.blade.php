@@ -41,20 +41,30 @@
                 this.$nextTick(() => {
                     const slot = this.$refs.previewSlot;
                     if(!slot) return;
-                    slot.classList.remove('is-loaded','is-error');
-                    this.ensureImgLoaded(slot);
+                    this.ensureImgLoaded(slot, true);
                 });
             });
 
             this.$watch('open', (v) => {
-                if (v && this.previewUrl) {
-                    this.tab = 'library';
-                    this.$nextTick(() => {
-                        if (this.$refs.previewSlot) {
-                            this.ensureImgLoaded(this.$refs.previewSlot);
-                        }
-                    });
-                }
+                if (!v) return;
+
+                this.$nextTick(() => {
+                    this.refreshGridThumbs();
+
+                    if (this.previewUrl) {
+                        this.tab = 'library';
+
+                        this.$nextTick(() => {
+                            if (this.$refs.previewSlot) {
+                                this.ensureImgLoaded(this.$refs.previewSlot, true);
+                            }
+                        });
+                    }
+                });
+            });
+
+            this.$watch('selectedId', () => {
+                this.markCachedImagesLoaded();
             });
 
             this.$nextTick(() => {
@@ -63,8 +73,7 @@
                 if(!gridWrap) return;
 
                 const run = () => {
-                    gridWrap.querySelectorAll('.mfip-imgSlot').forEach((slot) => {
-                        if (slot.classList.contains('is-loaded') || slot.classList.contains('is-error')) return;
+                    gridWrap.querySelectorAll('.mfip-tile .mfip-imgSlot').forEach((slot) => {
                         this.ensureImgLoaded(slot);
                     });
                 };
@@ -138,6 +147,8 @@
             this.open = true;
             this.tab = 'library';
 
+            this.$nextTick(() => this.refreshGridThumbs());
+
             // پاک کردن state قبلی modal سراسری
             this.optimisticInfo = null;
             this.titleDraft = '';
@@ -166,6 +177,23 @@
             this.$wire.openSingleton(itemKey, selectedMediaFileId);
         },
 
+        refreshGridThumbs() {
+            this.$nextTick(() => {
+                this.$el.querySelectorAll('.mfip-tile .mfip-imgSlot').forEach((slot) => {
+                    const img = slot.querySelector('img');
+                    if (!img) return;
+
+                    if (img.complete) {
+                        slot.classList.remove('is-loading', 'is-error');
+                        slot.classList.add(img.naturalWidth > 0 ? 'is-loaded' : 'is-error');
+                    } else {
+                        slot.classList.remove('is-loaded', 'is-error');
+                        slot.classList.add('is-loading');
+                    }
+                });
+            });
+        },
+
         emptySelectedInfo() {
             return {
                 id: null,
@@ -181,20 +209,36 @@
             };
         },
 
-        ensureImgLoaded(el){
+        ensureImgLoaded(el, force = false){
             const img = el?.querySelector('img');
             if(!img) return;
+
+            if (!force) {
+                if (el.classList.contains('is-loaded') || el.classList.contains('is-error')) {
+                    return;
+                }
+
+                if (img.complete) {
+                    el.classList.remove('is-loading', 'is-error');
+                    if (img.naturalWidth > 0) {
+                        el.classList.add('is-loaded');
+                    } else {
+                        el.classList.add('is-error');
+                    }
+                    return;
+                }
+            }
 
             el.classList.remove('is-loaded','is-error');
             el.classList.add('is-loading');
 
             const setLoaded = () => {
-                el.classList.remove('is-loading');
+                el.classList.remove('is-loading','is-error');
                 el.classList.add('is-loaded');
             };
 
             const setError = () => {
-                el.classList.remove('is-loading');
+                el.classList.remove('is-loading','is-loaded');
                 el.classList.add('is-error');
             };
 
@@ -210,15 +254,17 @@
 
         markCachedImagesLoaded(){
             this.$nextTick(() => {
-                document.querySelectorAll('.mfip-root .mfip-imgSlot').forEach((slot) => {
-                    if (slot.classList.contains('is-loaded') || slot.classList.contains('is-error')) return;
-
+                this.$el.querySelectorAll('.mfip-tile .mfip-imgSlot').forEach((slot) => {
                     const img = slot.querySelector('img');
                     if (!img) return;
 
                     if (img.complete) {
-                        if (img.naturalWidth > 0) slot.classList.add('is-loaded');
-                        else slot.classList.add('is-error');
+                        slot.classList.remove('is-loading', 'is-error');
+                        if (img.naturalWidth > 0) {
+                            slot.classList.add('is-loaded');
+                        } else {
+                            slot.classList.add('is-error');
+                        }
                     }
                 });
             });
@@ -235,6 +281,9 @@
             $event.detail.selectedMediaFileId ?? null,
             $event.detail.selectedMediaPath ?? null
         )
+    "
+    x-on:mfip-grid-refresh.window="
+        $nextTick(() => refreshGridThumbs())
     "
     x-on:mfip-close-modal.window="open = false"
     x-on:mfip-switch-tab.window="tab = $event.detail.tab"
@@ -339,16 +388,23 @@
                                             >
                                                 <div class="mfip-square mfip-tileAspect">
                                                     @if($url)
-                                                        <div class="mfip-imgSlot is-loading"
-                                                             x-init="ensureImgLoaded($el)">
+                                                        <div class="mfip-imgSlot" x-init="ensureImgLoaded($el)">
                                                             <img
                                                                 src="{{ $url }}"
                                                                 class="mfip-imgCover"
                                                                 alt="Library image"
                                                                 loading="lazy"
                                                                 decoding="async"
-                                                                onload="this.closest('.mfip-imgSlot')?.classList.add('is-loaded')"
-                                                                onerror="this.closest('.mfip-imgSlot')?.classList.add('is-error')"
+                                                                onload="
+                                                                    const slot = this.closest('.mfip-imgSlot');
+                                                                    slot?.classList.remove('is-loading','is-error');
+                                                                    slot?.classList.add('is-loaded');
+                                                                "
+                                                                onerror="
+                                                                    const slot = this.closest('.mfip-imgSlot');
+                                                                    slot?.classList.remove('is-loading','is-loaded');
+                                                                    slot?.classList.add('is-error');
+                                                                "
                                                             >
                                                         </div>
                                                     @else
@@ -444,7 +500,7 @@
                                     class="mfip-imgSlot is-loading"
                                     x-show="previewUrl"
                                     x-ref="previewSlot"
-                                    x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot)) }"
+                                    x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot, true)) }"
                                 >
                                     <img
                                         :src="previewUrl || ''"

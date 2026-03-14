@@ -66,7 +66,7 @@ class MediaPicker extends Component
 
         $this->opened = true;
 
-        $this->dispatch('mfip-modal-opened');
+        $this->dispatch('mfip-grid-refresh');
     }
 
     public function previewSelection(int $mediaFileId): void
