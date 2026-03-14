@@ -1,6 +1,7 @@
 <div
     class="mfip-root"
     x-data="{
+        itemKey: @js($itemKey),
         open: @js($opened),
         tab: 'library',
 
@@ -209,6 +210,24 @@
                 width: null,
                 height: null,
             };
+        },
+
+        applySelection() {
+            if (!this.pendingId) return;
+
+            const info = this.previewInfo ?? this.selectedInfo ?? null;
+            const mediaPath = info?.url ?? this.previewUrl ?? null;
+
+            window.dispatchEvent(new CustomEvent('mfip-selected', {
+                detail: {
+                    itemKey: this.itemKey,
+                    mediaId: this.pendingId,
+                    mediaPath: mediaPath,
+                }
+            }));
+
+            this.open = false;
+            this.$wire.confirmSelection();
         },
 
         ensureImgLoaded(el, force = false){
@@ -603,7 +622,7 @@
                                     type="button"
                                     class="mfip-button mfip-button--primary"
                                     :disabled="!pendingId"
-                                    wire:click="confirmSelection"
+                                    @click="applySelection()"
                                 >
                                     استفاده از این تصویر
                                 </button>
