@@ -249,9 +249,6 @@ class MediaPicker extends Component
 
         $this->dispatchSelectionCleared();
 
-        $this->opened = false;
-        $this->dispatch('mfip-close-modal');
-
         $this->skipRender();
     }
 

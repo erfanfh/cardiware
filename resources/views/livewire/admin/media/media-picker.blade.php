@@ -126,6 +126,7 @@
         },
 
         clearSelection() {
+            this.pendingId = null;
             this.selectedId = null;
             this.selectedUrl = null;
             this.optimisticInfo = null;
@@ -136,6 +137,10 @@
                 path: null,
                 size_bytes: null,
                 size_human: null,
+                uploaded_at: null,
+                uploaded_by: null,
+                width: null,
+                height: null,
             };
             this.titleDraft = '';
             this.$wire.unselect();
