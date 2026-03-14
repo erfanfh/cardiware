@@ -102,6 +102,8 @@
             const btn = e?.currentTarget;
             const url = btn?.dataset?.url || null;
 
+            this.pendingId = id;
+
             this.optimisticInfo = {
                 id: id,
                 title: btn?.dataset?.title || null,
