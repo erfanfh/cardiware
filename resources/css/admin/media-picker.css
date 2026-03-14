@@ -894,15 +894,25 @@
     background: rgba(248, 250, 252, .6);
 }
 
-/* hide image until loaded */
+/* image is visible by default */
 .mfip-imgSlot > img {
-    opacity: 0;
+    opacity: 1;
     transition: opacity var(--mf-dur) var(--mf-ease);
+}
+
+/* only hide while explicitly loading */
+.mfip-imgSlot.is-loading > img {
+    opacity: 0;
 }
 
 /* loaded */
 .mfip-imgSlot.is-loaded > img {
     opacity: 1;
+}
+
+/* error */
+.mfip-imgSlot.is-error > img {
+    opacity: 0;
 }
 
 .mfip-pickerBtn .mfip-imgSlot > img {

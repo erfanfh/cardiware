@@ -54,12 +54,16 @@ class MediaPicker extends Component
 
     public ?int $pendingMediaFileId = null;
 
+    public string $activeTab = 'upload';
+
     #[On('mfip-open-singleton')]
     public function openSingleton(string $itemKey, ?int $selectedMediaFileId = null): void
     {
         $this->itemKey = $itemKey;
         $this->selectedMediaFileId = $selectedMediaFileId;
         $this->pendingMediaFileId = $selectedMediaFileId;
+
+        $this->activeTab = $selectedMediaFileId ? 'library' : 'upload';
 
         $this->resetPage();
         $this->refreshSelected();
@@ -201,6 +205,8 @@ class MediaPicker extends Component
             $this->pendingMediaFileId = $media->id;
             $this->refreshSelected();
             $this->resetPage();
+
+            $this->activeTab = 'library';
 
             $this->dispatchSelectionChanged();
 

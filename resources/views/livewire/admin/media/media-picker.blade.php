@@ -3,7 +3,7 @@
     x-data="{
         itemKey: @js($itemKey),
         open: @js($opened),
-        tab: 'library',
+        tab: @entangle('activeTab').live,
 
         selectedId: @entangle('selectedMediaFileId').live,
         pendingId: @entangle('pendingMediaFileId').live,
@@ -28,7 +28,6 @@
         },
 
         init(){
-            this.tab = this.selectedUrl ? 'library' : 'upload';
             this.titleDraft = this.selectedInfo?.title ?? '';
 
             this.$watch('selectedInfo', (v) => {
@@ -51,21 +50,23 @@
 
                 this.$nextTick(() => {
                     this.refreshGridThumbs();
-
-                    if (this.previewUrl) {
-                        this.tab = 'library';
-
-                        this.$nextTick(() => {
-                            if (this.$refs.previewSlot) {
-                                this.ensureImgLoaded(this.$refs.previewSlot, true);
-                            }
-                        });
-                    }
+                    this.markCachedImagesLoaded();
+                    this.refreshPreviewSlot();
                 });
             });
 
             this.$watch('selectedId', () => {
                 this.markCachedImagesLoaded();
+            });
+
+            this.$watch('tab', (value) => {
+                if (value !== 'library') return;
+
+                this.$nextTick(() => {
+                    this.refreshGridThumbs();
+                    this.markCachedImagesLoaded();
+                    this.refreshPreviewSlot();
+                });
             });
 
             this.$nextTick(() => {
@@ -148,15 +149,12 @@
 
         openModal(itemKey, selectedMediaFileId = null, selectedMediaPath = null) {
             this.open = true;
-            this.tab = 'library';
 
             this.$nextTick(() => this.refreshGridThumbs());
 
-            // پاک کردن state قبلی modal سراسری
             this.optimisticInfo = null;
             this.titleDraft = '';
 
-            // از اول state را بر اساس trigger جدید prime کن
             this.selectedId = selectedMediaFileId ?? null;
             this.pendingId = selectedMediaFileId ?? null;
             this.selectedUrl = selectedMediaPath ?? null;
@@ -177,6 +175,8 @@
                 };
             }
 
+            this.tab = (selectedMediaFileId || selectedMediaPath) ? 'library' : 'upload';
+
             this.$wire.openSingleton(itemKey, selectedMediaFileId);
         },
 
@@ -186,13 +186,30 @@
                     const img = slot.querySelector('img');
                     if (!img) return;
 
+                    slot.classList.remove('is-loading', 'is-loaded', 'is-error');
+
                     if (img.complete) {
-                        slot.classList.remove('is-loading', 'is-error');
                         slot.classList.add(img.naturalWidth > 0 ? 'is-loaded' : 'is-error');
-                    } else {
-                        slot.classList.remove('is-loaded', 'is-error');
-                        slot.classList.add('is-loading');
+                        return;
                     }
+
+                    slot.classList.add('is-loading');
+
+                    const setLoaded = () => {
+                        slot.classList.remove('is-loading', 'is-error');
+                        slot.classList.add('is-loaded');
+                    };
+
+                    const setError = () => {
+                        slot.classList.remove('is-loading', 'is-loaded');
+                        slot.classList.add('is-error');
+                    };
+
+                    img.removeEventListener('load', setLoaded);
+                    img.removeEventListener('error', setError);
+
+                    img.addEventListener('load', setLoaded, { once: true });
+                    img.addEventListener('error', setError, { once: true });
                 });
             });
         },
@@ -217,6 +234,43 @@
 
             this.open = false;
             this.$wire.confirmSelection();
+        },
+
+        refreshPreviewSlot() {
+            this.$nextTick(() => {
+                const slot = this.$refs.previewSlot;
+                if (!slot) return;
+
+                const img = slot.querySelector('img');
+                if (!img) return;
+
+                if (img.complete) {
+                    slot.classList.remove('is-loading', 'is-error');
+                    slot.classList.add(img.naturalWidth > 0 ? 'is-loaded' : 'is-error');
+                    return;
+                }
+
+                if (!img.getAttribute('src')) {
+                    slot.classList.remove('is-loading', 'is-loaded', 'is-error');
+                    return;
+                }
+
+                slot.classList.remove('is-loaded', 'is-error');
+                slot.classList.add('is-loading');
+
+                const setLoaded = () => {
+                    slot.classList.remove('is-loading', 'is-error');
+                    slot.classList.add('is-loaded');
+                };
+
+                const setError = () => {
+                    slot.classList.remove('is-loading', 'is-loaded');
+                    slot.classList.add('is-error');
+                };
+
+                img.onload = setLoaded;
+                img.onerror = setError;
+            });
         },
 
         ensureImgLoaded(el, force = false){
@@ -508,10 +562,9 @@
                             <div class="mfip-previewScroll">
                                 <div class="mfip-aspect mfip-previewMedia">
                                     <div
-                                        class="mfip-imgSlot is-loading"
+                                        class="mfip-imgSlot"
                                         x-show="previewUrl"
                                         x-ref="previewSlot"
-                                        x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot, true)) }"
                                     >
                                         <img
                                             :src="previewUrl || ''"
