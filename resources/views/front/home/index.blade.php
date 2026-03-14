@@ -12,7 +12,7 @@
     @include('front.home.partials.story')
 
     <main class="mx-auto max-w-7xl px-4 py-8">
-        @include('front.home.partials.slider')
+        @include('front.home.partials.hero-slider')
 
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <aside class="lg:col-span-4 flex flex-col gap-4">
