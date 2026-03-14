@@ -1,5 +1,6 @@
 @import '../variables.css';
 @import './sidebar.css';
+@import './media-picker.css';
 
 [x-cloak] {
     display: none !important

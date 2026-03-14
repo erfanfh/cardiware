@@ -11,6 +11,7 @@ use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -22,20 +23,8 @@ class MediaPicker extends Component
     use WithPagination;
     use WithFileUploads;
 
-    /**
-     * field | event
-     */
-    public string $mode = 'field';
-
-    /**
-     * فقط در mode=field استفاده می‌شود
-     */
-    public ?string $name = null;
-
-    /**
-     * فقط در mode=event استفاده می‌شود
-     */
     public ?string $itemKey = null;
+    public bool $opened = false;
 
     public ?int $selectedMediaFileId = null;
     public ?string $selectedUrl = null;
@@ -63,20 +52,34 @@ class MediaPicker extends Component
         'search' => ['except' => ''],
     ];
 
-    public function mount(
-        ?string $mode = 'field',
-        ?string $name = null,
-        ?string $itemKey = null,
-        ?int    $selectedMediaFileId = null,
-    ): void
+    public ?int $pendingMediaFileId = null;
+
+    #[On('mfip-open-singleton')]
+    public function openSingleton(string $itemKey, ?int $selectedMediaFileId = null): void
     {
-        $this->mode = $mode ?: 'field';
-        $this->name = $name;
         $this->itemKey = $itemKey;
         $this->selectedMediaFileId = $selectedMediaFileId;
+        $this->pendingMediaFileId = $selectedMediaFileId;
+        $this->opened = true;
 
         $this->resetPage();
         $this->refreshSelected();
+
+        $this->dispatch('mfip-modal-opened');
+    }
+
+    public function previewSelection(int $mediaFileId): void
+    {
+        $this->pendingMediaFileId = $mediaFileId;
+        $this->selectedMediaFileId = $mediaFileId;
+
+        $this->refreshSelected();
+    }
+
+    public function closeModal(): void
+    {
+        $this->opened = false;
+        $this->dispatch('mfip-close-modal');
     }
 
     private function emptySelectedInfo(): array
@@ -117,11 +120,11 @@ class MediaPicker extends Component
         $this->selectedUrl = $url;
 
         $path = $mediaFile->primaryVariant?->path;
-
         $sizeBytes = null;
 
         try {
             $disk = $mediaFile->primaryVariant?->disk?->value;
+
             if ($disk && $path) {
                 $sizeBytes = Storage::disk($disk)->size($path);
             }
@@ -194,6 +197,7 @@ class MediaPicker extends Component
             $this->clearUpload();
 
             $this->selectedMediaFileId = $media->id;
+            $this->pendingMediaFileId = $media->id;
             $this->refreshSelected();
             $this->resetPage();
 
@@ -201,7 +205,6 @@ class MediaPicker extends Component
 
             $this->dispatch('mfip-switch-tab', tab: 'library');
             $this->dispatch('mfip-upload-saved');
-            $this->dispatch('mfip-close-modal');
         } catch (Throwable $e) {
             $this->addError('upload', $e->getMessage());
         }
@@ -213,23 +216,34 @@ class MediaPicker extends Component
         $this->resetErrorBag('upload');
     }
 
-    public function select(int $mediaFileId): void
+    public function confirmSelection(): void
     {
-        $this->selectedMediaFileId = $mediaFileId;
+        if (!$this->pendingMediaFileId) {
+            return;
+        }
+
+        $this->selectedMediaFileId = $this->pendingMediaFileId;
         $this->refreshSelected();
 
         $this->dispatchSelectionChanged();
+
+        $this->opened = false;
+        $this->dispatch('mfip-close-modal');
 
         $this->skipRender();
     }
 
     public function unselect(): void
     {
+        $this->pendingMediaFileId = null;
         $this->selectedMediaFileId = null;
         $this->selectedUrl = null;
         $this->selectedInfo = $this->emptySelectedInfo();
 
         $this->dispatchSelectionCleared();
+
+        $this->opened = false;
+        $this->dispatch('mfip-close-modal');
 
         $this->skipRender();
     }
@@ -284,7 +298,6 @@ class MediaPicker extends Component
         $this->selectedInfo = $this->emptySelectedInfo();
 
         $this->dispatchSelectionCleared();
-
         $this->resetPage();
     }
 
@@ -298,26 +311,16 @@ class MediaPicker extends Component
 
     private function dispatchSelectionChanged(): void
     {
-        if ($this->mode !== 'event') {
-            return;
-        }
-
         $this->dispatch(
             'mfip-selected',
             itemKey: $this->itemKey,
             mediaId: $this->selectedInfo['id'],
-            mediaUrl: $this->selectedInfo['url'],
-            mediaPath: $this->selectedInfo['path'],
-            mediaTitle: $this->selectedInfo['title'],
+            mediaPath: $this->selectedInfo['url'], // path key, full URL value
         );
     }
 
     private function dispatchSelectionCleared(): void
     {
-        if ($this->mode !== 'event') {
-            return;
-        }
-
         $this->dispatch(
             'mfip-cleared',
             itemKey: $this->itemKey,
