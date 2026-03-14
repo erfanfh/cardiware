@@ -48,17 +48,19 @@
                             />
                         </x-admin.field>
 
-                        <div class="flex flex-wrap gap-5">
-                            <x-admin.field
-                                class="w-72 max-w-full"
-                                label="تصویر بک گراند"
-                            >
-                                <x-admin.form.media-picker
-                                    name="announcement_background_image"
-                                    :mediaId="get_setting('header', 'announcement_background_image')->id"
-                                />
-                            </x-admin.field>
+                        <x-admin.field
+                            label="تصویر بک گراند"
+                        >
+                            <x-admin.form.media-picker
+                                name="announcement_background_image"
+                                :value="[
+                                    'id' => old('announcement_background_image.id', get_setting('header', 'announcement_background_image')->id),
+                                    'path' => old('announcement_background_image.path', get_setting('header', 'announcement_background_image')->path),
+                                ]"
+                            />
+                        </x-admin.field>
 
+                        <div class="flex flex-wrap gap-5">
                             <x-admin.field
                                 label="رنگ بک گراند"
                             >
@@ -83,15 +85,20 @@
                 </x-admin.metabox>
 
                 <x-admin.metabox title="لوگو">
-                    <x-admin.field
-                        class="w-72 max-w-full"
-                        label="لوگوی هدر"
-                    >
-                        <x-admin.form.media-picker
-                            name="logo"
-                            :mediaId="get_setting('header', 'logo')->id"
-                        />
-                    </x-admin.field>
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        <x-admin.field
+                            label="لوگوی هدر"
+                        >
+                            <x-admin.form.media-picker
+                                mode="field"
+                                name="logo"
+                                :value="[
+                                    'id' => old('hero_image.id', get_setting('header', 'logo')->id),
+                                    'path' => old('hero_image.path', get_setting('header', 'logo')->path),
+                                ]"
+                            />
+                        </x-admin.field>
+                    </div>
                 </x-admin.metabox>
 
                 <x-admin.metabox title="جستجو">
