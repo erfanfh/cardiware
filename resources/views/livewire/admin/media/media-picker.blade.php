@@ -505,125 +505,132 @@
                             x-transition:leave-start="mfip-preview-leave-start"
                             x-transition:leave-end="mfip-preview-leave-end"
                         >
-                            <div class="mfip-aspect mfip-previewMedia">
-                                <div
-                                    class="mfip-imgSlot is-loading"
-                                    x-show="previewUrl"
-                                    x-ref="previewSlot"
-                                    x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot, true)) }"
-                                >
-                                    <img
-                                        :src="previewUrl || ''"
-                                        class="mfip-imgCover"
-                                        alt="Selected preview"
-                                        decoding="async"
+                            <div class="mfip-previewScroll">
+                                <div class="mfip-aspect mfip-previewMedia">
+                                    <div
+                                        class="mfip-imgSlot is-loading"
+                                        x-show="previewUrl"
+                                        x-ref="previewSlot"
+                                        x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot, true)) }"
                                     >
-                                </div>
-
-                                <div class="mfip-previewEmpty" x-show="!previewUrl">
-                                    هنوز تصویری انتخاب نشده.
-                                </div>
-                            </div>
-
-                            <div class="mfip-previewActions">
-                                <!-- Title editable -->
-                                <div class="mfip-field">
-                                    <div class="mfip-fieldLabel">عنوان فایل</div>
-
-                                    <div class="mfip-titleInline">
-                                        <input
-                                            type="text"
-                                            class="mfip-input mfip-input--compact"
-                                            x-model="titleDraft"
-                                            placeholder="عنوان تصویر..."
+                                        <img
+                                            :src="previewUrl || ''"
+                                            class="mfip-imgCover"
+                                            alt="Selected preview"
+                                            decoding="async"
                                         >
+                                    </div>
 
-                                        <button
-                                            type="button"
-                                            class="mfip-button mfip-button--secondary mfip-button--sm"
-                                            :disabled="!selectedId"
-                                            @click="saveTitle()"
-                                        >
-                                            تغییر عنوان
-                                        </button>
+                                    <div class="mfip-previewEmpty" x-show="!previewUrl">
+                                        هنوز تصویری انتخاب نشده.
                                     </div>
                                 </div>
 
-                                <!-- File info (Disk removed) -->
-                                <div class="mfip-info">
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">شناسه</div>
-                                        <div class="mfip-infoVal" x-text="previewInfo?.id ?? '-'"></div>
-                                    </div>
+                                <div class="mfip-previewContent">
+                                    <div class="mfip-field">
+                                        <div class="mfip-fieldLabel">عنوان فایل</div>
 
-                                    <!-- Link + Path combined -->
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">فایل</div>
-                                        <div class="mfip-infoVal">
-                                            <template x-if="previewInfo?.url">
-                                                <a class="mfip-fileChip"
-                                                   :href="previewInfo.url"
-                                                   target="_blank"
-                                                   rel="noopener"
-                                                   :title="previewInfo?.path || previewInfo.url">
-                                                    <span class="mfip-fileChipIcon">⤴</span>
-                                                    <span class="mfip-fileChipText"
-                                                          x-text="previewInfo?.path || previewInfo.url"></span>
-                                                </a>
-                                            </template>
+                                        <div class="mfip-titleInline">
+                                            <input
+                                                type="text"
+                                                class="mfip-input mfip-input--compact"
+                                                x-model="titleDraft"
+                                                placeholder="عنوان تصویر..."
+                                            >
 
-                                            <template x-if="!previewInfo?.url">
-                                                <span>-</span>
-                                            </template>
-
-                                            <button type="button"
-                                                    class="mfip-copyBtn"
-                                                    :disabled="!(previewInfo?.path)"
-                                                    @click="copyText(previewInfo?.path)">
-                                                کپی
+                                            <button
+                                                type="button"
+                                                class="mfip-button mfip-button--secondary mfip-button--sm"
+                                                :disabled="!selectedId"
+                                                @click="saveTitle()"
+                                            >
+                                                تغییر عنوان
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">حجم</div>
-                                        <div class="mfip-infoVal" x-text="previewInfo?.size_human ?? '-'"></div>
+                                    <div class="mfip-info">
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">شناسه</div>
+                                            <div class="mfip-infoVal" x-text="previewInfo?.id ?? '-'"></div>
+                                        </div>
+
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">فایل</div>
+                                            <div class="mfip-infoVal">
+                                                <template x-if="previewInfo?.url">
+                                                    <a class="mfip-fileChip"
+                                                       :href="previewInfo.url"
+                                                       target="_blank"
+                                                       rel="noopener"
+                                                       :title="previewInfo?.path || previewInfo.url">
+                                                        <span class="mfip-fileChipIcon">⤴</span>
+                                                        <span class="mfip-fileChipText"
+                                                              x-text="previewInfo?.path || previewInfo.url"></span>
+                                                    </a>
+                                                </template>
+
+                                                <template x-if="!previewInfo?.url">
+                                                    <span>-</span>
+                                                </template>
+
+                                                <button
+                                                    type="button"
+                                                    class="mfip-copyBtn"
+                                                    :disabled="!(previewInfo?.path)"
+                                                    @click="copyText(previewInfo?.path)"
+                                                >
+                                                    کپی
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">حجم</div>
+                                            <div class="mfip-infoVal" x-text="previewInfo?.size_human ?? '-'"></div>
+                                        </div>
+
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">تاریخ آپلود</div>
+                                            <div class="mfip-infoVal" x-text="previewInfo?.uploaded_at ?? '-'"></div>
+                                        </div>
+
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">آپلودکننده</div>
+                                            <div class="mfip-infoVal" x-text="previewInfo?.uploaded_by ?? '-'"></div>
+                                        </div>
+
+                                        <div class="mfip-infoRow">
+                                            <div class="mfip-infoKey">ابعاد</div>
+                                            <div class="mfip-infoVal"
+                                                 x-text="(previewInfo?.width && previewInfo?.height) ? (previewInfo.width + 'px' + ' × ' + previewInfo.height + 'px') : '-'"></div>
+                                        </div>
                                     </div>
 
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">تاریخ آپلود</div>
-                                        <div class="mfip-infoVal" x-text="previewInfo?.uploaded_at ?? '-'"></div>
-                                    </div>
+                                    <button
+                                        type="button"
+                                        class="mfip-button mfip-button--danger"
+                                        :disabled="!selectedId"
+                                        @click="confirmDelete()"
+                                    >
+                                        حذف کامل تصویر
+                                    </button>
 
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">آپلودکننده</div>
-                                        <div class="mfip-infoVal" x-text="previewInfo?.uploaded_by ?? '-'"></div>
-                                    </div>
-
-                                    <div class="mfip-infoRow">
-                                        <div class="mfip-infoKey">ابعاد</div>
-                                        <div class="mfip-infoVal"
-                                             x-text="(previewInfo?.width && previewInfo?.height) ? (previewInfo.width + 'px' + ' × ' + previewInfo.height + 'px') : '-'"></div>
-                                    </div>
+                                    @error('selectedMediaFileId')
+                                    <div class="mfip-error">{{ $message }}</div>
+                                    @enderror
                                 </div>
+                            </div>
 
+                            <div class="mfip-previewFooter">
                                 <button
                                     type="button"
                                     class="mfip-button mfip-button--primary"
                                     :disabled="!pendingId"
                                     @click="applySelection()"
                                 >
-                                    استفاده از این تصویر
+                                    انتخاب تصویر
                                 </button>
-
-                                <button type="button" class="mfip-button mfip-button--danger" :disabled="!selectedId"
-                                        @click="confirmDelete()">
-                                    حذف کامل تصویر
-                                </button>
-
-                                @error('selectedMediaFileId')
-                                <div class="mfip-error">{{ $message }}</div>
-                                @enderror
                             </div>
                         </aside>
                     </div>
