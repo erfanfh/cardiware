@@ -136,13 +136,13 @@
 
         <input
             type="hidden"
-            x-bind:name="field(i, '{{ $name }}[id]')"
+            x-bind:name="field(i, '{{ $name }}.id')"
             x-model="it['{{ $name }}'].id"
         >
 
         <input
             type="hidden"
-            x-bind:name="field(i, '{{ $name }}[path]')"
+            x-bind:name="field(i, '{{ $name }}.path')"
             x-model="it['{{ $name }}'].path"
         >
     </div>
