@@ -141,7 +141,7 @@ class MediaPicker extends Component
             'size_bytes' => $sizeBytes,
             'size_human' => $sizeBytes ? $this->humanBytes($sizeBytes) : null,
             'uploaded_at' => jalali_date($mediaFile->processed_at),
-            'uploaded_by' => trim(($mediaFile->creator?->name ?? '') . ' ' . ($mediaFile->creator?->family ?? '')),
+            'uploaded_by' => trim(($mediaFile->creator?->first_name ?? '') . ' ' . ($mediaFile->creator?->last_name ?? '')),
             'width' => $mediaFile->primaryVariant?->width,
             'height' => $mediaFile->primaryVariant?->height,
         ];
