@@ -60,10 +60,11 @@ class MediaPicker extends Component
         $this->itemKey = $itemKey;
         $this->selectedMediaFileId = $selectedMediaFileId;
         $this->pendingMediaFileId = $selectedMediaFileId;
-        $this->opened = true;
 
         $this->resetPage();
         $this->refreshSelected();
+
+        $this->opened = true;
 
         $this->dispatch('mfip-modal-opened');
     }

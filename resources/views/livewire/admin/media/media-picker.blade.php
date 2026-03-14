@@ -18,24 +18,43 @@
             return this.optimisticInfo ?? this.selectedInfo ?? null;
         },
 
+        get hasPreview() {
+            return this.tab === 'library' && !!(this.optimisticInfo?.url ?? this.selectedUrl);
+        },
+
+        get previewUrl() {
+            return this.optimisticInfo?.url ?? this.selectedUrl ?? null;
+        },
+
         init(){
             this.tab = this.selectedUrl ? 'library' : 'upload';
             this.titleDraft = this.selectedInfo?.title ?? '';
 
             this.$watch('selectedInfo', (v) => {
                 this.titleDraft = v?.title ?? '';
-                if (v?.id && v.id === this.selectedId) {
+                if (v?.id && v.id === this.pendingId) {
                     this.optimisticInfo = null;
                 }
             });
 
-            this.$watch('selectedUrl', () => {
+            this.$watch('previewUrl', () => {
                 this.$nextTick(() => {
                     const slot = this.$refs.previewSlot;
                     if(!slot) return;
                     slot.classList.remove('is-loaded','is-error');
                     this.ensureImgLoaded(slot);
                 });
+            });
+
+            this.$watch('open', (v) => {
+                if (v && this.previewUrl) {
+                    this.tab = 'library';
+                    this.$nextTick(() => {
+                        if (this.$refs.previewSlot) {
+                            this.ensureImgLoaded(this.$refs.previewSlot);
+                        }
+                    });
+                }
             });
 
             this.$nextTick(() => {
@@ -66,22 +85,18 @@
         },
 
         pick(id, e) {
-            if (Number(this.selectedId) === Number(id)) {
+            if (Number(this.pendingId) === Number(id)) {
                 this.clearSelection();
                 return;
             }
 
             const btn = e?.currentTarget;
-
-            this.selectedId = id;
-
             const url = btn?.dataset?.url || null;
-            this.selectedUrl = url;
 
             this.optimisticInfo = {
                 id: id,
                 title: btn?.dataset?.title || null,
-                url: url || null,
+                url: url,
                 path: btn?.dataset?.path || null,
                 size_human: '…',
             };
@@ -167,7 +182,10 @@
             navigator.clipboard?.writeText(text);
         }
     }"
-    x-on:mfip-modal-opened.window="open = true"
+    x-on:mfip-modal-opened.window="
+        open = true;
+        if (previewUrl) tab = 'library';
+    "
     x-on:mfip-close-modal.window="open = false"
     x-on:mfip-switch-tab.window="tab = $event.detail.tab"
     x-on:mfip-upload-saved.window="uploading = false; uploadProgress = 0"
@@ -217,7 +235,7 @@
                         </button>
                     </div>
 
-                    <div class="mfip-body" :class="(tab === 'library' && selectedUrl) ? 'has-preview' : 'no-preview'">
+                    <div class="mfip-body" :class="hasPreview ? 'has-preview' : 'no-preview'">
                         <!-- LEFT -->
                         <div class="mfip-left">
                             <!-- Library -->
@@ -363,32 +381,32 @@
                         <aside
                             class="mfip-previewPanel"
                             x-cloak
-                            x-show="tab === 'library' && selectedUrl"
+                            x-show="hasPreview"
                             x-transition:enter="mfip-preview-enter"
                             x-transition:enter-start="mfip-preview-enter-start"
                             x-transition:enter-end="mfip-preview-enter-end"
                             x-transition:leave="mfip-preview-leave"
                             x-transition:leave-start="mfip-preview-leave-start"
                             x-transition:leave-end="mfip-preview-leave-end"
-                            wire:ignore
                         >
                             <div class="mfip-aspect mfip-previewMedia">
-                                <template x-if="selectedUrl">
-                                    <div class="mfip-imgSlot is-loading" x-init="ensureImgLoaded($el)"
-                                         x-ref="previewSlot">
-                                        <img
-                                            :src="selectedUrl"
-                                            class="mfip-imgCover"
-                                            alt="Selected preview"
-                                            loading="lazy"
-                                            decoding="async"
-                                        >
-                                    </div>
-                                </template>
+                                <div
+                                    class="mfip-imgSlot is-loading"
+                                    x-show="previewUrl"
+                                    x-ref="previewSlot"
+                                    x-effect="if (previewUrl) { $nextTick(() => ensureImgLoaded($refs.previewSlot)) }"
+                                >
+                                    <img
+                                        :src="previewUrl || ''"
+                                        class="mfip-imgCover"
+                                        alt="Selected preview"
+                                        decoding="async"
+                                    >
+                                </div>
 
-                                <template x-if="!selectedUrl">
-                                    <div class="mfip-previewEmpty">هنوز تصویری انتخاب نشده.</div>
-                                </template>
+                                <div class="mfip-previewEmpty" x-show="!previewUrl">
+                                    هنوز تصویری انتخاب نشده.
+                                </div>
                             </div>
 
                             <div class="mfip-previewActions">

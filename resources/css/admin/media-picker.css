@@ -448,9 +448,11 @@
     background: var(--mf-bg);
     border-radius: var(--mf-r-md);
     overflow: hidden;
-    height: fit-content;
     position: sticky;
     top: 12px;
+    align-self: start;
+    height: auto;
+    min-width: 0;
 }
 
 @media (max-width: 900px) {
@@ -495,6 +497,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+.mfip-previewMedia .mfip-imgSlot {
+    width: 100%;
+    height: 100%;
+}
+
+.mfip-previewMedia .mfip-imgCover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .mfip-previewEmpty {
