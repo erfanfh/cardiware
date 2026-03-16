@@ -44,7 +44,6 @@ class GetPageLayoutBuilderDataAction
                                     'description' => $area->description,
                                     'width' => $area->width,
                                     'sort_order' => $area->sort_order,
-                                    'span' => $this->resolveAreaSpan($area->width),
                                     'elements' => $area->elements
                                         ->map(function ($element) {
                                             $definition = $this->registry->get($element->key);
@@ -74,15 +73,6 @@ class GetPageLayoutBuilderDataAction
                 ->values()
                 ->all(),
         ];
-    }
-
-    /**
-     * @param int|null $width
-     * @return string
-     */
-    private function resolveAreaSpan(?int $width): string
-    {
-        return 'xl:col-span-' . ($width ?: 12);
     }
 
     /**

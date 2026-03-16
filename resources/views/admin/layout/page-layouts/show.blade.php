@@ -17,7 +17,7 @@
                                 :description="$area['description']"
                                 :count="count($area['elements'])"
                                 :empty="empty($area['elements'])"
-                                :span="$area['span']"
+                                :width="$area['width']"
                             >
                                 @foreach($area['elements'] as $element)
                                     <x-admin.layout.element-card
