@@ -44,25 +44,16 @@
                     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         <x-admin.field
                             label="سرویس پیش‌فرض"
-                            hint="فعلاً فقط نمای ظاهری فرم است."
                         >
                             <x-admin.form.select
                                 name="default_sms_provider"
                                 placeholder="انتخاب سرویس"
                                 :options="[
-                            'kavenegar' => 'کاوه نگار',
-                            'ippanel' => 'IPPanel',
-                            'smsir' => 'SMS.ir',
-                        ]"
-                            />
-                        </x-admin.field>
-
-                        <x-admin.field
-                            label="فعال بودن سامانه پیامکی"
-                        >
-                            <x-admin.form.switch
-                                name="sms_enabled"
-                                :checked="true"
+                            \App\Infrastructure\Services\Sms\Providers\SmsirProvider::class => 'اس ام اس دات آی آر (SMS.ir)',
+                            \App\Infrastructure\Services\Sms\Providers\MelliPayamakProvider::class => 'ملی پیامک',
+                            \App\Infrastructure\Services\Sms\Providers\FarazSmsProvider::class => 'فراز اس ام اس',
+                            ]"
+                                value="{{ get_setting('general', 'default_sms_provider') }}"
                             />
                         </x-admin.field>
                     </div>

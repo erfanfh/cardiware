@@ -12,6 +12,7 @@ class GeneralSettings extends BaseSettings
         'title',
         'subtitle',
         'favicon',
+        'default_sms_provider'
     ];
 
     protected array $casts = [
