@@ -22,6 +22,7 @@
                                 'type_color' => 'blue',
                                 'is_active' => true,
                                 'allowed_areas' => ['top_full'],
+                                'settings_url' => '#',
                             ],
                             [
                                 'key' => 'special_banner',
@@ -30,6 +31,7 @@
                                 'type_color' => 'emerald',
                                 'is_active' => true,
                                 'allowed_areas' => ['top_full', 'bottom_full'],
+                                'settings_url' => '#',
                             ],
                         ],
                     ],
@@ -53,6 +55,7 @@
                                 'type_color' => 'violet',
                                 'is_active' => true,
                                 'allowed_areas' => ['middle_main', 'bottom_full'],
+                                'settings_url' => '#',
                             ],
                             [
                                 'key' => 'featured_products',
@@ -61,6 +64,7 @@
                                 'type_color' => 'amber',
                                 'is_active' => false,
                                 'allowed_areas' => ['middle_main', 'bottom_full'],
+                                'settings_url' => '#',
                             ],
                         ],
                     ],
@@ -77,6 +81,7 @@
                                 'type_color' => 'rose',
                                 'is_active' => true,
                                 'allowed_areas' => ['middle_sidebar'],
+                                'settings_url' => '#',
                             ],
                             [
                                 'key' => 'newsletter',
@@ -85,6 +90,7 @@
                                 'type_color' => 'cyan',
                                 'is_active' => true,
                                 'allowed_areas' => ['middle_sidebar', 'bottom_full'],
+                                'settings_url' => '#',
                             ],
                         ],
                     ],
@@ -130,6 +136,7 @@
                                 :active="$element['is_active']"
                                 :inputName="'elements[' . $element['key'] . '][is_active]'"
                                 :allowedAreas="$element['allowed_areas'] ?? []"
+                                :settingsUrl="$element['settings_url'] ?? null"
                             />
                         @endforeach
                     </x-admin.layout.area-box>
