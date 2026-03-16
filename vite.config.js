@@ -8,6 +8,7 @@ export default defineConfig({
             input: [
                 'resources/js/app.js',
                 'resources/js/admin/admin.js',
+                'resources/js/admin/page-layout.js',
                 'resources/js/front/main.js',
                 'resources/js/front/home.js',
 
