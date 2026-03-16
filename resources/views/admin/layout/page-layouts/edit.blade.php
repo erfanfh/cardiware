@@ -21,6 +21,7 @@
                                 'type' => 'اسلایدر',
                                 'type_color' => 'blue',
                                 'is_active' => true,
+                                'allowed_areas' => ['top_full'],
                             ],
                             [
                                 'key' => 'special_banner',
@@ -28,6 +29,7 @@
                                 'type' => 'بنر',
                                 'type_color' => 'emerald',
                                 'is_active' => true,
+                                'allowed_areas' => ['top_full', 'bottom_full'],
                             ],
                         ],
                     ],
@@ -50,6 +52,7 @@
                                 'type' => 'لیست مقالات',
                                 'type_color' => 'violet',
                                 'is_active' => true,
+                                'allowed_areas' => ['middle_main', 'bottom_full'],
                             ],
                             [
                                 'key' => 'featured_products',
@@ -57,6 +60,7 @@
                                 'type' => 'لیست محصولات',
                                 'type_color' => 'amber',
                                 'is_active' => false,
+                                'allowed_areas' => ['middle_main', 'bottom_full'],
                             ],
                         ],
                     ],
@@ -72,6 +76,7 @@
                                 'type' => 'تبلیغات',
                                 'type_color' => 'rose',
                                 'is_active' => true,
+                                'allowed_areas' => ['middle_sidebar'],
                             ],
                             [
                                 'key' => 'newsletter',
@@ -79,6 +84,7 @@
                                 'type' => 'فرم',
                                 'type_color' => 'cyan',
                                 'is_active' => true,
+                                'allowed_areas' => ['middle_sidebar', 'bottom_full'],
                             ],
                         ],
                     ],
@@ -123,6 +129,7 @@
                                 :typeColor="$element['type_color']"
                                 :active="$element['is_active']"
                                 :inputName="'elements[' . $element['key'] . '][is_active]'"
+                                :allowedAreas="$element['allowed_areas'] ?? []"
                             />
                         @endforeach
                     </x-admin.layout.area-box>
@@ -155,6 +162,32 @@
         .layout-is-sorting [data-layout-area] {
             border-color: rgb(203 213 225);
             background-color: rgb(248 250 252 / 0.95);
+        }
+
+        .layout-sortable-ghost {
+            opacity: 0.45;
+        }
+
+        .layout-sortable-chosen {
+            transform: rotate(1deg);
+        }
+
+        .layout-sortable-drag {
+            cursor: grabbing !important;
+        }
+
+        .layout-is-sorting [data-layout-area] {
+            transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .layout-area-allowed {
+            border-color: rgb(148 163 184) !important;
+            background-color: rgb(248 250 252 / 0.95) !important;
+        }
+
+        .layout-area-forbidden {
+            border-color: rgb(252 165 165) !important;
+            background-color: rgb(254 242 242 / 0.95) !important;
         }
     </style>
 @endpush

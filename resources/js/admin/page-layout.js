@@ -25,7 +25,6 @@ function updateEmptyStates(root = document) {
         }
 
         const hasElements = list.querySelector('[data-layout-element]') !== null;
-
         empty.classList.toggle('hidden', hasElements);
     });
 }
@@ -38,6 +37,51 @@ function updateSerializedState(root = document) {
     }
 
     input.value = JSON.stringify(collectLayoutState(root));
+}
+
+function getAllowedAreas(element) {
+    const raw = element?.dataset?.allowedAreas ?? '';
+
+    return raw
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
+function isDropAllowed(draggedElement, targetAreaElement) {
+    if (!draggedElement || !targetAreaElement) {
+        return false;
+    }
+
+    const targetAreaKey = targetAreaElement.dataset.areaKey;
+    const allowedAreas = getAllowedAreas(draggedElement);
+
+    if (!allowedAreas.length) {
+        return true;
+    }
+
+    return allowedAreas.includes(targetAreaKey);
+}
+
+function setAreaVisualState(areaElement, state = null) {
+    areaElement.classList.remove(
+        'layout-area-allowed',
+        'layout-area-forbidden'
+    );
+
+    if (state === 'allowed') {
+        areaElement.classList.add('layout-area-allowed');
+    }
+
+    if (state === 'forbidden') {
+        areaElement.classList.add('layout-area-forbidden');
+    }
+}
+
+function clearAllAreaVisualStates(root = document) {
+    root.querySelectorAll('[data-layout-area]').forEach((area) => {
+        setAreaVisualState(area, null);
+    });
 }
 
 function initializeLayoutSortables(root = document) {
@@ -66,12 +110,35 @@ function initializeLayoutSortables(root = document) {
             fallbackOnBody: true,
             swapThreshold: 0.65,
 
-            onStart() {
+            onStart(event) {
                 document.documentElement.classList.add('layout-is-sorting');
+
+                const draggedElement = event.item;
+
+                areas.forEach((areaElement) => {
+                    const state = isDropAllowed(draggedElement, areaElement)
+                        ? 'allowed'
+                        : 'forbidden';
+
+                    setAreaVisualState(areaElement, state);
+                });
+            },
+
+            onMove(event) {
+                const draggedElement = event.dragged;
+                const targetArea = event.to.closest('[data-layout-area]');
+
+                if (!targetArea) {
+                    return false;
+                }
+
+                return isDropAllowed(draggedElement, targetArea);
             },
 
             onEnd() {
                 document.documentElement.classList.remove('layout-is-sorting');
+
+                clearAllAreaVisualStates(root);
                 updateEmptyStates(root);
                 updateSerializedState(root);
 

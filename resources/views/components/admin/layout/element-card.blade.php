@@ -5,6 +5,7 @@
     'typeColor' => 'blue',
     'active' => true,
     'inputName' => null,
+    'allowedAreas' => [],
 ])
 
 @php
@@ -17,11 +18,14 @@
         'fuchsia' => 'bg-fuchsia-50 text-fuchsia-700',
         default => 'bg-blue-50 text-blue-700',
     };
+
+    $allowedAreasValue = implode(',', $allowedAreas);
 @endphp
 
 <div
     data-layout-element
     data-element-key="{{ $elementKey }}"
+    data-allowed-areas="{{ $allowedAreasValue }}"
     class="group rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
 >
     <div class="flex items-center justify-between gap-4">
