@@ -22,7 +22,10 @@
             @endif
         </div>
 
-        <div class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+        <div
+            data-layout-area-count
+            class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
+        >
             {{ $count }} المنت
         </div>
     </div>
@@ -34,7 +37,6 @@
         class="flex-1 rounded-b-2xl border-2 border-dashed border-transparent bg-slate-50/70 p-4 transition-all duration-200 hover:border-slate-200"
     >
         <div class="relative h-full min-h-14">
-            {{-- Empty State --}}
             <div
                 data-layout-empty
                 class="{{ $empty ? '' : 'hidden' }} pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white/70 px-4 text-center text-xs text-slate-400"
@@ -42,7 +44,6 @@
                 هنوز المنتی در این باکس قرار نگرفته است
             </div>
 
-            {{-- Sortable List --}}
             <div
                 data-layout-elements-list
                 class="min-h-full space-y-3"

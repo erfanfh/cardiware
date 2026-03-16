@@ -29,6 +29,22 @@ function updateEmptyStates(root = document) {
     });
 }
 
+function updateAreaCounts(root = document) {
+    const areas = root.querySelectorAll('[data-layout-area]');
+
+    areas.forEach((area) => {
+        const list = area.querySelector('[data-layout-elements-list]');
+        const countBadge = area.closest('section')?.querySelector('[data-layout-area-count]');
+
+        if (!list || !countBadge) {
+            return;
+        }
+
+        const count = list.querySelectorAll('[data-layout-element]').length;
+        countBadge.textContent = `${count} المنت`;
+    });
+}
+
 function updateSerializedState(root = document) {
     const input = root.querySelector('[data-layout-state-input]');
 
@@ -84,6 +100,12 @@ function clearAllAreaVisualStates(root = document) {
     });
 }
 
+function syncLayoutUi(root = document) {
+    updateEmptyStates(root);
+    updateAreaCounts(root);
+    updateSerializedState(root);
+}
+
 function initializeLayoutSortables(root = document) {
     const areas = root.querySelectorAll('[data-layout-area]');
 
@@ -135,29 +157,30 @@ function initializeLayoutSortables(root = document) {
                 return isDropAllowed(draggedElement, targetArea);
             },
 
+            onAdd() {
+                syncLayoutUi(root);
+            },
+
+            onRemove() {
+                syncLayoutUi(root);
+            },
+
+            onUpdate() {
+                syncLayoutUi(root);
+            },
+
             onEnd() {
                 document.documentElement.classList.remove('layout-is-sorting');
-
                 clearAllAreaVisualStates(root);
-                updateEmptyStates(root);
-                updateSerializedState(root);
+                syncLayoutUi(root);
 
                 const state = collectLayoutState(root);
                 console.log('Layout state:', state);
             },
-
-            onAdd() {
-                updateEmptyStates(root);
-            },
-
-            onRemove() {
-                updateEmptyStates(root);
-            },
         });
     });
 
-    updateEmptyStates(root);
-    updateSerializedState(root);
+    syncLayoutUi(root);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
