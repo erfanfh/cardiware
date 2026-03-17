@@ -2,6 +2,7 @@
 
 namespace App\Domain\Project\Models;
 
+use App\Domain\Project\Enums\ProjectStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,6 +23,10 @@ class Project extends Model
         'body',
         'last_updated_at',
         'released_at',
+    ];
+
+    protected $casts = [
+        'status' => ProjectStatusEnum::class,
     ];
 
     /**
