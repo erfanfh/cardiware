@@ -2,8 +2,10 @@
 
 namespace App\Application\Layout\Actions;
 
+use App\Application\Layout\Support\PageLayoutCacheKeys;
 use App\Application\Layout\Support\PageLayoutElementRegistry;
 use App\Domain\Layout\Models\PageLayout;
+use Illuminate\Support\Facades\Cache;
 
 class GetPageLayoutBuilderDataAction
 {
@@ -20,61 +22,67 @@ class GetPageLayoutBuilderDataAction
      */
     public function execute(PageLayout $pageLayout): array
     {
-        $pageLayout->load([
-            'rows.areas.elements',
-        ]);
+        return Cache::remember(
+            PageLayoutCacheKeys::builder($pageLayout->key),
+            now()->addHours(6),
+            function () use ($pageLayout): array {
+                $pageLayout->load([
+                    'rows.areas.elements',
+                ]);
 
-        return [
-            'layout' => [
-                'id' => $pageLayout->id,
-                'key' => $pageLayout->key,
-                'title' => $pageLayout->title,
-            ],
-            'rows' => $pageLayout->rows
-                ->map(function ($row) {
-                    return [
-                        'id' => $row->id,
-                        'key' => $row->key,
-                        'layout_type' => $row->layout_type,
-                        'sort_order' => $row->sort_order,
-                        'areas' => $row->areas
-                            ->map(function ($area) {
-                                return [
-                                    'id' => $area->id,
-                                    'key' => $area->key,
-                                    'title' => $area->title,
-                                    'description' => $area->description,
-                                    'width' => $area->width,
-                                    'sort_order' => $area->sort_order,
-                                    'elements' => $area->elements
-                                        ->map(function ($element) {
-                                            $definition = $this->registry->get($element->key);
+                return [
+                    'layout' => [
+                        'id' => $pageLayout->id,
+                        'key' => $pageLayout->key,
+                        'title' => $pageLayout->title,
+                    ],
+                    'rows' => $pageLayout->rows
+                        ->map(function ($row) {
+                            return [
+                                'id' => $row->id,
+                                'key' => $row->key,
+                                'layout_type' => $row->layout_type,
+                                'sort_order' => $row->sort_order,
+                                'areas' => $row->areas
+                                    ->map(function ($area) {
+                                        return [
+                                            'id' => $area->id,
+                                            'key' => $area->key,
+                                            'title' => $area->title,
+                                            'description' => $area->description,
+                                            'width' => $area->width,
+                                            'sort_order' => $area->sort_order,
+                                            'elements' => $area->elements
+                                                ->map(function ($element) {
+                                                    $definition = $this->registry->get($element->key);
 
-                                            return [
-                                                'id' => $element->id,
-                                                'key' => $element->key,
-                                                'type' => $element->type,
-                                                'type_label' => $definition['type_label'] ?? $element->title,
-                                                'type_color' => $definition['type_color'] ?? 'blue',
-                                                'title' => $element->title,
-                                                'description' => $element->description,
-                                                'is_active' => $element->is_active,
-                                                'sort_order' => $element->sort_order,
-                                                'allowed_areas' => $definition['allowed_areas'] ?? [],
-                                                'settings_url' => $this->resolveSettingsUrl($definition),
-                                            ];
-                                        })
-                                        ->values()
-                                        ->all(),
-                                ];
-                            })
-                            ->values()
-                            ->all(),
-                    ];
-                })
-                ->values()
-                ->all(),
-        ];
+                                                    return [
+                                                        'id' => $element->id,
+                                                        'key' => $element->key,
+                                                        'type' => $element->type,
+                                                        'type_label' => $definition['type_label'] ?? $element->title,
+                                                        'type_color' => $definition['type_color'] ?? 'blue',
+                                                        'title' => $element->title,
+                                                        'description' => $element->description,
+                                                        'is_active' => $element->is_active,
+                                                        'sort_order' => $element->sort_order,
+                                                        'allowed_areas' => $definition['allowed_areas'] ?? [],
+                                                        'settings_url' => $this->resolveSettingsUrl($definition),
+                                                    ];
+                                                })
+                                                ->values()
+                                                ->all(),
+                                        ];
+                                    })
+                                    ->values()
+                                    ->all(),
+                            ];
+                        })
+                        ->values()
+                        ->all(),
+                ];
+            }
+        );
     }
 
     /**

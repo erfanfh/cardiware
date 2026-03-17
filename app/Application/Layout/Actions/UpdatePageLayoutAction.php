@@ -13,7 +13,8 @@ use Throwable;
 class UpdatePageLayoutAction
 {
     public function __construct(
-        private readonly PageLayoutElementRegistry $registry,
+        private readonly PageLayoutElementRegistry   $registry,
+        private readonly ForgetPageLayoutCacheAction $forgetPageLayoutCacheAction,
     )
     {
     }
@@ -66,6 +67,8 @@ class UpdatePageLayoutAction
                 elements: $elements->all(),
             );
         });
+
+        $this->forgetPageLayoutCacheAction->execute($pageLayout);
     }
 
     /**
