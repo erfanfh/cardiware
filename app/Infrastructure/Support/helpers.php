@@ -84,13 +84,26 @@ if (!function_exists('get_setting')) {
      */
     function get_setting(string $group, string $key, mixed $default = null): mixed
     {
+        static $instances = [];
+
         try {
             $settingsClass = '\\App\\Infrastructure\\Services\\Setting\\Groups\\' . ucfirst($group) . 'Settings';
-            $settings = App::make($settingsClass);
-            return $settings->get($key, $default);
+
+            if (!class_exists($settingsClass))
+                return $default;
+
+            if (!isset($instances[$settingsClass]))
+                $instances[$settingsClass] = App::make($settingsClass);
+
+            return $instances[$settingsClass]->get($key, $default);
         } catch (Throwable $e) {
-            Log::info($e->getMessage());
-            return null;
+            Log::warning('Failed to resolve setting.', [
+                'group' => $group,
+                'key' => $key,
+                'message' => $e->getMessage(),
+            ]);
+
+            return $default;
         }
     }
 }
