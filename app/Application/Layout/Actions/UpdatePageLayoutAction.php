@@ -19,21 +19,23 @@ class UpdatePageLayoutAction
     }
 
     /**
-     * @param PageLayout $layout
+     * @param PageLayout $pageLayout
      * @param array $layoutState
      * @param array $elementStates
      * @return void
      * @throws Throwable
      */
-    public function execute(PageLayout $layout, array $layoutState, array $elementStates = []): void
+    public function execute(PageLayout $pageLayout, array $layoutState, array $elementStates = []): void
     {
-        DB::transaction(function () use ($layout, $layoutState, $elementStates): void {
-            $layout = $layout->load('rows.areas.elements');
+        DB::transaction(function () use ($pageLayout, $layoutState, $elementStates): void {
+            $pageLayout->load([
+                'rows.areas.elements',
+            ]);
 
             $areas = PageLayoutArea::query()
                 ->whereIn(
                     'id',
-                    $layout->rows
+                    $pageLayout->rows
                         ->flatMap(fn($row) => $row->areas)
                         ->pluck('id')
                         ->all()
@@ -44,7 +46,7 @@ class UpdatePageLayoutAction
             $elements = PageLayoutElement::query()
                 ->whereIn(
                     'id',
-                    $layout->rows
+                    $pageLayout->rows
                         ->flatMap(fn($row) => $row->areas)
                         ->flatMap(fn($area) => $area->elements)
                         ->pluck('id')
@@ -75,11 +77,7 @@ class UpdatePageLayoutAction
     private function syncElementPositions(array $layoutState, array $areas, array $elements): void
     {
         foreach ($layoutState as $areaKey => $elementKeys) {
-            if (!isset($areas[$areaKey])) {
-                continue;
-            }
-
-            if (!is_array($elementKeys)) {
+            if (!isset($areas[$areaKey]) || !is_array($elementKeys)) {
                 continue;
             }
 
