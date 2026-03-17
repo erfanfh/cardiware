@@ -57,6 +57,81 @@
                             />
                         </x-admin.field>
                     </div>
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 mt-3">
+                        <x-admin.field
+                            label="کد قالب sms.ir"
+                        >
+                            <x-admin.form.input
+                                name="smsir_tepmlate_id"
+                                value="{{ get_setting('general', 'smsir_tepmlate_id') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="کلید توکن sms.ir"
+                        >
+                            <x-admin.form.input
+                                name="smsir_api_token"
+                                value="{{ get_setting('general', 'smsir_api_token') }}"
+                            />
+                        </x-admin.field>
+                    </div>
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-3 mt-3">
+                        <x-admin.field
+                            label="کد قالب فراز اس ام اس"
+                        >
+                            <x-admin.form.input
+                                name="farazsms_tepmlate_id"
+                                value="{{ get_setting('general', 'farazsms_tepmlate_id') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="کلید توکن فراز اس ام اس"
+                        >
+                            <x-admin.form.input
+                                name="farazsms_api_token"
+                                value="{{ get_setting('general', 'farazsms_api_token') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="شماره موبایل فراز اس ام اس"
+                        >
+                            <x-admin.form.input
+                                name="farazsms_from_mobile"
+                                value="{{ get_setting('general', 'farazsms_from_mobile') }}"
+                            />
+                        </x-admin.field>
+                    </div>
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-3 mt-3">
+                        <x-admin.field
+                            label="نام کاربری ملی پیامک"
+                        >
+                            <x-admin.form.input
+                                name="melli_payamak_username"
+                                value="{{ get_setting('general', 'melli_payamak_username') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="رمزعبور ملی پیامک"
+                        >
+                            <x-admin.form.input
+                                name="melli_payamak_password"
+                                value="{{ get_setting('general', 'melli_payamak_password') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="شماره موبایل ملی پیامک"
+                        >
+                            <x-admin.form.input
+                                name="melli_payamak_from_mobile"
+                                value="{{ get_setting('general', 'melli_payamak_from_mobile') }}"
+                            />
+                        </x-admin.field>
+                    </div>
                 </x-admin.metabox>
 
                 <x-admin.metabox title="درگاه‌های پرداخت">

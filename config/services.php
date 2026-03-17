@@ -34,29 +34,4 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
-    'notifications' => [
-        'sms' => [
-            'providers' => [
-                'smsir' => [
-                    'class' => \App\Infrastructure\Services\Sms\Providers\SmsirProvider::class,
-                    'sms_template_id' => env('SMSIR_TEMPLATE_ID'),
-                    'sms_api_token' => env('SMSIR_API_TOKEN'),
-                ],
-                'farazsms' => [
-                    'class' => \App\Infrastructure\Services\Sms\Providers\FarazSmsProvider::class,
-                    'sms_template_id' => env('FARAZSMS_TEMPLATE_ID'),
-                    'sms_api_token' => env('FARAZSMS_API_TOKEN'),
-                    'sms_from' => env('FARAZSMS_FROM'),
-                ],
-                'melli-payamak' => [
-                    'class' => \App\Infrastructure\Services\Sms\Providers\MelliPayamakProvider::class,
-                    'username' => env('MELLI_PAYAMAK_USERNAME'),
-                    'password' => env('MELLI_PAYAMAK_PASSWORD'),
-                    'from' => env('MELLI_PAYAMAK_FROM'),
-                ],
-            ]
-        ],
-    ],
-
 ];

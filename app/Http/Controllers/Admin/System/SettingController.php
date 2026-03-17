@@ -31,7 +31,20 @@ class SettingController extends Controller
      */
     public function storeGeneral(Request $request, UpdateSettingAction $action): RedirectResponse
     {
-        $fields = ['title', 'subtitle', 'favicon', 'default_sms_provider'];
+        $fields = [
+            'title',
+            'subtitle',
+            'favicon',
+            'default_sms_provider',
+            'smsir_tepmlate_id',
+            'smsir_api_token',
+            'farazsms_tepmlate_id',
+            'farazsms_api_token',
+            'farazsms_from_mobile',
+            'melli_payamak_username',
+            'melli_payamak_password',
+            'melli_payamak_from_mobile',
+        ];
 
         foreach ($fields as $field) {
             $action->execute('general', $field, $request->get($field));

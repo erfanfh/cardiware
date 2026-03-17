@@ -15,8 +15,8 @@ class FarazSmsProvider implements SmsProviderInterface
     {
         $payload = [
             'sending_type' => 'pattern',
-            'from_number' => config('services.notifications.sms.providers.farazsms.sms_from'),
-            'code' => (int) config('services.notifications.sms.providers.farazsms.sms_template_id'),
+            'from_number' => get_setting('general', 'farazsms_from_mobile'),
+            'code' => get_setting('general', 'farazsms_tepmlate_id'),
             'recipients' => [
                 (string) preg_replace('/^0/', '', $mobile)
             ],
@@ -28,7 +28,7 @@ class FarazSmsProvider implements SmsProviderInterface
         $headers = [
             'Content-Type: application/json',
             'Accept: text/plain',
-            'Authorization: ' . config('services.notifications.sms.providers.farazsms.sms_api_token')
+            'Authorization: ' . get_setting('general', 'farazsms_api_token')
         ];
 
         $curl = curl_init();
