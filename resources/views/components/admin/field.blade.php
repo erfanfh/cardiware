@@ -7,7 +7,7 @@
 
 <div {{ $attributes->merge(['class' => 'space-y-1.5']) }}>
     @if($label)
-        <label class="block text-xs font-bold text-slate-700">
+        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">
             {{ $label }}
             @if($required)
                 <span class="text-rose-600">*</span>
