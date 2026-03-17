@@ -18,17 +18,19 @@ class GetPageLayoutBuilderDataAction
      *
      * @return array<string, mixed>
      */
-    public function execute(PageLayout $layout): array
+    public function execute(PageLayout $pageLayout): array
     {
-        $layout = $layout->load('rows.areas.elements');
+        $pageLayout->load([
+            'rows.areas.elements',
+        ]);
 
         return [
             'layout' => [
-                'id' => $layout->id,
-                'key' => $layout->key,
-                'title' => $layout->title,
+                'id' => $pageLayout->id,
+                'key' => $pageLayout->key,
+                'title' => $pageLayout->title,
             ],
-            'rows' => $layout->rows
+            'rows' => $pageLayout->rows
                 ->map(function ($row) {
                     return [
                         'id' => $row->id,
