@@ -67,4 +67,12 @@ class Project extends Model
     {
         return $this->hasMany(ProjectRoadmapItem::class);
     }
+
+    /**
+     * @return HasMany
+     */
+    public function features(): HasMany
+    {
+        return $this->hasMany(ProjectFeature::class);
+    }
 }
