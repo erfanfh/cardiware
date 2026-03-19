@@ -15,7 +15,10 @@ return new class extends Migration {
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
             $table->string('title');
             $table->string('subtitle');
+            $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
+
+            $table->index(['project_id', 'sort_order']);
         });
     }
 

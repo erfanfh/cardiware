@@ -11,6 +11,7 @@ class ProjectFeature extends Model
         'project_id',
         'title',
         'subtitle',
+        'sort_order',
     ];
 
     /**
