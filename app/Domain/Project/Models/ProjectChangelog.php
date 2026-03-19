@@ -11,6 +11,7 @@ class ProjectChangelog extends Model
         'project_id',
         'title',
         'body',
+        'tags',
         'published_at',
         'sort_order',
     ];
