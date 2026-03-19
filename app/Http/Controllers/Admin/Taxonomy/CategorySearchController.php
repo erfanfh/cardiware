@@ -24,7 +24,7 @@ class CategorySearchController extends Controller
         }
 
         $items = TaxonomyTerm::query()
-            ->category()
+            ->categories()
             ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')

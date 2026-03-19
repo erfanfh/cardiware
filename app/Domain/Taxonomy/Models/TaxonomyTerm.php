@@ -85,7 +85,7 @@ class TaxonomyTerm extends Model
      * @param Builder $query
      * @return Builder
      */
-    public function scopeCategory(Builder $query): Builder
+    public function scopeCategories(Builder $query): Builder
     {
         return $query->where('type', TaxonomyTermTypeEnum::CATEGORY);
     }
