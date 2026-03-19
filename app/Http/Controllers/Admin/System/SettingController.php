@@ -31,7 +31,7 @@ class SettingController extends Controller
      */
     public function storeGeneral(Request $request, UpdateSettingAction $action): RedirectResponse
     {
-        $fields = ['title', 'subtitle', 'favicon'];
+        $fields = ['title', 'subtitle'];
 
         foreach ($fields as $field) {
             $action->execute('general', $field, $request->get($field));
