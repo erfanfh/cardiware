@@ -24,7 +24,7 @@ import 'tinymce/plugins/visualblocks';
 import 'tinymce/plugins/autoresize';
 import 'tinymce/plugins/directionality';
 
-// Skins / content css
+// Skins / Content CSS
 import 'tinymce/skins/ui/oxide/skin';
 import 'tinymce/skins/ui/oxide/content';
 import 'tinymce/skins/content/default/content';
@@ -36,23 +36,103 @@ function getPresetConfig(preset = 'default') {
         simple: {
             menubar: false,
             toolbar: 'undo redo | bold italic underline | bullist numlist | link | removeformat',
-            plugins: ['advlist', 'autolink', 'lists', 'link', 'quickbars', 'autoresize', 'directionality'],
+            plugins: [
+                'advlist',
+                'autolink',
+                'lists',
+                'link',
+                'quickbars',
+                'autoresize',
+                'directionality',
+            ],
         },
 
         default: {
             menubar: false,
-            toolbar: 'undo redo | blocks | bold italic underline | alignright aligncenter alignleft | bullist numlist blockquote | link table | removeformat | ltr rtl',
-            plugins: ['advlist', 'autolink', 'lists', 'link', 'table', 'quickbars', 'autoresize', 'directionality'],
+            toolbar: 'undo redo | blocks | bold italic underline | alignright aligncenter alignleft | bullist numlist blockquote | link mediaPicker table | removeformat | ltr rtl',
+            plugins: [
+                'advlist',
+                'autolink',
+                'lists',
+                'link',
+                'table',
+                'quickbars',
+                'autoresize',
+                'directionality',
+            ],
         },
 
         full: {
             menubar: 'file edit view insert format table tools help',
-            toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignright aligncenter alignleft alignjustify | bullist numlist outdent indent blockquote | link table charmap | visualblocks code fullscreen | removeformat | ltr rtl',
-            plugins: ['advlist', 'autolink', 'lists', 'link', 'table', 'code', 'fullscreen', 'wordcount', 'quickbars', 'charmap', 'visualblocks', 'autoresize', 'directionality'],
+            toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignright aligncenter alignleft alignjustify | bullist numlist outdent indent blockquote | link mediaPicker table charmap | visualblocks code fullscreen | removeformat | ltr rtl',
+            plugins: [
+                'advlist',
+                'autolink',
+                'lists',
+                'link',
+                'table',
+                'code',
+                'fullscreen',
+                'wordcount',
+                'quickbars',
+                'charmap',
+                'visualblocks',
+                'autoresize',
+                'directionality',
+            ],
         },
     };
 
     return presets[preset] || presets.default;
+}
+
+function escapeHtml(value = '') {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+}
+
+function buildImageHtml({url = '', alt = '', title = '', caption = ''} = {}) {
+    const safeUrl = escapeHtml(url);
+    const safeAlt = escapeHtml(alt);
+    const safeTitle = escapeHtml(title);
+    const safeCaption = escapeHtml(caption);
+
+    if (!safeUrl) {
+        return '';
+    }
+
+    if (safeCaption) {
+        return `
+            <figure class="content-media">
+                <img src="${safeUrl}" alt="${safeAlt}" title="${safeTitle}">
+                <figcaption>${safeCaption}</figcaption>
+            </figure>
+        `;
+    }
+
+    return `<img src="${safeUrl}" alt="${safeAlt}" title="${safeTitle}">`;
+}
+
+function registerCustomButtons(editor, element) {
+    const itemKey = element.dataset.editorKey;
+
+    editor.ui.registry.addButton('mediaPicker', {
+        text: 'رسانه',
+        tooltip: 'افزودن رسانه',
+        onAction: () => {
+            window.dispatchEvent(new CustomEvent('mfip-open-requested', {
+                detail: {
+                    itemKey,
+                    selectedMediaFileId: null,
+                    selectedMediaPath: null,
+                },
+            }));
+        },
+    });
 }
 
 function buildEditorConfig(element) {
@@ -65,12 +145,13 @@ function buildEditorConfig(element) {
 
     return {
         selector: `#${CSS.escape(element.id)}`,
+
         license_key: 'gpl',
         branding: false,
         promotion: false,
 
-        // language_url: '/vendor/tinymce/langs/fa.js',
-        // language: 'fa',
+        language_url: '/vendor/tinymce/langs/fa.js',
+        language: 'fa',
 
         directionality: dir === 'rtl' ? 'rtl' : 'ltr',
         readonly,
@@ -85,6 +166,18 @@ function buildEditorConfig(element) {
 
         toolbar_mode: 'sliding',
         statusbar: true,
+
+        placeholder: element.getAttribute('placeholder') || '',
+
+        paste_as_text: false,
+        paste_data_images: false,
+
+        link_default_target: '_blank',
+        link_assume_external_targets: true,
+
+        quickbars_selection_toolbar: 'bold italic underline | quicklink blockquote',
+        quickbars_insert_toolbar: 'quicktable',
+
         browser_spellcheck: true,
         contextmenu: false,
 
@@ -105,26 +198,60 @@ function buildEditorConfig(element) {
                 padding: 12px;
             }
 
-            p { margin: 0 0 1rem; }
-            h1,h2,h3,h4,h5,h6 { margin: 1.25rem 0 0.75rem; line-height: 1.8; }
-            ul,ol { margin: 0 0 1rem; padding-inline-start: 1.5rem; }
+            p {
+                margin: 0 0 1rem;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                margin: 1.25rem 0 0.75rem;
+                line-height: 1.8;
+            }
+
+            ul, ol {
+                margin: 0 0 1rem;
+                padding-inline-start: 1.5rem;
+            }
+
             blockquote {
                 margin: 1rem 0;
                 padding: 0.75rem 1rem;
                 border-right: 4px solid #fdba74;
                 background: #fff7ed;
             }
+
             table {
                 width: 100%;
                 border-collapse: collapse;
             }
-            table th, table td {
+
+            table th,
+            table td {
                 border: 1px solid #cbd5e1;
                 padding: 0.5rem;
+            }
+
+            figure.content-media {
+                margin: 1rem 0;
+            }
+
+            figure.content-media img {
+                display: block;
+                max-width: 100%;
+                height: auto;
+                border-radius: 0.75rem;
+            }
+
+            figure.content-media figcaption {
+                margin-top: 0.5rem;
+                color: #64748b;
+                font-size: 0.875rem;
+                text-align: center;
             }
         `,
 
         setup(editor) {
+            registerCustomButtons(editor, element);
+
             editor.on('init', () => {
                 editor.getElement()?.setAttribute('data-editor-initialized', 'true');
             });
@@ -137,17 +264,61 @@ function buildEditorConfig(element) {
 }
 
 function isInitialized(element) {
-    if (!element?.id) return true;
+    if (!element?.id) {
+        return true;
+    }
 
     return !!tinymce.get(element.id);
+}
+
+function handleMfipSelected(event) {
+    const detail = event.detail || {};
+    const itemKey = detail.itemKey;
+    const mediaPath = detail.mediaPath;
+    const mediaId = detail.mediaId;
+
+    if (!itemKey || !mediaPath) {
+        return;
+    }
+
+    const element = document.querySelector(`[data-editor-key="${CSS.escape(itemKey)}"]`);
+
+    if (!element) {
+        return;
+    }
+
+    const editor = tinymce.get(element.id);
+
+    if (!editor) {
+        return;
+    }
+
+    const html = buildImageHtml({
+        url: mediaPath,
+        alt: '',
+        title: mediaId ? `media-${mediaId}` : '',
+        caption: '',
+    });
+
+    if (!html) {
+        return;
+    }
+
+    editor.focus();
+    editor.insertContent(html);
 }
 
 export function initEditors(container = document) {
     const elements = container.querySelectorAll(EDITOR_SELECTOR);
 
     elements.forEach((element) => {
-        if (!element.id) return;
-        if (isInitialized(element)) return;
+        if (!element.id) {
+            return;
+        }
+
+        if (isInitialized(element)) {
+            return;
+        }
 
         tinymce.init(buildEditorConfig(element));
     });
@@ -157,7 +328,9 @@ export function destroyEditors(container = document) {
     const elements = container.querySelectorAll(EDITOR_SELECTOR);
 
     elements.forEach((element) => {
-        if (!element.id) return;
+        if (!element.id) {
+            return;
+        }
 
         const instance = tinymce.get(element.id);
 
@@ -175,6 +348,8 @@ export function reinitEditors(container = document) {
 document.addEventListener('DOMContentLoaded', () => {
     initEditors(document);
 });
+
+window.addEventListener('mfip-selected', handleMfipSelected);
 
 window.AdminEditor = {
     init: initEditors,
