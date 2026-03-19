@@ -2,8 +2,10 @@
 
 namespace App\Domain\Project\Models;
 
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -15,6 +17,7 @@ class Project extends Model
         'title',
         'slug',
         'status',
+        'cover_id',
         'progress_percent',
         'current_version',
         'creator_name',
@@ -37,6 +40,14 @@ class Project extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function cover(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class);
     }
 
     /**
