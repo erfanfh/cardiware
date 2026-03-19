@@ -4,6 +4,7 @@ namespace App\Domain\Project\Models;
 
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
+use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes;
+    use HasTaxonomyTerms, SoftDeletes;
 
     protected $fillable = [
         'title',
