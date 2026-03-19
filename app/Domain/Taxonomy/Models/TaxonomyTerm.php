@@ -94,7 +94,7 @@ class TaxonomyTerm extends Model
      * @param Builder $query
      * @return Builder
      */
-    public function scopeTag(Builder $query): Builder
+    public function scopeTags(Builder $query): Builder
     {
         return $query->where('type', TaxonomyTermTypeEnum::TAG);
     }
