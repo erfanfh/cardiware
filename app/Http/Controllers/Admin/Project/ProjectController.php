@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers\Admin\Project;
 
+use App\Application\Project\Actions\CreateProjectAction;
+use App\Application\Project\Actions\UpdateProjectAction;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Project\ProjectRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Throwable;
 
 class ProjectController extends Controller
 {
@@ -32,10 +37,18 @@ class ProjectController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param ProjectRequest $request
+     * @param CreateProjectAction $action
+     * @return RedirectResponse
+     * @throws Throwable
      */
-    public function store(Request $request)
+    public function store(ProjectRequest $request, CreateProjectAction $action): RedirectResponse
     {
-        //
+        $project = $action->execute($request->validated());
+
+        return redirect()->route('admin.projects.edit', $project)
+            ->with('success', 'پروژه با موفقیت ایجاد شد.');
     }
 
     /**
@@ -46,15 +59,31 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): View
     {
-        return view('admin.projects.projects.edit', compact('project'));
+        $selectedTags = $project->tags
+            ->map(fn($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
+        return view('admin.projects.projects.edit', compact('project', 'selectedTags'));
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param ProjectRequest $request
+     * @param Project $project
+     * @param UpdateProjectAction $action
+     * @return RedirectResponse
+     * @throws Throwable
      */
-    public function update(Request $request, Project $project)
+    public function update(ProjectRequest $request, Project $project, UpdateProjectAction $action): RedirectResponse
     {
-        //
+        $action->execute($project, $request->validated());
+
+        return redirect()->route('admin.projects.edit', $project);
     }
 
     /**
