@@ -57,7 +57,7 @@ class Project extends Model
      */
     public function changelogs(): HasMany
     {
-        return $this->hasMany(ProjectChangelog::class);
+        return $this->hasMany(ProjectChangelog::class)->orderBy('sort_order');
     }
 
     /**
@@ -65,7 +65,7 @@ class Project extends Model
      */
     public function roadmapItems(): HasMany
     {
-        return $this->hasMany(ProjectRoadmapItem::class);
+        return $this->hasMany(ProjectRoadmapItem::class)->orderBy('sort_order');
     }
 
     /**
@@ -73,6 +73,6 @@ class Project extends Model
      */
     public function features(): HasMany
     {
-        return $this->hasMany(ProjectFeature::class);
+        return $this->hasMany(ProjectFeature::class)->orderBy('sort_order');
     }
 }
