@@ -1,87 +1,94 @@
+@php use App\Domain\Project\Enums\RoadmapItemStatusEnum; @endphp
 @extends('front.master')
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8" x-data="projectPage()">
 
-        <!-- HERO / COVER -->
-        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-soft2">
-            <img :src="project.cover" alt="" class="absolute inset-0 h-full w-full object-cover opacity-80"/>
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-soft2">
+            @if($project->cover)
+                <img src="{{ $project->cover->url }}" alt="{{ $project->title }}" title="{{ $project->title }}"
+                     class="absolute inset-0 h-full w-full object-cover opacity-80"/>
+            @endif
+
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/75 via-slate-950/35 to-slate-950/10"></div>
 
             <div class="relative p-6 sm:p-10">
                 <nav class="text-xs text-white/70 flex flex-wrap gap-2">
-                    <a href="#" class="hover:text-brand-300 font-bold transition">خانه</a>
+                    <a href="{{ route('home') }}" class="hover:text-brand-300 font-bold transition">
+                        خانه
+                    </a>
                     <span>—</span>
-                    <a href="#" class="hover:text-brand-300 font-bold transition">پروژه‌ها</a>
+                    <a href="{{ route('projects.list') }}" class="hover:text-brand-300 font-bold transition">
+                        پروژه‌ها
+                    </a>
                     <span>—</span>
-                    <span class="text-white/90 font-semibold" x-text="project.title"></span>
+                    <span class="text-white/90 font-semibold">{{ $project->title }}</span>
                 </nav>
 
                 <div class="mt-4 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="max-w-2xl">
                         <div class="flex flex-wrap items-center gap-2">
-            <span class="text-[11px] font-extrabold px-2 py-1 rounded-xl border backdrop-blur"
-                  :class="project.status==='done'
-                    ? 'text-emerald-700 bg-emerald-50/90 border-emerald-200'
-                    : (project.status==='active'
-                      ? 'text-brand-800 bg-brand-50/90 border-brand-100'
-                      : 'text-slate-700 bg-slate-100/90 border-slate-200')"
-                  x-text="project.statusLabel"></span>
-
-                            <template x-for="t in project.tags" :key="'tag-'+t">
-              <span
-                  class="text-[11px] font-extrabold text-white/90 bg-white/10 border border-white/10 px-2 py-1 rounded-xl backdrop-blur"
-                  x-text="t"></span>
-                            </template>
+                            @foreach($project->tags as $tag)
+                                <span
+                                    class="text-[11px] font-extrabold text-white/90 bg-white/10 border border-white/10 px-2 py-1 rounded-xl backdrop-blur">
+                                    {{ $tag->title }}
+                                </span>
+                            @endforeach
                         </div>
 
-                        <h1 class="mt-4 text-2xl sm:text-3xl font-black leading-tight text-white"
-                            x-text="project.title"></h1>
+                        <h1 class="mt-4 text-2xl sm:text-3xl font-black leading-tight text-white">
+                            {{ $project->title }}
+                        </h1>
 
-                        <p class="mt-4 text-white/80 text-sm sm:text-base leading-7" x-text="project.summary"></p>
+                        <p class="mt-4 text-white/80 text-sm sm:text-base leading-7">
+                            {{ $project->excerpt() }}
+                        </p>
 
-                        <!-- quick meta -->
                         <div class="mt-6 flex flex-wrap items-center gap-2 text-xs text-white/70">
-            <span
-                class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
-              <span class="h-2 w-2 rounded bg-brand-400"></span>
-              آخرین آپدیت: <span class="font-extrabold text-white" x-text="project.updated"></span>
-            </span>
-                            <span
-                                class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
-              نسخه فعلی: <span class="font-extrabold text-white" x-text="project.version"></span>
-            </span>
-                            <span
-                                class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
-              هدف انتشار: <span class="font-extrabold text-white" x-text="project.target"></span>
-            </span>
+                            @if($project->last_updated_at)
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
+                                    <span class="h-2 w-2 rounded bg-brand-400"></span>
+                                    <span>آخرین آپدیت:</span>
+                                    <span class="font-extrabold text-white">
+                                        {{ jalali_date($project->last_updated_at, 'd F Y') }}
+                                    </span>
+                                </span>
+                            @endif
+
+                            @if($project->current_version)
+                                <span
+                                    class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
+                                    <span>نسخه فعلی:</span>
+                                    <span class="font-extrabold text-white">{{ $project->current_version }}</span>
+                                </span>
+                            @endif
                         </div>
                     </div>
 
-                    <!-- progress box -->
                     <div class="w-full lg:w-[420px] rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-5">
                         <div class="flex items-center justify-between">
                             <div class="text-white/80 text-sm font-extrabold">درصد پیشرفت</div>
-                            <div class="text-2xl font-black text-white" x-text="project.progress + '%'"></div>
+                            <div class="text-2xl font-black text-white">{{ $project->progress_percent }}%</div>
                         </div>
                         <div class="mt-3 h-2 rounded-full bg-white/15 overflow-hidden">
-                            <div class="h-full"
-                                 :class="project.status==='done' ? 'bg-emerald-500' : 'bg-brand-400'"
-                                 :style="`width:${project.progress}%`"></div>
+                            <div
+                                class="h-full @if($project->progress_percent == 100) bg-emerald-500 @else bg-brand-400 @endif"
+                                style="width:{{ $project->progress_percent }}%"></div>
                         </div>
 
                         <div class="mt-4 grid grid-cols-3 gap-3">
                             <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
                                 <div class="text-[11px] font-extrabold text-white/70">تسک‌ها</div>
-                                <div class="mt-1 text-white font-black" x-text="project.stats.tasks"></div>
-                            </div>
-                            <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
-                                <div class="text-[11px] font-extrabold text-white/70">باگ‌ها</div>
-                                <div class="mt-1 text-white font-black" x-text="project.stats.bugs"></div>
+                                <div class="mt-1 text-white font-black">{{ $project->roadmapItems->count() }}</div>
                             </div>
                             <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
                                 <div class="text-[11px] font-extrabold text-white/70">آپدیت‌ها</div>
-                                <div class="mt-1 text-white font-black" x-text="project.stats.updates"></div>
+                                <div class="mt-1 text-white font-black">{{ $project->changelogs->count() }}</div>
+                            </div>
+                            <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
+                                <div class="text-[11px] font-extrabold text-white/70">ویژگی‌ها</div>
+                                <div class="mt-1 text-white font-black">{{ $project->features->count() }}</div>
                             </div>
                         </div>
                     </div>
@@ -90,159 +97,176 @@
             </div>
         </section>
 
-        <!-- MAIN GRID -->
         <section class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- CONTENT -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- Overview -->
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden">
                     <div
                         class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] opacity-80"></div>
                     <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500 opacity-90"></div>
 
                     <div class="flex items-center gap-3">
-          <span
-              class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path
-                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            </svg>
-          </span>
+                        <span
+                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2">
+                                <path
+                                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                        </span>
+
                         <div>
                             <div class="text-base font-extrabold">معرفی پروژه</div>
                             <div class="mt-1 text-xs text-slate-500">چه چیزی در این پروژه ساخته می‌شود؟</div>
                         </div>
                     </div>
 
-                    <div class="mt-4 space-y-3 text-sm text-slate-700 leading-7">
-                        <p x-text="project.details.p1"></p>
-                        <p x-text="project.details.p2"></p>
+                    <div class="tinymce-content mt-5 text-slate-700">
+                        {!! $project->body !!}
                     </div>
 
-                    <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div class="text-sm font-extrabold">تمرکز</div>
-                            <div class="mt-1 text-xs text-slate-500 leading-6" x-text="project.focus"></div>
+                    @if($project->features->count() > 0)
+                        <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            @foreach($project->features as $feature)
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <div class="text-sm font-extrabold">{{ $feature->title }}</div>
+                                    <div class="mt-1 text-xs text-slate-500 leading-6">{{ $feature->subtitle }}</div>
+                                </div>
+                            @endforeach
                         </div>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div class="text-sm font-extrabold">سازگاری</div>
-                            <div class="mt-1 text-xs text-slate-500 leading-6" x-text="project.compat"></div>
-                        </div>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div class="text-sm font-extrabold">پلن انتشار</div>
-                            <div class="mt-1 text-xs text-slate-500 leading-6" x-text="project.plan"></div>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
-                <!-- Roadmap -->
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-            <span
-                class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 20l9-5-9-5-9 5 9 5z"></path>
-                <path d="M12 12l9-5-9-5-9 5 9 5z"></path>
-              </svg>
-            </span>
-                            <div>
-                                <div class="text-base font-extrabold">نقشه راه</div>
-                                <div class="mt-1 text-xs text-slate-500">مرحله‌ها و وضعیت هر مرحله</div>
-                            </div>
-                        </div>
-                        <span
-                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">
-            به‌روزرسانی: <span x-text="project.updated"></span>
-          </span>
-                    </div>
+                @if($project->roadmapItems->count() > 0)
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                            <span
+                                class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <path d="M12 20l9-5-9-5-9 5 9 5z"></path>
+                                    <path d="M12 12l9-5-9-5-9 5 9 5z"></path>
+                                </svg>
+                            </span>
 
-                    <div class="mt-5 space-y-3">
-                        <template x-for="(m, idx) in project.roadmap" :key="'m-'+idx">
-                            <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <div class="flex items-center gap-2">
+                                <div>
+                                    <div class="text-base font-extrabold">نقشه راه</div>
+                                    <div class="mt-1 text-xs text-slate-500">مرحله‌ها و وضعیت هر مرحله</div>
+                                </div>
+                            </div>
+
+                            @if($project->last_updated_at)
+                                <span
+                                    class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">
+                                <span>به‌روزرسانی:</span>
+                                <span>{{ jalali_date($project->last_updated_at, 'd F Y') }}</span>
+                            </span>
+                            @endif
+                        </div>
+
+                        <div class="mt-5 space-y-3">
+                            @php $counter = 1; @endphp
+                            @foreach($project->roadmapItems as $item)
+                                <div class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2">
                                             <span
-                                                class="h-9 w-9 rounded-2xl border border-slate-200 bg-slate-50 grid place-items-center font-black text-slate-700"
-                                                x-text="idx+1"></span>
-                                            <div class="text-sm font-extrabold truncate" x-text="m.title"></div>
+                                                class="h-9 w-9 rounded-2xl border border-slate-200 bg-slate-50 grid place-items-center font-black text-slate-700">
+                                                {{ $counter }}
+                                            </span>
+                                                <div class="text-sm font-extrabold truncate">{{ $item->title }}</div>
+                                            </div>
+                                            <div class="mt-2 text-xs text-slate-500 leading-6">
+                                                {!! nl2br(htmlspecialchars(e($item->excerpt))) !!}
+                                            </div>
                                         </div>
-                                        <div class="mt-2 text-xs text-slate-500 leading-6" x-text="m.desc"></div>
+                                        <span class="text-[11px] font-extrabold px-2 py-1 rounded-xl border
+                                        @if($item->status === RoadmapItemStatusEnum::DONE) text-emerald-700 bg-emerald-50 border-emerald-200
+                                        @elseif($item->status === RoadmapItemStatusEnum::INPROGRESS) text-brand-800 bg-brand-50 border-brand-100
+                                        @else text-slate-700 bg-slate-100 border-slate-200
+                                        @endif">{{ $item->status->label() }}</span>
                                     </div>
-                                    <span class="text-[11px] font-extrabold px-2 py-1 rounded-xl border"
-                                          :class="m.state==='done'
-                        ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                        : (m.state==='doing'
-                          ? 'text-brand-800 bg-brand-50 border-brand-100'
-                          : 'text-slate-700 bg-slate-100 border-slate-200')"
-                                          x-text="m.stateLabel"></span>
-                                </div>
 
-                                <div class="mt-4">
-                                    <div class="flex items-center justify-between text-xs text-slate-500">
-                                        <span>پیشرفت مرحله</span>
-                                        <span class="font-extrabold text-slate-700" x-text="m.progress + '%'"></span>
+                                    <div class="mt-4">
+                                        <div class="flex items-center justify-between text-xs text-slate-500">
+                                            <span>پیشرفت مرحله</span>
+                                            <span class="font-extrabold text-slate-700">
+                                                {{ $item->progress_percent }}%
+                                            </span>
+                                        </div>
+                                        <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
+                                            <div
+                                                class="h-full @if($item->status === RoadmapItemStatusEnum::DONE) bg-emerald-500 @else bg-brand-500 @endif"
+                                                style="width:{{ $item->progress_percent }}%"></div>
+                                        </div>
                                     </div>
-                                    <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                        <div class="h-full"
-                                             :class="m.state==='done' ? 'bg-emerald-500' : 'bg-brand-500'"
-                                             :style="`width:${m.progress}%`"></div>
-                                    </div>
+                                    @php $counter++; @endphp
                                 </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Updates (changelog style) -->
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-                    <div class="flex items-center gap-3">
-          <span
-              class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
-              <path d="M21 3v6h-6"></path>
-            </svg>
-          </span>
-                        <div>
-                            <div class="text-base font-extrabold">آپدیت‌ها و تغییرات</div>
-                            <div class="mt-1 text-xs text-slate-500">تازه‌ترین اتفاقات پروژه</div>
+                            @endforeach
                         </div>
                     </div>
+                @endif
 
-                    <div class="mt-5 space-y-3">
-                        <template x-for="u in project.updates" :key="u.id">
-                            <div
-                                class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 hover:bg-slate-50 transition">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <div class="text-sm font-extrabold" x-text="u.title"></div>
-                                        <div class="mt-2 text-sm text-slate-700 leading-7" x-text="u.text"></div>
-                                    </div>
-                                    <span class="text-xs text-slate-500 shrink-0" x-text="u.time"></span>
-                                </div>
-                                <div class="mt-3 flex flex-wrap gap-2">
-                                    <template x-for="b in u.badges" :key="u.id + '-' + b">
-                                        <span
-                                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl"
-                                            x-text="b"></span>
-                                    </template>
-                                </div>
+                @if($project->changelogs->count() > 0)
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2">
+                                    <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                                    <path d="M21 3v6h-6"></path>
+                                </svg>
+                            </span>
+
+                            <div>
+                                <div class="text-base font-extrabold">آپدیت‌ها و تغییرات</div>
+                                <div class="mt-1 text-xs text-slate-500">تازه‌ترین اتفاقات پروژه</div>
                             </div>
-                        </template>
-                    </div>
-                </div>
+                        </div>
 
+                        <div class="mt-5 space-y-3">
+                            @foreach($project->changelogs as $item)
+                                <div
+                                    class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 hover:bg-slate-50 transition">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-extrabold">{{ $item->title }}</div>
+                                            <div class="mt-2 text-sm text-slate-700 leading-7">
+                                                {!! nl2br(htmlspecialchars(e($item->body))) !!}
+                                            </div>
+                                        </div>
+                                        @if($item->published_at)
+                                            <span
+                                                class="text-xs text-slate-500 shrink-0">{{ time_ago($item->published_at)  }}</span>
+                                        @endif
+                                    </div>
+
+                                    @if(count($item->tagsList()) > 0)
+                                        <div class="mt-3 flex flex-wrap gap-2">
+                                            @foreach($item->tagsList() as $tag)
+                                                <span
+                                                    class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl">
+                                                    {{ $tag }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- SIDEBAR -->
             <aside class="lg:col-span-4 space-y-6">
 
                 <!-- Key info -->
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-center gap-3">
           <span
               class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
@@ -306,7 +330,7 @@
                 </div>
 
                 <!-- Subscribe -->
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="text-base font-extrabold">دنبال کردن پروژه</div>
                     <div class="mt-2 text-sm text-slate-600 leading-7">
                         اگر این پروژه برات مهمه، آپدیت‌ها رو دنبال کن تا از نسخه‌های جدید جا نمونی.
@@ -332,7 +356,7 @@
                 </div>
 
                 <!-- Placeholder -->
-                <div class="rounded-xl2 border border-dashed border-slate-300 bg-white p-5 shadow-sm">
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
                     <div class="font-extrabold text-slate-700">بنر / تبلیغات</div>
                     <div class="mt-2 text-sm text-slate-500">جایگاه پیشنهادی برای بنر مرتبط با بازی</div>
                     <div class="mt-3 text-xs text-slate-500">size: 320×250</div>
