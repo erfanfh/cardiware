@@ -1,6 +1,7 @@
 <?php
 
 use App\Infrastructure\Services\Date\DateConverterService;
+use Carbon\Carbon;
 
 if (!function_exists('jalali_date')) {
 
@@ -51,6 +52,95 @@ if (!function_exists('gregorian_date')) {
             outputFormat: $format,
             inputFormat: $inputFormat,
         );
+    }
+}
+
+if (!function_exists('time_ago')) {
+    /**
+     * Convert a datetime value to a human-readable Persian relative time.
+     *
+     * @param mixed $datetime Supported: Carbon instance, datetime string, timestamp
+     * @param bool $full Whether to show multiple parts, e.g. "1 سال و 2 ماه پیش"
+     * @return string|null
+     */
+    function time_ago(mixed $datetime, bool $full = false): ?string
+    {
+        if (blank($datetime)) {
+            return null;
+        }
+
+        try {
+            $now = Carbon::now();
+
+            if ($datetime instanceof Carbon) {
+                $time = $datetime->copy();
+            } elseif (is_numeric($datetime)) {
+                $time = Carbon::createFromTimestamp((int)$datetime);
+            } else {
+                $time = Carbon::parse($datetime);
+            }
+        } catch (Throwable $e) {
+            return null;
+        }
+
+        if ($time->equalTo($now)) {
+            return 'همین الان';
+        }
+
+        $isFuture = $time->greaterThan($now);
+        $diff = $now->diff($time);
+
+        $years = (int)$diff->y;
+        $months = (int)$diff->m;
+        $weeks = intdiv((int)$diff->d, 7);
+        $days = (int)$diff->d % 7;
+        $hours = (int)$diff->h;
+        $minutes = (int)$diff->i;
+        $seconds = (int)$diff->s;
+
+        $parts = [];
+
+        if ($years > 0) {
+            $parts[] = $years . ' سال';
+        }
+
+        if ($months > 0) {
+            $parts[] = $months . ' ماه';
+        }
+
+        if ($weeks > 0) {
+            $parts[] = $weeks . ' هفته';
+        }
+
+        if ($days > 0) {
+            $parts[] = $days . ' روز';
+        }
+
+        if ($hours > 0) {
+            $parts[] = $hours . ' ساعت';
+        }
+
+        if ($minutes > 0) {
+            $parts[] = $minutes . ' دقیقه';
+        }
+
+        if ($seconds > 0) {
+            $parts[] = $seconds . ' ثانیه';
+        }
+
+        if (empty($parts)) {
+            return 'همین الان';
+        }
+
+        if (!$full) {
+            $parts = array_slice($parts, 0, 1);
+        }
+
+        $text = implode(' و ', $parts);
+
+        return $isFuture
+            ? $text . ' دیگر'
+            : $text . ' پیش';
     }
 }
 
