@@ -16,7 +16,7 @@ class ProjectController extends Controller
      */
     public function detail(Project $project): View
     {
-        $project = $project->load(['cover.primaryVariant', 'roadmapItems', 'changelogs']);
+        $project = $project->load(['cover.primaryVariant', 'roadmapItems', 'changelogs', 'features']);
 
         return view('front.projects.detail', compact('project'));
     }
