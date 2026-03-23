@@ -115,6 +115,8 @@
         </x-admin.metabox>
     </x-slot:sidebar>
 
+    <x-admin.form.validation-errors class="mb-6"/>
+
     <x-admin.form.wp-title-slug
         titleName="title"
         slugName="slug"
