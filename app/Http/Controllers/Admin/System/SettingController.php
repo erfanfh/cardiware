@@ -84,6 +84,25 @@ class SettingController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @param UpdateSettingAction $action
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeFooter(Request $request, UpdateSettingAction $action): RedirectResponse
+    {
+        $fields = ['footer_about', 'footer_copyright', 'footer_quality_text', 'footer_commitment_text', 'footer_store_text'];
+
+        foreach ($fields as $field) {
+            $action->execute('footer', $field, $request->get($field));
+        }
+
+        return redirect()
+            ->route('admin.settings.footer')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * Home settings page
      *
      * @return View

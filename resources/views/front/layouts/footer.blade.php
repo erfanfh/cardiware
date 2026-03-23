@@ -101,12 +101,7 @@
                 </div>
 
                 <p class="text-neutral-700 leading-7 text-sm text-center md:text-justify">
-                    ما در مجموعه بزرگ مودینگ‌وی از سال ۱۳۹۶ در حوزه ماد فعالیت خود را در حوزه مادیت بازی‌های
-                    FIFA و PES شروع کرده‌ایم و همچنان با قدرت ادامه فعالیت می‌دهیم.
-                    سایت ما که یکی از بزرگ‌ترین سایت‌های فوتبال‌پی‌سی ایران به عنوان
-                    <span class="text-orange-500 font-extrabold">PGLPatch</span> بوده و خواهد بود.
-                    محصولات مجموعه مودینگ‌وی در دو فروشگاه زیرمجموعه با اسم‌های ادیت‌سیتی
-                    (محصولات دانلودی) و مودینگ‌استور (محصولات فیزیکی) عرضه می‌شوند.
+                    {{ get_setting('footer', 'footer_about') }}
                 </p>
             </div>
         </div>
@@ -129,8 +124,7 @@
                     </h3>
 
                     <p class="text-neutral-700 leading-7 text-sm">
-                        تولید پچ‌های تخصصی لیگ برتر ایران برای FIFA و PES
-                        با تمام جزئیات کامل برای PC و کنسول‌های نسل جدید.
+                        {{ get_setting('footer', 'footer_quality_text') }}
                     </p>
                 </div>
 
@@ -148,7 +142,7 @@
                     </h3>
 
                     <p class="text-neutral-700 text-sm mb-4">
-                        محصولات فیزیکی و پکیج‌های گیمینگ
+                        {{ get_setting('footer', 'footer_store_text') }}
                     </p>
 
                     <a href="#" class="text-orange-500 font-extrabold text-sm hover:underline">
@@ -170,8 +164,7 @@
                     </h3>
 
                     <p class="text-neutral-700 leading-7 text-sm">
-                        لینک دانلودها برای کاربران ایرانی نیم‌بها محاسبه می‌شود
-                        و هدف ما همیشه رضایت کامل کاربران بوده است.
+                        {{ get_setting('footer', 'footer_commitment_text') }}
                     </p>
                 </div>
 
@@ -355,6 +348,6 @@
     <div class="h-px w-full bg-gray-200"></div>
 
     <div class="text-xs text-center text-gray-600 py-3">
-        &copy; کلیه حقوق برای مودینگ وی محفوظ می باشد.
+        {{ get_setting('footer', 'footer_copyright') }}
     </div>
 </footer>

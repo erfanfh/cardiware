@@ -9,6 +9,6 @@
     @if($method === 'put')
         @method('PUT')
     @endif
-    
+
     {{ $slot }}
 </form>
