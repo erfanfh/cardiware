@@ -83,7 +83,9 @@ class ProjectController extends Controller
     {
         $action->execute($project, $request->validated());
 
-        return redirect()->route('admin.projects.edit', $project);
+        return redirect()
+            ->route('admin.projects.edit', $project)
+            ->with('success', 'پروژه با موفقیت بروزرسانی شد.');
     }
 
     /**
