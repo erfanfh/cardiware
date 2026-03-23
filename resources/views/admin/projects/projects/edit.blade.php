@@ -3,10 +3,7 @@
 @section('title', 'ویرایش پروژه')
 
 @section('content')
-    <form method="POST" action="{{ route('admin.projects.update', $project) }}">
-        @csrf
-        @method('PUT')
-
+    <x-admin.form action="{{ route('admin.projects.update', $project) }}" method="put">
         @include('admin.projects.projects.form', [
             'project' => $project,
             'roadmapItems' => $project->roadmapItems
@@ -29,5 +26,5 @@
                     'sort_order' => $c->sort_order,
                 ])->all(),
         ])
-    </form>
+    </x-admin.form>
 @endsection
