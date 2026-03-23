@@ -126,6 +126,7 @@
         basePath="{{ route('home') }}/projects/"
         :checkUrl="route('admin.projects.check-slug')"
         :currentId="$project->id ?? null"
+        :itemUrl="$project ? route('projects.detail', $project) : null"
     />
 
     <x-admin.metabox title="توضیحات">
