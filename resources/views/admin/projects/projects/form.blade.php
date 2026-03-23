@@ -38,6 +38,7 @@
                     'id' => old('cover.id', $project?->cover_id),
                     'path' => old('cover.path', $project?->cover?->url),
                 ]"
+                layout="vertical"
             />
         </x-admin.metabox>
 

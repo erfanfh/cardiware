@@ -7,7 +7,24 @@
     ],
     'previewHeight' => 'h-24',
     'buttonClass' => '',
+    'layout' => 'horizontal', // horizontal | vertical
 ])
+
+@php
+    $isVertical = $layout === 'vertical';
+
+    $selectedWrapperClasses = $isVertical
+        ? 'flex flex-col gap-4 cursor-pointer'
+        : 'flex items-center gap-4 cursor-pointer';
+
+    $previewWrapperClasses = $isVertical
+        ? 'relative w-full '.$previewHeight.' overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm'
+        : 'relative w-32 '.$previewHeight.' shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm';
+
+    $contentWrapperClasses = $isVertical
+        ? 'min-w-0 w-full'
+        : 'min-w-0 flex-1';
+@endphp
 
 @if($mode === 'repeater')
     <div
@@ -39,9 +56,8 @@
                 })"
             >
                 <template x-if="it['{{ $name }}']?.path">
-                    <div class="flex items-center gap-4 cursor-pointer">
-                        <div
-                            class="relative w-32 {{ $previewHeight }} shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
+                    <div class="{{ $selectedWrapperClasses }}">
+                        <div class="{{ $previewWrapperClasses }}">
                             <img
                                 :src="it['{{ $name }}']?.path"
                                 alt=""
@@ -53,7 +69,7 @@
                                 class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent"></div>
                         </div>
 
-                        <div class="min-w-0 flex-1">
+                        <div class="{{ $contentWrapperClasses }}">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div
                                     class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-extrabold text-emerald-700 ring-1 ring-emerald-100">
@@ -114,11 +130,13 @@
                 </template>
             </button>
 
-            <div class="mt-3 flex items-center justify-end border-t border-slate-100 pt-3"
-                 x-show="it['{{ $name }}']?.id">
+            <div
+                class="mt-3 flex items-center justify-end border-t border-slate-100 pt-3"
+                x-show="it['{{ $name }}']?.id"
+            >
                 <button
                     type="button"
-                    class="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100"
+                    class="cursor-pointer inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100"
                     @click.stop="
                         it['{{ $name }}'] = {
                             id: null,
@@ -177,9 +195,8 @@
                 })"
             >
                 <template x-if="selectedPath">
-                    <div class="flex items-center gap-4 cursor-pointer">
-                        <div
-                            class="relative w-32 {{ $previewHeight }} shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 shadow-sm">
+                    <div class="{{ $selectedWrapperClasses }}">
+                        <div class="{{ $previewWrapperClasses }}">
                             <img
                                 :src="selectedPath"
                                 alt=""
@@ -191,7 +208,7 @@
                                 class="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/10 to-transparent"></div>
                         </div>
 
-                        <div class="min-w-0 flex-1">
+                        <div class="{{ $contentWrapperClasses }}">
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div
                                     class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-[11px] font-extrabold text-emerald-700 ring-1 ring-emerald-100">
