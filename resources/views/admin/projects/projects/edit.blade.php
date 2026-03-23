@@ -26,5 +26,7 @@
                     'sort_order' => $c->sort_order,
                 ])->all(),
         ])
+
+        <x-admin.save-button label="ذخیره"/>
     </x-admin.form>
 @endsection

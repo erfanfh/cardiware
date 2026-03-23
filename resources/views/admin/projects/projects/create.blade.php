@@ -9,5 +9,7 @@
             'roadmapItems' => [],
             'changelogs' => [],
         ])
+
+        <x-admin.save-button label="انتشار پروژه"/>
     </x-admin.form>
 @endsection

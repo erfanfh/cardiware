@@ -22,12 +22,6 @@
                     />
                 </x-admin.field>
             </div>
-
-            <div class="pt-3 mt-3 border-t border-slate-200 flex items-center gap-2">
-                <x-admin.button type="submit" variant="solid" class="flex-1">
-                    {{ $isEdit ? 'ذخیره' : 'انتشار' }}
-                </x-admin.button>
-            </div>
         </x-admin.metabox>
 
         <x-admin.metabox title="کاور پروژه">
