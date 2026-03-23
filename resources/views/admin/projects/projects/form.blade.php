@@ -162,7 +162,7 @@
 
     <x-admin.metabox title="آپدیت‌ها و تغییرات">
         <x-admin.project.changelog-repeater
-            :items="old('changelogs', $project->changelogs->map(fn ($item) => [
+            :items="old('changelogs', $project?->changelogs?->map(fn ($item) => [
                 'id' => $item->id,
                 'title' => $item->title,
                 'tags' => $item->tags,
