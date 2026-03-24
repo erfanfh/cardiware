@@ -11,6 +11,7 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\IndexProjectRequest;
 use App\Http\Requests\Admin\Project\UpdateProjectRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -39,8 +40,7 @@ class ProjectController extends Controller
             ])
             ->all();
 
-        $hasActiveFilters = collect($projectListing->filters())
-            ->contains(fn(string $field) => $request->filled($field));
+        $hasActiveFilters = $projectListing->hasActiveFilters($request->validated());
 
         $selectedTagIds = collect(request('tag_ids', []))
             ->filter(fn($id) => filled($id))
@@ -58,11 +58,14 @@ class ProjectController extends Controller
             ->values()
             ->all();
 
+        $bulkActionOptions = DefaultBulkActions::toOptions();
+
         return view('admin.projects.projects.index', compact(
             'projects',
             'statuses',
             'hasActiveFilters',
             'selectedTagOptions',
+            'bulkActionOptions',
         ));
     }
 
