@@ -7,6 +7,7 @@ use App\Application\Project\Actions\UpdateProjectAction;
 use App\Application\Project\Listings\ProjectListing;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\IndexProjectRequest;
 use App\Http\Requests\Admin\Project\UpdateProjectRequest;
@@ -41,10 +42,27 @@ class ProjectController extends Controller
         $hasActiveFilters = collect($projectListing->filters())
             ->contains(fn(string $field) => $request->filled($field));
 
+        $selectedTagIds = collect(request('tag_ids', []))
+            ->filter(fn($id) => filled($id))
+            ->map(fn($id) => (int)$id)
+            ->filter(fn($id) => $id > 0)
+            ->values();
+
+        $selectedTagOptions = TaxonomyTerm::query()
+            ->whereIn('id', $selectedTagIds)
+            ->get(['id', 'title'])
+            ->map(fn($tag) => [
+                'value' => (string)$tag->id,
+                'label' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
         return view('admin.projects.projects.index', compact(
             'projects',
             'statuses',
             'hasActiveFilters',
+            'selectedTagOptions',
         ));
     }
 

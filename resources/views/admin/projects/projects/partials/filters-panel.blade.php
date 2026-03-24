@@ -97,6 +97,7 @@
                     <x-admin.form.async-select
                         name="tag_ids"
                         :value="request('tag_ids')"
+                        :selected-options="$selectedTagOptions"
                         placeholder="جستجو در برچسب‌ها..."
                         :multiple="true"
                         :search-url="route('admin.tags.ajax-search')"
