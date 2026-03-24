@@ -8,11 +8,8 @@
 
 <div
     {{ $attributes->merge([
-        'class' => 'rounded-[24px] border p-4 shadow-soft transition-all duration-200'
+        'class' => 'rounded-2xl border p-4 shadow-soft transition-all duration-200 border-slate-200 bg-white'
     ]) }}
-    :class="selectedCount > 0
-        ? 'border-brand-200 bg-gradient-to-r from-brand-50/80 via-white to-white'
-        : 'border-slate-200 bg-white'"
 >
     <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div class="flex flex-1 flex-col gap-4 lg:flex-row lg:items-center">
@@ -71,19 +68,23 @@
                 <div class="flex items-center gap-2">
                     <x-admin.button
                         type="button"
-                        variant="solid"
+                        variant="secondary"
                         x-bind:disabled="selectedCount === 0 || !bulkAction"
                         x-on:click="submitBulkAction($refs.bulkActionForm)"
+                        size="sm"
+                        class="leading-10"
                     >
                         {{ $buttonText }}
                     </x-admin.button>
 
                     <x-admin.button
                         type="button"
-                        variant="ghost"
+                        variant="danger"
                         x-cloak
                         x-show="selectedCount > 0"
                         x-on:click="clearSelection()"
+                        size="sm"
+                        class="leading-10"
                     >
                         لغو انتخاب
                     </x-admin.button>
