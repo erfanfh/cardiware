@@ -11,10 +11,5 @@ class GeneralSettings extends BaseSettings
     protected array $allowedKeys = [
         'title',
         'subtitle',
-        'favicon',
-    ];
-
-    protected array $casts = [
-        'favicon' => MediaFileCast::class,
     ];
 }
