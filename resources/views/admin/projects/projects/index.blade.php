@@ -97,23 +97,81 @@
             </div>
         </div>
 
+        @php
+            $projectIds = $projects->pluck('id')->values()->all();
+        @endphp
+
         <div
             x-data="adminListQuickEdit(@js(session('quick_edit_row_id')))"
             x-on:keydown.window="onEscape($event)"
+            class="space-y-4"
         >
+            <x-admin.list.selection-bar>
+                <button
+                    type="submit"
+                    formaction="{{ route('admin.projects.bulk-action') }}"
+                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                >
+                    اعمال عملیات گروهی
+                </button>
+
+                <button
+                    type="button"
+                    x-on:click="clearSelection()"
+                    class="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50"
+                >
+                    لغو انتخاب
+                </button>
+            </x-admin.list.selection-bar>
+
             <x-admin.list.table>
                 <x-admin.list.thead>
                     <tr>
                         <x-admin.list.th width="44px" align="center">
-                            <x-admin.list.checkbox/>
+                            <label class="inline-flex cursor-pointer items-center justify-center">
+                                <input
+                                    type="checkbox"
+                                    class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
+                                    :checked="isAllSelected(@js($projectIds))"
+                                    x-on:change="toggleAll(@js($projectIds))"
+                                >
+                            </label>
                         </x-admin.list.th>
 
                         <x-admin.list.th width="90px">تصویر</x-admin.list.th>
-                        <x-admin.list.th>عنوان</x-admin.list.th>
-                        <x-admin.list.th width="140px">وضعیت</x-admin.list.th>
-                        <x-admin.list.th width="170px">پیشرفت</x-admin.list.th>
+
+                        <x-admin.list.sortable-th
+                            label="عنوان"
+                            key="title"
+                            :current-sort="request('sort')"
+                            :current-direction="request('direction', 'desc')"
+                        />
+
+                        <x-admin.list.sortable-th
+                            width="140px"
+                            label="وضعیت"
+                            key="status"
+                            :current-sort="request('sort')"
+                            :current-direction="request('direction', 'desc')"
+                        />
+
+                        <x-admin.list.sortable-th
+                            width="170px"
+                            label="پیشرفت"
+                            key="progress_percentage"
+                            :current-sort="request('sort')"
+                            :current-direction="request('direction', 'desc')"
+                        />
+
                         <x-admin.list.th>برچسب‌ها</x-admin.list.th>
-                        <x-admin.list.th width="130px">آخرین بروزرسانی</x-admin.list.th>
+
+                        <x-admin.list.sortable-th
+                            width="130px"
+                            label="آخرین بروزرسانی"
+                            key="updated_at"
+                            :current-sort="request('sort')"
+                            :current-direction="request('direction', 'desc')"
+                        />
                     </tr>
                 </x-admin.list.thead>
 
@@ -121,15 +179,27 @@
                     @if($projects->isNotEmpty())
                         @foreach($projects as $project)
                             <x-admin.list.tr
-                                ::class="{ 'bg-brand-50/40 ring-1 ring-inset ring-brand-100': isOpen({{ $project->id }}) }"
+                                ::class="{
+                            'bg-brand-50/40 ring-1 ring-inset ring-brand-100': isOpen({{ $project->id }}),
+                            'bg-slate-50/90': isSelected({{ $project->id }})
+                        }"
                             >
                                 <x-admin.list.td align="center">
-                                    <x-admin.list.checkbox name="ids[]" :value="$project->id"/>
+                                    <label class="inline-flex cursor-pointer items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            name="ids[]"
+                                            value="{{ $project->id }}"
+                                            class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
+                                            :checked="isSelected({{ $project->id }})"
+                                            x-on:change="toggleSelection({{ $project->id }})"
+                                        >
+                                    </label>
                                 </x-admin.list.td>
 
                                 <x-admin.list.td>
                                     <div
-                                        class="h-14 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                                        class="h-14 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm">
                                         @if($project->cover_url)
                                             <img src="{{ $project->cover_url }}" alt=""
                                                  class="h-full w-full object-cover">
@@ -381,10 +451,9 @@
                                                         </div>
 
                                                         <div
-                                                            class="border-t border-slate-200 pt-3 text-xs text-slate-500 leading-6">
+                                                            class="border-t border-slate-200 pt-3 text-xs leading-6 text-slate-500">
                                                             این بخش فقط برای پیش‌نمایش سریع تغییرات است و بعد از ذخیره،
-                                                            داده
-                                                            واقعی به‌روزرسانی می‌شود.
+                                                            داده واقعی به‌روزرسانی می‌شود.
                                                         </div>
                                                     </div>
                                                 </div>
@@ -398,11 +467,34 @@
                         <x-admin.list.empty
                             colspan="7"
                             title="پروژه‌ای برای نمایش وجود ندارد"
-                            description="هنوز هیچ پروژه‌ای ایجاد نشده است."
+                            description="هنوز هیچ پروژه‌ای ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
+                            action-text="افزودن پروژه جدید"
+                            :action-href="route('admin.projects.create')"
                         />
                     @endif
                 </x-admin.list.tbody>
             </x-admin.list.table>
+
+            @if(method_exists($projects, 'links'))
+                <div
+                    class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-soft">
+                    <div class="text-xs text-slate-500">
+                        @if(method_exists($projects, 'total'))
+                            نمایش
+                            <span class="font-bold text-slate-700">{{ $projects->firstItem() }}</span>
+                            تا
+                            <span class="font-bold text-slate-700">{{ $projects->lastItem() }}</span>
+                            از
+                            <span class="font-bold text-slate-700">{{ $projects->total() }}</span>
+                            پروژه
+                        @endif
+                    </div>
+
+                    <div>
+                        {{ $projects->links() }}
+                    </div>
+                </div>
+            @endif
         </div>
     </form>
 @endsection
@@ -412,6 +504,7 @@
         document.addEventListener('alpine:init', () => {
             Alpine.data('adminListQuickEdit', (initialOpenId = null) => ({
                 openId: initialOpenId,
+                selected: [],
 
                 isOpen(id) {
                     return this.openId === id;
@@ -434,6 +527,40 @@
                         this.close();
                     }
                 },
+
+                toggleSelection(id) {
+                    if (this.selected.includes(id)) {
+                        this.selected = this.selected.filter(item => item !== id);
+                        return;
+                    }
+
+                    this.selected.push(id);
+                },
+
+                isSelected(id) {
+                    return this.selected.includes(id);
+                },
+
+                toggleAll(ids) {
+                    if (this.selected.length === ids.length) {
+                        this.selected = [];
+                        return;
+                    }
+
+                    this.selected = [...ids];
+                },
+
+                clearSelection() {
+                    this.selected = [];
+                },
+
+                get selectedCount() {
+                    return this.selected.length;
+                },
+
+                isAllSelected(ids) {
+                    return ids.length > 0 && this.selected.length === ids.length;
+                }
             }));
         });
     </script>
