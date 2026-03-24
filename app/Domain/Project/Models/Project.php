@@ -4,6 +4,7 @@ namespace App\Domain\Project\Models;
 
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
+use App\Domain\Project\Scopes\ActiveProjectScope;
 use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
@@ -33,6 +34,14 @@ class Project extends Model
     protected $casts = [
         'status' => ProjectStatusEnum::class,
     ];
+
+    /**
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ActiveProjectScope());
+    }
 
     /**
      * Get the route key name for Laravel route model binding.

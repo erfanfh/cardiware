@@ -57,7 +57,7 @@ new class extends Component {
                 $query->where('status', $request->status);
             })
             ->orderBy($sort, $direction)
-            ->paginate(1)
+            ->paginate(10)
             ->withQueryString();
     }
 
@@ -243,9 +243,9 @@ new class extends Component {
 
                                 <form method="POST"
                                       action="{{ route('admin.posts.destroy', $post) }}"
-                                      class="inline-block"
+                                      class="inline-block js-confirm"
                                       data-confirm-title="حذف نوشته"
-                                      data-confirm-text="نوشته برای همیشه حذف خواهد شد."
+                                      data-confirm-text="نوشته حذف و به سطل زباله منتقل میشود."
                                 >
                                     @csrf
                                     @method('DELETE')
@@ -264,7 +264,7 @@ new class extends Component {
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="p-4 text-center">
+                        <td colspan="11" class="p-4 text-center">
                             <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                         </td>
                     </tr>
