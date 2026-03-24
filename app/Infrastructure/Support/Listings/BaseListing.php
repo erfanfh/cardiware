@@ -155,5 +155,11 @@ abstract class BaseListing
     /**
      * @return array{sort: string, direction?: 'asc'|'desc'}
      */
-    abstract protected function defaultSort(): array;
+    protected function defaultSort(): array
+    {
+        return [
+            'sort' => array_values($this->allowedSorts())[0] ?? null,
+            'direction' => 'desc',
+        ];
+    }
 }
