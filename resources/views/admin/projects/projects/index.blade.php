@@ -42,24 +42,13 @@
 
                         <x-admin.list.th width="90px">تصویر</x-admin.list.th>
 
-                        <x-admin.list.sortable-th
-                            label="عنوان"
-                            key="title"
-                            :current-sort="request('sort')"
-                            :current-direction="request('direction', 'desc')"
-                        />
+                        <x-admin.list.th>عنوان</x-admin.list.th>
 
-                        <x-admin.list.sortable-th
-                            width="140px"
-                            label="وضعیت"
-                            key="status"
-                            :current-sort="request('sort')"
-                            :current-direction="request('direction', 'desc')"
-                        />
+                        <x-admin.list.th width="140px">وضعیت</x-admin.list.th>
 
                         <x-admin.list.sortable-th
                             width="170px"
-                            label="پیشرفت"
+                            label="درصد پیشرفت"
                             key="progress_percentage"
                             :current-sort="request('sort')"
                             :current-direction="request('direction', 'desc')"
@@ -69,8 +58,8 @@
 
                         <x-admin.list.sortable-th
                             width="130px"
-                            label="آخرین بروزرسانی"
-                            key="updated_at"
+                            label="زمان ایجاد"
+                            key="created_at"
                             :current-sort="request('sort')"
                             :current-direction="request('direction', 'desc')"
                         />
@@ -101,9 +90,9 @@
 
                                 <x-admin.list.td>
                                     <div
-                                        class="h-14 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm">
-                                        @if($project->cover_url)
-                                            <img src="{{ $project->cover_url }}" alt=""
+                                        class="h-18 w-20 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 shadow-sm">
+                                        @if($project->cover?->url)
+                                            <img src="{{ $project->cover?->url }}" alt="{{ $project->title }}"
                                                  class="h-full w-full object-cover">
                                         @else
                                             <div
@@ -116,7 +105,7 @@
 
                                 <x-admin.list.td>
                                     <div class="min-w-[280px]">
-                                        <a href="{{ route('admin.projects.edit', $project) }}"
+                                        <a href="{{ route('projects.detail', $project) }}" target="_blank"
                                            class="line-clamp-1 text-sm font-bold text-slate-800 transition hover:text-brand-600">
                                             {{ $project->title }}
                                         </a>
@@ -125,7 +114,7 @@
                                             <span>#{{ $project->id }}</span>
 
                                             @if($project->slug)
-                                                <span class="text-slate-300">•</span>
+                                                <span class="text-slate-300 pb-1">•</span>
                                                 <span dir="ltr">{{ $project->slug }}</span>
                                             @endif
                                         </div>
@@ -143,6 +132,7 @@
 
                                             <x-admin.list.action
                                                 tag="button"
+                                                class="cursor-pointer"
                                                 x-on:click="toggle({{ $project->id }})"
                                                 x-text="isOpen({{ $project->id }}) ? 'بستن ویرایش سریع' : 'ویرایش سریع'"
                                             >
@@ -161,71 +151,25 @@
                                             <span class="text-slate-300">|</span>
 
                                             <x-admin.list.action
+                                                class="cursor-pointer"
                                                 tag="button"
                                                 variant="danger"
                                             >
                                                 حذف
                                             </x-admin.list.action>
-
-                                            <x-admin.dropdown>
-                                                <x-slot:trigger>
-                                                    <button
-                                                        type="button"
-                                                        x-on:click="open = !open"
-                                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
-                                                    >
-                                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                                                            <circle cx="5" cy="12" r="1.8"/>
-                                                            <circle cx="12" cy="12" r="1.8"/>
-                                                            <circle cx="19" cy="12" r="1.8"/>
-                                                        </svg>
-                                                    </button>
-                                                </x-slot:trigger>
-
-                                                <x-admin.dropdown-item
-                                                    href="{{ route('admin.projects.edit', $project) }}">
-                                                    <span>ویرایش کامل</span>
-                                                </x-admin.dropdown-item>
-
-                                                <x-admin.dropdown-item href="{{ route('projects.detail', $project) }}"
-                                                                       target="_blank">
-                                                    <span>مشاهده در سایت</span>
-                                                </x-admin.dropdown-item>
-
-                                                <x-admin.dropdown-item tag="button">
-                                                    <span>تکثیر پروژه</span>
-                                                </x-admin.dropdown-item>
-
-                                                <x-admin.dropdown-item tag="button" variant="danger"
-                                                                       x-on:click="$dispatch('confirm-delete-project', { id: {{ $project->id }} })">
-                                                    <span>حذف پروژه</span>
-                                                </x-admin.dropdown-item>
-                                            </x-admin.dropdown>
                                         </x-admin.list.row-actions>
                                     </div>
                                 </x-admin.list.td>
 
                                 <x-admin.list.td>
-                                    @php
-                                        $projectStatusBadgeColors = [
-                                            'draft' => 'slate',
-                                            'active' => 'green',
-                                            'in_progress' => 'blue',
-                                            'completed' => 'emerald',
-                                            'archived' => 'yellow',
-                                            'inactive' => 'red',
-                                        ];
-                                        $statusValue = $project->status?->value;
-                                        $statusColor = $projectStatusBadgeColors[$statusValue] ?? 'slate';
-                                    @endphp
-
-                                    <x-admin.badge :color="$statusColor">
+                                    <x-admin.badge
+                                        :color="$project->status === \App\Domain\Project\Enums\ProjectStatusEnum::ACTIVE ? 'green' : 'red'">
                                         {{ $project->status?->label() ?? 'نامشخص' }}
                                     </x-admin.badge>
                                 </x-admin.list.td>
 
                                 <x-admin.list.td>
-                                    <x-admin.progress.mini :value="$project->progress_percentage ?? 0"/>
+                                    <x-admin.progress.mini :value="$project->progress_percent ?? 0"/>
                                 </x-admin.list.td>
 
                                 <x-admin.list.td>
@@ -234,8 +178,8 @@
                                             @foreach($project->tags as $tag)
                                                 <span
                                                     class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200">
-                                            {{ $tag }}
-                                        </span>
+                                                    {{ $tag->title }}
+                                                </span>
                                             @endforeach
                                         @else
                                             <span class="text-xs text-slate-400">بدون برچسب</span>
@@ -246,6 +190,7 @@
                                 <x-admin.list.td muted>
                                     <div class="text-xs leading-6">
                                         <div>{{ jalali_date($project->updated_at, 'Y/m/d') }}</div>
+                                        <div>{{ jalali_date($project->updated_at, 'H:i') }}</div>
                                     </div>
                                 </x-admin.list.td>
                             </x-admin.list.tr>
@@ -253,9 +198,9 @@
                             <x-admin.list.quick-edit-row :row-id="$project->id" colspan="7">
                                 <div
                                     x-data="{
-                                status: @js(old('status', $project->status?->value)),
-                                progress: @js(old('progress_percentage', $project->progress_percentage ?? 0))
-                            }"
+                                        status: @js(old('status', $project->status?->value)),
+                                        progress: @js(old('progress_percentage', $project->progress_percentage ?? 0))
+                                    }"
                                     class="space-y-5"
                                 >
                                     <form
