@@ -1,5 +1,7 @@
 <?php
 
+use App\Domain\System\Interfaces\PageViewableInterface;
+use App\Domain\System\Models\PageView;
 use App\Infrastructure\Services\Date\DateConverterService;
 use Carbon\Carbon;
 
@@ -195,5 +197,21 @@ if (!function_exists('get_setting')) {
 
             return $default;
         }
+    }
+}
+
+if (!function_exists('page_views')) {
+    function page_views(PageViewableInterface $model): string
+    {
+        $modelClass = class_basename($model);
+
+        return Cache::remember("views:$modelClass:$model->id", config('cache.page_views_lifetime') * 60, function () use ($model, $modelClass) {
+            $pageView = PageView::where('pageable_type', $model::class)->where('pageable_id', $model->id)->first();
+
+            if ($pageView)
+                return $pageView->count;
+            else
+                return Cache::get("temp_views:$modelClass:$model->id") ?? 0;
+        });
     }
 }

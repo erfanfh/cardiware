@@ -26,17 +26,6 @@
                                 value="{{ get_setting('general', 'subtitle') }}"
                             />
                         </x-admin.field>
-
-                        <div class="w-56 max-w-full">
-                            <x-admin.field
-                                label="فاوآیکون"
-                            >
-                                <x-admin.form.media-picker
-                                    name="favicon"
-                                    :mediaId="get_setting('general', 'favicon')->id"
-                                />
-                            </x-admin.field>
-                        </div>
                     </div>
                 </x-admin.metabox>
 

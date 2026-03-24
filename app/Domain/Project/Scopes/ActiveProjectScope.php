@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Domain\Project\Scopes;
+
+use App\Domain\Project\Enums\ProjectStatusEnum;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
+
+class ActiveProjectScope implements Scope
+{
+    public function apply(Builder $builder, Model $model): void
+    {
+        if (auth()->check() && auth()->user()->role->is_super_admin && !request()->routeIs('admin.*'))
+            return;
+        else
+            $builder->where('status', ProjectStatusEnum::ACTIVE->value);
+    }
+}

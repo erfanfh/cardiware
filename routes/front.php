@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['web'])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
-
+        Route::controller(PostController::class)->name('posts.')->group(function () {
+            Route::get('{post}', 'detail')->name('detail');
+            Route::get('posts', 'list')->name('list');
+        });
         require __DIR__ . '/front/identity.php';
         require __DIR__ . '/front/project.php';
         require __DIR__ . '/front/search.php';

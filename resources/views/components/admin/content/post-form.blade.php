@@ -22,7 +22,7 @@
     $published_at = old('published_at', isset($post?->published_at) ? $post->published_at : '');
 @endphp
 
-<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="js-confirm bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
     @csrf
     @if($isEdit)
         @method('PUT')
