@@ -23,7 +23,7 @@ class ProjectController extends Controller
      */
     public function index(): View
     {
-        $projects = Project::latest()->get();
+        $projects = Project::latest()->paginate(10);
         $statuses = [];
         foreach (ProjectStatusEnum::cases() as $status) {
             $statuses[$status->value] = $status->label();
