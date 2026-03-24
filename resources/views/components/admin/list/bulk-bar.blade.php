@@ -72,7 +72,7 @@
                         x-bind:disabled="selectedCount === 0 || !bulkAction"
                         x-on:click="submitBulkAction($refs.bulkActionForm)"
                         size="sm"
-                        class="leading-10"
+                        class="h-10 leading-10"
                     >
                         {{ $buttonText }}
                     </x-admin.button>
@@ -84,7 +84,7 @@
                         x-show="selectedCount > 0"
                         x-on:click="clearSelection()"
                         size="sm"
-                        class="leading-10"
+                        class="h-10 leading-10"
                     >
                         لغو انتخاب
                     </x-admin.button>
