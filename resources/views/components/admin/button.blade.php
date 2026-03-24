@@ -4,7 +4,7 @@
 ])
 
 @php
-    $base = 'inline-flex items-center justify-center gap-2 font-bold transition rounded-xl select-none';
+    $base = 'inline-flex items-center justify-center gap-2 font-bold transition rounded-xl select-none cursor-pointer';
     $sizes = [
         'sm' => 'h-9 px-3 text-xs',
         'md' => 'h-10 px-4 text-sm',

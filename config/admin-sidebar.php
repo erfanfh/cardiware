@@ -103,6 +103,19 @@ return [
     ],
 
     [
+        'label' => 'چیدمان صفحات',
+        'icon' => 'icons.dashboard-square-setting',
+        'children' => [
+            [
+                'label' => 'صفحه اصلی',
+                'route' => 'admin.page-layouts.show',
+                'routeParameters' => ['home'],
+                'icon' => 'icons.dashboard-square-setting'
+            ],
+        ],
+    ],
+
+    [
         'label' => 'تنظیمات سایت',
         'route' => 'admin.settings.general',
         'icon' => 'icons.settings-02',

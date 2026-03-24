@@ -11,6 +11,7 @@ use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
@@ -22,15 +23,12 @@ class MediaPicker extends Component
     use WithPagination;
     use WithFileUploads;
 
-    public string $name;
+    public ?string $itemKey = null;
+    public bool $opened = false;
 
     public ?int $selectedMediaFileId = null;
     public ?string $selectedUrl = null;
 
-    /**
-     * Data shown in preview panel (WP-like)
-     * @var array{id:int|null,title:string|null,url:string|null,path:string|null,size_bytes:int|null,size_human:string|null}
-     */
     public array $selectedInfo = [
         'id' => null,
         'title' => null,
@@ -54,30 +52,62 @@ class MediaPicker extends Component
         'search' => ['except' => ''],
     ];
 
-    public function mount(?int $selectedMediaFileId = null): void
+    public ?int $pendingMediaFileId = null;
+
+    public string $activeTab = 'upload';
+
+    #[On('mfip-open-singleton')]
+    public function openSingleton(string $itemKey, ?int $selectedMediaFileId = null): void
     {
+        $this->itemKey = $itemKey;
         $this->selectedMediaFileId = $selectedMediaFileId;
+        $this->pendingMediaFileId = $selectedMediaFileId;
+
+        $this->activeTab = $selectedMediaFileId ? 'library' : 'upload';
 
         $this->resetPage();
         $this->refreshSelected();
+
+        $this->opened = true;
+
+        $this->dispatch('mfip-grid-refresh');
+    }
+
+    public function previewSelection(int $mediaFileId): void
+    {
+        $this->pendingMediaFileId = $mediaFileId;
+        $this->selectedMediaFileId = $mediaFileId;
+
+        $this->refreshSelected();
+    }
+
+    public function closeModal(): void
+    {
+        $this->opened = false;
+        $this->dispatch('mfip-close-modal');
+    }
+
+    private function emptySelectedInfo(): array
+    {
+        return [
+            'id' => null,
+            'title' => null,
+            'url' => null,
+            'path' => null,
+            'size_bytes' => null,
+            'size_human' => null,
+            'uploaded_at' => null,
+            'uploaded_by' => null,
+            'width' => null,
+            'height' => null,
+        ];
     }
 
     private function refreshSelected(): void
     {
         if (!$this->selectedMediaFileId) {
             $this->selectedUrl = null;
-            $this->selectedInfo = [
-                'id' => null,
-                'title' => null,
-                'url' => null,
-                'path' => null,
-                'size_bytes' => null,
-                'size_human' => null,
-                'uploaded_at' => null,
-                'uploaded_by' => null,
-                'width' => null,
-                'height' => null,
-            ];
+            $this->selectedInfo = $this->emptySelectedInfo();
             return;
         }
 
@@ -87,18 +117,7 @@ class MediaPicker extends Component
 
         if (!$mediaFile) {
             $this->selectedUrl = null;
-            $this->selectedInfo = [
-                'id' => null,
-                'title' => null,
-                'url' => null,
-                'path' => null,
-                'size_bytes' => null,
-                'size_human' => null,
-                'uploaded_at' => null,
-                'uploaded_by' => null,
-                'width' => null,
-                'height' => null,
-            ];
+            $this->selectedInfo = $this->emptySelectedInfo();
             return;
         }
 
@@ -106,11 +125,11 @@ class MediaPicker extends Component
         $this->selectedUrl = $url;
 
         $path = $mediaFile->primaryVariant?->path;
-
         $sizeBytes = null;
 
         try {
             $disk = $mediaFile->primaryVariant?->disk?->value;
+
             if ($disk && $path) {
                 $sizeBytes = Storage::disk($disk)->size($path);
             }
@@ -126,7 +145,7 @@ class MediaPicker extends Component
             'size_bytes' => $sizeBytes,
             'size_human' => $sizeBytes ? $this->humanBytes($sizeBytes) : null,
             'uploaded_at' => jalali_date($mediaFile->processed_at),
-            'uploaded_by' => ($mediaFile->creator?->name ?? '') . ' ' . ($mediaFile->creator?->family ?? ''),
+            'uploaded_by' => trim(($mediaFile->creator?->first_name ?? '') . ' ' . ($mediaFile->creator?->last_name ?? '')),
             'width' => $mediaFile->primaryVariant?->width,
             'height' => $mediaFile->primaryVariant?->height,
         ];
@@ -137,10 +156,12 @@ class MediaPicker extends Component
         $units = ['بایت', 'کیلوبایت', 'مگابایت', 'گیگابایت', 'ترابایت'];
         $i = 0;
         $n = (float)$bytes;
+
         while ($n >= 1024 && $i < count($units) - 1) {
             $n /= 1024;
             $i++;
         }
+
         return rtrim(rtrim(number_format($n, 0, '.', ''), '0'), '.') . ' ' . $units[$i];
     }
 
@@ -149,9 +170,6 @@ class MediaPicker extends Component
         $this->resetPage();
     }
 
-    /**
-     * ✅ When user picks a file, upload it immediately (WP-like)
-     */
     public function updatedUpload(): void
     {
         $this->resetErrorBag('upload');
@@ -164,7 +182,6 @@ class MediaPicker extends Component
             'upload' => 'required|file|max:5120|mimes:jpg,jpeg,png,webp',
         ]);
 
-        // ✅ Auto-save immediately (no preview step)
         $this->saveUpload();
     }
 
@@ -182,20 +199,19 @@ class MediaPicker extends Component
                 disk: MediaFileDiskEnum::PUBLIC
             );
 
-            // ✅ clear upload input
             $this->clearUpload();
 
-            // ✅ select new file and refresh preview info
             $this->selectedMediaFileId = $media->id;
+            $this->pendingMediaFileId = $media->id;
             $this->refreshSelected();
-
-            // ✅ refresh list to show newly added item
             $this->resetPage();
 
-            // ✅ tell Alpine to switch to library (and maybe show success)
+            $this->activeTab = 'library';
+
+            $this->dispatchSelectionChanged();
+
             $this->dispatch('mfip-switch-tab', tab: 'library');
             $this->dispatch('mfip-upload-saved');
-
         } catch (Throwable $e) {
             $this->addError('upload', $e->getMessage());
         }
@@ -207,12 +223,32 @@ class MediaPicker extends Component
         $this->resetErrorBag('upload');
     }
 
-    public function select(int $mediaFileId): void
+    public function confirmSelection(): void
     {
-        $this->selectedMediaFileId = $mediaFileId;
+        if (!$this->pendingMediaFileId) {
+            return;
+        }
+
+        $this->selectedMediaFileId = $this->pendingMediaFileId;
         $this->refreshSelected();
 
-        // ✅ prevent grid skeleton re-mount
+        $this->dispatchSelectionChanged();
+
+        $this->opened = false;
+        $this->dispatch('mfip-close-modal');
+
+        $this->skipRender();
+    }
+
+    public function unselect(): void
+    {
+        $this->pendingMediaFileId = null;
+        $this->selectedMediaFileId = null;
+        $this->selectedUrl = null;
+        $this->selectedInfo = $this->emptySelectedInfo();
+
+        $this->dispatchSelectionCleared();
+
         $this->skipRender();
     }
 
@@ -235,6 +271,8 @@ class MediaPicker extends Component
         $mediaFile->save();
 
         $this->selectedInfo['title'] = $mediaFile->title;
+
+        $this->dispatchSelectionChanged();
 
         $this->skipRender();
     }
@@ -261,19 +299,9 @@ class MediaPicker extends Component
 
         $this->selectedMediaFileId = null;
         $this->selectedUrl = null;
-        $this->selectedInfo = [
-            'id' => null,
-            'title' => null,
-            'url' => null,
-            'path' => null,
-            'size_bytes' => null,
-            'size_human' => null,
-            'uploaded_at' => null,
-            'uploaded_by' => null,
-            'width' => null,
-            'height' => null,
-        ];
+        $this->selectedInfo = $this->emptySelectedInfo();
 
+        $this->dispatchSelectionCleared();
         $this->resetPage();
     }
 
@@ -285,33 +313,24 @@ class MediaPicker extends Component
         );
     }
 
-    /**
-     * @return void
-     */
-    public function unselect(): void
+    private function dispatchSelectionChanged(): void
     {
-        $this->selectedMediaFileId = null;
-        $this->selectedUrl = null;
-
-        $this->selectedInfo = [
-            'id' => null,
-            'title' => null,
-            'url' => null,
-            'path' => null,
-            'size_bytes' => null,
-            'size_human' => null,
-            'uploaded_at' => null,
-            'uploaded_by' => null,
-            'width' => null,
-            'height' => null,
-        ];
-
-        $this->skipRender();
+        $this->dispatch(
+            'mfip-selected',
+            itemKey: $this->itemKey,
+            mediaId: $this->selectedInfo['id'],
+            mediaPath: $this->selectedInfo['url'], // path key, full URL value
+        );
     }
 
-    /**
-     * @return View
-     */
+    private function dispatchSelectionCleared(): void
+    {
+        $this->dispatch(
+            'mfip-cleared',
+            itemKey: $this->itemKey,
+        );
+    }
+
     public function render(): View
     {
         return view('livewire.admin.media.media-picker', [

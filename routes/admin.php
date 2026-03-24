@@ -15,4 +15,5 @@ Route::middleware(['web', 'auth:web'])
         require __DIR__ . '/admin/project.php';
         require __DIR__ . '/admin/system.php';
         require __DIR__ . '/admin/discussion.php';
+        require __DIR__ . '/admin/layout.php';
     });

@@ -10,6 +10,7 @@ use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class MediaFile extends Model
 {
@@ -51,6 +52,19 @@ class MediaFile extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the public URL of the media file.
+     *
+     * @return string|null
+     */
+    public function getUrlAttribute(): ?string
+    {
+        if ($this->visibility !== MediaFileVisibilityEnum::PUBLIC)
+            return null;
+
+        return Storage::disk($this->primaryVariant->disk->value)->url($this->primaryVariant->path);
     }
 }
 

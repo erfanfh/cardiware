@@ -6,164 +6,309 @@
     <x-admin.form action="{{ route('admin.settings.footer.store') }}" method="put">
         <x-admin.page>
             <div class="space-y-6">
-
-                <x-admin.metabox title="درباره ما">
-                    <div class="grid grid-cols-1 gap-5">
-                        <x-admin.field
-                            label="متن درباره ما"
-                            hint="این متن در بخش فوتر سایت نمایش داده می‌شود."
-                        >
-                            <x-admin.form.textarea
-                                name="footer_about"
-                                rows="5"
-                                placeholder="متن درباره ما را وارد کنید..."
-                            >{{ get_setting('footer', 'footer_about') }}</x-admin.form.textarea>
-                        </x-admin.field>
-                    </div>
-                </x-admin.metabox>
-
                 <x-admin.metabox title="هویت و متن‌های فوتر">
-                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
                         <x-admin.field
                             label="لوگوی فوتر"
-                            hint="ترجیحاً PNG یا WebP با پس‌زمینه شفاف."
                         >
-                            <x-admin.form.input
-                                type="file"
-                                name="footer_logo"
+                            <x-admin.form.media-picker
+                                name="logo"
+                                :mediaId="get_setting('footer', 'logo')->id"
                             />
                         </x-admin.field>
 
                         <x-admin.field
-                            label="متن کپی‌رایت"
-                            hint="این متن در پایین‌ترین بخش فوتر نمایش داده می‌شود."
+                            class="lg:col-span-3"
+                            label="متن درباره ما"
                         >
-                            <x-admin.form.input
-                                name="footer_copyright"
-                                value="{{ get_setting('footer', 'footer_copyright') }}"
-                                placeholder="مثلاً تمامی حقوق برای مودینگ وی محفوظ است."
+                            <x-admin.form.textarea
+                                name="about"
+                                rows="5"
+                                value="{{ get_setting('footer', 'about') }}"
                             />
                         </x-admin.field>
 
-                        <div class="lg:col-span-2">
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="متن کپی‌رایت"
+                        >
+                            <x-admin.form.input
+                                name="copyright"
+                                value="{{ get_setting('footer', 'copyright') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="عنوان باکس هدف و کیفیت"
+                        >
+                            <x-admin.form.input
+                                name="quality_title"
+                                value="{{ get_setting('footer', 'quality_title') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-3"
+                            label="متن باکس هدف و کیفیت"
+                        >
+                            <x-admin.form.textarea
+                                name="quality_text"
+                                rows="4"
+                                value="{{ get_setting('footer', 'quality_text') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="عنوان باکس تعهد ما"
+                        >
+                            <x-admin.form.input
+                                name="commitment_title"
+                                value="{{ get_setting('footer', 'commitment_title') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-3"
+                            label="متن باکس تعهد ما"
+                        >
+                            <x-admin.form.textarea
+                                name="commitment_text"
+                                rows="4"
+                                value="{{ get_setting('footer', 'commitment_text') }}"
+                            />
+                        </x-admin.field>
+
+                        <div class="flex flex-col gap-5">
                             <x-admin.field
-                                label="متن هدف و کیفیت"
-                                hint="متن معرفی کوتاه برای کیفیت خدمات یا هدف مجموعه."
+                                label="عنوان باکس فروشگاه"
                             >
-                                <x-admin.form.textarea
-                                    name="footer_quality_text"
-                                    rows="4"
-                                    placeholder="متن هدف و کیفیت..."
-                                >{{ get_setting('footer', 'footer_quality_text') }}</x-admin.form.textarea>
+                                <x-admin.form.input
+                                    name="store_title"
+                                    value="{{ get_setting('footer', 'store_title') }}"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field
+                                label="لینک فروشگاه"
+                            >
+                                <x-admin.form.input
+                                    name="store_url"
+                                    value="{{ get_setting('footer', 'store_url') }}"
+                                    class="direction-ltr"
+                                />
                             </x-admin.field>
                         </div>
 
                         <x-admin.field
-                            label="متن تعهد ما"
+                            class="lg:col-span-3"
+                            label="متن باکس فروشگاه"
                         >
                             <x-admin.form.textarea
-                                name="footer_commitment_text"
+                                name="store_text"
                                 rows="4"
-                                placeholder="متن تعهد ما..."
-                            >{{ get_setting('footer', 'footer_commitment_text') }}</x-admin.form.textarea>
+                                value="{{ get_setting('footer', 'store_text') }}"
+                            />
+                        </x-admin.field>
+                    </div>
+                </x-admin.metabox>
+
+                <x-admin.metabox title="ستون 1 - ارتباط با ما">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="عنوان ستون"
+                        >
+                            <x-admin.form.input
+                                name="column1_title"
+                                value="{{ get_setting('footer', 'column1_title') }}"
+                            />
                         </x-admin.field>
 
                         <x-admin.field
-                            label="متن مودینگ استور"
+                            class="lg:col-span-2"
+                            label="آدرس ایمیل"
                         >
-                            <x-admin.form.textarea
-                                name="footer_store_text"
-                                rows="4"
-                                placeholder="متن مربوط به مودینگ استور..."
-                            >{{ get_setting('footer', 'footer_store_text') }}</x-admin.form.textarea>
+                            <x-admin.form.input
+                                name="email"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'email') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="شماره تماس"
+                        >
+                            <x-admin.form.input
+                                name="phone"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'phone') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی تلگرام"
+                        >
+                            <x-admin.form.input
+                                name="telegram"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'telegram') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی اینستاگرام"
+                        >
+                            <x-admin.form.input
+                                name="instagram"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'instagram') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آدرس 1"
+                        >
+                            <x-admin.form.input
+                                name="address_1"
+                                value="{{ get_setting('footer', 'address_1') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آدرس 2"
+                        >
+                            <x-admin.form.input
+                                name="address_2"
+                                value="{{ get_setting('footer', 'address_2') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آدرس 3"
+                        >
+                            <x-admin.form.input
+                                name="address_3"
+                                value="{{ get_setting('footer', 'address_3') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آدرس 4"
+                        >
+                            <x-admin.form.input
+                                name="address_4"
+                                value="{{ get_setting('footer', 'address_4') }}"
+                            />
                         </x-admin.field>
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="نمادها">
-                    <div class="space-y-4">
-                        <div class="text-xs text-slate-500">
-                            برای هر نماد می‌توانید تصویر و لینک مربوطه را ثبت کنید.
-                        </div>
-
-                        <x-admin.form.repeater
-                            name="footer_badges"
-                            addLabel="افزودن نماد"
-                            emptyTitle="هنوز نمادی ثبت نشده است"
-                            emptyDescription="از دکمه افزودن نماد برای ایجاد اولین آیتم استفاده کنید."
+                <x-admin.metabox title="ستون 2 - خدمات و محصولات">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="عنوان ستون"
                         >
-                            {{-- shell repeater items --}}
-                        </x-admin.form.repeater>
+                            <x-admin.form.input
+                                name="column2_title"
+                                value="{{ get_setting('footer', 'column2_title') }}"
+                            />
+                        </x-admin.field>
+
+                        <div class="mt-5 lg:col-span-4">
+                            <x-admin.form.repeater
+                                :items="get_setting('footer', 'column2_items')"
+                                name="column2_items"
+                                title="آیتم ها"
+                                addText="افزودن آیتم"
+                                :defaultItem="[
+                                    'title' => '',
+                                    'url' => '',
+                                ]"
+                            >
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-6">
+                                        <x-admin.field label="عنوان" required>
+                                            <x-admin.form.input x-model="it.title" x-bind:name="field(i, 'title')"/>
+                                        </x-admin.field>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <x-admin.field label="لینک" required>
+                                            <x-admin.form.input x-model="it.url"
+                                                                x-bind:name="field(i, 'url')"
+                                                                class="direction-ltr"/>
+                                        </x-admin.field>
+                                    </div>
+                                </div>
+                            </x-admin.form.repeater>
+                        </div>
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="آدرس‌ها">
-                    <div class="space-y-4">
-                        <div class="text-xs text-slate-500">
-                            آدرس‌ها و اطلاعات تماس قابل نمایش در فوتر را از این بخش مدیریت کنید.
-                        </div>
-
-                        <x-admin.form.repeater
-                            name="footer_addresses"
-                            addLabel="افزودن آدرس"
-                            emptyTitle="هنوز آدرسی ثبت نشده است"
-                            emptyDescription="می‌توانید چند آدرس یا راه ارتباطی مختلف اضافه کنید."
+                <x-admin.metabox title="ستون 3 - دسترسی سریع">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="عنوان ستون"
                         >
-                        </x-admin.form.repeater>
+                            <x-admin.form.input
+                                name="column3_title"
+                                value="{{ get_setting('footer', 'column3_title') }}"
+                            />
+                        </x-admin.field>
+
+                        <div class="mt-5 lg:col-span-4">
+                            <x-admin.form.repeater
+                                :items="get_setting('footer', 'column3_items')"
+                                name="column3_items"
+                                title="آیتم ها"
+                                addText="افزودن آیتم"
+                                :defaultItem="[
+                                    'title' => '',
+                                    'url' => '',
+                                ]"
+                            >
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-6">
+                                        <x-admin.field label="عنوان" required>
+                                            <x-admin.form.input x-model="it.title" x-bind:name="field(i, 'title')"/>
+                                        </x-admin.field>
+                                    </div>
+
+                                    <div class="col-span-6">
+                                        <x-admin.field label="لینک" required>
+                                            <x-admin.form.input x-model="it.url"
+                                                                x-bind:name="field(i, 'url')"
+                                                                class="direction-ltr"/>
+                                        </x-admin.field>
+                                    </div>
+                                </div>
+                            </x-admin.form.repeater>
+                        </div>
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="شبکه‌های اجتماعی">
-                    <div class="space-y-4">
-                        <div class="text-xs text-slate-500">
-                            لینک شبکه‌های اجتماعی نمایش‌داده‌شده در فوتر را از این بخش تنظیم کنید.
-                        </div>
-
-                        <x-admin.form.repeater
-                            name="footer_social_links"
-                            addLabel="افزودن شبکه اجتماعی"
-                            emptyTitle="هنوز شبکه اجتماعی ثبت نشده است"
-                            emptyDescription="مثلاً تلگرام، اینستاگرام، یوتیوب و ..."
+                <x-admin.metabox title="ستون 4 - نماد ها">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="عنوان ستون"
                         >
-                            {{-- shell repeater items --}}
-                        </x-admin.form.repeater>
+                            <x-admin.form.input
+                                name="column4_title"
+                                value="{{ get_setting('footer', 'column4_title') }}"
+                            />
+                        </x-admin.field>
                     </div>
                 </x-admin.metabox>
-
-                <x-admin.metabox title="لینک‌های دسترسی سریع">
-                    <div class="space-y-4">
-                        <div class="text-xs text-slate-500">
-                            لینک‌های مهم و پرکاربرد فوتر را از این بخش وارد کنید.
-                        </div>
-
-                        <x-admin.form.repeater
-                            name="footer_quick_links"
-                            addLabel="افزودن لینک"
-                            emptyTitle="هنوز لینکی ثبت نشده است"
-                            emptyDescription="عنوان و لینک هر مورد را بعداً داخل آیتم‌های ریپیتر قرار می‌دهیم."
-                        >
-                            {{-- shell repeater items --}}
-                        </x-admin.form.repeater>
-                    </div>
-                </x-admin.metabox>
-
-                <x-admin.metabox title="خدمات و محصولات">
-                    <div class="space-y-4">
-                        <div class="text-xs text-slate-500">
-                            لینک‌های مربوط به خدمات و محصولات قابل نمایش در فوتر.
-                        </div>
-
-                        <x-admin.form.repeater
-                            name="footer_services_links"
-                            addLabel="افزودن لینک خدمات/محصول"
-                            emptyTitle="هنوز موردی ثبت نشده است"
-                            emptyDescription="این بخش برای نمایش لینک‌های خدمات و محصولات فوتر استفاده می‌شود."
-                        >
-                            {{-- shell repeater items --}}
-                        </x-admin.form.repeater>
-                    </div>
-                </x-admin.metabox>
-
             </div>
         </x-admin.page>
 

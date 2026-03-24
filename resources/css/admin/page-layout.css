@@ -1,0 +1,46 @@
+.layout-sortable-ghost {
+    opacity: 0.45;
+}
+
+.layout-sortable-chosen {
+    transform: rotate(1deg);
+}
+
+.layout-sortable-drag {
+    cursor: grabbing !important;
+}
+
+.layout-is-sorting [data-layout-area] {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.layout-is-sorting [data-layout-area] {
+    border-color: rgb(203 213 225);
+    background-color: rgb(248 250 252 / 0.95);
+}
+
+.layout-sortable-ghost {
+    opacity: 0.45;
+}
+
+.layout-sortable-chosen {
+    transform: rotate(1deg);
+}
+
+.layout-sortable-drag {
+    cursor: grabbing !important;
+}
+
+.layout-is-sorting [data-layout-area] {
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.layout-area-allowed {
+    border-color: rgb(148 163 184) !important;
+    background-color: rgb(248 250 252 / 0.95) !important;
+}
+
+.layout-area-forbidden {
+    border-color: rgb(252 165 165) !important;
+    background-color: rgb(254 242 242 / 0.95) !important;
+}

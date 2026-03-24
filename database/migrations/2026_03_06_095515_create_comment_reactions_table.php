@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('comment_id')->constrained('comments');
             $table->foreignId('user_id')->constrained('users');
-            $table->binary('ip_hash')->nullable();
+            $table->binary('ip_hash', 32)->nullable();
             $table->string('type');
             $table->timestamps();
 

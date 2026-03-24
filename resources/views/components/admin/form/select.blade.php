@@ -1,5 +1,5 @@
 @props([
-   'name',
+   'name' => null,
    'options' => [],
    'value' => null,
    'placeholder' => null,
@@ -8,7 +8,7 @@
 <select
     name="{{ $name }}"
     {{ $attributes->merge([
-        'class' => 'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition'
+        'class' => 'w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
     ]) }}
 >
     @if($placeholder)
@@ -16,12 +16,11 @@
     @endif
 
     @foreach($options as $key => $option)
-
         @php
-            if(is_array($option)){
+            if (is_array($option)) {
                 $optValue = $option['value'];
                 $optLabel = $option['label'];
-            }else{
+            } else {
                 $optValue = $key;
                 $optLabel = $option;
             }
@@ -33,7 +32,5 @@
         >
             {{ $optLabel }}
         </option>
-
     @endforeach
-
 </select>

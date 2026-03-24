@@ -25,17 +25,12 @@ class SettingController extends Controller
      * Store general settings
      *
      * @param Request $request
-     * @param UpdateSettingAction $action
      * @return RedirectResponse
      * @throws BindingResolutionException
      */
-    public function storeGeneral(Request $request, UpdateSettingAction $action): RedirectResponse
+    public function storeGeneral(Request $request): RedirectResponse
     {
-        $fields = ['title', 'subtitle', 'favicon'];
-
-        foreach ($fields as $field) {
-            $action->execute('general', $field, $request->get($field));
-        }
+        $this->storeSettings($request, 'general');
 
         return redirect()
             ->route('admin.settings.general')
@@ -56,17 +51,12 @@ class SettingController extends Controller
      * Store header settings
      *
      * @param Request $request
-     * @param UpdateSettingAction $action
      * @return RedirectResponse
      * @throws BindingResolutionException
      */
-    public function storeHeader(Request $request, UpdateSettingAction $action): RedirectResponse
+    public function storeHeader(Request $request): RedirectResponse
     {
-        $fields = ['logo', 'ajax_search'];
-
-        foreach ($fields as $field) {
-            $action->execute('header', $field, $request->get($field));
-        }
+        $this->storeSettings($request, 'header');
 
         return redirect()
             ->route('admin.settings.header')
@@ -84,18 +74,15 @@ class SettingController extends Controller
     }
 
     /**
+     * Store footer settings
+     *
      * @param Request $request
-     * @param UpdateSettingAction $action
      * @return RedirectResponse
      * @throws BindingResolutionException
      */
-    public function storeFooter(Request $request, UpdateSettingAction $action): RedirectResponse
+    public function storeFooter(Request $request): RedirectResponse
     {
-        $fields = ['footer_about', 'footer_copyright', 'footer_quality_text', 'footer_commitment_text', 'footer_store_text'];
-
-        foreach ($fields as $field) {
-            $action->execute('footer', $field, $request->get($field));
-        }
+        $this->storeSettings($request, 'footer');
 
         return redirect()
             ->route('admin.settings.footer')
@@ -110,5 +97,36 @@ class SettingController extends Controller
     public function home(): View
     {
         return view('admin.system.settings.home');
+    }
+
+    /**
+     * Store home settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeHome(Request $request): RedirectResponse
+    {
+        $this->storeSettings($request, 'home');
+
+        return redirect()
+            ->route('admin.settings.home')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * @param Request $request
+     * @param string $group
+     * @return void
+     * @throws BindingResolutionException
+     */
+    private function storeSettings(Request $request, string $group)
+    {
+        foreach ($request->all() as $field => $value) {
+            if (in_array($field, ['_method', '_token'])) continue;
+
+            app(UpdateSettingAction::class)->execute($group, $field, $value);
+        }
     }
 }
