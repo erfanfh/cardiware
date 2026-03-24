@@ -35,8 +35,6 @@ class ProjectListing extends BaseListing
         return [
             'created_at' => 'created_at',
             'progress_percent' => 'progress_percent',
-            'released_at' => 'released_at',
-            'last_updated_at' => 'last_updated_at',
         ];
     }
 

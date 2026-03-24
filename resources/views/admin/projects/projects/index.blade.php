@@ -46,20 +46,22 @@
 
                         <x-admin.list.th width="140px">وضعیت</x-admin.list.th>
 
-                        <x-admin.list.sortable-th
+                        <x-admin.list.th
                             width="170px"
                             label="درصد پیشرفت"
-                            key="progress_percentage"
+                            sortable
+                            sortKey="progress_percent"
                             :current-sort="request('sort')"
                             :current-direction="request('direction', 'desc')"
                         />
 
                         <x-admin.list.th>برچسب‌ها</x-admin.list.th>
 
-                        <x-admin.list.sortable-th
+                        <x-admin.list.th
                             width="130px"
                             label="زمان ایجاد"
-                            key="created_at"
+                            sortable
+                            sortKey="created_at"
                             :current-sort="request('sort')"
                             :current-direction="request('direction', 'desc')"
                         />
