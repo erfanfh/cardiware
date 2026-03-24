@@ -3,7 +3,18 @@
     'method' => 'post' // post | put
 ])
 
-<form method="post" action="{{ $action }}" class="mb-12">
+<form method="post" class="mb-12"
+      action="{{ $action }}"
+      x-data
+      @keydown.enter.prevent="
+        if (
+            $event.target.tagName.toLowerCase() !== 'textarea' &&
+            $event.target.type !== 'submit' &&
+            $event.target.type !== 'button'
+        ) {
+            $event.preventDefault()
+        }
+    ">
     @csrf
 
     @if($method === 'put')

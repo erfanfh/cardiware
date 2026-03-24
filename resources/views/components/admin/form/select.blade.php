@@ -1,5 +1,5 @@
 @props([
-   'name',
+   'name' => null,
    'options' => [],
    'value' => null,
    'placeholder' => null,
@@ -16,12 +16,11 @@
     @endif
 
     @foreach($options as $key => $option)
-
         @php
-            if(is_array($option)){
+            if (is_array($option)) {
                 $optValue = $option['value'];
                 $optLabel = $option['label'];
-            }else{
+            } else {
                 $optValue = $key;
                 $optLabel = $option;
             }
@@ -33,7 +32,5 @@
         >
             {{ $optLabel }}
         </option>
-
     @endforeach
-
 </select>

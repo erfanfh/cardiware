@@ -3,7 +3,8 @@
 @php
     $label = $item['label'] ?? '';
     $route = $item['route'] ?? null;
-    $href  = $route ? route($route) : ($item['href'] ?? '#');
+    $routeParameters = $item['routeParameters'] ?? [];
+    $href  = $route ? route($route, $routeParameters) : ($item['href'] ?? '#');
 
     $iconView = $item['icon'] ?? null;
 
