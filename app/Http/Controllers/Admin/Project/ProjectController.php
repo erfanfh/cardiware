@@ -45,12 +45,12 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param ProjectRequest $request
+     * @param UpdateProjectRequest $request
      * @param CreateProjectAction $action
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function store(ProjectRequest $request, CreateProjectAction $action): RedirectResponse
+    public function store(UpdateProjectRequest $request, CreateProjectAction $action): RedirectResponse
     {
         $project = $action->execute($request->validated());
 
@@ -80,13 +80,13 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param ProjectRequest $request
+     * @param UpdateProjectRequest $request
      * @param Project $project
      * @param UpdateProjectAction $action
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(ProjectRequest $request, Project $project, UpdateProjectAction $action): RedirectResponse
+    public function update(UpdateProjectRequest $request, Project $project, UpdateProjectAction $action): RedirectResponse
     {
         $action->execute($project, $request->validated());
 
