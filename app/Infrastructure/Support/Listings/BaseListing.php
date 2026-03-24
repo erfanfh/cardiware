@@ -162,4 +162,17 @@ abstract class BaseListing
             'direction' => 'desc',
         ];
     }
+
+    public function hasActiveFilters(array $filters): bool
+    {
+        foreach ($this->filters() as $key) {
+            $value = $filters[$key] ?? null;
+
+            if (!$this->isBlank($value)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
