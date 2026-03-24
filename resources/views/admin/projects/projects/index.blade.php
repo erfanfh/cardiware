@@ -3,7 +3,10 @@
 @section('title', 'لیست پروژه‌ها')
 
 @section('content')
-    <div x-data="adminListQuickEdit()">
+    <div
+        x-data="adminListQuickEdit(@js(session('quick_edit_row_id')))"
+        x-on:keydown.window="onEscape($event)"
+    >
         <x-admin.list.table>
             <x-admin.list.thead>
                 <tr>
@@ -23,7 +26,9 @@
             <x-admin.list.tbody>
                 @if($projects->isNotEmpty())
                     @foreach($projects as $project)
-                        <x-admin.list.tr ::class="{ 'bg-brand-50/40': isOpen({{ $project->id }}) }">
+                        <x-admin.list.tr
+                            ::class="{ 'bg-brand-50/40 ring-1 ring-inset ring-brand-100': isOpen({{ $project->id }}) }"
+                        >
                             <x-admin.list.td align="center">
                                 <x-admin.list.checkbox name="ids[]" :value="$project->id"/>
                             </x-admin.list.td>
@@ -130,102 +135,166 @@
                         </x-admin.list.tr>
 
                         <x-admin.list.quick-edit-row :row-id="$project->id" colspan="7">
-                            <form
-                                method="POST"
-                                action="{{ route('admin.projects.quick-update', $project) }}"
+                            <div
+                                x-data="{
+                                status: @js(old('status', $project->status?->value)),
+                                progress: @js(old('progress_percentage', $project->progress_percentage ?? 0))
+                            }"
                                 class="space-y-5"
                             >
-                                @csrf
-                                @method('PATCH')
+                                <form
+                                    method="POST"
+                                    action="{{ route('admin.projects.quick-update', $project) }}"
+                                    class="space-y-5"
+                                >
+                                    @csrf
+                                    @method('PATCH')
 
-                                <div
-                                    class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                                    <div>
-                                        <h3 class="text-sm font-bold text-slate-800">
-                                            ویرایش سریع پروژه
-                                        </h3>
-                                        <p class="mt-1 text-xs text-slate-500">
-                                            تغییرات اصلی پروژه را بدون ورود به صفحه ویرایش انجام بده.
-                                        </p>
-                                    </div>
+                                    <div
+                                        class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
+                                        <div class="space-y-2">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <h3 class="text-sm font-bold text-slate-800">
+                                                    ویرایش سریع پروژه
+                                                </h3>
 
-                                    <div class="flex items-center gap-2">
-                                        <button
-                                            type="submit"
-                                            class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-700"
-                                        >
-                                            ذخیره تغییرات
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            x-on:click="close()"
-                                            class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                                        >
-                                            انصراف
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-12 gap-5">
-                                    <div class="col-span-12 lg:col-span-4">
-                                        <x-admin.field label="عنوان پروژه">
-                                            <x-admin.form.input
-                                                name="title"
-                                                :value="old('title', $project->title)"
-                                            />
-                                        </x-admin.field>
-                                    </div>
-
-                                    <div class="col-span-12 lg:col-span-3">
-                                        <x-admin.field label="اسلاگ">
-                                            <x-admin.form.input
-                                                name="slug"
-                                                dir="ltr"
-                                                :value="old('slug', $project->slug)"
-                                            />
-                                        </x-admin.field>
-                                    </div>
-
-                                    <div class="col-span-12 sm:col-span-6 lg:col-span-2">
-                                        <x-admin.field label="وضعیت">
-                                            <x-admin.form.select
-                                                name="status"
-                                                :options="$statuses"
-                                                :value="old('status', $project->status?->value)"
-                                            />
-                                        </x-admin.field>
-                                    </div>
-
-                                    <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-                                        <x-admin.field label="درصد پیشرفت">
-                                            <div class="space-y-2">
-                                                <x-admin.form.input
-                                                    type="number"
-                                                    name="progress_percentage"
-                                                    min="0"
-                                                    max="100"
-                                                    :value="old('progress_percentage', $project->progress_percentage ?? 0)"
-                                                />
-
-                                                <p class="text-xs text-slate-500">
-                                                    مقداری بین 0 تا 100 وارد کن.
-                                                </p>
+                                                <x-admin.badge color="blue">
+                                                    شناسه: {{ $project->id }}
+                                                </x-admin.badge>
                                             </div>
-                                        </x-admin.field>
+
+                                            <p class="text-xs text-slate-500">
+                                                اطلاعات اصلی پروژه را سریع و بدون خروج از لیست ویرایش کن.
+                                            </p>
+                                        </div>
+
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <button
+                                                type="submit"
+                                                class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-700"
+                                            >
+                                                ذخیره تغییرات
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                x-on:click="close()"
+                                                class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                                            >
+                                                انصراف
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div class="col-span-12">
-                                        <x-admin.field label="برچسب‌ها">
-                                            <x-admin.form.input
-                                                name="tags"
-                                                :value="old('tags', is_array($project->tags ?? null) ? implode('، ', $project->tags) : ($project->tags ?? ''))"
-                                                placeholder="مثلاً: لاراول، Livewire، Tailwind"
-                                            />
-                                        </x-admin.field>
+                                    <x-admin.form.error-box/>
+
+                                    <div class="grid grid-cols-12 gap-5">
+                                        <div class="col-span-12 lg:col-span-4">
+                                            <x-admin.field label="عنوان پروژه">
+                                                <x-admin.form.input
+                                                    name="title"
+                                                    :value="old('title', $project->title)"
+                                                />
+                                            </x-admin.field>
+                                        </div>
+
+                                        <div class="col-span-12 lg:col-span-3">
+                                            <x-admin.field label="اسلاگ">
+                                                <x-admin.form.input
+                                                    name="slug"
+                                                    dir="ltr"
+                                                    :value="old('slug', $project->slug)"
+                                                />
+                                            </x-admin.field>
+                                        </div>
+
+                                        <div class="col-span-12 sm:col-span-6 lg:col-span-2">
+                                            <x-admin.field label="وضعیت">
+                                                <x-admin.form.select
+                                                    name="status"
+                                                    x-model="status"
+                                                    :options="$statuses"
+                                                    :value="old('status', $project->status?->value)"
+                                                />
+                                            </x-admin.field>
+                                        </div>
+
+                                        <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                                            <x-admin.field label="پیشرفت">
+                                                <div class="space-y-3">
+                                                    <x-admin.form.input
+                                                        type="number"
+                                                        name="progress_percentage"
+                                                        min="0"
+                                                        max="100"
+                                                        x-model="progress"
+                                                        :value="old('progress_percentage', $project->progress_percentage ?? 0)"
+                                                    />
+
+                                                    <div class="space-y-2">
+                                                        <div class="flex items-center justify-between text-xs">
+                                                            <span class="text-slate-500">میزان پیشرفت</span>
+                                                            <span class="font-bold text-slate-700"
+                                                                  x-text="`${progress || 0}%`"></span>
+                                                        </div>
+
+                                                        <div class="h-2 overflow-hidden rounded-full bg-slate-100">
+                                                            <div
+                                                                class="h-full rounded-full bg-brand-500 transition-all duration-300"
+                                                                :style="`width: ${Math.max(0, Math.min(100, progress || 0))}%`"
+                                                            ></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </x-admin.field>
+                                        </div>
+
+                                        <div class="col-span-12 lg:col-span-6">
+                                            <x-admin.field label="برچسب‌ها">
+                                                <x-admin.form.input
+                                                    name="tags"
+                                                    :value="old('tags', is_array($project->tags ?? null) ? implode('، ', $project->tags) : ($project->tags ?? ''))"
+                                                    placeholder="مثلاً: لاراول، Livewire، Tailwind"
+                                                />
+                                            </x-admin.field>
+                                        </div>
+
+                                        <div class="col-span-12 lg:col-span-6">
+                                            <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
+                                                <div class="mb-3 flex items-center justify-between">
+                                                    <h4 class="text-xs font-bold text-slate-700">
+                                                        پیش‌نمایش سریع
+                                                    </h4>
+
+                                                    <x-admin.badge color="slate">
+                                                        Quick Edit
+                                                    </x-admin.badge>
+                                                </div>
+
+                                                <div class="space-y-3 text-sm">
+                                                    <div class="flex items-center justify-between gap-3">
+                                                        <span class="text-slate-500">وضعیت انتخاب‌شده</span>
+                                                        <span class="font-bold text-slate-800"
+                                                              x-text="status || 'نامشخص'"></span>
+                                                    </div>
+
+                                                    <div class="flex items-center justify-between gap-3">
+                                                        <span class="text-slate-500">پیشرفت</span>
+                                                        <span class="font-bold text-slate-800"
+                                                              x-text="`${progress || 0}%`"></span>
+                                                    </div>
+
+                                                    <div
+                                                        class="border-t border-slate-200 pt-3 text-xs text-slate-500 leading-6">
+                                                        این بخش فقط برای پیش‌نمایش سریع تغییرات است و بعد از ذخیره، داده
+                                                        واقعی به‌روزرسانی می‌شود.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </x-admin.list.quick-edit-row>
                     @endforeach
                 @else
@@ -243,19 +312,29 @@
 @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('adminListQuickEdit', () => ({
-                openId: null,
+            Alpine.data('adminListQuickEdit', (initialOpenId = null) => ({
+                openId: initialOpenId,
 
                 isOpen(id) {
                     return this.openId === id;
+                },
+
+                open(id) {
+                    this.openId = id;
+                },
+
+                close() {
+                    this.openId = null;
                 },
 
                 toggle(id) {
                     this.openId = this.openId === id ? null : id;
                 },
 
-                close() {
-                    this.openId = null;
+                onEscape(event) {
+                    if (event.key === 'Escape') {
+                        this.close();
+                    }
                 },
             }));
         });
