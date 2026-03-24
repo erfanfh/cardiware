@@ -3,7 +3,7 @@
     'method' => 'post' // post | put
 ])
 
-<form method="post"
+<form method="post" class="js-confirm"
       action="{{ $action }}"
       x-data
       @keydown.enter.prevent="

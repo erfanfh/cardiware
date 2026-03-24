@@ -187,7 +187,7 @@ new class extends Component {
 
                             <form method="post"
                                   action="{{ route('admin.pages.destroy', $page) }}"
-                                  class="inline-block"
+                                  class="inline-block js-confirm"
                                   data-confirm-title="حذف صفحه"
                                   data-confirm-text="صفحه برای همیشه حذف خواهد شد."
                             >

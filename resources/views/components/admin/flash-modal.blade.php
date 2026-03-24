@@ -282,13 +282,13 @@
 
         <div class="flex justify-center gap-2 mt-4">
             <button type="button"
-                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
                     data-confirm-cancel>
                 انصراف
             </button>
 
             <button type="button"
-                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-white dark:text-gray-100 bg-[var(--brand-500)] dark:bg-gray-700 hover:bg-[var(--brand-600)] dark:hover:bg-gray-600"
                     data-confirm-submit>
                 بله، ادامه
             </button>
@@ -307,18 +307,26 @@
         const cancelBtns = backdrop.querySelectorAll('[data-confirm-cancel]');
 
         function openModal({title, text}) {
-            if (!backdrop) return;
             titleEl.textContent = title;
             textEl.textContent = text;
-            backdrop.classList.remove('opacity-0 pointer-events-none');
-            backdrop.classList.add('opacity-100 pointer-events-auto');
+            backdrop.classList.remove('opacity-0');
+            backdrop.classList.remove('pointer-events-none');
+            backdrop.classList.add('opacity-100');
+            backdrop.classList.add('pointer-events-auto');
+
+            setTimeout(() => submitBtn.focus(), 100);
         }
 
         function closeModal() {
-            if (!backdrop) return;
-            backdrop.classList.remove('opacity-100 pointer-events-auto');
-            backdrop.classList.add('opacity-0 pointer-events-none');
+            backdrop.classList.remove('opacity-100');
+            backdrop.classList.remove('pointer-events-auto');
+            backdrop.classList.add('opacity-0');
+            backdrop.classList.add('pointer-events-none');
             activeForm = null;
+        }
+
+        function submitForm() {
+            if (activeForm) activeForm.submit();
         }
 
         // گرفتن submit فرم‌ها
@@ -335,9 +343,7 @@
             });
         });
 
-        submitBtn.addEventListener('click', () => {
-            if (activeForm) activeForm.submit();
-        });
+        submitBtn.addEventListener('click', submitForm);
 
         cancelBtns.forEach(btn =>
             btn.addEventListener('click', closeModal)
@@ -348,7 +354,15 @@
         });
 
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
+            if (backdrop.classList.contains('opacity-100')) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeModal();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submitForm();
+                }
+            }
         });
     });
 </script>
