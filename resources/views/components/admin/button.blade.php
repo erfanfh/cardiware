@@ -9,7 +9,7 @@
 ])
 
 @php
-    $base = 'inline-flex items-center justify-center gap-2 rounded-xl select-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:pointer-events-none disabled:opacity-60';
+    $base = 'inline-flex items-center justify-center gap-2 rounded-3xl select-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:pointer-events-none disabled:opacity-60';
 
     $sizes = [
         'sm' => 'h-9 px-3 text-xs font-bold',
