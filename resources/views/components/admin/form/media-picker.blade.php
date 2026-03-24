@@ -45,7 +45,7 @@
         "
     >
         <div
-            class="rounded-lg border border-slate-200/80 bg-white p-3 shadow-sm ring-1 ring-slate-100/80 transition hover:border-slate-300 hover:shadow-md {{ $buttonClass }}">
+            class="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm ring-1 ring-slate-100/80 transition hover:border-slate-300 hover:shadow-md {{ $buttonClass }}">
             <button
                 type="button"
                 class="block w-full text-right"
@@ -184,7 +184,7 @@
         "
     >
         <div
-            class="rounded-lg border border-slate-200/80 bg-white p-3 shadow-sm ring-1 ring-slate-100/80 transition hover:border-slate-300 hover:shadow-md {{ $buttonClass }}">
+            class="rounded-xl border border-slate-200/80 bg-white p-3 shadow-sm ring-1 ring-slate-100/80 transition hover:border-slate-300 hover:shadow-md {{ $buttonClass }}">
             <button
                 type="button"
                 class="block w-full text-right"
