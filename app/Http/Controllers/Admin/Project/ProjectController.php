@@ -22,7 +22,9 @@ class ProjectController extends Controller
      */
     public function index(): View
     {
-        return view('admin.projects.projects.index');
+        $projects = Project::latest()->get();
+
+        return view('admin.projects.projects.index', compact('projects'));
     }
 
     /**
