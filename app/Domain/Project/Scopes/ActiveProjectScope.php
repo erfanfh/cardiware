@@ -11,7 +11,7 @@ class ActiveProjectScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        if (auth()->check() && auth()->user()->role->is_super_admin && !request()->routeIs('admin.*'))
+        if (request()->routeIs('admin.*'))
             return;
         else
             $builder->where('status', ProjectStatusEnum::ACTIVE->value);
