@@ -13,71 +13,7 @@
         ];
     @endphp
 
-    <form method="GET" action="{{ route('admin.projects.index') }}" class="space-y-5">
-        <x-admin.list.toolbar>
-            <div class="flex flex-col gap-4">
-                <x-admin.list.toolbar-meta
-                    title="لیست پروژه‌ها"
-                    description="از این بخش می‌توانی پروژه‌ها را مدیریت، جستجو، فیلتر و ویرایش سریع کنی."
-                    :count="$projects->total()"
-                    count-label="پروژه"
-                />
-
-                <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                    <x-admin.list.toolbar-section stretch>
-                        <x-admin.list.search
-                            name="search"
-                            :value="request('search')"
-                            placeholder="جستجو در عنوان، اسلاگ و ..."
-                        />
-
-                        <x-admin.list.filters>
-                            <div class="min-w-[180px]">
-                                <x-admin.form.select
-                                    name="status"
-                                    :options="['' => 'همه وضعیت‌ها'] + $statuses"
-                                    :value="request('status')"
-                                />
-                            </div>
-
-                            <div class="min-w-[180px]">
-                                <x-admin.form.input
-                                    name="tag"
-                                    :value="request('tag')"
-                                    placeholder="فیلتر بر اساس برچسب"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-700"
-                            >
-                                اعمال فیلتر
-                            </button>
-
-                            @if(request()->filled('search') || request()->filled('status') || request()->filled('tag'))
-                                <a
-                                    href="{{ route('admin.projects.index') }}"
-                                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
-                                >
-                                    حذف فیلترها
-                                </a>
-                            @endif
-                        </x-admin.list.filters>
-                    </x-admin.list.toolbar-section>
-
-                    <x-admin.list.toolbar-section>
-                        <a
-                            href="{{ route('admin.projects.create') }}"
-                            class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-slate-800"
-                        >
-                            افزودن پروژه جدید
-                        </a>
-                    </x-admin.list.toolbar-section>
-                </div>
-            </div>
-        </x-admin.list.toolbar>
-    </form>
+    @include('admin.projects.projects.partials.filters-panel')
 
     @php
         $activeFilters = [];
