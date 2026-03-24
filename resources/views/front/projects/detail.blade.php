@@ -325,32 +325,6 @@
                     </div>
                 </div>
 
-                <!-- Subscribe -->
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div class="text-base font-extrabold">دنبال کردن پروژه</div>
-                    <div class="mt-2 text-sm text-slate-600 leading-7">
-                        اگر این پروژه برات مهمه، آپدیت‌ها رو دنبال کن تا از نسخه‌های جدید جا نمونی.
-                    </div>
-
-                    <div class="mt-4 flex items-center gap-2">
-                        <button @click="followed = !followed"
-                                class="flex-1 rounded-2xl px-4 py-3 text-sm font-extrabold shadow-soft transition"
-                                :class="followed ? 'bg-slate-900 text-white hover:opacity-95' : 'bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700'">
-                            <span x-text="followed ? 'دنبال می‌کنم ✓' : 'دنبال کردن'"></span>
-                        </button>
-
-                        <button @click="copyText(window.location.href)"
-                                class="h-12 w-12 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
-                                aria-label="کپی لینک">
-                            ⧉
-                        </button>
-                    </div>
-
-                    <div class="mt-3 text-xs text-slate-500">
-                        با کلیک روی ⧉ لینک پروژه کپی می‌شود.
-                    </div>
-                </div>
-
                 <!-- Placeholder -->
                 <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
                     <div class="font-extrabold text-slate-700">بنر / تبلیغات</div>
