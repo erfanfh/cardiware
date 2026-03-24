@@ -17,7 +17,9 @@
 <body>
 
 <div class="flex min-h-[100vh] bg-[var(--bg-body)] dark:bg-gray-900">
-    <div class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] opacity-0 pointer-events-none z-20 transition-all" id="SidebarBackdrop"></div>
+    <div
+        class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] opacity-0 pointer-events-none z-20 transition-all"
+        id="SidebarBackdrop"></div>
 
     @include('admin.partials.sidebar')
 
@@ -28,6 +30,8 @@
         <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto">
             @yield('page_header')
             @yield('content')
+
+            @livewire('admin.media.media-picker', ['mode' => 'singleton'], key('singleton-media-picker'))
         </main>
     </div>
 

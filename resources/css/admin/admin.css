@@ -1,6 +1,12 @@
 @import '../variables.css';
 @import './sidebar.css';
+@import './media-picker.css';
+@import './async-select.css';
 
 [x-cloak] {
     display: none !important
+}
+
+.pcr-button {
+    border: 1px solid #ddd !important;
 }

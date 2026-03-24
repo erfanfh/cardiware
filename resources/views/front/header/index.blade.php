@@ -1,10 +1,4 @@
-<!-- Top announcement -->
-<div class="bg-brand-600 text-white">
-    <div class="mx-auto max-w-7xl px-4 py-2 flex items-center justify-between gap-3">
-        <p class="text-sm/6 opacity-95">نسخه‌های جدید پچ‌ها و آپدیت‌ها منتشر شد — دانلود سریع و امن</p>
-        <a href="#" class="text-sm font-semibold underline underline-offset-4 hover:opacity-90">مشاهده</a>
-    </div>
-</div>
+@include('front.header.announcement')
 
 <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="mx-auto max-w-7xl px-4 py-4">
@@ -12,14 +6,15 @@
             <a href="{{ route('home') }}" class="flex items-center gap-2">
                 <div class="h-10 w-10 grid place-items-center">
                     <img
-                        src="https://moddingway.ir/wp-content/uploads/2025/12/mw-150x138-1.png"
-                        alt="Moddingway Logo"
-                        class="h-8 w-auto object-contain"
+                        src="{{ get_setting('header', 'logo')->path }}"
+                        alt="{{ get_setting('general', 'title') }}"
+                        title="{{ get_setting('general', 'title') }}"
+                        class="max-h-11 h-auto object-contain"
                     />
                 </div>
                 <div class="leading-tight">
-                    <div class="font-extrabold text-lg">مودینگ وی</div>
-                    <div class="text-xs text-slate-500">دانلود پچ و ماد بازی‌ها</div>
+                    <div class="font-extrabold text-lg">{{ get_setting('general', 'title') }}</div>
+                    <div class="text-xs text-slate-500">{{ get_setting('general', 'subtitle') }}</div>
                 </div>
             </a>
 
