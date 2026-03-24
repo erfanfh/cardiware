@@ -17,7 +17,7 @@
     $hasActiveFilters = collect($filterFields)->contains($isFilterFilled);
 @endphp
 
-<form method="GET" action="{{ route('admin.projects.index') }}" class="space-y-5">
+<x-admin.form method="get" action="{{ route('admin.projects.index') }}" class="space-y-5">
     <x-admin.filters.panel
         :open="$hasActiveFilters">
         <x-admin.filters.header
@@ -140,4 +140,4 @@
             </x-admin.filters.actions>
         </x-admin.filters.body>
     </x-admin.filters.panel>
-</form>
+</x-admin.form>
