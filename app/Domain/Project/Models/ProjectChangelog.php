@@ -11,6 +11,7 @@ class ProjectChangelog extends Model
         'project_id',
         'title',
         'body',
+        'tags',
         'published_at',
         'sort_order',
     ];
@@ -21,5 +22,21 @@ class ProjectChangelog extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * @return array
+     */
+    public function tagsList(): array
+    {
+        if (blank($this->tags)) {
+            return [];
+        }
+
+        return collect(preg_split('/[،,]+/u', $this->tags))
+            ->map(fn($tag) => trim($tag))
+            ->filter(fn($tag) => $tag !== '')
+            ->values()
+            ->all();
     }
 }

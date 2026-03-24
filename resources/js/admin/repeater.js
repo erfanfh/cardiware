@@ -1,83 +1,153 @@
 import Sortable from 'sortablejs'
 
-window.mwRepeater = function (opts) {
-    const makeKey = () => Date.now().toString(36) + Math.random().toString(36).slice(2)
+window.mwRepeater = function (opts = {}) {
+    const makeKey = () => {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID()
+        }
+
+        return Date.now().toString(36) + Math.random().toString(36).slice(2)
+    }
+
+    const deepClone = (value) => {
+        return JSON.parse(JSON.stringify(value || {}))
+    }
 
     return {
-        items: Array.isArray(opts.items) ? opts.items : [],
+        items: Array.isArray(opts.items) ? deepClone(opts.items) : [],
         name: opts.name || 'items',
         defaultItem: opts.defaultItem || {},
         sortable: opts.sortable !== false,
 
-        __currentIndex: 0,
+        __sortableInstance: null,
+        __renderNonce: 0,
 
         init() {
-            this.items = this.items.map((it) => {
-                if (typeof it !== 'object' || it === null) it = {}
-                if (!it.__key) it.__key = makeKey()
-                if (it._open === undefined) it._open = true
-                return it
+            this.items = this.items.map((it, index) => {
+                const item = (typeof it === 'object' && it !== null) ? deepClone(it) : {}
+
+                if (!item.__key) {
+                    item.__key = makeKey()
+                }
+
+                if (item._open === undefined) {
+                    item._open = true
+                }
+
+                if (item.sort_order === undefined || item.sort_order === null || item.sort_order === '') {
+                    item.sort_order = index
+                }
+
+                return item
             })
 
-            if (this.sortable) this.initSortable()
             this.reorder()
-        },
 
-        // ✅ مهم: این باعث میشه field('title') بدون i هم درست کار کنه
-        setCurrent(i) {
-            this.__currentIndex = i
-        },
-
-        // ✅ field فقط key می‌گیرد (مثل ACF / WP Repeater)
-        field(key, i = null) {
-            const idx = (i === null ? this.__currentIndex : i)
-            return `${this.name}[${idx}][${key}]`
+            this.$nextTick(() => {
+                if (this.sortable) {
+                    this.initSortable()
+                }
+            })
         },
 
         initSortable() {
-            new Sortable(this.$refs.list, {
-                animation: 150,
+            if (!this.$refs.list) return
+
+            if (this.__sortableInstance) {
+                this.__sortableInstance.destroy()
+                this.__sortableInstance = null
+            }
+
+            this.__sortableInstance = new Sortable(this.$refs.list, {
+                animation: 180,
                 handle: '.drag-handle',
+                draggable: '[data-repeater-item]',
+                ghostClass: 'repeater-sortable-ghost',
+                chosenClass: 'repeater-sortable-chosen',
+                dragClass: 'repeater-sortable-drag',
 
                 onEnd: (evt) => {
+                    if (evt.oldIndex === evt.newIndex) return
+                    if (evt.oldIndex == null || evt.newIndex == null) return
+
                     const moved = this.items.splice(evt.oldIndex, 1)[0]
                     this.items.splice(evt.newIndex, 0, moved)
 
-                    // ✅ بعد از drag/drop index ها عوض میشن → فقط reorder کافی است
                     this.reorder()
+                    this.refreshDom()
                 },
             })
         },
 
         add() {
-            const it = JSON.parse(JSON.stringify(this.defaultItem || {}))
-            it.__key = makeKey()
-            it._open = true
-            this.items.push(it)
+            const item = deepClone(this.defaultItem || {})
+
+            item.__key = makeKey()
+            item._open = true
+            item.sort_order = this.items.length
+
+            this.items.push(item)
             this.reorder()
+            this.refreshDom()
         },
 
-        remove(i) {
-            this.items.splice(i, 1)
+        remove(index) {
+            this.items.splice(index, 1)
             this.reorder()
+            this.refreshDom()
         },
 
         reorder() {
-            this.items.forEach((it, idx) => {
-                it.sort_order = idx
+            this.items.forEach((item, index) => {
+                item.sort_order = index
             })
         },
 
-        toggle(i) {
-            this.items[i]._open = !this.items[i]._open
+        refreshDom() {
+            this.__renderNonce++
+
+            this.$nextTick(() => {
+                if (this.sortable) {
+                    this.initSortable()
+                }
+            })
+        },
+
+        toggle(index) {
+            this.items[index]._open = !this.items[index]._open
         },
 
         collapseAll() {
-            this.items.forEach(it => it._open = false)
+            this.items.forEach((item) => {
+                item._open = false
+            })
+
+            this.refreshDom()
         },
 
         expandAll() {
-            this.items.forEach(it => it._open = true)
+            this.items.forEach((item) => {
+                item._open = true
+            })
+
+            this.refreshDom()
+        },
+
+        field(index, key = null) {
+            let base = `${this.name}[${index}]`
+
+            if (!key) {
+                return base
+            }
+
+            String(key)
+                .split('.')
+                .filter(Boolean)
+                .forEach((part) => {
+                    base += `[${part}]`
+                })
+
+            return base
         },
     }
 }

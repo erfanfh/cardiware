@@ -21,6 +21,13 @@ abstract class BaseSettings
      */
     protected array $casts = [];
 
+    /**
+     * Per-request in-memory cache
+     *
+     * @var array
+     */
+    protected static array $resolvedGroups = [];
+
     public function __construct()
     {
         if (empty($this->group) || empty($this->allowedKeys))
@@ -34,22 +41,12 @@ abstract class BaseSettings
      */
     public function get(string $key, mixed $default = null): mixed
     {
-        if (!in_array($key, $this->allowedKeys))
-            throw new InvalidArgumentException("Key '$key' is not allowed for group '$this->group'.");
+        $this->ensureAllowedKey($key);
 
         $settings = $this->getAll();
         $rawValue = $settings[$key] ?? $default;
 
-        if (isset($this->casts[$key])) {
-            $castClass = $this->casts[$key];
-            if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class))
-                throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
-
-            $castInstance = new $castClass();
-            return $castInstance->get(app(Setting::class), $key, $rawValue, []);
-        }
-
-        return $rawValue;
+        return $this->castValueForGet($key, $rawValue);
     }
 
     /**
@@ -57,11 +54,20 @@ abstract class BaseSettings
      */
     protected function getAll(): array
     {
-        return Cache::rememberForever("settings_$this->group", function () {
-            return Setting::where('group', $this->group)
+        if (array_key_exists($this->group, self::$resolvedGroups)) {
+            return self::$resolvedGroups[$this->group];
+        }
+
+        $settings = Cache::rememberForever($this->getCacheKey(), function () {
+            return Setting::query()
+                ->where('group', $this->group)
                 ->pluck('value', 'key')
                 ->toArray();
         });
+
+        self::$resolvedGroups[$this->group] = $settings;
+
+        return $settings;
     }
 
     /**
@@ -71,26 +77,25 @@ abstract class BaseSettings
      */
     public function set(string $key, mixed $value): void
     {
-        if (!in_array($key, $this->allowedKeys))
-            throw new InvalidArgumentException("Key '$key' is not allowed for group '$this->group'.");
+        $this->ensureAllowedKey($key);
 
-        $processedValue = $value;
-
-        if (isset($this->casts[$key])) {
-            $castClass = $this->casts[$key];
-            if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class)) {
-                throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
-            }
-            $castInstance = new $castClass();
-            $processedValue = $castInstance->set(app(Setting::class), $key, $value, []);
-        }
+        $processedValue = $this->castValueForSet($key, $value);
 
         Setting::updateOrCreate(
             ['group' => $this->group, 'key' => $key],
             ['value' => $processedValue],
         );
 
-        Cache::forget("settings_$this->group");
+        $this->forgetCache();
+    }
+
+    /**
+     * @return void
+     */
+    public function forgetCache(): void
+    {
+        Cache::forget($this->getCacheKey());
+        unset(self::$resolvedGroups[$this->group]);
     }
 
     /**
@@ -100,5 +105,67 @@ abstract class BaseSettings
     {
         return $this->allowedKeys;
     }
-}
 
+    /**
+     * @param string $key
+     * @return void
+     */
+    protected function ensureAllowedKey(string $key): void
+    {
+        if (!in_array($key, $this->allowedKeys, true)) {
+            throw new InvalidArgumentException("Key '$key' is not allowed for group '$this->group'.");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCacheKey(): string
+    {
+        return "settings_$this->group";
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function castValueForGet(string $key, mixed $value): mixed
+    {
+        $castClass = $this->casts[$key] ?? null;
+
+        if (!$castClass) {
+            return $value;
+        }
+
+        if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class)) {
+            throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
+        }
+
+        $castInstance = new $castClass();
+
+        return $castInstance->get(app(Setting::class), $key, $value, []);
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function castValueForSet(string $key, mixed $value): mixed
+    {
+        $castClass = $this->casts[$key] ?? null;
+
+        if (!$castClass) {
+            return $value;
+        }
+
+        if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class)) {
+            throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
+        }
+
+        $castInstance = new $castClass();
+
+        return $castInstance->set(app(Setting::class), $key, $value, []);
+    }
+}

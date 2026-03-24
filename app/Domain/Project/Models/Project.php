@@ -2,18 +2,24 @@
 
 namespace App\Domain\Project\Models;
 
+use App\Domain\Media\Models\MediaFile;
+use App\Domain\Project\Enums\ProjectStatusEnum;
+use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
+use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use SoftDeletes;
+    use HasTaxonomyTerms, HasExcerpt, SoftDeletes;
 
     protected $fillable = [
         'title',
         'slug',
         'status',
+        'cover_id',
         'progress_percent',
         'current_version',
         'creator_name',
@@ -22,6 +28,10 @@ class Project extends Model
         'body',
         'last_updated_at',
         'released_at',
+    ];
+
+    protected $casts = [
+        'status' => ProjectStatusEnum::class,
     ];
 
     /**
@@ -35,11 +45,19 @@ class Project extends Model
     }
 
     /**
+     * @return BelongsTo
+     */
+    public function cover(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class);
+    }
+
+    /**
      * @return HasMany
      */
     public function changelogs(): HasMany
     {
-        return $this->hasMany(ProjectChangelog::class);
+        return $this->hasMany(ProjectChangelog::class)->orderBy('sort_order');
     }
 
     /**
@@ -47,6 +65,14 @@ class Project extends Model
      */
     public function roadmapItems(): HasMany
     {
-        return $this->hasMany(ProjectRoadmapItem::class);
+        return $this->hasMany(ProjectRoadmapItem::class)->orderBy('sort_order');
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function features(): HasMany
+    {
+        return $this->hasMany(ProjectFeature::class)->orderBy('sort_order');
     }
 }

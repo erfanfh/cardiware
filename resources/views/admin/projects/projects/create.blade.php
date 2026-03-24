@@ -3,12 +3,13 @@
 @section('title', 'ایجاد پروژه جدید')
 
 @section('content')
-    <form method="POST" action="{{ route('admin.projects.store') }}">
-        @csrf
+    <x-admin.form action="{{ route('admin.projects.store') }}" method="post">
         @include('admin.projects.projects.form', [
             'project' => null,
             'roadmapItems' => [],
             'changelogs' => [],
         ])
-    </form>
+
+        <x-admin.save-button label="انتشار پروژه"/>
+    </x-admin.form>
 @endsection

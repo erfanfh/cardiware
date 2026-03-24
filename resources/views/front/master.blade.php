@@ -14,7 +14,7 @@
 </head>
 
 <body class="bg-slate-50 text-slate-900">
-@include('front.layouts.header')
+@include('front.header.index')
 @yield('content')
 @include('front.layouts.footer')
 

@@ -6,6 +6,7 @@
     'basePath' => '/',
     'checkUrl' => null,
     'currentId' => null,
+    'itemUrl' => null,
 ])
 
 <div
@@ -39,7 +40,8 @@
             <span class="text-slate-600 select-none">{{ $basePath }}</span>
 
             <template x-if="!editingSlug">
-                <span class="font-bold text-slate-800 truncate max-w-[520px]" x-text="slug || '—'"></span>
+                <a @if($itemUrl) href="{{ $itemUrl }}" target="_blank"
+                   @endif class="font-bold text-slate-800 truncate max-w-[520px]" x-text="slug || '—'"></a>
             </template>
 
             <template x-if="editingSlug">
@@ -65,6 +67,17 @@
             >
                 ویرایش
             </button>
+
+            @if($itemUrl)
+                <a href="{{ $itemUrl }}"
+                   target="_blank"
+                   class="h-7 leading-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-orange-200 bg-orange-50 hover:bg-orange-100 font-bold text-orange-700 transition"
+                   x-show="!editingSlug"
+                   x-cloak
+                >
+                    مشاهده
+                </a>
+            @endif
 
             <button type="button"
                     class="h-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"

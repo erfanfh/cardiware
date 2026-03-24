@@ -3,7 +3,18 @@
     'method' => 'post' // post | put
 ])
 
-<form method="post" action="{{ $action }}" class="js-confirm">
+<form method="post" class="js-confirm"
+      action="{{ $action }}"
+      x-data
+      @keydown.enter.prevent="
+        if (
+            $event.target.tagName.toLowerCase() !== 'textarea' &&
+            $event.target.type !== 'submit' &&
+            $event.target.type !== 'button'
+        ) {
+            $event.preventDefault()
+        }
+    ">
     @csrf
 
     @if($method === 'put')
