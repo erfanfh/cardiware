@@ -3,7 +3,7 @@
     'method' => 'post' // post | put
 ])
 
-<form method="post" class="mb-12"
+<form method="post"
       action="{{ $action }}"
       x-data
       @keydown.enter.prevent="
