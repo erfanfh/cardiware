@@ -3,16 +3,10 @@
     'options' => [],
     'buttonText' => 'اعمال عملیات گروهی',
     'idleText' => 'برای استفاده از کارهای دسته‌جمعی، ابتدا یک یا چند آیتم را انتخاب کن.',
-    'selectedText' => 'آیتم انتخاب شده',
-    'checkboxSelector' => 'input[name="ids[]"]',
+    'selectedText' => 'مورد انتخاب شده',
 ])
 
 <div
-    x-data="adminBulkBar({
-        action: @js($action),
-        checkboxSelector: @js($checkboxSelector),
-    })"
-    x-init="init()"
     {{ $attributes->merge([
         'class' => 'rounded-[24px] border p-4 shadow-soft transition-all duration-200'
     ]) }}
@@ -60,7 +54,7 @@
                         class="mt-1 text-xs leading-6 transition"
                         :class="selectedCount > 0 ? 'text-brand-700/90' : 'text-slate-500'"
                         x-text="selectedCount > 0
-                            ? `اکنون می‌توانی عملیات موردنظر را روی ${selectedCount} مورد انتخاب‌شده اعمال کنی.`
+                            ? `اکنون می‌توانی عملیات موردنظر را روی ${selectedCount} آیتم انتخاب‌شده اعمال کنی.`
                             : @js($idleText)"
                     ></p>
                 </div>
@@ -79,7 +73,7 @@
                         type="button"
                         variant="solid"
                         x-bind:disabled="selectedCount === 0 || !bulkAction"
-                        x-on:click="submit()"
+                        x-on:click="submitBulkAction($refs.bulkActionForm)"
                     >
                         {{ $buttonText }}
                     </x-admin.button>
@@ -99,7 +93,7 @@
     </div>
 
     <form
-        x-ref="form"
+        x-ref="bulkActionForm"
         method="POST"
         action="{{ $action }}"
         class="hidden"
@@ -108,7 +102,7 @@
 
         <input type="hidden" name="bulk_action" :value="bulkAction">
 
-        <template x-for="id in selectedIds" :key="id">
+        <template x-for="id in selected" :key="id">
             <input type="hidden" name="ids[]" :value="id">
         </template>
     </form>
