@@ -4,7 +4,7 @@
 
 @section('content')
     <x-admin.form action="{{ route('admin.projects.store') }}" method="post">
-        @include('admin.projects.projects.form', [
+        @include('admin.projects.projects.partials.form-fields', [
             'project' => null,
             'roadmapItems' => [],
             'changelogs' => [],

@@ -80,7 +80,7 @@
 
                 <x-admin.field
                     class="col-span-12"
-                    label="تاریخ انتشار"
+                    label="تاریخ انتشار پروژه"
                 >
                     <x-admin.form.date-picker
                         name="released_at"
@@ -90,7 +90,7 @@
 
                 <x-admin.field
                     class="col-span-12"
-                    label="تاریخ آخرین بروزرسانی"
+                    label="تاریخ آخرین بروزرسانی پروژه"
                 >
                     <x-admin.form.date-picker
                         name="last_updated_at"

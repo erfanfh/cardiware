@@ -4,7 +4,7 @@
 
 @section('content')
     <x-admin.form action="{{ route('admin.projects.update', $project) }}" method="put">
-        @include('admin.projects.projects.form', [
+        @include('admin.projects.projects.partials.form-fields', [
             'project' => $project,
             'roadmapItems' => $project->roadmapItems
                 ->sortBy('sort_order')
