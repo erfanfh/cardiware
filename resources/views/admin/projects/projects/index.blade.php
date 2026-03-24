@@ -15,50 +15,6 @@
 
     @include('admin.projects.projects.partials.filters-panel')
 
-    @php
-        $activeFilters = [];
-
-        if (filled(request('search'))) {
-            $activeFilters[] = [
-                'label' => 'جستجو: ' . request('search'),
-                'remove_url' => request()->fullUrlWithQuery(['search' => null]),
-            ];
-        }
-
-        if (filled(request('status'))) {
-            $activeFilters[] = [
-                'label' => 'وضعیت: ' . ($statuses[request('status')] ?? request('status')),
-                'remove_url' => request()->fullUrlWithQuery(['status' => null]),
-            ];
-        }
-
-        if (filled(request('tag'))) {
-            $activeFilters[] = [
-                'label' => 'برچسب: ' . request('tag'),
-                'remove_url' => request()->fullUrlWithQuery(['tag' => null]),
-            ];
-        }
-    @endphp
-
-    <x-admin.list.active-filters
-        :items="$activeFilters"
-        :clear-url="route('admin.projects.index')"
-    />
-
-    @php
-        $summaryText = null;
-
-        if (filled(request('search'))) {
-            $summaryText = 'نتایج جستجو برای «' . request('search') . '» نمایش داده می‌شود.';
-        } elseif (filled(request('status')) && isset($statuses[request('status')])) {
-            $summaryText = 'فقط پروژه‌های با وضعیت «' . $statuses[request('status')] . '» نمایش داده می‌شوند.';
-        } elseif (filled(request('tag'))) {
-            $summaryText = 'پروژه‌های دارای برچسب «' . request('tag') . '» نمایش داده می‌شوند.';
-        }
-    @endphp
-
-    <x-admin.list.summary :text="$summaryText"/>
-
     <form method="POST" action="{{ route('admin.projects.bulk-action') }}" class="space-y-4">
         @csrf
 

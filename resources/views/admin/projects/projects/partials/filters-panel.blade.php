@@ -1,22 +1,3 @@
-@php
-    $filterFields = [
-        'id',
-        'title',
-        'status',
-        'progress_from',
-        'progress_to',
-        'released_at_from',
-        'released_at_to',
-        'last_updated_at_from',
-        'last_updated_at_to',
-        'tag_ids',
-    ];
-
-    $isFilterFilled = fn (string $field): bool => request()->filled($field);
-
-    $hasActiveFilters = collect($filterFields)->contains($isFilterFilled);
-@endphp
-
 <x-admin.form method="get" action="{{ route('admin.projects.index') }}" class="space-y-5">
     <x-admin.filters.panel
         :open="$hasActiveFilters">
@@ -62,19 +43,19 @@
                     <div class="flex gap-2">
                         <x-admin.form.input
                             type="number"
-                            name="progress_from"
+                            name="progress_percent_from"
                             min="0"
                             max="100"
-                            :value="request('progress_from')"
+                            :value="request('progress_percent_from')"
                             placeholder="از"
                         />
 
                         <x-admin.form.input
                             type="number"
-                            name="progress_to"
+                            name="progress_percent_to"
                             min="0"
                             max="100"
-                            :value="request('progress_to')"
+                            :value="request('progress_percent_to')"
                             placeholder="تا"
                         />
                     </div>
@@ -120,6 +101,22 @@
                         :multiple="true"
                         :search-url="route('admin.tags.ajax-search')"
                     />
+                </x-admin.filters.item>
+
+                <x-admin.filters.item label="تاریخ ایجاد">
+                    <div class="flex gap-2">
+                        <x-admin.form.date-picker
+                            name="created_at_from"
+                            :value="request('created_at_from')"
+                            placeholder="از تاریخ"
+                        />
+
+                        <x-admin.form.date-picker
+                            name="created_at_to"
+                            :value="request('created_at_to')"
+                            placeholder="تا تاریخ"
+                        />
+                    </div>
                 </x-admin.filters.item>
             </x-admin.filters.grid>
 
