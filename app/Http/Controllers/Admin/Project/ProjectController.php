@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin\Project;
 
 use App\Application\Project\Actions\CreateProjectAction;
 use App\Application\Project\Actions\UpdateProjectAction;
+use App\Application\Project\Listings\ProjectListing;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Project\ProjectRequest;
+use App\Http\Requests\Admin\Project\IndexProjectRequest;
+use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,17 +21,31 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param IndexProjectRequest $request
+     * @param ProjectListing $projectListing
      * @return View
      */
-    public function index(): View
+    public function index(IndexProjectRequest $request, ProjectListing $projectListing): View
     {
-        $projects = Project::latest()->paginate(10);
-        $statuses = [];
-        foreach (ProjectStatusEnum::cases() as $status) {
-            $statuses[$status->value] = $status->label();
-        }
+        $projects = $projectListing
+            ->handle(Project::query(), $request->validated())
+            ->paginate(20)
+            ->withQueryString();
 
-        return view('admin.projects.projects.index', compact('projects', 'statuses'));
+        $statuses = collect(ProjectStatusEnum::cases())
+            ->mapWithKeys(fn(ProjectStatusEnum $status) => [
+                $status->value => $status->label(),
+            ])
+            ->all();
+
+        $hasActiveFilters = collect($projectListing->filters())
+            ->contains(fn(string $field) => $request->filled($field));
+
+        return view('admin.projects.projects.index', compact(
+            'projects',
+            'statuses',
+            'hasActiveFilters',
+        ));
     }
 
     /**
