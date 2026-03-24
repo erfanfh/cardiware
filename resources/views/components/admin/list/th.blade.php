@@ -11,21 +11,33 @@
 
 @php
     $isActive = $sortable && $currentSort === $sortKey;
+    $isAscActive = $isActive && $currentDirection === 'asc';
+    $isDescActive = $isActive && $currentDirection === 'desc';
 
-    $ascUrl = request()->fullUrlWithQuery([
-        'sort' => $sortKey,
-        'direction' => 'asc',
-    ]);
+    $baseQuery = request()->query();
+    unset($baseQuery['sort'], $baseQuery['direction']);
 
-    $descUrl = request()->fullUrlWithQuery([
-        'sort' => $sortKey,
-        'direction' => 'desc',
-    ]);
+    $ascQuery = $isAscActive
+        ? $baseQuery
+        : array_merge($baseQuery, [
+            'sort' => $sortKey,
+            'direction' => 'asc',
+        ]);
+
+    $descQuery = $isDescActive
+        ? $baseQuery
+        : array_merge($baseQuery, [
+            'sort' => $sortKey,
+            'direction' => 'desc',
+        ]);
+
+    $ascUrl = url()->current() . (count($ascQuery) ? '?' . http_build_query($ascQuery) : '');
+    $descUrl = url()->current() . (count($descQuery) ? '?' . http_build_query($descQuery) : '');
 
     $wrapperClass = match ($align) {
         'center' => 'justify-center',
-        'left' => 'justify-start',
-        default => 'justify-end',
+        'left' => 'justify-end',
+        default => 'justify-start',
     };
 
     $textAlignClass = match ($align) {
@@ -47,15 +59,15 @@
                 {{ $label ?? $slot }}
             </span>
 
-            <span class="inline-flex items-center rounded-md  p-0.5 ring-1 ring-slate-200/70">
+            <span class="inline-flex items-center gap-0.5 rounded-md px-0.5">
                 <a
                     href="{{ $ascUrl }}"
-                    class="flex h-5 w-5 items-center justify-center rounded transition"
-                    title="مرتب‌سازی صعودی"
-                    aria-label="مرتب‌سازی صعودی {{ $label }}"
+                    class="flex h-5 w-5 items-center justify-center rounded transition hover:bg-slate-100"
+                    title="{{ $isAscActive ? 'حذف مرتب‌سازی' : 'مرتب‌سازی صعودی' }}"
+                    aria-label="{{ $isAscActive ? 'حذف مرتب‌سازی' : 'مرتب‌سازی صعودی' }} {{ $label }}"
                 >
                     <svg
-                        class="h-3.5 w-3.5 transition {{ $isActive && $currentDirection === 'asc' ? 'text-brand-600' : 'text-slate-400 hover:text-slate-600' }}"
+                        class="h-3.5 w-3.5 transition {{ $isAscActive ? 'text-brand-600' : 'text-slate-400 hover:text-slate-600' }}"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                         aria-hidden="true"
@@ -68,12 +80,12 @@
 
                 <a
                     href="{{ $descUrl }}"
-                    class="flex h-5 w-5 items-center justify-center rounded transition"
-                    title="مرتب‌سازی نزولی"
-                    aria-label="مرتب‌سازی نزولی {{ $label }}"
+                    class="flex h-5 w-5 items-center justify-center rounded transition hover:bg-slate-100"
+                    title="{{ $isDescActive ? 'حذف مرتب‌سازی' : 'مرتب‌سازی نزولی' }}"
+                    aria-label="{{ $isDescActive ? 'حذف مرتب‌سازی' : 'مرتب‌سازی نزولی' }} {{ $label }}"
                 >
                     <svg
-                        class="h-3.5 w-3.5 transition {{ $isActive && $currentDirection === 'desc' ? 'text-brand-600' : 'text-slate-400 hover:text-slate-600' }}"
+                        class="h-3.5 w-3.5 transition {{ $isDescActive ? 'text-brand-600' : 'text-slate-400 hover:text-slate-600' }}"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                         aria-hidden="true"
