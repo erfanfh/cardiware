@@ -1,9 +1,14 @@
 @props([
     'action',
-    'method' => 'post' // post | put
+    'method' => 'post' // post | put | get
 ])
 
-<form method="post" class="js-confirm"
+@php
+    $method = strtolower($method);
+@endphp
+
+<form method="{{ $method === 'get' ? 'get' : 'post' }}"
+      {{ $attributes }}
       action="{{ $action }}"
       x-data
       @keydown.enter.prevent="
@@ -15,7 +20,9 @@
             $event.preventDefault()
         }
     ">
-    @csrf
+    @if($method !== 'get')
+        @csrf
+    @endif
 
     @if($method === 'put')
         @method('PUT')
