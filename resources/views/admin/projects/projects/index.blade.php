@@ -79,6 +79,50 @@
         </x-admin.list.toolbar>
     </form>
 
+    @php
+        $activeFilters = [];
+
+        if (filled(request('search'))) {
+            $activeFilters[] = [
+                'label' => 'جستجو: ' . request('search'),
+                'remove_url' => request()->fullUrlWithQuery(['search' => null]),
+            ];
+        }
+
+        if (filled(request('status'))) {
+            $activeFilters[] = [
+                'label' => 'وضعیت: ' . ($statuses[request('status')] ?? request('status')),
+                'remove_url' => request()->fullUrlWithQuery(['status' => null]),
+            ];
+        }
+
+        if (filled(request('tag'))) {
+            $activeFilters[] = [
+                'label' => 'برچسب: ' . request('tag'),
+                'remove_url' => request()->fullUrlWithQuery(['tag' => null]),
+            ];
+        }
+    @endphp
+
+    <x-admin.list.active-filters
+        :items="$activeFilters"
+        :clear-url="route('admin.projects.index')"
+    />
+
+    @php
+        $summaryText = null;
+
+        if (filled(request('search'))) {
+            $summaryText = 'نتایج جستجو برای «' . request('search') . '» نمایش داده می‌شود.';
+        } elseif (filled(request('status')) && isset($statuses[request('status')])) {
+            $summaryText = 'فقط پروژه‌های با وضعیت «' . $statuses[request('status')] . '» نمایش داده می‌شوند.';
+        } elseif (filled(request('tag'))) {
+            $summaryText = 'پروژه‌های دارای برچسب «' . request('tag') . '» نمایش داده می‌شوند.';
+        }
+    @endphp
+
+    <x-admin.list.summary :text="$summaryText"/>
+
     <form method="POST" action="{{ route('admin.projects.bulk-action') }}" class="space-y-4">
         @csrf
 
@@ -180,9 +224,9 @@
                         @foreach($projects as $project)
                             <x-admin.list.tr
                                 ::class="{
-                            'bg-brand-50/40 ring-1 ring-inset ring-brand-100': isOpen({{ $project->id }}),
-                            'bg-slate-50/90': isSelected({{ $project->id }})
-                        }"
+                                    'bg-brand-50/50 ring-1 ring-inset ring-brand-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]': isOpen({{ $project->id }}),
+                                    'bg-slate-50/90': !isOpen({{ $project->id }}) && isSelected({{ $project->id }})
+                                }"
                             >
                                 <x-admin.list.td align="center">
                                     <label class="inline-flex cursor-pointer items-center justify-center">
@@ -264,12 +308,60 @@
                                             >
                                                 حذف
                                             </x-admin.list.action>
+
+                                            <x-admin.dropdown>
+                                                <x-slot:trigger>
+                                                    <button
+                                                        type="button"
+                                                        x-on:click="open = !open"
+                                                        class="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                                                    >
+                                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                                                            <circle cx="5" cy="12" r="1.8"/>
+                                                            <circle cx="12" cy="12" r="1.8"/>
+                                                            <circle cx="19" cy="12" r="1.8"/>
+                                                        </svg>
+                                                    </button>
+                                                </x-slot:trigger>
+
+                                                <x-admin.dropdown-item
+                                                    href="{{ route('admin.projects.edit', $project) }}">
+                                                    <span>ویرایش کامل</span>
+                                                </x-admin.dropdown-item>
+
+                                                <x-admin.dropdown-item href="{{ route('projects.detail', $project) }}"
+                                                                       target="_blank">
+                                                    <span>مشاهده در سایت</span>
+                                                </x-admin.dropdown-item>
+
+                                                <x-admin.dropdown-item tag="button">
+                                                    <span>تکثیر پروژه</span>
+                                                </x-admin.dropdown-item>
+
+                                                <x-admin.dropdown-item tag="button" variant="danger"
+                                                                       x-on:click="$dispatch('confirm-delete-project', { id: {{ $project->id }} })">
+                                                    <span>حذف پروژه</span>
+                                                </x-admin.dropdown-item>
+                                            </x-admin.dropdown>
                                         </x-admin.list.row-actions>
                                     </div>
                                 </x-admin.list.td>
 
                                 <x-admin.list.td>
-                                    <x-admin.badge color="brand">
+                                    @php
+                                        $projectStatusBadgeColors = [
+                                            'draft' => 'slate',
+                                            'active' => 'green',
+                                            'in_progress' => 'blue',
+                                            'completed' => 'emerald',
+                                            'archived' => 'yellow',
+                                            'inactive' => 'red',
+                                        ];
+                                        $statusValue = $project->status?->value;
+                                        $statusColor = $projectStatusBadgeColors[$statusValue] ?? 'slate';
+                                    @endphp
+
+                                    <x-admin.badge :color="$statusColor">
                                         {{ $project->status?->label() ?? 'نامشخص' }}
                                     </x-admin.badge>
                                 </x-admin.list.td>
@@ -476,8 +568,7 @@
             </x-admin.list.table>
 
             @if(method_exists($projects, 'links'))
-                <div
-                    class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-soft">
+                <x-admin.list.pagination-wrap>
                     <div class="text-xs text-slate-500">
                         @if(method_exists($projects, 'total'))
                             نمایش
@@ -490,12 +581,44 @@
                         @endif
                     </div>
 
-                    <div>
+                    <div
+                        class="[&_nav]:flex [&_nav]:items-center [&_nav]:gap-1 [&_span]:rounded-lg [&_span]:border [&_span]:border-slate-200 [&_span]:bg-white [&_span]:px-3 [&_span]:py-1.5 [&_span]:text-sm [&_a]:rounded-lg [&_a]:border [&_a]:border-slate-200 [&_a]:bg-white [&_a]:px-3 [&_a]:py-1.5 [&_a]:text-sm [&_a]:text-slate-700 [&_a]:transition [&_a:hover]:bg-slate-50">
                         {{ $projects->links() }}
                     </div>
-                </div>
+                </x-admin.list.pagination-wrap>
             @endif
         </div>
+    </form>
+
+    <x-admin.modal.confirm
+        name="deleteProject"
+        title="حذف پروژه"
+        description="با حذف این پروژه، اطلاعات وابسته ممکن است تحت تأثیر قرار بگیرند. این عملیات را فقط در صورت اطمینان انجام بده."
+        confirm-text="بله، حذف شود"
+        cancel-text="انصراف"
+    />
+
+    <form
+        x-data="{ deleteId: null }"
+        x-on:confirm-delete-project.window="
+        $dispatch('open-confirm-modal', {
+            name: 'deleteProject',
+            payload: { id: $event.detail.id }
+        })
+    "
+        x-on:confirm-modal-accepted.window="
+        if ($event.detail.name !== 'deleteProject') return;
+        deleteId = $event.detail.payload.id;
+        $refs.projectDeleteForm.action = '{{ url('/admin/projects') }}/' + deleteId;
+        $refs.projectDeleteForm.submit();
+    "
+        x-ref="projectDeleteFormWrapper"
+        class="hidden"
+    >
+        <form x-ref="projectDeleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+        </form>
     </form>
 @endsection
 

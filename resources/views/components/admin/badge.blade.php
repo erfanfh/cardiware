@@ -1,5 +1,5 @@
 @props([
-    'color' => 'slate', // slate | green | yellow | red | blue | brand
+    'color' => 'slate',
     'size' => 'sm',
 ])
 
@@ -11,6 +11,7 @@
         'red' => 'bg-rose-100 text-rose-700 ring-rose-200',
         'blue' => 'bg-sky-100 text-sky-700 ring-sky-200',
         'brand' => 'bg-brand-100 text-brand-700 ring-brand-200',
+        'emerald' => 'bg-emerald-100 text-emerald-700 ring-emerald-200',
     ];
 
     $sizes = [
