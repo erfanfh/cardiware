@@ -6,3 +6,5 @@ Route::resource('projects', ProjectController::class)->except(['show']);
 
 Route::get('/projects/check-slug', [ProjectController::class, 'checkSlug'])
     ->name('projects.check-slug');
+Route::patch('/projects/{project}/quick-update', function () {
+})->name('projects.quick-update');

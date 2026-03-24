@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Project;
 
 use App\Application\Project\Actions\CreateProjectAction;
 use App\Application\Project\Actions\UpdateProjectAction;
+use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\ProjectRequest;
@@ -23,8 +24,12 @@ class ProjectController extends Controller
     public function index(): View
     {
         $projects = Project::latest()->get();
+        $statuses = [];
+        foreach (ProjectStatusEnum::cases() as $status) {
+            $statuses[$status->value] = $status->label();
+        }
 
-        return view('admin.projects.projects.index', compact('projects'));
+        return view('admin.projects.projects.index', compact('projects', 'statuses'));
     }
 
     /**
