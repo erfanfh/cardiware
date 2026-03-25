@@ -118,7 +118,7 @@
         :titleValue="$project->title ?? ''"
         :slugValue="$project->slug ?? ''"
         basePath="{{ route('home') }}/projects/"
-        :checkUrl="route('admin.projects.check-slug')"
+        scope="project"
         :currentId="$project->id ?? null"
         :itemUrl="$project ? route('projects.detail', $project) : null"
     />
