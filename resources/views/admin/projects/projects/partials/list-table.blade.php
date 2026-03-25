@@ -9,6 +9,7 @@
                     'urls' => [
                         'detail' => route('projects.detail', $project),
                         'edit' => route('admin.projects.edit', $project),
+                        'destroy' => route('admin.projects.destroy', $project),
                     ],
                     'status' => [
                         'value' => $project->status?->value,
@@ -167,8 +168,8 @@
                                     <span class="text-slate-300">|</span>
 
                                     <x-admin.form
-                                        action="{{ route('admin.projects.destroy', $project) }}"
-                                        method="DELETE"
+                                        bind-action="rows[{{ $project->id }}]?.urls?.destroy"
+                                        method="delete"
                                         class="js-confirm"
                                         data-confirm-title="حذف پروژه"
                                         data-confirm-text="آیا از حذف پروژه «{{ $project->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست."

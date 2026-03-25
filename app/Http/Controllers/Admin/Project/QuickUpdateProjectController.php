@@ -55,6 +55,7 @@ class QuickUpdateProjectController extends Controller
                     'urls' => [
                         'detail' => route('projects.detail', $project),
                         'edit' => route('admin.projects.edit', $project),
+                        'destroy' => route('admin.projects.destroy', $project),
                     ],
                     'status' => [
                         'value' => $project->status?->value,
