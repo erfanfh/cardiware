@@ -14,7 +14,7 @@
     x-transition:leave-end="opacity-0 -translate-y-1"
     class="bg-slate-50/70"
 >
-    <td colspan="{{ $colspan }}" class="px-4 pb-4 pt-0">
+    <td colspan="{{ $colspan }}" class="px-2 py-2">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm ring-1 ring-slate-100">
             {{ $slot }}
         </div>
