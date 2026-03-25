@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Project;
 
+use App\Application\Slug\Actions\AssignSlugAction;
+use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
@@ -15,7 +17,8 @@ use Throwable;
 class QuickUpdateProjectController extends Controller
 {
     public function __construct(
-        protected SyncModelTagsAction $syncModelTagsAction
+        protected SyncModelTagsAction $syncModelTagsAction,
+        protected AssignSlugAction    $assignSlugAction
     )
     {
     }
@@ -33,10 +36,19 @@ class QuickUpdateProjectController extends Controller
         DB::transaction(function () use ($project, $data): void {
             $project->update([
                 'title' => $data['title'],
-                'slug' => $data['slug'],
                 'status' => $data['status'],
                 'progress_percent' => $data['progress_percent'],
             ]);
+
+            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+
+            $this->assignSlugAction->execute(
+                new AssignSlugDTO(
+                    scope: 'project',
+                    model: $project,
+                    desiredSlug: $desiredSlug,
+                )
+            );
 
             $this->syncModelTagsAction->execute($project, [
                 'new' => $this->extractTagTitles($data['tags'] ?? null),
