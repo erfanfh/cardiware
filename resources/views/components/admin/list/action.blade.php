@@ -1,5 +1,6 @@
 @props([
     'tag' => 'a', // a | button
+    'type' => 'button',
     'variant' => 'default', // default | primary | danger
 ])
 
@@ -13,9 +14,9 @@
 
 @if($tag === 'button')
     <button
-        type="button"
+        type="{{ $type }}"
         {{ $attributes->merge([
-            'class' => 'font-medium transition ' . $classes
+            'class' => 'font-medium transition cursor-pointer ' . $classes
         ]) }}
     >
         {{ $slot }}
