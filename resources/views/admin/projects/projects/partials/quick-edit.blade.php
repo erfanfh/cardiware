@@ -1,14 +1,11 @@
 <x-admin.list.quick-edit-row :row-id="$project->id" colspan="7">
     <div class="space-y-5">
-        <form
-            method="POST"
+        <x-admin.form
+            method="PATCH"
             action="{{ route('admin.projects.quick-update', $project) }}"
             class="space-y-5"
             x-on:submit.prevent="submitQuickEdit($event.target, {{ $project->id }})"
         >
-            @csrf
-            @method('PATCH')
-
             <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
                 <div class="space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
@@ -20,29 +17,28 @@
                             شناسه: {{ $project->id }}
                         </x-admin.badge>
                     </div>
-
-                    <p class="text-xs text-slate-500">
-                        اطلاعات اصلی پروژه را سریع و بدون خروج از لیست ویرایش کن.
-                    </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <button
+                    <x-admin.button
                         type="submit"
-                        class="inline-flex items-center justify-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        :disabled="isSaving({{ $project->id }})"
+                        variant="solid"
+                        size="sm"
+                        ::disabled="isSaving({{ $project->id }})"
                     >
                         <span x-show="!isSaving({{ $project->id }})">ذخیره تغییرات</span>
                         <span x-show="isSaving({{ $project->id }})" x-cloak>در حال ذخیره...</span>
-                    </button>
+                    </x-admin.button>
 
-                    <button
+                    <x-admin.button
                         type="button"
+                        variant="secondary"
+                        size="sm"
                         x-on:click="close()"
-                        class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                        ::disabled="isSaving({{ $project->id }})"
                     >
                         انصراف
-                    </button>
+                    </x-admin.button>
                 </div>
             </div>
 
@@ -180,6 +176,6 @@
                     </x-admin.field>
                 </div>
             </div>
-        </form>
+        </x-admin.form>
     </div>
 </x-admin.list.quick-edit-row>
