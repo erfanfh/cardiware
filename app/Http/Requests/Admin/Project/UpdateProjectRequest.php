@@ -25,7 +25,6 @@ class UpdateProjectRequest extends FormRequest
                 'string',
                 'max:255',
                 'alpha_dash',
-                Rule::unique('projects', 'slug')->ignore($this->getProjectId()),
             ],
             'status' => ['required', Rule::enum(ProjectStatusEnum::class)],
             'cover_id' => ['nullable', 'integer', 'exists:media_files,id'],
