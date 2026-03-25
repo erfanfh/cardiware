@@ -4,8 +4,9 @@ namespace App\Domain\Content\Models;
 
 use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
 use App\Domain\Audit\Traits\Auditable;
-use App\Domain\Content\Enums\StatusEnum;
+use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
@@ -26,11 +27,12 @@ class Post extends Model implements PageViewableInterface
         'excerpt',
         'body',
         'status',
+        'picture_id',
         'published_at',
     ];
 
     protected $casts = [
-        'status' => StatusEnum::class,
+        'status' => PostStatusEnum::class,
     ];
 
     /**
@@ -57,6 +59,14 @@ class Post extends Model implements PageViewableInterface
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function picture(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class);
     }
 
     /**
