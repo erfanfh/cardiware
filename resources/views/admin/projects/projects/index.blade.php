@@ -44,37 +44,6 @@
             </x-admin.list.pagination-wrap>
         @endif
     </div>
-
-    <x-admin.modal.confirm
-        name="deleteProject"
-        title="حذف پروژه"
-        description="با حذف این پروژه، اطلاعات وابسته ممکن است تحت تأثیر قرار بگیرند. این عملیات را فقط در صورت اطمینان انجام بده."
-        confirm-text="بله، حذف شود"
-        cancel-text="انصراف"
-    />
-
-    <form
-        x-data="{ deleteId: null }"
-        x-on:confirm-delete-project.window="
-        $dispatch('open-confirm-modal', {
-            name: 'deleteProject',
-            payload: { id: $event.detail.id }
-        })
-    "
-        x-on:confirm-modal-accepted.window="
-        if ($event.detail.name !== 'deleteProject') return;
-        deleteId = $event.detail.payload.id;
-        $refs.projectDeleteForm.action = '{{ url('/admin/projects') }}/' + deleteId;
-        $refs.projectDeleteForm.submit();
-    "
-        x-ref="projectDeleteFormWrapper"
-        class="hidden"
-    >
-        <form x-ref="projectDeleteForm" method="POST">
-            @csrf
-            @method('DELETE')
-        </form>
-    </form>
 @endsection
 
 @push('scripts')
