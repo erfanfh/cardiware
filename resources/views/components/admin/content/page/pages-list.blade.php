@@ -150,20 +150,20 @@ new class extends Component {
                     <td class="p-3 text-gray-600 dark:text-gray-300">{{ $page->author->first_name . ' ' . $page->author->last_name }}</td>
 
                     <td class="p-3">
-                        @if($page->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
+                        @if($page->status == \App\Domain\Content\Enums\PostStatusEnum::DRAFT)
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->value }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::DRAFT->value }}
                                 </span>
-                        @elseif($page->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
+                        @elseif($page->status == \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW)
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->value }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW->value }}
                                 </span>
-                        @elseif($page->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
+                        @elseif($page->status == \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED)
                             <span
                                 class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->value }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED->value }}
                                 </span>
                         @endif
                     </td>
