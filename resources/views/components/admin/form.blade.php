@@ -1,6 +1,6 @@
 @props([
     'action',
-    'method' => 'post' // post | put | patch | get
+    'method' => 'post' // post | put | patch | delete | get
 ])
 
 @php
@@ -28,6 +28,8 @@
         @method('PUT')
     @elseif($method === 'patch')
         @method('PATCH')
+    @elseif($method === 'delete')
+        @method('DELETE')
     @endif
 
     {{ $slot }}
