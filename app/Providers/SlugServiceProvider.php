@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\Slug\Services\SlugAssignmentManager;
 use App\Application\Slug\Services\SlugManager;
 use App\Application\Slug\Services\SlugNormalizer;
+use App\Application\Slug\Services\SlugResolverManager;
 use App\Application\Slug\Services\SlugSuggestionGenerator;
 use App\Infrastructure\Slug\Checkers\ContentSlugChecker;
 use App\Infrastructure\Slug\Checkers\ProjectSlugChecker;
@@ -12,6 +13,9 @@ use App\Infrastructure\Slug\Checkers\TaxonomySlugChecker;
 use App\Infrastructure\Slug\Drivers\ContentSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\ProjectSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\TaxonomySlugPersistenceDriver;
+use App\Infrastructure\Slug\Resolvers\ContentSlugResolverDriver;
+use App\Infrastructure\Slug\Resolvers\ProjectSlugResolverDriver;
+use App\Infrastructure\Slug\Resolvers\TaxonomySlugResolverDriver;
 use App\Infrastructure\Slug\Services\TaxonomyRouteKeyBuilder;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\ServiceProvider;
@@ -19,7 +23,7 @@ use Illuminate\Support\ServiceProvider;
 class SlugServiceProvider extends ServiceProvider
 {
     /**
-     * Register slug-related services, checkers, and persistence drivers.
+     * Register slug-related services, checkers, persistence drivers, and resolver drivers.
      */
     public function register(): void
     {
@@ -34,6 +38,10 @@ class SlugServiceProvider extends ServiceProvider
         $this->app->singleton(ContentSlugPersistenceDriver::class);
         $this->app->singleton(ProjectSlugPersistenceDriver::class);
         $this->app->singleton(TaxonomySlugPersistenceDriver::class);
+
+        $this->app->singleton(ContentSlugResolverDriver::class);
+        $this->app->singleton(ProjectSlugResolverDriver::class);
+        $this->app->singleton(TaxonomySlugResolverDriver::class);
 
         $this->app->tag(
             [
@@ -53,6 +61,15 @@ class SlugServiceProvider extends ServiceProvider
             'slug.persistence.drivers'
         );
 
+        $this->app->tag(
+            [
+                ContentSlugResolverDriver::class,
+                ProjectSlugResolverDriver::class,
+                TaxonomySlugResolverDriver::class,
+            ],
+            'slug.resolver.drivers'
+        );
+
         $this->app->singleton(SlugManager::class, function ($app): SlugManager {
             return new SlugManager(
                 checkers: $app->tagged('slug.scope.checkers'),
@@ -68,6 +85,12 @@ class SlugServiceProvider extends ServiceProvider
                 normalizer: $app->make(SlugNormalizer::class),
                 suggestionGenerator: $app->make(SlugSuggestionGenerator::class),
                 db: $app->make(ConnectionInterface::class),
+            );
+        });
+
+        $this->app->singleton(SlugResolverManager::class, function ($app): SlugResolverManager {
+            return new SlugResolverManager(
+                drivers: $app->tagged('slug.resolver.drivers'),
             );
         });
     }
