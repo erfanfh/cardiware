@@ -24,7 +24,7 @@ class QuickUpdateProjectRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => [
-                'nullable',
+                'required',
                 'string',
                 'max:255',
                 Rule::unique('projects', 'slug')->ignore($this->project?->id),
