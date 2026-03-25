@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\Content\PostController;
 use App\Http\Controllers\Front\HomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
+        Route::view('/about-us', 'templates.about-us');
         Route::controller(PostController::class)->name('posts.')->group(function () {
             Route::get('{post}', 'detail')->name('detail');
             Route::get('posts', 'list')->name('list');
