@@ -60,7 +60,7 @@
             <template x-if="collapsible">
                 <button
                     type="button"
-                    class="h-9 w-9 cursor-pointer rounded-xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-slate-100 transition grid place-items-center text-slate-600 dark:text-white dark:hover:bg-gray-700"
+                    class="h-9 w-9 cursor-pointer rounded-2xl border border-slate-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-slate-100 transition grid place-items-center text-slate-600 dark:text-white dark:hover:bg-gray-700"
                     @click="toggle()"
                     title="باز/بسته"
                 >
