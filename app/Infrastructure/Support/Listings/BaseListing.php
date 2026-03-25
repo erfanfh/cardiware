@@ -175,4 +175,9 @@ abstract class BaseListing
 
         return false;
     }
+
+    public function perPage(): int
+    {
+        return 10;
+    }
 }
