@@ -13,7 +13,7 @@
         data-jdp
         autocomplete="off"
         {{ $attributes->merge([
-            'class' => 'w-full h-10 rounded-lg border border-slate-200 bg-white pr-10 pl-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
+            'class' => 'w-full h-10 rounded-2xl border border-slate-200 bg-white pr-10 pl-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
         ]) }}
     />
 

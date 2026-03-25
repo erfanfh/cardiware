@@ -38,7 +38,7 @@ This project follows **Modular Monolith Architecture** using
         Application/
             {Module}/
                 Actions/
-                Queries/
+                Listings/
                 DTOs/
 
         Domain/

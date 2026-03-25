@@ -5,8 +5,8 @@
 
 .mw-async-select .ts-control {
     width: 100%;
-    min-height: 42px;
-    border-radius: 0.5rem;
+    min-height: 2.5rem;
+    border-radius: 1rem;
     border: 1px solid rgb(226 232 240);
     background: rgb(255 255 255);
     padding: 0.5rem 0.75rem;

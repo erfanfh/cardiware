@@ -116,6 +116,23 @@ document.addEventListener('alpine:init', () => {
                     this.decorateControl();
                     this.syncLoadingIndicator();
                 },
+                onItemAdd: () => {
+                    if (!this.multiple || !this.tom) {
+                        return;
+                    }
+
+                    this.tom.setTextboxValue('');
+                    this.tom.lastValue = '';
+                    this.tom.clearActiveOption();
+                    this.tom.refreshOptions(false);
+
+                    if (this.tom.control_input) {
+                        this.tom.control_input.value = '';
+                        this.tom.control_input.dispatchEvent(new Event('input', {bubbles: true}));
+                    }
+
+                    this.tom.close();
+                },
                 onType: (query) => {
                     if (query.trim().length > 0 && query.trim().length < this.minChars) {
                         this.hasError = false;

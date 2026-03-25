@@ -9,6 +9,6 @@
     value="{{ $value }}"
     @if($name) name="{{ $name }}" @endif
     {{ $attributes->merge([
-        'class' => 'w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400'
+        'class' => 'w-full h-10 rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
     ]) }}
 />

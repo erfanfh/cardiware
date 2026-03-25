@@ -6,7 +6,7 @@ use App\Domain\Project\Enums\ProjectStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProjectRequest extends FormRequest
+class UpdateProjectRequest extends FormRequest
 {
     public function authorize(): bool
     {

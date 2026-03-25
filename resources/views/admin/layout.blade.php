@@ -27,7 +27,7 @@
 
         @include('admin.partials.topbar')
 
-        <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto">
+        <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto space-y-4">
             @yield('page_header')
             @yield('content')
 
