@@ -12,9 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\IndexProjectRequest;
 use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Throwable;
 
@@ -142,57 +140,5 @@ class ProjectController extends Controller
         return redirect()
             ->route('admin.projects.index')
             ->with('success', 'پروژه با موفقیت حذف شد.');
-    }
-
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function checkSlug(Request $request): JsonResponse
-    {
-        $slug = trim((string)$request->query('slug', ''));
-        $ignoreId = $request->query('ignore');
-
-        if ($slug === '') {
-            return response()->json([
-                'unique' => true,
-                'suggested_slug' => null,
-                'message' => null,
-            ]);
-        }
-
-        $query = Project::query()->where('slug', $slug);
-        if ($ignoreId) $query->where('id', '!=', $ignoreId);
-
-        $exists = $query->exists();
-
-        if (!$exists) {
-            return response()->json([
-                'unique' => true,
-                'suggested_slug' => null,
-                'message' => null,
-            ]);
-        }
-
-        $base = $slug;
-        $i = 2;
-        $suggested = $base . '-' . $i;
-
-        while (
-        Project::query()
-            ->where('slug', $suggested)
-            ->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))
-            ->exists()
-        ) {
-            $i++;
-            $suggested = $base . '-' . $i;
-            if ($i > 999) break;
-        }
-
-        return response()->json([
-            'unique' => false,
-            'suggested_slug' => $suggested,
-            'message' => 'این پیوند یکتا قبلاً استفاده شده.',
-        ]);
     }
 }
