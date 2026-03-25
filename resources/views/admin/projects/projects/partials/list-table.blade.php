@@ -39,14 +39,10 @@
         <x-admin.list.thead>
             <tr>
                 <x-admin.list.th width="44px" align="center">
-                    <label class="inline-flex cursor-pointer items-center justify-center">
-                        <input
-                            type="checkbox"
-                            class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-                            :checked="isAllSelected(@js($projectIds))"
-                            x-on:change="toggleAll(@js($projectIds))"
-                        >
-                    </label>
+                    <x-admin.list.bulk-checkbox
+                        :x-bind:checked="'isAllSelected(' . \Illuminate\Support\Js::from($projectIds) . ')'"
+                        :x-on:change="'toggleAll(' . \Illuminate\Support\Js::from($projectIds) . ')'"
+                    />
                 </x-admin.list.th>
 
                 <x-admin.list.th width="90px">تصویر</x-admin.list.th>
@@ -87,16 +83,12 @@
                                 }"
                     >
                         <x-admin.list.td align="center">
-                            <label class="inline-flex cursor-pointer items-center justify-center">
-                                <input
-                                    type="checkbox"
-                                    name="ids[]"
-                                    value="{{ $project->id }}"
-                                    class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-                                    :checked="isSelected({{ $project->id }})"
-                                    x-on:change="toggleSelection({{ $project->id }})"
-                                >
-                            </label>
+                            <x-admin.list.bulk-checkbox
+                                name="ids[]"
+                                :value="$project->id"
+                                x-bind:checked="isSelected({{ $project->id }})"
+                                x-on:change="toggleSelection({{ $project->id }})"
+                            />
                         </x-admin.list.td>
 
                         <x-admin.list.td>
