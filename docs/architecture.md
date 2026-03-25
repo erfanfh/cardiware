@@ -40,6 +40,8 @@ This project follows **Modular Monolith Architecture** using
                 Actions/
                 Listings/
                 DTOs/
+                Contracts/
+                Services/
 
         Domain/
             {Module}/
