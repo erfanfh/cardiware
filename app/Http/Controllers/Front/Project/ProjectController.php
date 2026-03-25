@@ -29,8 +29,6 @@ class ProjectController extends Controller
      */
     public function list(): View
     {
-        $projects = Project::paginate(1);
-
-        return view('front.projects.list', compact('projects'));
+        return view('front.projects.list');
     }
 }
