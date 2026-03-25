@@ -31,7 +31,7 @@ class ProjectController extends Controller
     {
         $projects = $projectListing
             ->handle(Project::query(), $request->validated())
-            ->paginate(20)
+            ->paginate($projectListing->perPage())
             ->withQueryString();
 
         $statuses = collect(ProjectStatusEnum::cases())
