@@ -79,12 +79,14 @@
             <x-admin.form.error-box/>
 
             <div class="grid grid-cols-12 gap-5">
-                <div class="col-span-12 lg:col-span-5">
+                {{-- Title --}}
+                <div class="col-span-12 lg:col-span-4">
                     <x-admin.field label="عنوان پروژه">
                         <x-admin.form.input
                             name="title"
                             :value="old('title', $project->title)"
                         />
+
                         <p
                             x-show="fieldError({{ $project->id }}, 'title')"
                             x-cloak
@@ -94,13 +96,37 @@
                     </x-admin.field>
                 </div>
 
-                <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                {{-- Slug --}}
+                <div class="col-span-12 lg:col-span-4">
+                    <x-admin.field label="اسلاگ">
+                        <x-admin.form.input
+                            name="slug"
+                            dir="ltr"
+                            :value="old('slug', $project->slug)"
+                        />
+
+                        <p class="mt-2 text-xs text-slate-500">
+                            برای استفاده در آدرس صفحه پروژه.
+                        </p>
+
+                        <p
+                            x-show="fieldError({{ $project->id }}, 'slug')"
+                            x-cloak
+                            class="mt-2 text-xs text-rose-600"
+                            x-text="fieldError({{ $project->id }}, 'slug')"
+                        ></p>
+                    </x-admin.field>
+                </div>
+
+                {{-- Status --}}
+                <div class="col-span-12 sm:col-span-6 lg:col-span-2">
                     <x-admin.field label="وضعیت">
                         <x-admin.form.select
                             name="status"
                             :options="$statuses"
                             :value="old('status', $project->status?->value)"
                         />
+
                         <p
                             x-show="fieldError({{ $project->id }}, 'status')"
                             x-cloak
@@ -110,30 +136,27 @@
                     </x-admin.field>
                 </div>
 
-                <div class="col-span-12 sm:col-span-6 lg:col-span-4">
+                {{-- Progress --}}
+                <div class="col-span-12 sm:col-span-6 lg:col-span-2">
                     <x-admin.field label="درصد پیشرفت">
-                        <div class="space-y-3">
-                            <x-admin.form.input
-                                type="number"
-                                name="progress_percent"
-                                min="0"
-                                max="100"
-                                :value="old('progress_percent', $project->progress_percent ?? 0)"
-                            />
-                            <p
-                                x-show="fieldError({{ $project->id }}, 'progress_percent')"
-                                x-cloak
-                                class="mt-2 text-xs text-rose-600"
-                                x-text="fieldError({{ $project->id }}, 'progress_percent')"
-                            ></p>
+                        <x-admin.form.input
+                            type="number"
+                            name="progress_percent"
+                            min="0"
+                            max="100"
+                            :value="old('progress_percent', $project->progress_percent ?? 0)"
+                        />
 
-                            <p class="text-xs text-slate-500">
-                                عددی بین ۰ تا ۱۰۰ وارد کن.
-                            </p>
-                        </div>
+                        <p
+                            x-show="fieldError({{ $project->id }}, 'progress_percent')"
+                            x-cloak
+                            class="mt-2 text-xs text-rose-600"
+                            x-text="fieldError({{ $project->id }}, 'progress_percent')"
+                        ></p>
                     </x-admin.field>
                 </div>
 
+                {{-- Tags --}}
                 <div class="col-span-12">
                     <x-admin.field label="برچسب‌ها">
                         <x-admin.form.textarea
@@ -142,17 +165,18 @@
                             :value="old('tags', $project->tags?->pluck('title')->implode('، '))"
                             placeholder="مثلاً: لاراول، Livewire، Tailwind"
                         />
+
+                        <p class="mt-2 text-xs leading-6 text-slate-500">
+                            برچسب‌ها را با ویرگول فارسی یا انگلیسی از هم جدا کن. برچسب‌های جدید در صورت نیاز ساخته
+                            می‌شوند.
+                        </p>
+
                         <p
                             x-show="fieldError({{ $project->id }}, 'tags')"
                             x-cloak
                             class="mt-2 text-xs text-rose-600"
                             x-text="fieldError({{ $project->id }}, 'tags')"
                         ></p>
-
-                        <p class="mt-2 text-xs leading-6 text-slate-500">
-                            برچسب‌ها را با ویرگول فارسی یا انگلیسی از هم جدا کن. برچسب‌های جدید در صورت نیاز ساخته
-                            می‌شوند.
-                        </p>
                     </x-admin.field>
                 </div>
             </div>

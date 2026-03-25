@@ -23,6 +23,12 @@ class QuickUpdateProjectRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('projects', 'slug')->ignore($this->project?->id),
+            ],
             'status' => [
                 'required',
                 Rule::in(array_column(ProjectStatusEnum::cases(), 'value')),
@@ -39,6 +45,7 @@ class QuickUpdateProjectRequest extends FormRequest
     {
         return [
             'title' => 'عنوان پروژه',
+            'slug' => 'اسلاگ',
             'status' => 'وضعیت',
             'progress_percent' => 'درصد پیشرفت',
             'tags' => 'برچسب‌ها',

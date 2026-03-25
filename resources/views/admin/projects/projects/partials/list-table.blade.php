@@ -5,6 +5,11 @@
                 $project->id => [
                     'id' => $project->id,
                     'title' => $project->title,
+                    'slug' => $project->slug,
+                    'urls' => [
+                        'detail' => route('projects.detail', $project),
+                        'edit' => route('admin.projects.edit', $project),
+                    ],
                     'status' => [
                         'value' => $project->status?->value,
                         'label' => $project->status?->label() ?? 'نامشخص',
@@ -111,7 +116,7 @@
                         <x-admin.list.td>
                             <div class="min-w-[280px]">
                                 <a
-                                    href="{{ route('projects.detail', $project) }}"
+                                    :href="rows[{{ $project->id }}]?.urls?.detail"
                                     target="_blank"
                                     class="line-clamp-1 text-sm font-bold text-slate-800 transition hover:text-brand-600"
                                     x-text="rows[{{ $project->id }}]?.title ?? ''"
@@ -120,16 +125,20 @@
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                                     <span>#{{ $project->id }}</span>
 
-                                    @if($project->slug)
+                                    <template x-if="rows[{{ $project->id }}]?.slug">
                                         <span class="text-slate-300 pb-1">•</span>
-                                        <span dir="ltr">{{ $project->slug }}</span>
-                                    @endif
+                                    </template>
+
+                                    <template x-if="rows[{{ $project->id }}]?.slug">
+                                        <span dir="ltr" x-text="rows[{{ $project->id }}]?.slug"></span>
+                                    </template>
                                 </div>
 
                                 <x-admin.list.row-actions
                                     class="opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
                                     <x-admin.list.action
-                                        href="{{ route('admin.projects.edit', $project) }}"
+                                        tag="a"
+                                        ::href="rows[{{ $project->id }}]?.urls?.edit"
                                         variant="primary"
                                     >
                                         ویرایش
@@ -149,7 +158,8 @@
                                     <span class="text-slate-300">|</span>
 
                                     <x-admin.list.action
-                                        href="{{ route('projects.detail', $project) }}"
+                                        tag="a"
+                                        ::href="rows[{{ $project->id }}]?.urls?.detail"
                                         target="_blank"
                                     >
                                         مشاهده

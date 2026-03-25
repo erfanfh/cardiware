@@ -33,6 +33,7 @@ class QuickUpdateProjectController extends Controller
         DB::transaction(function () use ($project, $data): void {
             $project->update([
                 'title' => $data['title'],
+                'slug' => $data['slug'],
                 'status' => $data['status'],
                 'progress_percent' => $data['progress_percent'],
             ]);
@@ -50,6 +51,11 @@ class QuickUpdateProjectController extends Controller
                 'project' => [
                     'id' => $project->id,
                     'title' => $project->title,
+                    'slug' => $project->slug,
+                    'urls' => [
+                        'detail' => route('projects.detail', $project),
+                        'edit' => route('admin.projects.edit', $project),
+                    ],
                     'status' => [
                         'value' => $project->status?->value,
                         'label' => $project->status?->label() ?? 'نامشخص',
