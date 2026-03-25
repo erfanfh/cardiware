@@ -53,7 +53,7 @@
         :titleValue="$post->title ?? ''"
         :slugValue="$post->slug ?? ''"
         basePath="{{ route('home') }}/"
-        :checkUrl="route('admin.projects.check-slug')"
+        scope="content"
         :currentId="$post->id ?? null"
         :itemUrl="$post ? route('posts.detail', $post) : null"
     />
