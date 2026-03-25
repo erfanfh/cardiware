@@ -1,17 +1,32 @@
 @props([
-    'action',
-    'method' => 'post' // post | put | patch | delete | get
+    'action' => null,
+    'bindAction' => null,
+    'method' => 'post', // post | put | patch | delete | get
 ])
 
 @php
     $method = strtolower($method);
+
+    $formMethod = $method === 'get' ? 'get' : 'post';
+
+    $baseAttributes = $attributes->class([]);
+
+    if (filled($bindAction)) {
+        $baseAttributes = $baseAttributes->merge([
+            ':action' => $bindAction,
+        ]);
+    } elseif (filled($action)) {
+        $baseAttributes = $baseAttributes->merge([
+            'action' => $action,
+        ]);
+    }
 @endphp
 
-<form method="{{ $method === 'get' ? 'get' : 'post' }}"
-      {{ $attributes }}
-      action="{{ $action }}"
-      x-data
-      @keydown.enter.prevent="
+<form
+    method="{{ $formMethod }}"
+    {{ $baseAttributes }}
+    x-data
+    @keydown.enter.prevent="
         if (
             $event.target.tagName.toLowerCase() !== 'textarea' &&
             $event.target.type !== 'submit' &&
@@ -19,7 +34,8 @@
         ) {
             $event.preventDefault()
         }
-    ">
+    "
+>
     @if($method !== 'get')
         @csrf
     @endif
