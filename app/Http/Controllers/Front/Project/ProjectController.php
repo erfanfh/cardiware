@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Project;
 
+use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
@@ -28,6 +29,8 @@ class ProjectController extends Controller
      */
     public function list(): View
     {
-        return view('front.projects.list');
+        $projects = Project::paginate(1);
+
+        return view('front.projects.list', compact('projects'));
     }
 }

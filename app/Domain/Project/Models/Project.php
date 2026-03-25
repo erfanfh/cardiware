@@ -40,7 +40,7 @@ class Project extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope(new ActiveProjectScope());
+//        static::addGlobalScope(new ActiveProjectScope());
     }
 
     /**
