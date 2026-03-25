@@ -14,9 +14,9 @@ class MelliPayamakProvider implements SmsProviderInterface
     public function send(string $mobile, string $message): bool
     {
         $payload = [
-            'username' => config('services.notifications.sms.providers.melli-payamak.username'),
-            'password' => config('services.notifications.sms.providers.melli-payamak.password'),
-            'from' => config('services.notifications.sms.providers.melli-payamak.from'),
+            'username' => get_setting('general', 'melli_payamak_username'),
+            'password' => get_setting('general', 'melli_payamak_password'),
+            'from' => get_setting('general', 'melli_payamak_from_mobile'),
             'text' => $message,
             'to' => (string)preg_replace('/^0/', '', $mobile),
         ];
