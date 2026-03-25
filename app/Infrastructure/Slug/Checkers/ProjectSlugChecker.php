@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Infrastructure\Slug\Checkers;
+
+use App\Application\Slug\Contracts\SlugScopeChecker;
+use App\Domain\Project\Models\Project;
+
+class ProjectSlugChecker implements SlugScopeChecker
+{
+    /**
+     * Determine whether this checker supports the given scope.
+     */
+    public function supports(string $scope): bool
+    {
+        return $scope === 'project';
+    }
+
+    /**
+     * Determine whether the given slug exists in the project scope.
+     */
+    public function exists(
+        string  $scope,
+        string  $slug,
+        ?int    $ignoreId = null,
+        ?string $ignoreType = null,
+    ): bool
+    {
+        return Project::query()
+            ->where('slug', $slug)
+            ->when(
+                $ignoreId !== null,
+                fn($query) => $query->whereKeyNot($ignoreId)
+            )
+            ->exists();
+    }
+}

@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Infrastructure\Slug\Checkers;
+
+use App\Application\Slug\Contracts\SlugScopeChecker;
+use App\Domain\Content\Models\ContentSlug;
+use Illuminate\Database\Eloquent\Builder;
+
+class ContentSlugChecker implements SlugScopeChecker
+{
+    /**
+     * Determine whether this checker supports the given scope.
+     */
+    public function supports(string $scope): bool
+    {
+        return $scope === 'content';
+    }
+
+    /**
+     * Determine whether the given slug exists in the shared content slug registry.
+     *
+     * The content scope is shared between models like Post and Page.
+     * When editing an existing record, both ignoreId and ignoreType should
+     * ideally be provided to avoid ambiguity between different models that
+     * may share the same numeric identifier.
+     */
+    public function exists(
+        string  $scope,
+        string  $slug,
+        ?int    $ignoreId = null,
+        ?string $ignoreType = null,
+    ): bool
+    {
+        $query = ContentSlug::query()->where('slug', $slug);
+
+        if ($ignoreId !== null && $ignoreType !== null) {
+            $query->where(function (Builder $builder) use ($ignoreId, $ignoreType): void {
+                $builder
+                    ->where('sluggable_id', '!=', $ignoreId)
+                    ->orWhere('sluggable_type', '!=', $ignoreType);
+            });
+        } elseif ($ignoreId !== null) {
+            $query->where('sluggable_id', '!=', $ignoreId);
+        }
+
+        return $query->exists();
+    }
+}
