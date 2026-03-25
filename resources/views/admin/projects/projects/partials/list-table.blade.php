@@ -179,21 +179,23 @@
                         </x-admin.list.td>
 
                         <x-admin.list.td>
-                            <span
-                                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ring-1"
-                                :class="{
-                                    'bg-emerald-50 text-emerald-700 ring-emerald-200': rows[{{ $project->id }}]?.status?.color === 'green',
-                                    'bg-rose-50 text-rose-700 ring-rose-200': rows[{{ $project->id }}]?.status?.color === 'red',
-                                    'bg-slate-100 text-slate-700 ring-slate-200': !rows[{{ $project->id }}]?.status?.color || !['green', 'red'].includes(rows[{{ $project->id }}]?.status?.color)
-                                }"
+                            <x-admin.badge
+                                color="green"
+                                x-show="rows[{{ $project->id }}]?.status?.color === 'green'"
                                 x-text="rows[{{ $project->id }}]?.status?.label ?? 'نامشخص'"
-                            ></span>
+                            ></x-admin.badge>
+
+                            <x-admin.badge
+                                color="red"
+                                x-show="rows[{{ $project->id }}]?.status?.color === 'red'"
+                                x-text="rows[{{ $project->id }}]?.status?.label ?? 'نامشخص'"
+                            ></x-admin.badge>
                         </x-admin.list.td>
 
                         <x-admin.list.td>
-                            <div class="min-w-[120px] space-y-2">
-                                <div class="flex items-center justify-between text-xs">
-                                    <span class="text-slate-500">پیشرفت</span>
+                            <div class="min-w-[120px]">
+                                <div class="mb-1 flex items-center justify-between text-[11px] text-slate-500">
+                                    <span>پیشرفت</span>
                                     <span
                                         class="font-bold text-slate-700"
                                         x-text="`${rows[{{ $project->id }}]?.progress_percent ?? 0}%`"
@@ -202,7 +204,14 @@
 
                                 <div class="h-2 overflow-hidden rounded-full bg-slate-100">
                                     <div
-                                        class="h-full rounded-full bg-brand-500 transition-all duration-300"
+                                        class="h-full rounded-full transition-all duration-300"
+                                        :class="{
+                                            'bg-emerald-500': (rows[{{ $project->id }}]?.progress_percent ?? 0) >= 100,
+                                            'bg-sky-500': (rows[{{ $project->id }}]?.progress_percent ?? 0) >= 70 && (rows[{{ $project->id }}]?.progress_percent ?? 0) < 100,
+                                            'bg-yellow-500': (rows[{{ $project->id }}]?.progress_percent ?? 0) >= 40 && (rows[{{ $project->id }}]?.progress_percent ?? 0) < 70,
+                                            'bg-red-500': (rows[{{ $project->id }}]?.progress_percent ?? 0) >= 1 && (rows[{{ $project->id }}]?.progress_percent ?? 0) < 40,
+                                            'bg-slate-300': (rows[{{ $project->id }}]?.progress_percent ?? 0) < 1
+                                        }"
                                         :style="`width: ${Math.max(0, Math.min(100, rows[{{ $project->id }}]?.progress_percent ?? 0))}%`"
                                     ></div>
                                 </div>
