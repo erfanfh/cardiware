@@ -148,7 +148,6 @@
 
                                     <x-admin.list.action
                                         tag="button"
-                                        class="cursor-pointer"
                                         x-on:click="toggle({{ $project->id }})"
                                         x-text="isOpen({{ $project->id }}) ? 'بستن ویرایش سریع' : 'ویرایش سریع'"
                                     >
@@ -167,13 +166,21 @@
 
                                     <span class="text-slate-300">|</span>
 
-                                    <x-admin.list.action
-                                        class="cursor-pointer"
-                                        tag="button"
-                                        variant="danger"
+                                    <x-admin.form
+                                        action="{{ route('admin.projects.destroy', $project) }}"
+                                        method="DELETE"
+                                        class="js-confirm"
+                                        data-confirm-title="حذف پروژه"
+                                        data-confirm-text="آیا از حذف پروژه «{{ $project->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست."
                                     >
-                                        حذف
-                                    </x-admin.list.action>
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="submit"
+                                            variant="danger"
+                                        >
+                                            حذف
+                                        </x-admin.list.action>
+                                    </x-admin.form>
                                 </x-admin.list.row-actions>
                             </div>
                         </x-admin.list.td>
