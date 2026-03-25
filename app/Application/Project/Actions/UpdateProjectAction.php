@@ -2,6 +2,8 @@
 
 namespace App\Application\Project\Actions;
 
+use App\Application\Slug\Actions\AssignSlugAction;
+use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
 use App\Domain\Project\Models\Project;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +16,7 @@ class UpdateProjectAction
         protected SyncProjectFeaturesAction     $syncProjectFeaturesAction,
         protected SyncProjectRoadmapItemsAction $syncProjectRoadmapItemsAction,
         protected SyncProjectChangelogsAction   $syncProjectChangelogsAction,
+        protected AssignSlugAction              $assignSlugAction,
     )
     {
     }
@@ -28,12 +31,26 @@ class UpdateProjectAction
     {
         return DB::transaction(function () use ($project, $data) {
             $projectData = $data;
-            unset($projectData['tags']);
-            unset($projectData['features']);
-            unset($projectData['roadmap_items']);
-            unset($projectData['changelogs']);
+
+            unset(
+                $projectData['tags'],
+                $projectData['features'],
+                $projectData['roadmap_items'],
+                $projectData['changelogs'],
+                $projectData['slug'],
+            );
 
             $project->update($projectData);
+
+            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+
+            $this->assignSlugAction->execute(
+                new AssignSlugDTO(
+                    scope: 'project',
+                    model: $project,
+                    desiredSlug: $desiredSlug,
+                )
+            );
 
             $this->syncModelTagsAction->execute($project, $data['tags'] ?? []);
             $this->syncProjectFeaturesAction->execute($project, $data['features'] ?? []);
