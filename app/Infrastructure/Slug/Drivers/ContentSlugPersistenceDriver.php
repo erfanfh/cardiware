@@ -4,6 +4,7 @@ namespace App\Infrastructure\Slug\Drivers;
 
 use App\Application\Slug\Contracts\SlugPersistenceDriver;
 use App\Domain\Content\Models\ContentSlug;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class ContentSlugPersistenceDriver implements SlugPersistenceDriver
@@ -11,9 +12,9 @@ class ContentSlugPersistenceDriver implements SlugPersistenceDriver
     /**
      * Determine whether this driver supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return $scope === 'content';
+        return $scope === SlugScopeEnum::CONTENT;
     }
 
     /**
@@ -36,7 +37,7 @@ class ContentSlugPersistenceDriver implements SlugPersistenceDriver
      *     history_recorded: bool
      * }
      */
-    public function persist(Model $model, string $scope, string $finalSlug): array
+    public function persist(Model $model, SlugScopeEnum $scope, string $finalSlug): array
     {
         $previousSlug = $this->getCurrentSlug($model);
 

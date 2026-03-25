@@ -4,25 +4,26 @@ namespace App\Infrastructure\Slug\Checkers;
 
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Domain\Project\Models\Project;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 
 class ProjectSlugChecker implements SlugScopeChecker
 {
     /**
      * Determine whether this checker supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return $scope === 'project';
+        return $scope === SlugScopeEnum::PROJECT;
     }
 
     /**
      * Determine whether the given slug exists in the project scope.
      */
     public function exists(
-        string  $scope,
-        string  $slug,
-        ?int    $ignoreId = null,
-        ?string $ignoreType = null,
+        SlugScopeEnum $scope,
+        string        $slug,
+        ?int          $ignoreId = null,
+        ?string       $ignoreType = null,
     ): bool
     {
         return Project::query()

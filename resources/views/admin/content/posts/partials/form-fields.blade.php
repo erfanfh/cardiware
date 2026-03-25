@@ -53,7 +53,7 @@
         :titleValue="$post->title ?? ''"
         :slugValue="$post->slug ?? ''"
         basePath="{{ route('home') }}/"
-        scope="content"
+        :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
         :currentId="$post->id ?? null"
         :itemUrl="$post ? route('posts.detail', $post) : null"
     />

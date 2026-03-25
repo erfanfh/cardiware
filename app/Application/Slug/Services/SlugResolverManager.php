@@ -5,6 +5,7 @@ namespace App\Application\Slug\Services;
 use App\Application\Slug\Contracts\SlugResolverDriver;
 use App\Application\Slug\DTOs\ResolvedSlugDTO;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use RuntimeException;
 
 class SlugResolverManager
@@ -31,7 +32,7 @@ class SlugResolverManager
     /**
      * Resolve the driver responsible for the given scope.
      */
-    private function resolveDriver(string $scope): SlugResolverDriver
+    private function resolveDriver(SlugScopeEnum $scope): SlugResolverDriver
     {
         foreach ($this->drivers as $driver) {
             if ($driver->supports($scope)) {
@@ -39,6 +40,6 @@ class SlugResolverManager
             }
         }
 
-        throw new RuntimeException("No slug checker found for scope [{$scope}].");
+        throw new RuntimeException("No slug checker found for scope [{$scope->value}].");
     }
 }

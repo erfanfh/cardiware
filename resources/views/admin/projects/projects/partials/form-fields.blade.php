@@ -118,7 +118,7 @@
         :titleValue="$project->title ?? ''"
         :slugValue="$project->slug ?? ''"
         basePath="{{ route('home') }}/projects/"
-        scope="project"
+        :scope="\App\Domain\Slug\Enums\SlugScopeEnum::PROJECT"
         :currentId="$project->id ?? null"
         :itemUrl="$project ? route('projects.detail', $project) : null"
     />

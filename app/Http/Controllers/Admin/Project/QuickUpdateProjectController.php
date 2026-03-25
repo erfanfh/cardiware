@@ -7,6 +7,7 @@ use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\QuickUpdateProjectRequest;
 use Illuminate\Http\JsonResponse;
@@ -44,7 +45,7 @@ class QuickUpdateProjectController extends Controller
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(
-                    scope: 'project',
+                    scope: SlugScopeEnum::PROJECT,
                     model: $project,
                     desiredSlug: $desiredSlug,
                 )

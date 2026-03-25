@@ -6,6 +6,7 @@ use App\Application\Slug\Contracts\SlugPersistenceDriver;
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Slug\DTOs\AssignSlugResultDTO;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\ConnectionInterface;
 use RuntimeException;
 
@@ -86,7 +87,7 @@ class SlugAssignmentManager
     /**
      * Resolve the checker responsible for the given scope.
      */
-    private function resolveChecker(string $scope): SlugScopeChecker
+    private function resolveChecker(SlugScopeEnum $scope): SlugScopeChecker
     {
         foreach ($this->checkers as $checker) {
             if ($checker->supports($scope)) {
@@ -94,13 +95,13 @@ class SlugAssignmentManager
             }
         }
 
-        throw new RuntimeException("No slug checker found for scope [{$scope}].");
+        throw new RuntimeException("No slug checker found for scope [{$scope->value}].");
     }
 
     /**
      * Resolve the persistence driver responsible for the given scope.
      */
-    private function resolveDriver(string $scope): SlugPersistenceDriver
+    private function resolveDriver(SlugScopeEnum $scope): SlugPersistenceDriver
     {
         foreach ($this->drivers as $driver) {
             if ($driver->supports($scope)) {
@@ -108,6 +109,6 @@ class SlugAssignmentManager
             }
         }
 
-        throw new RuntimeException("No slug checker found for scope [{$scope}].");
+        throw new RuntimeException("No slug checker found for scope [{$scope->value}].");
     }
 }

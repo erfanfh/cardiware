@@ -4,6 +4,7 @@ namespace App\Infrastructure\Slug\Checkers;
 
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Domain\Content\Models\ContentSlug;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\Eloquent\Builder;
 
 class ContentSlugChecker implements SlugScopeChecker
@@ -11,9 +12,9 @@ class ContentSlugChecker implements SlugScopeChecker
     /**
      * Determine whether this checker supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return $scope === 'content';
+        return $scope === SlugScopeEnum::CONTENT;
     }
 
     /**
@@ -25,10 +26,10 @@ class ContentSlugChecker implements SlugScopeChecker
      * may share the same numeric identifier.
      */
     public function exists(
-        string  $scope,
-        string  $slug,
-        ?int    $ignoreId = null,
-        ?string $ignoreType = null,
+        SlugScopeEnum $scope,
+        string        $slug,
+        ?int          $ignoreId = null,
+        ?string       $ignoreType = null,
     ): bool
     {
         $query = ContentSlug::query()->where('slug', $slug);

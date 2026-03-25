@@ -5,6 +5,7 @@ namespace App\Application\Slug\Services;
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Application\Slug\DTOs\CheckSlugDTO;
 use App\Application\Slug\DTOs\SlugCheckResultDTO;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use RuntimeException;
 
 class SlugManager
@@ -79,10 +80,10 @@ class SlugManager
     /**
      * Resolve the proper checker for the given scope.
      *
-     * @param string $scope
+     * @param SlugScopeEnum $scope
      * @return SlugScopeChecker
      */
-    private function resolveChecker(string $scope): SlugScopeChecker
+    private function resolveChecker(SlugScopeEnum $scope): SlugScopeChecker
     {
         foreach ($this->checkers as $checker) {
             if ($checker->supports($scope)) {
@@ -90,6 +91,6 @@ class SlugManager
             }
         }
 
-        throw new RuntimeException("No slug checker found for scope [{$scope}].");
+        throw new RuntimeException("No slug checker found for scope [{$scope->value}].");
     }
 }

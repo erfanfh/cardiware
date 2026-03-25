@@ -3,10 +3,10 @@
 namespace App\Infrastructure\Slug\Drivers;
 
 use App\Application\Slug\Contracts\SlugPersistenceDriver;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use App\Infrastructure\Slug\Services\TaxonomyRouteKeyBuilder;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
 
 class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 {
@@ -19,9 +19,9 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
     /**
      * Determine whether this driver supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return str_starts_with($scope, 'taxonomy:');
+        return SlugScopeEnum::isTaxonomyScope($scope);
     }
 
     /**
@@ -44,7 +44,7 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
      *     history_recorded: bool
      * }
      */
-    public function persist(Model $model, string $scope, string $finalSlug): array
+    public function persist(Model $model, SlugScopeEnum $scope, string $finalSlug): array
     {
         $previousSlug = $this->getCurrentSlug($model);
 
@@ -57,7 +57,7 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
             ];
         }
 
-        $type = $this->extractTypeFromScope($scope);
+        $type = SlugScopeEnum::extractTaxonomyType($scope);
         $routeKey = $this->routeKeyBuilder->build($model, $finalSlug);
 
         $model->forceFill([
@@ -91,19 +91,5 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
             'changed' => true,
             'history_recorded' => true,
         ];
-    }
-
-    /**
-     * Extract the taxonomy type from the given scope value.
-     */
-    private function extractTypeFromScope(string $scope): string
-    {
-        $parts = explode(':', $scope, 2);
-
-        if (count($parts) !== 2 || trim($parts[1]) === '') {
-            throw new InvalidArgumentException("Invalid taxonomy scope [{$scope}].");
-        }
-
-        return trim($parts[1]);
     }
 }

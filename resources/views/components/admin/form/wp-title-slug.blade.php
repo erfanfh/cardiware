@@ -5,7 +5,7 @@
     'slugValue' => '',
     'basePath' => '/',
     'checkUrl' => route('admin.slugs.check'),
-    'scope', // project | content
+    'scope', // SlugScopeEnum
     'currentId' => null,
     'itemUrl' => null,
 ])
@@ -18,7 +18,7 @@
         slugName:  @js($slugName),
         basePath:  @js($basePath),
         checkUrl:  @js($checkUrl),
-        scope:  @js($scope),
+        scope:  @js($scope->value),
         currentId: @js($currentId),
     })"
     class="space-y-2"

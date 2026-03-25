@@ -4,26 +4,26 @@ namespace App\Infrastructure\Slug\Resolvers;
 
 use App\Application\Slug\Contracts\SlugResolverDriver;
 use App\Application\Slug\DTOs\ResolvedSlugDTO;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use Illuminate\Database\Eloquent\Model;
-use InvalidArgumentException;
 
 class TaxonomySlugResolverDriver implements SlugResolverDriver
 {
     /**
      * Determine whether this resolver supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return str_starts_with($scope, 'taxonomy:');
+        return SlugScopeEnum::isTaxonomyScope($scope);
     }
 
     /**
      * Resolve a taxonomy route key from the taxonomy slug history table.
      */
-    public function resolve(string $scope, string $value): ResolvedSlugDTO
+    public function resolve(SlugScopeEnum $scope, string $value): ResolvedSlugDTO
     {
-        $type = $this->extractTypeFromScope($scope);
+        $type = SlugScopeEnum::extractTaxonomyType($scope);
 
         /** @var TaxonomyTermSlug|null $slugRecord */
         $slugRecord = TaxonomyTermSlug::query()
@@ -59,20 +59,6 @@ class TaxonomySlugResolverDriver implements SlugResolverDriver
             redirectTo: url($this->buildTaxonomyRedirectPath($type, $currentRouteKey)),
             model: $model,
         );
-    }
-
-    /**
-     * Extract the taxonomy type from the given scope value.
-     */
-    private function extractTypeFromScope(string $scope): string
-    {
-        $parts = explode(':', $scope, 2);
-
-        if (count($parts) !== 2 || trim($parts[1]) === '') {
-            throw new InvalidArgumentException("Invalid taxonomy scope [{$scope}].");
-        }
-
-        return trim($parts[1]);
     }
 
     /**

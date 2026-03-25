@@ -2,13 +2,15 @@
 
 namespace App\Application\Slug\DTOs;
 
-final class CheckSlugDTO
+use App\Domain\Slug\Enums\SlugScopeEnum;
+
+class CheckSlugDTO
 {
     public function __construct(
-        public readonly string  $scope,
-        public readonly string  $slug,
-        public readonly ?int    $ignoreId = null,
-        public readonly ?string $ignoreType = null,
+        public readonly SlugScopeEnum $scope,
+        public readonly string        $slug,
+        public readonly ?int          $ignoreId = null,
+        public readonly ?string       $ignoreType = null,
     )
     {
     }
@@ -21,7 +23,7 @@ final class CheckSlugDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            scope: (string)($data['scope'] ?? ''),
+            scope: is_string($data['scope']) ? SlugScopeEnum::from($data['scope']) : $data['scope'],
             slug: (string)($data['slug'] ?? ''),
             ignoreId: isset($data['ignore']) && $data['ignore'] !== ''
                 ? (int)$data['ignore']

@@ -6,6 +6,7 @@ use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
 use App\Domain\Project\Models\Project;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -47,7 +48,7 @@ class CreateProjectAction
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(
-                    scope: 'project',
+                    scope: SlugScopeEnum::PROJECT,
                     model: $project,
                     desiredSlug: $desiredSlug,
                 )

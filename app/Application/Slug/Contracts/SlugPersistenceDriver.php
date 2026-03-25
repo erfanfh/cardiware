@@ -2,6 +2,7 @@
 
 namespace App\Application\Slug\Contracts;
 
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 interface SlugPersistenceDriver
@@ -9,7 +10,7 @@ interface SlugPersistenceDriver
     /**
      * Determine whether this driver supports the given scope.
      */
-    public function supports(string $scope): bool;
+    public function supports(SlugScopeEnum $scope): bool;
 
     /**
      * Get the current slug value from the given model.
@@ -26,5 +27,5 @@ interface SlugPersistenceDriver
      *     history_recorded: bool
      * }
      */
-    public function persist(Model $model, string $scope, string $finalSlug): array;
+    public function persist(Model $model, SlugScopeEnum $scope, string $finalSlug): array;
 }

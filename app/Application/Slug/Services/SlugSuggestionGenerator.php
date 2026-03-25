@@ -3,6 +3,7 @@
 namespace App\Application\Slug\Services;
 
 use App\Application\Slug\Contracts\SlugScopeChecker;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 
 class SlugSuggestionGenerator
 {
@@ -10,7 +11,7 @@ class SlugSuggestionGenerator
      * Generate the next available slug suggestion for the given scope.
      *
      * @param SlugScopeChecker $checker
-     * @param string $scope
+     * @param SlugScopeEnum $scope
      * @param string $baseSlug
      * @param int|null $ignoreId
      * @param string|null $ignoreType
@@ -19,7 +20,7 @@ class SlugSuggestionGenerator
      */
     public function generate(
         SlugScopeChecker $checker,
-        string           $scope,
+        SlugScopeEnum    $scope,
         string           $baseSlug,
         ?int             $ignoreId = null,
         ?string          $ignoreType = null,

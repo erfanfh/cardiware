@@ -5,6 +5,7 @@ namespace App\Infrastructure\Slug\Resolvers;
 use App\Application\Slug\Contracts\SlugResolverDriver;
 use App\Application\Slug\DTOs\ResolvedSlugDTO;
 use App\Domain\Content\Models\ContentSlug;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\Eloquent\Model;
 
 class ContentSlugResolverDriver implements SlugResolverDriver
@@ -12,15 +13,15 @@ class ContentSlugResolverDriver implements SlugResolverDriver
     /**
      * Determine whether this resolver supports the given scope.
      */
-    public function supports(string $scope): bool
+    public function supports(SlugScopeEnum $scope): bool
     {
-        return $scope === 'content';
+        return $scope === SlugScopeEnum::CONTENT;
     }
 
     /**
      * Resolve a content slug from the shared content slug registry.
      */
-    public function resolve(string $scope, string $value): ResolvedSlugDTO
+    public function resolve(SlugScopeEnum $scope, string $value): ResolvedSlugDTO
     {
         /** @var ContentSlug|null $slugRecord */
         $slugRecord = ContentSlug::query()
