@@ -25,17 +25,26 @@
                 >
                     همه
                 </button>
-                <button wire:click="activeFilter"
-                        @if($filter == 'active')
+                <button wire:click="notStartedFilter"
+                        @if($filter == 'not-started')
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
                     @endif
                 >
-                    فعال
+                    شروع نشده
                 </button>
-                <button wire:click="inactiveFilter"
-                        @if($filter == 'inactive')
+                <button wire:click="inprogressFilter"
+                        @if($filter == 'inprogress')
+                            class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
+                        @else
+                            class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
+                    @endif
+                >
+                    در حال تکمیل
+                </button>
+                <button wire:click="completedFilter"
+                        @if($filter == 'completed')
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
@@ -91,24 +100,12 @@
             @foreach($projects as $project)
                 <a href="{{ route('projects.detail', $project) }}"
                    class="group rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition relative overflow-hidden">
-                    <div
-                        class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] opacity-70"></div>
-                    <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500 opacity-90"></div>
-
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
                             <div
                                 class="text-sm font-extrabold truncate group-hover:text-brand-700 transition">{{ $project->title }}</div>
-                            <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2">{{ $project->body }}</div>
+                            <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2">{!! $project->body !!}</div>
                         </div>
-
-                        @if($project->status == \App\Domain\Project\Enums\ProjectStatusEnum::ACTIVE)
-                            <span
-                                class="text-[11px] font-extrabold px-2 py-1 rounded-xl border text-emerald-700 bg-emerald-50 border-emerald-200">{{ $project->status->label() }}</span>
-                        @else
-                            <span
-                                class="text-[11px] font-extrabold px-2 py-1 rounded-xl border text-slate-700 bg-slate-100 border-slate-200">{{ $project->status->label() }}</span>
-                        @endif
                     </div>
 
                     <div class="mt-4">

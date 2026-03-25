@@ -56,16 +56,23 @@ class ProjectsList extends Component
     }
 
     #[NoReturn]
-    public function activeFilter(): void
+    public function notStartedFilter(): void
     {
-        $this->filter = 'active';
+        $this->filter = 'not-started';
         $this->resetPage();
     }
 
     #[NoReturn]
-    public function inactiveFilter(): void
+    public function inprogressFilter(): void
     {
-        $this->filter = 'inactive';
+        $this->filter = 'inprogress';
+        $this->resetPage();
+    }
+
+    #[NoReturn]
+    public function completedFilter(): void
+    {
+        $this->filter = 'completed';
         $this->resetPage();
     }
 
@@ -89,10 +96,12 @@ class ProjectsList extends Component
         elseif ($this->sort == 'older-update')
             $projects->orderBy('last_updated_at', 'asc');
 
-        if ($this->filter == 'active')
-            $projects->where('status', ProjectStatusEnum::ACTIVE);
-        elseif ($this->filter == 'inactive')
-            $projects->where('status', ProjectStatusEnum::INACTIVE);
+        if ($this->filter == 'not-started')
+            $projects->where('progress_percent', 0);
+        elseif ($this->filter == 'inprogress')
+            $projects->whereBetween('progress_percent', [1, 99]);
+        elseif ($this->filter == 'completed')
+            $projects->where('progress_percent', 100);
 
         $projects = $projects->paginate(10);
 

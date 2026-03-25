@@ -35,16 +35,16 @@
                     <!-- Quick counters -->
                     <div class="grid grid-cols-3 gap-3 w-full lg:w-[420px]">
                         <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
-                            <div class="text-[11px] font-extrabold text-white/70">فعال</div>
-                            <div class="mt-2 text-2xl font-black text-white"></div>
+                            <div class="text-[11px] font-extrabold text-white/70">شروع نشده</div>
+                            <div class="mt-2 text-2xl font-black text-white">{{ \App\Domain\Project\Models\Project::where('progress_percent', 0)->count() }}</div>
                         </div>
                         <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
-                            <div class="text-[11px] font-extrabold text-white/70">درحال توسعه</div>
-                            <div class="mt-2 text-2xl font-black text-white"></div>
+                            <div class="text-[11px] font-extrabold text-white/70">در حال تکمیل</div>
+                            <div class="mt-2 text-2xl font-black text-white">{{ \App\Domain\Project\Models\Project::whereBetween('progress_percent', [1, 99])->count() }}</div>
                         </div>
                         <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
                             <div class="text-[11px] font-extrabold text-white/70">تکمیل</div>
-                            <div class="mt-2 text-2xl font-black text-white"></div>
+                            <div class="mt-2 text-2xl font-black text-white">{{ \App\Domain\Project\Models\Project::where('progress_percent', 100)->count() }}</div>
                         </div>
                     </div>
                 </div>
