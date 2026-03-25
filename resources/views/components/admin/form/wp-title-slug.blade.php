@@ -4,7 +4,8 @@
     'titleValue' => '',
     'slugValue' => '',
     'basePath' => '/',
-    'checkUrl' => null,
+    'checkUrl' => route('admin.slugs.check'),
+    'scope', // project | content
     'currentId' => null,
     'itemUrl' => null,
 ])
@@ -17,6 +18,7 @@
         slugName:  @js($slugName),
         basePath:  @js($basePath),
         checkUrl:  @js($checkUrl),
+        scope:  @js($scope),
         currentId: @js($currentId),
     })"
     class="space-y-2"
@@ -48,7 +50,7 @@
                 <input
                     x-ref="slugInput"
                     type="text"
-                    class="h-8 w-[280px] max-w-full rounded-lg direction-ltr border border-slate-200 bg-white px-2.5 text-xs font-bold outline-none transition focus:ring-2 focus:ring-orange-200 focus:border-orange-300"
+                    class="h-8 w-[280px] max-w-full rounded-2xl direction-ltr border border-slate-200 bg-white px-2.5 text-xs font-bold outline-none transition focus:ring-2 focus:ring-orange-200 focus:border-orange-300"
                     x-model="slug"
                     autocomplete="off"
                     dir="rtl"
@@ -60,7 +62,7 @@
 
         <div class="flex items-center gap-2">
             <button type="button"
-                    class="h-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
+                    class="h-7 px-2 rounded-2xl text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
                     x-show="!editingSlug"
                     x-cloak
                     @click="startEdit()"
@@ -71,7 +73,7 @@
             @if($itemUrl)
                 <a href="{{ $itemUrl }}"
                    target="_blank"
-                   class="h-7 leading-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-orange-200 bg-orange-50 hover:bg-orange-100 font-bold text-orange-700 transition"
+                   class="h-7 leading-7 px-2 rounded-2xl text-[0.65rem] cursor-pointer border border-orange-200 bg-orange-50 hover:bg-orange-100 font-bold text-orange-700 transition"
                    x-show="!editingSlug"
                    x-cloak
                 >
@@ -80,7 +82,7 @@
             @endif
 
             <button type="button"
-                    class="h-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
+                    class="h-7 px-2 rounded-2xl text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
                     x-show="editingSlug"
                     x-cloak
                     @click="applyEdit()"
@@ -89,7 +91,7 @@
             </button>
 
             <button type="button"
-                    class="h-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
+                    class="h-7 px-2 rounded-2xl text-[0.65rem] cursor-pointer border border-slate-200 bg-white hover:bg-slate-100 font-bold text-slate-700 transition"
                     x-show="editingSlug"
                     x-cloak
                     @click="cancelEdit()"
@@ -98,7 +100,7 @@
             </button>
 
             <button type="button"
-                    class="h-7 px-2 rounded-lg text-[0.65rem] cursor-pointer border border-orange-200 bg-orange-50 hover:bg-orange-100 font-bold text-orange-700 transition"
+                    class="h-7 px-2 rounded-2xl text-[0.65rem] cursor-pointer border border-orange-200 bg-orange-50 hover:bg-orange-100 font-bold text-orange-700 transition"
                     x-show="editingSlug && manualSlug"
                     x-cloak
                     @click="resetAuto()"
