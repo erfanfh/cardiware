@@ -9,7 +9,7 @@
 
             <div class="relative p-6 sm:p-10">
                 <nav class="text-xs text-white/70 flex flex-wrap gap-2">
-                    <a href="#" class="hover:text-brand-300 font-bold transition">خانه</a>
+                    <a href="/" class="hover:text-brand-300 font-bold transition">خانه</a>
                     <span>—</span>
                     <span class="text-white/90 font-semibold">درباره ما</span>
                 </nav>

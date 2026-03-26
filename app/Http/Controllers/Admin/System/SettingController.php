@@ -120,7 +120,7 @@ class SettingController extends Controller
      *
      * @return View
      */
-    public function aboutus()
+    public function aboutUs()
     {
         return view('admin.system.settings.about-us');
     }
@@ -132,7 +132,7 @@ class SettingController extends Controller
      * @return RedirectResponse
      * @throws BindingResolutionException
      */
-    public function storeAboutus(Request $request): RedirectResponse
+    public function storeAboutUs(Request $request): RedirectResponse
     {
         $this->storeSettings($request, 'aboutUs');
 
