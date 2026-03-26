@@ -12,45 +12,45 @@
                 <input wire:model.live="search"
                        class="w-full rounded-2xl border border-slate-200 bg-slate-50 pr-10 pl-4 py-3 text-sm outline-none
                     focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
-                       placeholder="جستجو بین پروژه‌ها (مثلاً: پچ، فارسی‌ساز، installer…)"/>
+                       placeholder="جستجو بین پروژه‌ها "/>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
                 <button wire:click="noFilter"
-                        @if($filter == 'all')
+                        @if($filter == \App\Domain\Project\Enums\ProjectFilterEnum::ALL->value)
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
                     @endif
                 >
-                    همه
+                    {{ \App\Domain\Project\Enums\ProjectFilterEnum::ALL->label() }}
                 </button>
                 <button wire:click="notStartedFilter"
-                        @if($filter == 'not-started')
+                        @if($filter == \App\Domain\Project\Enums\ProjectFilterEnum::NOT_STARTED->value)
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
                     @endif
                 >
-                    شروع نشده
+                    {{ \App\Domain\Project\Enums\ProjectFilterEnum::NOT_STARTED->label() }}
                 </button>
                 <button wire:click="inprogressFilter"
-                        @if($filter == 'inprogress')
+                        @if($filter == \App\Domain\Project\Enums\ProjectFilterEnum::INPROGRESS->value)
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
                     @endif
                 >
-                    در حال تکمیل
+                    {{ \App\Domain\Project\Enums\ProjectFilterEnum::INPROGRESS->label() }}
                 </button>
                 <button wire:click="completedFilter"
-                        @if($filter == 'completed')
+                        @if($filter == \App\Domain\Project\Enums\ProjectFilterEnum::COMPLETED->value)
                             class="h-10 px-4 rounded-2xl border border-brand-100 bg-brand-50 text-slate-900 font-extrabold cursor-pointer"
                         @else
                             class="h-10 px-4 rounded-2xl border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 font-extrabold transition cursor-pointer"
                     @endif
                 >
-                    تکمیل
+                    {{ \App\Domain\Project\Enums\ProjectFilterEnum::COMPLETED->label() }}
                 </button>
             </div>
 
@@ -58,10 +58,18 @@
                 <span class="text-xs text-slate-500">مرتب‌سازی:</span>
                 <select wire:model.live="sort" class="h-10 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 outline-none
                  focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition">
-                    <option value="most-progress">پیشرفت (بیشتر)</option>
-                    <option value="least-progress">پیشرفت (کمتر)</option>
-                    <option value="later-update">آپدیت (جدیدتر)</option>
-                    <option value="older-update">آپدیت (قدیمی‌تر)</option>
+                    <option value="{{ \App\Domain\Project\Enums\ProjectSortEnum::MOST_PROGRESS->value }}">
+                        {{ \App\Domain\Project\Enums\ProjectSortEnum::MOST_PROGRESS->label() }}
+                    </option>
+                    <option value="{{ \App\Domain\Project\Enums\ProjectSortEnum::LEAST_PROGRESS->value }}">
+                        {{ \App\Domain\Project\Enums\ProjectSortEnum::LEAST_PROGRESS->label() }}
+                    </option>
+                    <option value="{{ \App\Domain\Project\Enums\ProjectSortEnum::LATER_UPDATE->value }}">
+                        {{ \App\Domain\Project\Enums\ProjectSortEnum::LATER_UPDATE->label() }}
+                    </option>
+                    <option value="{{ \App\Domain\Project\Enums\ProjectSortEnum::OLDER_UPDATE->value }}">
+                        {{ \App\Domain\Project\Enums\ProjectSortEnum::OLDER_UPDATE->label() }}
+                    </option>
                 </select>
             </div>
         </div>
@@ -115,7 +123,7 @@
                         </div>
                         <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
                             <div
-                                class="h-full @if($project->status == \App\Domain\Project\Enums\ProjectStatusEnum::ACTIVE) bg-emerald-500 @else bg-brand-500 @endif "
+                                class="h-full bg-emerald-500"
                                 style="width: {{ $project->progress_percent . '%' }}"></div>
                         </div>
                     </div>

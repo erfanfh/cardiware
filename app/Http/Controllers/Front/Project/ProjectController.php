@@ -29,6 +29,15 @@ class ProjectController extends Controller
      */
     public function list(): View
     {
-        return view('front.projects.list');
+        $stats =  Project::query()
+            ->selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN progress_percent = 0 THEN 1 ELSE 0 END) as not_started,
+            SUM(CASE WHEN progress_percent BETWEEN 1 AND 99 THEN 1 ELSE 0 END) as in_progress,
+            SUM(CASE WHEN progress_percent = 100 THEN 1 ELSE 0 END) as completed
+            ")
+            ->first();
+
+        return view('front.projects.list', compact('stats'));
     }
 }

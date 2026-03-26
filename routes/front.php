@@ -11,8 +11,4 @@ Route::middleware(['web'])
         require __DIR__ . '/front/project.php';
         require __DIR__ . '/front/search.php';
         require __DIR__ . '/front/content.php'; // This must be the last
-        Route::controller(PostController::class)->name('posts.')->group(function () {
-            Route::get('{post}', 'detail')->name('detail');
-            Route::get('posts', 'list')->name('list');
-        });
     });

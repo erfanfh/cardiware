@@ -8,6 +8,8 @@ use App\Application\System\RateLimiterAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
+use App\Domain\Project\Enums\ProjectFilterEnum;
+use App\Domain\Project\Enums\ProjectSortEnum;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use Illuminate\Http\RedirectResponse;
@@ -27,13 +29,13 @@ class ProjectsList extends Component
 
     public string $search = '';
 
-    public string $sort = 'most-progress';
+    public string $sort = ProjectSortEnum::MOST_PROGRESS->value;
 
-    public string $filter = 'all';
+    public string $filter = ProjectFilterEnum::ALL->value;
 
     public function mount(): void
     {
-        $this->sort = request('sort') ?? 'most-progress';
+        $this->sort = request('sort') ?? ProjectSortEnum::MOST_PROGRESS->value;
     }
 
     #[NoReturn]
@@ -51,28 +53,28 @@ class ProjectsList extends Component
     #[NoReturn]
     public function noFilter(): void
     {
-        $this->filter = 'all';
+        $this->filter = ProjectFilterEnum::ALL->value;
         $this->resetPage();
     }
 
     #[NoReturn]
     public function notStartedFilter(): void
     {
-        $this->filter = 'not-started';
+        $this->filter = ProjectFilterEnum::NOT_STARTED->value;
         $this->resetPage();
     }
 
     #[NoReturn]
     public function inprogressFilter(): void
     {
-        $this->filter = 'inprogress';
+        $this->filter = ProjectFilterEnum::INPROGRESS->value;
         $this->resetPage();
     }
 
     #[NoReturn]
     public function completedFilter(): void
     {
-        $this->filter = 'completed';
+        $this->filter = ProjectFilterEnum::COMPLETED->value;
         $this->resetPage();
     }
 
@@ -81,26 +83,26 @@ class ProjectsList extends Component
      */
     public function render(): View
     {
-        $projects = Project::query();
+        $projects = Project::query()->with('tags');
 
         if (!empty($this->search)) {
             $projects->where('title', 'like', '%' . $this->search . '%');
         }
 
-        if ($this->sort == 'most-progress')
+        if ($this->sort == ProjectSortEnum::MOST_PROGRESS->value)
             $projects->orderBy('progress_percent', 'desc');
-        elseif ($this->sort == 'least-progress')
+        elseif ($this->sort == ProjectSortEnum::LEAST_PROGRESS->value)
             $projects->orderBy('progress_percent', 'asc');
-        elseif ($this->sort == 'later-update')
+        elseif ($this->sort == ProjectSortEnum::LATER_UPDATE->value)
             $projects->orderBy('last_updated_at', 'desc');
-        elseif ($this->sort == 'older-update')
+        elseif ($this->sort == ProjectSortEnum::OLDER_UPDATE->value)
             $projects->orderBy('last_updated_at', 'asc');
 
-        if ($this->filter == 'not-started')
+        if ($this->filter == ProjectFilterEnum::NOT_STARTED->value)
             $projects->where('progress_percent', 0);
-        elseif ($this->filter == 'inprogress')
+        elseif ($this->filter == ProjectFilterEnum::INPROGRESS->value)
             $projects->whereBetween('progress_percent', [1, 99]);
-        elseif ($this->filter == 'completed')
+        elseif ($this->filter == ProjectFilterEnum::COMPLETED->value)
             $projects->where('progress_percent', 100);
 
         $projects = $projects->paginate(10);
