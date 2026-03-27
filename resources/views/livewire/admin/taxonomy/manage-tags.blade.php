@@ -103,15 +103,18 @@
 
         <div
             class="relative"
-            x-data
+            x-data="{ isUpdatingList: false }"
             x-ref="taxonomyListBox"
             x-on:taxonomy-scroll-to-list.window="
                 $refs.taxonomyListBox.scrollIntoView({ behavior: 'smooth', block: 'start' })
             "
+            x-on:taxonomy-list-updating-start.window="isUpdatingList = true"
+            x-on:taxonomy-list-updating-stop.window="isUpdatingList = false"
         >
             <div
+                :class="{ 'opacity-60 pointer-events-none': isUpdatingList }"
                 wire:loading.class="opacity-60 pointer-events-none"
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm"
                 class="transition duration-200"
             >
                 <x-admin.metabox :collapsible="false" title="لیست {{ $taxonomyLabelPlural }}">
@@ -444,8 +447,11 @@
             </div>
 
             <div
+                x-cloak
+                x-show="isUpdatingList"
+                x-transition.opacity.duration.150ms
                 wire:loading.flex
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm"
                 class="absolute inset-0 z-10 hidden items-center justify-center rounded-2xl"
             >
                 <div class="absolute inset-0 rounded-2xl bg-white/55 backdrop-blur-[2px]"></div>

@@ -350,6 +350,8 @@
             if (!pendingAction) return;
 
             if (pendingAction.type === 'livewire' && pendingAction.event) {
+                window.dispatchEvent(new CustomEvent('taxonomy-list-updating-start'));
+
                 if (window.Livewire) {
                     window.Livewire.dispatch(
                         pendingAction.event,

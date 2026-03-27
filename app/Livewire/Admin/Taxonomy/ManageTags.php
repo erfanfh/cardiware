@@ -206,6 +206,8 @@ class ManageTags extends Component
         $this->deletingId = null;
 
         session()->flash('success', 'برچسب با موفقیت حذف شد.');
+
+        $this->dispatch('taxonomy-list-updating-stop');
     }
 
     public function cancelDelete(): void
