@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Taxonomy;
 
+use App\Application\Taxonomy\Listings\TagListing;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Contracts\View\View;
@@ -14,6 +15,8 @@ use Livewire\WithPagination;
 class ManageTags extends Component
 {
     use WithPagination;
+
+    protected TagListing $tagListing;
 
     public string $search = '';
 
@@ -68,6 +71,11 @@ class ManageTags extends Component
             ],
             'description' => ['nullable', 'string'],
         ];
+    }
+
+    public function boot(TagListing $tagListing): void
+    {
+        $this->tagListing = $tagListing;
     }
 
     public function getIsEditingProperty(): bool
@@ -274,7 +282,7 @@ class ManageTags extends Component
 
     public function sortByColumn(string $column): void
     {
-        if (!in_array($column, $this->allowedSortColumns(), true)) {
+        if (!array_key_exists($column, $this->tagListing->sortable())) {
             return;
         }
 
@@ -342,37 +350,23 @@ class ManageTags extends Component
         $this->deleteTerm();
     }
 
-    protected function getTermsQuery(): Builder
-    {
-        $query = TaxonomyTerm::tags()
-            ->when($this->search !== '', function (Builder $query) {
-                $query->where(function (Builder $subQuery) {
-                    $subQuery
-                        ->where('title', 'like', '%' . $this->search . '%')
-                        ->orWhere('slug', 'like', '%' . $this->search . '%')
-                        ->orWhere('description', 'like', '%' . $this->search . '%');
-                });
-            });
-
-        /**
-         * Example if you have a real usage relation:
-         * $query->withCount(['posts as usage_count']);
-         * or:
-         * $query->withCount(['termables as usage_count']);
-         */
-        return $query;
-    }
-
     /**
-     * @return array<int, string>
+     * @return array<string, mixed>
      */
-    protected function allowedSortColumns(): array
+    protected function listingFilters(): array
     {
         return [
-            'title',
-            'slug',
-            'created_at',
+            'search' => $this->search,
+            'sort' => $this->sortBy,
+            'direction' => $this->sortDirection,
         ];
+    }
+
+    protected function getTermsQuery(): Builder
+    {
+        $query = TaxonomyTerm::tags();
+
+        return $this->tagListing->handle($query, $this->listingFilters());
     }
 
     /**
