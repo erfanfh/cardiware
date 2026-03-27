@@ -178,6 +178,66 @@
     </div>
 </div>
 
+<div
+    id="lw-confirm-backdrop"
+    data-lw-confirm-backdrop
+    class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-0 pointer-events-none transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
+>
+    <div
+        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
+    >
+        <button
+            type="button"
+            data-lw-confirm-cancel
+            class="absolute top-[10px] end-[12px] cursor-pointer border-0 bg-transparent text-[1.4rem] leading-none text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+        >
+            &times;
+        </button>
+
+        <div class="mb-[1.25rem] flex justify-center">
+            <div
+                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
+            >
+                !
+            </div>
+        </div>
+
+        <div class="px-[6px] text-center">
+            <h2
+                data-lw-confirm-title
+                class="mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100"
+            >
+                تأیید عملیات
+            </h2>
+
+            <p
+                data-lw-confirm-text
+                class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400"
+            >
+                آیا مطمئن هستید؟
+            </p>
+        </div>
+
+        <div class="mt-4 flex justify-center gap-2">
+            <button
+                type="button"
+                data-lw-confirm-cancel
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-gray-100 px-[14px] py-[7px] text-[0.86rem] font-medium text-[var(--text-main)] transition-transform duration-50 ease-out hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
+                انصراف
+            </button>
+
+            <button
+                type="button"
+                data-lw-confirm-submit
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-[var(--brand-500)] px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-[var(--brand-600)] dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
+                بله، ادامه
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         let activeForm = null;
@@ -252,6 +312,84 @@
             if (event.key === 'Enter') {
                 event.preventDefault();
                 submitForm();
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let pendingAction = null;
+
+        const backdrop = document.querySelector('[data-lw-confirm-backdrop]');
+        if (!backdrop) return;
+
+        const titleEl = backdrop.querySelector('[data-lw-confirm-title]');
+        const textEl = backdrop.querySelector('[data-lw-confirm-text]');
+        const submitBtn = backdrop.querySelector('[data-lw-confirm-submit]');
+        const cancelBtns = backdrop.querySelectorAll('[data-lw-confirm-cancel]');
+
+        function openModal({title, text, action}) {
+            titleEl.textContent = title || 'تأیید عملیات';
+            textEl.textContent = text || 'آیا مطمئن هستید؟';
+            pendingAction = action || null;
+
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+
+            setTimeout(() => submitBtn.focus(), 100);
+        }
+
+        function closeModal() {
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            pendingAction = null;
+        }
+
+        function submitAction() {
+            if (!pendingAction) return;
+
+            if (pendingAction.type === 'livewire' && pendingAction.event) {
+                if (window.Livewire) {
+                    window.Livewire.dispatch(
+                        pendingAction.event,
+                        pendingAction.payload || {}
+                    );
+                }
+            }
+
+            closeModal();
+        }
+
+        window.addEventListener('admin-open-confirm', event => {
+            openModal(event.detail || {});
+        });
+
+        submitBtn.addEventListener('click', submitAction);
+
+        cancelBtns.forEach(button => {
+            button.addEventListener('click', closeModal);
+        });
+
+        backdrop.addEventListener('click', event => {
+            if (event.target === backdrop) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            const isOpen = backdrop.classList.contains('opacity-100');
+
+            if (!isOpen) return;
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
+            }
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitAction();
             }
         });
     });
