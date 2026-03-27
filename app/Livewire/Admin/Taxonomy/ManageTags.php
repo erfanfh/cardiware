@@ -6,6 +6,7 @@ use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,15 +16,23 @@ class ManageTags extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $sortBy = 'created_at';
+
     public string $sortDirection = 'desc';
+
     public int $perPage = 10;
+
     public array $selectedIds = [];
-    public ?string $bulkAction = null;
+
+    public string $bulkAction = '';
 
     public ?int $editingId = null;
-    public string $name = '';
+
+    public string $title = '';
+
     public string $slug = '';
+
     public string $description = '';
 
     public ?int $deletingId = null;
@@ -35,16 +44,21 @@ class ManageTags extends Component
         'page' => ['except' => 1],
     ];
 
+    /**
+     * @return array<string, mixed>
+     */
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'title' => ['required', 'string', 'max:255'],
             'slug' => [
                 'nullable',
                 'string',
                 'max:255',
                 'alpha_dash',
-                Rule::unique('tags', 'slug')->ignore($this->editingId),
+                Rule::unique((new TaxonomyTerm())->getTable(), 'slug')
+                    ->where(fn($query) => $query->where('type', $this->taxonomyTypeValue()))
+                    ->ignore($this->editingId),
             ],
             'description' => ['nullable', 'string'],
         ];
@@ -65,6 +79,17 @@ class ManageTags extends Component
         return count($this->selectedIds);
     }
 
+    public function getAllVisibleSelectedProperty(): bool
+    {
+        $visibleIds = $this->getVisibleTermIds();
+
+        if (empty($visibleIds)) {
+            return false;
+        }
+
+        return count(array_intersect($visibleIds, $this->selectedIds)) === count($visibleIds);
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -77,39 +102,22 @@ class ManageTags extends Component
         $this->clearSelection();
     }
 
-    public function sortByColumn(string $column): void
-    {
-        if ($this->sortBy === $column) {
-            if ($this->sortDirection === 'asc') {
-                $this->sortBy = 'created_at';
-                $this->sortDirection = 'desc';
-                return;
-            }
-
-            $this->sortDirection = 'asc';
-            return;
-        }
-
-        $this->sortBy = $column;
-        $this->sortDirection = 'asc';
-    }
-
     public function save(): void
     {
         if ($this->isEditing) {
-            $this->updateTag();
+            $this->updateTerm();
             return;
         }
 
-        $this->createTag();
+        $this->createTerm();
     }
 
-    public function createTag(): void
+    public function createTerm(): void
     {
         $validated = $this->validate();
 
-        $validated['slug'] = $this->normalizeSlug(
-            name: $validated['name'],
+        $validated['slug'] = $this->generateUniqueSlug(
+            title: $validated['title'],
             slug: $validated['slug'] ?? null,
         );
 
@@ -125,29 +133,30 @@ class ManageTags extends Component
 
     public function startEditing(int $id): void
     {
-        $tag = TaxonomyTerm::tags()->findOrFail($id);
+        $term = TaxonomyTerm::tags()->findOrFail($id);
 
-        $this->editingId = $tag->id;
-        $this->name = $tag->name;
-        $this->slug = $tag->slug ?? '';
-        $this->description = $tag->description ?? '';
+        $this->editingId = $term->id;
+        $this->title = $term->title;
+        $this->slug = $term->slug ?? '';
+        $this->description = $term->description ?? '';
 
         $this->resetValidation();
     }
 
-    public function updateTag(): void
+    public function updateTerm(): void
     {
         abort_unless($this->editingId, 404);
 
         $validated = $this->validate();
 
-        $validated['slug'] = $this->normalizeSlug(
-            name: $validated['name'],
+        $validated['slug'] = $this->generateUniqueSlug(
+            title: $validated['title'],
             slug: $validated['slug'] ?? null,
+            ignoreId: $this->editingId,
         );
 
-        $tag = TaxonomyTerm::tags()->findOrFail($this->editingId);
-        $tag->update($validated);
+        $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
+        $term->update($validated);
 
         $this->resetForm();
 
@@ -164,18 +173,20 @@ class ManageTags extends Component
         $this->deletingId = $id;
     }
 
-    public function deleteTag(): void
+    public function deleteTerm(): void
     {
         abort_unless($this->deletingId, 404);
 
-        $tag = TaxonomyTerm::tags()->findOrFail($this->deletingId);
-        $tag->delete();
+        $term = TaxonomyTerm::tags()->findOrFail($this->deletingId);
+        $termId = $term->id;
 
-        if ($this->editingId === $tag->id) {
+        $term->delete();
+
+        if ($this->editingId === $termId) {
             $this->resetForm();
         }
 
-        $this->selectedIds = array_values(array_diff($this->selectedIds, [$tag->id]));
+        $this->selectedIds = array_values(array_diff($this->selectedIds, [$termId]));
         $this->deletingId = null;
 
         session()->flash('success', 'برچسب با موفقیت حذف شد.');
@@ -199,15 +210,13 @@ class ManageTags extends Component
 
     public function togglePageSelection(): void
     {
-        $visibleIds = $this->getVisibleTagIds();
+        $visibleIds = $this->getVisibleTermIds();
 
         if (empty($visibleIds)) {
             return;
         }
 
-        $allSelected = count(array_intersect($visibleIds, $this->selectedIds)) === count($visibleIds);
-
-        if ($allSelected) {
+        if ($this->allVisibleSelected) {
             $this->selectedIds = array_values(array_diff($this->selectedIds, $visibleIds));
             return;
         }
@@ -225,7 +234,7 @@ class ManageTags extends Component
 
     public function applyBulkAction(): void
     {
-        if (!$this->bulkAction || empty($this->selectedIds)) {
+        if ($this->bulkAction === '' || empty($this->selectedIds)) {
             return;
         }
 
@@ -239,59 +248,141 @@ class ManageTags extends Component
             }
 
             $this->clearSelection();
-            $this->bulkAction = null;
+            $this->bulkAction = '';
 
             session()->flash('success', 'برچسب‌های انتخاب‌شده با موفقیت حذف شدند.');
         }
     }
 
+    public function sortByColumn(string $column): void
+    {
+        if (!in_array($column, $this->allowedSortColumns(), true)) {
+            return;
+        }
+
+        if ($this->sortBy === $column) {
+            if ($this->sortDirection === 'asc') {
+                $this->sortBy = 'created_at';
+                $this->sortDirection = 'desc';
+                return;
+            }
+
+            $this->sortDirection = 'asc';
+            return;
+        }
+
+        $this->sortBy = $column;
+        $this->sortDirection = 'asc';
+    }
+
     public function resetForm(): void
     {
         $this->editingId = null;
-        $this->name = '';
+        $this->title = '';
         $this->slug = '';
         $this->description = '';
 
         $this->resetValidation();
     }
 
-    protected function getTagsQuery(): Builder
+    protected function getTermsQuery(): Builder
     {
-        return TaxonomyTerm::tags()
+        $query = TaxonomyTerm::tags()
             ->when($this->search !== '', function (Builder $query) {
                 $query->where(function (Builder $subQuery) {
                     $subQuery
-                        ->where('name', 'like', '%' . $this->search . '%')
+                        ->where('title', 'like', '%' . $this->search . '%')
                         ->orWhere('slug', 'like', '%' . $this->search . '%')
                         ->orWhere('description', 'like', '%' . $this->search . '%');
                 });
             });
+
+        /**
+         * Example if you have a real usage relation:
+         * $query->withCount(['posts as usage_count']);
+         * or:
+         * $query->withCount(['termables as usage_count']);
+         */
+        return $query;
     }
 
-    protected function getVisibleTagIds(): array
+    /**
+     * @return array<int, string>
+     */
+    protected function allowedSortColumns(): array
     {
-        return $this->getTagsQuery()
+        return [
+            'title',
+            'slug',
+            'created_at',
+        ];
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    protected function getVisibleTermIds(): array
+    {
+        return $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
             ->forPage($this->getPage(), $this->perPage)
             ->pluck('id')
+            ->map(fn($id) => (int)$id)
             ->all();
     }
 
-    protected function normalizeSlug(string $name, ?string $slug = null): string
+    protected function generateUniqueSlug(string $title, ?string $slug = null, ?int $ignoreId = null): string
     {
-        $value = filled($slug) ? $slug : $name;
+        $baseSlug = $this->normalizeSlug($title, $slug);
 
-        return str($value)->slug()->value();
+        $slugCandidate = $baseSlug;
+        $counter = 2;
+
+        while ($this->slugExists($slugCandidate, $ignoreId)) {
+            $slugCandidate = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slugCandidate;
+    }
+
+    protected function normalizeSlug(string $title, ?string $slug = null): string
+    {
+        $value = filled($slug) ? $slug : $title;
+
+        $normalized = Str::slug($value);
+
+        if ($normalized !== '') {
+            return $normalized;
+        }
+
+        return 'term-' . Str::lower(Str::random(6));
+    }
+
+    protected function slugExists(string $slug, ?int $ignoreId = null): bool
+    {
+        return TaxonomyTerm::query()
+            ->where('type', $this->taxonomyTypeValue())
+            ->where('slug', $slug)
+            ->when($ignoreId, fn(Builder $query) => $query->whereKeyNot($ignoreId))
+            ->exists();
+    }
+
+    protected function taxonomyTypeValue(): string|int
+    {
+        return TaxonomyTermTypeEnum::TAG->value;
     }
 
     public function render(): View
     {
-        $tags = $this->getTagsQuery()
+        $terms = $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->perPage);
 
         return view('livewire.admin.taxonomy.manage-tags', [
-            'tags' => $tags,
+            'items' => $terms,
+            'taxonomyLabel' => 'برچسب',
+            'taxonomyLabelPlural' => 'برچسب‌ها',
         ]);
     }
 }
