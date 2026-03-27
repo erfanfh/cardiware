@@ -49,7 +49,7 @@
                 <span class="shrink-0 text-slate-500">{!! $icon !!}</span>
             @endif
 
-            <h3 class="font-extrabold text-sm text-slate-800 truncate dark:text-gray-200">{{ $title }}</h3>
+            <h3 class="font-extrabold text-sm text-slate-800 truncate dark:text-gray-200 leading-7">{{ $title }}</h3>
         </button>
 
         <div class="shrink-0 flex items-center gap-2">
