@@ -37,6 +37,8 @@ class ManageTags extends Component
 
     public ?int $deletingId = null;
 
+    public ?int $highlightedId = null;
+
     protected $queryString = [
         'search' => ['except' => ''],
         'sortBy' => ['except' => 'created_at'],
@@ -123,7 +125,9 @@ class ManageTags extends Component
 
         $validated['type'] = TaxonomyTermTypeEnum::TAG;
 
-        TaxonomyTerm::query()->create($validated);
+        $term = TaxonomyTerm::query()->create($validated);
+
+        $this->highlightedId = $term->id;
 
         $this->resetForm();
         $this->resetPage();
