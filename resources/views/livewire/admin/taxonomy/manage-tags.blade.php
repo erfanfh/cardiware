@@ -333,7 +333,22 @@
 
                                                     <button
                                                         type="button"
-                                                        wire:click="confirmDelete({{ $item->id }})"
+                                                        x-data
+                                                        x-on:click="
+                                                            window.dispatchEvent(new CustomEvent('admin-open-confirm', {
+                                                                detail: {
+                                                                    title: 'حذف {{ $taxonomyLabel }}',
+                                                                    text: 'آیا از حذف «{{ $item->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.',
+                                                                    action: {
+                                                                        type: 'livewire',
+                                                                        event: 'performDeleteTerm',
+                                                                        payload: {
+                                                                            id: {{ $item->id }}
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }))
+                                                        "
                                                         class="text-rose-600/90 transition hover:text-rose-700"
                                                     >
                                                         حذف

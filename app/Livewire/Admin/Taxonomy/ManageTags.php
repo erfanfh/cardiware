@@ -46,6 +46,10 @@ class ManageTags extends Component
         'page' => ['except' => 1],
     ];
 
+    protected $listeners = [
+        'performDeleteTerm' => 'performDeleteTerm',
+    ];
+
     /**
      * @return array<string, mixed>
      */
@@ -318,6 +322,22 @@ class ManageTags extends Component
     {
         $this->setPage($page, $pageName);
         $this->dispatch('taxonomy-scroll-to-list');
+    }
+
+    public function performDeleteTerm($id = null): void
+    {
+        if (is_array($id)) {
+            $id = $id['id'] ?? null;
+        }
+
+        $id = (int)$id;
+
+        if (!$id) {
+            return;
+        }
+
+        $this->deletingId = $id;
+        $this->deleteTerm();
     }
 
     protected function getTermsQuery(): Builder
