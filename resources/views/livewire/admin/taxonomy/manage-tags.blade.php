@@ -7,94 +7,120 @@
                     : "افزودن {$taxonomyLabel} جدید";
             @endphp
 
-            <x-admin.metabox :collapsible="false">
-                <x-slot name="title">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm font-black text-slate-900 leading-7">
-                            {{ $formTitle }}
+            <div
+                x-data
+                x-on:taxonomy-edit-started.window="
+                    if (window.innerWidth < 1280) {
+                        $el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                "
+                @class([
+                    'transition-all duration-300',
+                    'ring-2 ring-sky-200 rounded-[1.5rem]' => $this->isEditing,
+                ])
+            >
+                <x-admin.metabox :collapsible="false">
+                    <x-slot name="title">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2">
+                                <div class="text-sm font-black text-slate-900 leading-7">
+                                    {{ $formTitle }}
+                                </div>
+
+                                @if($this->isEditing)
+                                    <span
+                                        class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-sky-700">
+                                        در حال ویرایش
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if($this->isEditing)
+                                <button
+                                    type="button"
+                                    wire:click="cancelEditing"
+                                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                                >
+                                    انصراف
+                                </button>
+                            @endif
+                        </div>
+                    </x-slot>
+
+                    <form wire:submit.prevent="save" class="space-y-5">
+                        <x-admin.validation-errors/>
+
+                        <div class="space-y-4">
+                            <x-admin.field
+                                label="عنوان"
+                                for="taxonomy-term-title"
+                            >
+                                <x-admin.form.input
+                                    id="taxonomy-term-title"
+                                    x-ref="taxonomyTitleInput"
+                                    x-on:taxonomy-edit-started.window="
+                                        setTimeout(() => $refs.taxonomyTitleInput?.focus(), 120)
+                                    "
+                                    wire:model.live.debounce.400ms="title"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field
+                                label="نامک"
+                                for="taxonomy-term-slug"
+                                hint="اختیاری است. اگر خالی بماند، به‌صورت خودکار ساخته می‌شود."
+                            >
+                                <x-admin.form.input
+                                    id="taxonomy-term-slug"
+                                    class="direction-ltr"
+                                    wire:model.live.debounce.400ms="slug"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field
+                                label="توضیحات"
+                                for="taxonomy-term-description"
+                            >
+                                <x-admin.form.textarea
+                                    id="taxonomy-term-description"
+                                    rows="3"
+                                    wire:model.live.debounce.400ms="description"
+                                />
+                            </x-admin.field>
                         </div>
 
-                        @if($this->isEditing)
-                            <button
-                                type="button"
-                                wire:click="cancelEditing"
-                                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                        <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
+                            <x-admin.button
+                                type="submit"
+                                wire:loading.attr="disabled"
+                                wire:target="save"
                             >
-                                انصراف
-                            </button>
-                        @endif
-                    </div>
-                </x-slot>
+                                <svg wire:loading wire:target="save" class="ml-2 h-4 w-4 animate-spin"
+                                     viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
+                                            stroke-width="4"></circle>
+                                    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
+                                          stroke-linecap="round"></path>
+                                </svg>
 
-                <form wire:submit.prevent="save" class="space-y-5">
-                    <x-admin.validation-errors/>
-
-                    <div class="space-y-4">
-                        <x-admin.field
-                            label="عنوان"
-                            for="taxonomy-term-title"
-                        >
-                            <x-admin.form.input
-                                id="taxonomy-term-title"
-                                wire:model.live.debounce.400ms="title"
-                            />
-                        </x-admin.field>
-
-                        <x-admin.field
-                            label="نامک"
-                            for="taxonomy-term-slug"
-                            hint="اختیاری است. اگر خالی بماند، به‌صورت خودکار ساخته می‌شود."
-                        >
-                            <x-admin.form.input
-                                id="taxonomy-term-slug"
-                                class="direction-ltr"
-                                wire:model.live.debounce.400ms="slug"
-                            />
-                        </x-admin.field>
-
-                        <x-admin.field
-                            label="توضیحات"
-                            for="taxonomy-term-description"
-                        >
-                            <x-admin.form.textarea
-                                id="taxonomy-term-description"
-                                rows="3"
-                                wire:model.live.debounce.400ms="description"
-                            />
-                        </x-admin.field>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
-                        <x-admin.button
-                            type="submit"
-                            wire:loading.attr="disabled"
-                            wire:target="save"
-                        >
-                            <svg wire:loading wire:target="save" class="ml-2 h-4 w-4 animate-spin"
-                                 viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
-                                        stroke-width="4"></circle>
-                                <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
-                                      stroke-linecap="round"></path>
-                            </svg>
-
-                            <span>
+                                <span>
                                 {{ $this->isEditing ? 'ذخیره تغییرات' : "افزودن {$taxonomyLabel}" }}
                             </span>
-                        </x-admin.button>
+                            </x-admin.button>
 
-                        @if($this->isEditing)
-                            <button
-                                type="button"
-                                wire:click="resetForm"
-                                class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-                            >
-                                پاک کردن فرم
-                            </button>
-                        @endif
-                    </div>
-                </form>
-            </x-admin.metabox>
+                            @if($this->isEditing)
+                                <button
+                                    type="button"
+                                    wire:click="resetForm"
+                                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                                >
+                                    پاک کردن فرم
+                                </button>
+                            @endif
+                        </div>
+                    </form>
+                </x-admin.metabox>
+            </div>
         </x-slot:sidebar>
 
         <div class="relative">
@@ -261,13 +287,13 @@
                                     <tr
                                         wire:key="taxonomy-row-{{ $item->id }}"
                                         @if($highlightedId === $item->id)
-                                            x-data
-                                        x-init="setTimeout(() => $wire.set('highlightedId', null), 500)"
+                                            x-data x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
                                         @endif
                                         @class([
                                             'transition duration-700 hover:bg-slate-50/80',
                                             'bg-brand-50/40' => in_array($item->id, $selectedIds, true),
-                                            'bg-amber-50' => $highlightedId === $item->id,
+                                            'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
+                                            'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
                                         ])
                                     >
                                         <td class="px-4 py-4 align-top">

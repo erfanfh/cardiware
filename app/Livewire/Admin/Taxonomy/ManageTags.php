@@ -145,6 +145,8 @@ class ManageTags extends Component
         $this->description = $term->description ?? '';
 
         $this->resetValidation();
+
+        $this->dispatch('taxonomy-edit-started');
     }
 
     public function updateTerm(): void
