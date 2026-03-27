@@ -197,246 +197,175 @@
                         </div>
                     </div>
 
-                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200">
-                                <thead class="bg-slate-50">
-                                <tr class="text-right">
-                                    <th class="w-14 px-4 py-3">
+                    <x-admin.list.table>
+                        <x-admin.list.thead>
+                            <tr class="text-right">
+                                <th class="w-14 px-4 py-3">
+                                    <label class="inline-flex cursor-pointer items-center justify-center">
+                                        <input
+                                            type="checkbox"
+                                            wire:click="togglePageSelection"
+                                            @checked($this->allVisibleSelected)
+                                            class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
+                                        >
+                                    </label>
+                                </th>
+
+                                <x-admin.list.th
+                                    width="170px"
+                                    label="عنوان"
+                                    sortable
+                                    sortKey="title"
+                                    :current-sort="request('sort')"
+                                    :current-direction="request('direction', 'desc')"
+                                />
+
+                                <x-admin.list.th>نامک</x-admin.list.th>
+
+                                <x-admin.list.th>توضیحات</x-admin.list.th>
+
+                                <x-admin.list.th>استفاده</x-admin.list.th>
+
+                                <x-admin.list.th
+                                    label="تاریخ"
+                                    sortable
+                                    sortKey="created_at"
+                                    :current-sort="request('sort')"
+                                    :current-direction="request('direction', 'desc')"
+                                />
+                            </tr>
+                        </x-admin.list.thead>
+
+                        <x-admin.list.tbody>
+                            @forelse($items as $item)
+                                <tr
+                                    wire:key="taxonomy-row-{{ $item->id }}"
+                                    wire:loading.class="opacity-60"
+                                    wire:target="startEditing({{ $item->id }})"
+                                    @if($highlightedId === $item->id)
+                                        x-data
+                                    x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
+                                    @endif
+                                    @class([
+                                        'group transition duration-700 hover:bg-slate-50/80',
+                                        'bg-brand-50/40' => in_array($item->id, $selectedIds, true),
+                                        'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
+                                        'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
+                                    ])
+                                >
+                                    <td class="px-4 py-4 align-top">
                                         <label class="inline-flex cursor-pointer items-center justify-center">
                                             <input
                                                 type="checkbox"
-                                                wire:click="togglePageSelection"
-                                                @checked($this->allVisibleSelected)
+                                                wire:click="toggleSelection({{ $item->id }})"
+                                                @checked(in_array($item->id, $selectedIds, true))
                                                 class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
                                             >
                                         </label>
-                                    </th>
+                                    </td>
 
-                                    <th class="px-4 py-3">
-                                        <button
-                                            type="button"
-                                            wire:click="sortByColumn('title')"
-                                            class="inline-flex items-center gap-2 text-xs font-black text-slate-700 transition hover:text-slate-900"
-                                        >
-                                            <span>عنوان</span>
+                                    <x-admin.list.td>
+                                        <div class="min-w-[190px]">
+                                            <button
+                                                type="button"
+                                                wire:click="startEditing({{ $item->id }})"
+                                                wire:loading.class="text-slate-400"
+                                                wire:target="startEditing({{ $item->id }})"
+                                                class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
+                                            >
+                                                {{ $item->title }}
+                                            </button>
 
-                                            @if($sortBy === 'title')
-                                                <span class="text-brand-600">
-                                                    {!! $sortDirection === 'asc' ? '↑' : '↓' !!}
-                                                </span>
-                                            @else
-                                                <span class="text-slate-300">↕</span>
-                                            @endif
-                                        </button>
-                                    </th>
-
-                                    <th class="hidden px-4 py-3 text-xs font-black text-slate-700 lg:table-cell">
-                                        نامک
-                                    </th>
-
-                                    <th class="hidden px-4 py-3 text-xs font-black text-slate-700 xl:table-cell">
-                                        توضیح
-                                    </th>
-
-                                    <th class="px-4 py-3 text-center text-xs font-black text-slate-700">
-                                        استفاده
-                                    </th>
-
-                                    <th class="px-4 py-3 text-center">
-                                        <button
-                                            type="button"
-                                            wire:click="sortByColumn('created_at')"
-                                            class="inline-flex items-center gap-2 text-xs font-black text-slate-700 transition hover:text-slate-900"
-                                        >
-                                            <span>تاریخ</span>
-
-                                            @if($sortBy === 'created_at')
-                                                <span class="text-brand-600">
-                                                    {!! $sortDirection === 'asc' ? '↑' : '↓' !!}
-                                                </span>
-                                            @else
-                                                <span class="text-slate-300">↕</span>
-                                            @endif
-                                        </button>
-                                    </th>
-                                </tr>
-                                </thead>
-
-                                <tbody class="divide-y divide-slate-100">
-                                @forelse($items as $item)
-                                    <tr
-                                        wire:key="taxonomy-row-{{ $item->id }}"
-                                        wire:loading.class="opacity-60"
-                                        wire:target="startEditing({{ $item->id }})"
-                                        @if($highlightedId === $item->id)
-                                            x-data
-                                        x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
-                                        @endif
-                                        @class([
-                                            'group transition duration-700 hover:bg-slate-50/80',
-                                            'bg-brand-50/40' => in_array($item->id, $selectedIds, true),
-                                            'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
-                                            'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
-                                        ])
-                                    >
-                                        <td class="px-4 py-4 align-top">
-                                            <label class="inline-flex cursor-pointer items-center justify-center">
-                                                <input
-                                                    type="checkbox"
-                                                    wire:click="toggleSelection({{ $item->id }})"
-                                                    @checked(in_array($item->id, $selectedIds, true))
-                                                    class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-                                                >
-                                            </label>
-                                        </td>
-
-                                        <td class="px-4 py-4 align-top">
-                                            <div class="min-w-[190px]">
-                                                <button
-                                                    type="button"
+                                            <x-admin.list.row-actions class="mt-3">
+                                                <x-admin.list.action
+                                                    tag="button"
                                                     wire:click="startEditing({{ $item->id }})"
-                                                    wire:loading.class="text-slate-400"
+                                                    wire:loading.attr="disabled"
                                                     wire:target="startEditing({{ $item->id }})"
-                                                    class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
+                                                    class="inline-flex items-center gap-1"
+                                                    variant="primary"
                                                 >
-                                                    {{ $item->title }}
-                                                </button>
-
-                                                <div class="mt-1 text-[11px] text-slate-400 lg:hidden" dir="ltr">
-                                                    {{ $item->slug ?: '—' }}
-                                                </div>
-
-                                                <div
-                                                    class="mt-2 flex flex-wrap items-center gap-3 text-xs font-bold transition lg:translate-y-1 lg:pointer-events-none lg:opacity-0 group-hover:lg:translate-y-0 group-hover:lg:pointer-events-auto group-hover:lg:opacity-100">
-                                                    <button
-                                                        type="button"
-                                                        wire:click="startEditing({{ $item->id }})"
-                                                        wire:loading.attr="disabled"
+                                                    <svg
+                                                        wire:loading
                                                         wire:target="startEditing({{ $item->id }})"
-                                                        class="inline-flex items-center gap-1 text-brand-700 transition hover:text-brand-800 disabled:opacity-60"
+                                                        class="h-3.5 w-3.5 animate-spin"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
                                                     >
-                                                        <svg
-                                                            wire:loading
-                                                            wire:target="startEditing({{ $item->id }})"
-                                                            class="h-3.5 w-3.5 animate-spin"
-                                                            viewBox="0 0 24 24"
-                                                            fill="none"
-                                                        >
-                                                            <circle cx="12" cy="12" r="10" stroke="currentColor"
-                                                                    stroke-opacity=".25" stroke-width="4"></circle>
-                                                            <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor"
-                                                                  stroke-width="4" stroke-linecap="round"></path>
-                                                        </svg>
+                                                        <circle cx="12" cy="12" r="10" stroke="currentColor"
+                                                                stroke-opacity=".25" stroke-width="4"></circle>
+                                                        <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor"
+                                                              stroke-width="4" stroke-linecap="round"></path>
+                                                    </svg>
 
-                                                        <span>ویرایش</span>
-                                                    </button>
+                                                    <span>ویرایش</span>
+                                                </x-admin.list.action>
 
-                                                    <span class="text-slate-300">|</span>
+                                                <span class="text-slate-300">|</span>
 
-                                                    <button
-                                                        type="button"
-                                                        x-data
-                                                        x-on:click="
-                                                            window.dispatchEvent(new CustomEvent('admin-open-confirm', {
-                                                                detail: {
-                                                                    title: 'حذف {{ $taxonomyLabel }}',
-                                                                    text: 'آیا از حذف «{{ $item->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.',
-                                                                    action: {
-                                                                        type: 'livewire',
-                                                                        event: 'performDeleteTerm',
-                                                                        payload: {
-                                                                            id: {{ $item->id }}
-                                                                        }
+                                                <x-admin.list.action
+                                                    tag="button"
+                                                    x-data
+                                                    x-on:click="
+                                                        window.dispatchEvent(new CustomEvent('admin-open-confirm', {
+                                                            detail: {
+                                                                title: 'حذف {{ $taxonomyLabel }}',
+                                                                text: 'آیا از حذف «{{ $item->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست.',
+                                                                action: {
+                                                                    type: 'livewire',
+                                                                    event: 'performDeleteTerm',
+                                                                    payload: {
+                                                                        id: {{ $item->id }}
                                                                     }
                                                                 }
-                                                            }))
-                                                        "
-                                                        class="text-rose-600/90 transition hover:text-rose-700"
-                                                    >
-                                                        حذف
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </td>
+                                                            }
+                                                        }))
+                                                    "
+                                                    variant="danger"
+                                                >
+                                                    حذف
+                                                </x-admin.list.action>
+                                            </x-admin.list.row-actions>
+                                        </div>
+                                    </x-admin.list.td>
 
-                                        <td class="hidden px-4 py-4 align-top lg:table-cell">
-                                            <div class="text-sm text-slate-700" dir="ltr">
-                                                {{ $item->slug ?: '—' }}
-                                            </div>
-                                        </td>
+                                    <x-admin.list.td>
+                                        <div class="text-sm text-slate-700">
+                                            {{ $item->slug ?: '—' }}
+                                        </div>
+                                    </x-admin.list.td>
 
-                                        <td class="hidden px-4 py-4 align-top xl:table-cell">
-                                            <div class="max-w-[280px] text-sm leading-6 text-slate-500">
-                                                {{ $item->description ?: '—' }}
-                                            </div>
-                                        </td>
+                                    <x-admin.list.td>
+                                        <div class="max-w-[280px] text-sm leading-6 text-slate-500">
+                                            {{ $item->description ?: '—' }}
+                                        </div>
+                                    </x-admin.list.td>
 
-                                        <td class="px-4 py-4 align-top text-center">
-                                            <span
-                                                class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
-                                                {{ $item->usage_count ?? 0 }}
-                                            </span>
-                                        </td>
+                                    <x-admin.list.td>
+                                        <span
+                                            class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
+                                            {{ $item->usage_count ?? 0 }}
+                                        </span>
+                                    </x-admin.list.td>
 
-                                        <td class="px-4 py-4 align-top text-center">
-                                            <div class="text-xs font-bold text-slate-500">
-                                                {{ jalali_date($item->created_at, 'Y/n/j') }}
-                                            </div>
-                                            <div class="mt-1 text-[11px] text-slate-400">
-                                                {{ jalali_date($item->created_at, 'H:i') }}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="px-6 py-16">
-                                            <div class="flex flex-col items-center justify-center text-center">
-                                                <div
-                                                    class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
-                                                    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none">
-                                                        <path d="M7 7h10M7 12h10M7 17h6" stroke="currentColor"
-                                                              stroke-width="1.8" stroke-linecap="round"/>
-                                                        <rect x="3.75" y="3.75" width="16.5" height="16.5" rx="3.25"
-                                                              stroke="currentColor" stroke-width="1.5"/>
-                                                    </svg>
-                                                </div>
-
-                                                <div class="mt-4 text-sm font-black text-slate-900">
-                                                    @if($search !== '')
-                                                        نتیجه‌ای برای جستجوی شما پیدا نشد
-                                                    @else
-                                                        هنوز {{ $taxonomyLabel }}ی ثبت نشده است
-                                                    @endif
-                                                </div>
-
-                                                <div class="mt-2 max-w-md text-sm leading-6 text-slate-500">
-                                                    @if($search !== '')
-                                                        عبارت جستجو را تغییر دهید یا آن را پاک کنید تا همه موارد دوباره
-                                                        نمایش داده شوند.
-                                                    @else
-                                                        از فرم کنار صفحه برای افزودن اولین {{ $taxonomyLabel }} استفاده
-                                                        کنید.
-                                                    @endif
-                                                </div>
-
-                                                @if($search !== '')
-                                                    <button
-                                                        type="button"
-                                                        wire:click="$set('search', '')"
-                                                        class="mt-5 inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-                                                    >
-                                                        پاک کردن جستجو
-                                                    </button>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                    <x-admin.list.td>
+                                        <div class="text-xs font-bold text-slate-500">
+                                            {{ jalali_date($item->created_at, 'Y/n/j') }}
+                                        </div>
+                                        <div class="mt-1 text-[11px] text-slate-400">
+                                            {{ jalali_date($item->created_at, 'H:i') }}
+                                        </div>
+                                    </x-admin.list.td>
+                                </tr>
+                            @empty
+                                <x-admin.list.empty
+                                    colspan="7"
+                                    title="برچسبی برای نمایش وجود ندارد"
+                                    description="هنوز هیچ برچسبی ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
+                                />
+                            @endforelse
+                        </x-admin.list.tbody>
+                    </x-admin.list.table>
 
                     @if($items->hasPages())
                         <div class="mt-4">
@@ -472,79 +401,5 @@
                 </div>
             </div>
         </div>
-
-        {{-- Delete Modal --}}
-        @if($deletingId)
-            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]" wire:click="cancelDelete"></div>
-
-                <div class="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-soft2">
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
-                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
-                                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
-                            </svg>
-                        </div>
-
-                        <div class="flex-1">
-                            <div class="text-base font-black text-slate-900">
-                                حذف {{ $taxonomyLabel }}
-                            </div>
-
-                            <div class="mt-2 text-sm leading-6 text-slate-500">
-                                آیا از حذف این {{ $taxonomyLabel }} مطمئن هستید؟ این عملیات قابل بازگشت نیست.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex items-center justify-end gap-3">
-                        <x-admin.button
-                            type="button"
-                            wire:click="cancelEditing"
-                            wire:loading.attr="disabled"
-                            wire:target="cancelEditing"
-                            variant="secondary"
-                        >
-                            <svg
-                                wire:loading
-                                wire:target="cancelEditing"
-                                class="ml-2 h-4 w-4 animate-spin"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                            >
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
-                                        stroke-width="4"></circle>
-                                <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
-                                      stroke-linecap="round"></path>
-                            </svg>
-
-                            <span>انصراف</span>
-                        </x-admin.button>
-
-                        <button
-                            type="button"
-                            wire:click="deleteTerm"
-                            wire:loading.attr="disabled"
-                            wire:target="deleteTerm"
-                            class="inline-flex items-center justify-center rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                            <svg wire:loading wire:target="deleteTerm" class="ml-2 h-4 w-4 animate-spin"
-                                 viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
-                                        stroke-width="4"></circle>
-                                <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
-                                      stroke-linecap="round"></path>
-                            </svg>
-
-                            حذف {{ $taxonomyLabel }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        @endif
     </x-admin.page>
 </div>
