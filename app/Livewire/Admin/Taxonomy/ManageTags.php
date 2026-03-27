@@ -96,6 +96,8 @@ class ManageTags extends Component
     {
         $this->resetPage();
         $this->clearSelection();
+
+        $this->dispatch('taxonomy-scroll-to-list');
     }
 
     public function updatedPerPage(): void
@@ -164,7 +166,10 @@ class ManageTags extends Component
         $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
         $term->update($validated);
 
+        $updatedId = $term->id;
+
         $this->resetForm();
+        $this->highlightedId = $updatedId;
 
         session()->flash('success', 'برچسب با موفقیت به‌روزرسانی شد.');
     }
@@ -172,6 +177,7 @@ class ManageTags extends Component
     public function cancelEditing(): void
     {
         $this->resetForm();
+        $this->dispatch('taxonomy-scroll-to-list');
     }
 
     public function confirmDelete(int $id): void
@@ -289,6 +295,29 @@ class ManageTags extends Component
         $this->description = '';
 
         $this->resetValidation();
+    }
+
+    public function nextPage($pageName = 'page'): void
+    {
+        $this->setPage(($this->getPage($pageName) ?? 1) + 1, $pageName);
+        $this->dispatch('taxonomy-scroll-to-list');
+    }
+
+    public function previousPage($pageName = 'page'): void
+    {
+        $currentPage = (int)($this->getPage($pageName) ?? 1);
+
+        if ($currentPage > 1) {
+            $this->setPage($currentPage - 1, $pageName);
+        }
+
+        $this->dispatch('taxonomy-scroll-to-list');
+    }
+
+    public function gotoPage($page, $pageName = 'page'): void
+    {
+        $this->setPage($page, $pageName);
+        $this->dispatch('taxonomy-scroll-to-list');
     }
 
     protected function getTermsQuery(): Builder

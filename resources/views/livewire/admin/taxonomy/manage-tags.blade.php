@@ -19,7 +19,9 @@
                         <form
                             wire:submit.prevent="save"
                             wire:key="taxonomy-form-{{ $editingId ? 'edit-' . $editingId : 'create' }}"
-                            class="space-y-5"
+                            wire:loading.class="opacity-70"
+                            wire:target="save,cancelEditing"
+                            class="space-y-5 transition"
                         >
                             <x-admin.validation-errors/>
 
@@ -99,10 +101,17 @@
             </div>
         </x-slot:sidebar>
 
-        <div class="relative">
+        <div
+            class="relative"
+            x-data
+            x-ref="taxonomyListBox"
+            x-on:taxonomy-scroll-to-list.window="
+                $refs.taxonomyListBox.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            "
+        >
             <div
                 wire:loading.class="opacity-60 pointer-events-none"
-                wire:target="createTerm"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search"
                 class="transition duration-200"
             >
                 <x-admin.metabox :collapsible="false" title="لیست {{ $taxonomyLabelPlural }}">
@@ -421,7 +430,7 @@
 
             <div
                 wire:loading.flex
-                wire:target="createTerm"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search"
                 class="absolute inset-0 z-10 hidden items-center justify-center rounded-2xl"
             >
                 <div class="absolute inset-0 rounded-2xl bg-white/55 backdrop-blur-[2px]"></div>
@@ -471,13 +480,28 @@
                     </div>
 
                     <div class="mt-6 flex items-center justify-end gap-3">
-                        <button
+                        <x-admin.button
                             type="button"
-                            wire:click="cancelDelete"
-                            class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                            wire:click="cancelEditing"
+                            wire:loading.attr="disabled"
+                            wire:target="cancelEditing"
+                            variant="secondary"
                         >
-                            انصراف
-                        </button>
+                            <svg
+                                wire:loading
+                                wire:target="cancelEditing"
+                                class="ml-2 h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
+                                        stroke-width="4"></circle>
+                                <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
+                                      stroke-linecap="round"></path>
+                            </svg>
+
+                            <span>انصراف</span>
+                        </x-admin.button>
 
                         <button
                             type="button"
