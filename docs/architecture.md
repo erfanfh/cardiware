@@ -48,7 +48,6 @@ This project follows **Modular Monolith Architecture** using
                 Models/
                 Policies/
                 Enums/
-                ValueObjects/
 
         Http/
             Controllers/
