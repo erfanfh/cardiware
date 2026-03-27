@@ -5,14 +5,14 @@
                 wire:key="taxonomy-sidebar-{{ $editingId ? 'edit-' . $editingId : 'create' }}"
                 x-data
                 x-on:taxonomy-edit-started.window="
-            if (window.innerWidth < 1280) {
-                $el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            }
+                    if (window.innerWidth < 1280) {
+                        $el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
 
-            $nextTick(() => {
-                setTimeout(() => $refs.taxonomyTitleInput?.focus(), 120)
-            })
-        "
+                    $nextTick(() => {
+                        setTimeout(() => $refs.taxonomyTitleInput?.focus(), 120)
+                    })
+                "
             >
                 <x-admin.metabox :collapsible="false" title="اطلاعات {{ $taxonomyLabel }}">
                     <div class="space-y-5">
@@ -102,7 +102,7 @@
         <div class="relative">
             <div
                 wire:loading.class="opacity-60 pointer-events-none"
-                wire:target="save"
+                wire:target="createTerm"
                 class="transition duration-200"
             >
                 <x-admin.metabox :collapsible="false" title="لیست {{ $taxonomyLabelPlural }}">
@@ -112,14 +112,16 @@
                             <div class="flex items-center gap-2">
                                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                                     <div class="relative min-w-0 sm:w-[280px]">
-                            <span
-                                class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd"
-                                          d="M8.5 3a5.5 5.5 0 1 0 3.472 9.765l3.631 3.632a1 1 0 0 0 1.414-1.414l-3.632-3.631A5.5 5.5 0 0 0 8.5 3ZM5 8.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z"
-                                          clip-rule="evenodd"/>
-                                </svg>
-                            </span>
+                                        <span
+                                            class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+                                            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M8.5 3a5.5 5.5 0 1 0 3.472 9.765l3.631 3.632a1 1 0 0 0 1.414-1.414l-3.632-3.631A5.5 5.5 0 0 0 8.5 3ZM5 8.5a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0Z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                        </span>
 
                                         <x-admin.form.input
                                             wire:model.live.debounce.400ms="search"
@@ -142,7 +144,7 @@
                         </div>
 
                         @if(! empty($selectedIds))
-                            <div>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                                 <x-admin.form.select wire:model="bulkAction" class="min-w-[180px]">
                                     <option value="">کار دسته‌جمعی</option>
                                     <option value="delete">حذف</option>
@@ -175,10 +177,10 @@
                         @endif
 
                         <div class="flex items-center gap-2 text-xs text-slate-500">
-                    <span
-                        class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">
-                        {{ $items->total() }}
-                    </span>
+                            <span
+                                class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">
+                                {{ $items->total() }}
+                            </span>
                             <span>{{ $taxonomyLabel }}</span>
                         </div>
                     </div>
@@ -246,27 +248,21 @@
                                             @endif
                                         </button>
                                     </th>
-
-                                    <th class="px-4 py-3 text-center text-xs font-black text-slate-700">
-                                        عملیات
-                                    </th>
                                 </tr>
                                 </thead>
 
                                 <tbody class="divide-y divide-slate-100">
                                 @forelse($items as $item)
-                                    @php
-                                        $isSelected = in_array($item->id, $selectedIds, true);
-                                        $isHighlighted = $highlightedId === $item->id;
-                                    @endphp
-
                                     <tr
                                         wire:key="taxonomy-row-{{ $item->id }}"
+                                        wire:loading.class="opacity-60"
+                                        wire:target="startEditing({{ $item->id }})"
                                         @if($highlightedId === $item->id)
-                                            x-data x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
+                                            x-data
+                                        x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
                                         @endif
                                         @class([
-                                            'transition duration-700 hover:bg-slate-50/80',
+                                            'group transition duration-700 hover:bg-slate-50/80',
                                             'bg-brand-50/40' => in_array($item->id, $selectedIds, true),
                                             'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
                                             'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
@@ -284,16 +280,56 @@
                                         </td>
 
                                         <td class="px-4 py-4 align-top">
-                                            <button
-                                                type="button"
-                                                wire:click="startEditing({{ $item->id }})"
-                                                class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
-                                            >
-                                                {{ $item->title }}
-                                            </button>
+                                            <div class="min-w-[190px]">
+                                                <button
+                                                    type="button"
+                                                    wire:click="startEditing({{ $item->id }})"
+                                                    wire:loading.class="text-slate-400"
+                                                    wire:target="startEditing({{ $item->id }})"
+                                                    class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
+                                                >
+                                                    {{ $item->title }}
+                                                </button>
 
-                                            <div class="mt-1 text-[11px] text-slate-400 lg:hidden" dir="ltr">
-                                                {{ $item->slug ?: '—' }}
+                                                <div class="mt-1 text-[11px] text-slate-400 lg:hidden" dir="ltr">
+                                                    {{ $item->slug ?: '—' }}
+                                                </div>
+
+                                                <div
+                                                    class="mt-2 flex flex-wrap items-center gap-3 text-xs font-bold transition lg:translate-y-1 lg:pointer-events-none lg:opacity-0 group-hover:lg:translate-y-0 group-hover:lg:pointer-events-auto group-hover:lg:opacity-100">
+                                                    <button
+                                                        type="button"
+                                                        wire:click="startEditing({{ $item->id }})"
+                                                        wire:loading.attr="disabled"
+                                                        wire:target="startEditing({{ $item->id }})"
+                                                        class="inline-flex items-center gap-1 text-brand-700 transition hover:text-brand-800 disabled:opacity-60"
+                                                    >
+                                                        <svg
+                                                            wire:loading
+                                                            wire:target="startEditing({{ $item->id }})"
+                                                            class="h-3.5 w-3.5 animate-spin"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                        >
+                                                            <circle cx="12" cy="12" r="10" stroke="currentColor"
+                                                                    stroke-opacity=".25" stroke-width="4"></circle>
+                                                            <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor"
+                                                                  stroke-width="4" stroke-linecap="round"></path>
+                                                        </svg>
+
+                                                        <span>ویرایش</span>
+                                                    </button>
+
+                                                    <span class="text-slate-300">|</span>
+
+                                                    <button
+                                                        type="button"
+                                                        wire:click="confirmDelete({{ $item->id }})"
+                                                        class="text-rose-600/90 transition hover:text-rose-700"
+                                                    >
+                                                        حذف
+                                                    </button>
+                                                </div>
                                             </div>
                                         </td>
 
@@ -324,30 +360,10 @@
                                                 {{ jalali_date($item->created_at, 'H:i') }}
                                             </div>
                                         </td>
-
-                                        <td class="px-4 py-4 align-top text-center">
-                                            <div class="flex flex-wrap items-center justify-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    wire:click="startEditing({{ $item->id }})"
-                                                    class="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
-                                                >
-                                                    ویرایش
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    wire:click="confirmDelete({{ $item->id }})"
-                                                    class="inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100"
-                                                >
-                                                    حذف
-                                                </button>
-                                            </div>
-                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-16">
+                                        <td colspan="6" class="px-6 py-16">
                                             <div class="flex flex-col items-center justify-center text-center">
                                                 <div
                                                     class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
@@ -405,7 +421,7 @@
 
             <div
                 wire:loading.flex
-                wire:target="save"
+                wire:target="createTerm"
                 class="absolute inset-0 z-10 hidden items-center justify-center rounded-2xl"
             >
                 <div class="absolute inset-0 rounded-2xl bg-white/55 backdrop-blur-[2px]"></div>
@@ -438,7 +454,8 @@
                                 <path
                                     d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
                                     stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                                    stroke-linejoin="round"/>
+                                    stroke-linejoin="round"
+                                />
                             </svg>
                         </div>
 
