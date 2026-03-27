@@ -28,8 +28,10 @@ class UpdatePostRequest extends FormRequest
             ],
             'status' => ['required', Rule::enum(PostStatusEnum::class)],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'author_id' => ['nullable', 'integer', 'exists:users,id'],
             'body' => ['required', 'string'],
             'excerpt' => ['nullable', 'string'],
+            'published_at' => ['nullable', 'string'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],
@@ -109,6 +111,8 @@ class UpdatePostRequest extends FormRequest
                 'existing' => $existing,
                 'new' => $new,
             ],
+            'author_id' => auth()->user()->id,
+            'published_at' => $this->input('published_at') ? gregorian_date($this->input('published_at')) : date('Y-m-d H:i:s'),
         ]);
     }
 }
