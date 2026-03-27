@@ -120,8 +120,7 @@
                                     </template>
                                 </div>
 
-                                <x-admin.list.row-actions
-                                    class="opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
+                                <x-admin.list.row-actions>
                                     <x-admin.list.action
                                         tag="a"
                                         ::href="rows[{{ $project->id }}]?.urls?.edit"
