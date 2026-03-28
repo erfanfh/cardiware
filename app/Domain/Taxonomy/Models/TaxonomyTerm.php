@@ -2,10 +2,8 @@
 
 namespace App\Domain\Taxonomy\Models;
 
-use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
 use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaxonomyTerm extends Model
 {
-    use Sluggable, SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'type',
@@ -29,23 +27,6 @@ class TaxonomyTerm extends Model
     protected $casts = [
         'type' => TaxonomyTermTypeEnum::class,
     ];
-
-    /**
-     * configs of sluggable package
-     *
-     * @return array[]
-     */
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'slug',
-                'unique' => false, //We handle uniqueness manually via GenerateUniqueSlugAction
-                'includeTrashed' => true,
-                'onUpdate' => true,
-            ]
-        ];
-    }
 
     /**
      * Get the route key name for Laravel route model binding.
@@ -111,27 +92,5 @@ class TaxonomyTerm extends Model
             'taxonomy_term_id',
             'taxonomable_id'
         );
-    }
-
-    /**
-     * @return void
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::saving(function ($term) {
-            if (empty(trim($term->slug ?? ''))) {
-                $term->slug = $term->title;
-            }
-
-            //Generate unique slug using dedicated action
-            $generateUniqueSlugAction = app(GenerateUniqueSlugAction::class);
-            $term->slug = $generateUniqueSlugAction->execute(
-                $term->slug,
-                $term->type,
-                $term->id ?? null // Exclude current term when updating
-            );
-        });
     }
 }
