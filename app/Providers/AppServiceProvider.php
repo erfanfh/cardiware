@@ -3,9 +3,9 @@
 namespace App\Providers;
 
 use App\Application\Content\Observers\PageObserver;
-use App\Application\Content\Observers\PostObserver;
 use App\Domain\Content\Models\Page;
-use App\Domain\Content\Models\Post;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,7 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Post::observe(PostObserver::class);
+        if (Request::is('admin/*'))
+            Paginator::defaultView('vendor.pagination.admin');
+
         Page::observe(PageObserver::class);
     }
 }

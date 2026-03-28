@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="{{ asset('css/jalalidatepicker.min.css') }}">
+    <x-favicons/>
     <script src="{{ asset('js/jalalidatepicker.min.js') }}"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @vite(['resources/css/admin/admin.css', 'resources/js/admin/admin.js'])
@@ -26,7 +27,7 @@
 
         @include('admin.partials.topbar')
 
-        <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto">
+        <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto space-y-4">
             @yield('page_header')
             @yield('content')
 

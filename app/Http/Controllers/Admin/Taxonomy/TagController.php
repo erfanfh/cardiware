@@ -41,22 +41,7 @@ class TagController extends Controller
      */
     public function index(Request $request): View
     {
-        $editingId = $request->query('edit');
-        $search = $request->query('search');
-
-        $query = TaxonomyTerm::tag()->orderBy('title');
-
-        $query = $this->applySearch($query, $search, [
-            'title',
-            'slug',
-            'description',
-        ]);
-
-        $tags = $query->get();
-
-        $editingTerm = $editingId ? TaxonomyTerm::findOrFail($editingId) : null;
-
-        return view('admin.taxonomies.tags.index', compact('tags', 'editingTerm', 'search'));
+        return view('admin.taxonomies.tags.index');
     }
 
     /**

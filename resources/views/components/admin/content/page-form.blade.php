@@ -23,7 +23,7 @@
 @endphp
 
 <form action="{{ $action }}" method="post" enctype="multipart/form-data"
-      class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
+      class="js-confirm bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
     @csrf
     @if($isEdit)
         @method('PUT')
@@ -91,7 +91,7 @@
                     <label for="status" class="text-xs font-medium text-gray-500 dark:text-gray-400">وضعیت</label>
                     <select name="status" autocomplete="off" id="status"
                             class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                        @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
+                        @foreach (\App\Domain\Content\Enums\PostStatusEnum::cases() as $status)
                             <option @if($page and $page->status === $status->value) selected
                                     @endif value="{{ $status->value }}">
                                 {{ $status->value }}

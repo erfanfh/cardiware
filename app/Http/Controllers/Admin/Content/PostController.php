@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Content;
 
-use App\Domain\Content\Actions\CreatePostAction;
-use App\Domain\Content\Actions\UpdatePostAction;
+use App\Application\Content\Actions\CreatePostAction;
+use App\Application\Content\Actions\UpdatePostAction;
 use App\Domain\Content\Models\Post;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Content\Post\StoreRequest;
-use App\Http\Requests\Content\Post\UpdateRequest;
+use App\Http\Requests\Admin\Content\UpdatePostRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -27,21 +26,6 @@ class PostController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param StoreRequest $request
-     * @param CreatePostAction $action
-     * @return RedirectResponse
-     * @throws Throwable
-     */
-    public function store(StoreRequest $request, CreatePostAction $action): RedirectResponse
-    {
-        $post = $action->execute($request->validated());
-
-        return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت ایجاد شد.');
-    }
-
-    /**
      * Show the form for creating a new resource.
      *
      * @return View
@@ -52,6 +36,22 @@ class PostController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param UpdatePostRequest $request
+     * @param CreatePostAction $action
+     * @return RedirectResponse
+     * @throws Throwable
+     */
+    public function store(UpdatePostRequest $request, CreatePostAction $action): RedirectResponse
+    {
+        $post = $action->execute($request->validated());
+
+        return redirect()->route('admin.posts.edit', $post)
+            ->with('success', 'نوشته با موفقیت ایجاد شد.');
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param Post $post
@@ -59,25 +59,35 @@ class PostController extends Controller
      */
     public function edit(Post $post): View
     {
-        return view('admin.content.posts.edit', compact('post'));
+        $selectedTags = $post->tags
+            ->map(fn($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
+        return view('admin.content.posts.edit', compact('post', 'selectedTags'));
     }
 
 
     /**
      * Update the specified resource in storage.
      *
-     * @param UpdateRequest $request
+     * @param UpdatePostRequest $request
      * @param Post $post
      * @param UpdatePostAction $action
      * @return RedirectResponse
+     * @throws Throwable
      */
-    public function update(UpdateRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
+    public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
     {
-        $action->execute($request->validated(), $post);
+        $action->execute($post, $request->validated());
 
-        return redirect()->route('admin.posts.edit', $post)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
+        return redirect()
+            ->route('admin.posts.edit', $post)
+            ->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }
-
 
     /**
      * Remove the specified resource from storage.

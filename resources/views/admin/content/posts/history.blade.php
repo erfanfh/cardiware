@@ -103,7 +103,8 @@
                         autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     @if(request('category'))
-                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('category'))->title }}</option>
+                        <option selected
+                                value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('category'))->title }}</option>
                     @endif
                 </select>
             </div>
@@ -116,7 +117,8 @@
                         autocomplete="off"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     @if(request('tag'))
-                        <option selected value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('tag'))->title }}</option>
+                        <option selected
+                                value="{{ request('category') }}">{{ \App\Domain\Taxonomy\Models\TaxonomyTerm::findOrFail(request('tag'))->title }}</option>
                     @endif
                 </select>
             </div>
@@ -180,7 +182,7 @@
                 <select name="status"
                         class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
                     <option value="">همه وضعیت‌ها</option>
-                    @foreach(\App\Domain\Content\Enums\StatusEnum::cases() as $status)
+                    @foreach(\App\Domain\Content\Enums\PostStatusEnum::cases() as $status)
                         <option
                             @selected(request('status') === $status->value) value="{{ $status->value }}">{{ $status->label() }}</option>
                     @endforeach
@@ -220,12 +222,14 @@
                             @if(request('sort') !== 'title')
                                 <div class="flex">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                              stroke-linejoin="round"
                                               stroke-width="1.5"
                                               d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
                                     </svg>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                              stroke-linejoin="round"
                                               stroke-width="1.5"
                                               d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
                                     </svg>
@@ -252,12 +256,14 @@
                             @if(request('sort') !== 'published_at')
                                 <div class="flex">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                              stroke-linejoin="round"
                                               stroke-width="1.5"
                                               d="m10.397 18.586l-.76-.967c-1.234-1.565-1.851-2.348-1.57-2.984C8.348 14 9.312 14 11.24 14h1.522c1.927 0 2.89 0 3.172.635c.281.636-.336 1.419-1.57 2.984l-.76.967C12.86 19.529 12.488 20 12 20s-.86-.471-1.603-1.414M12 14V4"/>
                                     </svg>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
+                                              stroke-linejoin="round"
                                               stroke-width="1.5"
                                               d="M12 10v10m1.603-14.586l.76.967c1.234 1.565 1.851 2.348 1.57 2.984c-.281.635-1.245.635-3.172.635H11.24c-1.927 0-2.89 0-3.172-.635c-.281-.636.336-1.419 1.57-2.984l.76-.967C11.14 4.471 11.511 4 12 4s.86.471 1.603 1.414"/>
                                     </svg>
@@ -302,20 +308,20 @@
                         <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->tags->pluck('title')->implode(', ') }}</td>
 
                         <td class="p-3 break-words whitespace-normal">
-                            @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
+                            @if($post->status == \App\Domain\Content\Enums\PostStatusEnum::DRAFT)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::DRAFT->label() }}
                                 </span>
-                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
+                            @elseif($post->status == \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW->label() }}
                                 </span>
-                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
+                            @elseif($post->status == \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED->label() }}
                                 </span>
                             @endif
                         </td>
@@ -330,25 +336,35 @@
 
                         <td class="p-3 break-words whitespace-normal">
                             <div class="flex gap-1.5 justify-start">
-                                <a href="{{ route('admin.posts.restore', $post->id) }}"
-                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
-                                            <path
-                                                d="m19.5 5.5l-.5 6m-14.5-6l.605 10.037c.154 2.57.232 3.855.874 4.78a4 4 0 0 0 1.2 1.132c.582.356 1.284.496 2.321.551"/>
-                                            <path stroke-linejoin="round"
-                                                  d="m11 15.5l1.136 1.466a4 4 0 0 1 7.364-.901M21 20.5l-1.136-1.464a4 4 0 0 1-7.328.965"/>
-                                            <path
-                                                d="M3 5.5h18m-4.944 0l-.683-1.408c-.453-.936-.68-1.403-1.071-1.695a2 2 0 0 0-.275-.172C13.594 2 13.074 2 12.035 2c-1.066 0-1.599 0-2.04.234a2 2 0 0 0-.278.18c-.395.303-.616.788-1.058 1.757L8.053 5.5"/>
-                                        </g>
-                                    </svg>
-                                    بازیابی
-                                </a>
+                                <form method="POST"
+                                      action="{{ route('admin.posts.restore', $post->id) }}"
+                                      class="js-confirm inline-block"
+                                      data-confirm-title="بازیابی نوشته"
+                                      data-confirm-text="نوشته بازیابی و از سطل زباله خارج خواهد شد."
+                                >
+                                    @csrf
+                                    <button type="submit"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                               stroke-width="1.5">
+                                                <path
+                                                    d="m19.5 5.5l-.5 6m-14.5-6l.605 10.037c.154 2.57.232 3.855.874 4.78a4 4 0 0 0 1.2 1.132c.582.356 1.284.496 2.321.551"/>
+                                                <path stroke-linejoin="round"
+                                                      d="m11 15.5l1.136 1.466a4 4 0 0 1 7.364-.901M21 20.5l-1.136-1.464a4 4 0 0 1-7.328.965"/>
+                                                <path
+                                                    d="M3 5.5h18m-4.944 0l-.683-1.408c-.453-.936-.68-1.403-1.071-1.695a2 2 0 0 0-.275-.172C13.594 2 13.074 2 12.035 2c-1.066 0-1.599 0-2.04.234a2 2 0 0 0-.278.18c-.395.303-.616.788-1.058 1.757L8.053 5.5"/>
+                                            </g>
+                                        </svg>
+                                        بازیابی
+                                    </button>
+                                </form>
 
                                 <form method="POST"
                                       action="{{ route('admin.posts.force-delete', $post->id) }}"
-                                      class="inline-block"
-                                      data-confirm-title="حذف نوشته"
+                                      class="js-confirm inline-block"
+                                      data-confirm-title="حذف دائمی نوشته"
                                       data-confirm-text="نوشته برای همیشه حذف خواهد شد."
                                 >
                                     @csrf
@@ -369,7 +385,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="p-4 text-center">
+                        <td colspan="11" class="p-4 text-center">
                             <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                         </td>
                     </tr>

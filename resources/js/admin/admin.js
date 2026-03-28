@@ -323,6 +323,8 @@ window.mwWpSlugEditor = function (opts) {
         async checkUnique() {
             if (!opts.checkUrl) return;
 
+            const scope = (opts.scope || '').trim();
+
             const slug = (this.slug || '').trim();
             if (!slug) {
                 this.uniqueOk = true;
@@ -338,6 +340,7 @@ window.mwWpSlugEditor = function (opts) {
             try {
                 const url = new URL(opts.checkUrl, window.location.origin);
                 url.searchParams.set('slug', slug);
+                url.searchParams.set('scope', scope);
                 if (opts.currentId) url.searchParams.set('ignore', opts.currentId);
 
                 const res = await fetch(url.toString(), {
@@ -345,8 +348,8 @@ window.mwWpSlugEditor = function (opts) {
                 });
                 const data = await res.json();
 
-                this.uniqueOk = !!data.unique;
-                this.uniqueMsg = data.message || (data.unique ? '' : 'اسلاگ تکراری است');
+                this.uniqueOk = !!data.available;
+                this.uniqueMsg = data.message || (data.available ? '' : 'اسلاگ تکراری است');
                 this.suggestedSlug = data.suggested_slug || '';
             } catch (e) {
                 // اگر endpoint در دسترس نبود، مزاحم UX نشیم

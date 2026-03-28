@@ -8,7 +8,7 @@
 <select
     name="{{ $name }}"
     {{ $attributes->merge([
-        'class' => 'w-full h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
+        'class' => 'w-full h-10 rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-300'
     ]) }}
 >
     @if($placeholder)

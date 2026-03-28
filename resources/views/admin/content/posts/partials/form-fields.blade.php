@@ -1,0 +1,83 @@
+@php
+    use App\Domain\Content\Enums\PostStatusEnum;$isEdit = isset($post) && $post;
+    $statuses = [];
+    foreach (PostStatusEnum::cases() as $status){
+        $statuses[$status->value] = $status->label();
+    }
+@endphp
+
+<x-admin.page columns="2">
+    <x-slot:sidebar>
+        <x-admin.metabox title="انتشار">
+            <div class="grid grid-cols-12 gap-5">
+                <x-admin.field
+                    class="col-span-12"
+                    label="وضعیت"
+                >
+                    <x-admin.form.select
+                        name="status"
+                        :options="$statuses"
+                        :value="old('status', $post?->status?->value)"
+                    />
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+
+        <x-admin.metabox title="تصویر شاخص">
+            <x-admin.form.media-picker
+                mode="field"
+                name="picture"
+                :value="[
+                    'id' => old('picture.id', $post?->picture_id),
+                    'path' => old('picture.path', $post?->picture?->url),
+                ]"
+                layout="vertical"
+            />
+        </x-admin.metabox>
+
+        <x-admin.metabox title="برچسب‌ها">
+            <x-admin.form.tags
+                existingName="tags[existing]"
+                newName="tags[new]"
+                :selected="$selectedTags ?? []"
+                :suggestions="$tagSuggestions ?? []"
+            />
+        </x-admin.metabox>
+    </x-slot:sidebar>
+
+    <x-admin.form.validation-errors class="mb-6"/>
+
+    <x-admin.form.wp-title-slug
+        titleName="title"
+        slugName="slug"
+        :titleValue="$post->title ?? ''"
+        :slugValue="$post->slug ?? ''"
+        basePath="{{ route('home') }}/"
+        :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
+        :currentId="$post->id ?? null"
+        :itemUrl="$post ? route('posts.detail', $post) : null"
+    />
+
+    <x-admin.metabox title="توضیحات">
+        <x-admin.field required>
+            <x-admin.form.editor
+                name="body"
+                :value="old('body', $post?->body)"
+                preset="full"
+                height="500"
+                placeholder="متن نوشته ..."
+            />
+        </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="خلاصه">
+        <x-admin.field required
+                       hint="این فیلد اختیاری است. درصورتی که تکمیل نشود، خلاصه توضیحات نوشته در نظر گرفته خواهد شد.">
+            <x-admin.form.textarea
+                name="excerpt"
+                rows="4"
+                placeholder="یک خلاصه کوتاه از نوشته ..."
+                value="{{ old('excerpt', $post->excerpt ?? '') }}"/>
+        </x-admin.field>
+    </x-admin.metabox>
+</x-admin.page>

@@ -1,0 +1,100 @@
+<x-admin.list.quick-edit-row :row-id="$project->id" colspan="7">
+    <div class="space-y-5">
+        <x-admin.form
+            method="PATCH"
+            action="{{ route('admin.projects.quick-update', $project) }}"
+            class="space-y-5"
+            x-on:submit.prevent="submitQuickEdit($event.target, {{ $project->id }})"
+        >
+            <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-4">
+                <div class="space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-sm font-bold text-slate-800">
+                            ویرایش سریع پروژه
+                        </h3>
+
+                        <x-admin.badge color="blue">
+                            شناسه: {{ $project->id }}
+                        </x-admin.badge>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <x-admin.button
+                        type="submit"
+                        variant="solid"
+                        size="sm"
+                        ::disabled="isSaving({{ $project->id }})"
+                    >
+                        <span x-show="!isSaving({{ $project->id }})">ذخیره تغییرات</span>
+                        <span x-show="isSaving({{ $project->id }})" x-cloak>در حال ذخیره...</span>
+                    </x-admin.button>
+
+                    <x-admin.button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        x-on:click="close()"
+                        ::disabled="isSaving({{ $project->id }})"
+                    >
+                        انصراف
+                    </x-admin.button>
+                </div>
+            </div>
+
+            <x-admin.form.ajax-error-box
+                :row-id="$project->id"
+                :fields="['title', 'slug', 'status', 'progress_percent', 'tags']"
+            />
+
+            <div class="grid grid-cols-12 gap-5">
+                <div class="grid col-span-12 lg:col-span-6 grid-cols-2 gap-5">
+                    <x-admin.field label="عنوان پروژه" class="col-span-2">
+                        <x-admin.form.input
+                            name="title"
+                            :value="old('title', $project->title)"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field label="اسلاگ" class="col-span-2">
+                        <x-admin.form.input
+                            name="slug"
+                            class="direction-ltr"
+                            :value="old('slug', $project->slug)"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field label="وضعیت">
+                        <x-admin.form.select
+                            name="status"
+                            :options="$statuses"
+                            :value="old('status', $project->status?->value)"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field label="درصد پیشرفت (0 تا 100)">
+                        <x-admin.form.input
+                            type="number"
+                            name="progress_percent"
+                            min="0"
+                            max="100"
+                            :value="old('progress_percent', $project->progress_percent ?? 0)"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <x-admin.field
+                    label="برچسب‌ها"
+                    hint="برچسب‌ها را با کاما از هم جدا کنید."
+                    class="col-span-12 lg:col-span-6"
+                >
+                    <x-admin.form.textarea
+                        name="tags"
+                        rows="6"
+                        :value="old('tags', $project->tags?->pluck('title')->implode('، '))"
+                    />
+                </x-admin.field>
+            </div>
+        </x-admin.form>
+    </div>
+</x-admin.list.quick-edit-row>

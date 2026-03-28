@@ -16,12 +16,12 @@ class SmsService
      */
     public function __construct()
     {
-        $providerConfig = config('services.notifications.sms.providers.smsir');
+        $providerConfig = get_setting('general', 'default_sms_provider');
 
-        if (!isset($providerConfig['class']))
+        if (!isset($providerConfig))
             throw new RuntimeException('No valid SMS provider configuration found!');
 
-        $this->provider = app($providerConfig['class']);
+        $this->provider = app($providerConfig);
     }
 
     /**

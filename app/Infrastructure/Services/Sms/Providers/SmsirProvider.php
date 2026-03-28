@@ -15,7 +15,7 @@ class SmsirProvider implements SmsProviderInterface
     {
         $payload = [
             'mobile' => (string) preg_replace('/^0/', '', $mobile),
-            'templateId' => (int) config('services.notifications.sms.providers.smsir.sms_template_id'),
+            'templateId' => get_setting('general', 'smsir_tepmlate_id'),
             'parameters' => [
                 [
                     'name' => 'CODE',
@@ -27,7 +27,7 @@ class SmsirProvider implements SmsProviderInterface
         $headers = [
             'Content-Type: application/json',
             'Accept: text/plain',
-            'x-api-key: ' . config('services.notifications.sms.providers.smsir.sms_api_token')
+            'x-api-key: ' . get_setting('general', 'smsir_api_token')
         ];
 
         $curl = curl_init();

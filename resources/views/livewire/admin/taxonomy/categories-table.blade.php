@@ -1,8 +1,4 @@
 <div>
-    @push('styles')
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    @endpush
-
     <div class="p-6 bg-gray-50 min-h-screen">
 
         @if (session()->has('warning'))
@@ -105,7 +101,8 @@
                     </form>
 
                     <div class="flex-1">
-                        <input type="search" wire:model.live.debounce.300ms="search" placeholder="جستجو در دسته‌بندی‌ها..."
+                        <input type="search" wire:model.live.debounce.300ms="search"
+                               placeholder="جستجو در دسته‌بندی‌ها..."
                                class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
@@ -117,7 +114,8 @@
                             <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase w-10">
-                                    <input type="checkbox" id="select-all" wire:model.live="selectAll" class="rounded h-5 w-5">
+                                    <input type="checkbox" id="select-all" wire:model.live="selectAll"
+                                           class="rounded h-5 w-5">
                                 </th>
                                 <th class="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase">نام
                                 </th>
@@ -133,31 +131,33 @@
                             </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 bg-white">
-                                @forelse ($terms as $term)
-                                    <tr class="hover:bg-gray-50 transition-colors {{ $this->isSelected($term->id) ? 'bg-indigo-50' : '' }}">
-                                        <td class="px-6 py-4 text-center">
-                                            <input type="checkbox" wire:model.live="selectedIds" value="{{ $term->id }}"
-                                                   class="rounded h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500">
-                                        </td>
+                            @forelse ($terms as $term)
+                                <tr class="hover:bg-gray-50 transition-colors {{ $this->isSelected($term->id) ? 'bg-indigo-50' : '' }}">
+                                    <td class="px-6 py-4 text-center">
+                                        <input type="checkbox" wire:model.live="selectedIds" value="{{ $term->id }}"
+                                               class="rounded h-5 w-5 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    </td>
 
-                                        <td class="px-6 py-4 text-sm font-medium text-gray-900"
-                                            style="padding-right: {{ ($term->level ?? 0) * 3 }}rem;">
-                                            {{ $term->title }}
-                                            @if (isset($term->children) && $term->children->isNotEmpty())
-                                                <span class="text-xs text-gray-500 mr-2">(دارای {{ $term->children->count() }} زیرمجموعه)</span>
-                                            @endif
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900"
+                                        style="padding-right: {{ ($term->level ?? 0) * 3 }}rem;">
+                                        {{ $term->title }}
+                                        @if (isset($term->children) && $term->children->isNotEmpty())
+                                            <span class="text-xs text-gray-500 mr-2">(دارای {{ $term->children->count() }} زیرمجموعه)</span>
+                                        @endif
 
-                                        </td>
-                                <td class="px-6 py-4 text-sm text-gray-600 font-mono">{{ $term->slug }}</td>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-600 font-mono">{{ $term->slug }}</td>
                                     <td class="px-6 py-4 text-sm text-gray-600">{{ Str::limit($term->description ?? '—', 60) }}</td>
-                                        <td class="px-6 py-4 whitespace-no-wrap text-sm text-gray-500">
-                                            {{ $term->path }} {{-- اگر $term از دیتابیس لود شده و path دارد، این کار می کند --}}
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-right space-x-3">
+                                    <td class="px-6 py-4 whitespace-no-wrap text-sm text-gray-500">
+                                        {{ $term->path }} {{-- اگر $term از دیتابیس لود شده و path دارد، این کار می کند --}}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-right space-x-3">
                                         <button wire:click="edit({{ $term->id }})"
-                                                class="text-blue-600 hover:text-blue-800 font-medium">ویرایش</button>
+                                                class="text-blue-600 hover:text-blue-800 font-medium">ویرایش
+                                        </button>
                                         <span class="text-gray-300">|</span>
-                                        <button type="button" wire:confirm="مطمئنی می‌خوای حذف کنی؟" wire:click="delete({{ $term->id }})"
+                                        <button type="button" wire:confirm="مطمئنی می‌خوای حذف کنی؟"
+                                                wire:click="delete({{ $term->id }})"
                                                 class="text-red-600 hover:text-red-800 font-medium">
                                             حذف
                                         </button>
@@ -195,7 +195,7 @@
             });
 
             document.addEventListener('livewire:initialized', () => {
-                Livewire.hook('component.updated', ({ component, payload }) => {
+                Livewire.hook('component.updated', ({component, payload}) => {
                     if (component.name === 'admin.categories-table') {
                         const selectAllCheckbox = document.getElementById('select-all');
                         const checkboxes = Array.from(document.querySelectorAll('input[name="selectedIds[]"]'));

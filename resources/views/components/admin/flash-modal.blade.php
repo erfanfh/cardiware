@@ -1,63 +1,82 @@
 @php
     $successMessage = session('success');
-    $errorMessage   = session('error');
+    $errorMessage = session('error');
 
     $type = $successMessage ? 'success' : ($errorMessage ? 'error' : null);
     $message = $successMessage ?? $errorMessage;
 
     if ($type === 'success') {
-        $title       = session('success_title', 'عملیات موفق');
-        $icon        = '✓';
+        $title = session('success_title', 'عملیات موفق');
+        $icon = '✓';
         $accentClass = 'border-[var(--bg-chip)]';
-        $actionUrl   = session('success_action_url');
+        $actionUrl = session('success_action_url');
         $actionLabel = session('success_action_label', 'مشاهده');
     } elseif ($type === 'error') {
-        $title       = session('error_title', 'خطا');
-        $icon        = '!';
+        $title = session('error_title', 'خطا');
+        $icon = '!';
         $accentClass = 'border-[var(--brand-100)]';
-        $actionUrl   = session('error_action_url');
+        $actionUrl = session('error_action_url');
         $actionLabel = session('error_action_label', 'جزئیات بیشتر');
     } else {
-        $title = $icon = $accentClass = $actionUrl = $actionLabel = null;
+        $title = null;
+        $icon = null;
+        $accentClass = null;
+        $actionUrl = null;
+        $actionLabel = null;
     }
 @endphp
 
 @if($type && $message)
     <div
-        class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] backdrop-blur-[10px] flex items-center justify-center z-[9998] transition-opacity duration-200 ease-out opacity-100 pointer-events-auto"
-        data-modal-backdrop
-        id="flash-modal-backdrop">
+        id="flash-modal-backdrop"
+        data-flash-modal
+        class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-100 pointer-events-auto transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
+    >
         <div
-            class="relative w-full max-w-[380px] mx-4 rounded-[24px] px-[20px] py-[22px] pb-[16px] bg-white dark:bg-gray-800 shadow-[0_24px_60px_rgba(15,23,42,0.35)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] border border-[var(--border-subtle)] dark:border-gray-700 animate-[za-modal-pop-in_0.2s_ease-out] sm:rounded-[18px] sm:px-4{{ $accentClass }}">
-            <button type="button"
-                    class="absolute top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none cursor-pointer text-[var(--darker-text-muted)] dark:text-gray-400 transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:hover:text-gray-200"
-                    data-modal-close aria-label="بستن">
+            class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4 {{ $accentClass }}"
+        >
+            <button
+                type="button"
+                aria-label="بستن"
+                data-flash-close
+                class="absolute cursor-pointer top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+            >
                 &times;
             </button>
 
-            <div class="flex justify-center mb-[1.25rem]">
+            <div class="mb-[1.25rem] flex justify-center">
                 <div
-                    class="w-[46px] h-[46px] rounded-full flex items-center justify-center bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] text-[var(--text-invert)] text-[1.4rem] font-bold shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]">
+                    class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_25px_rgba(244,63,94,0.3)]"
+                >
                     {{ $icon }}
                 </div>
             </div>
 
-            <div class="text-center py-0 px-[6px]">
-                <h2 class="m-0 mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100">{{ $title }}</h2>
-                <p class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400">{{ $message }}</p>
+            <div class="px-[6px] text-center">
+                <h2 class="mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100">
+                    {{ $title }}
+                </h2>
+
+                <p class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400">
+                    {{ $message }}
+                </p>
             </div>
 
-            <div class="flex justify-center gap-2 mt-4">
+            <div class="mt-4 flex justify-center gap-2">
                 @if($actionUrl)
-                    <a href="{{ $actionUrl }}"
-                       class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <a
+                        href="{{ $actionUrl }}"
+                        class="inline-flex items-center justify-center gap-[6px] rounded-full border border-transparent bg-white px-[14px] py-[7px] text-[0.86rem] font-medium text-[var(--text-main)] no-underline transition-transform duration-50 ease-out hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700"
+                    >
                         {{ $actionLabel }}
                     </a>
                 @endif
 
-                <button type="button"
-                        class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                        data-modal-close>
+                <button
+                    type="button"
+                    data-flash-close
+                    class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-gray-100 px-[14px] py-[7px] text-[0.86rem] font-medium text-[var(--text-main)] transition-transform duration-50 ease-out hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+                >
                     باشه
                 </button>
             </div>
@@ -66,230 +85,153 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const backdrop = document.querySelector('#flash-modal-backdrop');
+            const backdrop = document.querySelector('[data-flash-modal]');
             if (!backdrop) return;
 
-            function closeModal() {
+            const closeButtons = backdrop.querySelectorAll('[data-flash-close]');
+
+            function closeFlashModal() {
                 backdrop.style.opacity = '0';
                 backdrop.style.pointerEvents = 'none';
+
                 setTimeout(() => {
-                    backdrop.remove();  // حتماً حذف کامل از DOM
+                    backdrop.remove();
                 }, 250);
             }
 
-            // کلیک روی backdrop
-            backdrop.addEventListener('click', function (e) {
-                if (e.target === backdrop || e.target.hasAttribute('data-modal-close')) {
-                    closeModal();
+            backdrop.addEventListener('click', function (event) {
+                if (event.target === backdrop || event.target.closest('[data-flash-close]')) {
+                    closeFlashModal();
                 }
             });
 
-            // ESC
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    closeModal();
-                }
+            closeButtons.forEach(button => {
+                button.addEventListener('click', closeFlashModal);
             });
 
-            // کلیک روی دکمه "باشه" و ضربدر
-            const closeButtons = backdrop.querySelectorAll('[data-modal-close]');
-            closeButtons.forEach(btn => {
-                btn.addEventListener('click', closeModal);
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') {
+                    closeFlashModal();
+                }
             });
         });
     </script>
 @endif
 
-{{-- SweetAlert2 Modals --}}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // ========== Select All Checkbox (کاربرد برای همه صفحات) ==========
-        const selectAllCheckbox = document.getElementById('select-all');
-        const itemCheckboxes = document.querySelectorAll('input[name="ids[]"]');
-
-        if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function () {
-                itemCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
-            });
-        }
-
-        itemCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', function () {
-                const allChecked = Array.from(itemCheckboxes).every(cb => cb.checked);
-                const someChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
-
-                if (selectAllCheckbox) {
-                    selectAllCheckbox.checked = allChecked;
-                    selectAllCheckbox.indeterminate = someChecked && !allChecked;
-                }
-            });
-        });
-
-        // ========== Helper: Get item type text ==========
-        function getItemTypeText(itemType) {
-            const texts = {
-                category: {
-                    singular: 'دسته‌بندی',
-                    plural: 'دسته‌بندی‌ها'
-                },
-                tag: {
-                    singular: 'برچسب',
-                    plural: 'برچسب‌ها'
-                }
-            };
-            return texts[itemType] || texts.category;
-        }
-
-        // ========== Slug Change Confirmation ==========
-        window.confirmSlugChange = function (originalSlug, currentSlug, form, confirmInput, itemType = 'category') {
-            const texts = getItemTypeText(itemType);
-
-            Swal.fire({
-                title: '⚠️ تأیید تغییر اسلاگ',
-                html: `
-                    <div class="text-right">
-                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید اسلاگ را تغییر دهید؟</p>
-                        <p class="font-medium mb-2">اسلاگ قبلی: <span class="text-gray-600">${originalSlug}</span></p>
-                        <p class="font-medium mb-3">اسلاگ جدید: <span class="text-blue-600">${currentSlug}</span></p>
-                        <p class="text-sm text-red-600 dark:text-red-400">
-                            ⚠️ تغییر اسلاگ باعث تغییر آدرس این ${texts.singular} می‌شود.<br>
-                            ممکن است لینک‌های قدیمی شکسته شوند و روی سئو تأثیر بگذارد.
-                        </p>
-                    </div>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'بله، تغییر بده',
-                cancelButtonText: 'لغو',
-                reverseButtons: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                customClass: {
-                    popup: 'rtl-popup'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    confirmInput.value = '1';
-                    form.submit();
-                }
-            });
-        };
-
-        // ========== Bulk Delete Confirmation ==========
-        window.confirmBulkDelete = function (checkedCount, checkedCheckboxes, bulkForm, itemType = 'category') {
-            const texts = getItemTypeText(itemType);
-
-            Swal.fire({
-                title: '⚠️ تأیید حذف گروهی',
-                html: `
-                    <div class="text-right">
-                        <p class="mb-3">آیا مطمئن هستید که می‌خواهید <strong>${checkedCount}</strong> ${texts.singular} انتخاب‌شده را حذف کنید؟</p>
-                        <p class="text-sm text-red-600 dark:text-red-400">
-                            ⚠️ این عملیات غیرقابل بازگشت است!<br>
-                            تمام ${texts.plural} انتخاب‌شده حذف خواهند شد.
-                        </p>
-                    </div>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'بله، حذف کن',
-                cancelButtonText: 'لغو',
-                reverseButtons: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                customClass: {
-                    popup: 'rtl-popup'
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    checkedCheckboxes.forEach(checkbox => {
-                        const hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'ids[]';
-                        hiddenInput.value = checkbox.value;
-                        bulkForm.appendChild(hiddenInput);
-                    });
-                    bulkForm.submit();
-                }
-            });
-        };
-
-        // ========== No Items Selected Warning ==========
-        window.showNoItemsSelected = function (itemType = 'category') {
-            const texts = getItemTypeText(itemType);
-
-            Swal.fire({
-                title: '❌ هشدار',
-                text: `لطفاً حداقل یک ${texts.singular} انتخاب کنید.`,
-                icon: 'warning',
-                confirmButtonColor: '#3085d6',
-                customClass: {
-                    popup: 'rtl-popup'
-                }
-            });
-        };
-    });
-</script>
-
-<style>
-    .rtl-popup {
-        direction: rtl;
-        text-align: right;
-    }
-
-    .rtl-popup .swal2-title {
-        text-align: right;
-    }
-
-    .rtl-popup .swal2-html-container {
-        text-align: right;
-    }
-
-    .rtl-popup .swal2-actions {
-        text-align: center;
-    }
-</style>
-
-<div id="confirm-backdrop"
-     class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] backdrop-blur-[10px] flex items-center justify-center z-[9998] transition-opacity duration-200 ease-out opacity-0 pointer-events-none"
-     data-confirm-backdrop>
+<div
+    id="confirm-backdrop"
+    data-confirm-backdrop
+    class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-0 pointer-events-none transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
+>
     <div
-        class="relative w-full max-w-[380px] mx-4 rounded-[24px] px-[20px] py-[22px] pb-[16px] bg-white dark:bg-gray-800 shadow-[0_24px_60px_rgba(15,23,42,0.35)] dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] border border-[var(--border-subtle)] dark:border-gray-700 animate-[za-modal-pop-in_0.2s_ease-out] sm:rounded-[18px] sm:px-4">
-        <button type="button"
-                class="absolute top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none cursor-pointer text-[var(--darker-text-muted)] dark:text-gray-400 transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:hover:text-gray-200"
-                data-confirm-cancel>
+        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
+    >
+        <button
+            type="button"
+            data-confirm-cancel
+            class="absolute top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none cursor-pointer text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+        >
             &times;
         </button>
 
-        <div class="flex justify-center mb-[1.25rem]">
+        <div class="mb-[1.25rem] flex justify-center">
             <div
-                class="w-[46px] h-[46px] rounded-full flex items-center justify-center bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] text-[var(--text-invert)] text-[1.4rem] font-bold shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]">
+                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
+            >
                 !
             </div>
         </div>
 
-        <div class="text-center py-0 px-[6px]">
-            <h2 class="m-0 mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100"
-                data-confirm-title>
+        <div class="px-[6px] text-center">
+            <h2
+                data-confirm-title
+                class="mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100"
+            >
                 تأیید عملیات
             </h2>
-            <p class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400" data-confirm-text>
+
+            <p
+                data-confirm-text
+                class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400"
+            >
                 آیا مطمئن هستید؟
             </p>
         </div>
 
-        <div class="flex justify-center gap-2 mt-4">
-            <button type="button"
-                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    data-confirm-cancel>
+        <div class="mt-4 flex justify-center gap-2">
+            <button
+                type="button"
+                data-confirm-cancel
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-gray-100 px-[14px] py-[7px] text-[0.86rem] font-medium text-[var(--text-main)] transition-transform duration-50 ease-out hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
                 انصراف
             </button>
 
-            <button type="button"
-                    class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-50 ease-out text-[var(--text-main)] dark:text-gray-100 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    data-confirm-submit>
+            <button
+                type="button"
+                data-confirm-submit
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-[var(--brand-500)] px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-[var(--brand-600)] dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
+                بله، ادامه
+            </button>
+        </div>
+    </div>
+</div>
+
+<div
+    id="lw-confirm-backdrop"
+    data-lw-confirm-backdrop
+    class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-0 pointer-events-none transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
+>
+    <div
+        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
+    >
+        <button
+            type="button"
+            data-lw-confirm-cancel
+            class="absolute top-[10px] end-[12px] cursor-pointer border-0 bg-transparent text-[1.4rem] leading-none text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+        >
+            &times;
+        </button>
+
+        <div class="mb-[1.25rem] flex justify-center">
+            <div
+                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
+            >
+                !
+            </div>
+        </div>
+
+        <div class="px-[6px] text-center">
+            <h2
+                data-lw-confirm-title
+                class="mb-[4px] text-[1.1rem] font-bold text-[var(--text-main)] dark:text-gray-100"
+            >
+                تأیید عملیات
+            </h2>
+
+            <p
+                data-lw-confirm-text
+                class="m-0 text-[0.88rem] text-[var(--text-muted)] dark:text-gray-400"
+            >
+                آیا مطمئن هستید؟
+            </p>
+        </div>
+
+        <div class="mt-4 flex justify-center gap-2">
+            <button
+                type="button"
+                data-lw-confirm-cancel
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-gray-100 px-[14px] py-[7px] text-[0.86rem] font-medium text-[var(--text-main)] transition-transform duration-50 ease-out hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
+                انصراف
+            </button>
+
+            <button
+                type="button"
+                data-lw-confirm-submit
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-[var(--brand-500)] px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-[var(--brand-600)] dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+            >
                 بله، ادامه
             </button>
         </div>
@@ -301,54 +243,156 @@
         let activeForm = null;
 
         const backdrop = document.querySelector('[data-confirm-backdrop]');
+        if (!backdrop) return;
+
         const titleEl = backdrop.querySelector('[data-confirm-title]');
         const textEl = backdrop.querySelector('[data-confirm-text]');
         const submitBtn = backdrop.querySelector('[data-confirm-submit]');
         const cancelBtns = backdrop.querySelectorAll('[data-confirm-cancel]');
 
         function openModal({title, text}) {
-            if (!backdrop) return;
             titleEl.textContent = title;
             textEl.textContent = text;
-            backdrop.classList.remove('opacity-0 pointer-events-none');
-            backdrop.classList.add('opacity-100 pointer-events-auto');
+
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+
+            setTimeout(() => submitBtn.focus(), 100);
         }
 
         function closeModal() {
-            if (!backdrop) return;
-            backdrop.classList.remove('opacity-100 pointer-events-auto');
-            backdrop.classList.add('opacity-0 pointer-events-none');
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
             activeForm = null;
         }
 
-        // گرفتن submit فرم‌ها
-        document.addEventListener('submit', e => {
-            const form = e.target;
-            if (!form.classList.contains('js-confirm')) return;
+        function submitForm() {
+            if (!activeForm) return;
+            activeForm.submit();
+        }
 
-            e.preventDefault();
+        document.addEventListener('submit', event => {
+            const form = event.target;
+
+            if (!form.classList.contains('js-confirm')) {
+                return;
+            }
+
+            event.preventDefault();
             activeForm = form;
 
             openModal({
                 title: form.dataset.confirmTitle || 'آیا اطمینان دارید؟',
-                text: form.dataset.confirmText || 'این عملیات قابل بازگشت نیست.'
+                text: form.dataset.confirmText || 'این عملیات قابل بازگشت نیست.',
             });
         });
 
-        submitBtn.addEventListener('click', () => {
-            if (activeForm) activeForm.submit();
+        submitBtn.addEventListener('click', submitForm);
+
+        cancelBtns.forEach(button => {
+            button.addEventListener('click', closeModal);
         });
 
-        cancelBtns.forEach(btn =>
-            btn.addEventListener('click', closeModal)
-        );
-
-        backdrop.addEventListener('click', e => {
-            if (e.target === backdrop) closeModal();
+        backdrop.addEventListener('click', event => {
+            if (event.target === backdrop) {
+                closeModal();
+            }
         });
 
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeModal();
+        document.addEventListener('keydown', event => {
+            const isOpen = backdrop.classList.contains('opacity-100');
+
+            if (!isOpen) return;
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
+            }
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitForm();
+            }
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let pendingAction = null;
+
+        const backdrop = document.querySelector('[data-lw-confirm-backdrop]');
+        if (!backdrop) return;
+
+        const titleEl = backdrop.querySelector('[data-lw-confirm-title]');
+        const textEl = backdrop.querySelector('[data-lw-confirm-text]');
+        const submitBtn = backdrop.querySelector('[data-lw-confirm-submit]');
+        const cancelBtns = backdrop.querySelectorAll('[data-lw-confirm-cancel]');
+
+        function openModal({title, text, action}) {
+            titleEl.textContent = title || 'تأیید عملیات';
+            textEl.textContent = text || 'آیا مطمئن هستید؟';
+            pendingAction = action || null;
+
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+
+            setTimeout(() => submitBtn.focus(), 100);
+        }
+
+        function closeModal() {
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            pendingAction = null;
+        }
+
+        function submitAction() {
+            if (!pendingAction) return;
+
+            if (pendingAction.type === 'livewire' && pendingAction.event) {
+                window.dispatchEvent(new CustomEvent('taxonomy-list-updating-start'));
+
+                if (window.Livewire) {
+                    window.Livewire.dispatch(
+                        pendingAction.event,
+                        pendingAction.payload || {}
+                    );
+                }
+            }
+
+            closeModal();
+        }
+
+        window.addEventListener('admin-open-confirm', event => {
+            openModal(event.detail || {});
+        });
+
+        submitBtn.addEventListener('click', submitAction);
+
+        cancelBtns.forEach(button => {
+            button.addEventListener('click', closeModal);
+        });
+
+        backdrop.addEventListener('click', event => {
+            if (event.target === backdrop) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', event => {
+            const isOpen = backdrop.classList.contains('opacity-100');
+
+            if (!isOpen) return;
+
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeModal();
+            }
+
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitAction();
+            }
         });
     });
 </script>

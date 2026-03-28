@@ -25,23 +25,21 @@
 >
     <div class="flex flex-col gap-2 sm:flex-row">
         <div class="flex-1">
-            <input
+            <x-admin.form.input
                 x-model="input"
-                type="text"
-                dir="rtl"
                 placeholder="{{ $placeholder }}"
                 @keydown.enter.prevent="commitInput()"
-                class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200 placeholder:text-slate-400"
-            >
+            />
         </div>
 
-        <button
-            type="button"
+        <x-admin.button
             @click="commitInput()"
-            class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-orange-200 bg-orange-50 px-4 py-2 text-xs font-semibold text-orange-700 transition hover:bg-orange-100"
+            variant="soft"
+            size="sm"
+            class="rounded-2xl h-10"
         >
             افزودن
-        </button>
+        </x-admin.button>
     </div>
 
     <p class="text-xs text-slate-500">
@@ -62,7 +60,7 @@
             </button>
         </div>
 
-        <div class="min-h-[84px] rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3">
+        <div class="min-h-[84px] rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-3">
             <template x-if="selected.length === 0">
                 <div class="flex min-h-[56px] items-center justify-center text-xs text-slate-400">
                     هنوز برچسبی انتخاب نشده است.

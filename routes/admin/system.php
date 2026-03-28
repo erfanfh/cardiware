@@ -13,4 +13,6 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('home', 'storeHome')->name('home.store');
     Route::get('ads', 'ads')->name('ads');
     Route::put('ads', 'storeAds')->name('ads.store');
+    Route::get('about-us', 'aboutUs')->name('about-us');
+    Route::put('about-us', 'storeAboutUs')->name('about-us.store');
 });

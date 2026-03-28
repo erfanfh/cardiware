@@ -57,7 +57,7 @@ new class extends Component {
                 $query->where('status', $request->status);
             })
             ->orderBy($sort, $direction)
-            ->paginate(1)
+            ->paginate(10)
             ->withQueryString();
     }
 
@@ -202,20 +202,20 @@ new class extends Component {
                         <td class="p-3 text-gray-600 dark:text-gray-300 break-words whitespace-normal max-w-xs">{{ $post->tags->pluck('title')->implode(', ') }}</td>
 
                         <td class="p-3 break-words whitespace-normal">
-                            @if($post->status == \App\Domain\Content\Enums\StatusEnum::DRAFT)
+                            @if($post->status == \App\Domain\Content\Enums\PostStatusEnum::DRAFT)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::DRAFT->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::DRAFT->label() }}
                                 </span>
-                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW)
+                            @elseif($post->status == \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PENDING_REVIEW->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PENDING_REVIEW->label() }}
                                 </span>
-                            @elseif($post->status == \App\Domain\Content\Enums\StatusEnum::PUBLISHED)
+                            @elseif($post->status == \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED)
                                 <span
                                     class=" whitespace-nowrap inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    {{ \App\Domain\Content\Enums\StatusEnum::PUBLISHED->label() }}
+                                    {{ \App\Domain\Content\Enums\PostStatusEnum::PUBLISHED->label() }}
                                 </span>
                             @endif
                         </td>
@@ -243,9 +243,9 @@ new class extends Component {
 
                                 <form method="POST"
                                       action="{{ route('admin.posts.destroy', $post) }}"
-                                      class="inline-block"
+                                      class="inline-block js-confirm"
                                       data-confirm-title="حذف نوشته"
-                                      data-confirm-text="نوشته برای همیشه حذف خواهد شد."
+                                      data-confirm-text="نوشته حذف و به سطل زباله منتقل میشود."
                                 >
                                     @csrf
                                     @method('DELETE')
@@ -264,7 +264,7 @@ new class extends Component {
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="p-4 text-center">
+                        <td colspan="11" class="p-4 text-center">
                             <h3 class="text-gray-500 dark:text-gray-400 font-medium">هیچ نوشته ای یافت نشد!</h3>
                         </td>
                     </tr>

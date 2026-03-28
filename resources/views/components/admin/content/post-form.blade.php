@@ -22,7 +22,8 @@
     $published_at = old('published_at', isset($post?->published_at) ? $post->published_at : '');
 @endphp
 
-<form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data"
+      class="js-confirm bg-white dark:bg-gray-800 rounded-[var(--radius-xl)] shadow-[var(--shadow-soft)] border border-gray-200 dark:border-gray-700 p-5 mb-0 md:mb-12">
     @csrf
     @if($isEdit)
         @method('PUT')
@@ -32,7 +33,8 @@
         <div>
             <div class="mb-4">
                 <h2 class="text-base font-semibold text-gray-800 dark:text-gray-200 mb-1">محتوای نوشته</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">عنوان، تصویر، محتوا و تاریخ انتشار را تعیین کنید.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">عنوان، تصویر، محتوا و تاریخ انتشار را تعیین
+                    کنید.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -46,7 +48,8 @@
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ انتشار</label>
+                    <label for="published_at" class="text-xs font-medium text-gray-500 dark:text-gray-400">تاریخ
+                        انتشار</label>
                     <input
                         data-jdp
                         autocomplete="off"
@@ -58,7 +61,8 @@
                 </div>
 
                 <div class="flex flex-col gap-1">
-                    <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته بندی</label>
+                    <label for="categories" class="text-xs font-medium text-gray-500 dark:text-gray-400">دسته
+                        بندی</label>
                     <select name="categories[]"
                             placeholder="جستجو کنید..."
                             id="category-select"
@@ -86,9 +90,13 @@
                             placeholder="تگ‌ها را با کاما جدا کنید"
                             class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400"
                         >
-                        <button type="button" @click="addTags()" class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] dark:hover:bg-[var(--brand-400)] transition-transform">افزودن</button>
+                        <button type="button" @click="addTags()"
+                                class="bg-[var(--brand-500)] text-white text-[0.86rem] inline-flex items-center justify-center rounded-full py-[7px] px-[14px] cursor-pointer hover:bg-[var(--brand-600)] dark:hover:bg-[var(--brand-400)] transition-transform">
+                            افزودن
+                        </button>
 
-                        <ul x-show="suggestions.length > 0" class="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mt-1 rounded shadow z-50 max-h-40 overflow-auto">
+                        <ul x-show="suggestions.length > 0"
+                            class="absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mt-1 rounded shadow z-50 max-h-40 overflow-auto">
                             <template x-for="(tag, index) in suggestions" :key="index">
                                 <li
                                     @click="addTags(tag)"
@@ -101,9 +109,11 @@
 
                     <div class="flex flex-wrap gap-2 mt-2">
                         <template x-for="(tag, index) in tags" :key="index">
-                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-700 flex items-center gap-1">
+                            <span
+                                class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-700 flex items-center gap-1">
                                 <span x-text="tag"></span>
-                                <button type="button" @click="removeTag(index)" class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold cursor-pointer">&times;</button>
+                                <button type="button" @click="removeTag(index)"
+                                        class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-bold cursor-pointer">&times;</button>
                             </span>
                         </template>
                     </div>
@@ -142,8 +152,9 @@
                     <label for="status" class="text-xs font-medium text-gray-500 dark:text-gray-400">وضعیت</label>
                     <select name="status" autocomplete="off" id="status"
                             class="w-full rounded-[10px] border border-solid border-[var(--border-subtle)] dark:border-gray-700 py-[9px] px-[11px] text-[0.88rem] text-[var(--text-main)] dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 outline-none transition-colors focus-visible:outline focus-visible:outline-red-400 focus-visible:border focus-visible:border-red-400">
-                        @foreach (\App\Domain\Content\Enums\StatusEnum::cases() as $status)
-                            <option @if($post and $post->status === $status->value) selected @endif value="{{ $status->value }}">
+                        @foreach (\App\Domain\Content\Enums\PostStatusEnum::cases() as $status)
+                            <option @if($post and $post->status === $status->value) selected
+                                    @endif value="{{ $status->value }}">
                                 {{ $status->value }}
                             </option>
                         @endforeach

@@ -141,6 +141,11 @@ return [
                 'icon' => 'icons.settings-02'
             ],
             [
+                'label' => 'درباره ما',
+                'route' => 'admin.settings.about-us',
+                'icon' => 'icons.settings-02'
+            ],
+            [
                 'label' => 'تبلیغات',
                 'route' => 'admin.settings.ads',
                 'icon' => 'icons.settings-02'

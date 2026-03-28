@@ -38,15 +38,16 @@ This project follows **Modular Monolith Architecture** using
         Application/
             {Module}/
                 Actions/
-                Queries/
+                Listings/
                 DTOs/
+                Contracts/
+                Services/
 
         Domain/
             {Module}/
                 Models/
                 Policies/
                 Enums/
-                ValueObjects/
 
         Http/
             Controllers/

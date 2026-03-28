@@ -2,15 +2,16 @@
 
 namespace App\Domain\Content\Models;
 
-use App\Domain\Content\Enums\StatusEnum;
+use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\System\Interfaces\PageViewableInterface;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Page extends Model
+class Page extends Model implements PageViewableInterface
 {
     use Sluggable, SoftDeletes;
 
@@ -26,7 +27,7 @@ class Page extends Model
     ];
 
     protected $casts = [
-        'status' => StatusEnum::class,
+        'status' => PostStatusEnum::class,
     ];
 
     /**
