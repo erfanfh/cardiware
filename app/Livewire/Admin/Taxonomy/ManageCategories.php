@@ -5,146 +5,20 @@ namespace App\Livewire\Admin\Taxonomy;
 use App\Application\Taxonomy\Actions\CreateCategoryAction;
 use App\Application\Taxonomy\Actions\HandleCategoryBulkAction;
 use App\Application\Taxonomy\Actions\UpdateCategoryAction;
-use App\Application\Taxonomy\Listings\TaxonomyTermListing;
-use App\Application\Taxonomy\Support\TagBulkActions;
+use App\Application\Taxonomy\Support\CategoryBulkActions;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Livewire\Admin\Taxonomy\Base\ManageTaxonomyTerms;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Livewire\Component;
-use Livewire\WithPagination;
 use Throwable;
 
-class ManageCategories extends Component
+class ManageCategories extends ManageTaxonomyTerms
 {
-    use WithPagination;
-
-    protected TaxonomyTermListing $taxonomyTermListing;
-
-    public string $search = '';
-
-    public string $sortBy;
-
-    public string $sortDirection;
-
-    public array $selectedIds = [];
-
-    public string $bulkAction = '';
-
-    public ?int $editingId = null;
-
-    public string $title = '';
-
-    public string $slug = '';
-
-    public string $description = '';
-
-    public ?int $deletingId = null;
-
-    public ?int $highlightedId = null;
-
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'sortBy' => ['except' => 'created_at'],
-        'sortDirection' => ['except' => 'desc'],
-        'page' => ['except' => 1],
-    ];
-
-    protected $listeners = [
-        'performDeleteTerm' => 'performDeleteTerm',
-    ];
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function rules(): array
-    {
-        return [
-            'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-        ];
-    }
-
-    public function mount(): void
-    {
-        $default = $this->taxonomyTermListing->defaultSort();
-
-        $this->sortBy = $default['sort'];
-        $this->sortDirection = $default['direction'];
-    }
-
-    public function boot(TaxonomyTermListing $taxonomyTermListing): void
-    {
-        $this->taxonomyTermListing = $taxonomyTermListing;
-    }
-
-    public function getIsEditingProperty(): bool
-    {
-        return filled($this->editingId);
-    }
-
-    public function getHasSelectionsProperty(): bool
-    {
-        return !empty($this->selectedIds);
-    }
-
-    public function getSelectedCountProperty(): int
-    {
-        return count($this->selectedIds);
-    }
-
-    public function getAllVisibleSelectedProperty(): bool
-    {
-        $visibleIds = $this->getVisibleTermIds();
-
-        if (empty($visibleIds)) {
-            return false;
-        }
-
-        return count(array_intersect($visibleIds, $this->selectedIds)) === count($visibleIds);
-    }
-
-    public function updatedSearch(): void
-    {
-        $this->resetPage();
-        $this->clearSelection();
-
-        $this->dispatch('taxonomy-scroll-to-list');
-    }
-
-    public function updatedPerPage(): void
-    {
-        $this->resetPage();
-        $this->clearSelection();
-    }
-
-    public function updatedSortBy(): void
-    {
-        $this->resetPage();
-        $this->clearSelection();
-    }
-
-    public function updatedSortDirection(): void
-    {
-        $this->resetPage();
-        $this->clearSelection();
-    }
-
-    public function save(): void
-    {
-        if ($this->isEditing) {
-            $this->updateTerm();
-            return;
-        }
-
-        $this->createTerm();
-    }
-
     /**
      * @throws Throwable
      */
-    public function createTerm(): void
+    protected function createTerm(): void
     {
         $term = app(CreateCategoryAction::class)->execute($this->validate());
 
@@ -153,7 +27,7 @@ class ManageCategories extends Component
         $this->resetForm();
         $this->resetPage();
 
-        session()->flash('success', 'برچسب با موفقیت ایجاد شد.');
+        session()->flash('success', 'دسته‌بندی با موفقیت ایجاد شد.');
     }
 
     public function startEditing(int $id): void
@@ -182,18 +56,7 @@ class ManageCategories extends Component
         $this->resetForm();
         $this->highlightedId = $updatedId;
 
-        session()->flash('success', 'برچسب با موفقیت به‌روزرسانی شد.');
-    }
-
-    public function cancelEditing(): void
-    {
-        $this->resetForm();
-        $this->dispatch('taxonomy-scroll-to-list');
-    }
-
-    public function confirmDelete(int $id): void
-    {
-        $this->deletingId = $id;
+        session()->flash('success', 'دسته‌بندی با موفقیت به‌روزرسانی شد.');
     }
 
     public function deleteTerm(): void
@@ -212,196 +75,40 @@ class ManageCategories extends Component
         $this->selectedIds = array_values(array_diff($this->selectedIds, [$termId]));
         $this->deletingId = null;
 
-        session()->flash('success', 'برچسب با موفقیت حذف شد.');
+        session()->flash('success', 'دسته‌بندی با موفقیت حذف شد.');
 
         $this->dispatch('taxonomy-list-updating-stop');
     }
 
-    public function cancelDelete(): void
+    protected function getTermsQuery(): Builder
     {
-        $this->deletingId = null;
+        return $this->taxonomyTermListing->handle(
+            TaxonomyTerm::categories(),
+            $this->listingFilters()
+        );
     }
 
-    public function toggleSelection(int $id): void
+    protected function handleBulkAction(array $selectedIds): mixed
     {
-        if (in_array($id, $this->selectedIds, true)) {
-            $this->selectedIds = array_values(array_diff($this->selectedIds, [$id]));
-            return;
-        }
-
-        $this->selectedIds[] = $id;
-        $this->selectedIds = array_values(array_unique($this->selectedIds));
-    }
-
-    public function togglePageSelection(): void
-    {
-        $visibleIds = $this->getVisibleTermIds();
-
-        if (empty($visibleIds)) {
-            return;
-        }
-
-        if ($this->allVisibleSelected) {
-            $this->selectedIds = array_values(array_diff($this->selectedIds, $visibleIds));
-            return;
-        }
-
-        $this->selectedIds = array_values(array_unique([
-            ...$this->selectedIds,
-            ...$visibleIds,
-        ]));
-    }
-
-    public function clearSelection(): void
-    {
-        $this->selectedIds = [];
-    }
-
-    /**
-     * @throws Throwable
-     */
-    /**
-     * @throws Throwable
-     */
-    public function applyBulkAction(): void
-    {
-        if ($this->bulkAction === '' || empty($this->selectedIds)) {
-            return;
-        }
-
-        $selectedIds = collect($this->selectedIds)
-            ->map(fn($id) => (int)$id)
-            ->filter(fn($id) => $id > 0)
-            ->unique()
-            ->values()
-            ->all();
-
-        $handler = app(HandleCategoryBulkAction::class);
-
-        $result = $handler->execute(
+        return app(HandleCategoryBulkAction::class)->execute(
             action: $this->bulkAction,
             ids: $selectedIds,
         );
-
-        if (
-            $this->editingId !== null &&
-            in_array($this->editingId, $selectedIds, true) &&
-            $this->bulkAction === 'delete'
-        ) {
-            $this->resetForm();
-        }
-
-        $this->clearSelection();
-        $this->bulkAction = '';
-
-        session()->flash('success', $handler->successMessage($result));
     }
 
-    public function sortByColumn(string $column, string $direction = 'asc'): void
+    protected function bulkActionSuccessMessage(mixed $result): string
     {
-        if (!array_key_exists($column, $this->taxonomyTermListing->sortable())) {
-            return;
-        }
-
-        if ($this->sortBy === $column) {
-            if ($this->sortDirection === $direction) {
-                $default = $this->taxonomyTermListing->defaultSort();
-
-                $this->sortBy = $default['sort'];
-                $this->sortDirection = $default['direction'];
-            } else {
-                $this->sortDirection = $direction;
-            }
-        } else {
-            $this->sortBy = $column;
-            $this->sortDirection = $direction;
-        }
-
-        $this->resetPage();
-        $this->clearSelection();
-
-        $this->dispatch('taxonomy-scroll-to-list');
+        return app(HandleCategoryBulkAction::class)->successMessage($result);
     }
 
-    public function resetForm(): void
+    protected function taxonomyLabel(): string
     {
-        $this->editingId = null;
-        $this->title = '';
-        $this->slug = '';
-        $this->description = '';
-
-        $this->resetValidation();
+        return 'دسته‌بندی';
     }
 
-    public function nextPage($pageName = 'page'): void
+    protected function taxonomyLabelPlural(): string
     {
-        $this->setPage(($this->getPage($pageName) ?? 1) + 1, $pageName);
-        $this->dispatch('taxonomy-scroll-to-list');
-    }
-
-    public function previousPage($pageName = 'page'): void
-    {
-        $currentPage = (int)($this->getPage($pageName) ?? 1);
-
-        if ($currentPage > 1) {
-            $this->setPage($currentPage - 1, $pageName);
-        }
-
-        $this->dispatch('taxonomy-scroll-to-list');
-    }
-
-    public function gotoPage($page, $pageName = 'page'): void
-    {
-        $this->setPage($page, $pageName);
-        $this->dispatch('taxonomy-scroll-to-list');
-    }
-
-    public function performDeleteTerm($id = null): void
-    {
-        if (is_array($id)) {
-            $id = $id['id'] ?? null;
-        }
-
-        $id = (int)$id;
-
-        if (!$id) {
-            return;
-        }
-
-        $this->deletingId = $id;
-        $this->deleteTerm();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function listingFilters(): array
-    {
-        return [
-            'search' => $this->search,
-            'sort' => $this->sortBy,
-            'direction' => $this->sortDirection,
-        ];
-    }
-
-    protected function getTermsQuery(): Builder
-    {
-        $query = TaxonomyTerm::categories();
-
-        return $this->taxonomyTermListing->handle($query, $this->listingFilters());
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    protected function getVisibleTermIds(): array
-    {
-        return $this->getTermsQuery()
-            ->orderBy($this->sortBy, $this->sortDirection)
-            ->forPage($this->getPage(), $this->taxonomyTermListing->perPage())
-            ->pluck('id')
-            ->map(fn($id) => (int)$id)
-            ->all();
+        return 'دسته‌بندی‌ها';
     }
 
     protected function taxonomyTypeValue(): string|int
@@ -417,9 +124,9 @@ class ManageCategories extends Component
 
         return view('livewire.admin.taxonomy.manage-categories', [
             'items' => $terms,
-            'taxonomyLabel' => 'دسته‌بندی',
-            'taxonomyLabelPlural' => 'دسته‌بندی‌ها',
-            'bulkActionOptions' => TagBulkActions::set()->toOptions(),
+            'taxonomyLabel' => $this->taxonomyLabel(),
+            'taxonomyLabelPlural' => $this->taxonomyLabelPlural(),
+            'bulkActionOptions' => CategoryBulkActions::set()->toOptions(),
         ]);
     }
 }
