@@ -5,7 +5,7 @@ namespace App\Livewire\Admin\Taxonomy;
 use App\Application\Taxonomy\Actions\CreateTagAction;
 use App\Application\Taxonomy\Actions\HandleTagBulkAction;
 use App\Application\Taxonomy\Actions\UpdateTagAction;
-use App\Application\Taxonomy\Listings\TagListing;
+use App\Application\Taxonomy\Listings\TaxonomyTermListing;
 use App\Application\Taxonomy\Support\TagBulkActions;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
@@ -19,7 +19,7 @@ class ManageTags extends Component
 {
     use WithPagination;
 
-    protected TagListing $tagListing;
+    protected TaxonomyTermListing $taxonomyTermListing;
 
     public string $search = '';
 
@@ -68,15 +68,15 @@ class ManageTags extends Component
 
     public function mount(): void
     {
-        $default = $this->tagListing->defaultSort();
+        $default = $this->taxonomyTermListing->defaultSort();
 
         $this->sortBy = $default['sort'];
         $this->sortDirection = $default['direction'];
     }
 
-    public function boot(TagListing $tagListing): void
+    public function boot(TaxonomyTermListing $taxonomyTermListing): void
     {
-        $this->tagListing = $tagListing;
+        $this->taxonomyTermListing = $taxonomyTermListing;
     }
 
     public function getIsEditingProperty(): bool
@@ -299,13 +299,13 @@ class ManageTags extends Component
 
     public function sortByColumn(string $column, string $direction = 'asc'): void
     {
-        if (!array_key_exists($column, $this->tagListing->sortable())) {
+        if (!array_key_exists($column, $this->taxonomyTermListing->sortable())) {
             return;
         }
 
         if ($this->sortBy === $column) {
             if ($this->sortDirection === $direction) {
-                $default = $this->tagListing->defaultSort();
+                $default = $this->taxonomyTermListing->defaultSort();
 
                 $this->sortBy = $default['sort'];
                 $this->sortDirection = $default['direction'];
@@ -388,7 +388,7 @@ class ManageTags extends Component
     {
         $query = TaxonomyTerm::tags();
 
-        return $this->tagListing->handle($query, $this->listingFilters());
+        return $this->taxonomyTermListing->handle($query, $this->listingFilters());
     }
 
     /**
@@ -398,7 +398,7 @@ class ManageTags extends Component
     {
         return $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->forPage($this->getPage(), $this->tagListing->perPage())
+            ->forPage($this->getPage(), $this->taxonomyTermListing->perPage())
             ->pluck('id')
             ->map(fn($id) => (int)$id)
             ->all();
@@ -413,7 +413,7 @@ class ManageTags extends Component
     {
         $terms = $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate($this->tagListing->perPage());
+            ->paginate($this->taxonomyTermListing->perPage());
 
         return view('livewire.admin.taxonomy.manage-tags', [
             'items' => $terms,
