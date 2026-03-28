@@ -155,7 +155,7 @@ abstract class BaseListing
     /**
      * @return array{sort: string, direction?: 'asc'|'desc'}
      */
-    protected function defaultSort(): array
+    public function defaultSort(): array
     {
         return [
             'sort' => array_values($this->allowedSorts())[0] ?? null,
