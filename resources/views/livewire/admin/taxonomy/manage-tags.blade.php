@@ -103,7 +103,54 @@
 
         <div
             class="relative"
-            x-data="{ isUpdatingList: false }"
+            x-data="{
+                isUpdatingList: false,
+                selectedIds: @entangle('selectedIds').live,
+                visibleIds: @js($items->pluck('id')->map(fn ($id) => (string) $id)->values()->all()),
+
+                normalizeIds(ids) {
+                    return (ids || []).map(id => String(id))
+                },
+
+                isSelected(id) {
+                    return this.normalizeIds(this.selectedIds).includes(String(id))
+                },
+
+                toggleOne(id) {
+                    id = String(id)
+
+                    const ids = this.normalizeIds(this.selectedIds)
+
+                    if (ids.includes(id)) {
+                        this.selectedIds = ids.filter(item => item !== id)
+                        return
+                    }
+
+                    this.selectedIds = [...ids, id]
+                },
+
+                get allVisibleSelected() {
+                    const selected = this.normalizeIds(this.selectedIds)
+
+                    return this.visibleIds.length > 0
+                        && this.visibleIds.every(id => selected.includes(String(id)))
+                },
+
+                toggleVisible() {
+                    const selected = this.normalizeIds(this.selectedIds)
+
+                    if (this.allVisibleSelected) {
+                        this.selectedIds = selected.filter(id => !this.visibleIds.includes(String(id)))
+                        return
+                    }
+
+                    this.selectedIds = [...new Set([...selected, ...this.visibleIds])]
+                },
+
+                clearSelections() {
+                    this.selectedIds = []
+                }
+            }"
             x-ref="taxonomyListBox"
             x-on:taxonomy-scroll-to-list.window="
                 $refs.taxonomyListBox.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -155,45 +202,56 @@
                             </div>
                         </div>
 
-                        @if(! empty($selectedIds))
-                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                                <x-admin.form.select wire:model="bulkAction" class="min-w-[180px]">
-                                    <option value="">کار دسته‌جمعی</option>
-                                    <option value="delete">حذف</option>
-                                </x-admin.form.select>
-
-                                <button
-                                    type="button"
-                                    wire:click="applyBulkAction"
-                                    wire:loading.attr="disabled"
-                                    wire:target="applyBulkAction"
-                                    @disabled(empty($selectedIds) || blank($bulkAction))
-                                    class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                                >
-                                    اجرا
-                                </button>
-
-                                <div
-                                    class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700">
-                                    <span>{{ count($selectedIds) }} {{ $taxonomyLabel }} انتخاب شده</span>
-
-                                    <button
-                                        type="button"
-                                        wire:click="clearSelection"
-                                        class="text-brand-700/80 transition hover:text-brand-800"
-                                    >
-                                        پاک کردن انتخاب‌ها
-                                    </button>
-                                </div>
-                            </div>
-                        @endif
-
                         <div class="flex items-center gap-2 text-xs text-slate-500">
                             <span
                                 class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">
                                 {{ $items->total() }}
                             </span>
                             <span>{{ $taxonomyLabel }}</span>
+                        </div>
+                    </div>
+
+                    <div
+                        x-cloak
+                        x-show="selectedIds.length > 0"
+                        x-transition.opacity.duration.150ms
+                        class="mb-4"
+                    >
+                        <div
+                            class="flex flex-col gap-3 rounded-2xl border border-brand-200 bg-brand-50/70 p-3 md:flex-row md:items-center md:justify-between">
+                            <div class="flex items-center gap-2 text-sm font-bold text-brand-800">
+                                <span
+                                    class="inline-flex h-8 min-w-8 items-center justify-center rounded-full bg-white px-2 text-xs shadow-sm">
+                                    <span x-text="selectedIds.length"></span>
+                                </span>
+
+                                <span>{{ $taxonomyLabel }} انتخاب شده</span>
+                            </div>
+
+                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                <x-admin.form.select wire:model="bulkAction" class="min-w-[190px] bg-white">
+                                    <option value="">کار دسته‌جمعی را انتخاب کنید</option>
+                                    <option value="delete">حذف</option>
+                                </x-admin.form.select>
+
+                                <x-admin.button
+                                    type="button"
+                                    wire:click="applyBulkAction"
+                                    wire:loading.attr="disabled"
+                                    wire:target="applyBulkAction"
+                                    x-bind:disabled="selectedIds.length === 0"
+                                >
+                                    اجرا
+                                </x-admin.button>
+
+                                <x-admin.button
+                                    type="button"
+                                    variant="secondary"
+                                    x-on:click="clearSelections()"
+                                >
+                                    لغو انتخاب
+                                </x-admin.button>
+                            </div>
                         </div>
                     </div>
 
@@ -204,8 +262,8 @@
                                     <label class="inline-flex cursor-pointer items-center justify-center">
                                         <input
                                             type="checkbox"
-                                            wire:click="togglePageSelection"
-                                            @checked($this->allVisibleSelected)
+                                            :checked="allVisibleSelected"
+                                            x-on:change="toggleVisible()"
                                             class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
                                         >
                                     </label>
@@ -248,9 +306,9 @@
                                         x-data
                                     x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
                                     @endif
+                                    :class="{ 'bg-brand-50/40': isSelected({{ $item->id }}) }"
                                     @class([
                                         'group transition duration-700 hover:bg-slate-50/80',
-                                        'bg-brand-50/40' => in_array($item->id, $selectedIds, true),
                                         'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
                                         'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
                                     ])
@@ -259,8 +317,8 @@
                                         <label class="inline-flex cursor-pointer items-center justify-center">
                                             <input
                                                 type="checkbox"
-                                                wire:click="toggleSelection({{ $item->id }})"
-                                                @checked(in_array($item->id, $selectedIds, true))
+                                                :checked="isSelected({{ $item->id }})"
+                                                x-on:change="toggleOne({{ $item->id }})"
                                                 class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
                                             >
                                         </label>
