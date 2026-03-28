@@ -56,7 +56,7 @@ class ProjectController extends Controller
             ->values()
             ->all();
 
-        $bulkActionOptions = DefaultBulkActions::toOptions();
+        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
 
         return view('admin.projects.projects.index', compact(
             'projects',
