@@ -3,13 +3,12 @@
 namespace App\Livewire\Admin\Taxonomy;
 
 use App\Application\Taxonomy\Actions\CreateTagAction;
+use App\Application\Taxonomy\Actions\UpdateTagAction;
 use App\Application\Taxonomy\Listings\TagListing;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Throwable;
@@ -60,15 +59,7 @@ class ManageTags extends Component
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => [
-                'nullable',
-                'string',
-                'max:255',
-                'alpha_dash',
-                Rule::unique((new TaxonomyTerm())->getTable(), 'slug')
-                    ->where(fn($query) => $query->where('type', $this->taxonomyTypeValue()))
-                    ->ignore($this->editingId),
-            ],
+            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
         ];
     }
@@ -181,16 +172,8 @@ class ManageTags extends Component
     {
         abort_unless($this->editingId, 404);
 
-        $validated = $this->validate();
-
-        $validated['slug'] = $this->generateUniqueSlug(
-            title: $validated['title'],
-            slug: $validated['slug'] ?? null,
-            ignoreId: $this->editingId,
-        );
-
         $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
-        $term->update($validated);
+        $term = app(UpdateTagAction::class)->execute($term, $this->validate());
 
         $updatedId = $term->id;
 
@@ -399,43 +382,6 @@ class ManageTags extends Component
             ->pluck('id')
             ->map(fn($id) => (int)$id)
             ->all();
-    }
-
-    protected function generateUniqueSlug(string $title, ?string $slug = null, ?int $ignoreId = null): string
-    {
-        $baseSlug = $this->normalizeSlug($title, $slug);
-
-        $slugCandidate = $baseSlug;
-        $counter = 2;
-
-        while ($this->slugExists($slugCandidate, $ignoreId)) {
-            $slugCandidate = $baseSlug . '-' . $counter;
-            $counter++;
-        }
-
-        return $slugCandidate;
-    }
-
-    protected function normalizeSlug(string $title, ?string $slug = null): string
-    {
-        $value = filled($slug) ? $slug : $title;
-
-        $normalized = Str::slug($value);
-
-        if ($normalized !== '') {
-            return $normalized;
-        }
-
-        return 'term-' . Str::lower(Str::random(6));
-    }
-
-    protected function slugExists(string $slug, ?int $ignoreId = null): bool
-    {
-        return TaxonomyTerm::query()
-            ->where('type', $this->taxonomyTypeValue())
-            ->where('slug', $slug)
-            ->when($ignoreId, fn(Builder $query) => $query->whereKeyNot($ignoreId))
-            ->exists();
     }
 
     protected function taxonomyTypeValue(): string|int
