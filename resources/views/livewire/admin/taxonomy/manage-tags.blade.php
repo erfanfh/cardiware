@@ -114,7 +114,7 @@
             <div
                 :class="{ 'opacity-60 pointer-events-none': isUpdatingList }"
                 wire:loading.class="opacity-60 pointer-events-none"
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn"
                 class="transition duration-200"
             >
                 <x-admin.metabox :collapsible="false" title="لیست {{ $taxonomyLabelPlural }}">
@@ -382,7 +382,7 @@
                 :class="isUpdatingList ? 'flex' : 'hidden'"
                 wire:loading.class.remove="hidden"
                 wire:loading.class="flex"
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn"
                 class="absolute inset-0 z-10 items-center justify-center rounded-2xl"
             >
                 <div class="absolute inset-0 rounded-2xl bg-white/55 backdrop-blur-[2px]"></div>
