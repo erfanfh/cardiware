@@ -244,6 +244,11 @@ abstract class ManageTaxonomyTerms extends Component
         $this->description = '';
 
         $this->resetValidation();
+        $this->resetExtraFormFields();
+    }
+
+    protected function resetExtraFormFields(): void
+    {
     }
 
     public function nextPage($pageName = 'page'): void
