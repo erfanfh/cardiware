@@ -20,11 +20,9 @@ class ManageTags extends Component
 
     public string $search = '';
 
-    public string $sortBy = 'created_at';
+    public string $sortBy;
 
-    public string $sortDirection = 'desc';
-
-    public int $perPage = 10;
+    public string $sortDirection;
 
     public array $selectedIds = [];
 
@@ -71,6 +69,14 @@ class ManageTags extends Component
             ],
             'description' => ['nullable', 'string'],
         ];
+    }
+
+    public function mount(): void
+    {
+        $default = $this->tagListing->defaultSort();
+
+        $this->sortBy = $default['sort'];
+        $this->sortDirection = $default['direction'];
     }
 
     public function boot(TagListing $tagListing): void
@@ -302,8 +308,8 @@ class ManageTags extends Component
             if ($this->sortDirection === $direction) {
                 $default = $this->tagListing->defaultSort();
 
-                $this->sortBy = $default['sort'] ?? 'created_at';
-                $this->sortDirection = $default['direction'] ?? 'desc';
+                $this->sortBy = $default['sort'];
+                $this->sortDirection = $default['direction'];
             } else {
                 $this->sortDirection = $direction;
             }
@@ -393,7 +399,7 @@ class ManageTags extends Component
     {
         return $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->forPage($this->getPage(), $this->perPage)
+            ->forPage($this->getPage(), $this->tagListing->perPage())
             ->pluck('id')
             ->map(fn($id) => (int)$id)
             ->all();
@@ -445,7 +451,7 @@ class ManageTags extends Component
     {
         $terms = $this->getTermsQuery()
             ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate($this->perPage);
+            ->paginate($this->tagListing->perPage());
 
         return view('livewire.admin.taxonomy.manage-tags', [
             'items' => $terms,
