@@ -1,8 +1,9 @@
 <div>
     <x-admin.page :columns="2" :sidebarSpan="4" sidebarPosition="right">
         <x-slot:sidebar>
-            @include('livewire.admin.taxonomy.partials.form', [
+            @include('livewire.admin.taxonomy.partials.category-form', [
                 'taxonomyLabel' => $taxonomyLabel,
+                'parentOptions' => $parentOptions,
             ])
         </x-slot:sidebar>
 
@@ -77,7 +78,7 @@
 
                     @include('livewire.admin.taxonomy.partials.bulk-bar')
 
-                    @include('livewire.admin.taxonomy.partials.table', [
+                    @include('livewire.admin.taxonomy.partials.category-table', [
                         'items' => $items,
                         'taxonomyLabel' => $taxonomyLabel,
                         'sortBy' => $sortBy,
