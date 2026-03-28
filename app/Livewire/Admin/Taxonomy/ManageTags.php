@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Taxonomy;
 
+use App\Application\Taxonomy\Actions\CreateTagAction;
 use App\Application\Taxonomy\Listings\TagListing;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
@@ -11,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Throwable;
 
 class ManageTags extends Component
 {
@@ -146,18 +148,12 @@ class ManageTags extends Component
         $this->createTerm();
     }
 
+    /**
+     * @throws Throwable
+     */
     public function createTerm(): void
     {
-        $validated = $this->validate();
-
-        $validated['slug'] = $this->generateUniqueSlug(
-            title: $validated['title'],
-            slug: $validated['slug'] ?? null,
-        );
-
-        $validated['type'] = TaxonomyTermTypeEnum::TAG;
-
-        $term = TaxonomyTerm::query()->create($validated);
+        $term = app(CreateTagAction::class)->execute($this->validate());
 
         $this->highlightedId = $term->id;
 
