@@ -140,6 +140,11 @@ return [
                 'route' => 'admin.settings.home',
                 'icon' => 'icons.settings-02'
             ],
+            [
+                'label' => 'تبلیغات',
+                'route' => 'admin.settings.ads',
+                'icon' => 'icons.settings-02'
+            ],
         ],
     ],
 ];
