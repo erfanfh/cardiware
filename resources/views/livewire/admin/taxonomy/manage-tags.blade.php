@@ -33,7 +33,7 @@
                                     <x-admin.form.input
                                         id="taxonomy-term-title"
                                         x-ref="taxonomyTitleInput"
-                                        wire:model.live.debounce.400ms="title"
+                                        wire:model.defer="title"
                                     />
                                 </x-admin.field>
 
@@ -45,7 +45,7 @@
                                     <x-admin.form.input
                                         id="taxonomy-term-slug"
                                         class="direction-ltr"
-                                        wire:model.live.debounce.400ms="slug"
+                                        wire:model.defer="slug"
                                     />
                                 </x-admin.field>
 
@@ -56,12 +56,15 @@
                                     <x-admin.form.textarea
                                         id="taxonomy-term-description"
                                         rows="3"
-                                        wire:model.live.debounce.400ms="description"
+                                        wire:model.defer="description"
                                     />
                                 </x-admin.field>
                             </div>
 
-                            <div class="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4">
+                            <div
+                                wire:key="taxonomy-form-actions-{{ $this->isEditing ? 'edit' : 'create' }}"
+                                class="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4"
+                            >
                                 <x-admin.button
                                     type="submit"
                                     wire:loading.attr="disabled"
