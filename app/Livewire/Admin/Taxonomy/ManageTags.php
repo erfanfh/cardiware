@@ -298,8 +298,19 @@ class ManageTags extends Component
             return;
         }
 
-        $this->sortBy = $column;
-        $this->sortDirection = $direction === 'asc' ? 'asc' : 'desc';
+        if ($this->sortBy === $column) {
+            if ($this->sortDirection === $direction) {
+                $default = $this->tagListing->defaultSort();
+
+                $this->sortBy = $default['sort'] ?? 'created_at';
+                $this->sortDirection = $default['direction'] ?? 'desc';
+            } else {
+                $this->sortDirection = $direction;
+            }
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = $direction;
+        }
 
         $this->resetPage();
         $this->clearSelection();
