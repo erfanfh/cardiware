@@ -118,6 +118,18 @@ class ManageTags extends Component
         $this->clearSelection();
     }
 
+    public function updatedSortBy(): void
+    {
+        $this->resetPage();
+        $this->clearSelection();
+    }
+
+    public function updatedSortDirection(): void
+    {
+        $this->resetPage();
+        $this->clearSelection();
+    }
+
     public function save(): void
     {
         if ($this->isEditing) {
@@ -280,25 +292,19 @@ class ManageTags extends Component
         }
     }
 
-    public function sortByColumn(string $column): void
+    public function sortByColumn(string $column, string $direction = 'asc'): void
     {
         if (!array_key_exists($column, $this->tagListing->sortable())) {
             return;
         }
 
-        if ($this->sortBy === $column) {
-            if ($this->sortDirection === 'asc') {
-                $this->sortBy = 'created_at';
-                $this->sortDirection = 'desc';
-                return;
-            }
-
-            $this->sortDirection = 'asc';
-            return;
-        }
-
         $this->sortBy = $column;
-        $this->sortDirection = 'asc';
+        $this->sortDirection = $direction === 'asc' ? 'asc' : 'desc';
+
+        $this->resetPage();
+        $this->clearSelection();
+
+        $this->dispatch('taxonomy-scroll-to-list');
     }
 
     public function resetForm(): void

@@ -216,8 +216,9 @@
                                     label="عنوان"
                                     sortable
                                     sortKey="title"
-                                    :current-sort="request('sort')"
-                                    :current-direction="request('direction', 'desc')"
+                                    :current-sort="$sortBy"
+                                    :current-direction="$sortDirection"
+                                    sortMode="livewire"
                                 />
 
                                 <x-admin.list.th>نامک</x-admin.list.th>
@@ -230,8 +231,9 @@
                                     label="تاریخ"
                                     sortable
                                     sortKey="created_at"
-                                    :current-sort="request('sort')"
-                                    :current-direction="request('direction', 'desc')"
+                                    :current-sort="$sortBy"
+                                    :current-direction="$sortDirection"
+                                    sortMode="livewire"
                                 />
                             </tr>
                         </x-admin.list.thead>
