@@ -71,14 +71,6 @@ class Project extends Model
     /**
      * @return HasMany
      */
-    public function ads(): HasMany
-    {
-        return $this->hasMany(ProjectAd::class)->orderBy('sort_order');
-    }
-
-    /**
-     * @return HasMany
-     */
     public function features(): HasMany
     {
         return $this->hasMany(ProjectFeature::class)->orderBy('sort_order');

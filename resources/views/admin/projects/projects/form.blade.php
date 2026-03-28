@@ -169,10 +169,4 @@
             ]) ?? [])"
         />
     </x-admin.metabox>
-
-    <x-admin.metabox title="تبلیغات">
-        <x-admin.project.ad-repeater
-            :items="old('ads', $project->ads ?? [])"
-        />
-    </x-admin.metabox>
 </x-admin.page>

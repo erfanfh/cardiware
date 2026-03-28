@@ -25,14 +25,6 @@
                     'published_at' => optional($c->published_at)?->format('Y-m-d\TH:i'),
                     'sort_order' => $c->sort_order,
                 ])->all(),
-            'ads' => $project->ads
-                ->sortBy('sort_order')
-                ->values()
-                ->map(fn($a) => [
-                    'title' => $a->title,
-                    'link' => $a->link,
-                    'sort_order' => $a->sort_order,
-                ])->all(),
         ])
 
         <x-admin.save-button label="ذخیره"/>
