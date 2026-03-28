@@ -161,7 +161,7 @@
             <div
                 :class="{ 'opacity-60 pointer-events-none': isUpdatingList }"
                 wire:loading.class="opacity-60 pointer-events-none"
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn, applyBulkAction"
                 class="transition duration-200"
             >
                 <x-admin.metabox :collapsible="false" title="لیست {{ $taxonomyLabelPlural }}">
@@ -229,10 +229,10 @@
                             </div>
 
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-                                <x-admin.form.select wire:model="bulkAction" class="min-w-[190px] bg-white">
-                                    <option value="">کار دسته‌جمعی را انتخاب کنید</option>
-                                    <option value="delete">حذف</option>
-                                </x-admin.form.select>
+                                <x-admin.form.select class="min-w-[190px] bg-white"
+                                                     wire:model="bulkAction"
+                                                     :options="$bulkActionOptions"
+                                />
 
                                 <x-admin.button
                                     type="button"
@@ -240,6 +240,7 @@
                                     wire:loading.attr="disabled"
                                     wire:target="applyBulkAction"
                                     x-bind:disabled="selectedIds.length === 0"
+                                    size="sm"
                                 >
                                     اجرا
                                 </x-admin.button>
@@ -248,6 +249,8 @@
                                     type="button"
                                     variant="secondary"
                                     x-on:click="clearSelections()"
+                                    class="whitespace-nowrap"
+                                    size="sm"
                                 >
                                     لغو انتخاب
                                 </x-admin.button>
@@ -440,7 +443,7 @@
                 :class="isUpdatingList ? 'flex' : 'hidden'"
                 wire:loading.class.remove="hidden"
                 wire:loading.class="flex"
-                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn"
+                wire:target="createTerm, gotoPage, previousPage, nextPage, search, performDeleteTerm, deleteTerm, sortByColumn, applyBulkAction"
                 class="absolute inset-0 z-10 items-center justify-center rounded-2xl"
             >
                 <div class="absolute inset-0 rounded-2xl bg-white/55 backdrop-blur-[2px]"></div>

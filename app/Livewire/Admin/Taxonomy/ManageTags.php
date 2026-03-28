@@ -3,8 +3,10 @@
 namespace App\Livewire\Admin\Taxonomy;
 
 use App\Application\Taxonomy\Actions\CreateTagAction;
+use App\Application\Taxonomy\Actions\HandleTagBulkAction;
 use App\Application\Taxonomy\Actions\UpdateTagAction;
 use App\Application\Taxonomy\Listings\TagListing;
+use App\Application\Taxonomy\Support\TagBulkActions;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Contracts\View\View;
@@ -255,26 +257,44 @@ class ManageTags extends Component
         $this->selectedIds = [];
     }
 
+    /**
+     * @throws Throwable
+     */
+    /**
+     * @throws Throwable
+     */
     public function applyBulkAction(): void
     {
         if ($this->bulkAction === '' || empty($this->selectedIds)) {
             return;
         }
 
-        if ($this->bulkAction === 'delete') {
-            TaxonomyTerm::tags()
-                ->whereIn('id', $this->selectedIds)
-                ->delete();
+        $selectedIds = collect($this->selectedIds)
+            ->map(fn($id) => (int)$id)
+            ->filter(fn($id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
 
-            if ($this->editingId && in_array($this->editingId, $this->selectedIds, true)) {
-                $this->resetForm();
-            }
+        $handler = app(HandleTagBulkAction::class);
 
-            $this->clearSelection();
-            $this->bulkAction = '';
+        $result = $handler->execute(
+            action: $this->bulkAction,
+            ids: $selectedIds,
+        );
 
-            session()->flash('success', 'برچسب‌های انتخاب‌شده با موفقیت حذف شدند.');
+        if (
+            $this->editingId !== null &&
+            in_array($this->editingId, $selectedIds, true) &&
+            $this->bulkAction === 'delete'
+        ) {
+            $this->resetForm();
         }
+
+        $this->clearSelection();
+        $this->bulkAction = '';
+
+        session()->flash('success', $handler->successMessage($result));
     }
 
     public function sortByColumn(string $column, string $direction = 'asc'): void
@@ -399,6 +419,7 @@ class ManageTags extends Component
             'items' => $terms,
             'taxonomyLabel' => 'برچسب',
             'taxonomyLabelPlural' => 'برچسب‌ها',
+            'bulkActionOptions' => TagBulkActions::set()->toOptions(),
         ]);
     }
 }
