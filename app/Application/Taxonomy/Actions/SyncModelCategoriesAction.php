@@ -29,14 +29,19 @@ class SyncModelCategoriesAction
 
         if (count($categoryIds) !== 0) {
             $validCategoryIds = TaxonomyTerm::query()
-                ->where('type', TaxonomyTermTypeEnum::CATEGORY->value)
+                ->where('type', TaxonomyTermTypeEnum::CATEGORY)
                 ->whereIn('id', $categoryIds)
                 ->pluck('id')
                 ->map(fn($id) => (int)$id)
                 ->all();
         }
 
-        $model->categories()->sync($validCategoryIds);
+        $model->categories()->syncWithPivotValues(
+            $validCategoryIds,
+            [
+                'type' => TaxonomyTermTypeEnum::CATEGORY,
+            ]
+        );
     }
 
     /**
