@@ -1,56 +1,52 @@
 <tr
-        wire:key="taxonomy-row-{{ $item->id }}"
-        wire:loading.class="opacity-60"
-        wire:target="startEditing({{ $item->id }})"
-        @if($highlightedId === $item->id)
-            x-data
-        x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
-        @endif
-        :class="{ 'bg-brand-50/40': isSelected({{ $item->id }}) }"
-        @class([
-            'group transition duration-700 hover:bg-slate-50/80',
-            'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
-            'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
-        ])
+    wire:key="taxonomy-row-{{ $item->id }}"
+    wire:loading.class="opacity-60"
+    wire:target="startEditing({{ $item->id }})"
+    @if($highlightedId === $item->id)
+        x-data
+    x-init="setTimeout(() => $wire.set('highlightedId', null), 2200)"
+    @endif
+    :class="{ 'bg-brand-50/40': isSelected({{ $item->id }}) }"
+    @class([
+        'group transition duration-700 hover:bg-slate-50/80',
+        'bg-brand-50/70 ring-2 ring-inset ring-brand-200' => $highlightedId === $item->id,
+        'bg-sky-50/80 ring-2 ring-inset ring-sky-200' => $editingId === $item->id,
+    ])
 >
     <td class="px-4 py-4 align-top">
-        <label class="inline-flex cursor-pointer items-center justify-center">
-            <input
-                    type="checkbox"
-                    :checked="isSelected({{ $item->id }})"
-                    x-on:change="toggleOne({{ $item->id }})"
-                    class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-            >
-        </label>
+        <x-admin.list.bulk-checkbox
+            x-bind:checked="isSelected({{ $item->id }})"
+            x-on:change="toggleOne({{ $item->id }})"
+        />
     </td>
 
     <x-admin.list.td>
         <div class="min-w-[190px]">
             <button
-                    type="button"
-                    wire:click="startEditing({{ $item->id }})"
-                    wire:loading.class="text-slate-400"
-                    wire:target="startEditing({{ $item->id }})"
-                    class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
+                type="button"
+                wire:click="startEditing({{ $item->id }})"
+                wire:loading.class="text-slate-400"
+                wire:target="startEditing({{ $item->id }})"
+                class="text-right text-sm font-black text-slate-900 transition hover:text-brand-700"
             >
                 {{ $item->title }}
             </button>
 
             <x-admin.list.row-actions class="mt-3">
                 <x-admin.list.action
-                        tag="button"
-                        wire:click="startEditing({{ $item->id }})"
-                        wire:loading.attr="disabled"
-                        wire:target="startEditing({{ $item->id }})"
-                        class="inline-flex items-center gap-1"
-                        variant="primary"
+                    tag="button"
+                    wire:click="startEditing({{ $item->id }})"
+                    wire:loading.attr="disabled"
+                    wire:target="startEditing({{ $item->id }})"
+                    class="inline-flex items-center gap-1"
+                    variant="primary"
                 >
                     <svg
-                            wire:loading
-                            wire:target="startEditing({{ $item->id }})"
-                            class="h-3.5 w-3.5 animate-spin"
-                            viewBox="0 0 24 24"
-                            fill="none"
+                        wire:loading
+                        wire:target="startEditing({{ $item->id }})"
+                        class="h-3.5 w-3.5 animate-spin"
+                        viewBox="0 0 24 24"
+                        fill="none"
                     >
                         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
                                 stroke-width="4"></circle>
@@ -64,9 +60,9 @@
                 <span class="text-slate-300">|</span>
 
                 <x-admin.list.action
-                        tag="button"
-                        x-data
-                        x-on:click="
+                    tag="button"
+                    x-data
+                    x-on:click="
                         window.dispatchEvent(new CustomEvent('admin-open-confirm', {
                             detail: {
                                 title: 'حذف {{ $taxonomyLabel }}',
@@ -81,7 +77,7 @@
                             }
                         }))
                     "
-                        variant="danger"
+                    variant="danger"
                 >
                     حذف
                 </x-admin.list.action>
@@ -102,7 +98,8 @@
     </x-admin.list.td>
 
     <x-admin.list.td>
-        <span class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
+        <span
+            class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
             {{ $item->usage_count ?? 0 }}
         </span>
     </x-admin.list.td>
