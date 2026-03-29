@@ -15,22 +15,26 @@
         <option value="">{{ $placeholder }}</option>
     @endif
 
-    @foreach($options as $key => $option)
-        @php
-            if (is_array($option)) {
-                $optValue = $option['value'];
-                $optLabel = $option['label'];
-            } else {
-                $optValue = $key;
-                $optLabel = $option;
-            }
-        @endphp
+    @if(!empty($options))
+        @foreach($options as $key => $option)
+            @php
+                if (is_array($option)) {
+                    $optValue = $option['value'];
+                    $optLabel = $option['label'];
+                } else {
+                    $optValue = $key;
+                    $optLabel = $option;
+                }
+            @endphp
 
-        <option
-            value="{{ $optValue }}"
-            @selected($value == $optValue)
-        >
-            {{ $optLabel }}
-        </option>
-    @endforeach
+            <option
+                value="{{ $optValue }}"
+                @selected($value == $optValue)
+            >
+                {{ $optLabel }}
+            </option>
+        @endforeach
+    @else
+        {{ $slot }}
+    @endif
 </select>
