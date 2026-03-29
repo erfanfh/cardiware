@@ -11,7 +11,7 @@
                 @foreach($layoutRows as $row)
                     <div class="grid grid-cols-1 gap-6 xl:grid-cols-12 items-stretch">
                         @foreach($row['areas'] as $area)
-                            <x-admin.layout.area-box
+                            <x-admin.modules.page-layout.area-box
                                 :areaKey="$area['key']"
                                 :title="$area['title']"
                                 :description="$area['description']"
@@ -20,7 +20,7 @@
                                 :width="$area['width']"
                             >
                                 @foreach($area['elements'] as $element)
-                                    <x-admin.layout.element-card
+                                    <x-admin.modules.page-layout.element-card
                                         :elementKey="$element['key']"
                                         :title="$element['title']"
                                         :type="$element['type_label']"
@@ -31,7 +31,7 @@
                                         :settingsUrl="$element['settings_url']"
                                     />
                                 @endforeach
-                            </x-admin.layout.area-box>
+                            </x-admin.modules.page-layout.area-box>
                         @endforeach
                     </div>
                 @endforeach
