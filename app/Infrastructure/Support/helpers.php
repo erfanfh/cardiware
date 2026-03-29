@@ -215,3 +215,18 @@ if (!function_exists('page_views')) {
         });
     }
 }
+
+if (!function_exists('first_filled')) {
+    function first_filled(...$values): string
+    {
+        foreach ($values as $value) {
+            $value = trim((string)($value ?? ''));
+
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+}
