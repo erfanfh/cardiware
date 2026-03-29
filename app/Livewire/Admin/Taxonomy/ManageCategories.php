@@ -277,16 +277,20 @@ class ManageCategories extends ManageTaxonomyTerms
     protected function flattenCategoriesTree(): Collection
     {
         $categories = $this->getTermsQuery()
-            ->orderBy('title')
+            ->reorder()
             ->get();
 
         $grouped = $categories->groupBy(function (TaxonomyTerm $term) {
             return $term->parent_id ?? 0;
         });
 
+        $rootItems = $this->sortRootCategories(
+            $grouped->get(0, collect())
+        );
+
         return $this->flattenTreeBranch(
             grouped: $grouped,
-            parentId: null,
+            siblings: $rootItems,
             depth: 0,
             trail: [],
         );
@@ -294,17 +298,15 @@ class ManageCategories extends ManageTaxonomyTerms
 
     protected function flattenTreeBranch(
         Collection $grouped,
-        ?int       $parentId,
+        Collection $siblings,
         int        $depth,
         array      $trail
     ): Collection
     {
         $items = collect();
 
-        /** @var Collection<int, TaxonomyTerm> $children */
-        $children = $grouped->get($parentId ?? 0, collect());
-
-        foreach ($children as $child) {
+        /** @var TaxonomyTerm $child */
+        foreach ($siblings as $child) {
             $currentTrail = [...$trail, $child->title];
 
             $child->depth = $depth;
@@ -312,10 +314,14 @@ class ManageCategories extends ManageTaxonomyTerms
 
             $items->push($child);
 
+            $children = $this->sortChildCategories(
+                $grouped->get((int)$child->id, collect())
+            );
+
             $items = $items->concat(
                 $this->flattenTreeBranch(
                     grouped: $grouped,
-                    parentId: (int)$child->id,
+                    siblings: $children,
                     depth: $depth + 1,
                     trail: $currentTrail,
                 )
@@ -323,6 +329,44 @@ class ManageCategories extends ManageTaxonomyTerms
         }
 
         return $items;
+    }
+
+    protected function sortRootCategories(Collection $items): Collection
+    {
+        if ($items->isEmpty()) {
+            return $items;
+        }
+
+        $sorted = $items->sortBy(
+            fn(TaxonomyTerm $term) => $this->resolveRootSortValue($term),
+            options: SORT_NATURAL | SORT_FLAG_CASE,
+            descending: $this->sortDirection === 'desc',
+        );
+
+        return $sorted->values();
+    }
+
+    protected function sortChildCategories(Collection $items): Collection
+    {
+        if ($items->isEmpty()) {
+            return $items;
+        }
+
+        return $items->sortBy(
+            fn(TaxonomyTerm $term) => mb_strtolower($term->title),
+            options: SORT_NATURAL | SORT_FLAG_CASE,
+        )->values();
+    }
+
+    protected function resolveRootSortValue(TaxonomyTerm $term): mixed
+    {
+        return match ($this->sortBy) {
+            'title' => mb_strtolower($term->title),
+            'slug' => mb_strtolower($term->slug ?? ''),
+            'created_at' => $term->created_at?->timestamp ?? 0,
+            'posts_count' => (int)($term->posts_count ?? 0),
+            default => mb_strtolower($term->title),
+        };
     }
 
     /**

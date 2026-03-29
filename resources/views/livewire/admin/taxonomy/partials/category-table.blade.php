@@ -8,7 +8,15 @@
                 />
             </th>
 
-            <x-admin.list.th width="280px">نام</x-admin.list.th>
+            <x-admin.list.th
+                width="170px"
+                label="عنوان"
+                sortable
+                sortKey="title"
+                :current-sort="$sortBy"
+                :current-direction="$sortDirection"
+                sortMode="livewire"
+            />
 
             <x-admin.list.th>عبارت یکتا</x-admin.list.th>
 
@@ -16,7 +24,14 @@
 
             <x-admin.list.th>استفاده</x-admin.list.th>
 
-            <x-admin.list.th>تاریخ</x-admin.list.th>
+            <x-admin.list.th
+                label="تاریخ"
+                sortable
+                sortKey="created_at"
+                :current-sort="$sortBy"
+                :current-direction="$sortDirection"
+                sortMode="livewire"
+            />
         </tr>
     </x-admin.list.thead>
 
