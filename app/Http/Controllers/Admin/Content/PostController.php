@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Content;
 
 use App\Application\Content\Actions\CreatePostAction;
 use App\Application\Content\Actions\UpdatePostAction;
+use App\Application\Taxonomy\Actions\GetAllCategoriesAction;
 use App\Domain\Content\Models\Post;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Content\UpdatePostRequest;
@@ -14,6 +15,13 @@ use Throwable;
 
 class PostController extends Controller
 {
+    public function __construct(
+        protected GetAllCategoriesAction $getCategoryOptionsAction
+    )
+    {
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -32,7 +40,9 @@ class PostController extends Controller
      */
     public function create(): View
     {
-        return view('admin.content.posts.create');
+        return view('admin.content.posts.create', [
+            'categoryOptions' => $this->getCategoryOptionsAction->execute(),
+        ]);
     }
 
     /**
@@ -67,7 +77,9 @@ class PostController extends Controller
             ->values()
             ->all();
 
-        return view('admin.content.posts.edit', compact('post', 'selectedTags'));
+        $categoryOptions = $this->getCategoryOptionsAction->execute();
+
+        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'categoryOptions'));
     }
 
 
