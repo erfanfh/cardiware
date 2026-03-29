@@ -60,14 +60,32 @@
                         دسته‌های موجود
                     </p>
 
-                    <button
-                        x-show="search && visibleItems.length > 0"
-                        type="button"
-                        class="cursor-pointer text-[11px] font-medium text-slate-500 transition hover:text-slate-700"
-                        @click="search = ''"
-                    >
-                        پاک کردن جستجو
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button
+                            x-show="selected.length > 0 && !isSearching"
+                            type="button"
+                            class="cursor-pointer text-[11px] font-medium text-slate-500 transition hover:text-slate-700"
+                            @click="showSelectedOnly = !showSelectedOnly"
+                            x-text="showSelectedOnly ? 'نمایش همه' : `نمایش انتخاب‌شده‌ها (${selected.length})`"
+                        >
+                        </button>
+
+                        <button
+                            x-show="search"
+                            type="button"
+                            class="cursor-pointer text-[11px] font-medium text-slate-500 transition hover:text-slate-700"
+                            @click="search = ''"
+                        >
+                            پاک کردن جستجو
+                        </button>
+                    </div>
+                </div>
+
+                <div
+                    x-show="showSelectedOnly && !isSearching"
+                    class="border-b border-slate-200 bg-white/70 px-3 py-2 text-[11px] text-slate-500"
+                >
+                    فقط دسته‌های انتخاب‌شده نمایش داده می‌شوند.
                 </div>
 
                 <div class="p-2">
@@ -83,10 +101,20 @@
                             <div
                                 class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
                                 <svg class="h-4 w-4 animate-spin text-slate-500" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
-                                            stroke-width="4"></circle>
-                                    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
-                                          stroke-linecap="round"></path>
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-opacity="0.25"
+                                        stroke-width="4"
+                                    ></circle>
+                                    <path
+                                        d="M22 12a10 10 0 0 0-10-10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                        stroke-linecap="round"
+                                    ></path>
                                 </svg>
                             </div>
                         </div>
@@ -114,12 +142,12 @@
 
                                         <div
                                             class="flex min-w-0 items-center gap-2"
-                                            :style="isSearching ? '' : `padding-right:${item.level * 18}px`"
+                                            :style="isSearching || showSelectedOnly ? '' : `padding-right:${item.level * 18}px`"
                                         >
                                             <span
                                                 class="truncate text-sm"
                                                 :class="[
-                                                    isSearching
+                                                    isSearching || showSelectedOnly
                                                         ? 'text-slate-700'
                                                         : (item.level === 0 ? 'font-medium text-slate-800' : 'text-slate-700')
                                                 ]"
@@ -212,6 +240,7 @@
                 search: '',
                 searchLoading: false,
                 searchLoadingTimeout: null,
+                showSelectedOnly: false,
                 newCategoryTitle: '',
                 newCategoryParentId: '',
                 quickCreateError: '',
@@ -223,7 +252,11 @@
                 selected: config.selected ?? [],
 
                 init() {
-                    this.$watch('search', () => {
+                    this.$watch('search', (value) => {
+                        if (value.trim() !== '') {
+                            this.showSelectedOnly = false;
+                        }
+
                         this.startSearchLoading();
                     });
                 },
@@ -245,16 +278,26 @@
                 get visibleItems() {
                     const term = this.search.trim().toLowerCase();
 
-                    if (!term) {
-                        return this.treeItems;
+                    if (term) {
+                        return this.flatItems
+                            .filter(item => (item.title || '').toLowerCase().includes(term))
+                            .map(item => ({
+                                ...item,
+                                level: 0,
+                            }));
                     }
 
-                    return this.flatItems.filter(item =>
-                        (item.title || '').toLowerCase().includes(term)
-                    ).map(item => ({
-                        ...item,
-                        level: 0,
-                    }));
+                    if (this.showSelectedOnly) {
+                        return this.selected
+                            .map(selectedId => this.treeItems.find(item => Number(item.id) === Number(selectedId)))
+                            .filter(Boolean)
+                            .map(item => ({
+                                ...item,
+                                level: 0,
+                            }));
+                    }
+
+                    return this.treeItems;
                 },
 
                 get parentOptions() {
@@ -273,6 +316,11 @@
 
                     if (this.isSelected(id)) {
                         this.selected = this.selected.filter(item => item !== id);
+
+                        if (this.showSelectedOnly && this.selected.length === 0) {
+                            this.showSelectedOnly = false;
+                        }
+
                         return;
                     }
 
@@ -280,6 +328,16 @@
                 },
 
                 startSearchLoading() {
+                    if (this.search.trim() === '') {
+                        this.searchLoading = false;
+
+                        if (this.searchLoadingTimeout) {
+                            clearTimeout(this.searchLoadingTimeout);
+                        }
+
+                        return;
+                    }
+
                     this.searchLoading = true;
 
                     if (this.searchLoadingTimeout) {
@@ -353,6 +411,7 @@
                         this.newCategoryParentId = '';
                         this.quickCreateOpen = false;
                         this.search = '';
+                        this.showSelectedOnly = false;
                     } catch (error) {
                         this.quickCreateError = 'ارتباط با سرور برقرار نشد.';
                     } finally {
