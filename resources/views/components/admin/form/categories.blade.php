@@ -39,7 +39,6 @@
         csrfToken: @js(csrf_token()),
     })"
 >
-
     <div x-show="open" x-collapse class="space-y-4">
         <div class="space-y-3">
             <div class="relative">
@@ -50,7 +49,7 @@
                 />
 
                 <span
-                    class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 [&_svg]:w-4 [&_svg]:h-4">
+                    class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 [&_svg]:h-4 [&_svg]:w-4">
                     @include('icons.search-01')
                 </span>
             </div>
@@ -62,7 +61,7 @@
                     </p>
 
                     <button
-                        x-show="search && filteredTreeItems.length > 0"
+                        x-show="search && visibleItems.length > 0"
                         type="button"
                         class="cursor-pointer text-[11px] font-medium text-slate-500 transition hover:text-slate-700"
                         @click="search = ''"
@@ -73,17 +72,33 @@
 
                 <div class="p-2">
                     <div
-                        class="overflow-y-auto px-1"
+                        class="relative overflow-y-auto px-1"
                         style="max-height: {{ $height }}"
                     >
-                        <template x-if="filteredTreeItems.length === 0">
+                        <div
+                            x-show="searchLoading"
+                            x-transition.opacity
+                            class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/70 backdrop-blur-[1px]"
+                        >
+                            <div
+                                class="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 shadow-sm">
+                                <svg class="h-4 w-4 animate-spin text-slate-500" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                            stroke-width="4"></circle>
+                                    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
+                                          stroke-linecap="round"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <template x-if="!searchLoading && visibleItems.length === 0">
                             <div class="px-3 py-8 text-center text-sm text-slate-500">
                                 دسته‌ای پیدا نشد.
                             </div>
                         </template>
 
-                        <div class="space-y-1">
-                            <template x-for="item in filteredTreeItems" :key="item.id">
+                        <div class="space-y-1" :class="{ 'opacity-50': searchLoading }">
+                            <template x-for="item in visibleItems" :key="item.id">
                                 <label
                                     class="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2.5 transition hover:bg-white"
                                     :class="{ 'bg-brand-50/60': isSelected(item.id) }"
@@ -94,16 +109,20 @@
                                             :value="item.id"
                                             :checked="isSelected(item.id)"
                                             @change="toggle(item.id)"
-                                            class="cursor-pointer h-3 w-3 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
+                                            class="h-3 w-3 cursor-pointer rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
                                         >
 
                                         <div
                                             class="flex min-w-0 items-center gap-2"
-                                            :style="`padding-right:${item.level * 18}px`"
+                                            :style="isSearching ? '' : `padding-right:${item.level * 18}px`"
                                         >
                                             <span
                                                 class="truncate text-sm"
-                                                :class="item.level === 0 ? 'font-medium text-slate-800' : 'text-slate-700'"
+                                                :class="[
+                                                    isSearching
+                                                        ? 'text-slate-700'
+                                                        : (item.level === 0 ? 'font-medium text-slate-800' : 'text-slate-700')
+                                                ]"
                                                 x-text="item.title"
                                             ></span>
                                         </div>
@@ -133,7 +152,7 @@
                     <span x-text="quickCreateOpen ? 'بستن افزودن سریع' : '+ افزودن دسته جدید'"></span>
                 </button>
 
-                <div x-show="quickCreateOpen" x-collapse class="space-y-3 mt-4">
+                <div x-show="quickCreateOpen" x-collapse class="mt-4 space-y-3">
                     <div class="grid gap-3 sm:grid-cols-2">
                         <div class="sm:col-span-2">
                             <x-admin.form.input
@@ -191,6 +210,8 @@
                 open: true,
                 quickCreateOpen: false,
                 search: '',
+                searchLoading: false,
+                searchLoadingTimeout: null,
                 newCategoryTitle: '',
                 newCategoryParentId: '',
                 quickCreateError: '',
@@ -201,20 +222,39 @@
                 items: config.items ?? [],
                 selected: config.selected ?? [],
 
+                init() {
+                    this.$watch('search', () => {
+                        this.startSearchLoading();
+                    });
+                },
+
+                get isSearching() {
+                    return this.search.trim() !== '';
+                },
+
                 get treeItems() {
                     return this.buildTreeItems(this.items);
                 },
 
-                get filteredTreeItems() {
+                get flatItems() {
+                    return [...this.items].sort((a, b) =>
+                        String(a.title ?? '').localeCompare(String(b.title ?? ''), 'fa')
+                    );
+                },
+
+                get visibleItems() {
                     const term = this.search.trim().toLowerCase();
 
                     if (!term) {
                         return this.treeItems;
                     }
 
-                    return this.treeItems.filter(item =>
+                    return this.flatItems.filter(item =>
                         (item.title || '').toLowerCase().includes(term)
-                    );
+                    ).map(item => ({
+                        ...item,
+                        level: 0,
+                    }));
                 },
 
                 get parentOptions() {
@@ -237,6 +277,18 @@
                     }
 
                     this.selected = [...this.selected, id];
+                },
+
+                startSearchLoading() {
+                    this.searchLoading = true;
+
+                    if (this.searchLoadingTimeout) {
+                        clearTimeout(this.searchLoadingTimeout);
+                    }
+
+                    this.searchLoadingTimeout = setTimeout(() => {
+                        this.searchLoading = false;
+                    }, 220);
                 },
 
                 async addQuickCategory() {
