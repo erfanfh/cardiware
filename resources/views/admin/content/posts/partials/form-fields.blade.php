@@ -12,6 +12,16 @@
             <div class="grid grid-cols-12 gap-5">
                 <x-admin.field
                     class="col-span-12"
+                    label="تاریخ ایجاد"
+                >
+                    <x-admin.form.date-picker
+                        name="published_at"
+                        :value="old('published_at', jalali_date($post?->published_at))"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
                     label="وضعیت"
                 >
                     <x-admin.form.select
