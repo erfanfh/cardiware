@@ -83,7 +83,7 @@ class ManageTags extends ManageTaxonomyTerms
     protected function getTermsQuery(): Builder
     {
         return $this->taxonomyTermListing->handle(
-            TaxonomyTerm::tags(),
+            TaxonomyTerm::tags()->withCount('posts'),
             $this->listingFilters()
         );
     }

@@ -129,7 +129,7 @@ class ManageCategories extends ManageTaxonomyTerms
     protected function getTermsQuery(): Builder
     {
         return $this->taxonomyTermListing->handle(
-            TaxonomyTerm::categories()->with('parent'),
+            TaxonomyTerm::categories()->with('parent')->withCount('posts'),
             [
                 'search' => $this->search,
             ]

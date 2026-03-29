@@ -100,7 +100,7 @@
     <x-admin.list.td>
         <span
             class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
-            {{ $item->usage_count ?? 0 }}
+            {{ $item->posts_count }}
         </span>
     </x-admin.list.td>
 
