@@ -83,7 +83,7 @@
                 name="category_ids"
                 :items="$categoryOptions"
                 :selected="old('category_ids', $selectedCategoryIds ?? [])"
-                quick-create-url="{{ route('admin.taxonomy.categories.quick-create') }}"
+                quick-create-url="{{ route('admin.categories.quick-create') }}"
             />
         </x-admin.metabox>
     </x-slot:sidebar>
