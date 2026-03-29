@@ -320,6 +320,6 @@
             </x-admin.tabs>
         </x-admin.page>
 
-        <x-admin.save-button/>
+        <x-admin.form.save-button/>
     </x-admin.form>
 @endsection

@@ -164,7 +164,7 @@
         </div>
     </div>
 
-    <x-admin.save-button :label="$submitLabel"/>
+    <x-admin.form.save-button :label="$submitLabel"/>
 
     <script>
         function tagInput() {
