@@ -38,6 +38,8 @@ class UpdatePostRequest extends FormRequest
             'tags.existing.*' => ['integer', 'exists:taxonomy_terms,id'],
             'tags.new' => ['nullable', 'array'],
             'tags.new.*' => ['string', 'max:255'],
+
+            'category_ids' => ['nullable', 'array'],
         ];
     }
 
