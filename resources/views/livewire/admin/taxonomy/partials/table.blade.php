@@ -4,37 +4,37 @@
             <th class="w-14 px-4 py-3">
                 <label class="inline-flex cursor-pointer items-center justify-center">
                     <input
-                            type="checkbox"
-                            :checked="allVisibleSelected"
-                            x-on:change="toggleVisible()"
-                            class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
+                        type="checkbox"
+                        :checked="allVisibleSelected"
+                        x-on:change="toggleVisible()"
+                        class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
                     >
                 </label>
             </th>
 
             <x-admin.list.th
-                    width="170px"
-                    label="عنوان"
-                    sortable
-                    sortKey="title"
-                    :current-sort="$sortBy"
-                    :current-direction="$sortDirection"
-                    sortMode="livewire"
+                width="170px"
+                label="عنوان"
+                sortable
+                sortKey="title"
+                :current-sort="$sortBy"
+                :current-direction="$sortDirection"
+                sortMode="livewire"
             />
 
-            <x-admin.list.th>نامک</x-admin.list.th>
+            <x-admin.list.th>عبارت یکتا</x-admin.list.th>
 
             <x-admin.list.th>توضیحات</x-admin.list.th>
 
             <x-admin.list.th>استفاده</x-admin.list.th>
 
             <x-admin.list.th
-                    label="تاریخ"
-                    sortable
-                    sortKey="created_at"
-                    :current-sort="$sortBy"
-                    :current-direction="$sortDirection"
-                    sortMode="livewire"
+                label="تاریخ"
+                sortable
+                sortKey="created_at"
+                :current-sort="$sortBy"
+                :current-direction="$sortDirection"
+                sortMode="livewire"
             />
         </tr>
     </x-admin.list.thead>
@@ -49,9 +49,9 @@
             ])
         @empty
             <x-admin.list.empty
-                    colspan="7"
-                    title="{{ $taxonomyLabel }}ی برای نمایش وجود ندارد"
-                    description="هنوز هیچ {{ $taxonomyLabel }}ی ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
+                colspan="7"
+                title="{{ $taxonomyLabel }}ی برای نمایش وجود ندارد"
+                description="هنوز هیچ {{ $taxonomyLabel }}ی ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
             />
         @endforelse
     </x-admin.list.tbody>

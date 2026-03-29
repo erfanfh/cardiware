@@ -14,7 +14,7 @@
 
             <x-admin.list.th width="280px">نام</x-admin.list.th>
 
-            <x-admin.list.th>نامک</x-admin.list.th>
+            <x-admin.list.th>عبارت یکتا</x-admin.list.th>
 
             <x-admin.list.th>توضیحات</x-admin.list.th>
 

@@ -35,7 +35,7 @@
                     </x-admin.field>
 
                     <x-admin.field
-                        label="نامک"
+                        label="عبارت یکتا"
                         for="taxonomy-term-slug"
                         hint="اختیاری است. اگر خالی بماند، به‌صورت خودکار ساخته می‌شود."
                     >
