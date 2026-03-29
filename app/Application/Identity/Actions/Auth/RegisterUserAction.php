@@ -15,20 +15,23 @@ class RegisterUserAction
      *
      * @param string $firstName
      * @param string $lastName
+     * @param string $displayName
      * @param string $mobile
      * @param string $email
      * @param string $password
-     * @param bool $active
      * @param int|null $roleId
+     * @param string|null $status
      * @return User
      */
     public function execute(
         string $firstName,
         string $lastName,
+        ?string $displayName,
         string $mobile,
         string $email,
         string $password,
-        ?int   $roleId = null
+        ?int   $roleId = null,
+        string $status = null,
     ): User
     {
         $roleId = Role::find($roleId)?->id ?? Role::defaultRole()->id;
@@ -36,11 +39,11 @@ class RegisterUserAction
         $data = [
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'display_name' => $firstName . ' ' . $lastName,
+            'display_name' => $displayName,
             'mobile' => $mobile,
             'email' => $email,
             'password' => Hash::make($password),
-            'status' => UserStatusEnum::ACTIVE,
+            'status' => $status,
             'role_id' => $roleId,
         ];
 

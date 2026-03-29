@@ -82,10 +82,12 @@ class UserController extends Controller
         $registerUserAction->execute(
             firstName: $data['first_name'],
             lastName: $data['last_name'],
+            displayName: $data['display_name'],
             mobile: $data['mobile'],
             email: $data['email'],
             password: $data['password'],
-            roleId: $data['role_id']
+            roleId: $data['role'],
+            status: $data['status'],
         );
 
         return redirect()->route('admin.users.index')

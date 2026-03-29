@@ -9,9 +9,9 @@
                     />
                 </x-admin.list.th>
 
-                <x-admin.list.th>نام نمایشی</x-admin.list.th>
-
                 <x-admin.list.th>نام کامل</x-admin.list.th>
+
+                <x-admin.list.th>نام نمایشی</x-admin.list.th>
 
                 <x-admin.list.th>موبایل</x-admin.list.th>
 
@@ -55,7 +55,7 @@
                         <x-admin.list.td>
                             <div>
                                 <p class="line-clamp-1 text-sm font-bold text-slate-800 transition hover:text-brand-600"
-                                >{{ $user->display_name }}</p>
+                                >{{ $user->full_name }}</p>
 
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                                     <span>#{{ $user->id }}</span>
@@ -93,7 +93,7 @@
 
                         <x-admin.list.td>
                             <div class="text-xs leading-6">
-                                <div>{{ $user->full_name }}</div>
+                                <div>{{ $user->display_name }}</div>
                             </div>
                         </x-admin.list.td>
 
@@ -142,7 +142,6 @@
                         </x-admin.list.td>
                     </x-admin.list.tr>
 
-                    @include('admin.identity.users.partials.quick-edit')
                 @endforeach
             @else
                 <x-admin.list.empty
