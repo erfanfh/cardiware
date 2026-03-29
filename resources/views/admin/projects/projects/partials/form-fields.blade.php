@@ -101,11 +101,35 @@
         </x-admin.metabox>
 
         <x-admin.metabox title="برچسب‌ها">
+            @php
+                $oldExistingIds = collect(old('tags.existing', []))
+                    ->filter()
+                    ->map(fn ($id) => (int) $id);
+
+                $oldExistingTags = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+                    ->whereIn('id', $oldExistingIds)
+                    ->get(['id', 'title'])
+                    ->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->title,
+                    ]);
+
+                $oldNewTags = collect(old('tags.new', []))
+                    ->filter()
+                    ->map(fn ($name) => [
+                        'id' => null,
+                        'name' => trim((string) $name),
+                    ]);
+
+                $resolvedSelectedTags = old('tags.existing') !== null || old('tags.new') !== null
+                    ? $oldExistingTags->concat($oldNewTags)->values()->all()
+                    : ($selectedTags ?? []);
+            @endphp
+
             <x-admin.form.tags
                 existingName="tags[existing]"
                 newName="tags[new]"
-                :selected="$selectedTags ?? []"
-                :suggestions="$tagSuggestions ?? []"
+                :selected="$resolvedSelectedTags"
             />
         </x-admin.metabox>
     </x-slot:sidebar>
