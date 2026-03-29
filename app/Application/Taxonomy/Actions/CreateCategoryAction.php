@@ -7,6 +7,7 @@ use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -31,13 +32,13 @@ class CreateCategoryAction
         return DB::transaction(function () use ($data) {
             $categoryData = $data;
 
-            unset($categoryData['slug']);
+            $categoryData = Arr::except($categoryData, ['slug']);
 
             $categoryData['type'] = TaxonomyTermTypeEnum::CATEGORY;
 
             $category = TaxonomyTerm::create($categoryData);
 
-            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+            $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(
