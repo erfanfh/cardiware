@@ -2,14 +2,10 @@
     <x-admin.list.thead>
         <tr class="text-right">
             <th class="w-14 px-4 py-3">
-                <label class="inline-flex cursor-pointer items-center justify-center">
-                    <input
-                        type="checkbox"
-                        :checked="allVisibleSelected"
-                        x-on:change="toggleVisible()"
-                        class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-                    >
-                </label>
+                <x-admin.list.bulk-checkbox
+                    x-bind:checked="allVisibleSelected"
+                    x-on:change="toggleVisible()"
+                />
             </th>
 
             <x-admin.list.th width="280px">نام</x-admin.list.th>
@@ -48,14 +44,10 @@
                 ])
             >
                 <td class="px-4 py-4 align-top">
-                    <label class="inline-flex cursor-pointer items-center justify-center">
-                        <input
-                            type="checkbox"
-                            :checked="isSelected({{ $item->id }})"
-                            x-on:change="toggleOne({{ $item->id }})"
-                            class="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-2 focus:ring-brand-200 focus:ring-offset-0"
-                        >
-                    </label>
+                    <x-admin.list.bulk-checkbox
+                        x-bind:checked="isSelected({{ $item->id }})"
+                        x-on:change="toggleOne({{ $item->id }})"
+                    />
                 </td>
 
                 <x-admin.list.td>
