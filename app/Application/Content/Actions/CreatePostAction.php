@@ -4,6 +4,7 @@ namespace App\Application\Content\Actions;
 
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
+use App\Application\Taxonomy\Actions\SyncModelCategoriesAction;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
 use App\Domain\Content\Models\Post;
 use App\Domain\Slug\Enums\SlugScopeEnum;
@@ -13,8 +14,9 @@ use Throwable;
 class CreatePostAction
 {
     public function __construct(
-        protected SyncModelTagsAction $syncModelTagsAction,
-        protected AssignSlugAction    $assignSlugAction,
+        protected SyncModelTagsAction       $syncModelTagsAction,
+        protected SyncModelCategoriesAction $syncModelCategoriesAction,
+        protected AssignSlugAction          $assignSlugAction,
     )
     {
     }
@@ -49,6 +51,7 @@ class CreatePostAction
             );
 
             $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
+            $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
 
             return $post;
         });
