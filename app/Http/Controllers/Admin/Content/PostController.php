@@ -16,7 +16,7 @@ use Throwable;
 class PostController extends Controller
 {
     public function __construct(
-        protected GetAllCategoriesAction $getCategoryOptionsAction
+        protected GetAllCategoriesAction $getAllCategoriesAction
     )
     {
 
@@ -41,7 +41,7 @@ class PostController extends Controller
     public function create(): View
     {
         return view('admin.content.posts.create', [
-            'categoryOptions' => $this->getCategoryOptionsAction->execute(),
+            'allCategories' => $this->getAllCategoriesAction->execute(),
         ]);
     }
 
@@ -77,9 +77,10 @@ class PostController extends Controller
             ->values()
             ->all();
 
-        $categoryOptions = $this->getCategoryOptionsAction->execute();
+        $allCategories = $this->getAllCategoriesAction->execute();
+        $selectedCategoryIds = $post->categories()->pluck('taxonomy_terms.id')->all();
 
-        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'categoryOptions'));
+        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds'));
     }
 
 
