@@ -147,19 +147,19 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="ویژگی‌ها">
-        <x-admin.project.feature-repeater
+        <x-admin.modules.project.feature-repeater
             :items="old('features', $project->features ?? [])"
         />
     </x-admin.metabox>
 
     <x-admin.metabox title="نقشه راه">
-        <x-admin.project.roadmap-item-repeater
+        <x-admin.modules.project.roadmap-item-repeater
             :items="old('roadmap_items', $project->roadmapItems ?? [])"
         />
     </x-admin.metabox>
 
     <x-admin.metabox title="آپدیت‌ها و تغییرات">
-        <x-admin.project.changelog-repeater
+        <x-admin.modules.project.changelog-repeater
             :items="old('changelogs', $project?->changelogs?->map(fn ($item) => [
                 'id' => $item->id,
                 'title' => $item->title,
