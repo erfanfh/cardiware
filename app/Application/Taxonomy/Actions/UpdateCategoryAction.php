@@ -40,7 +40,7 @@ class UpdateCategoryAction
 
             $category->update($categoryData);
 
-            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+            $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(

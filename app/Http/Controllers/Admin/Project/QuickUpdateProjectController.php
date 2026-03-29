@@ -41,7 +41,7 @@ class QuickUpdateProjectController extends Controller
                 'progress_percent' => $data['progress_percent'],
             ]);
 
-            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+            $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(
