@@ -39,7 +39,6 @@ abstract class ManageTaxonomyTerms extends Component
         'search' => ['except' => ''],
         'sortBy' => ['except' => 'created_at'],
         'sortDirection' => ['except' => 'desc'],
-        'page' => ['except' => 1],
     ];
 
     protected $listeners = [
