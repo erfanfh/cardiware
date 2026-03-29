@@ -20,7 +20,7 @@
                 wire:target="save,cancelEditing"
                 class="space-y-5 transition"
             >
-                <x-admin.validation-errors/>
+                <x-admin.form.simple-validation-errors/>
 
                 <div class="space-y-4">
                     <x-admin.field
