@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Taxonomy\Concerns;
+namespace App\Domain\Taxonomy\Traits;
 
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;

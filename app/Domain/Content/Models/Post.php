@@ -2,15 +2,14 @@
 
 namespace App\Domain\Content\Models;
 
-use App\Application\Taxonomy\Actions\GenerateUniqueSlugAction;
 use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
-use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -78,7 +77,7 @@ class Post extends Model implements PageViewableInterface
         return collect($tags)->map(function ($tagName) {
             return TaxonomyTerm::firstOrCreate(
                 ['title' => $tagName, 'type' => TaxonomyTermTypeEnum::TAG->value],
-                ['slug' => (new GenerateUniqueSlugAction())->execute($tagName, TaxonomyTermTypeEnum::TAG)]
+//                ['slug' => (new GenerateUniqueSlugAction())->execute($tagName, TaxonomyTermTypeEnum::TAG)]
             )->id;
         })->all();
     }
