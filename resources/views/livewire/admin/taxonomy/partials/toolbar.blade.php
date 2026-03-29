@@ -22,13 +22,14 @@
                 </div>
 
                 @if($search !== '')
-                    <button
+                    <x-admin.button
                         type="button"
                         wire:click="$set('search', '')"
-                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                        variant="secondary"
+                        size="sm"
                     >
                         پاک کردن جستجو
-                    </button>
+                    </x-admin.button>
                 @endif
             </div>
         </div>
