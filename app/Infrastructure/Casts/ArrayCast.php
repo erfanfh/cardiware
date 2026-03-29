@@ -9,10 +9,10 @@ use JsonException;
 
 class ArrayCast implements CastsAttributes
 {
-    public function get(Model $model, string $key, mixed $value, array $attributes): ?array
+    public function get(Model $model, string $key, mixed $value, array $attributes): array
     {
         if ($value === null)
-            return null;
+            return [];
 
         try {
             $decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
