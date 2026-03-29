@@ -1,8 +1,8 @@
 <header
-    class="h-[var(--topbar-height)] bg-white dark:bg-gray-900 flex items-center justify-between px-5 py-[10px] shadow-[0_1px_0_var(--border-subtle)] dark:shadow-[0_1px_0_rgb(75_85_99/0.3)] sticky top-0 z-20 ps-[12px] pe-[14px] lg:px-5">
+    class="h-16 bg-white dark:bg-gray-900 flex items-center justify-between px-5 py-[10px] shadow-[0_1px_0_theme(colors.gray.200)] dark:shadow-[0_1px_0_rgb(75_85_99/0.3)] sticky top-0 z-20 ps-[12px] pe-[14px] lg:px-5">
     <div class="flex items-center gap-3 min-w-0">
         <button
-            class="inline-flex lg:hidden items-center justify-center p-[6px] rounded-full bg-[#efefef] dark:bg-gray-800 cursor-pointer border-0 outline-none transition-transform duration-150 hover:bg-[var(--brand-50)] dark:hover:bg-[var(--brand-600)]"
+            class="inline-flex lg:hidden items-center justify-center p-[6px] rounded-full bg-[#efefef] dark:bg-gray-800 cursor-pointer border-0 outline-none transition-transform duration-150 hover:bg-brand-50 dark:hover:bg-brand-600"
             aria-label="باز کردن منو" id="SidebarToggle">
             <svg viewBox="0 0 24 24" width="20" height="20">
                 <path d="M4 7h16M4 12h16M4 17h16"
@@ -29,10 +29,12 @@
                           d="M21.5 14.078A8.557 8.557 0 0 1 9.922 2.5C5.668 3.497 2.5 7.315 2.5 11.873a9.627 9.627 0 0 0 9.627 9.627c4.558 0 8.376-3.168 9.373-7.422"/>
                 </svg>
 
-                <svg class="hidden h-5 w-5 dark:block" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
+                <svg class="hidden h-5 w-5 dark:block" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                     viewBox="0 0 24 24">
                     <g fill="none" stroke="#031e3c" stroke-width="1.5">
                         <path d="M17 12a5 5 0 1 1-10 0a5 5 0 0 1 10 0Z"/>
-                        <path stroke-linecap="round" d="M12 2c-.377.333-.905 1.2 0 2m0 16c.377.333.906 1.2 0 2m7.5-17.497c-.532-.033-1.575.22-1.496 1.495M5.496 17.5c.033.532-.22 1.575-1.496 1.496M5.003 4.5c-.033.532.22 1.576 1.497 1.497M18 17.503c.532-.032 1.575.208 1.496 1.414M22 12c-.333-.377-1.2-.905-2 0m-16-.5c-.333.377-1.2.906-2 0"/>
+                        <path stroke-linecap="round"
+                              d="M12 2c-.377.333-.905 1.2 0 2m0 16c.377.333.906 1.2 0 2m7.5-17.497c-.532-.033-1.575.22-1.496 1.495M5.496 17.5c.033.532-.22 1.575-1.496 1.496M5.003 4.5c-.033.532.22 1.576 1.497 1.497M18 17.503c.532-.032 1.575.208 1.496 1.414M22 12c-.333-.377-1.2-.905-2 0m-16-.5c-.333.377-1.2.906-2 0"/>
                     </g>
                 </svg>
             </span>
@@ -43,7 +45,7 @@
             class="flex items-center gap-2 ps-[5px] pe-[12px] py-[5px] rounded-full bg-[#f1f1f1] dark:bg-gray-800 transition-transform duration-150 hover:shadow-[0_10px_25px_rgba(15,23,42,0.08)] dark:hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] hover:-translate-y-[1px] cursor-pointer"
             id="userMenuButton">
             <div
-                class="w-7 h-7 rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--orange-500))] flex items-center justify-center text-white text-sm font-semibold">
+                class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-orange-500 flex items-center justify-center text-white text-sm font-semibold">
                 {{ mb_substr('کاربر', 0, 1) }}
             </div>
             <div class="flex flex-col">

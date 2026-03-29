@@ -6,7 +6,7 @@
     <a href="{{ route('home') }}"
        class="flex items-center gap-[10px] pt-[8px] pb-[4px] px-[10px] mb-[4px] text-gray-700 dark:text-white transition hover:opacity-70">
         <div
-            class="w-8 h-8 rounded-[12px] bg-[conic-gradient(from_160deg_at_30%_30%,var(--orange-500),var(--brand-500),var(--brand-400),var(--yellow-500))] flex items-center justify-center text-gray-700 dark:text-white font-bold text-[18px]">
+            class="w-8 h-8 rounded-[12px] bg-[conic-gradient(from_160deg_at_30%_30%,theme(colors.orange.500),theme(colors.brand.500),theme(colors.brand.400),theme(colors.yellow.500))] flex items-center justify-center text-gray-700 dark:text-white font-bold text-[18px]">
             م
         </div>
         <div class="flex flex-col gap-[2px]">

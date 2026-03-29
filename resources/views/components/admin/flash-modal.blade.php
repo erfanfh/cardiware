@@ -8,13 +8,13 @@
     if ($type === 'success') {
         $title = session('success_title', 'عملیات موفق');
         $icon = '✓';
-        $accentClass = 'border-[var(--bg-chip)]';
+        $accentClass = 'border-red-100';
         $actionUrl = session('success_action_url');
         $actionLabel = session('success_action_label', 'مشاهده');
     } elseif ($type === 'error') {
         $title = session('error_title', 'خطا');
         $icon = '!';
-        $accentClass = 'border-[var(--brand-100)]';
+        $accentClass = 'border-brand-100';
         $actionUrl = session('error_action_url');
         $actionLabel = session('error_action_label', 'جزئیات بیشتر');
     } else {
@@ -33,20 +33,20 @@
         class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-100 pointer-events-auto transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
     >
         <div
-            class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4 {{ $accentClass }}"
+            class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-gray-200 bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4 {{ $accentClass }}"
         >
             <button
                 type="button"
                 aria-label="بستن"
                 data-flash-close
-                class="absolute cursor-pointer top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+                class="absolute cursor-pointer top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none text-gray-400 transition-colors duration-150 ease hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
             >
                 &times;
             </button>
 
             <div class="mb-[1.25rem] flex justify-center">
                 <div
-                    class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_25px_rgba(244,63,94,0.3)]"
+                    class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-[1.4rem] font-bold text-gray-50 shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-gradient-to-br dark:from-brand-400 dark:to-brand-500 dark:shadow-[0_10px_25px_25px_rgba(244,63,94,0.3)]"
                 >
                     {{ $icon }}
                 </div>
@@ -124,19 +124,19 @@
     class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-0 pointer-events-none transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
 >
     <div
-        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
+        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-gray-200 bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
     >
         <button
             type="button"
             data-confirm-cancel
-            class="absolute top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none cursor-pointer text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+            class="absolute top-[10px] end-[12px] border-0 bg-transparent text-[1.4rem] leading-none cursor-pointer text-gray-400 transition-colors duration-150 ease hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
         >
             &times;
         </button>
 
         <div class="mb-[1.25rem] flex justify-center">
             <div
-                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
+                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-[1.4rem] font-bold text-gray-50 shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-gradient-to-br dark:from-brand-400 dark:to-brand-500 dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
             >
                 !
             </div>
@@ -170,7 +170,7 @@
             <button
                 type="button"
                 data-confirm-submit
-                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-[var(--brand-500)] px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-[var(--brand-600)] dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-brand-500 px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-brand-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
             >
                 بله، ادامه
             </button>
@@ -184,19 +184,19 @@
     class="fixed inset-0 z-[9998] flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[10px] opacity-0 pointer-events-none transition-opacity duration-200 ease-out dark:bg-[rgba(0,0,0,0.6)]"
 >
     <div
-        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-[var(--border-subtle)] bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
+        class="relative mx-4 w-full max-w-[380px] rounded-[24px] border border-gray-200 bg-white px-[20px] py-[22px] pb-[16px] shadow-[0_24px_60px_rgba(15,23,42,0.35)] animate-[za-modal-pop-in_0.2s_ease-out] dark:border-gray-700 dark:bg-gray-800 dark:shadow-[0_24px_60px_rgba(0,0,0,0.5)] sm:rounded-[18px] sm:px-4"
     >
         <button
             type="button"
             data-lw-confirm-cancel
-            class="absolute top-[10px] end-[12px] cursor-pointer border-0 bg-transparent text-[1.4rem] leading-none text-[var(--darker-text-muted)] transition-colors duration-150 ease hover:text-[var(--text-dark-gray)] dark:text-gray-400 dark:hover:text-gray-200"
+            class="absolute top-[10px] end-[12px] cursor-pointer border-0 bg-transparent text-[1.4rem] leading-none text-gray-400 transition-colors duration-150 ease hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200"
         >
             &times;
         </button>
 
         <div class="mb-[1.25rem] flex justify-center">
             <div
-                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[linear-gradient(135deg,var(--brand-500),var(--brand-600))] text-[1.4rem] font-bold text-[var(--text-invert)] shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-[linear-gradient(135deg,var(--brand-400),var(--brand-500))] dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
+                class="flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-[1.4rem] font-bold text-gray-50 shadow-[0_10px_25px_rgba(244,63,94,0.6)] dark:bg-gradient-to-br dark:from-brand-400 dark:to-brand-500 dark:shadow-[0_10px_25px_rgba(244,63,94,0.3)]"
             >
                 !
             </div>
@@ -230,7 +230,7 @@
             <button
                 type="button"
                 data-lw-confirm-submit
-                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-[var(--brand-500)] px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-[var(--brand-600)] dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
+                class="inline-flex cursor-pointer items-center justify-center gap-[6px] rounded-full border border-transparent bg-brand-500 px-[14px] py-[7px] text-[0.86rem] font-medium text-white transition-transform duration-50 ease-out hover:bg-brand-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
             >
                 بله، ادامه
             </button>
