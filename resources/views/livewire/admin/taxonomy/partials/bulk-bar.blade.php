@@ -22,7 +22,7 @@
                 :options="$bulkActionOptions"
             />
 
-            <x-admin.button
+            <x-admin.form.button
                 type="button"
                 wire:click="applyBulkAction"
                 wire:loading.attr="disabled"
@@ -31,9 +31,9 @@
                 size="sm"
             >
                 اجرا
-            </x-admin.button>
+            </x-admin.form.button>
 
-            <x-admin.button
+            <x-admin.form.button
                 type="button"
                 variant="secondary"
                 x-on:click="clearSelections()"
@@ -41,7 +41,7 @@
                 size="sm"
             >
                 لغو انتخاب
-            </x-admin.button>
+            </x-admin.form.button>
         </div>
     </div>
 </div>

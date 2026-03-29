@@ -22,14 +22,14 @@
                 </div>
 
                 @if($search !== '')
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         wire:click="$set('search', '')"
                         variant="secondary"
                         size="sm"
                     >
                         پاک کردن جستجو
-                    </x-admin.button>
+                    </x-admin.form.button>
                 @endif
             </div>
         </div>

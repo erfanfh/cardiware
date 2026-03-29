@@ -32,14 +32,14 @@
             />
         </div>
 
-        <x-admin.button
+        <x-admin.form.button
             @click="commitInput()"
             variant="soft"
             size="sm"
             class="rounded-2xl h-10"
         >
             افزودن
-        </x-admin.button>
+        </x-admin.form.button>
     </div>
 
     <p class="text-xs text-slate-500">

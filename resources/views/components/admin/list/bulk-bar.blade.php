@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         variant="secondary"
                         x-bind:disabled="selectedCount === 0 || !bulkAction"
@@ -75,9 +75,9 @@
                         class="h-10 leading-10"
                     >
                         {{ $buttonText }}
-                    </x-admin.button>
+                    </x-admin.form.button>
 
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         variant="danger"
                         x-cloak
@@ -87,7 +87,7 @@
                         class="h-10 leading-10"
                     >
                         لغو انتخاب
-                    </x-admin.button>
+                    </x-admin.form.button>
                 </div>
             </div>
         </div>

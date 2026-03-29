@@ -74,7 +74,7 @@
                     wire:key="taxonomy-form-actions-{{ $this->isEditing ? 'edit' : 'create' }}"
                     class="flex flex-wrap items-center gap-3 border-t border-slate-100 pt-4"
                 >
-                    <x-admin.button
+                    <x-admin.form.button
                         type="submit"
                         wire:loading.attr="disabled"
                         wire:target="save"
@@ -95,16 +95,16 @@
                         <span>
                             {{ $this->isEditing ? 'ذخیره تغییرات' : "افزودن {$taxonomyLabel}" }}
                         </span>
-                    </x-admin.button>
+                    </x-admin.form.button>
 
                     @if($this->isEditing)
-                        <x-admin.button
+                        <x-admin.form.button
                             type="button"
                             wire:click="cancelEditing"
                             variant="secondary"
                         >
                             انصراف
-                        </x-admin.button>
+                        </x-admin.form.button>
                     @endif
                 </div>
             </form>
