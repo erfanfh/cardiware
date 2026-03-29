@@ -39,7 +39,7 @@
         @forelse($items as $item)
             @php
                 $depth = (int) ($item->depth ?? 0);
-                $indent = $depth * 28;
+                $indent = $depth * 1.2;
                 $isChild = $depth > 0;
             @endphp
 
@@ -69,24 +69,24 @@
                     <div class="min-w-[280px]">
                         <div
                             class="relative"
-                            style="padding-right: {{ $indent }}px;"
+                            style="padding-right: {{ $indent }}rem;"
                         >
                             @if($isChild)
                                 <span
-                                    class="pointer-events-none absolute right-0 top-3 inline-flex h-6 w-5 items-center justify-center text-slate-300"
+                                    class="pointer-events-none absolute right-0 top-2 inline-flex h-6 w-5 items-center justify-center text-slate-300"
                                     aria-hidden="true"
                                 >
                                     <span class="block h-px w-4 bg-slate-300"></span>
                                 </span>
                             @endif
 
-                            <div class="rounded-xl transition group-hover:bg-white/70">
+                            <div class="rounded-xl transition">
                                 <button
                                     type="button"
                                     wire:click="startEditing({{ $item->id }})"
                                     wire:loading.class="text-slate-400"
                                     wire:target="startEditing({{ $item->id }})"
-                                    class="flex w-full items-start gap-2 rounded-xl px-2 py-2 text-right transition hover:bg-white/80"
+                                    class="flex w-full items-start gap-2 rounded-xl px-2 py-2 text-right"
                                 >
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-2">
@@ -94,25 +94,7 @@
                                                 class="truncate text-sm font-black text-slate-900 transition hover:text-brand-700">
                                                 {{ $item->title }}
                                             </span>
-
-                                            @if($depth > 0)
-                                                <span
-                                                    class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
-                                                    سطح {{ $depth + 1 }}
-                                                </span>
-                                            @else
-                                                <span
-                                                    class="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">
-                                                    ریشه
-                                                </span>
-                                            @endif
                                         </div>
-
-                                        @if($isChild && filled($item->tree_label ?? null))
-                                            <div class="mt-1 truncate text-[11px] text-slate-400">
-                                                {{ $item->tree_label }}
-                                            </div>
-                                        @endif
                                     </div>
                                 </button>
                             </div>
