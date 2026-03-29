@@ -239,15 +239,29 @@ class ManageCategories extends ManageTaxonomyTerms
         return false;
     }
 
+    protected function isSearching(): bool
+    {
+        return filled(trim($this->search));
+    }
+
     /**
      * @return array<int, int>
      */
     protected function getVisibleTermIds(): array
     {
-        return collect($this->paginatedTreeItems()->items())
+        return collect($this->paginatedItems()->items())
             ->pluck('id')
             ->map(fn($id) => (int)$id)
             ->all();
+    }
+
+    protected function paginatedItems(): LengthAwarePaginator
+    {
+        if ($this->isSearching()) {
+            return $this->paginatedSearchItems();
+        }
+
+        return $this->paginatedTreeItems();
     }
 
     protected function paginatedTreeItems(): LengthAwarePaginator
@@ -272,6 +286,47 @@ class ManageCategories extends ManageTaxonomyTerms
                 'pageName' => 'page',
             ]
         );
+    }
+
+    protected function paginatedSearchItems(): LengthAwarePaginator
+    {
+        $query = $this->getTermsQuery();
+
+        $this->applyFlatSorting($query);
+
+        $items = $query->paginate(
+            perPage: $this->taxonomyTermListing->perPage(),
+            pageName: 'page',
+        );
+
+        $pathMap = $this->categoryPathMap();
+
+        $items->getCollection()->transform(function (TaxonomyTerm $term) use ($pathMap) {
+            $term->depth = 0;
+            $term->tree_label = $pathMap[(int)$term->id] ?? $term->title;
+
+            return $term;
+        });
+
+        return $items;
+    }
+
+    protected function applyFlatSorting(Builder $query): void
+    {
+        $allowedSorts = [
+            'title',
+            'slug',
+            'created_at',
+            'posts_count',
+        ];
+
+        $sortBy = in_array($this->sortBy, $allowedSorts, true)
+            ? $this->sortBy
+            : 'title';
+
+        $sortDirection = $this->sortDirection === 'asc' ? 'asc' : 'desc';
+
+        $query->reorder()->orderBy($sortBy, $sortDirection);
     }
 
     protected function flattenCategoriesTree(): Collection
@@ -370,6 +425,58 @@ class ManageCategories extends ManageTaxonomyTerms
     }
 
     /**
+     * @return array<int, string>
+     */
+    protected function categoryPathMap(): array
+    {
+        $categories = TaxonomyTerm::categories()
+            ->orderBy('title')
+            ->get([
+                'id',
+                'title',
+                'parent_id',
+            ]);
+
+        /** @var array<int, TaxonomyTerm> $indexed */
+        $indexed = $categories
+            ->keyBy(fn(TaxonomyTerm $term) => (int)$term->id)
+            ->all();
+
+        $paths = [];
+
+        foreach ($categories as $category) {
+            $paths[(int)$category->id] = $this->buildCategoryPathLabel(
+                category: $category,
+                indexed: $indexed,
+            );
+        }
+
+        return $paths;
+    }
+
+    /**
+     * @param array<int, TaxonomyTerm> $indexed
+     */
+    protected function buildCategoryPathLabel(TaxonomyTerm $category, array $indexed): string
+    {
+        $titles = [$category->title];
+        $parentId = $category->parent_id ? (int)$category->parent_id : null;
+
+        while ($parentId !== null) {
+            $parent = $indexed[$parentId] ?? null;
+
+            if (!$parent) {
+                break;
+            }
+
+            array_unshift($titles, $parent->title);
+            $parentId = $parent->parent_id ? (int)$parent->parent_id : null;
+        }
+
+        return implode(' / ', $titles);
+    }
+
+    /**
      * @param Collection<int|string, Collection<int, TaxonomyTerm>> $grouped
      * @return array<string, string>
      */
@@ -407,7 +514,7 @@ class ManageCategories extends ManageTaxonomyTerms
 
     public function render(): View
     {
-        $terms = $this->paginatedTreeItems();
+        $terms = $this->paginatedItems();
 
         return view('livewire.admin.taxonomy.manage-categories', [
             'items' => $terms,
