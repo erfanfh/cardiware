@@ -77,6 +77,15 @@
                 :selected="$resolvedSelectedTags"
             />
         </x-admin.metabox>
+
+        <x-admin.metabox title="دسته‌بندی‌ها">
+            <x-admin.form.categories
+                name="category_ids"
+                :items="$categoryOptions"
+                :selected="old('category_ids', $selectedCategoryIds ?? [])"
+                quick-create-url="{{ route('admin.taxonomy.categories.quick-create') }}"
+            />
+        </x-admin.metabox>
     </x-slot:sidebar>
 
     <x-admin.form.validation-errors class="mb-6"/>
