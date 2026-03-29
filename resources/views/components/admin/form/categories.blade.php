@@ -144,30 +144,29 @@
 
                         <template x-if="quickCreateParentEnabled">
                             <div class="sm:col-span-2">
-                                <select
+                                <x-admin.form.select
                                     x-model="newCategoryParentId"
-                                    class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                                    placeholder="بدون والد"
                                 >
-                                    <option value="">بدون والد</option>
-
                                     <template x-for="option in parentOptions" :key="'parent-' + option.id">
                                         <option :value="String(option.id)" x-text="option.label"></option>
                                     </template>
-                                </select>
+                                </x-admin.form.select>
                             </div>
                         </template>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button
+                    <div class="flex flex-wrap items-center justify-end gap-2">
+                        <x-admin.form.button
                             type="button"
+                            variant="solid"
+                            size="sm"
                             @click="addQuickCategory()"
-                            :disabled="quickCreateLoading"
-                            class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            x-bind:disabled="quickCreateLoading"
                         >
                             <span x-show="!quickCreateLoading">افزودن دسته</span>
                             <span x-show="quickCreateLoading">در حال ایجاد...</span>
-                        </button>
+                        </x-admin.form.button>
                     </div>
 
                     <p
