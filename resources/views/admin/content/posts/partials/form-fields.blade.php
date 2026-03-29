@@ -81,7 +81,7 @@
         <x-admin.metabox title="دسته‌بندی‌ها">
             <x-admin.form.categories
                 name="category_ids"
-                :items="$categoryOptions"
+                :items="$allCategories"
                 :selected="old('category_ids', $selectedCategoryIds ?? [])"
                 quick-create-url="{{ route('admin.categories.quick-create') }}"
             />
