@@ -43,7 +43,7 @@ class SetFeatureValueAction
 
             FeatureAssignment::query()->updateOrCreate(
                 $attributes,
-                ['value' => '1']
+                []
             );
 
             return;
