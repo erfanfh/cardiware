@@ -81,4 +81,20 @@ class Post extends Model implements PageViewableInterface
             )->id;
         })->all();
     }
+
+    /**
+     * @return bool
+     */
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === PostStatusEnum::ACTIVE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlAttribute(): string
+    {
+        return url($this->slug ?? '/');
+    }
 }
