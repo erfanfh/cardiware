@@ -17,6 +17,7 @@ class CreatePostAction
     public function __construct(
         protected SyncModelTagsAction       $syncModelTagsAction,
         protected SyncModelCategoriesAction $syncModelCategoriesAction,
+        protected SyncPostFeaturesAction    $syncPostFeaturesAction,
         protected AssignSlugAction          $assignSlugAction,
         protected ContentSlugCacheService   $contentSlugCacheService,
     )
@@ -54,6 +55,7 @@ class CreatePostAction
 
             $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
+            $this->syncPostFeaturesAction->execute($post, $data);
 
             return $post;
         });
