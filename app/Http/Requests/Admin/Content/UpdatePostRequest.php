@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Content;
 
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Feature\Enums\FrontBadgeOptionEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -40,6 +41,11 @@ class UpdatePostRequest extends FormRequest
             'tags.new.*' => ['string', 'max:255'],
 
             'category_ids' => ['nullable', 'array'],
+
+            'front_badge' => ['nullable', Rule::enum(FrontBadgeOptionEnum::class)],
+            'is_special' => ['nullable', 'boolean'],
+            'is_vip' => ['nullable', 'boolean'],
+            'is_updated' => ['nullable', 'boolean'],
         ];
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Content;
 
 use App\Application\Content\Actions\CreatePostAction;
 use App\Application\Content\Actions\DeletePostAction;
+use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\UpdatePostAction;
 use App\Application\Taxonomy\Actions\GetAllCategoriesAction;
 use App\Domain\Content\Models\Post;
@@ -17,7 +18,8 @@ use Throwable;
 class PostController extends Controller
 {
     public function __construct(
-        protected GetAllCategoriesAction $getAllCategoriesAction
+        protected GetAllCategoriesAction $getAllCategoriesAction,
+        protected GetPostFeaturesAction  $getPostFeaturesAction,
     )
     {
 
@@ -80,8 +82,9 @@ class PostController extends Controller
 
         $allCategories = $this->getAllCategoriesAction->execute();
         $selectedCategoryIds = $post->categories()->pluck('taxonomy_terms.id')->all();
+        $selectedFeatures = $this->getPostFeaturesAction->execute($post);
 
-        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds'));
+        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds', 'selectedFeatures'));
     }
 
 

@@ -33,6 +33,50 @@
             </div>
         </x-admin.metabox>
 
+        <x-admin.metabox title="ویژگی‌ها">
+            <div class="grid grid-cols-12 gap-5">
+                <x-admin.field
+                    class="col-span-12 flex items-center gap-3 [&_label]:mb-0"
+                    label="لیبل"
+                >
+                    @php
+                        $frontBadges = collect(\App\Domain\Feature\Enums\FrontBadgeOptionEnum::cases())
+                        ->mapWithKeys(fn($status) => [
+                            $status->value => $status->label(),
+                        ])
+                        ->all();
+                    @endphp
+
+                    <x-admin.form.select name="front_badge" :options="$frontBadges" placeholder="--- انتخاب کنید ---"
+                                         style="width: auto !important;"
+                                         :value="old('front_badge', $selectedFeatures?->frontBadge?->value)"/>
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12 flex items-center gap-3 [&_label]:mb-0"
+                    label="نوشته ویژه"
+                >
+                    <x-admin.form.switch name="is_special"
+                                         :checked="old('is_special', $selectedFeatures?->isSpecial)"/>
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12 flex items-center gap-3 [&_label]:mb-0"
+                    label="نوشته VIP"
+                >
+                    <x-admin.form.switch name="is_vip" :checked="old('is_vip', $selectedFeatures?->isVip)"/>
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12 flex items-center gap-3 [&_label]:mb-0"
+                    label="نوشته به روزرسانی شده"
+                >
+                    <x-admin.form.switch name="is_updated"
+                                         :checked="old('is_updated', $selectedFeatures?->isUpdated)"/>
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+
         <x-admin.metabox title="تصویر شاخص">
             <x-admin.form.media-picker
                 mode="field"
