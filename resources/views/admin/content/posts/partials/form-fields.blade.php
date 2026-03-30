@@ -98,7 +98,7 @@
         basePath="{{ route('home') }}/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
         :currentId="$post->id ?? null"
-        :itemUrl="$post ? route('posts.detail', $post) : null"
+        :itemUrl="$post?->url"
     />
 
     <x-admin.metabox title="توضیحات">
