@@ -10,8 +10,8 @@ enum FrontBadgeOptionEnum: string
     case ATS = 'ATS';
     case ETS = 'ETS';
     case NBA = 'NBA';
-    case FIFA_Android = 'FIFA - Android';
-    case PES_Android = 'PES - Android';
+    case FIFA_Android = 'FIFA-Android';
+    case PES_Android = 'PES-Android';
     case ARTICLE = 'Article';
     case REPORTAGE = 'Reportage';
 
