@@ -2,6 +2,7 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Content\Services\ContentSlugCacheService;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelCategoriesAction;
@@ -17,6 +18,7 @@ class UpdatePostAction
         protected SyncModelTagsAction       $syncModelTagsAction,
         protected SyncModelCategoriesAction $syncModelCategoriesAction,
         protected AssignSlugAction          $assignSlugAction,
+        protected ContentSlugCacheService   $contentSlugCacheService,
     )
     {
     }
@@ -29,7 +31,7 @@ class UpdatePostAction
      */
     public function execute(Post $post, array $data): Post
     {
-        return DB::transaction(function () use ($post, $data) {
+        $post = DB::transaction(function () use ($post, $data) {
             $postData = $data;
 
             unset(
@@ -54,5 +56,9 @@ class UpdatePostAction
 
             return $post;
         });
+
+        $this->contentSlugCacheService->forgetForModel($post);
+
+        return $post;
     }
 }
