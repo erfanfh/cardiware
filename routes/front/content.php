@@ -1,11 +1,6 @@
 <?php
 
-use App\Http\Controllers\Front\Content\PageController;
-use App\Http\Controllers\Front\Content\PostController;
+use App\Http\Controllers\Front\Content\ContentController;
 
-Route::get('{page}', [PageController::class, 'detail'])->name('pages.detail');
-
-Route::controller(PostController::class)->name('posts.')->group(function () {
-    Route::get('{post}', 'detail')->name('detail');
-    Route::get('posts', 'list')->name('list');
-});
+//=== Last route ===//
+Route::get('/{slug}', ContentController::class)->where('slug', '[^/]+')->name('contents.detail');
