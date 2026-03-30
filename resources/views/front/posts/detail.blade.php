@@ -4,8 +4,8 @@
     <main class="mx-auto max-w-7xl px-4 py-8">
         @include('front.posts.partials.detail.title')
 
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 space-y-6">
+        <section class="grid grid-cols-1 lg:grid-cols-10 gap-6">
+            <div class="lg:col-span-7 space-y-6">
                 @include('front.posts.partials.detail.content')
                 @include('front.posts.partials.detail.image-gallery')
                 @include('front.posts.partials.detail.video')
@@ -13,7 +13,7 @@
                 @include('front.posts.partials.detail.comments')
             </div>
 
-            <aside class="lg:col-span-4 space-y-6">
+            <aside class="lg:col-span-3 space-y-6">
 
                 <!-- Tools (2 columns) -->
                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
