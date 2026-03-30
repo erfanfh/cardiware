@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Content;
 
 use App\Application\Content\Actions\CreatePostAction;
+use App\Application\Content\Actions\DeletePostAction;
 use App\Application\Content\Actions\UpdatePostAction;
 use App\Application\Taxonomy\Actions\GetAllCategoriesAction;
 use App\Domain\Content\Models\Post;
@@ -106,13 +107,16 @@ class PostController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Post $post
+     * @param DeletePostAction $action
      * @return RedirectResponse
      */
-    public function destroy(Post $post): RedirectResponse
+    public function destroy(Post $post, DeletePostAction $action): RedirectResponse
     {
-        $post->delete();
+        $action->execute($post);
 
-        return redirect()->route('admin.posts.index')->with('success', 'نوشته موردنظر با موفقیت حذف شد');
+        return redirect()
+            ->route('admin.posts.index')
+            ->with('success', 'نوشته موردنظر با موفقیت حذف شد');
     }
 
     /**
