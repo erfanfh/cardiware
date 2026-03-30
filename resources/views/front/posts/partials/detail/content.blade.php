@@ -1,33 +1,26 @@
 <article class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
 
-    <!-- image with spacing -->
     <div class="p-5 pb-0 sm:p-6 sm:pb-0">
-        <div class="relative rounded-2xl overflow-hidden border border-slate-200">
-            <img src="https://picsum.photos/seed/mw-single-hero/1400/820" alt=""
-                 class="w-full h-[220px] sm:h-[360px] object-cover"/>
-            <div
-                class="absolute inset-0 bg-gradient-to-t from-black/45 via-black/15 to-transparent"></div>
+        <div class="text-center">
+            <div class="relative inline-block overflow-hidden rounded-2xl border border-slate-200">
+                <img
+                    src="{{ $post->picture->url }}"
+                    alt="{{ $post->title }}"
+                    title="{{ $post->title }}"
+                    class="block max-w-full h-auto"
+                />
 
-            <div class="absolute top-4 right-4 flex flex-wrap items-center gap-2">
-                            <span
-                                class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">نسخه: 0.9.3</span>
-                <span
-                    class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">ویندوز</span>
-                <span
-                    class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">بهینه‌سازی</span>
-            </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/0 via-black/30 to-transparent"></div>
 
-            <div class="absolute bottom-4 right-4 left-4 flex items-center justify-end gap-3">
-                <button
-                    class="inline-flex items-center gap-2 rounded-2xl bg-white/10 text-white border border-white/10 backdrop-blur px-4 py-2 text-sm font-extrabold hover:bg-white/15 transition">
-                    اشتراک‌گذاری
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2">
-                        <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"></path>
-                        <path d="M16 6l-4-4-4 4"></path>
-                        <path d="M12 2v14"></path>
-                    </svg>
-                </button>
+                <div class="absolute top-4 right-4 left-4 flex flex-wrap justify-start items-center gap-2">
+                    @php $post->categories @endphp
+                    @foreach($post->categories as $category)
+                        <span
+                            class="text-xs font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
+                            {{ $category->title }}
+                        </span>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
