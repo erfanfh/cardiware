@@ -4,6 +4,7 @@ namespace App\Domain\Content\Models;
 
 use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Feature\Traits\HasFeatures;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable;
+    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures;
 
     protected $fillable = [
         'author_id',
