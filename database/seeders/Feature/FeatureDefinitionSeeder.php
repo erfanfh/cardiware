@@ -19,7 +19,7 @@ class FeatureDefinitionSeeder extends Seeder
     {
         $definitions = [
             [
-                'key' => FeatureKeyEnum::IS_FEATURED->value,
+                'key' => FeatureKeyEnum::IS_SPECIAL->value,
                 'title' => 'نوشته ویژه',
                 'value_type' => ValueTypeEnum::FLAG,
                 'allowed_values' => null,

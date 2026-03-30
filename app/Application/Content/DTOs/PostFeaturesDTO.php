@@ -7,7 +7,7 @@ use App\Domain\Feature\Enums\FrontBadgeOptionEnum;
 class PostFeaturesDTO
 {
     public function __construct(
-        public readonly bool                  $isFeatured,
+        public readonly bool                  $isSpecial,
         public readonly bool                  $isVip,
         public readonly bool                  $isUpdated,
         public readonly ?FrontBadgeOptionEnum $frontBadge,
@@ -53,7 +53,7 @@ class PostFeaturesDTO
     public function toArray(): array
     {
         return [
-            'is_featured' => $this->isFeatured,
+            'is_special' => $this->isSpecial,
             'is_vip' => $this->isVip,
             'is_updated' => $this->isUpdated,
             'front_badge' => $this->frontBadge?->value,

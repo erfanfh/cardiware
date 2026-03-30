@@ -33,7 +33,7 @@ class GetPostFeaturesAction
         $frontBadgeValue = $assignmentsByKey->get(FeatureKeyEnum::FRONT_BADGE->value)?->value;
 
         return new PostFeaturesDTO(
-            isFeatured: $assignmentsByKey->has(FeatureKeyEnum::IS_FEATURED->value),
+            isSpecial: $assignmentsByKey->has(FeatureKeyEnum::IS_SPECIAL->value),
             isVip: $assignmentsByKey->has(FeatureKeyEnum::IS_VIP->value),
             isUpdated: $assignmentsByKey->has(FeatureKeyEnum::IS_UPDATED->value),
             frontBadge: $frontBadgeValue !== null

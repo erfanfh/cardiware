@@ -4,7 +4,7 @@ namespace App\Domain\Feature\Enums;
 
 enum FeatureKeyEnum: string
 {
-    case IS_FEATURED = 'is_featured';
+    case IS_SPECIAL = 'is_special';
     case IS_VIP = 'is_vip';
     case IS_UPDATED = 'is_updated';
     case FRONT_BADGE = 'front_badge';

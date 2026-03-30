@@ -20,7 +20,7 @@ class SyncPostFeaturesAction
      * Sync the supported feature values for the given post.
      *
      * Supported input keys:
-     * - is_featured
+     * - is_special
      * - is_vip
      * - is_updated
      * - front_badge
@@ -33,8 +33,8 @@ class SyncPostFeaturesAction
     {
         $this->setFeatureValueAction->execute(
             $post,
-            FeatureKeyEnum::IS_FEATURED,
-            $this->resolveBooleanInput($data, 'is_featured')
+            FeatureKeyEnum::IS_SPECIAL,
+            $this->resolveBooleanInput($data, 'is_special')
         );
 
         $this->setFeatureValueAction->execute(
