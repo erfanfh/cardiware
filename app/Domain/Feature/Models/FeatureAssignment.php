@@ -15,6 +15,10 @@ class FeatureAssignment extends Model
         'value',
     ];
 
+    protected $casts = [
+        'value' => 'array',
+    ];
+
     /**
      * @return BelongsTo
      */
