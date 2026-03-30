@@ -65,7 +65,7 @@ final class ResolveContentBySlugAction
         if (!$contentSlug->is_current) {
             return [
                 'type' => ResolvedContentTypeEnum::REDIRECT->value,
-                'redirect_url' => $model->url,
+                'slug' => $model->slug,
             ];
         }
 
@@ -150,13 +150,13 @@ final class ResolveContentBySlugAction
      */
     private function mapRedirectResult(array $cached): ResolvedContentDTO
     {
-        $redirectUrl = trim((string)($cached['redirect_url'] ?? ''));
+        $slug = trim((string)($cached['slug'] ?? ''));
 
-        if ($redirectUrl === '') {
+        if ($slug === '') {
             return ResolvedContentDTO::notFound();
         }
 
-        return ResolvedContentDTO::redirect($redirectUrl);
+        return ResolvedContentDTO::redirect('/' . $slug);
     }
 
     private function isSupportedModel(mixed $model): bool
