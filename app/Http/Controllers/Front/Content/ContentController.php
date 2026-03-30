@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Content;
 
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\ResolveContentBySlugAction;
+use App\Domain\Content\Models\Post;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,7 +33,13 @@ final class ContentController
         }
 
         if ($resolvedContent->isPost()) {
-            $post = $resolvedContent->model;
+            /** @var Post $post */
+            $post = $resolvedContent->model->load([
+                'author:id,display_name',
+                'picture.primaryVariant',
+                'categories:id,title',
+                'tags:id,title'
+            ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
             return view('front.posts.detail', compact('post', 'features'));
