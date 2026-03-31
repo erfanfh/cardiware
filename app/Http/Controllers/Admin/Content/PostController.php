@@ -83,8 +83,9 @@ class PostController extends Controller
         $allCategories = $this->getAllCategoriesAction->execute();
         $selectedCategoryIds = $post->categories()->pluck('taxonomy_terms.id')->all();
         $selectedFeatures = $this->getPostFeaturesAction->execute($post);
+        $downloadSections = $post->downloadSections;
 
-        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds', 'selectedFeatures'));
+        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds', 'selectedFeatures', 'downloadSections'));
     }
 
 
