@@ -3,6 +3,7 @@
 namespace App\Application\Content\Actions;
 
 use App\Application\Content\Services\ContentSlugCacheService;
+use App\Application\Download\Actions\SyncDownloadSectionsAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelCategoriesAction;
@@ -15,11 +16,12 @@ use Throwable;
 class UpdatePostAction
 {
     public function __construct(
-        protected SyncModelTagsAction       $syncModelTagsAction,
-        protected SyncModelCategoriesAction $syncModelCategoriesAction,
-        protected SyncPostFeaturesAction    $syncPostFeaturesAction,
-        protected AssignSlugAction          $assignSlugAction,
-        protected ContentSlugCacheService   $contentSlugCacheService,
+        protected SyncModelTagsAction        $syncModelTagsAction,
+        protected SyncModelCategoriesAction  $syncModelCategoriesAction,
+        protected SyncPostFeaturesAction     $syncPostFeaturesAction,
+        protected AssignSlugAction           $assignSlugAction,
+        protected ContentSlugCacheService    $contentSlugCacheService,
+        protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
     )
     {
     }
@@ -55,6 +57,7 @@ class UpdatePostAction
             $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);
+            $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
 
             return $post;
         });
