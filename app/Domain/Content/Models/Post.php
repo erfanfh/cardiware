@@ -110,4 +110,44 @@ class Post extends Model implements PageViewableInterface
     {
         return $this->hasMany(DownloadSection::class)->orderBy('sort_order')->orderBy('id');
     }
+
+    /**
+     * @return array
+     */
+    public function getDownloadSectionsForForm(): array
+    {
+        return $this->downloadSections()
+            ->with('entries')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(function ($section) {
+                return [
+                    'id' => $section->id,
+                    'title' => $section->title,
+                    'description' => $section->description,
+                    'password' => $section->password,
+                    'sort_order' => $section->sort_order,
+                    'entries' => $section->entries
+                        ->sortBy([
+                            ['sort_order', 'asc'],
+                            ['id', 'asc'],
+                        ])
+                        ->values()
+                        ->map(function ($entry) {
+                            return [
+                                'id' => $entry->id,
+                                'type' => $entry->type?->value ?? $entry->type,
+                                'title' => $entry->title,
+                                'content' => $entry->content,
+                                'sort_order' => $entry->sort_order,
+                            ];
+                        })
+                        ->values()
+                        ->all(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
 }
