@@ -167,4 +167,11 @@
                 value="{{ old('excerpt', $post->excerpt ?? '') }}"/>
         </x-admin.field>
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="باکس دانلود"
+        storageKey="post-download-sections"
+    >
+        @include('admin.content.posts.partials.download-sections')
+    </x-admin.metabox>
 </x-admin.page>
