@@ -29,7 +29,7 @@
             @if($entries->isNotEmpty())
                 <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
                     <div
-                        class="border-b border-slate-200 bg-[linear-gradient(135deg,#fff7ed,#ffffff)] px-5 py-4 sm:px-6">
+                        class="border-b border-slate-200 bg-[linear-gradient(135deg,#fff7ed,#ffffff)] px-5 py-4">
                         <div class="flex items-center gap-3">
                             <span
                                 class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-orange-600 whitespace-nowrap">
@@ -87,7 +87,7 @@
                         </div>
                     </div>
 
-                    <div class="px-5 py-5 sm:px-6 space-y-4">
+                    <div class="px-5 py-5 space-y-4">
                         @foreach($entries as $entry)
                             @if($entry->isLink())
                                 <div
@@ -155,6 +155,54 @@
                             @endif
                         @endforeach
                     </div>
+
+                    @if(filled($section->password))
+                        <div class="border-t border-slate-200 mt-2 px-5 py-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-brand-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                             viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M14.491 15.5h.009m-5 0h.009"/>
+                                                <path stroke-width="1.5"
+                                                      d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                      d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
+                                            </g>
+                                        </svg>
+                                    </span>
+
+                                    <div class="text-sm">
+                                        <span class="font-extrabold text-brand-600">رمز فایل ها:</span>
+                                        <span class="font-extrabold text-slate-800 mr-2" dir="ltr">
+                                            {{ $section->password }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    @click="copyText(@js($section->password ?? ''), '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}')"
+                                    class="inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
+                                        <g fill="none" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M14.491 15.5h.009m-5 0h.009"/>
+                                            <path stroke-width="1.5"
+                                                  d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                  d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
+                                        </g>
+                                    </svg>
+
+                                    کپی رمز
+                                </button>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endif
         @endforeach
