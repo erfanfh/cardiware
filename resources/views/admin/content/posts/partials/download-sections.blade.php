@@ -1,5 +1,5 @@
 @php
-    $downloadSections = old('download_sections', $downloadSections ?? []);
+    $downloadSections = old('download_sections', $post?->getDownloadSectionsForForm() ?? []);
 @endphp
 
 <div class="space-y-4">
@@ -74,23 +74,23 @@
                 class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
                 x-data
                 x-init="
-                        if (!Array.isArray(it.entries)) {
-                            it.entries = [];
-                        }
-                    "
+                    if (!Array.isArray(it.entries)) {
+                        it.entries = [];
+                    }
+                "
             >
                 <div
                     x-data="mwRepeater({
-                            items: it.entries,
-                            name: `${field(i, 'entries')}`,
-                            defaultItem: {
-                                id: null,
-                                type: 'link',
-                                title: '',
-                                content: '',
-                            },
-                            sortable: true,
-                        })"
+                        items: it.entries,
+                        name: field(i, 'entries'),
+                        defaultItem: {
+                            id: null,
+                            type: 'link',
+                            title: '',
+                            content: '',
+                        },
+                        sortable: true,
+                    })"
                     class="space-y-3"
                 >
                     <div class="flex items-center justify-between gap-3">
@@ -154,14 +154,14 @@
 
                                         <div class="min-w-0">
                                             <div class="truncate text-xs font-bold text-slate-800 max-w-[420px]">
-                                                    <span
-                                                        x-text="(entry.title && String(entry.title).trim().length)
-                                                            ? entry.title
-                                                            : 'آیتم جدید'"
-                                                        :class="(!entry.title || !String(entry.title).trim().length)
-                                                            ? 'text-slate-400 font-semibold'
-                                                            : ''"
-                                                    ></span>
+                                                <span
+                                                    x-text="(entry.title && String(entry.title).trim().length)
+                                                        ? entry.title
+                                                        : 'آیتم جدید'"
+                                                    :class="(!entry.title || !String(entry.title).trim().length)
+                                                        ? 'text-slate-400 font-semibold'
+                                                        : ''"
+                                                ></span>
                                             </div>
 
                                             <div
@@ -169,8 +169,8 @@
                                                 x-show="!entry._open"
                                                 x-cloak
                                             >
-                                                    <span
-                                                        x-text="entry.type === 'text' ? 'آیتم متنی' : 'لینک دانلود'"></span>
+                                                <span
+                                                    x-text="entry.type === 'text' ? 'آیتم متنی' : 'لینک دانلود'"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -199,7 +199,7 @@
                                 >
                                     <input
                                         type="hidden"
-                                        x-bind:name="`${field(i, 'entries')}[${entryIndex}][id]`"
+                                        x-bind:name="field(entryIndex, 'id')"
                                         x-model="entry.id"
                                     >
 
@@ -210,12 +210,12 @@
                                             </label>
 
                                             <x-admin.form.select
-                                                x-bind:name="`${field(i, 'entries')}[${entryIndex}][type]`"
+                                                x-bind:name="field(entryIndex, 'type')"
                                                 x-model="entry.type"
                                                 :options="[
-                                                        ['value' => 'link', 'label' => 'لینک'],
-                                                        ['value' => 'text', 'label' => 'متن'],
-                                                    ]"
+                                                    ['value' => 'link', 'label' => 'لینک'],
+                                                    ['value' => 'text', 'label' => 'متن'],
+                                                ]"
                                             />
                                         </div>
 
@@ -225,7 +225,7 @@
                                             </label>
 
                                             <x-admin.form.input
-                                                x-bind:name="`${field(i, 'entries')}[${entryIndex}][title]`"
+                                                x-bind:name="field(entryIndex, 'title')"
                                                 x-model="entry.title"
                                                 placeholder="مثلاً لینک مستقیم، Part 01 یا رمز نصب"
                                             />
@@ -241,7 +241,7 @@
                                             <div>
                                                 <x-admin.form.textarea
                                                     rows="3"
-                                                    x-bind:name="`${field(i, 'entries')}[${entryIndex}][content]`"
+                                                    x-bind:name="field(entryIndex, 'content')"
                                                     x-model="entry.content"
                                                     placeholder="مثلاً رمز فایل یا توضیح متنی"
                                                 />
@@ -252,7 +252,7 @@
                                             <div>
                                                 <x-admin.form.input
                                                     type="url"
-                                                    x-bind:name="`${field(i, 'entries')}[${entryIndex}][content]`"
+                                                    x-bind:name="field(entryIndex, 'content')"
                                                     x-model="entry.content"
                                                     placeholder="https://example.com/file.zip"
                                                     dir="ltr"
@@ -263,7 +263,7 @@
 
                                     <input
                                         type="hidden"
-                                        x-bind:name="`${field(i, 'entries')}[${entryIndex}][sort_order]`"
+                                        x-bind:name="field(entryIndex, 'sort_order')"
                                         x-model="entry.sort_order"
                                     >
                                 </div>
