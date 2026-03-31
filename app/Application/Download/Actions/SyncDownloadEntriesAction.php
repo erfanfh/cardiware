@@ -22,17 +22,10 @@ class SyncDownloadEntriesAction extends AbstractSyncRepeaterAction
      */
     protected function isMeaningfulItem(mixed $item): bool
     {
-        if (!is_array($item)) {
+        if (!is_array($item))
             return false;
-        }
 
         $type = $item['type'] ?? null;
-        $title = $this->nullableString($item['title'] ?? null);
-        $content = $this->nullableString($item['content'] ?? null);
-
-        if ($type === null || $title === null || $content === null) {
-            return false;
-        }
 
         return in_array($type, [
             DownloadEntryTypeEnum::LINK->value,
@@ -49,12 +42,8 @@ class SyncDownloadEntriesAction extends AbstractSyncRepeaterAction
     protected function mapItemToPayload(array $item, int $sortOrder, Model $owner): ?array
     {
         $type = $item['type'] ?? null;
-        $title = $this->nullableString($item['title'] ?? null);
-        $content = $this->nullableString($item['content'] ?? null);
-
-        if ($type === null || $title === null || $content === null) {
-            return null;
-        }
+        $title = $this->stringOrDefault($item['title'] ?? '');
+        $content = $this->stringOrDefault($item['content'] ?? '');
 
         if (!in_array($type, [
             DownloadEntryTypeEnum::LINK->value,
