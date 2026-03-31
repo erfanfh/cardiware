@@ -151,8 +151,8 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $data['status'] = filter_var($data['status'] ?? false, FILTER_VALIDATE_BOOLEAN)
-            ? UserStatusEnum::ACTIVE->value : UserStatusEnum::INACTIVE->value;
+        $data['role_id'] = $data['role'];
+        unset($data['role']);
 
         $user->update($data);
 

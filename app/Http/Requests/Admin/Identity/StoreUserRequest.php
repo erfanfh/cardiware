@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'mobile' => ['required', 'string', 'unique:users,mobile', 'regex:/^09[0-9]{9}$/'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'status' => ['required', 'nullable', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
+            'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
         ];
     }
 

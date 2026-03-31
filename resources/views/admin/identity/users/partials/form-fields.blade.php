@@ -1,6 +1,5 @@
 @php
     use App\Domain\Identity\Enums\UserStatusEnum;
-    $isEdit = isset($user) && $user;
     $statuses = [];
     foreach (UserStatusEnum::cases() as $status){
         $statuses[$status->value] = $status->label();
@@ -62,7 +61,7 @@
                     name="role"
                     placeholder="انتخاب نقش"
                     :options="\App\Domain\Identity\Models\Role::pluck('title', 'id')->all()"
-                    :value="old('role', \App\Domain\Identity\Models\Role::defaultRole()->id)"
+                    :value="old('role', $user->role_id ?? \App\Domain\Identity\Models\Role::defaultRole()->id)"
                 />
             </x-admin.field>
             <x-admin.field required label="وضعیت">
@@ -70,7 +69,7 @@
                     name="status"
                     placeholder="انتخاب وضعیت"
                     :options="$statuses"
-                    :value="old('status', UserStatusEnum::ACTIVE->value)"
+                    :value="old('status', $user->status->value ?? UserStatusEnum::ACTIVE->value)"
                 />
             </x-admin.field>
         </div>
@@ -79,7 +78,7 @@
     <x-admin.metabox title="امنیت">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
             <x-admin.field required label="رمز عبور">
-                <x-admin.form.password
+                <x-admin.form.secret-input
                     id="password"
                     type="password"
                     dir="ltr"
@@ -88,7 +87,7 @@
             </x-admin.field>
 
             <x-admin.field required label="تکرار رمز عبور">
-                <x-admin.form.password
+                <x-admin.form.secret-input
                     id="password_confirmation"
                     toggle="password_confirmation"
                     type="password"
