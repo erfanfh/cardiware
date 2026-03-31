@@ -4,6 +4,7 @@ namespace App\Domain\Content\Models;
 
 use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Download\Models\DownloadSection;
 use App\Domain\Feature\Traits\HasFeatures;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
@@ -13,6 +14,7 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -97,5 +99,15 @@ class Post extends Model implements PageViewableInterface
     public function getUrlAttribute(): string
     {
         return url($this->slug ?? '/');
+    }
+
+    /**
+     * Get the download sections of the post.
+     *
+     * @return HasMany
+     */
+    public function downloadSections(): HasMany
+    {
+        return $this->hasMany(DownloadSection::class)->orderBy('sort_order')->orderBy('id');
     }
 }
