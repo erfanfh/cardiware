@@ -15,6 +15,25 @@
             'href' => route('admin.pages.create'),
         ],
     ];
+
+    $contextAction = null;
+
+    if (request()->routeIs('contents.detail') && isset($post)) {
+        $contextAction = [
+            'title' => 'ویرایش نوشته',
+            'href' => route('admin.posts.edit', $post),
+        ];
+    } elseif (request()->routeIs('projects.detail') && isset($project)) {
+        $contextAction = [
+            'title' => 'ویرایش پروژه',
+            'href' => route('admin.projects.edit', $project),
+        ];
+    } elseif (request()->routeIs('contents.detail') && isset($page)) {
+        $contextAction = [
+            'title' => 'ویرایش برگه',
+            'href' => route('admin.pages.edit', $page),
+        ];
+    }
 @endphp
 
 @if($user)
@@ -55,7 +74,17 @@
                 </div>
 
                 <div class="hidden items-center gap-2 lg:flex">
-                    <div class="relative">
+                    <div class="relative flex items-center gap-2">
+                        @if($contextAction)
+                            <a
+                                href="{{ $contextAction['href'] }}"
+                                class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-2.5 leading-7 text-xs font-medium text-white transition hover:bg-white/15"
+                            >
+                                @include('icons.edit-03')
+                                <span>{{ $contextAction['title'] }}</span>
+                            </a>
+                        @endif
+
                         <button
                             type="button"
                             @click="quickOpen = !quickOpen"
@@ -162,6 +191,16 @@
                 style="display: none;"
             >
                 <div class="grid gap-2">
+                    @if($contextAction)
+                        <a
+                            href="{{ $contextAction['href'] }}"
+                            class="flex items-center justify-between rounded-xl bg-brand-500/15 px-3 py-3 text-sm font-medium text-white transition hover:bg-brand-500/20"
+                        >
+                            <span>{{ $contextAction['title'] }}</span>
+                            @include('icons.edit-03')
+                        </a>
+                    @endif
+
                     <a
                         href="{{ route('admin.projects.create') }}"
                         class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
