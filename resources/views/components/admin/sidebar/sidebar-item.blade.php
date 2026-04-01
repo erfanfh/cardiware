@@ -34,9 +34,9 @@
             <a
                 href="{{ $href }}"
                 class="
-                flex items-center px-4 py-2 rounded-md transition-colors duration-200
-                {{ $isActive ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-700' }}
-                hover:text-gray-700 dark:hover:text-gray-200
+                flex items-center px-4 py-2 rounded-2xl transition-colors duration-200 hover:bg-brand-500 hover:text-white
+                {{ $isActive ? 'bg-brand-500 text-white' : '' }}
+                hover:text-gray-700
             "
             >
             <span class="shrink-0">
@@ -56,9 +56,9 @@
             <button
                 type="button"
                 class="
-                cursor-pointer w-full flex items-center px-4 py-2 rounded-md transition-colors duration-200 text-right
-                {{ $isActive ? 'bg-gray-100 dark:bg-gray-700' : 'hover:bg-gray-200 dark:hover:bg-gray-700' }}
-                hover:text-gray-700 dark:hover:text-gray-200
+                cursor-pointer w-full flex items-center px-4 py-2 rounded-2xl transition-colors duration-200 text-right hover:bg-brand-500 hover:text-white
+                {{ $isActive ? 'bg-brand-500 text-white' : '' }}
+                hover:text-gray-700
             "
                 @click="open = !open"
             >
@@ -87,7 +87,7 @@
             <div
                 x-show="open"
                 x-transition
-                class="mt-1 mr-4 pr-2 border-r border-gray-100 dark:border-gray-800"
+                class="mt-1 mr-4 pr-2 border-r border-gray-100"
             >
                 <ul class="space-y-1">
                     @foreach($children as $child)
