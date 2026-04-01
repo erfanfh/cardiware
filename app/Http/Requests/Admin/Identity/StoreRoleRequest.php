@@ -29,7 +29,7 @@ class StoreRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255', 'unique:roles,title'],
+            'title' => ['required', 'max:255', 'unique:roles,title'],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['integer', 'exists:permissions,id'],
         ];

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Identity\PermissionSearchController;
 use App\Http\Controllers\Admin\Identity\RoleController;
 use App\Http\Controllers\Admin\Identity\UserController;
 use Illuminate\Support\Facades\Route;
@@ -10,3 +11,5 @@ Route::post('roles/{role}/assign-new-role', [RoleController::class, 'assignNewRo
 
 Route::resource('users', UserController::class)->names('users');
 Route::get('/users/fetch', [UserController::class, 'usersFetch'])->name('users.fetch');
+
+Route::get('permissions/ajax-search', PermissionSearchController::class)->name('permissions.ajax-search');
