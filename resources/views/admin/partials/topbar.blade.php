@@ -1,6 +1,6 @@
-<div x-data="adminTopbar()" class="relative">
+<div x-data="adminTopbar()" class="sticky top-0">
     <header
-        class="h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-5 py-[10px] sticky top-0 z-20 ps-[12px] pe-[14px] lg:px-5"
+        class="h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-5 py-[10px] relative top-0 z-20 ps-[12px] pe-[14px] lg:px-5"
     >
         <div class="flex items-center gap-3 min-w-0">
             <button
