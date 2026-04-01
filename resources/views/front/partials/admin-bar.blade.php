@@ -262,5 +262,13 @@
         </div>
     </div>
 
-    <div class="h-10"></div>
+    <style>
+        body {
+            padding-top: 2.5rem;
+        }
+
+        #header {
+            top: 2.5rem;
+        }
+    </style>
 @endif

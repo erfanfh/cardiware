@@ -1,6 +1,6 @@
 @include('front.header.announcement')
 
-<header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+<header id="header" class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="mx-auto max-w-7xl px-4 py-4">
         <div class="flex items-center gap-3">
             <a href="{{ route('home') }}" class="flex items-center gap-2">
