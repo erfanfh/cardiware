@@ -284,32 +284,32 @@
                             <span class="text-slate-500">وضعیت</span>
                             <span class="font-extrabold"
                                   :class="project.status==='done' ? 'text-emerald-700' : 'text-brand-700'"
-                                  x-text="project.statusLabel"></span>
+                            >{{ \App\Domain\Project\Enums\ProjectStatusEnum::from($project->status->value)->label() }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-slate-500">پیشرفت</span>
-                            <span class="font-extrabold" x-text="project.progress + '%'"></span>
+                            <span class="font-extrabold">{{ $project->progress_percent . '%' }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-slate-500">نسخه فعلی</span>
-                            <span class="font-extrabold" x-text="project.version"></span>
+                            <span class="font-extrabold">{{ $project->current_version }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-slate-500">سازنده</span>
-                            <span class="font-extrabold" x-text="project.owner"></span>
+                            <span class="font-extrabold">{{ $project->creator_name }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-slate-500">پلتفرم</span>
-                            <span class="font-extrabold" x-text="project.platform"></span>
+                            <span class="font-extrabold">{{ $project->platform }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
                             <span class="text-slate-500">آخـرین آپدیت</span>
-                            <span class="font-extrabold" x-text="project.updated"></span>
+                            <span class="font-extrabold">{{ jalali_date($project->last_updated_at, 'd F Y') }}</span>
                         </div>
                     </div>
 
@@ -338,92 +338,3 @@
 
     </main>
 @endsection
-
-@push('scripts')
-    <script>
-        function projectPage() {
-            return {
-                followed: false,
-                project: {
-                    title: 'پچ فارسی‌ساز نسخه جدید',
-                    summary: 'بهبود فونت و زیرنویس‌ها، اصلاح منوها و سازگاری بهتر با نسخه‌های مختلف بازی. تمرکز روی نصب ساده و تجربه کاربری روان.',
-                    status: 'active',
-                    statusLabel: '{{ \App\Domain\Project\Enums\ProjectStatusEnum::from($project->status->value)->label() }}',
-                    progress: {{ $project->progress_percent }},
-                    updated: '{{ jalali_date($project->last_updated_at, 'd F Y') }}',
-                    version: '{{ $project->current_version }}',
-                    target: 'نسخه پایدار v1.0',
-                    owner: '{{ $project->creator_name }}',
-                    platform: '{{ $project->platform }}',
-                    focus: 'خوانایی متن، زیرنویس، منو و پایداری',
-                    compat: 'سازگار با نسخه‌های 1.0 تا 1.2',
-                    plan: 'انتشار نسخه‌های کوتاه و منظم',
-                    tags: ['Patch', 'Persian'],
-                    cover: 'https://picsum.photos/seed/mw-proj-cover/1400/700',
-                    stats: {tasks: 48, bugs: 9, updates: 16},
-                    details: {
-                        p1: 'این پروژه با هدف ارائه یک تجربه فارسی‌سازی استاندارد و پایدار توسعه داده می‌شود. تمرکز اصلی روی خوانایی، هماهنگی UI و کاهش خطاهای رایج پس از نصب است.',
-                        p2: 'در نسخه‌های جدید علاوه بر بهبود فونت‌ها، بخشی از ترجمه‌ها بازنویسی شده و مسیر نصب ساده‌تر شده تا کاربران بدون دردسر بتوانند پچ را اعمال کنند.'
-                    },
-                    roadmap: [
-                        {
-                            title: 'پایه‌سازی فونت و منوها',
-                            desc: 'هماهنگ‌سازی فونت، اندازه‌ها و اصلاح بخش‌های اصلی UI',
-                            state: 'done',
-                            stateLabel: 'تکمیل',
-                            progress: 100
-                        },
-                        {
-                            title: 'بازنویسی ترجمه‌ها',
-                            desc: 'یکدست‌سازی ترجمه‌ها + اصلاح جمله‌بندی‌ها',
-                            state: 'doing',
-                            stateLabel: 'درحال انجام',
-                            progress: 58
-                        },
-                        {
-                            title: 'بهینه‌سازی نصب و بکاپ',
-                            desc: 'تشخیص مسیر بازی + بکاپ‌گیری از فایل‌های حساس',
-                            state: 'todo',
-                            stateLabel: 'در صف',
-                            progress: 10
-                        },
-                        {
-                            title: 'نسخه پایدار v1.0',
-                            desc: 'تست سناریوهای نصب + رفع خطاهای نهایی',
-                            state: 'todo',
-                            stateLabel: 'در صف',
-                            progress: 0
-                        },
-                    ],
-                    updates: [
-                        {
-                            id: 1,
-                            title: 'بهبود فونت‌ها و خوانایی',
-                            text: 'فونت جدید اضافه شد و اندازه‌ها برای رزولوشن‌های مختلف تنظیم شدند.',
-                            time: '۳ روز پیش',
-                            badges: ['UI', 'Readability']
-                        },
-                        {
-                            id: 2,
-                            title: 'رفع چند خطای نصب',
-                            text: 'اسکریپت نصب اصلاح شد تا روی مسیرهای غیر استاندارد هم درست عمل کند.',
-                            time: '۱ هفته پیش',
-                            badges: ['Installer', 'Fix']
-                        },
-                        {
-                            id: 3,
-                            title: 'بازنویسی بخشی از ترجمه‌ها',
-                            text: 'ترجمه منوهای اصلی بازنگری شد و اصطلاحات یکدست شدند.',
-                            time: '۲ هفته پیش',
-                            badges: ['Persian', 'Update']
-                        },
-                    ],
-                },
-
-                copyText(txt) {
-                    navigator.clipboard?.writeText(txt);
-                }
-            }
-        }
-    </script>
-@endpush
