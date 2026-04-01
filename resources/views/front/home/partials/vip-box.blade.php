@@ -8,7 +8,7 @@
         </div>
     </div>
     <a href="#"
-       class="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-brand-500 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition shadow-soft">
+       class="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-brand-500 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition shadow-lg">
         فعال‌سازی اشتراک
     </a>
 </div>

@@ -3,7 +3,7 @@
     'hoverable' => true,
 ])
 
-<div {{ $attributes->merge(['class' => 'overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft']) }}>
+<div {{ $attributes->merge(['class' => 'overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg']) }}>
     <div class="overflow-x-auto">
         <table class="min-w-full text-sm text-slate-700">
             {{ $slot }}

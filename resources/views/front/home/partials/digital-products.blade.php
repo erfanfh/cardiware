@@ -20,7 +20,7 @@
             <div
                 class="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-3 pr-8 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <article
-                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                     <!-- uniform image ratio -->
                     <div class="relative aspect-[16/9] bg-slate-100">
                         <img class="absolute inset-0 h-full w-full object-cover"
@@ -57,7 +57,7 @@
                 </article>
 
                 <article
-                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                     <div class="relative aspect-[16/9] bg-slate-100">
                         <img class="absolute inset-0 h-full w-full object-cover"
                              src="https://moddingway.ir/wp-content/uploads/2025/10/pes-2021-hano-patch-v3-2026.webp"
@@ -91,7 +91,7 @@
                 </article>
 
                 <article
-                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                    class="snap-start min-w-[40%] rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                     <div class="relative aspect-[16/9] bg-slate-100">
                         <img class="absolute inset-0 h-full w-full object-cover"
                              src="https://moddingway.ir/wp-content/uploads/2025/11/pes-2021-viruared-patch-V10.webp"

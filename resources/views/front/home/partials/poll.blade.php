@@ -1,4 +1,4 @@
-<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition"
+<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition"
      x-data="{
   voted: false,
   selected: 'free',

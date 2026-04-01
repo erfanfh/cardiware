@@ -8,7 +8,7 @@
     x-transition:leave-start="opacity-100 translate-y-0"
     x-transition:leave-end="opacity-0 -translate-y-2"
     {{ $attributes->merge([
-        'class' => 'rounded-2xl border border-slate-200 bg-white p-5 shadow-soft'
+        'class' => 'rounded-2xl border border-slate-200 bg-white p-5 shadow-lg'
     ]) }}
 >
     {{ $slot }}

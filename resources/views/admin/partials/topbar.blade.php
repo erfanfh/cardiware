@@ -107,7 +107,7 @@
                     x-transition:leave="transition ease-in duration-100"
                     x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                     x-transition:leave-end="opacity-0 translate-y-1 scale-[0.98]"
-                    class="absolute left-0 top-full mt-2 min-w-56 overflow-hidden rounded-3xl border border-slate-200 bg-white p-2 shadow-soft2"
+                    class="absolute left-0 top-full mt-2 min-w-56 overflow-hidden rounded-3xl border border-slate-200 bg-white p-2"
                 >
                     <div class="rounded-2xl bg-slate-100/80 px-3 py-3">
                         <div class="flex items-center gap-3">

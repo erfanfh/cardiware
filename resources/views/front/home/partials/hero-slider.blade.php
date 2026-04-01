@@ -2,7 +2,7 @@
 
 <div class="w-full">
     @if(count($items) > 0)
-        <div class="hero-slider relative overflow-hidden rounded-2xl bg-slate-900 shadow-soft2">
+        <div class="hero-slider relative overflow-hidden rounded-2xl bg-slate-900">
             <div class="swiper heroSwiper h-full">
                 <div class="swiper-wrapper">
                     @foreach($items as $item)
@@ -50,7 +50,7 @@
                                         @if($item['primary_button_text'])
                                             <a href="{{ $item['primary_button_url'] }}"
                                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
-                          hover:bg-brand-600 active:bg-brand-700 transition shadow-soft">
+                          hover:bg-brand-600 active:bg-brand-700 transition shadow-lg">
                                                 {{ $item['primary_button_text'] }}
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                                     <path d="M12 3v10m0 0 4-4m-4 4-4-4" stroke="currentColor"

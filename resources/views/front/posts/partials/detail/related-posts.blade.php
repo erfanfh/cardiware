@@ -16,7 +16,7 @@
     <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Featured related -->
         <a href="#"
-           class="rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-soft transition group">
+           class="rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition group">
             <div class="relative">
                 <img src="https://picsum.photos/seed/mw-rel-feature/1200/800" alt=""
                      class="h-44 sm:h-52 w-full object-cover opacity-80 group-hover:scale-[1.02] transition duration-500">

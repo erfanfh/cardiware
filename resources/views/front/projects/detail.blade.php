@@ -4,7 +4,7 @@
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8" x-data="projectPage()">
 
-        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-soft2">
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl">
             @if($project->cover)
                 <img src="{{ $project->cover->url }}" alt="{{ $project->title }}" title="{{ $project->title }}"
                      class="absolute inset-0 h-full w-full object-cover opacity-80"/>
@@ -319,7 +319,7 @@
 
                     <div class="mt-5 grid grid-cols-2 gap-3">
                         <a href="#updates"
-                           class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white shadow-soft hover:bg-brand-600 active:bg-brand-700 transition text-center">
+                           class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition text-center">
                             مشاهده آپدیت‌ها
                         </a>
                         <a href="#roadmap"
@@ -338,7 +338,7 @@
 
                     <div class="mt-4 flex items-center gap-2">
                         <button @click="followed = !followed"
-                                class="flex-1 rounded-2xl px-4 py-3 text-sm font-extrabold shadow-soft transition"
+                                class="flex-1 rounded-2xl px-4 py-3 text-sm font-extrabold shadow-lg transition"
                                 :class="followed ? 'bg-slate-900 text-white hover:opacity-95' : 'bg-brand-500 text-white hover:bg-brand-600 active:bg-brand-700'">
                             <span x-text="followed ? 'دنبال می‌کنم ✓' : 'دنبال کردن'"></span>
                         </button>

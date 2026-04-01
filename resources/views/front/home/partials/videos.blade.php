@@ -20,7 +20,7 @@
 
                 <!-- Card -->
                 <a href="#"
-                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-soft transition">
+                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition">
                     <!-- Thumb -->
                     <div class="relative h-40">
                         <img class="absolute inset-0 h-full w-full object-cover opacity-90"
@@ -78,7 +78,7 @@
 
                 <!-- Card -->
                 <a href="#"
-                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-soft transition">
+                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition">
                     <div class="relative h-40">
                         <img class="absolute inset-0 h-full w-full object-cover opacity-90"
                              src="https://moddingway.ir/wp-content/uploads/2025/09/%D8%AA%D8%B3%D8%AA-%D8%A7%D8%AC%D8%B1%D8%A7%DB%8C-FC26-%D8%B1%D9%88%DB%8C-%D8%B3%DB%8C%D8%B3%D8%AA%D9%85.webp"
@@ -131,7 +131,7 @@
 
                 <!-- Card -->
                 <a href="#"
-                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-soft transition">
+                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition">
                     <div class="relative h-40">
                         <img class="absolute inset-0 h-full w-full object-cover opacity-90"
                              src="https://moddingway.ir/wp-content/uploads/2022/01/%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%D8%B3%D8%A7%D8%AE%D8%AA-%D9%BE%D8%B1%DA%86%D9%85-%DA%A9%D8%B1%D9%86%D8%B1-PES2017.jpg"
@@ -183,7 +183,7 @@
 
                 <!-- Card -->
                 <a href="#"
-                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-soft transition">
+                   class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition">
                     <div class="relative h-40">
                         <img class="absolute inset-0 h-full w-full object-cover opacity-90"
                              src="https://moddingway.ir/wp-content/uploads/2021/12/photo_2021-12-31_18-35-44.jpg"

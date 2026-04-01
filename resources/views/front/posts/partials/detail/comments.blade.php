@@ -168,7 +168,7 @@
                                             لغو
                                         </button>
                                         <button
-                                            class="h-10 px-4 rounded-2xl bg-brand-500 text-white text-sm font-extrabold shadow-soft hover:bg-brand-600 active:bg-brand-700 transition">
+                                            class="h-10 px-4 rounded-2xl bg-brand-500 text-white text-sm font-extrabold shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                                             ارسال پاسخ
                                         </button>
                                     </div>
