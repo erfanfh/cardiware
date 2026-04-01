@@ -14,11 +14,31 @@
     $children = $item['children'] ?? [];
     $hasChildren = is_array($children) && count($children) > 0;
 
-    $activePatterns = (array)($item['active'] ?? ($route ? [$route, $route.'.*'] : []));
-    $isActive = false;
-    foreach ($activePatterns as $pattern) {
-        if (request()->routeIs($pattern)) { $isActive = true; break; }
-    }
+    $isItemActive = function (array $sidebarItem) use (&$isItemActive): bool {
+        $itemRoute = $sidebarItem['route'] ?? null;
+        $itemChildren = $sidebarItem['children'] ?? [];
+        $itemHasChildren = is_array($itemChildren) && count($itemChildren) > 0;
+
+        $activePatterns = (array)($sidebarItem['active'] ?? ($itemRoute ? [$itemRoute, $itemRoute . '.*'] : []));
+
+        foreach ($activePatterns as $pattern) {
+            if (request()->routeIs($pattern)) {
+                return true;
+            }
+        }
+
+        if ($itemHasChildren) {
+            foreach ($itemChildren as $child) {
+                if (is_array($child) && $isItemActive($child)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    $isActive = $isItemActive($item);
 
     $allowed = true;
     if ($can)  $allowed = auth()->check() && auth()->user()->can($can);
@@ -39,16 +59,16 @@
                 hover:text-gray-700
             "
             >
-            <span class="shrink-0">
-                @if($iconView)
-                    @includeIf($iconView)
-                @else
-                    <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="1.6">
-                        <path stroke-linecap="round" d="M5 12h14"/>
-                    </svg>
-                @endif
-            </span>
+                <span class="shrink-0">
+                    @if($iconView)
+                        @includeIf($iconView)
+                    @else
+                        <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6">
+                            <path stroke-linecap="round" d="M5 12h14"/>
+                        </svg>
+                    @endif
+                </span>
                 <span class="mx-3 font-medium text-sm">{{ $label }}</span>
             </a>
         @else
@@ -57,21 +77,19 @@
                 type="button"
                 class="
                 cursor-pointer w-full flex items-center px-4 py-2 rounded-2xl transition-colors duration-200 text-right hover:bg-brand-500 hover:text-white
-                {{ $isActive ? 'bg-brand-500 text-white' : '' }}
-                hover:text-gray-700
             "
                 @click="open = !open"
             >
-            <span class="shrink-0">
-                @if($iconView)
-                    @includeIf($iconView)
-                @else
-                    <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="1.6">
-                        <path stroke-linecap="round" d="M6 8h12M6 12h12M6 16h12"/>
-                    </svg>
-                @endif
-            </span>
+                <span class="shrink-0">
+                    @if($iconView)
+                        @includeIf($iconView)
+                    @else
+                        <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6">
+                            <path stroke-linecap="round" d="M6 8h12M6 12h12M6 16h12"/>
+                        </svg>
+                    @endif
+                </span>
 
                 <span class="mx-3 font-medium text-sm flex-1">{{ $label }}</span>
 
