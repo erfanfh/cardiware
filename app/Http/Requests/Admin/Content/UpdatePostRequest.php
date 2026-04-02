@@ -29,6 +29,7 @@ class UpdatePostRequest extends FormRequest
                 'alpha_dash',
             ],
             'status' => ['required', Rule::enum(PostStatusEnum::class)],
+            'is_pinned' => ['boolean'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'author_id' => ['nullable', 'integer', 'exists:users,id'],
             'body' => ['required', 'string'],

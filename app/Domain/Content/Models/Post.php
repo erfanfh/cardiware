@@ -29,12 +29,14 @@ class Post extends Model implements PageViewableInterface
         'excerpt',
         'body',
         'status',
+        'is_pinned',
         'picture_id',
         'published_at',
     ];
 
     protected $casts = [
         'status' => PostStatusEnum::class,
+        'is_pinned' => 'boolean',
     ];
 
     /**

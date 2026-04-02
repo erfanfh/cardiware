@@ -22,6 +22,17 @@
 
                 <x-admin.field
                     class="col-span-12"
+                    label="سنجاق کردن نوشته"
+                >
+                    <x-admin.form.select
+                        name="is_pinned"
+                        :options="['0' => 'خیر', '1' => 'بله']"
+                        :value="old('is_pinned', $post?->is_pinned)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
                     label="وضعیت"
                 >
                     <x-admin.form.select
