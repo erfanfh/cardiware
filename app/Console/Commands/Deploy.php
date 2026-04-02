@@ -29,12 +29,15 @@ class Deploy extends Command
         $this->info('🚀 Running post-deploy commands...');
 
         $commands = [
+            'optimize:clear',
             'migrate',
             DatabaseSeeder::class,
-            'optimize:clear',
-            'optimize',
-            'queue:restart',
         ];
+
+        if (app()->environment('production'))
+            $commands[] = 'optimize';
+
+        $commands[] = 'queue:restart';
 
         foreach ($commands as $command) {
             $this->call($command);
