@@ -22,6 +22,7 @@ class UpdatePostAction
         protected AssignSlugAction           $assignSlugAction,
         protected ContentSlugCacheService    $contentSlugCacheService,
         protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
+        protected SyncPostImageGalleryAction $syncPostImageGalleryAction,
     )
     {
     }
@@ -39,7 +40,10 @@ class UpdatePostAction
 
             unset(
                 $postData['tags'],
+                $postData['category_ids'],
                 $postData['slug'],
+                $postData['download_sections'],
+                $postData['image_gallery_items'],
             );
 
             $post->update($postData);
@@ -58,6 +62,7 @@ class UpdatePostAction
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);
             $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
+            $this->syncPostImageGalleryAction->execute($post, $data['image_gallery_items'] ?? []);
 
             return $post;
         });
