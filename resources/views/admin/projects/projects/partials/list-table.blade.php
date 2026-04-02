@@ -104,7 +104,7 @@
                                 <a
                                     :href="rows[{{ $project->id }}]?.urls?.detail"
                                     target="_blank"
-                                    class="line-clamp-1 text-sm font-bold text-slate-800 transition hover:text-brand-600"
+                                    class="inline-block leading-6 text-sm font-bold text-slate-800 transition hover:text-brand-600"
                                     x-text="rows[{{ $project->id }}]?.title ?? ''"
                                 ></a>
 
@@ -214,23 +214,24 @@
                             <div class="flex flex-wrap gap-2">
                                 <template x-if="rows[{{ $project->id }}]?.tags?.length">
                                     <template x-for="tag in rows[{{ $project->id }}].tags" :key="tag.id">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200"
+                                        <x-admin.badge
                                             x-text="tag.title"
-                                        ></span>
+                                            size="md"
+                                            class="whitespace-nowrap"
+                                        ></x-admin.badge>
                                     </template>
                                 </template>
 
                                 <template x-if="!(rows[{{ $project->id }}]?.tags?.length)">
-                                    <span class="text-xs text-slate-400">بدون برچسب</span>
+                                    <span class="text-xs text-slate-400">---</span>
                                 </template>
                             </div>
                         </x-admin.list.td>
 
                         <x-admin.list.td muted>
                             <div class="text-xs leading-6">
-                                <div>{{ jalali_date($project->updated_at, 'Y/m/d') }}</div>
-                                <div>{{ jalali_date($project->updated_at, 'H:i') }}</div>
+                                <div>{{ jalali_date($project->created_at, 'Y/m/d') }}</div>
+                                <div>{{ jalali_date($project->created_at, 'H:i') }}</div>
                             </div>
                         </x-admin.list.td>
                     </x-admin.list.tr>
