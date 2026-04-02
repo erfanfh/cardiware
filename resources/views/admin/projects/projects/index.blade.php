@@ -28,5 +28,5 @@
 @endsection
 
 @push('scripts')
-    @vite(['resources/js/admin/project-index.js'])
+    @vite(['resources/js/admin/list-table.js'])
 @endpush

@@ -92,7 +92,7 @@ document.addEventListener('alpine:init', () => {
 
                 this.rows[id] = {
                     ...this.rows[id],
-                    ...data.project,
+                    ...data.updatedItem,
                 };
 
                 this.clearErrors(id);
