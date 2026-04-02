@@ -61,7 +61,7 @@ class QuickUpdateProjectController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'پروژه با موفقیت به‌روزرسانی شد.',
-                'project' => [
+                'updatedItem' => [
                     'id' => $project->id,
                     'title' => $project->title,
                     'slug' => $project->slug,
