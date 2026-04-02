@@ -1,4 +1,4 @@
-<div x-data="adminTopbar()" class="sticky top-0">
+<div x-data="adminTopbar()" class="sticky top-0 z-20">
     <header
         class="h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-5 py-[10px] relative top-0 z-20 ps-[12px] pe-[14px] lg:px-5"
     >
