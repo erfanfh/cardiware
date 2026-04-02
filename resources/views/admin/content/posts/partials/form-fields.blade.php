@@ -185,4 +185,11 @@
     >
         @include('admin.content.posts.partials.download-sections')
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="گالری تصاویر"
+        storageKey="post-image-gallery"
+    >
+        @include('admin.content.posts.partials.image-gallery')
+    </x-admin.metabox>
 </x-admin.page>
