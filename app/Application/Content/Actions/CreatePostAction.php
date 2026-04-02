@@ -22,6 +22,7 @@ class CreatePostAction
         protected AssignSlugAction           $assignSlugAction,
         protected ContentSlugCacheService    $contentSlugCacheService,
         protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
+        protected SyncPostImageGalleryAction $syncPostImageGalleryAction,
     )
     {
     }
@@ -40,7 +41,10 @@ class CreatePostAction
 
             unset(
                 $postData['tags'],
+                $postData['category_ids'],
                 $postData['slug'],
+                $postData['download_sections'],
+                $postData['image_gallery_items'],
             );
 
             $post = Post::create($postData);
@@ -59,6 +63,7 @@ class CreatePostAction
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);
             $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
+            $this->syncPostImageGalleryAction->execute($post, $data['image_gallery'] ?? []);
 
             return $post;
         });
