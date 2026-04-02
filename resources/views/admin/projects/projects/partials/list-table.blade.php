@@ -240,7 +240,6 @@
                 @endforeach
             @else
                 <x-admin.list.empty
-                    colspan="7"
                     title="پروژه‌ای برای نمایش وجود ندارد"
                     description="هنوز هیچ پروژه‌ای ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
                     action-text="افزودن پروژه جدید"

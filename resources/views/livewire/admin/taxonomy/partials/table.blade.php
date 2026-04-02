@@ -45,7 +45,6 @@
             ])
         @empty
             <x-admin.list.empty
-                colspan="7"
                 title="{{ $taxonomyLabel }}ی برای نمایش وجود ندارد"
                 description="هنوز هیچ {{ $taxonomyLabel }}ی ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
             />
