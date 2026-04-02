@@ -49,7 +49,7 @@
 
                     <x-admin.form.select name="front_badge" :options="$frontBadges" placeholder="--- انتخاب کنید ---"
                                          style="width: auto !important;"
-                                         :value="old('front_badge', $selectedFeatures?->frontBadge?->value)"/>
+                                         :value="old('front_badge', $selectedFeatures?->frontBadge?->value ?? '')"/>
                 </x-admin.field>
 
                 <x-admin.field
@@ -57,14 +57,14 @@
                     label="نوشته ویژه"
                 >
                     <x-admin.form.switch name="is_special"
-                                         :checked="old('is_special', $selectedFeatures?->isSpecial)"/>
+                                         :checked="old('is_special', $selectedFeatures?->isSpecial ?? false)"/>
                 </x-admin.field>
 
                 <x-admin.field
                     class="col-span-12 flex items-center gap-3 [&_label]:mb-0"
                     label="نوشته VIP"
                 >
-                    <x-admin.form.switch name="is_vip" :checked="old('is_vip', $selectedFeatures?->isVip)"/>
+                    <x-admin.form.switch name="is_vip" :checked="old('is_vip', $selectedFeatures?->isVip ?? false)"/>
                 </x-admin.field>
 
                 <x-admin.field
@@ -72,7 +72,7 @@
                     label="نوشته به روزرسانی شده"
                 >
                     <x-admin.form.switch name="is_updated"
-                                         :checked="old('is_updated', $selectedFeatures?->isUpdated)"/>
+                                         :checked="old('is_updated', $selectedFeatures?->isUpdated ?? false)"/>
                 </x-admin.field>
             </div>
         </x-admin.metabox>
