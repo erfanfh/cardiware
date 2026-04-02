@@ -1,5 +1,5 @@
 @props([
-   'name',
+   'name' => null,
    'checked' => false,
    'disabled' => false,
 ])
@@ -10,7 +10,7 @@
 >
     <input
         type="hidden"
-        name="{{ $name }}"
+        @if($name) name="{{ $name }}" @endif
         :value="on ? 1 : 0"
         {{ $disabled ? 'disabled' : '' }}
     >
