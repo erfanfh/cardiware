@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
-use App\Infrastructure\Casts\MediaFileCast;
+use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
 class SidebarWidgetsSettings extends BaseSettings
@@ -24,5 +24,11 @@ class SidebarWidgetsSettings extends BaseSettings
         'comments_title',
         'comments_subtitle',
         'comments_comments_count',
+    ];
+
+    protected array $casts = [
+        'tools_items' => RepeaterArrayCast::class,
+        'categories_items' => RepeaterArrayCast::class,
+        'projects_items' => RepeaterArrayCast::class,
     ];
 }
