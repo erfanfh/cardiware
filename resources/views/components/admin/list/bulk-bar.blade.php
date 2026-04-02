@@ -8,7 +8,7 @@
 
 <div
     {{ $attributes->merge([
-        'class' => 'rounded-2xl border p-4 shadow-lg transition-all duration-200 border-slate-200 bg-white'
+        'class' => 'rounded-2xl border p-4 transition-all duration-200 border-slate-200 bg-white'
     ]) }}
 >
     <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
