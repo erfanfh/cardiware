@@ -38,11 +38,11 @@
         }
     }"
 >
-    <header class="px-4 py-3 border-b border-slate-200 flex items-center justify-between gap-3">
+    <header @click="toggle()"
+            class="px-4 py-3 border-b border-slate-200 flex items-center justify-between gap-3 cursor-pointer">
         <button
             type="button"
-            class="flex items-center gap-2 min-w-0 text-right hover:opacity-80 transition"
-            @click="toggle()"
+            class="flex items-center gap-2 min-w-0 text-right hover:opacity-80 transition cursor-pointer"
             :aria-expanded="open.toString()"
         >
             @if($icon)
@@ -61,7 +61,6 @@
                 <button
                     type="button"
                     class="h-9 w-9 cursor-pointer rounded-2xl border border-slate-200  bg-white  hover:bg-slate-100 transition grid place-items-center text-slate-600"
-                    @click="toggle()"
                     title="باز/بسته"
                 >
                     <span x-show="open" x-cloak>−</span>
