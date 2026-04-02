@@ -3,6 +3,7 @@
 namespace App\Domain\Content\Models;
 
 use App\Domain\Audit\Traits\Auditable;
+use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Download\Models\DownloadSection;
 use App\Domain\Feature\Traits\HasFeatures;
@@ -147,6 +148,46 @@ class Post extends Model implements PageViewableInterface
                         })
                         ->values()
                         ->all(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(PostMedia::class);
+    }
+
+    public function imageGallery()
+    {
+        return $this->media()
+            ->where('collection', PostMediaCollectionEnum::IMAGE_GALLERY)
+            ->orderBy('sort_order');
+    }
+
+    public function videoGallery()
+    {
+        return $this->media()
+            ->where('collection', PostMediaCollectionEnum::VIDEO_GALLERY)
+            ->orderBy('sort_order');
+    }
+
+    /**
+     * @return array
+     */
+    public function getImageGalleryForForm(): array
+    {
+        return $this->imageGallery
+            ->map(function ($imageGallery) {
+                return [
+                    'id' => $imageGallery->id,
+                    'title' => $imageGallery->title,
+                    'image' => [
+                        'id' => $imageGallery->media_file_id,
+                        'path' => $imageGallery->mediaFile->url,
+                    ],
+                    'sort_order' => $imageGallery->sort_order,
                 ];
             })
             ->values()
