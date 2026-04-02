@@ -142,6 +142,32 @@ class SettingController extends Controller
     }
 
     /**
+     * General settings page
+     *
+     * @return View
+     */
+    public function sidebarWidgets(): View
+    {
+        return view('admin.system.settings.sidebar-widgets');
+    }
+
+    /**
+     * Store home settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeSidebarWidgets(Request $request): RedirectResponse
+    {
+        $this->storeSettings($request, 'sidebarWidgets');
+
+        return redirect()
+            ->route('admin.settings.sidebar-widgets')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * @param Request $request
      * @param string $group
      * @return void

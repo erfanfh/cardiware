@@ -230,3 +230,17 @@ if (!function_exists('first_filled')) {
         return '';
     }
 }
+
+if (!function_exists('approximate_view')) {
+    function approximate_view(int $number): string
+    {
+        if ($number < 100)
+            return '0';
+        elseif ($number < 1000)
+            return '+' . (floor($number / 100) * 100);
+        elseif ($number < 1000000)
+            return '+' . (floor($number / 1000)) . 'K';
+        else
+            return '+1M';
+    }
+}
