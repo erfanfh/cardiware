@@ -66,6 +66,14 @@ class UpdatePostRequest extends FormRequest
             'download_sections.*.entries.*.title' => ['nullable', 'string', 'max:255'],
             'download_sections.*.entries.*.content' => ['nullable', 'string'],
             'download_sections.*.entries.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'image_gallery_items' => ['nullable', 'array'],
+            'image_gallery_items.*' => ['array'],
+
+            'image_gallery_items.*.id' => ['nullable', 'integer'],
+            'image_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
+            'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
+            'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
