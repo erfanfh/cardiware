@@ -28,11 +28,15 @@ class HomeSettings extends BaseSettings
         'videos_description',
         'videos_button_title',
         'videos_button_url',
+        'testimonials_title',
+        'testimonials_users_avg_scores',
+        'testimonials_items',
     ];
 
     protected array $casts = [
         'hero_slider' => RepeaterArrayCast::class,
         'download_products_items' => RepeaterArrayCast::class,
         'products_items' => RepeaterArrayCast::class,
+        'testimonials_items' => RepeaterArrayCast::class,
     ];
 }
