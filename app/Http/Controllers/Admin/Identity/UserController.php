@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Admin\Identity;
 
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
+use App\Application\Identity\Listings\UserListing;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
+use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Identity\IndexUserRequest;
 use App\Http\Requests\Admin\Identity\StoreUserRequest;
 use App\Http\Requests\Admin\Identity\UpdateUserRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -24,32 +28,30 @@ class UserController extends Controller
     /**
      * Display paginated list of users with filters
      *
-     * @param Request $request HTTP request with filter parameters
+     * @param IndexUserRequest $request HTTP request with filter parameters
+     * @param UserListing $userListing
      * @return View
      */
-    public function index(Request $request): View
+    public function index(IndexUserRequest $request, UserListing $userListing): View
     {
-        // Get all roles for filter dropdown
-        $roles = Role::query()
-            ->orderBy('title')
-            ->get();
-
-        $users = User::query()
-            ->with('role')
-            ->when($request->search, fn($q, $search) => $q->where(function ($query) use ($search) {
-                $query->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('last_name', 'like', "%{$search}%")
-                    ->orWhere('display_name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('mobile', 'like', "%{$search}%");
-            })
-            )
-            ->when($request->role_id, fn($q, $roleId) => $q->where('role_id', $roleId))
-            ->latest('id')
-            ->paginate(20)
+        $users = $userListing
+            ->handle(User::query(), $request->validated())
+            ->paginate($userListing->perPage())
             ->withQueryString();
 
-        return view('admin.identity.users.index', compact('users', 'roles'));
+        $statuses = collect(UserStatusEnum::cases())
+            ->mapWithKeys(fn(UserStatusEnum $status) => [
+                $status->value => $status->label(),
+            ])
+            ->all();
+
+        $roles = Role::pluck('title', 'id')->all();
+
+        $hasActiveFilters = $userListing->hasActiveFilters($request->validated());
+
+        $bulkActionOptions = DefaultBulkActions::toOptions();
+
+        return view('admin.identity.users.index', compact('users', 'roles', 'bulkActionOptions', 'hasActiveFilters', 'statuses'));
     }
 
     /**
@@ -80,10 +82,12 @@ class UserController extends Controller
         $registerUserAction->execute(
             firstName: $data['first_name'],
             lastName: $data['last_name'],
+            displayName: $data['display_name'],
             mobile: $data['mobile'],
             email: $data['email'],
             password: $data['password'],
-            roleId: $data['role_id']
+            roleId: $data['role'],
+            status: $data['status'],
         );
 
         return redirect()->route('admin.users.index')
@@ -147,8 +151,8 @@ class UserController extends Controller
             unset($data['password']);
         }
 
-        $data['status'] = filter_var($data['status'] ?? false, FILTER_VALIDATE_BOOLEAN)
-            ? UserStatusEnum::ACTIVE->value : UserStatusEnum::INACTIVE->value;
+        $data['role_id'] = $data['role'];
+        unset($data['role']);
 
         $user->update($data);
 
@@ -169,5 +173,17 @@ class UserController extends Controller
             ->get(['id', 'full_name']);
 
         return response()->json($users);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $user): RedirectResponse
+    {
+        $user->delete();
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'کاربر با موفقیت حذف شد.');
     }
 }

@@ -138,14 +138,14 @@
                     <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3">
-                            <span
-                                class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                     stroke-width="2">
-                                    <path d="M12 20l9-5-9-5-9 5 9 5z"></path>
-                                    <path d="M12 12l9-5-9-5-9 5 9 5z"></path>
-                                </svg>
-                            </span>
+                                <span
+                                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2">
+                                        <path d="M12 20l9-5-9-5-9 5 9 5z"></path>
+                                        <path d="M12 12l9-5-9-5-9 5 9 5z"></path>
+                                    </svg>
+                                </span>
 
                                 <div>
                                     <div class="text-base font-extrabold">نقشه راه</div>
