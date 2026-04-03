@@ -5,13 +5,13 @@
             title="مدیریت و جستجوی کاربر‌ها"
         >
             <x-slot:actions>
-                <x-admin.button
+                <x-admin.form.button
                     tag="a"
                     href="{{ route('admin.users.create') }}"
                     variant="solid"
                 >
                     + افزودن کاربر جدید
-                </x-admin.button>
+                </x-admin.form.button>
             </x-slot:actions>
         </x-admin.filters.header>
 
@@ -93,18 +93,18 @@
             </x-admin.filters.grid>
 
             <x-admin.filters.actions>
-                <x-admin.button type="submit" variant="solid">
+                <x-admin.form.button type="submit" variant="solid">
                     جستجو
-                </x-admin.button>
+                </x-admin.form.button>
 
                 @if($hasActiveFilters)
-                    <x-admin.button
+                    <x-admin.form.button
                         tag="a"
                         href="{{ route('admin.users.index') }}"
                         variant="secondary"
                     >
                         حذف فیلترها
-                    </x-admin.button>
+                    </x-admin.form.button>
                 @endif
             </x-admin.filters.actions>
         </x-admin.filters.body>

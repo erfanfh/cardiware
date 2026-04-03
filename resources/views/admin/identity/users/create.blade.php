@@ -8,7 +8,7 @@
             'user' => null,
         ])
 
-        <x-admin.save-button label="ایجاد کاربر"/>
+        <x-admin.form.save-button label="ایجاد کاربر"/>
     </x-admin.form>
 @endsection
 

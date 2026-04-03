@@ -26,3 +26,7 @@
         <x-admin.list.pagination :model="$users"/>
     </div>
 @endsection
+
+@push('scripts')
+    @vite(['resources/js/admin/list-table.js'])
+@endpush

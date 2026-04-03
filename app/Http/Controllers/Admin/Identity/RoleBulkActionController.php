@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
-use App\Application\Project\Actions\HandleProjectBulkAction;
-use App\Http\Requests\Admin\Project\BulkProjectActionRequest;
+use App\Application\Identity\Actions\User\HandleRoleBulkAction;
+use App\Http\Requests\Admin\Identity\BulkRoleActionRequest;
 use Throwable;
 
 class RoleBulkActionController
@@ -12,17 +12,17 @@ class RoleBulkActionController
      * @throws Throwable
      */
     public function __invoke(
-        BulkProjectActionRequest $request,
-        HandleProjectBulkAction  $actionHandler
+        BulkRoleActionRequest $request,
+        HandleRoleBulkAction  $actionHandler
     )
     {
         $result = $actionHandler->execute(
             action: $request->bulkAction(),
-            ids: $request->projectIds(),
+            ids: $request->roleIds(),
         );
 
         return redirect()
-            ->route('admin.projects.index')
+            ->route('admin.roles.index')
             ->with('success', $actionHandler->successMessage($result));
     }
 }

@@ -10,7 +10,7 @@ use App\Http\Requests\Admin\Identity\AssignNewRoleRequest;
 use App\Http\Requests\Admin\Identity\IndexRoleRequest;
 use App\Http\Requests\Admin\Identity\StoreRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
-use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
+use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -55,7 +55,7 @@ class RoleController extends Controller
             ->values()
             ->all();
 
-        $bulkActionOptions = DefaultBulkActions::toOptions();
+        $bulkActionOptions = DeleteBulkActions::set()->toOptions();
 
         return view('admin.identity.roles.index', compact('roles', 'hasActiveFilters', 'bulkActionOptions', 'selectedPermissionOptions'));
     }
