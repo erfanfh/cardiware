@@ -3,19 +3,20 @@
 @section('title', 'تنظیمات صفحه اصلی')
 
 @section('content')
-    <x-admin.form action="{{ route('admin.settings.home.store') }}" method="put">
+    <x-admin.form action="{{ route('admin.settings.home.store') }}" method="put" class="js-confirm">
         <x-admin.page>
             <x-admin.tabs
                 :tabs="[
                     'slider' => 'اسلایدر',
                     'download-products' => 'محصولات دانلودی',
+                    'special-posts' => 'نوشته های ویژه',
                     'subscription' => 'اشتراک ویژه',
-                    'posts' => 'مطالب',
-                    'shortcuts' => 'میانبرها',
                     'products' => 'محصولات فیزیکی',
-                    'projects' => 'پروژه‌ها',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
+                    'posts' => 'مطالب',
+                    'shortcuts' => 'میانبرها',
+                    'projects' => 'پروژه‌ها',
                 ]"
                 active="slider"
             >
@@ -136,6 +137,290 @@
                                     </x-admin.field>
                                 </div>
                             </x-admin.form.repeater>
+                        </x-admin.metabox>
+                    </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="special-posts">
+                    <div class="space-y-6">
+                        <x-admin.metabox title="نوشته های ویژه" :collapsible="false">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+                                <x-admin.field label="عنوان باکس"
+                                >
+                                    <x-admin.form.input
+                                        name="special_posts_title"
+                                        :value="old('special_posts_title', get_setting('home', 'special_posts_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="تعداد نوشته نمایشی"
+                                >
+                                    <x-admin.form.input
+                                        dir="ltr"
+                                        min="0"
+                                        type="number"
+                                        name="special_posts_posts_counts"
+                                        :value="old('special_posts_posts_counts', get_setting('home', 'special_posts_posts_counts'))"
+                                    />
+                                </x-admin.field>
+                            </div>
+                        </x-admin.metabox>
+                    </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="subscription">
+                    <div class="space-y-6">
+                        <x-admin.metabox title="اشتراک ویژه" :collapsible="false">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+                                <x-admin.field label="عنوان"
+                                >
+                                    <x-admin.form.input
+                                        name="subscription_title"
+                                        :value="old('subscription_title', get_setting('home', 'subscription_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="زیرعنوان"
+                                >
+                                    <x-admin.form.input
+                                        name="subscription_subtitle"
+                                        :value="old('subscription_subtitle', get_setting('home', 'subscription_subtitle'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="متن دکمه"
+                                >
+                                    <x-admin.form.input
+                                        name="subscription_button_title"
+                                        :value="old('subscription_button_title', get_setting('home', 'subscription_button_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="لینک دکمه"
+                                >
+                                    <x-admin.form.input
+                                        dir="ltr"
+                                        name="subscription_button_url"
+                                        :value="old('subscription_button_url', get_setting('home', 'subscription_button_url'))"
+                                    />
+                                </x-admin.field>
+                            </div>
+                        </x-admin.metabox>
+                    </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="products">
+                    <div class="space-y-6">
+                        <x-admin.metabox title="محصولات فیزیکی" :collapsible="false">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+                                <x-admin.field label="عنوان باکس">
+                                    <x-admin.form.input
+                                        name="products_title"
+                                        :value="old('products_title', get_setting('home', 'products_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="لینک همه محصولات">
+                                    <x-admin.form.input
+                                        name="products_all_products_url"
+                                        :value="old('products_all_products_url', get_setting('home', 'products_all_products_url'))"
+                                    />
+                                </x-admin.field>
+                            </div>
+
+                            <x-admin.field label="آیتم ها">
+                                <x-admin.form.repeater
+                                    :items="get_setting('home', 'products_items')"
+                                    name="products_items"
+                                    title="آیتم ها"
+                                    addText="افزودن آیتم"
+                                    :defaultItem="[
+                                            'title' => '',
+                                            'image_id' => null,
+                                            'image_path' => null,
+                                            'button_title' => '',
+                                            'category' => '',
+                                            'url' => '',
+                                            'sort_order' => 0,
+                                        ]"
+                                >
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <x-admin.field label="عنوان">
+                                            <x-admin.form.input x-model="it.title"
+                                                                x-bind:name="field(i, 'title')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="متن دکمه">
+                                            <x-admin.form.input x-model="it.button_title"
+                                                                x-bind:name="field(i, 'button_title')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="تصویر">
+                                            <x-admin.form.media-picker
+                                                mode="repeater"
+                                                name="image"
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="دسته بندی">
+                                            <x-admin.form.async-select
+                                                x-bind:name="`blocks[${index}][category]`"
+                                                :multiple="false"
+                                                :selected-options="[]"
+                                                :search-url="route('admin.categories.ajax-search')"
+                                                placeholder="دسته بندی را انتخاب کنید..."
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="لینک">
+                                            <x-admin.form.input x-model="it.url"
+                                                                x-bind:name="field(i, 'url')"/>
+                                        </x-admin.field>
+                                    </div>
+                                </x-admin.form.repeater>
+                            </x-admin.field>
+                        </x-admin.metabox>
+                    </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="videos">
+                    <div class="space-y-6">
+                        <x-admin.metabox title="ویدیوهای آموزشی" :collapsible="false">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+                                <x-admin.field label="عنوان باکس">
+                                    <x-admin.form.input
+                                        name="videos_title"
+                                        :value="old('videos_title', get_setting('home', 'videos_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="دسته های مجاز">
+                                    <x-admin.form.async-select
+                                        name="videos_category_ids"
+                                        :multiple="true"
+                                        :value="old('videos_category_ids', get_setting('home', 'videos_category_ids')) ?? []"
+                                        :selected-options="\App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
+                                                                    ->whereIn('id', old('videos_category_ids', get_setting('home', 'videos_category_ids')))
+                                                                    ->get()
+                                                                    ->map(fn ($c) => [
+                                                                        'value' => $c->id,
+                                                                        'label' => $c->title,
+                                                                    ])
+                                                                    ->all() ?? []"
+                                        :search-url="route('admin.categories.ajax-search')"
+                                        placeholder="دسته‌ها را جستجو کنید..."
+                                        :error="$errors->first('videos_category_ids')"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="توضیحات باکس">
+                                    <x-admin.form.textarea
+                                        rows="3"
+                                        name="videos_description"
+                                        :value="old('videos_description', get_setting('home', 'videos_description'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="متن دکمه باکس">
+                                    <x-admin.form.input
+                                        name="videos_button_title"
+                                        :value="old('videos_button_title', get_setting('home', 'videos_button_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="لینک دکمه باکس">
+                                    <x-admin.form.input
+                                        dir="ltr"
+                                        name="videos_button_url"
+                                        :value="old('videos_button_url', get_setting('home', 'videos_button_url'))"
+                                    />
+                                </x-admin.field>
+                            </div>
+                        </x-admin.metabox>
+                    </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="testimonials">
+                    <div class="space-y-6">
+                        <x-admin.metabox title="تجربه کاربران" :collapsible="false">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+                                <x-admin.field label="عنوان باکس">
+                                    <x-admin.form.input
+                                        name="testimonials_title"
+                                        :value="old('testimonials_title', get_setting('home', 'testimonials_title'))"
+                                    />
+                                </x-admin.field>
+
+                                <x-admin.field label="میانگین رضایت کاربران">
+                                    <x-admin.form.input
+                                        type="number"
+                                        min="0"
+                                        max="5"
+                                        name="testimonials_users_avg_scores"
+                                        :value="old('testimonials_users_avg_scores', get_setting('home', 'testimonials_users_avg_scores'))"
+                                    />
+                                </x-admin.field>
+                            </div>
+
+                            <x-admin.field label="آیتم ها">
+                                <x-admin.form.repeater
+                                    :items="get_setting('home', 'testimonials_items')"
+                                    name="testimonials_items"
+                                    title="آیتم ها"
+                                    addText="افزودن آیتم"
+                                    :defaultItem="[
+                                            'title' => '',
+                                            'subtitle' => '',
+                                            'score' => '',
+                                            'text' => '',
+                                            'tags' => '',
+                                            'special_experience' => null,
+                                            'image_id' => null,
+                                            'image_path' => null,
+                                            'sort_order' => 0,
+                                        ]"
+                                >
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <x-admin.field label="عنوان">
+                                            <x-admin.form.input x-model="it.title"
+                                                                x-bind:name="field(i, 'title')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="زیرعنوان">
+                                            <x-admin.form.input x-model="it.subtitle"
+                                                                x-bind:name="field(i, 'subtitle')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="تصویر">
+                                            <x-admin.form.media-picker
+                                                mode="repeater"
+                                                name="image"
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="امتیاز">
+                                            <x-admin.form.input x-model="it.score"
+                                                                x-bind:name="field(i, 'score')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="متن">
+                                            <x-admin.form.textarea rows="2" x-model="it.text"
+                                                                   x-bind:name="field(i, 'text')"/>
+                                        </x-admin.field>
+
+                                        <x-admin.field label="برچسب ها">
+                                            <x-admin.form.textarea rows="2" x-model="it.tags"
+                                                                   x-bind:name="field(i, 'tags')"/>
+                                        </x-admin.field>
+                                        <x-admin.field label="برچسب ها">
+                                            <x-admin.form.switch
+                                                x-model="it.special_experience"
+                                                x-bind:name="field(i, 'special_experience')"
+                                            />
+                                        </x-admin.field>
+                                    </div>
+                                </x-admin.form.repeater>
+                            </x-admin.field>
                         </x-admin.metabox>
                     </div>
                 </x-admin.tabs.panel>

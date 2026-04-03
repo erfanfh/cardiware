@@ -14,10 +14,29 @@ class HomeSettings extends BaseSettings
         'download_products_title',
         'download_products_all_url',
         'download_products_items',
+        'special_posts_title',
+        'special_posts_posts_counts',
+        'subscription_title',
+        'subscription_subtitle',
+        'subscription_button_title',
+        'subscription_button_url',
+        'products_title',
+        'products_all_products_url',
+        'products_items',
+        'videos_title',
+        'videos_category_ids',
+        'videos_description',
+        'videos_button_title',
+        'videos_button_url',
+        'testimonials_title',
+        'testimonials_users_avg_scores',
+        'testimonials_items',
     ];
 
     protected array $casts = [
         'hero_slider' => RepeaterArrayCast::class,
         'download_products_items' => RepeaterArrayCast::class,
+        'products_items' => RepeaterArrayCast::class,
+        'testimonials_items' => RepeaterArrayCast::class,
     ];
 }
