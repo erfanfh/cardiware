@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Admin\Identity;
 
-use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
+use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -19,7 +19,7 @@ class BulkRoleActionRequest extends FormRequest
             'bulk_action' => [
                 'required',
                 'string',
-                Rule::in(DefaultBulkActions::set()->values()),
+                Rule::in(DeleteBulkActions::set()->values()),
             ],
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'distinct', 'exists:roles,id'],
