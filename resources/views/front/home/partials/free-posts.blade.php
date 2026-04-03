@@ -36,7 +36,7 @@
                     <div class="flex items-stretch justify-center gap-4">
                         <!-- Side Card -->
                         <a href="#"
-                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                             <div class="p-4">
                                 <div class="relative rounded-2xl overflow-hidden bg-slate-900">
                                     <img
@@ -77,7 +77,7 @@
 
                         <!-- Center (Active) Card -->
                         <a href="#"
-                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                             <div class="p-4">
                                 <div class="relative rounded-2xl overflow-hidden bg-slate-900">
                                     <img src="https://moddingway.ir/wp-content/uploads/2022/10/FIFA-23-new-Update.jpg"
@@ -122,7 +122,7 @@
 
                         <!-- Side Card -->
                         <a href="#"
-                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-soft transition">
+                           class="group w-[360px] hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
                             <div class="p-4">
                                 <div class="relative rounded-2xl overflow-hidden bg-slate-900">
                                     <img

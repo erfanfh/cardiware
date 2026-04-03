@@ -8,6 +8,6 @@
             'post' => null,
         ])
 
-        <x-admin.save-button label="انتشار نوشته"/>
+        <x-admin.form.save-button label="انتشار نوشته"/>
     </x-admin.form>
 @endsection

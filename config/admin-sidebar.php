@@ -150,6 +150,11 @@ return [
                 'route' => 'admin.settings.ads',
                 'icon' => 'icons.settings-02'
             ],
+            [
+                'label' => 'ابزارک های سایدبار',
+                'route' => 'admin.settings.sidebar-widgets',
+                'icon' => 'icons.settings-02'
+            ],
         ],
     ],
 ];

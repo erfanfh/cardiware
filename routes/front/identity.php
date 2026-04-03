@@ -9,3 +9,6 @@ Route::prefix('auth')->middleware('guest')->group(function () {
 Route::redirect('login', 'auth')->name('login');
 
 Route::middleware('auth')->get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+Route::get('account', function () {
+})->name('account');

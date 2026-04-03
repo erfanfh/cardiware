@@ -112,7 +112,7 @@
                 <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- 1 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -149,7 +149,7 @@
 
                     <!-- 2 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -186,7 +186,7 @@
 
                     <!-- 3 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -223,7 +223,7 @@
 
                     <!-- 4 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -260,7 +260,7 @@
 
                     <!-- 5 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -297,7 +297,7 @@
 
                     <!-- 6 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -334,7 +334,7 @@
 
                     <!-- 7 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -371,7 +371,7 @@
 
                     <!-- 8 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -408,7 +408,7 @@
 
                     <!-- 9 -->
                     <article
-                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-soft transition overflow-hidden group">
+                        class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
                         <a href="#" class="block relative">
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -479,7 +479,7 @@
                             </div>
 
                             <button
-                                class="h-10 px-4 rounded-2xl bg-brand-500 text-white text-sm font-extrabold shadow-soft hover:bg-brand-600 active:bg-brand-700 transition">
+                                class="h-10 px-4 rounded-2xl bg-brand-500 text-white text-sm font-extrabold shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                                 بعدی
                             </button>
                         </div>

@@ -2,16 +2,16 @@
 
 use App\Http\Controllers\Admin\Taxonomy\CategoryController;
 use App\Http\Controllers\Admin\Taxonomy\CategorySearchController;
+use App\Http\Controllers\Admin\Taxonomy\QuickCreateCategoryController;
 use App\Http\Controllers\Admin\Taxonomy\TagController;
 use App\Http\Controllers\Admin\Taxonomy\TagSearchController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
-Route::post('categories/bulk', [CategoryController::class, 'bulkAction'])->name('categories.bulk');
-Route::get('categories/fetch', [CategoryController::class, 'categoriesFetch'])->name('categories.fetch');
-Route::get('categories/ajax-search', CategorySearchController::class)->name('categories.ajax-search');
+Route::prefix('categories')->name('categories.')->group(function () {
+    Route::get('/', CategoryController::class)->name('index');
+    Route::get('ajax-search', CategorySearchController::class)->name('ajax-search');
+    Route::post('quick-create', QuickCreateCategoryController::class)->name('quick-create');
+});
 
-Route::resource('tags', TagController::class)->except(['create', 'show', 'edit']);
-Route::post('tags/bulk', [TagController::class, 'bulkAction'])->name('tags.bulk');
-Route::get('tags/fetch', [TagController::class, 'tagsFetch'])->name('tags.fetch');
+Route::get('tags', TagController::class)->name('tags.index');
 Route::get('tags/ajax-search', TagSearchController::class)->name('tags.ajax-search');

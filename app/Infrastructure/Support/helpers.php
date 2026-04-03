@@ -215,3 +215,32 @@ if (!function_exists('page_views')) {
         });
     }
 }
+
+if (!function_exists('first_filled')) {
+    function first_filled(...$values): string
+    {
+        foreach ($values as $value) {
+            $value = trim((string)($value ?? ''));
+
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('approximate_view')) {
+    function approximate_view(int $number): string
+    {
+        if ($number < 100)
+            return '0';
+        elseif ($number < 1000)
+            return '+' . (floor($number / 100) * 100);
+        elseif ($number < 1000000)
+            return '+' . (floor($number / 1000)) . 'K';
+        else
+            return '+1M';
+    }
+}

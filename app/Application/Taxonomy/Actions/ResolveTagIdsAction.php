@@ -2,15 +2,15 @@
 
 namespace App\Application\Taxonomy\Actions;
 
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use Illuminate\Support\Str;
+use Throwable;
 
 class ResolveTagIdsAction
 {
     /**
      * @param array $payload
      * @return array<int>
+     * @throws Throwable
      */
     public function execute(array $payload): array
     {
@@ -40,15 +40,9 @@ class ResolveTagIdsAction
                 return $existing->id;
             }
 
-            $slug = $this->generateUniqueTagSlug($title);
-
-            $term = TaxonomyTerm::query()->create([
-                'type' => TaxonomyTermTypeEnum::TAG,
+            $term = app(CreateTagAction::class)->execute([
                 'title' => $title,
-                'slug' => $slug,
-                'path' => null,
-                'parent_id' => null,
-                'description' => null,
+                'slug' => $title,
             ]);
 
             return $term->id;
@@ -59,32 +53,5 @@ class ResolveTagIdsAction
             ->unique()
             ->values()
             ->all();
-    }
-
-    /**
-     * @param string $title
-     * @return string
-     */
-    protected function generateUniqueTagSlug(string $title): string
-    {
-        $baseSlug = Str::slug($title);
-
-        if (blank($baseSlug)) {
-            $baseSlug = 'tag';
-        }
-
-        $slug = $baseSlug;
-        $counter = 1;
-
-        while (
-        TaxonomyTerm::query()
-            ->where('slug', $slug)
-            ->exists()
-        ) {
-            $counter++;
-            $slug = "{$baseSlug}-{$counter}";
-        }
-
-        return $slug;
     }
 }

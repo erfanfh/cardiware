@@ -16,7 +16,7 @@
 
                 <div style="display:flex; gap:10px; flex-wrap:wrap;">
                     <a href="{{ route('admin.dashboard') }}"
-                       class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-75 ease-out bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700">داشبورد</a>
+                       class="inline-flex items-center justify-center gap-[6px] px-[14px] py-[7px] rounded-full text-[0.86rem] font-medium border border-transparent cursor-pointer no-underline transition-transform duration-75 ease-out bg-white text-gray-900 hover:bg-gray-100">داشبورد</a>
                 </div>
             </div>
         </main>

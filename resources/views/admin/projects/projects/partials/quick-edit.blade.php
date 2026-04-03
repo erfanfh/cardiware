@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
-                    <x-admin.button
+                    <x-admin.form.button
                         type="submit"
                         variant="solid"
                         size="sm"
@@ -28,9 +28,9 @@
                     >
                         <span x-show="!isSaving({{ $project->id }})">ذخیره تغییرات</span>
                         <span x-show="isSaving({{ $project->id }})" x-cloak>در حال ذخیره...</span>
-                    </x-admin.button>
+                    </x-admin.form.button>
 
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         variant="secondary"
                         size="sm"
@@ -38,7 +38,7 @@
                         ::disabled="isSaving({{ $project->id }})"
                     >
                         انصراف
-                    </x-admin.button>
+                    </x-admin.form.button>
                 </div>
             </div>
 

@@ -101,11 +101,35 @@
         </x-admin.metabox>
 
         <x-admin.metabox title="برچسب‌ها">
+            @php
+                $oldExistingIds = collect(old('tags.existing', []))
+                    ->filter()
+                    ->map(fn ($id) => (int) $id);
+
+                $oldExistingTags = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+                    ->whereIn('id', $oldExistingIds)
+                    ->get(['id', 'title'])
+                    ->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->title,
+                    ]);
+
+                $oldNewTags = collect(old('tags.new', []))
+                    ->filter()
+                    ->map(fn ($name) => [
+                        'id' => null,
+                        'name' => trim((string) $name),
+                    ]);
+
+                $resolvedSelectedTags = old('tags.existing') !== null || old('tags.new') !== null
+                    ? $oldExistingTags->concat($oldNewTags)->values()->all()
+                    : ($selectedTags ?? []);
+            @endphp
+
             <x-admin.form.tags
                 existingName="tags[existing]"
                 newName="tags[new]"
-                :selected="$selectedTags ?? []"
-                :suggestions="$tagSuggestions ?? []"
+                :selected="$resolvedSelectedTags"
             />
         </x-admin.metabox>
     </x-slot:sidebar>
@@ -147,19 +171,19 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="ویژگی‌ها">
-        <x-admin.project.feature-repeater
+        <x-admin.modules.project.feature-repeater
             :items="old('features', $project->features ?? [])"
         />
     </x-admin.metabox>
 
     <x-admin.metabox title="نقشه راه">
-        <x-admin.project.roadmap-item-repeater
+        <x-admin.modules.project.roadmap-item-repeater
             :items="old('roadmap_items', $project->roadmapItems ?? [])"
         />
     </x-admin.metabox>
 
     <x-admin.metabox title="آپدیت‌ها و تغییرات">
-        <x-admin.project.changelog-repeater
+        <x-admin.modules.project.changelog-repeater
             :items="old('changelogs', $project?->changelogs?->map(fn ($item) => [
                 'id' => $item->id,
                 'title' => $item->title,
