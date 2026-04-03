@@ -18,6 +18,7 @@ use App\Http\Requests\Admin\Content\UpdatePostRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
 
@@ -40,6 +41,8 @@ class PostController extends Controller
      */
     public function index(IndexPostRequest $request, PostListing $postListing): View
     {
+        Gate::authorize('post.list');
+
         $posts = $postListing
             ->handle(Post::with(['author']), $request->validated())
             ->paginate($postListing->perPage())
@@ -121,6 +124,8 @@ class PostController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('post.create');
+
         return view('admin.content.posts.create', [
             'allCategories' => $this->getAllCategoriesAction->execute(),
         ]);
@@ -136,6 +141,8 @@ class PostController extends Controller
      */
     public function store(UpdatePostRequest $request, CreatePostAction $action): RedirectResponse
     {
+        Gate::authorize('post.create');
+
         $post = $action->execute($request->validated());
 
         return redirect()->route('admin.posts.edit', $post)
@@ -150,6 +157,8 @@ class PostController extends Controller
      */
     public function edit(Post $post): View
     {
+        Gate::authorize('post.edit');
+
         $selectedTags = $post->tags
             ->map(fn($tag) => [
                 'id' => $tag->id,
@@ -177,6 +186,8 @@ class PostController extends Controller
      */
     public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
     {
+        Gate::authorize('post.edit');
+
         $action->execute($post, $request->validated());
 
         return redirect()
@@ -193,6 +204,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post, DeletePostAction $action): RedirectResponse
     {
+        Gate::authorize('post.delete');
+
         $action->execute($post);
 
         return redirect()
