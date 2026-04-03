@@ -16,6 +16,10 @@ class HomeSettings extends BaseSettings
         'download_products_items',
         'special_posts_title',
         'special_posts_posts_counts',
+        'subscription_title',
+        'subscription_subtitle',
+        'subscription_button_title',
+        'subscription_button_url',
     ];
 
     protected array $casts = [
