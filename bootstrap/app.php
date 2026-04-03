@@ -9,8 +9,8 @@ return Application::configure(basePath: dirname(__DIR__))
         web: [],
         health: '/up',
         then: function () {
-            require base_path('routes/front.php');
             require base_path('routes/admin.php');
+            require base_path('routes/front.php');
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {

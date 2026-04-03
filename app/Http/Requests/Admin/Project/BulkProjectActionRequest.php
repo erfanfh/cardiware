@@ -19,7 +19,7 @@ class BulkProjectActionRequest extends FormRequest
             'bulk_action' => [
                 'required',
                 'string',
-                Rule::in(DefaultBulkActions::values()),
+                Rule::in(DefaultBulkActions::set()->values()),
             ],
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'distinct', 'exists:projects,id'],

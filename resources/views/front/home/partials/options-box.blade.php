@@ -1,7 +1,7 @@
 <section class="mt-10">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <a href="#"
-           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm hover:shadow-soft transition">
+           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm hover:shadow-lg transition">
             <div
                 class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_30%,#fb923c,transparent_55%),radial-gradient(circle_at_80%_70%,#60a5fa,transparent_55%)]"></div>
             <div class="absolute -top-10 -left-10 h-28 w-28 rounded-full bg-brand-500/30 blur-2xl"></div>
@@ -25,7 +25,7 @@
         </a>
 
         <a href="#"
-           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-soft transition">
+           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition">
             <div class="absolute inset-0 bg-gradient-to-l from-brand-50 via-white to-white"></div>
             <div class="absolute top-4 left-5 h-3 w-3 rounded-full bg-brand-500"></div>
             <div class="absolute -bottom-10 -right-10 h-28 w-28 rounded-full bg-brand-100 blur-xl"></div>
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="shrink-0">
-                    <div class="h-20 w-24 rounded-2xl bg-brand-500 text-white shadow-soft grid place-items-center">
+                    <div class="h-20 w-24 rounded-2xl bg-brand-500 text-white shadow-lg grid place-items-center">
                         <svg width="34" height="34" viewBox="0 0 24 24" fill="none" class="text-white">
                             <path d="M10 8l6 4-6 4V8Z" fill="currentColor"/>
                             <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="2"
@@ -53,7 +53,7 @@
         </a>
 
         <a href="#"
-           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm hover:shadow-soft transition">
+           class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm hover:shadow-lg transition">
             <div
                 class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_25%_25%,#fb923c,transparent_55%),radial-gradient(circle_at_75%_75%,#22c55e,transparent_55%)]"></div>
             <div class="absolute -top-10 -left-10 h-28 w-28 rounded-full bg-brand-500/30 blur-2xl"></div>

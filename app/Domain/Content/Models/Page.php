@@ -71,4 +71,20 @@ class Page extends Model implements PageViewableInterface
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * @return bool
+     */
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === PostStatusEnum::ACTIVE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUrlAttribute(): string
+    {
+        return url($this->slug ?? '/');
+    }
 }

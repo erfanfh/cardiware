@@ -12,6 +12,6 @@
         <span class="font-bold text-slate-700">{{ $model->lastItem() }}</span>
         از
         <span class="font-bold text-slate-700">{{ $model->total() }}</span>
-        پروژه
+        مورد
     </div>
 </div>

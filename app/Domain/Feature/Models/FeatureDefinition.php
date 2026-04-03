@@ -17,6 +17,7 @@ class FeatureDefinition extends Model
 
     protected $casts = [
         'value_type' => ValueTypeEnum::class,
+        'allowed_values' => 'array',
     ];
 
     /**

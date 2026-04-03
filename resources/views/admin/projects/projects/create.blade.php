@@ -10,6 +10,6 @@
             'changelogs' => [],
         ])
 
-        <x-admin.save-button label="انتشار پروژه"/>
+        <x-admin.form.save-button label="انتشار پروژه"/>
     </x-admin.form>
 @endsection

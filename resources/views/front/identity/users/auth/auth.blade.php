@@ -32,7 +32,7 @@
 
                         <div class="absolute right-[18%] top-[45%] translate-x-1/2 -translate-y-1/2">
                             <div
-                                class="h-24 w-24 rounded-[26px] bg-gradient-to-b from-orange-400 to-orange-600 shadow-soft2 grid place-items-center">
+                                class="h-24 w-24 rounded-[26px] bg-gradient-to-b from-orange-400 to-orange-600 shadow-xl grid place-items-center">
                                 <svg class="h-12 w-12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                     <path d="M12 5v14M5 12h14" stroke="white" stroke-width="3.5"
                                           stroke-linecap="round"/>
@@ -50,7 +50,7 @@
 
                         <div class="mt-7">
                             <a id="heroCta" href="#"
-                               class="inline-flex items-center justify-center rounded-2xl bg-orange-500 px-8 py-3 text-sm font-extrabold text-white shadow-soft2
+                               class="inline-flex items-center justify-center rounded-2xl bg-orange-500 px-8 py-3 text-sm font-extrabold text-white shadow-xl
                         hover:bg-orange-600 active:bg-orange-700 transition">
                                 مشاهده پیشنهاد
                             </a>
@@ -66,14 +66,14 @@
 
         <aside class="relative hidden md:block bg-slate-50">
             <div class="w-[620px] max-w-[55vw] h-full flex items-center justify-center px-10">
-                <div class="w-full max-w-lg rounded-2xl bg-white shadow-soft2 border border-slate-200 p-8 my-4">
+                <div class="w-full max-w-lg rounded-2xl bg-white shadow-xl border border-slate-200 p-8 my-4">
                     <livewire:front.identity.user.auth.auth-flow/>
                 </div>
             </div>
         </aside>
 
         <section class="md:hidden w-full bg-slate-50 px-4 py-8">
-            <div class="mx-auto max-w-md rounded-2xl bg-white shadow-soft2 border border-slate-200 p-6">
+            <div class="mx-auto max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-6">
                 <div id="mobile-auth-mount"></div>
             </div>
         </section>

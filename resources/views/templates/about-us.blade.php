@@ -2,7 +2,7 @@
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-soft2">
+        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-xl">
             <div
                 class="absolute inset-0 opacity-90 bg-[radial-gradient(700px_circle_at_15%_20%,rgba(249,115,22,.35),transparent_55%),radial-gradient(700px_circle_at_80%_60%,rgba(34,197,94,.18),transparent_60%),radial-gradient(700px_circle_at_55%_10%,rgba(59,130,246,.15),transparent_60%)]"></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
@@ -32,7 +32,7 @@
 
                         <div class="mt-6 flex flex-wrap items-center gap-3">
                             <a href="#projects"
-                               class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft hover:bg-brand-600 active:bg-brand-700 transition">
+                               class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                                 پروژه‌های ما <span class="font-black">←</span>
                             </a>
                             <a href="#contact"
@@ -133,7 +133,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach(\App\Domain\Project\Models\Project::orderBy('created_at')->take(3)->get() as $project)
                     <div
-                        class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition relative overflow-hidden">
+                        class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-sm font-extrabold truncate">{{ $project->title }}</div>
@@ -160,7 +160,7 @@
         <section class="mt-10">
             <div class="flex items-center gap-3 mb-4">
                 <span
-                  class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
                     @include('icons.user-multiple')
                 </span>
                 <div>
@@ -169,7 +169,7 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition">
+                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=12" alt="">
@@ -189,7 +189,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition">
+                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=32" alt="">
@@ -209,7 +209,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition">
+                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=47" alt="">
@@ -233,7 +233,8 @@
 
         <section class="mt-10" x-data="{ open: 1 }">
             <div class="flex items-center gap-3 mb-4">
-                <span class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                <span
+                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
                     @include('icons.help-circle')
                 </span>
                 <div>
@@ -267,7 +268,7 @@
                 <div class="lg:col-span-7 rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
                     <div class="flex items-center gap-3">
                         <span
-                          class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
                             @include('icons.telephone')
                         </span>
                         <div>
@@ -288,7 +289,7 @@
                               placeholder="پیام شما…"></textarea>
                     <div class="mt-3 flex items-center justify-end">
                         <button
-                            class="rounded-2xl bg-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-soft hover:bg-brand-600 active:bg-brand-700 transition">
+                            class="rounded-2xl bg-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                             ارسال پیام
                         </button>
                     </div>

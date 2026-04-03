@@ -41,7 +41,7 @@ class QuickUpdateProjectController extends Controller
                 'progress_percent' => $data['progress_percent'],
             ]);
 
-            $desiredSlug = trim((string)(($data['slug'] ?: $data['title']) ?? ''));
+            $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 
             $this->assignSlugAction->execute(
                 new AssignSlugDTO(
@@ -61,7 +61,7 @@ class QuickUpdateProjectController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'پروژه با موفقیت به‌روزرسانی شد.',
-                'project' => [
+                'updatedItem' => [
                     'id' => $project->id,
                     'title' => $project->title,
                     'slug' => $project->slug,

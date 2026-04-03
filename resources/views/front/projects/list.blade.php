@@ -2,7 +2,7 @@
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-soft2">
+        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-xl">
             <div
                 class="absolute inset-0 opacity-90 bg-[radial-gradient(700px_circle_at_15%_20%,rgba(249,115,22,.35),transparent_55%),radial-gradient(700px_circle_at_85%_60%,rgba(59,130,246,.14),transparent_60%)]"></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>

@@ -14,7 +14,12 @@ final class BulkActionDefinition
     }
 
     /**
-     * @return array{value: string, label: string, destructive: bool, requires_confirmation: bool}
+     * @return array{
+     *     value: string,
+     *     label: string,
+     *     destructive: bool,
+     *     requires_confirmation: bool
+     * }
      */
     public function toArray(): array
     {

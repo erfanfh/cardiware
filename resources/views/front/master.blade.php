@@ -17,6 +17,7 @@
 <body class="bg-slate-50 text-slate-900">
 @include('front.header.index')
 @yield('content')
+@include('front.partials.admin-bar')
 @include('front.layouts.footer')
 
 @vite(['resources/js/front/main.js'])

@@ -16,9 +16,9 @@
 </head>
 <body>
 
-<div class="flex min-h-[100vh] bg-[var(--bg-body)] dark:bg-gray-900">
+<div class="flex min-h-[100vh] bg-gray-100 ">
     <div
-        class="fixed inset-0 bg-[rgba(15,23,42,0.45)] dark:bg-[rgba(0,0,0,0.6)] opacity-0 pointer-events-none z-20 transition-all"
+        class="fixed inset-0 bg-[rgba(15,23,42,0.45)]  opacity-0 pointer-events-none z-20 transition-all"
         id="SidebarBackdrop"></div>
 
     @include('admin.partials.sidebar')
@@ -27,7 +27,7 @@
 
         @include('admin.partials.topbar')
 
-        <main class="flex-1 pt-[18px] px-[20px] pb-[24px] min-h-0 overflow-y-auto space-y-4">
+        <main class="flex-1 p-5 min-h-0 overflow-y-auto space-y-4">
             @yield('page_header')
             @yield('content')
 

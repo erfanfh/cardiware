@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Admin\Content;
 
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Download\Enums\DownloadEntryTypeEnum;
+use App\Domain\Feature\Enums\FrontBadgeOptionEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,6 +29,7 @@ class UpdatePostRequest extends FormRequest
                 'alpha_dash',
             ],
             'status' => ['required', Rule::enum(PostStatusEnum::class)],
+            'is_pinned' => ['boolean'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'author_id' => ['nullable', 'integer', 'exists:users,id'],
             'body' => ['required', 'string'],
@@ -38,6 +41,39 @@ class UpdatePostRequest extends FormRequest
             'tags.existing.*' => ['integer', 'exists:taxonomy_terms,id'],
             'tags.new' => ['nullable', 'array'],
             'tags.new.*' => ['string', 'max:255'],
+
+            'category_ids' => ['nullable', 'array'],
+
+            'front_badge' => ['nullable', Rule::enum(FrontBadgeOptionEnum::class)],
+            'is_special' => ['nullable', 'boolean'],
+            'is_vip' => ['nullable', 'boolean'],
+            'is_updated' => ['nullable', 'boolean'],
+
+            'download_sections' => ['nullable', 'array'],
+            'download_sections.*' => ['array'],
+
+            'download_sections.*.id' => ['nullable', 'integer'],
+            'download_sections.*.title' => ['nullable', 'string', 'max:255'],
+            'download_sections.*.description' => ['nullable', 'string'],
+            'download_sections.*.password' => ['nullable', 'string', 'max:255'],
+            'download_sections.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'download_sections.*.entries' => ['nullable', 'array'],
+            'download_sections.*.entries.*' => ['array'],
+
+            'download_sections.*.entries.*.id' => ['nullable', 'integer'],
+            'download_sections.*.entries.*.type' => ['nullable', Rule::enum(DownloadEntryTypeEnum::class)],
+            'download_sections.*.entries.*.title' => ['nullable', 'string', 'max:255'],
+            'download_sections.*.entries.*.content' => ['nullable', 'string'],
+            'download_sections.*.entries.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'image_gallery_items' => ['nullable', 'array'],
+            'image_gallery_items.*' => ['array'],
+
+            'image_gallery_items.*.id' => ['nullable', 'integer'],
+            'image_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
+            'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
+            'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -81,8 +117,14 @@ class UpdatePostRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'slug.alpha_dash' => 'اسلاگ فقط می‌تواند شامل حروف انگلیسی، عدد، خط تیره و زیرخط باشد.',
             'status.enum' => 'وضعیت انتخاب‌شده معتبر نیست.',
+            'download_sections.array' => 'ساختار سکشن‌های دانلود نامعتبر است.',
+            'download_sections.*.title.max' => 'عنوان سکشن دانلود نمی‌تواند بیشتر از 255 کاراکتر باشد.',
+            'download_sections.*.password.max' => 'رمز فایل نمی‌تواند بیشتر از 255 کاراکتر باشد.',
+
+            'download_sections.*.entries.array' => 'ساختار آیتم‌های سکشن دانلود نامعتبر است.',
+            'download_sections.*.entries.*.type.enum' => 'نوع آیتم دانلود نامعتبر است.',
+            'download_sections.*.entries.*.title.max' => 'عنوان آیتم دانلود نمی‌تواند بیشتر از 255 کاراکتر باشد.',
         ];
     }
 

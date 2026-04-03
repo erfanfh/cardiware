@@ -10,7 +10,7 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-3">
-        <x-admin.button
+        <x-admin.form.button
             type="button"
             variant="secondary"
             x-on:click="open = !open"
@@ -21,8 +21,8 @@
             </svg>
 
             <span x-text="open ? 'بستن فیلترها' : 'فیلترها'"></span>
-        </x-admin.button>
-        
+        </x-admin.form.button>
+
         {{ $actions ?? '' }}
     </div>
 </div>

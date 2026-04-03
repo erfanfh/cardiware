@@ -5,7 +5,7 @@ namespace App\Domain\Project\Models;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Scopes\ActiveProjectScope;
-use App\Domain\Taxonomy\Concerns\HasTaxonomyTerms;
+use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

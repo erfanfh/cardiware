@@ -8,7 +8,7 @@
 
 <div
     {{ $attributes->merge([
-        'class' => 'rounded-2xl border p-4 shadow-soft transition-all duration-200 border-slate-200 bg-white'
+        'class' => 'rounded-2xl border p-4 transition-all duration-200 border-slate-200 bg-white'
     ]) }}
 >
     <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         variant="secondary"
                         x-bind:disabled="selectedCount === 0 || !bulkAction"
@@ -75,9 +75,9 @@
                         class="h-10 leading-10"
                     >
                         {{ $buttonText }}
-                    </x-admin.button>
+                    </x-admin.form.button>
 
-                    <x-admin.button
+                    <x-admin.form.button
                         type="button"
                         variant="danger"
                         x-cloak
@@ -87,7 +87,7 @@
                         class="h-10 leading-10"
                     >
                         لغو انتخاب
-                    </x-admin.button>
+                    </x-admin.form.button>
                 </div>
             </div>
         </div>
