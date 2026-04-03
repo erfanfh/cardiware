@@ -9,3 +9,13 @@
 .pcr-button {
     border: 1px solid #ddd !important;
 }
+
+.switch-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.switch-field label {
+    margin-bottom: 0;
+}
