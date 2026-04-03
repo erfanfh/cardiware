@@ -1,4 +1,5 @@
 import tinymce from 'tinymce';
+import '../../css/admin/tinymce.css';
 
 // Theme
 import 'tinymce/themes/silver/theme';
@@ -63,10 +64,9 @@ function getPresetConfig(preset = 'default') {
         },
 
         full: {
-            menubar: 'file edit view insert format table tools help',
-            toolbar: 'undo redo | blocks | bold italic underline strikethrough | alignright aligncenter alignleft alignjustify | bullist numlist outdent indent blockquote | link mediaPicker table charmap | visualblocks code fullscreen | removeformat | ltr rtl',
+            menubar: false,
+            toolbar: 'redo undo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
             plugins: [
-                'advlist',
                 'autolink',
                 'lists',
                 'link',
@@ -189,7 +189,6 @@ function buildEditorConfig(element) {
 
         content_style: `
             body {
-                font-family: IRANSansX, Vazirmatn, sans-serif;
                 font-size: 14px;
                 line-height: 2;
                 color: #0f172a;
@@ -253,6 +252,18 @@ function buildEditorConfig(element) {
             registerCustomButtons(editor, element);
 
             editor.on('init', () => {
+                const container = editor.getContainer();
+
+                if (container) {
+                    container.setAttribute('dir', dir);
+
+                    if (dir === 'rtl') {
+                        container.classList.add('tox-rtl-custom');
+                    } else {
+                        container.classList.remove('tox-rtl-custom');
+                    }
+                }
+
                 editor.getElement()?.setAttribute('data-editor-initialized', 'true');
             });
 
