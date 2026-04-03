@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Permission extends Model
 {
     protected $fillable = [
-        'title'
+        'group',
+        'ability',
+        'label',
     ];
 
     /**
