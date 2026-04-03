@@ -13,7 +13,7 @@
     <!-- 3 per row, 2 rows, equal widths -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=12"
                      alt="آواتار نسخه جدید FC26">
@@ -27,7 +27,7 @@
         </a>
 
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=12"
                      alt="آواتار نسخه جدید FC26">
@@ -41,7 +41,7 @@
         </a>
 
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=12"
                      alt="آواتار نسخه جدید FC26">
@@ -55,7 +55,7 @@
         </a>
 
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=22"
                      alt="آواتار نسخه جدید FC26">
@@ -69,7 +69,7 @@
         </a>
 
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=34"
                      alt="آواتار نسخه جدید FC26">
@@ -83,7 +83,7 @@
         </a>
 
         <a href="#"
-           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-soft transition">
+           class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition">
             <div class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100">
                 <img class="h-10 w-10 rounded-xl object-cover" src="https://i.pravatar.cc/80?img=48"
                      alt="آواتار نسخه جدید FC26">

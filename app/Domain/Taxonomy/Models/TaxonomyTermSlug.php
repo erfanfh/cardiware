@@ -11,6 +11,7 @@ class TaxonomyTermSlug extends Model
         'type',
         'route_key',
         'is_current',
+        'taxonomy_term_id',
     ];
 
     protected $casts = [

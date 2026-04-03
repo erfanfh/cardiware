@@ -4,6 +4,7 @@ namespace App\Application\Taxonomy\Actions;
 
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use Illuminate\Database\Eloquent\Model;
+use Throwable;
 
 class SyncModelTagsAction
 {
@@ -17,6 +18,7 @@ class SyncModelTagsAction
      * @param Model $model
      * @param array|null $payload
      * @return void
+     * @throws Throwable
      */
     public function execute(Model $model, ?array $payload): void
     {

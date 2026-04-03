@@ -16,7 +16,6 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/admin/admin.css',
                 'resources/css/admin/page-layout.css',
-                'resources/css/variables.css',
                 'resources/css/front/main.css',
                 'resources/css/front/home.css',
             ],

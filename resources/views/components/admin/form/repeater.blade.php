@@ -41,14 +41,14 @@
                 بستن همه
             </button>
 
-            <x-admin.button
+            <x-admin.form.button
                 type="button"
                 variant="soft"
                 size="sm"
                 @click="add()"
             >
                 + {{ $addText }}
-            </x-admin.button>
+            </x-admin.form.button>
         </div>
     </div>
 

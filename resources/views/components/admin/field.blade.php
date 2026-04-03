@@ -9,7 +9,7 @@
 <div {{ $attributes->merge(['class' => 'space-y-1.5']) }}>
     @if($label)
         <label
-            class="text-xs font-medium text-gray-500 dark:text-gray-400"
+            class="text-xs font-medium text-gray-500"
             @if($for) for="{{ $for }}" @endif
         >
             {{ $label }}

@@ -12,8 +12,7 @@ return new class extends Migration {
     {
         Schema::create('content_slugs', function (Blueprint $table) {
             $table->id();
-            $table->string('sluggable_type');
-            $table->unsignedBigInteger('sluggable_id');
+            $table->morphs('sluggable');
             $table->string('slug')->unique();
             $table->boolean('is_current')->default(false);
             $table->timestamps();

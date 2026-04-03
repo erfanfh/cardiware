@@ -58,7 +58,7 @@
             <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                 <!-- Left (muted) -->
                 <article
-                    class="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm p-5 shadow-sm hover:shadow-soft transition opacity-95">
+                    class="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm p-5 shadow-sm hover:shadow-lg transition opacity-95">
                     <div class="flex items-start justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
                             <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
@@ -88,7 +88,7 @@
 
                 <!-- Center (featured) -->
                 <article
-                    class="relative rounded-2xl border border-brand-100 bg-white p-6 shadow-soft hover:shadow-md transition overflow-hidden">
+                    class="relative rounded-2xl border border-brand-100 bg-white p-6 shadow-lg hover:shadow-md transition overflow-hidden">
                     <!-- top gradient line -->
                     <div
                         class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-700 via-brand-500 to-brand-300"></div>
@@ -149,7 +149,7 @@
 
                 <!-- Right (muted) -->
                 <article
-                    class="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm p-5 shadow-sm hover:shadow-soft transition opacity-95">
+                    class="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur-sm p-5 shadow-sm hover:shadow-lg transition opacity-95">
                     <div class="flex items-start justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
                             <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"

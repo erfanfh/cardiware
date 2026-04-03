@@ -94,7 +94,8 @@
 
                                     <div class="col-span-6">
                                         <x-admin.field label="زیرعنوان">
-                                            <x-admin.form.input x-model="it.subtitle" x-bind:name="field(i, 'subtitle')"/>
+                                            <x-admin.form.input x-model="it.subtitle"
+                                                                x-bind:name="field(i, 'subtitle')"/>
                                         </x-admin.field>
                                     </div>
                                 </div>
@@ -163,7 +164,8 @@
 
                                     <div class="col-span-12">
                                         <x-admin.field label="جواب">
-                                            <x-admin.form.textarea rows="2" x-model="it.answer" x-bind:name="field(i, 'answer')"/>
+                                            <x-admin.form.textarea rows="2" x-model="it.answer"
+                                                                   x-bind:name="field(i, 'answer')"/>
                                         </x-admin.field>
                                     </div>
                                 </div>
@@ -245,6 +247,6 @@
             </div>
         </x-admin.page>
 
-        <x-admin.save-button/>
+        <x-admin.form.save-button/>
     </x-admin.form>
 @endsection

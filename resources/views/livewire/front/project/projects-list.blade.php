@@ -107,7 +107,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($projects as $project)
                 <a href="{{ route('projects.detail', $project) }}"
-                   class="group rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-soft transition relative overflow-hidden">
+                   class="group rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
                             <div
@@ -154,7 +154,7 @@
                 <div class="text-base font-extrabold">نتیجه‌ای پیدا نشد</div>
                 <div class="mt-2 text-sm text-slate-500">فیلترها را تغییر بده یا عبارت دیگری جستجو کن.</div>
                 <button
-                    class="mt-4 inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft hover:bg-brand-600 active:bg-brand-700 transition">
+                    class="mt-4 inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                     پاک کردن همه فیلترها
                 </button>
             </div>

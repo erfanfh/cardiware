@@ -27,6 +27,6 @@
                 ])->all(),
         ])
 
-        <x-admin.save-button label="ذخیره"/>
+        <x-admin.form.save-button label="ذخیره"/>
     </x-admin.form>
 @endsection
