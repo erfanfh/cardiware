@@ -14,6 +14,8 @@ class HomeSettings extends BaseSettings
         'download_products_title',
         'download_products_all_url',
         'download_products_items',
+        'special_posts_title',
+        'special_posts_posts_counts',
     ];
 
     protected array $casts = [
