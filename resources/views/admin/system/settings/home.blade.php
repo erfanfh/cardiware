@@ -210,77 +210,7 @@
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="products">
-                    <div class="space-y-6">
-                        <x-admin.metabox title="محصولات فیزیکی" :collapsible="false">
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
-                                <x-admin.field label="عنوان باکس">
-                                    <x-admin.form.input
-                                        name="products_title"
-                                        :value="old('products_title', get_setting('home', 'products_title'))"
-                                    />
-                                </x-admin.field>
-
-                                <x-admin.field label="لینک همه محصولات">
-                                    <x-admin.form.input
-                                        name="products_all_products_url"
-                                        :value="old('products_all_products_url', get_setting('home', 'products_all_products_url'))"
-                                    />
-                                </x-admin.field>
-                            </div>
-
-                            <x-admin.field label="آیتم ها">
-                                <x-admin.form.repeater
-                                    :items="get_setting('home', 'products_items')"
-                                    name="products_items"
-                                    title="آیتم ها"
-                                    addText="افزودن آیتم"
-                                    :defaultItem="[
-                                            'title' => '',
-                                            'image_id' => null,
-                                            'image_path' => null,
-                                            'button_title' => '',
-                                            'category' => '',
-                                            'url' => '',
-                                            'sort_order' => 0,
-                                        ]"
-                                >
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <x-admin.field label="عنوان">
-                                            <x-admin.form.input x-model="it.title"
-                                                                x-bind:name="field(i, 'title')"/>
-                                        </x-admin.field>
-
-                                        <x-admin.field label="متن دکمه">
-                                            <x-admin.form.input x-model="it.button_title"
-                                                                x-bind:name="field(i, 'button_title')"/>
-                                        </x-admin.field>
-
-                                        <x-admin.field label="تصویر">
-                                            <x-admin.form.media-picker
-                                                mode="repeater"
-                                                name="image"
-                                            />
-                                        </x-admin.field>
-
-                                        <x-admin.field label="دسته بندی">
-                                            <x-admin.form.async-select
-                                                x-bind:name="`blocks[${index}][category]`"
-                                                :multiple="false"
-                                                :selected-options="[]"
-                                                :search-url="route('admin.categories.ajax-search')"
-                                                placeholder="دسته بندی را انتخاب کنید..."
-                                            />
-                                        </x-admin.field>
-
-                                        <x-admin.field label="لینک">
-                                            <x-admin.form.input x-model="it.url"
-                                                                x-bind:name="field(i, 'url')"/>
-                                        </x-admin.field>
-                                    </div>
-                                </x-admin.form.repeater>
-                            </x-admin.field>
-                        </x-admin.metabox>
-                    </div>
+                    @include('admin.system.settings.partials.home-products')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="videos">
