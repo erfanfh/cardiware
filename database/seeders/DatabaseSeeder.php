@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Database\Seeders\Feature\FeatureDefinitionSeeder;
+use Database\Seeders\Identity\PermissionSeeder;
 use Database\Seeders\Identity\RoleSeeder;
 use Database\Seeders\Layout\PageLayoutSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -19,6 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
+            PermissionSeeder::class,
             PageLayoutSeeder::class,
             FeatureDefinitionSeeder::class
         ]);
