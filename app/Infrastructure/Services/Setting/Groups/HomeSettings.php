@@ -20,10 +20,14 @@ class HomeSettings extends BaseSettings
         'subscription_subtitle',
         'subscription_button_title',
         'subscription_button_url',
+        'products_title',
+        'products_all_products_url',
+        'products_items',
     ];
 
     protected array $casts = [
         'hero_slider' => RepeaterArrayCast::class,
         'download_products_items' => RepeaterArrayCast::class,
+        'products_items' => RepeaterArrayCast::class,
     ];
 }
