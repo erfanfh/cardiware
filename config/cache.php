@@ -112,7 +112,8 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
+    'prefix' => env('CACHE_PREFIX', Str::slug((string)env('APP_NAME', 'laravel')) . '-cache-'),
+    'user_access_lifetime' => env('CACHE_USER_ACCESS_LIFETIME', 24), // hours
     'page_views_lifetime' => env('CACHE_PAGE_VIEWS_LIFETIME', 5), // minutes
     'page_views_schedule' => env('CACHE_PAGE_VIEWS_SCHEDULE', 1), // minutes
     'page_views_batch_size' => env('PAGE_VIEWS_BATCH_SIZE', 100),
