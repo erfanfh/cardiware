@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
+use App\Application\Identity\Listings\RoleListing;
 use App\Domain\Identity\Models\Permission;
 use App\Domain\Identity\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\AssignNewRoleRequest;
+use App\Http\Requests\Admin\Identity\IndexRoleRequest;
 use App\Http\Requests\Admin\Identity\StoreRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,22 +26,38 @@ class RoleController extends Controller
     /**
      * Display a listing of roles
      *
-     * @param Request $request
+     * @param IndexRoleRequest $request
+     * @param RoleListing $roleListing
      * @return View
      */
-    public function index(Request $request): View
+    public function index(IndexRoleRequest $request, RoleListing $roleListing): View
     {
-        $roles = Role::query()
-            ->withCount('users')
-            ->when($request->search, fn($q, $search) => $q->where('title', 'like', "%{$search}%"))
-            ->when($request->id, fn($q, $id) => $q->where('id', $id))
-            ->when($request->default, fn($q) => $q->where('is_default', true))
-            ->when($request->super_admin, fn($q) => $q->where('is_super_admin', true))
-            ->latest('id')
-            ->paginate(20)
+        $roles = $roleListing
+            ->handle(Role::query(), $request->validated())
+            ->paginate($roleListing->perPage())
             ->withQueryString();
 
-        return view('admin.identity.roles.index', compact('roles'));
+        $hasActiveFilters = $roleListing->hasActiveFilters($request->validated());
+
+        $selectedPermissions = collect(request('permission_ids', []))
+            ->filter(fn($id) => filled($id))
+            ->map(fn($id) => (int)$id)
+            ->filter(fn($id) => $id > 0)
+            ->values();
+
+        $selectedPermissionOptions = Permission::query()
+            ->whereIn('id', $selectedPermissions)
+            ->get(['id', 'title'])
+            ->map(fn($tag) => [
+                'value' => (string)$tag->id,
+                'label' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
+        $bulkActionOptions = DefaultBulkActions::toOptions();
+
+        return view('admin.identity.roles.index', compact('roles', 'hasActiveFilters', 'bulkActionOptions', 'selectedPermissionOptions'));
     }
 
     /**

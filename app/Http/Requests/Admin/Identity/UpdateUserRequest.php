@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Admin\Identity;
 
+use App\Domain\Identity\Enums\UserStatusEnum;
+use App\Rules\MobileRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -12,15 +14,6 @@ use Illuminate\Validation\Rule;
  */
 class UpdateUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request
-     *
-     * @return bool
-     */
-    public function authorize(): bool
-    {
-        return true;
-    }
 
     /**
      * Get the validation rules that apply to the request
@@ -37,7 +30,7 @@ class UpdateUserRequest extends FormRequest
         if ($isStatusToggle) {
             // Only status update (from index page)
             return [
-                'status' => ['required', 'boolean'],
+                'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
             ];
         }
 
@@ -45,11 +38,11 @@ class UpdateUserRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'display_name' => ['nullable', 'string', 'max:255'],
-            'role_id' => ['required', 'integer', Rule::exists('roles', 'id')],
-            'mobile' => ['required', 'string', 'regex:/^09[0-9]{9}$/', Rule::unique('users', 'mobile')->ignore($userId)],
+            'role' => ['required', 'integer', Rule::exists('roles', 'id')],
+            'mobile' => ['required', 'string', Rule::unique('users', 'mobile')->ignore($userId), new MobileRule()],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'status' => ['nullable', 'boolean'],
+            'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
         ];
     }
 
@@ -64,7 +57,7 @@ class UpdateUserRequest extends FormRequest
             'first_name' => 'نام',
             'last_name' => 'نام خانوادگی',
             'display_name' => 'نام نمایشی',
-            'role_id' => 'نقش',
+            'role' => 'نقش',
             'mobile' => 'موبایل',
             'email' => 'ایمیل',
             'password' => 'رمز عبور',
@@ -85,14 +78,15 @@ class UpdateUserRequest extends FormRequest
             'last_name.required' => 'نام خانوادگی الزامی است.',
             'mobile.required' => 'موبایل الزامی است.',
             'mobile.unique' => 'این موبایل قبلاً ثبت شده است.',
-            'mobile.regex' => 'موبایل باید به فرمت صحیح (09xxxxxxxxx) باشد.',
             'email.required' => 'ایمیل الزامی است.',
             'email.email' => 'ایمیل وارد شده معتبر نیست.',
             'email.unique' => 'این ایمیل قبلاً ثبت شده است.',
             'password.min' => 'رمز عبور باید حداقل 8 کاراکتر باشد.',
             'password.confirmed' => 'رمز عبور و تکرار آن مطابقت ندارند.',
-            'role_id.required' => 'لطفاً یک نقش انتخاب کنید.',
-            'role_id.exists' => 'نقش انتخاب شده معتبر نیست.',
+            'role.required' => 'نقش کاربر الزامی است.',
+            'role.exists' => 'نقش انتخاب شده معتبر نیست.',
+            'status.required' => 'وضعیت کاربر الزامی است.',
+            'status.in' => 'نقش انتخاب شده معتبر نیست.',
         ];
     }
 }

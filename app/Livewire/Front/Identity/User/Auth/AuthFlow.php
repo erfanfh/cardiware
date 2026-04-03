@@ -210,7 +210,7 @@ class AuthFlow extends Component
         ], [
             'mobile.required' => 'شماره موبایل خود را وارد کنید',
             'mobile.regex' => 'شماره موبایل خود را به طور صحیح وارد کنید',
-            'email.required' => 'نام خود را وارد کنید',
+            'email.required' => 'ایمیل خود را وارد کنید',
             'email.email' => 'ایمیل خود را به طور صحیح وارد کنید',
             'first_name.required' => 'نام خود را وارد کنید',
             'last_name.required' => 'نام خانوادگی خود را وارد کنید',
