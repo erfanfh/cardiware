@@ -9,7 +9,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/admin/admin.js',
                 'resources/js/admin/page-layout.js',
-                // 'resources/js/admin/project-index.js',
+                'resources/js/admin/list-table.js',
                 'resources/js/front/main.js',
                 'resources/js/front/home.js',
 
