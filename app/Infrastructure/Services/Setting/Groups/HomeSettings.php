@@ -23,6 +23,11 @@ class HomeSettings extends BaseSettings
         'products_title',
         'products_all_products_url',
         'products_items',
+        'videos_title',
+        'videos_category_ids',
+        'videos_description',
+        'videos_button_title',
+        'videos_button_url',
     ];
 
     protected array $casts = [
