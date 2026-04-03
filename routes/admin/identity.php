@@ -13,4 +13,3 @@ Route::post('roles/{role}/assign-new-role', [RoleController::class, 'assignNewRo
 Route::resource('users', UserController::class)->names('users');
 Route::post('/users/bulk-action', UserBulkActionController::class)->name('users.bulk-action');
 Route::get('/users/fetch', [UserController::class, 'usersFetch'])->name('users.fetch');
-Route::patch('/users/{user}/quick-update', QuickUpdateUserController::class)->name('users.quick-update');

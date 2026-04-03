@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'mobile' => ['required', 'string', 'unique:users,mobile', 'regex:/^09[0-9]{9}$/'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
+            'status' => ['nullable', 'sometimes', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
         ];
     }
 
@@ -74,7 +74,6 @@ class StoreUserRequest extends FormRequest
             'password.confirmed' => 'رمز عبور و تکرار آن مطابقت ندارند.',
             'role.required' => 'نقش کاربر الزامی است.',
             'role.exists' => 'نقش انتخاب شده معتبر نیست.',
-            'status.required' => 'وضعیت کاربر الزامی است.',
             'status.in' => 'نقش انتخاب شده معتبر نیست.',
         ];
     }

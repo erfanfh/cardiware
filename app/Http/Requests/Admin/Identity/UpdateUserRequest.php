@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin\Identity;
 
 use App\Domain\Identity\Enums\UserStatusEnum;
+use App\Rules\MobileRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -38,7 +39,7 @@ class UpdateUserRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:255'],
             'display_name' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'integer', Rule::exists('roles', 'id')],
-            'mobile' => ['required', 'string', Rule::unique('users', 'mobile')->ignore($userId), 'regex:/^09[0-9]{9}$/'],
+            'mobile' => ['required', 'string', Rule::unique('users', 'mobile')->ignore($userId), new MobileRule()],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
@@ -77,7 +78,6 @@ class UpdateUserRequest extends FormRequest
             'last_name.required' => 'نام خانوادگی الزامی است.',
             'mobile.required' => 'موبایل الزامی است.',
             'mobile.unique' => 'این موبایل قبلاً ثبت شده است.',
-            'mobile.regex' => 'موبایل باید به فرمت صحیح (09xxxxxxxxx) باشد.',
             'email.required' => 'ایمیل الزامی است.',
             'email.email' => 'ایمیل وارد شده معتبر نیست.',
             'email.unique' => 'این ایمیل قبلاً ثبت شده است.',
