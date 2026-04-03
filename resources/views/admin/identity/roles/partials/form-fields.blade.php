@@ -14,7 +14,6 @@
             />
         </x-admin.field>
 
-{{--        @dd($selectedPermissions)--}}
         <x-admin.field required label="دسترسی‌ها">
             <x-admin.form.async-select
                 name="permissions"
