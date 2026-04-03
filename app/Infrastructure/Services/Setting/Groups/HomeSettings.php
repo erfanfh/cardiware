@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
+use App\Infrastructure\Casts\ArrayCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -38,5 +39,6 @@ class HomeSettings extends BaseSettings
         'download_products_items' => RepeaterArrayCast::class,
         'products_items' => RepeaterArrayCast::class,
         'testimonials_items' => RepeaterArrayCast::class,
+        'videos_category_ids' => ArrayCast::class,
     ];
 }
