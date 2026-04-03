@@ -20,7 +20,6 @@ class DownloadSection extends Model
     protected $fillable = [
         'post_id',
         'title',
-        'description',
         'password',
         'sort_order',
         'copy_all_links_count',

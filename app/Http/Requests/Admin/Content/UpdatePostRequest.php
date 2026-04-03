@@ -54,7 +54,6 @@ class UpdatePostRequest extends FormRequest
 
             'download_sections.*.id' => ['nullable', 'integer'],
             'download_sections.*.title' => ['nullable', 'string', 'max:255'],
-            'download_sections.*.description' => ['nullable', 'string'],
             'download_sections.*.password' => ['nullable', 'string', 'max:255'],
             'download_sections.*.sort_order' => ['nullable', 'integer', 'min:0'],
 

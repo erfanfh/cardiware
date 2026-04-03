@@ -14,7 +14,6 @@
         :defaultItem="[
                 'id' => null,
                 'title' => '',
-                'description' => '',
                 'password' => '',
                 'entries' => [],
             ]"
@@ -55,19 +54,6 @@
                         placeholder="مثلاً PES_PATCH_2025"
                     />
                 </div>
-            </div>
-
-            <div class="space-y-2">
-                <label class="block text-sm font-bold text-slate-700">
-                    توضیح
-                </label>
-
-                <x-admin.form.textarea
-                    rows="3"
-                    x-bind:name="field(i, 'description')"
-                    x-model="it.description"
-                    placeholder="توضیح کوتاه درباره این بخش دانلود، در صورت نیاز"
-                />
             </div>
 
             <div
