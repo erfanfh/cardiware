@@ -64,6 +64,12 @@ class UpdateProjectRequest extends FormRequest
             'changelogs.*.body' => ['nullable', 'string'],
             'changelogs.*.published_at' => ['nullable', 'string', 'max:20'],
             'changelogs.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'ads' => ['nullable', 'array'],
+            'ads.*.id' => ['nullable', 'integer'],
+            'ads.*.title' => ['nullable', 'string', 'max:255'],
+            'ads.*.link' => ['nullable', 'string', 'max:255'],
+            'ads.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
