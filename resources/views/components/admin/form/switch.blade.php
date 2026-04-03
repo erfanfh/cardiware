@@ -1,16 +1,28 @@
 @props([
-   'name' => null,
-   'checked' => false,
-   'disabled' => false,
+    'name' => null,
+    'checked' => false,
+    'disabled' => false,
 ])
+
+@php
+    $rootAttributes = $attributes
+        ->except(['x-bind:name', 'name'])
+        ->merge([
+            'class' => 'inline-flex items-center',
+        ]);
+
+    $nameAttributes = $attributes->only(['x-bind:name']);
+@endphp
 
 <label
     x-data="{ on: @js((bool) $checked) }"
-    class="inline-flex items-center"
+    x-modelable="on"
+    {{ $rootAttributes }}
 >
     <input
         type="hidden"
         @if($name) name="{{ $name }}" @endif
+        {{ $nameAttributes }}
         :value="on ? 1 : 0"
         {{ $disabled ? 'disabled' : '' }}
     >
