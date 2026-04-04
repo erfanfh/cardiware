@@ -1,3 +1,5 @@
+import './hero-slider.js';
+
 (function () {
     const tabs = Array.from(document.querySelectorAll(".free-tab"));
     const panels = Array.from(document.querySelectorAll(".free-panel"));
