@@ -31,6 +31,7 @@ import 'tinymce/skins/ui/oxide/content';
 import 'tinymce/skins/content/default/content';
 
 const EDITOR_SELECTOR = 'textarea[data-editor]';
+let pendingImageReplace = null;
 
 function getPresetConfig(preset = 'default') {
     const presets = {
@@ -95,11 +96,13 @@ function escapeHtml(value = '') {
         .replaceAll("'", '&#039;');
 }
 
-function buildImageHtml({url = '', alt = '', title = '', caption = ''} = {}) {
+function buildImageHtml({url = '', alt = '', title = '', caption = '', mediaId = null, size = 'md'} = {}) {
     const safeUrl = escapeHtml(url);
     const safeAlt = escapeHtml(alt);
     const safeTitle = escapeHtml(title);
     const safeCaption = escapeHtml(caption);
+    const safeMediaId = mediaId ? escapeHtml(String(mediaId)) : '';
+    const normalizedSize = ['sm', 'md', 'lg', 'full'].includes(size) ? size : 'md';
 
     if (!safeUrl) {
         return '';
@@ -107,13 +110,14 @@ function buildImageHtml({url = '', alt = '', title = '', caption = ''} = {}) {
 
     if (safeCaption) {
         return `
-            <figure class="content-media">
+            <figure class="content-media image-size-${normalizedSize}">
                 <img
                     src="${safeUrl}"
                     alt="${safeAlt}"
                     title="${safeTitle}"
                     class="editor-media-image"
                     data-media-type="image"
+                    ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
                 >
                 <figcaption>${safeCaption}</figcaption>
             </figure>
@@ -125,8 +129,9 @@ function buildImageHtml({url = '', alt = '', title = '', caption = ''} = {}) {
             src="${safeUrl}"
             alt="${safeAlt}"
             title="${safeTitle}"
-            class="editor-media-image"
+            class="editor-media-image image-size-${normalizedSize}"
             data-media-type="image"
+            ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
         >
     `;
 }
@@ -183,6 +188,46 @@ function registerCustomButtons(editor, element) {
             }
         },
     });
+
+    editor.ui.registry.addButton('mediaImageReplace', {
+        icon: 'reload',
+        tooltip: 'جایگزینی تصویر',
+        onAction: () => {
+            startImageReplace(editor, element);
+        },
+    });
+
+    editor.ui.registry.addButton('mediaImageSizeSm', {
+        text: 'S',
+        tooltip: 'اندازه کوچک',
+        onAction: () => {
+            setImageSize(editor, 'sm');
+        },
+    });
+
+    editor.ui.registry.addButton('mediaImageSizeMd', {
+        text: 'M',
+        tooltip: 'اندازه متوسط',
+        onAction: () => {
+            setImageSize(editor, 'md');
+        },
+    });
+
+    editor.ui.registry.addButton('mediaImageSizeLg', {
+        text: 'L',
+        tooltip: 'اندازه بزرگ',
+        onAction: () => {
+            setImageSize(editor, 'lg');
+        },
+    });
+
+    editor.ui.registry.addButton('mediaImageSizeFull', {
+        text: '100%',
+        tooltip: 'تمام عرض',
+        onAction: () => {
+            setImageSize(editor, 'full');
+        },
+    });
 }
 
 function openImageEditDialog(editor) {
@@ -219,12 +264,24 @@ function openImageEditDialog(editor) {
                     name: 'caption',
                     label: 'کپشن',
                 },
+                {
+                    type: 'selectbox',
+                    name: 'size',
+                    label: 'اندازه تصویر',
+                    items: [
+                        {value: 'sm', text: 'کوچک'},
+                        {value: 'md', text: 'متوسط'},
+                        {value: 'lg', text: 'بزرگ'},
+                        {value: 'full', text: 'تمام عرض'},
+                    ],
+                },
             ],
         },
         initialData: {
             alt: currentAlt,
             title: currentTitle,
             caption: currentCaption,
+            size: getCurrentImageSize(editor, node),
         },
         buttons: [
             {
@@ -242,6 +299,7 @@ function openImageEditDialog(editor) {
 
             node.setAttribute('alt', data.alt || '');
             node.setAttribute('title', data.title || '');
+            setImageSize(editor, data.size || 'md');
 
             if (figure) {
                 let captionNode = figure.querySelector('figcaption');
@@ -274,20 +332,106 @@ function openImageEditDialog(editor) {
     });
 }
 
-function setImageAlignment(editor, align = 'center') {
+function getSelectedImageNode(editor) {
     const node = editor.selection.getNode();
 
-    if (!node || node.nodeName !== 'IMG') {
+    if (node?.nodeName === 'IMG' && editor.dom.hasClass(node, 'editor-media-image')) {
+        return node;
+    }
+
+    const img = node?.querySelector?.('img.editor-media-image');
+
+    return img || null;
+}
+
+function getImageWrapper(editor, imageNode) {
+    if (!imageNode) {
+        return null;
+    }
+
+    return editor.dom.getParent(imageNode, 'figure.content-media') || imageNode;
+}
+
+function clearImageSizeClasses(editor, target) {
+    if (!target) {
         return;
     }
 
-    const target = editor.dom.getParent(node, 'figure') || node;
+    editor.dom.removeClass(target, 'image-size-sm');
+    editor.dom.removeClass(target, 'image-size-md');
+    editor.dom.removeClass(target, 'image-size-lg');
+    editor.dom.removeClass(target, 'image-size-full');
+}
 
-    editor.dom.removeClass(target, 'image-align-right');
-    editor.dom.removeClass(target, 'image-align-center');
-    editor.dom.removeClass(target, 'image-align-left');
+function setImageSize(editor, size = 'md') {
+    const imageNode = getSelectedImageNode(editor);
 
-    editor.dom.addClass(target, `image-align-${align}`);
+    if (!imageNode) {
+        return;
+    }
+
+    const target = getImageWrapper(editor, imageNode);
+
+    clearImageSizeClasses(editor, target);
+
+    const allowedSizes = ['sm', 'md', 'lg', 'full'];
+    const safeSize = allowedSizes.includes(size) ? size : 'md';
+
+    editor.dom.addClass(target, `image-size-${safeSize}`);
+}
+
+function getCurrentImageSize(editor, imageNode) {
+    const target = getImageWrapper(editor, imageNode);
+
+    if (!target) {
+        return 'md';
+    }
+
+    if (editor.dom.hasClass(target, 'image-size-sm')) return 'sm';
+    if (editor.dom.hasClass(target, 'image-size-md')) return 'md';
+    if (editor.dom.hasClass(target, 'image-size-lg')) return 'lg';
+    if (editor.dom.hasClass(target, 'image-size-full')) return 'full';
+
+    return 'md';
+}
+
+function startImageReplace(editor, element) {
+    const imageNode = getSelectedImageNode(editor);
+
+    if (!imageNode) {
+        return;
+    }
+
+    pendingImageReplace = {
+        editorId: editor.id,
+        elementId: element.id,
+    };
+
+    window.dispatchEvent(new CustomEvent('mfip-open-requested', {
+        detail: {
+            itemKey: element.dataset.editorKey,
+            selectedMediaFileId: imageNode.getAttribute('data-media-id') || null,
+            selectedMediaPath: imageNode.getAttribute('src') || null,
+            mode: 'replace-image',
+        },
+    }));
+}
+
+function replaceSelectedImage(editor, {mediaId = null, mediaPath = null} = {}) {
+    const imageNode = getSelectedImageNode(editor);
+
+    if (!imageNode || !mediaPath) {
+        return;
+    }
+
+    imageNode.setAttribute('src', mediaPath);
+
+    if (mediaId) {
+        imageNode.setAttribute('data-media-id', String(mediaId));
+        imageNode.setAttribute('title', `media-${mediaId}`);
+    } else {
+        imageNode.removeAttribute('data-media-id');
+    }
 }
 
 function buildEditorConfig(element) {
@@ -401,6 +545,50 @@ function buildEditorConfig(element) {
                 font-size: 0.875rem;
                 text-align: center;
             }
+
+            figure.content-media {
+                margin: 1rem 0;
+            }
+
+            figure.content-media img,
+            img.editor-media-image {
+                max-width: 100%;
+                height: auto;
+                border-radius: 0.75rem;
+            }
+
+            .image-size-sm {
+                max-width: 14rem;
+            }
+
+            .image-size-md {
+                max-width: 24rem;
+            }
+
+            .image-size-lg {
+                max-width: 36rem;
+            }
+
+            .image-size-full {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            figure.content-media.image-size-sm img {
+                width: 100%;
+            }
+
+            figure.content-media.image-size-md img {
+                width: 100%;
+            }
+
+            figure.content-media.image-size-lg img {
+                width: 100%;
+            }
+
+            figure.content-media.image-size-full img {
+                width: 100%;
+            }
         `,
 
         setup(editor) {
@@ -430,7 +618,7 @@ function buildEditorConfig(element) {
                 predicate: (node) => {
                     return node?.nodeName === 'IMG' && editor.dom.hasClass(node, 'editor-media-image');
                 },
-                items: 'mediaImageRemove mediaImageEdit',
+                items: 'mediaImageRemove mediaImageReplace mediaImageEdit',
                 position: 'node',
                 scope: 'node',
             });
@@ -468,11 +656,27 @@ function handleMfipSelected(event) {
         return;
     }
 
+    const shouldReplace =
+        pendingImageReplace &&
+        pendingImageReplace.editorId === editor.id;
+
+    if (shouldReplace) {
+        replaceSelectedImage(editor, {
+            mediaId,
+            mediaPath,
+        });
+
+        pendingImageReplace = null;
+        return;
+    }
+
     const html = buildImageHtml({
         url: mediaPath,
         alt: '',
         title: mediaId ? `media-${mediaId}` : '',
         caption: '',
+        mediaId,
+        size: 'md',
     });
 
     if (!html) {
