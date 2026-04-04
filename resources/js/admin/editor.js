@@ -37,7 +37,7 @@ function getPresetConfig(preset = 'default') {
     const presets = {
         simple: {
             menubar: false,
-            toolbar: 'undo redo | bold italic underline | bullist numlist | link | removeformat',
+            toolbar: 'undo redo | bold italic underline | alignright aligncenter alignleft | link ',
             plugins: [
                 'advlist',
                 'autolink',
@@ -51,7 +51,7 @@ function getPresetConfig(preset = 'default') {
 
         default: {
             menubar: false,
-            toolbar: 'undo redo | blocks | bold italic underline | alignright aligncenter alignleft | bullist numlist blockquote | link mediaPicker table | removeformat | ltr rtl',
+            toolbar: 'undo redo | blocks bold italic underline | alignright aligncenter alignleft | link mediaPicker | bullist numlist | ltr rtl',
             plugins: [
                 'advlist',
                 'autolink',
@@ -66,7 +66,7 @@ function getPresetConfig(preset = 'default') {
 
         full: {
             menubar: false,
-            toolbar: 'redo undo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
+            toolbar: 'undo redo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
             plugins: [
                 'autolink',
                 'lists',
@@ -474,8 +474,8 @@ function buildEditorConfig(element) {
         link_default_target: '_blank',
         link_assume_external_targets: true,
 
-        quickbars_selection_toolbar: 'bold italic underline | quicklink blockquote',
-        quickbars_insert_toolbar: 'quicktable',
+        quickbars_selection_toolbar: 'bold italic underline quicklink',
+        quickbars_insert_toolbar: '',
 
         browser_spellcheck: true,
         contextmenu: false,
