@@ -23,12 +23,16 @@
                 <div class="mt-4 flex items-center justify-between">
                     <div
                         class="mwGalleryPrev h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer">
-                        <span class="text-slate-700">→</span>
+                        <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5">
+                            @include('icons.arrow-right-01')
+                        </span>
                     </div>
                     <div class="mwGalleryPagination flex items-center gap-2"></div>
                     <div
                         class="mwGalleryNext h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer">
-                        <span class="text-slate-700">←</span>
+                        <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5">
+                            @include('icons.arrow-left-01')
+                        </span>
                     </div>
                 </div>
             </div>
