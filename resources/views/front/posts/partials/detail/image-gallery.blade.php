@@ -14,7 +14,7 @@
                     @foreach($post->imageGallery as $item)
                         <div class="swiper-slide">
                             <div
-                                class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 cursor-zoom-in"
+                                class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 cursor-pointer"
                                 data-lightbox="post-gallery"
                                 data-src="{{ $item->mediaFile->url }}"
                                 data-title="{{ $item->title }}"
