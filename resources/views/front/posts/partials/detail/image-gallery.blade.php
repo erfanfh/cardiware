@@ -14,8 +14,12 @@
                     @foreach($post->imageGallery as $item)
                         <div class="swiper-slide">
                             <img
-                                class="h-56 sm:h-64 w-full rounded-2xl border border-slate-200 object-cover"
-                                src="{{ $item->mediaFile->url }}" alt="{{ $item->title }}">
+                                class="h-56 sm:h-64 w-full rounded-2xl border border-slate-200 object-cover cursor-zoom-in"
+                                src="{{ $item->mediaFile->url }}"
+                                alt="{{ $item->title }}"
+                                data-lightbox="post-gallery"
+                                data-title="{{ $item->title }}"
+                            >
                         </div>
                     @endforeach
                 </div>
