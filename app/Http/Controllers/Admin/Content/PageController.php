@@ -8,6 +8,7 @@ use App\Http\Requests\Content\Page\StoreRequest;
 use App\Http\Requests\Content\Page\UpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -20,6 +21,8 @@ class PageController extends Controller
      */
     public function index(Request $request): View
     {
+        Gate::authorize('page.list');
+
         return view('admin.content.pages.index');
     }
 
@@ -30,6 +33,8 @@ class PageController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('page.create');
+
         return view('admin.content.pages.create');
     }
 
@@ -41,6 +46,8 @@ class PageController extends Controller
      */
     public function store(StoreRequest $request): RedirectResponse
     {
+        Gate::authorize('page.create');
+
         $page = Page::create($request->validated());
 
         return redirect()->route('admin.pages.edit', $page)->with('success', 'صفحه با موفقیت ایجاد شد.');
@@ -54,6 +61,8 @@ class PageController extends Controller
      */
     public function edit(Page $page): View
     {
+        Gate::authorize('page.edit');
+
         return view('admin.content.pages.edit', compact('page'));
     }
 
@@ -66,6 +75,8 @@ class PageController extends Controller
      */
     public function update(UpdateRequest $request, Page $page): RedirectResponse
     {
+        Gate::authorize('page.edit');
+
         $page->update($request->validated());
 
         return redirect()->route('admin.pages.edit', $page)->with('success', 'نوشته با موفقیت بروزرسانی شد.');
@@ -79,6 +90,8 @@ class PageController extends Controller
      */
     public function destroy(Page $page): RedirectResponse
     {
+        Gate::authorize('page.delete');
+
         $page->delete();
 
         return redirect()->route('admin.pages.index')->with('success', 'نوشته موردنظر با موفقیت حذف شد');

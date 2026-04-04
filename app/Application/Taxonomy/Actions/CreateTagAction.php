@@ -8,6 +8,7 @@ use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class CreateTagAction
@@ -28,6 +29,8 @@ class CreateTagAction
      */
     public function execute(array $data): TaxonomyTerm
     {
+        Gate::authorize('tag.create');
+
         return DB::transaction(function () use ($data) {
             $tagData = $data;
 

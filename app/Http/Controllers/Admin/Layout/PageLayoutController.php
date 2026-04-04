@@ -7,6 +7,7 @@ use App\Application\Layout\Actions\UpdatePageLayoutAction;
 use App\Domain\Layout\Models\PageLayout;
 use App\Http\Requests\Admin\Layout\UpdatePageLayoutRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
 
@@ -19,6 +20,8 @@ class PageLayoutController
      */
     public function show(PageLayout $pageLayout, GetPageLayoutBuilderDataAction $getPageLayoutBuilderDataAction): View
     {
+        Gate::authorize('page-layouts.home');
+
         $builderData = $getPageLayoutBuilderDataAction->execute($pageLayout);
 
         return view('admin.layout.page-layouts.show', [
@@ -39,6 +42,8 @@ class PageLayoutController
                            UpdatePageLayoutAction  $updatePageLayoutAction,
     ): RedirectResponse
     {
+        Gate::authorize('page-layouts.home');
+
         $updatePageLayoutAction->execute($pageLayout, $request->layoutState(), $request->elementStates());
 
         return redirect()

@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -34,6 +35,8 @@ class UserController extends Controller
      */
     public function index(IndexUserRequest $request, UserListing $userListing): View
     {
+        Gate::authorize('user.list');
+
         $users = $userListing
             ->handle(User::query(), $request->validated())
             ->paginate($userListing->perPage())
@@ -61,6 +64,8 @@ class UserController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('user.create');
+
         $roles = Role::query()
             ->orderBy('title')
             ->get();
@@ -77,6 +82,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request, RegisterUserAction $registerUserAction): RedirectResponse
     {
+        Gate::authorize('user.create');
+
         $data = $request->validated();
 
         $registerUserAction->execute(
@@ -103,6 +110,8 @@ class UserController extends Controller
      */
     public function edit(User $user): View
     {
+        Gate::authorize('user.edit');
+
         $roles = Role::query()
             ->orderBy('title')
             ->get();
@@ -120,6 +129,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
+        Gate::authorize('user.edit');
+
         $data = $request->validated();
 
         $isStatusToggle = $request->has('status') && !$request->has('first_name');
@@ -167,6 +178,8 @@ class UserController extends Controller
      */
     public function usersFetch(Request $request): JsonResponse
     {
+        Gate::authorize('user.list');
+
         $query = $request->get('q', '');
 
         $users = User::whereRaw('CONCAT(first_name, " ", last_name) LIKE ?', ["%$query%"])
@@ -180,6 +193,8 @@ class UserController extends Controller
      */
     public function destroy(User $user): RedirectResponse
     {
+        Gate::authorize('user.delete');
+
         $user->delete();
 
         return redirect()

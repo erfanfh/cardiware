@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class SettingController extends Controller
@@ -18,6 +19,8 @@ class SettingController extends Controller
      */
     public function general(): View
     {
+        Gate::authorize('setting.general');
+
         return view('admin.system.settings.general');
     }
 
@@ -30,6 +33,8 @@ class SettingController extends Controller
      */
     public function storeGeneral(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.general');
+
         $this->storeSettings($request, 'general');
 
         return redirect()
@@ -44,6 +49,8 @@ class SettingController extends Controller
      */
     public function header(): View
     {
+        Gate::authorize('setting.header');
+
         return view('admin.system.settings.header');
     }
 
@@ -56,6 +63,8 @@ class SettingController extends Controller
      */
     public function storeHeader(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.header');
+
         $this->storeSettings($request, 'header');
 
         return redirect()
@@ -70,6 +79,8 @@ class SettingController extends Controller
      */
     public function footer(): View
     {
+        Gate::authorize('setting.footer');
+
         return view('admin.system.settings.footer');
     }
 
@@ -82,6 +93,8 @@ class SettingController extends Controller
      */
     public function storeFooter(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.footer');
+
         $this->storeSettings($request, 'footer');
 
         return redirect()
@@ -96,6 +109,8 @@ class SettingController extends Controller
      */
     public function home(): View
     {
+        Gate::authorize('setting.home');
+
         return view('admin.system.settings.home');
     }
 
@@ -108,6 +123,8 @@ class SettingController extends Controller
      */
     public function storeHome(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.home');
+
         $this->storeSettings($request, 'home');
 
         return redirect()
@@ -122,6 +139,8 @@ class SettingController extends Controller
      */
     public function ads(): View
     {
+        Gate::authorize('setting.ads');
+
         return view('admin.system.settings.ads');
     }
 
@@ -134,6 +153,8 @@ class SettingController extends Controller
      */
     public function storeAds(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.ads');
+
         $this->storeSettings($request, 'ads');
 
         return redirect()
@@ -148,6 +169,8 @@ class SettingController extends Controller
      */
     public function aboutUs()
     {
+        Gate::authorize('setting.about-us');
+
         return view('admin.system.settings.about-us');
     }
 
@@ -160,6 +183,8 @@ class SettingController extends Controller
      */
     public function storeAboutUs(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.about-us');
+
         $this->storeSettings($request, 'aboutUs');
 
         return redirect()
@@ -174,6 +199,8 @@ class SettingController extends Controller
      */
     public function sidebarWidgets(): View
     {
+        Gate::authorize('setting.sidebar-widgets');
+
         return view('admin.system.settings.sidebar-widgets');
     }
 
@@ -186,6 +213,8 @@ class SettingController extends Controller
      */
     public function storeSidebarWidgets(Request $request): RedirectResponse
     {
+        Gate::authorize('setting.sidebar-widgets');
+
         $this->storeSettings($request, 'sidebarWidgets');
 
         return redirect()

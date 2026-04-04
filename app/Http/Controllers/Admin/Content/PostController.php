@@ -219,6 +219,8 @@ class PostController extends Controller
      */
     public function history(Request $request): View
     {
+        Gate::authorize('post.index');
+
         $sort = $request->get('sort', 'published_at');
         $direction = $request->get('direction', 'desc');
 
@@ -269,6 +271,8 @@ class PostController extends Controller
      */
     public function restore(int $id): RedirectResponse
     {
+        Gate::authorize('post.create');
+
         $post = Post::withTrashed()->findOrFail($id);
         $post->restore();
 
@@ -277,6 +281,8 @@ class PostController extends Controller
 
     public function forceDelete(int $id): RedirectResponse
     {
+        Gate::authorize('post.delete');
+
         $post = Post::withTrashed()->findOrFail($id);
         $post->forceDelete();
 

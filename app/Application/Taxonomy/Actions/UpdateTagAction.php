@@ -8,6 +8,7 @@ use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use InvalidArgumentException;
 use Throwable;
 
@@ -27,6 +28,8 @@ class UpdateTagAction
      */
     public function execute(TaxonomyTerm $tag, array $data): TaxonomyTerm
     {
+        Gate::authorize('tag.edit');
+
         return DB::transaction(function () use ($tag, $data) {
             if ($tag->type !== TaxonomyTermTypeEnum::TAG)
                 throw new InvalidArgumentException('Tag type should be "' . TaxonomyTermTypeEnum::TAG->value . '" but "' . $tag->type->value . '" given.');

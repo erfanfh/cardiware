@@ -9,6 +9,7 @@ use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class CreateCategoryAction
@@ -29,6 +30,8 @@ class CreateCategoryAction
      */
     public function execute(array $data): TaxonomyTerm
     {
+        Gate::authorize('category.create');
+
         return DB::transaction(function () use ($data) {
             $categoryData = $data;
 

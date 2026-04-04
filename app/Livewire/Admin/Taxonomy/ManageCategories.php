@@ -13,6 +13,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class ManageCategories extends ManageTaxonomyTerms
@@ -107,6 +108,8 @@ class ManageCategories extends ManageTaxonomyTerms
 
     public function deleteTerm(): void
     {
+        Gate::authorize('category.delete');
+
         abort_unless($this->deletingId, 404);
 
         $term = TaxonomyTerm::categories()->findOrFail($this->deletingId);
@@ -138,6 +141,8 @@ class ManageCategories extends ManageTaxonomyTerms
 
     protected function handleBulkAction(array $selectedIds): mixed
     {
+        Gate::authorize('category.list');
+
         return app(HandleCategoryBulkAction::class)->execute(
             action: $this->bulkAction,
             ids: $selectedIds,
