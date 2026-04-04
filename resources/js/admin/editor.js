@@ -108,13 +108,27 @@ function buildImageHtml({url = '', alt = '', title = '', caption = ''} = {}) {
     if (safeCaption) {
         return `
             <figure class="content-media">
-                <img src="${safeUrl}" alt="${safeAlt}" title="${safeTitle}">
+                <img
+                    src="${safeUrl}"
+                    alt="${safeAlt}"
+                    title="${safeTitle}"
+                    class="editor-media-image"
+                    data-media-type="image"
+                >
                 <figcaption>${safeCaption}</figcaption>
             </figure>
         `;
     }
 
-    return `<img src="${safeUrl}" alt="${safeAlt}" title="${safeTitle}">`;
+    return `
+        <img
+            src="${safeUrl}"
+            alt="${safeAlt}"
+            title="${safeTitle}"
+            class="editor-media-image"
+            data-media-type="image"
+        >
+    `;
 }
 
 function registerCustomButtons(editor, element) {
@@ -143,6 +157,137 @@ function registerCustomButtons(editor, element) {
             }));
         },
     });
+
+    editor.ui.registry.addButton('mediaImageEdit', {
+        icon: 'edit-block',
+        tooltip: 'ویرایش تصویر',
+        onAction: () => {
+            openImageEditDialog(editor);
+        },
+    });
+
+    editor.ui.registry.addButton('mediaImageRemove', {
+        icon: 'remove',
+        tooltip: 'حذف تصویر',
+        onAction: () => {
+            const node = editor.selection.getNode();
+
+            if (node?.nodeName === 'IMG') {
+                const figure = editor.dom.getParent(node, 'figure');
+
+                if (figure) {
+                    editor.dom.remove(figure);
+                } else {
+                    editor.dom.remove(node);
+                }
+            }
+        },
+    });
+}
+
+function openImageEditDialog(editor) {
+    const node = editor.selection.getNode();
+
+    if (!node || node.nodeName !== 'IMG') {
+        return;
+    }
+
+    const figure = editor.dom.getParent(node, 'figure');
+    const figcaption = figure ? figure.querySelector('figcaption') : null;
+
+    const currentAlt = node.getAttribute('alt') || '';
+    const currentTitle = node.getAttribute('title') || '';
+    const currentCaption = figcaption?.innerText || '';
+
+    editor.windowManager.open({
+        title: 'ویرایش تصویر',
+        body: {
+            type: 'panel',
+            items: [
+                {
+                    type: 'input',
+                    name: 'alt',
+                    label: 'متن جایگزین',
+                },
+                {
+                    type: 'input',
+                    name: 'title',
+                    label: 'عنوان',
+                },
+                {
+                    type: 'textarea',
+                    name: 'caption',
+                    label: 'کپشن',
+                },
+            ],
+        },
+        initialData: {
+            alt: currentAlt,
+            title: currentTitle,
+            caption: currentCaption,
+        },
+        buttons: [
+            {
+                type: 'cancel',
+                text: 'انصراف',
+            },
+            {
+                type: 'submit',
+                text: 'ذخیره',
+                primary: true,
+            },
+        ],
+        onSubmit: (api) => {
+            const data = api.getData();
+
+            node.setAttribute('alt', data.alt || '');
+            node.setAttribute('title', data.title || '');
+
+            if (figure) {
+                let captionNode = figure.querySelector('figcaption');
+
+                if (data.caption?.trim()) {
+                    if (!captionNode) {
+                        captionNode = editor.dom.create('figcaption');
+                        figure.appendChild(captionNode);
+                    }
+
+                    captionNode.textContent = data.caption.trim();
+                } else if (captionNode) {
+                    editor.dom.remove(captionNode);
+                }
+            } else if (data.caption?.trim()) {
+                const wrapper = editor.dom.create('figure', {class: 'content-media'});
+                const clonedImg = node.cloneNode(true);
+                const captionNode = editor.dom.create('figcaption');
+
+                captionNode.textContent = data.caption.trim();
+
+                wrapper.appendChild(clonedImg);
+                wrapper.appendChild(captionNode);
+
+                editor.dom.replace(wrapper, node);
+            }
+
+            api.close();
+        },
+    });
+}
+
+function setImageAlignment(editor, align = 'center') {
+    const node = editor.selection.getNode();
+
+    if (!node || node.nodeName !== 'IMG') {
+        return;
+    }
+
+    const target = editor.dom.getParent(node, 'figure') || node;
+
+    editor.dom.removeClass(target, 'image-align-right');
+    editor.dom.removeClass(target, 'image-align-center');
+    editor.dom.removeClass(target, 'image-align-left');
+
+    editor.dom.addClass(target, `image-align-${align}`);
 }
 
 function buildEditorConfig(element) {
@@ -279,6 +424,15 @@ function buildEditorConfig(element) {
 
             editor.on('remove', () => {
                 editor.getElement()?.removeAttribute('data-editor-initialized');
+            });
+
+            editor.ui.registry.addContextToolbar('imageToolbar', {
+                predicate: (node) => {
+                    return node?.nodeName === 'IMG' && editor.dom.hasClass(node, 'editor-media-image');
+                },
+                items: 'mediaImageRemove mediaImageEdit',
+                position: 'node',
+                scope: 'node',
             });
         },
     };
