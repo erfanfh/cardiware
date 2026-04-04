@@ -38,7 +38,8 @@ final class ContentController
                 'author:id,display_name',
                 'picture.primaryVariant',
                 'categories:id,title',
-                'tags:id,title'
+                'tags:id,title',
+                'imageGallery.mediaFile',
             ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
