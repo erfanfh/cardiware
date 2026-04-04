@@ -1,3 +1,5 @@
+import './lightbox-gallery.js';
+
 (function () {
     const items = [
         "• نسخه جدید پچ لیگ ایران منتشر شد (FC26)",

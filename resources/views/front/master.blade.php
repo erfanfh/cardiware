@@ -19,7 +19,7 @@
 @yield('content')
 @include('front.partials.admin-bar')
 @include('front.layouts.footer')
-
+<x-front.lightbox-gallery/>
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts
