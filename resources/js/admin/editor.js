@@ -417,7 +417,7 @@ function startImageReplace(editor, element) {
     }));
 }
 
-function replaceSelectedImage(editor, {mediaId = null, mediaPath = null} = {}) {
+function replaceSelectedImage(editor, {mediaId = null, mediaPath = null, mediaTitle = ''} = {}) {
     const imageNode = getSelectedImageNode(editor);
 
     if (!imageNode || !mediaPath) {
@@ -425,10 +425,11 @@ function replaceSelectedImage(editor, {mediaId = null, mediaPath = null} = {}) {
     }
 
     imageNode.setAttribute('src', mediaPath);
+    imageNode.setAttribute('alt', mediaTitle || '');
+    imageNode.setAttribute('title', mediaTitle || '');
 
     if (mediaId) {
         imageNode.setAttribute('data-media-id', String(mediaId));
-        imageNode.setAttribute('title', `media-${mediaId}`);
     } else {
         imageNode.removeAttribute('data-media-id');
     }
@@ -639,6 +640,7 @@ function handleMfipSelected(event) {
     const itemKey = detail.itemKey;
     const mediaPath = detail.mediaPath;
     const mediaId = detail.mediaId;
+    const mediaTitle = detail.mediaTitle || '';
 
     if (!itemKey || !mediaPath) {
         return;
@@ -664,6 +666,7 @@ function handleMfipSelected(event) {
         replaceSelectedImage(editor, {
             mediaId,
             mediaPath,
+            mediaTitle,
         });
 
         pendingImageReplace = null;
@@ -672,8 +675,8 @@ function handleMfipSelected(event) {
 
     const html = buildImageHtml({
         url: mediaPath,
-        alt: '',
-        title: mediaId ? `media-${mediaId}` : '',
+        alt: mediaTitle,
+        title: mediaTitle,
         caption: '',
         mediaId,
         size: 'md',
