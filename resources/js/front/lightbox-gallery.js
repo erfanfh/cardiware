@@ -59,13 +59,32 @@ window.lightboxSystem = function () {
     };
 };
 
+function getLightboxItemFromElement(element) {
+    const src =
+        element.dataset.src ||
+        element.getAttribute('href') ||
+        element.getAttribute('src') ||
+        element.querySelector('img')?.getAttribute('src') ||
+        '';
+
+    const title =
+        element.dataset.title ||
+        element.getAttribute('title') ||
+        element.querySelector('img')?.getAttribute('alt') ||
+        '';
+
+    return {
+        src,
+        title,
+    };
+}
+
 function collectLightboxItems(galleryName) {
     const elements = Array.from(document.querySelectorAll(`[data-lightbox="${galleryName}"]`));
 
-    return elements.map((element) => ({
-        src: element.dataset.src || element.getAttribute('src') || '',
-        title: element.dataset.title || element.getAttribute('alt') || '',
-    }));
+    return elements
+        .map((element) => getLightboxItemFromElement(element))
+        .filter((item) => item.src);
 }
 
 function openLightboxFromElement(element) {

@@ -13,13 +13,34 @@
                 <div class="swiper-wrapper">
                     @foreach($post->imageGallery as $item)
                         <div class="swiper-slide">
-                            <img
-                                class="h-56 sm:h-64 w-full rounded-2xl border border-slate-200 object-cover cursor-zoom-in"
-                                src="{{ $item->mediaFile->url }}"
-                                alt="{{ $item->title }}"
+                            <div
+                                class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 cursor-zoom-in"
                                 data-lightbox="post-gallery"
+                                data-src="{{ $item->mediaFile->url }}"
                                 data-title="{{ $item->title }}"
                             >
+                                <img
+                                    class="h-56 sm:h-64 w-full object-cover transition duration-500 group-hover:scale-[1.05]"
+                                    src="{{ $item->mediaFile->url }}"
+                                    alt="{{ $item->title }}"
+                                    loading="lazy"
+                                >
+
+                                <div
+                                    class="pointer-events-none absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition duration-300"></div>
+
+                                <div
+                                    class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+
+                                @if($item->title)
+                                    <div
+                                        class="pointer-events-none absolute bottom-3 right-3 left-3 opacity-0 group-hover:opacity-100 transition duration-300">
+                                        <div class="text-white text-xs font-bold line-clamp-2">
+                                            {{ $item->title }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     @endforeach
                 </div>
