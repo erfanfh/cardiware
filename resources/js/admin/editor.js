@@ -514,6 +514,9 @@ function buildEditorConfig(element) {
         relative_urls: false,
         remove_script_host: false,
 
+        toolbar_sticky: true,
+        toolbar_sticky_offset: 64,
+
         autoresize_bottom_margin: 16,
 
         body_class: 'tinymce-content',
