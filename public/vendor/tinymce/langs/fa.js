@@ -42,7 +42,7 @@ tinymce.addI18n('fa', {
     'Paragraph': 'پاراگراف',
     'Blockquote': 'نقل‌قول',
     'Div': 'بلوک',
-    'Pre': 'متن از پیش قالب‌بندی‌شده',
+    'Preformatted': 'از پیش ساخته',
 
     'Formats': 'قالب‌ها',
     'Headings': 'تیترها',
