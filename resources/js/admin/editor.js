@@ -1,5 +1,6 @@
 import tinymce from 'tinymce';
 import '../../css/admin/tinymce.css';
+import '../../css/front/tinymce-content.css';
 
 // Theme
 import 'tinymce/themes/silver/theme';
@@ -515,123 +516,8 @@ function buildEditorConfig(element) {
 
         autoresize_bottom_margin: 16,
 
-        content_style: `
-            body {
-                font-size: 14px;
-                line-height: 2;
-                color: #0f172a;
-                direction: ${dir};
-                text-align: ${dir === 'rtl' ? 'right' : 'left'};
-                padding: 12px;
-            }
-
-            p {
-                margin: 0 0 1rem;
-            }
-
-            h1, h2, h3, h4, h5, h6 {
-                margin: 1.25rem 0 0.75rem;
-                line-height: 1.8;
-            }
-
-            ul, ol {
-                margin: 0 0 1rem;
-                padding-inline-start: 1.5rem;
-            }
-
-            blockquote {
-                margin: 1rem 0;
-                padding: 0.75rem 1rem;
-                border-right: 4px solid #fdba74;
-                background: #fff7ed;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-
-            table th,
-            table td {
-                border: 1px solid #cbd5e1;
-                padding: 0.5rem;
-            }
-
-            figure.content-media {
-                margin: 1rem 0;
-            }
-
-            figure.content-media img {
-                display: block;
-                max-width: 100%;
-                height: auto;
-                border-radius: 0.75rem;
-            }
-
-            figure.content-media figcaption {
-                margin-top: 0.5rem;
-                color: #64748b;
-                font-size: 0.875rem;
-                text-align: center;
-            }
-
-            figure.content-media {
-                margin: 1rem 0;
-            }
-
-            figure.content-media img,
-            img.editor-media-image {
-                max-width: 100%;
-                height: auto;
-                border-radius: 0.75rem;
-            }
-
-            .image-size-sm {
-                max-width: 14rem;
-            }
-
-            .image-size-md {
-                max-width: 24rem;
-            }
-
-            .image-size-lg {
-                max-width: 36rem;
-            }
-
-            .image-size-full {
-                max-width: 100%;
-                width: 100%;
-            }
-
-            figure.content-media.image-size-sm img {
-                width: 100%;
-            }
-
-            figure.content-media.image-size-md img {
-                width: 100%;
-            }
-
-            figure.content-media.image-size-lg img {
-                width: 100%;
-            }
-
-            figure.content-media.image-size-full img {
-                width: 100%;
-            }
-
-            .editor-more-marker {
-                margin: 1.25rem 0;
-                padding: 0.25rem 1rem;
-                border: 1px dashed #e5e5e5;
-                border-radius: 0.75rem;
-                background: #f5f5f5;
-                color: #999;
-                font-size: 0.8rem;
-                font-weight: 700;
-                text-align: center;
-                user-select: none;
-            }
-        `,
+        body_class: 'tinymce-content',
+        content_css: [window.tinymceContentCss, window.editorCss],
 
         setup(editor) {
             registerCustomButtons(editor, element);
