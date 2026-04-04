@@ -1,1 +1,15 @@
 @import "./tinymce-content.css";
+
+.mwGalleryPrev.swiper-button-disabled,
+.mwGalleryNext.swiper-button-disabled {
+    opacity: 0.8;
+    cursor: default;
+    pointer-events: none;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.mwGalleryPrev.swiper-button-disabled svg,
+.mwGalleryNext.swiper-button-disabled svg {
+    opacity: 0.5;
+}
