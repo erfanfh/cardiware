@@ -49,7 +49,7 @@ class UserController extends Controller
 
         $hasActiveFilters = $userListing->hasActiveFilters($request->validated());
 
-        $bulkActionOptions = DefaultBulkActions::toOptions();
+        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
 
         return view('admin.identity.users.index', compact('users', 'roles', 'bulkActionOptions', 'hasActiveFilters', 'statuses'));
     }

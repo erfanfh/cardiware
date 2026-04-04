@@ -9,6 +9,6 @@
             'selectedPermissions' => [],
         ])
 
-        <x-admin.save-button label="ایجاد نقش"/>
+        <x-admin.form.save-button label="ایجاد نقش"/>
     </x-admin.form>
 @endsection
