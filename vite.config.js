@@ -12,6 +12,7 @@ export default defineConfig({
                 'resources/js/admin/list-table.js',
                 'resources/js/front/main.js',
                 'resources/js/front/home.js',
+                'resources/js/front/post-detail.js',
 
                 'resources/css/app.css',
                 'resources/css/admin/admin.css',
