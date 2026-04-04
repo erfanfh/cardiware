@@ -13,3 +13,17 @@
 .mwGalleryNext.swiper-button-disabled svg {
     opacity: 0.5;
 }
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar {
+    height: 8px;
+}
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+}
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 9999px;
+}

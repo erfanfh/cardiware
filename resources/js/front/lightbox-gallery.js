@@ -7,6 +7,15 @@ function normalizeLightboxItems(items = []) {
         .filter((item) => item.src);
 }
 
+function preloadImage(src) {
+    if (!src) {
+        return;
+    }
+
+    const image = new Image();
+    image.src = src;
+}
+
 window.lightboxSystem = function () {
     return {
         isOpen: false,
@@ -30,12 +39,25 @@ window.lightboxSystem = function () {
 
             document.documentElement.classList.add('overflow-hidden');
             document.body.classList.add('overflow-hidden');
+
+            this.preloadNeighbors();
+
+            this.$nextTick(() => {
+                this.scrollActiveThumbIntoView();
+            });
         },
 
         close() {
             this.isOpen = false;
-            this.items = [];
-            this.index = 0;
+
+            window.setTimeout(() => {
+                if (this.isOpen) {
+                    return;
+                }
+
+                this.items = [];
+                this.index = 0;
+            }, 300);
 
             document.documentElement.classList.remove('overflow-hidden');
             document.body.classList.remove('overflow-hidden');
@@ -47,6 +69,11 @@ window.lightboxSystem = function () {
             }
 
             this.index = (this.index + 1) % this.items.length;
+            this.preloadNeighbors();
+
+            this.$nextTick(() => {
+                this.scrollActiveThumbIntoView();
+            });
         },
 
         prev() {
@@ -55,6 +82,57 @@ window.lightboxSystem = function () {
             }
 
             this.index = (this.index - 1 + this.items.length) % this.items.length;
+            this.preloadNeighbors();
+
+            this.$nextTick(() => {
+                this.scrollActiveThumbIntoView();
+            });
+        },
+
+        goTo(index) {
+            if (index < 0 || index >= this.items.length) {
+                return;
+            }
+
+            this.index = index;
+            this.preloadNeighbors();
+
+            this.$nextTick(() => {
+                this.scrollActiveThumbIntoView();
+            });
+        },
+
+        preloadNeighbors() {
+            if (this.items.length <= 1) {
+                return;
+            }
+
+            const nextIndex = (this.index + 1) % this.items.length;
+            const prevIndex = (this.index - 1 + this.items.length) % this.items.length;
+
+            preloadImage(this.items[nextIndex]?.src);
+            preloadImage(this.items[prevIndex]?.src);
+        },
+
+        scrollActiveThumbIntoView() {
+            const container = this.$refs.thumbs;
+
+            if (!container) {
+                return;
+            }
+
+            const buttons = container.querySelectorAll('button');
+            const activeButton = buttons[this.index];
+
+            if (!activeButton) {
+                return;
+            }
+
+            activeButton.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center',
+            });
         },
     };
 };
