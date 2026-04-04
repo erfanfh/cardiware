@@ -66,7 +66,7 @@ function getPresetConfig(preset = 'default') {
 
         full: {
             menubar: false,
-            toolbar: 'undo redo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
+            toolbar: 'undo redo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | insertMore | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
             plugins: [
                 'autolink',
                 'lists',
@@ -160,6 +160,35 @@ function registerCustomButtons(editor, element) {
                     selectedMediaPath: null,
                 },
             }));
+        },
+    });
+
+    editor.ui.registry.addIcon('moreIcon', `
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" d="M3 12h18"/>
+                <path d="M14.5 5.5a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Zm0 13a2.5 2.5 0 1 1-5 0a2.5 2.5 0 0 1 5 0Z"/>
+            </g>
+        </svg>
+    `);
+
+    editor.ui.registry.addButton('insertMore', {
+        icon: 'moreIcon',
+        tooltip: 'درج جداکننده ادامه مطلب',
+        onAction: () => {
+            const existingMarker = editor.getBody().querySelector('[data-more-marker="true"]');
+
+            if (existingMarker) {
+                editor.selection.select(existingMarker);
+                editor.selection.scrollIntoView(existingMarker);
+                return;
+            }
+
+            editor.insertContent(`
+            <div class="editor-more-marker" data-more-marker="true" contenteditable="false">
+                ادامه مطلب
+            </div>
+        `);
         },
     });
 
@@ -590,6 +619,19 @@ function buildEditorConfig(element) {
             figure.content-media.image-size-full img {
                 width: 100%;
             }
+
+            .editor-more-marker {
+                margin: 1.25rem 0;
+                padding: 0.25rem 1rem;
+                border: 1px dashed #e5e5e5;
+                border-radius: 0.75rem;
+                background: #f5f5f5;
+                color: #999;
+                font-size: 0.8rem;
+                font-weight: 700;
+                text-align: center;
+                user-select: none;
+            }
         `,
 
         setup(editor) {
@@ -613,6 +655,14 @@ function buildEditorConfig(element) {
 
             editor.on('remove', () => {
                 editor.getElement()?.removeAttribute('data-editor-initialized');
+            });
+
+            editor.on('GetContent', (event) => {
+                event.content = normalizeEditorContentBeforeSave(event.content);
+            });
+
+            editor.on('BeforeSetContent', (event) => {
+                event.content = normalizeEditorContentForDisplay(event.content);
             });
 
             editor.ui.registry.addContextToolbar('imageToolbar', {
@@ -688,6 +738,20 @@ function handleMfipSelected(event) {
 
     editor.focus();
     editor.insertContent(html);
+}
+
+function normalizeEditorContentBeforeSave(content = '') {
+    return String(content).replaceAll(
+        /<div class="editor-more-marker"[^>]*data-more-marker="true"[^>]*>[\s\S]*?<\/div>/g,
+        '<!--more-->'
+    );
+}
+
+function normalizeEditorContentForDisplay(content = '') {
+    return String(content).replaceAll(
+        '<!--more-->',
+        '<div class="editor-more-marker" data-more-marker="true" contenteditable="false">ادامه مطلب</div>'
+    );
 }
 
 export function initEditors(container = document) {
