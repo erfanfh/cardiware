@@ -3,7 +3,7 @@
 @section('title', 'تنظیمات ابزارک های سایدبار')
 
 @section('content')
-    <x-admin.form class="js-confirm" action="{{ route('admin.settings.sidebar-widgets.store') }}" method="put">
+    <x-admin.form action="{{ route('admin.settings.sidebar-widgets.store') }}" method="put">
         <x-admin.page>
             <x-admin.tabs
                 :tabs="[

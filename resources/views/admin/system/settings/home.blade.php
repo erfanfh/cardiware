@@ -3,7 +3,7 @@
 @section('title', 'تنظیمات صفحه اصلی')
 
 @section('content')
-    <x-admin.form action="{{ route('admin.settings.home.store') }}" method="put" class="js-confirm">
+    <x-admin.form action="{{ route('admin.settings.home.store') }}" method="put">
         <x-admin.page>
             <x-admin.tabs
                 :tabs="[
