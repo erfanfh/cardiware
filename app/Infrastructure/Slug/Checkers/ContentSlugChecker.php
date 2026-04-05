@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Slug\Checkers;
 
+use App\Application\Content\Services\ReservedSlugService;
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
@@ -32,6 +33,9 @@ class ContentSlugChecker implements SlugScopeChecker
         ?string       $ignoreType = null,
     ): bool
     {
+        if (app(ReservedSlugService::class)->isReserved($slug))
+            return true;
+
         $query = ContentSlug::query()->where('slug', $slug);
 
         if ($ignoreId !== null && $ignoreType !== null) {
