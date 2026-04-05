@@ -27,53 +27,8 @@
 
     <!-- body -->
     <div class="p-5 sm:p-6">
-        <p class="text-sm leading-7 text-slate-700">
-            در این نسخه تمرکز اصلی روی پایداری، سرعت لود، کاهش کرش‌ها و سازگاری بهتر با برخی سیستم‌ها
-            بوده
-            است.
-            در ادامه تغییرات را به صورت دقیق مرور می‌کنیم.
-        </p>
-
-        <div class="mt-6 space-y-6">
-            <div>
-                <div class="text-base font-extrabold">مهم‌ترین تغییرات</div>
-                <ul class="mt-3 space-y-2 text-sm text-slate-700">
-                    <li class="flex items-start gap-3"><span
-                            class="mt-2 h-2 w-2 rounded bg-brand-600"></span>بهبود سرعت لود اولیه و کاهش
-                        زمان ورود به منوها
-                    </li>
-                    <li class="flex items-start gap-3"><span
-                            class="mt-2 h-2 w-2 rounded bg-brand-600"></span>رفع کرش‌های مرتبط با
-                        Alt+Tab در
-                        برخی سیستم‌ها
-                    </li>
-                    <li class="flex items-start gap-3"><span
-                            class="mt-2 h-2 w-2 rounded bg-brand-600"></span>بهبود سازگاری با مودهای
-                        گرافیکی
-                        رایج
-                    </li>
-                    <li class="flex items-start gap-3"><span
-                            class="mt-2 h-2 w-2 rounded bg-brand-600"></span>بهینه‌سازی مصرف رم در
-                        صحنه‌های
-                        شلوغ
-                    </li>
-                </ul>
-            </div>
-
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4">
-                <div class="text-sm font-extrabold text-emerald-900">نکته مهم</div>
-                <p class="mt-1 text-sm text-emerald-800 leading-7">
-                    اگر از نسخه‌های قدیمی‌تر استفاده می‌کنید، قبل از آپدیت حتماً از تنظیمات و فایل‌های
-                    مهم
-                    بکاپ بگیرید.
-                </p>
-            </div>
-
-            <div>
-                <div class="text-base font-extrabold">تصویر نمونه</div>
-                <img class="mt-3 rounded-2xl border border-slate-200 shadow-sm"
-                     src="https://picsum.photos/seed/mw-single-inline/1200/700" alt=""/>
-            </div>
+        <div class="tinymce-content">
+            {!! $post->body !!}
         </div>
 
         @include('front.posts.partials.detail.download-box')

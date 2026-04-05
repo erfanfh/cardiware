@@ -1,1 +1,29 @@
 @import "./tinymce-content.css";
+
+.mwGalleryPrev.swiper-button-disabled,
+.mwGalleryNext.swiper-button-disabled {
+    opacity: 0.8;
+    cursor: default;
+    pointer-events: none;
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.mwGalleryPrev.swiper-button-disabled svg,
+.mwGalleryNext.swiper-button-disabled svg {
+    opacity: 0.5;
+}
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar {
+    height: 8px;
+}
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+}
+
+.lightbox-thumbs-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 9999px;
+}

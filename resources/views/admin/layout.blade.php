@@ -44,6 +44,9 @@
         hasSecond: false,
         showTodayBtn: true,
     });
+
+    window.tinymceContentCss = "{{ Vite::asset('resources/css/front/tinymce-content.css') }}";
+    window.editorCss = "{{ Vite::asset('resources/css/admin/editor.css') }}";
 </script>
 
 @stack('scripts')

@@ -1,0 +1,103 @@
+@font-face {
+    font-family: "main-font";
+    src: url("../../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2") format("woff2"),
+    url("../../fonts/IRANSansX/IRANSansXFaNum-Regular.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+@font-face {
+    font-family: "main-font";
+    src: url("../../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2") format("woff2"),
+    url("../../fonts/IRANSansX/IRANSansXFaNum-Bold.woff") format("woff");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+* {
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+}
+
+body {
+    direction: rtl;
+    padding: 0.75rem;
+}
+
+figure.content-media {
+    margin: 1rem 0;
+}
+
+figure.content-media img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+}
+
+figure.content-media figcaption {
+    margin-top: 0.5rem;
+    color: #64748b;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+figure.content-media {
+    margin: 1rem 0;
+}
+
+figure.content-media img,
+img.editor-media-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.75rem;
+}
+
+.image-size-sm {
+    max-width: 14rem;
+}
+
+.image-size-md {
+    max-width: 24rem;
+}
+
+.image-size-lg {
+    max-width: 36rem;
+}
+
+.image-size-full {
+    max-width: 100%;
+    width: 100%;
+}
+
+figure.content-media.image-size-sm img {
+    width: 100%;
+}
+
+figure.content-media.image-size-md img {
+    width: 100%;
+}
+
+figure.content-media.image-size-lg img {
+    width: 100%;
+}
+
+figure.content-media.image-size-full img {
+    width: 100%;
+}
+
+.editor-more-marker {
+    margin: 1.25rem 0;
+    padding: 0.25rem 1rem;
+    border: 1px dashed #e5e5e5;
+    border-radius: 0.75rem;
+    background: #f5f5f5;
+    color: #999;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    user-select: none;
+}

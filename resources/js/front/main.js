@@ -1,4 +1,4 @@
-import './hero-slider.js';
+import './lightbox-gallery.js';
 
 (function () {
     const items = [

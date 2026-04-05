@@ -60,3 +60,78 @@ body .tox :not(svg):not(rect) {
 .tox.tox-tinymce.tox-rtl-custom .tox-statusbar {
     direction: rtl;
 }
+
+.tox .tox-collection--list .tox-collection__item {
+    direction: rtl;
+    cursor: pointer;
+}
+
+.tox .tox-collection--list .tox-collection__item-label {
+    text-align: right;
+}
+
+.tox .tox-collection--list .tox-collection__item-label * {
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-size: 0.9rem !important;
+}
+
+.tox .tox-dialog__header {
+    direction: rtl;
+}
+
+.tox .tox-dialog * {
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+}
+
+.tox .tox-dialog__title {
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+}
+
+.tox .tox-dialog .tox-form {
+    gap: 1rem;
+}
+
+.tox .tox-dialog .tox-form .tox-form__group .tox-label {
+    padding: 0 0 0 8px;
+    text-align: right;
+    direction: rtl;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+.tox .tox-dialog .tox-form .tox-form__group input,
+.tox .tox-dialog .tox-form .tox-form__group select,
+.tox .tox-dialog .tox-form .tox-form__group button,
+.tox .tox-dialog .tox-form .tox-form__group textarea {
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-size: 0.9rem;
+}
+
+.tox .tox-dialog .tox-form .tox-form__group input[type=text],
+.tox .tox-dialog .tox-form .tox-form__group select,
+.tox .tox-dialog .tox-form .tox-form__group button,
+.tox .tox-dialog .tox-form .tox-form__group textarea {
+    text-align: right;
+    direction: rtl;
+}
+
+.tox .tox-dialog__footer {
+    direction: rtl;
+}
+
+.tox .tox-dialog__footer button {
+    margin-left: 0 !important;
+    margin-right: 0.5rem;
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-size: 0.8rem;
+}
+
+.tox .tox-split-button__chevron {
+    border-radius: 3px 0 0 3px !important;
+}
+
+.tox .tox-split-button__main {
+    border-radius: 0 3px 3px 0 !important;
+}

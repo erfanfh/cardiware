@@ -191,14 +191,12 @@
 
                         <template x-if="quickCreateParentEnabled">
                             <div class="sm:col-span-2">
-                                <x-admin.form.select
+                                <x-admin.form.async-select
                                     x-model="newCategoryParentId"
                                     placeholder="بدون والد"
-                                >
-                                    <template x-for="option in parentOptions" :key="'parent-' + option.id">
-                                        <option :value="String(option.id)" x-text="option.label"></option>
-                                    </template>
-                                </x-admin.form.select>
+                                    :multiple="false"
+                                    :search-url="route('admin.categories.ajax-search')"
+                                />
                             </div>
                         </template>
                     </div>

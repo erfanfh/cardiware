@@ -42,7 +42,7 @@ tinymce.addI18n('fa', {
     'Paragraph': 'پاراگراف',
     'Blockquote': 'نقل‌قول',
     'Div': 'بلوک',
-    'Pre': 'متن از پیش قالب‌بندی‌شده',
+    'Preformatted': 'از پیش ساخته',
 
     'Formats': 'قالب‌ها',
     'Headings': 'تیترها',
@@ -230,4 +230,14 @@ tinymce.addI18n('fa', {
     'Dark blue': 'آبی تیره',
     'Dark purple': 'بنفش تیره',
     'Dark gray': 'خاکستری تیره',
+
+    'Replace': 'جایگزینی',
+    'Replace image': 'جایگزینی تصویر',
+    'Small': 'کوچک',
+    'Medium': 'متوسط',
+    'Large': 'بزرگ',
+    'Full width': 'تمام عرض',
+    'Image size': 'اندازه تصویر',
+    'Edit image': 'ویرایش تصویر',
+    'Remove image': 'حذف تصویر',
 });

@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <x-admin.metabox title="تجربه کاربران" :collapsible="false">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2 space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-4">
             <x-admin.field label="عنوان باکس">
                 <x-admin.form.input
                     name="testimonials_title"

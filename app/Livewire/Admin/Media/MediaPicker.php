@@ -320,6 +320,7 @@ class MediaPicker extends Component
             itemKey: $this->itemKey,
             mediaId: $this->selectedInfo['id'],
             mediaPath: $this->selectedInfo['url'], // path key, full URL value
+            mediaTitle: $this->selectedInfo['title'],
         );
     }
 
