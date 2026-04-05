@@ -3,7 +3,6 @@
 namespace App\Domain\Content\Models;
 
 use App\Domain\Content\Enums\PageStatusEnum;
-use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
@@ -29,7 +28,7 @@ class Page extends Model implements PageViewableInterface
     ];
 
     protected $casts = [
-        'status' => PostStatusEnum::class,
+        'status' => PageStatusEnum::class,
     ];
 
     /**
