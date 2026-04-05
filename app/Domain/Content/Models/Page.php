@@ -4,6 +4,7 @@ namespace App\Domain\Content\Models;
 
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
@@ -86,5 +87,13 @@ class Page extends Model implements PageViewableInterface
     public function getUrlAttribute(): string
     {
         return url($this->slug ?? '/');
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function picture(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class);
     }
 }
