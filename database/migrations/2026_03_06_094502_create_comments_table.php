@@ -10,6 +10,7 @@ return new class extends Migration {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
             $table->morphs('commentable');
+            $table->foreignId('root_id')->nullable()->constrained('comments')->nullOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('comments')->nullOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('author_name')->nullable();
@@ -26,9 +27,10 @@ return new class extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index(['commentable_type', 'commentable_id'], 'comments_commentable_index');
             $table->index(['commentable_type', 'commentable_id', 'parent_id', 'status'], 'comments_commentable_parent_status_index');
+            $table->index(['commentable_type', 'commentable_id', 'root_id'], 'comments_commentable_root_index');
             $table->index(['parent_id', 'status', 'created_at'], 'comments_parent_status_created_at_index');
+            $table->index(['root_id', 'created_at'], 'comments_root_created_at_index');
             $table->index(['status', 'created_at'], 'comments_status_created_at_index');
             $table->index(['user_id'], 'comments_user_id_index');
         });
