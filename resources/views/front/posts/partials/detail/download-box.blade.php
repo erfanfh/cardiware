@@ -49,7 +49,7 @@
                                 <button
                                     type="button"
                                     @click="copyText(@js($section->password ?? ''), '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}')"
-                                    class="inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700"
+                                    class="inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 active:bg-slate-800"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
                                         <g fill="none" stroke="currentColor">
