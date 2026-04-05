@@ -15,36 +15,36 @@ class BuildCommentTreeAction
     {
         $nodesById = [];
 
-        foreach ($rootComments as $rootComment) {
-            $nodesById[$rootComment->id] = [
-                'comment' => $rootComment,
+        foreach ($rootComments as $comment) {
+            $nodesById[$comment->id] = [
+                'comment' => $comment,
                 'replies' => [],
             ];
         }
 
-        foreach ($replies as $reply) {
-            $nodesById[$reply->id] = [
-                'comment' => $reply,
+        foreach ($replies as $comment) {
+            $nodesById[$comment->id] = [
+                'comment' => $comment,
                 'replies' => [],
             ];
+        }
+
+        foreach ($replies as $comment) {
+            if ($comment->parent_id === null) {
+                continue;
+            }
+
+            if (!isset($nodesById[$comment->parent_id])) {
+                continue;
+            }
+
+            $nodesById[$comment->parent_id]['replies'][] = &$nodesById[$comment->id];
         }
 
         $tree = [];
 
-        foreach ($rootComments as $rootComment) {
-            $tree[] = &$nodesById[$rootComment->id];
-        }
-
-        foreach ($replies as $reply) {
-            if ($reply->parent_id === null) {
-                continue;
-            }
-
-            if (!isset($nodesById[$reply->parent_id])) {
-                continue;
-            }
-
-            $nodesById[$reply->parent_id]['replies'][] = &$nodesById[$reply->id];
+        foreach ($rootComments as $comment) {
+            $tree[] = $nodesById[$comment->id];
         }
 
         return $tree;

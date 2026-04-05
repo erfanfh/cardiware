@@ -6,19 +6,16 @@ use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
-use App\Domain\Discussion\Models\Comment as CommentModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-use Throwable;
 
 class CreateCommentAction
 {
     /**
      * @throws ValidationException
-     * @throws Throwable
      */
-    public function execute(CreateCommentDataDTO $data): CommentModel
+    public function execute(CreateCommentDataDTO $data): Comment
     {
         $commentable = $data->commentable;
 
@@ -26,18 +23,19 @@ class CreateCommentAction
         $this->ensureCommentsAreEnabled($commentable);
         $this->ensureGuestIsAllowedIfNeeded($commentable, $data);
         $this->ensureRatingIsValid($commentable, $data);
+
         $parent = $this->validateParent($data);
 
         $status = $this->resolveInitialStatus();
 
         return DB::transaction(function () use ($data, $commentable, $parent, $status) {
-
             $comment = new Comment();
 
             $comment->commentable_type = $commentable->getMorphClass();
             $comment->commentable_id = $commentable->getKey();
 
             $comment->parent_id = $parent?->id;
+            $comment->root_id = $parent?->root_id ?? $parent?->id;
 
             $comment->user_id = $data->userId;
             $comment->author_name = $data->authorName;
@@ -46,13 +44,18 @@ class CreateCommentAction
             $comment->ip_address = $data->ipAddress;
             $comment->user_agent = $data->userAgent;
 
-            $comment->content = $data->content;
+            $comment->content = trim($data->content);
             $comment->rating_percent = $data->ratingPercent;
 
             $comment->status = $status;
             $comment->approved_at = $status === CommentStatusEnum::APPROVED ? now() : null;
 
             $comment->save();
+
+            if ($comment->isRoot()) {
+                $comment->root_id = $comment->id;
+                $comment->save();
+            }
 
             return $comment;
         });
@@ -78,18 +81,26 @@ class CreateCommentAction
 
     protected function ensureGuestIsAllowedIfNeeded(CommentableContract $commentable, CreateCommentDataDTO $data): void
     {
-        if ($data->userId === null) {
-            if (!$commentable->guestCommentsEnabled()) {
-                throw ValidationException::withMessages([
-                    'comments' => 'Guests are not allowed to submit comments.',
-                ]);
-            }
+        if ($data->userId !== null) {
+            return;
+        }
 
-            if (empty($data->authorName) || empty($data->authorEmail)) {
-                throw ValidationException::withMessages([
-                    'author' => 'Name and email are required for guest comments.',
-                ]);
-            }
+        if (!$commentable->guestCommentsEnabled()) {
+            throw ValidationException::withMessages([
+                'comments' => 'Guests are not allowed to submit comments.',
+            ]);
+        }
+
+        if (blank($data->authorName)) {
+            throw ValidationException::withMessages([
+                'author_name' => 'Name is required for guest comments.',
+            ]);
+        }
+
+        if (blank($data->authorEmail)) {
+            throw ValidationException::withMessages([
+                'author_email' => 'Email is required for guest comments.',
+            ]);
         }
     }
 
@@ -97,20 +108,18 @@ class CreateCommentAction
     {
         if ($commentable->requiresCommentRating() && $data->ratingPercent === null) {
             throw ValidationException::withMessages([
-                'rating' => 'Rating is required for this item.',
+                'rating_percent' => 'Rating is required for this item.',
             ]);
         }
 
-        if ($data->ratingPercent !== null) {
-            if ($data->ratingPercent < 0 || $data->ratingPercent > 100) {
-                throw ValidationException::withMessages([
-                    'rating' => 'Rating must be between 0 and 100.',
-                ]);
-            }
+        if ($data->ratingPercent !== null && ($data->ratingPercent < 0 || $data->ratingPercent > 100)) {
+            throw ValidationException::withMessages([
+                'rating_percent' => 'Rating must be between 0 and 100.',
+            ]);
         }
     }
 
-    protected function validateParent(CreateCommentDataDTO $data): ?CommentModel
+    protected function validateParent(CreateCommentDataDTO $data): ?Comment
     {
         if ($data->parentId === null) {
             return null;
@@ -120,7 +129,16 @@ class CreateCommentAction
 
         if (!$parent) {
             throw ValidationException::withMessages([
-                'parent' => 'Parent comment not found.',
+                'parent_id' => 'Parent comment not found.',
+            ]);
+        }
+
+        if (
+            $parent->commentable_type !== $data->commentable->getMorphClass() ||
+            (int)$parent->commentable_id !== (int)$data->commentable->getKey()
+        ) {
+            throw ValidationException::withMessages([
+                'parent_id' => 'The parent comment does not belong to this item.',
             ]);
         }
 

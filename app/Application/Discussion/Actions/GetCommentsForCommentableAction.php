@@ -32,10 +32,7 @@ class GetCommentsForCommentableAction
         $rootCommentsQuery = Comment::query()
             ->forCommentable($data->commentable)
             ->root()
-            ->with([
-                'user',
-                'reactions',
-            ]);
+            ->with(['user']);
 
         if ($data->onlyApproved) {
             $rootCommentsQuery->approved();
@@ -54,25 +51,22 @@ class GetCommentsForCommentableAction
             ]);
         }
 
-        $allReplies = Comment::query()
+        $threadCommentsQuery = Comment::query()
             ->forCommentable($data->commentable)
-            ->whereNotNull('parent_id')
-            ->with([
-                'user',
-                'reactions',
-            ]);
+            ->forRootIds($rootIds)
+            ->repliesOnly()
+            ->with(['user'])
+            ->oldestFirst();
 
         if ($data->onlyApproved) {
-            $allReplies->approved();
+            $threadCommentsQuery->approved();
         }
 
-        $allReplies = $allReplies
-            ->oldestFirst()
-            ->get();
+        $threadComments = $threadCommentsQuery->get();
 
         $tree = $this->buildCommentTreeAction->execute(
             rootComments: $rootComments->getCollection()->all(),
-            replies: $allReplies->all(),
+            replies: $threadComments->all(),
         );
 
         $rootComments->setCollection(collect($tree));
@@ -85,7 +79,8 @@ class GetCommentsForCommentableAction
         match ($sort) {
             CommentSortEnum::NEWEST => $query->latestFirst(),
             CommentSortEnum::OLDEST => $query->oldestFirst(),
-            CommentSortEnum::BEST => $query->orderByDesc('score')
+            CommentSortEnum::BEST => $query
+                ->orderByDesc('score')
                 ->orderByDesc('likes_count')
                 ->orderByDesc('created_at')
                 ->orderByDesc('id'),
