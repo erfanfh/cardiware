@@ -45,7 +45,9 @@ class HandleRoleBulkAction
         $count = $roles->count();
 
         foreach ($roles as $role) {
-            $role->delete();
+            if (!$role->is_default and !$role->is_super_admin) {
+                $role->delete();
+            }
         }
 
         return $count;
