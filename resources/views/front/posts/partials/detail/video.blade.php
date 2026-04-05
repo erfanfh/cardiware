@@ -1,14 +1,8 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-    <div class="flex items-center gap-3">
-          <span
-              class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M23 7l-7 5 7 5V7z"></path>
-              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-            </svg>
-          </span>
-        <h2 class="text-base font-extrabold">گالری ویدیویی</h2>
-    </div>
+<x-front.cart>
+    <x-front.cart-title
+        title="گالری ویدیویی"
+        iconName="video-01"
+    />
 
     <div class="mt-4">
         <div class="swiper mwVideos">
@@ -117,4 +111,4 @@
             </div>
         </div>
     </div>
-</section>
+</x-front.cart>
