@@ -18,6 +18,7 @@ class Comment extends Model
     protected $fillable = [
         'commentable_id',
         'commentable_type',
+        'root_id',
         'parent_id',
         'user_id',
         'author_name',
@@ -42,107 +43,66 @@ class Comment extends Model
         'score' => 'integer',
     ];
 
-    /**
-     * Get the model that owns the comment.
-     *
-     * @return MorphTo
-     */
     public function commentable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    /**
-     * Get the parent comment.
-     *
-     * @return BelongsTo
-     */
+    public function root(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'root_id');
+    }
+
+    public function threadComments(): HasMany
+    {
+        return $this->hasMany(self::class, 'root_id');
+    }
+
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    /**
-     * Get direct replies of this comment.
-     *
-     * @return HasMany
-     */
     public function replies(): HasMany
     {
-        return $this->hasMany(self::class, 'parent_id')->latest('id');
+        return $this->hasMany(self::class, 'parent_id')->oldestFirst();
     }
 
-    /**
-     * Get the author user if the comment belongs to an authenticated user.
-     *
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Get all reactions of the comment.
-     *
-     * @return HasMany
-     */
     public function reactions(): HasMany
     {
         return $this->hasMany(CommentReaction::class);
     }
 
-    /**
-     * Scope only approved comments.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeApproved(Builder $query): Builder
     {
         return $query->where('status', CommentStatusEnum::APPROVED);
     }
 
-    /**
-     * Scope only pending comments.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopePending(Builder $query): Builder
     {
         return $query->where('status', CommentStatusEnum::PENDING);
     }
 
-    /**
-     * Scope only rejected comments.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeRejected(Builder $query): Builder
     {
         return $query->where('status', CommentStatusEnum::REJECTED);
     }
 
-    /**
-     * Scope only root comments.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeRoot(Builder $query): Builder
     {
         return $query->whereNull('parent_id');
     }
 
-    /**
-     * Scope comments for the given commentable model.
-     *
-     * @param Builder $query
-     * @param Model $commentable
-     * @return Builder
-     */
+    public function scopeRepliesOnly(Builder $query): Builder
+    {
+        return $query->whereNotNull('parent_id');
+    }
+
     public function scopeForCommentable(Builder $query, Model $commentable): Builder
     {
         return $query
@@ -150,90 +110,48 @@ class Comment extends Model
             ->where('commentable_id', $commentable->getKey());
     }
 
-    /**
-     * Sort comments by newest first.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
+    public function scopeForRootIds(Builder $query, array $rootIds): Builder
+    {
+        return $query->whereIn('root_id', $rootIds);
+    }
+
     public function scopeLatestFirst(Builder $query): Builder
     {
         return $query->orderByDesc('created_at')->orderByDesc('id');
     }
 
-    /**
-     * Sort comments by oldest first.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
     public function scopeOldestFirst(Builder $query): Builder
     {
         return $query->orderBy('created_at')->orderBy('id');
     }
 
-    /**
-     * Determine whether the comment is a root comment.
-     *
-     * @return bool
-     */
     public function isRoot(): bool
     {
         return $this->parent_id === null;
     }
 
-    /**
-     * Determine whether the comment is a reply.
-     *
-     * @return bool
-     */
     public function isReply(): bool
     {
         return $this->parent_id !== null;
     }
 
-    /**
-     * Determine whether the comment is approved.
-     *
-     * @return bool
-     */
     public function isApproved(): bool
     {
         return $this->status === CommentStatusEnum::APPROVED;
     }
 
-    /**
-     * Determine whether the comment is pending.
-     *
-     * @return bool
-     */
     public function isPending(): bool
     {
         return $this->status === CommentStatusEnum::PENDING;
     }
 
-    /**
-     * Determine whether the comment has been soft deleted.
-     *
-     * @return bool
-     */
     public function isDeleted(): bool
     {
         return $this->trashed();
     }
 
-    /**
-     * Determine whether the comment should be displayed as deleted.
-     *
-     * @return bool
-     */
     public function shouldDisplayAsDeleted(): bool
     {
         return $this->trashed();
-    }
-
-    public function directReplies(): HasMany
-    {
-        return $this->hasMany(self::class, 'parent_id');
     }
 }
