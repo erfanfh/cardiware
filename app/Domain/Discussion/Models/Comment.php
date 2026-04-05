@@ -231,4 +231,9 @@ class Comment extends Model
     {
         return $this->trashed();
     }
+
+    public function directReplies(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
 }
