@@ -2,11 +2,11 @@
 
 namespace App\Domain\Content\Models;
 
+use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
-use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model implements PageViewableInterface
 {
-    use Sluggable, SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'author_id',
@@ -23,6 +23,7 @@ class Page extends Model implements PageViewableInterface
         'excerpt',
         'body',
         'status',
+        'picture_id',
         'template',
         'published_at',
     ];
@@ -37,22 +38,6 @@ class Page extends Model implements PageViewableInterface
     public function slugs(): MorphMany
     {
         return $this->morphMany(ContentSlug::class, 'sluggable');
-    }
-
-    /**
-     * configs of sluggable package
-     *
-     * @return array[]
-     */
-    public function sluggable(): array
-    {
-        return [
-            'slug' => [
-                'source' => 'title',
-                'unique' => true,
-                'includeTrashed' => true
-            ]
-        ];
     }
 
     /**
@@ -78,7 +63,7 @@ class Page extends Model implements PageViewableInterface
      */
     public function isPubliclyVisible(): bool
     {
-        return $this->status === PostStatusEnum::ACTIVE;
+        return $this->status === PageStatusEnum::ACTIVE;
     }
 
     /**
