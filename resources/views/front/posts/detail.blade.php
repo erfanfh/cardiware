@@ -10,7 +10,8 @@
                 @include('front.posts.partials.detail.image-gallery')
                 @include('front.posts.partials.detail.video')
                 @include('front.posts.partials.detail.related-posts')
-                @include('front.posts.partials.detail.comments')
+                @include('front.posts.partials.detail.send-comment-form')
+                @include('front.posts.partials.detail.comments-list')
             </div>
 
             <aside class="lg:col-span-3 space-y-6">
