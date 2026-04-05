@@ -196,9 +196,9 @@
                                 <x-admin.form.repeater
                                     name="projects_items"
                                     :items="old('projects_items', get_setting('sidebarWidgets', 'projects_items') ?? [])"
-                                    title="دسته بندی ها"
-                                    addText="افزودن دسته بندی"
-                                    emptyText="هنوز دسته بندی ای اضافه نشده است."
+                                    title="پروژه ها"
+                                    addText="افزودن پروژه"
+                                    emptyText="هنوز پروژه ای اضافه نشده است."
                                     headingKey="title"
                                     :defaultItem="[
                                         'category_id' => '',
@@ -209,11 +209,11 @@
                                         <x-admin.field>
                                             <x-admin.form.async-select
                                                 x-bind:name="`blocks[${index}][category_id]`"
-                                                label="دسته اصلی"
+                                                label="پروژه"
                                                 :multiple="false"
                                                 :selected-options="[]"
                                                 :search-url="route('admin.projects.ajax-search')"
-                                                placeholder="دسته اصلی را انتخاب کنید..."
+                                                placeholder="پروژه را انتخاب کنید..."
                                             />
                                         </x-admin.field>
                                     </div>
