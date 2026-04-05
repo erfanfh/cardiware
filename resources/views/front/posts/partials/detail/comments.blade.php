@@ -31,62 +31,7 @@
             </div>
         </div>
         <!-- Add comment -->
-        <div class="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- Name -->
-                <input required
-                       class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none
-                    focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
-                       placeholder="نام شما (الزامی)"/>
-
-                <!-- Email -->
-                <input type="email" required
-                       class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none
-                    focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
-                       placeholder="ایمیل شما (الزامی)"/>
-            </div>
-
-            <textarea rows="3"
-                      class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none
-             focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
-                      placeholder="دیدگاه شما…"></textarea>
-
-            <!-- Bottom row: Stars + Submit button -->
-            <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-
-                <!-- Rating Stars -->
-                <div class="flex items-center gap-2"
-                     x-data="{ hoverRating: 0 }"
-                     @mouseleave="hoverRating = 0">
-
-                    <span class="text-xs text-slate-500 ml-2">امتیاز شما:</span>
-
-                    <template x-for="n in 5" :key="'rate'+n">
-                        <button
-                            type="button"
-                            @mouseenter="hoverRating = n"
-                            @click="newRating = n"
-                            class="p-0.5 rounded-lg transition-transform duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100"
-                        >
-                            <svg viewBox="0 0 20 20"
-                                 class="h-7 w-7 drop-shadow-sm"
-                                 :class="(hoverRating ? hoverRating : newRating) >= n ? 'text-amber-400' : 'text-slate-300'">
-                                <path fill="currentColor"
-                                      d="M10 15.27l-5.18 2.73 0.99-5.82L1.62 7.9l5.84-.85L10 1.75l2.54 5.3 5.84.85-4.19 4.28.99 5.82z"/>
-                            </svg>
-                        </button>
-                    </template>
-
-                </div>
-
-                <!-- Submit -->
-                <button
-                    class="rounded-2xl bg-slate-900 text-white px-6 py-3 text-sm font-extrabold hover:opacity-95 transition">
-                    ارسال دیدگاه
-                </button>
-            </div>
-        </div>
+        @include('front.posts.partials.detail.send-comment-form')
         <!-- list -->
         <div class="mt-5 space-y-4">
             <template x-for="c in sortedComments()" :key="c.id">
