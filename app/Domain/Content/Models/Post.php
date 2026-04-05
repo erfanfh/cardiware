@@ -5,6 +5,8 @@ namespace App\Domain\Content\Models;
 use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Discussion\Contracts\CommentableContract;
+use App\Domain\Discussion\Traits\InteractsWithComments;
 use App\Domain\Download\Models\DownloadSection;
 use App\Domain\Feature\Traits\HasFeatures;
 use App\Domain\Identity\Models\User;
@@ -19,9 +21,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Model implements PageViewableInterface
+class Post extends Model implements PageViewableInterface, CommentableContract
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures;
+    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, InteractsWithComments;
 
     protected $fillable = [
         'author_id',
@@ -192,5 +194,20 @@ class Post extends Model implements PageViewableInterface
             })
             ->values()
             ->all();
+    }
+
+    public function commentsEnabled(): bool
+    {
+        return true;
+    }
+
+    public function guestCommentsEnabled(): bool
+    {
+        return true;
+    }
+
+    public function requiresCommentRating(): bool
+    {
+        return true;
     }
 }
