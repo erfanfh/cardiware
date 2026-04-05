@@ -5,7 +5,7 @@ namespace App\Application\Discussion\DTOs;
 use App\Domain\Discussion\Enums\CommentSortEnum;
 use Illuminate\Database\Eloquent\Model;
 
-class GetCommentsForCommentableData
+class GetCommentsForCommentableDataDTO
 {
     public function __construct(
         public Model           $commentable,

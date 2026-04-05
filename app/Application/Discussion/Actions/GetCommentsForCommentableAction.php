@@ -2,7 +2,7 @@
 
 namespace App\Application\Discussion\Actions;
 
-use App\Application\Discussion\DTOs\GetCommentsForCommentableData;
+use App\Application\Discussion\DTOs\GetCommentsForCommentableDataDTO;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Enums\CommentSortEnum;
 use App\Domain\Discussion\Models\Comment;
@@ -21,7 +21,7 @@ class GetCommentsForCommentableAction
     /**
      * @throws ValidationException
      */
-    public function execute(GetCommentsForCommentableData $data): LengthAwarePaginator
+    public function execute(GetCommentsForCommentableDataDTO $data): LengthAwarePaginator
     {
         if (!$data->commentable instanceof CommentableContract) {
             throw ValidationException::withMessages([
