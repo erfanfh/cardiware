@@ -4,7 +4,7 @@
         <div class="text-center">
             <div class="relative inline-block overflow-hidden rounded-2xl border border-slate-200">
                 <img
-                    src="{{ $post->picture->url }}"
+                    src="{{ $post->picture?->url }}"
                     alt="{{ $post->title }}"
                     title="{{ $post->title }}"
                     class="block max-w-full h-auto"

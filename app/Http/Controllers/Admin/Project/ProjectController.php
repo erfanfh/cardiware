@@ -13,6 +13,7 @@ use App\Http\Requests\Admin\Project\IndexProjectRequest;
 use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
 
@@ -27,6 +28,8 @@ class ProjectController extends Controller
      */
     public function index(IndexProjectRequest $request, ProjectListing $projectListing): View
     {
+        Gate::authorize('project.list');
+
         $projects = $projectListing
             ->handle(Project::query(), $request->validated())
             ->paginate($projectListing->perPage())
@@ -74,6 +77,8 @@ class ProjectController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('project.create');
+
         return view('admin.projects.projects.create');
     }
 
@@ -87,6 +92,8 @@ class ProjectController extends Controller
      */
     public function store(UpdateProjectRequest $request, CreateProjectAction $action): RedirectResponse
     {
+        Gate::authorize('project.create');
+
         $project = $action->execute($request->validated());
 
         return redirect()->route('admin.projects.edit', $project)
@@ -101,6 +108,8 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): View
     {
+        Gate::authorize('project.edit');
+
         $selectedTags = $project->tags
             ->map(fn($tag) => [
                 'id' => $tag->id,
@@ -123,6 +132,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project, UpdateProjectAction $action): RedirectResponse
     {
+        Gate::authorize('project.edit');
+
         $action->execute($project, $request->validated());
 
         return redirect()
@@ -135,6 +146,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): RedirectResponse
     {
+        Gate::authorize('project.delete');
+
         $project->delete();
 
         return redirect()

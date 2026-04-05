@@ -11,6 +11,7 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Livewire\Admin\Taxonomy\Base\ManageTaxonomyTerms;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class ManageTags extends ManageTaxonomyTerms
@@ -20,6 +21,8 @@ class ManageTags extends ManageTaxonomyTerms
      */
     public function createTerm(): void
     {
+        Gate::authorize('tag.manage');
+
         $term = app(CreateTagAction::class)->execute($this->validate());
 
         $this->highlightedId = $term->id;
@@ -44,8 +47,13 @@ class ManageTags extends ManageTaxonomyTerms
         $this->dispatch('taxonomy-edit-started');
     }
 
+    /**
+     * @throws Throwable
+     */
     public function updateTerm(): void
     {
+        Gate::authorize('tag.manage');
+
         abort_unless($this->editingId, 404);
 
         $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
@@ -61,6 +69,8 @@ class ManageTags extends ManageTaxonomyTerms
 
     public function deleteTerm(): void
     {
+        Gate::authorize('tag.manage');
+
         abort_unless($this->deletingId, 404);
 
         $term = TaxonomyTerm::tags()->findOrFail($this->deletingId);
@@ -90,6 +100,8 @@ class ManageTags extends ManageTaxonomyTerms
 
     protected function handleBulkAction(array $selectedIds): mixed
     {
+        Gate::authorize('tag.manage');
+
         return app(HandleTagBulkAction::class)->execute(
             action: $this->bulkAction,
             ids: $selectedIds,
