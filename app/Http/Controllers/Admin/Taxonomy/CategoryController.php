@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Taxonomy;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
@@ -14,6 +15,8 @@ class CategoryController extends Controller
      */
     public function __invoke(): View
     {
+        Gate::authorize('category.manage');
+
         return view('admin.taxonomy.categories.index');
     }
 }

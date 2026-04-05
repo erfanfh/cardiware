@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'تنظیمات عمومی')
+@section('title', 'تنظیمات درباره ما')
 
 @section('content')
     <x-admin.form action="{{ route('admin.settings.about-us.store') }}" method="put">
