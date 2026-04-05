@@ -7,7 +7,6 @@ use App\Application\Identity\Listings\UserListing;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
-use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\IndexUserRequest;
 use App\Http\Requests\Admin\Identity\StoreUserRequest;
@@ -86,7 +85,7 @@ class UserController extends Controller
 
         $data = $request->validated();
 
-        $registerUserAction->execute(
+        $user = $registerUserAction->execute(
             firstName: $data['first_name'],
             lastName: $data['last_name'],
             displayName: $data['display_name'],
@@ -98,7 +97,7 @@ class UserController extends Controller
         );
 
         return redirect()->route('admin.users.index')
-            ->with('success', "کاربر '{$data['first_name']}' با موفقیت ایجاد شد.")
+            ->with('success', "کاربر '{$user->display_name}' با موفقیت ایجاد شد.")
             ->with('success_title', 'ایجاد موفق');
     }
 
@@ -168,7 +167,7 @@ class UserController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.users.index')
-            ->with('success', "کاربر '{$user->first_name}' با موفقیت به‌روزرسانی شد.")
+            ->with('success', "کاربر '{$user->display_name}' با موفقیت به‌روزرسانی شد.")
             ->with('success_title', 'به‌روزرسانی موفق');
     }
 
