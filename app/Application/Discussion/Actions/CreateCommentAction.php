@@ -2,7 +2,7 @@
 
 namespace App\Application\Discussion\Actions;
 
-use App\Application\Discussion\DTOs\CreateCommentData;
+use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
@@ -18,7 +18,7 @@ class CreateCommentAction
      * @throws ValidationException
      * @throws Throwable
      */
-    public function execute(CreateCommentData $data): CommentModel
+    public function execute(CreateCommentDataDTO $data): CommentModel
     {
         $commentable = $data->commentable;
 
@@ -76,7 +76,7 @@ class CreateCommentAction
         }
     }
 
-    protected function ensureGuestIsAllowedIfNeeded(CommentableContract $commentable, CreateCommentData $data): void
+    protected function ensureGuestIsAllowedIfNeeded(CommentableContract $commentable, CreateCommentDataDTO $data): void
     {
         if ($data->userId === null) {
             if (!$commentable->guestCommentsEnabled()) {
@@ -93,7 +93,7 @@ class CreateCommentAction
         }
     }
 
-    protected function ensureRatingIsValid(CommentableContract $commentable, CreateCommentData $data): void
+    protected function ensureRatingIsValid(CommentableContract $commentable, CreateCommentDataDTO $data): void
     {
         if ($commentable->requiresCommentRating() && $data->ratingPercent === null) {
             throw ValidationException::withMessages([
@@ -110,7 +110,7 @@ class CreateCommentAction
         }
     }
 
-    protected function validateParent(CreateCommentData $data): ?CommentModel
+    protected function validateParent(CreateCommentDataDTO $data): ?CommentModel
     {
         if ($data->parentId === null) {
             return null;
