@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Admin\Content;
 
+use App\Application\Content\Listings\PageListing;
+use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Models\Page;
+use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Content\IndexPageRequest;
 use App\Http\Requests\Content\Page\StoreRequest;
 use App\Http\Requests\Content\Page\UpdateRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -15,12 +20,52 @@ class PageController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param IndexPageRequest $request
+     * @param PageListing $pageListing
      * @return View
      */
-    public function index(Request $request): View
+    public function index(IndexPageRequest $request, PageListing $pageListing): View
     {
-        return view('admin.content.pages.index');
+        Gate::authorize('page.list');
+
+        $pages = $pageListing
+            ->handle(Page::with(['author']), $request->validated())
+            ->paginate($pageListing->perPage())
+            ->withQueryString();
+
+        $statuses = collect(PageStatusEnum::cases())
+            ->mapWithKeys(fn(PageStatusEnum $status) => [
+                $status->value => $status->label(),
+            ])
+            ->all();
+
+        $hasActiveFilters = $pageListing->hasActiveFilters($request->validated());
+
+        $selectedAuthorIds = collect(request('author_ids', []))
+            ->filter(fn($id) => filled($id))
+            ->map(fn($id) => (int)$id)
+            ->filter(fn($id) => $id > 0)
+            ->values();
+
+        $selectedAuthorOptions = User::query()
+            ->whereIn('id', $selectedAuthorIds)
+            ->get(['id', 'display_name', 'email'])
+            ->map(fn($user) => [
+                'value' => (string)$user->id,
+                'label' => $user->display_name . ' (' . $user->email . ')',
+            ])
+            ->values()
+            ->all();
+
+        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
+
+        return view('admin.content.pages.index', compact(
+            'pages',
+            'statuses',
+            'hasActiveFilters',
+            'bulkActionOptions',
+            'selectedAuthorOptions',
+        ));
     }
 
     /**
