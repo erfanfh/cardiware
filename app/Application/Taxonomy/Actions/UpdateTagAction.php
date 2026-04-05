@@ -28,8 +28,6 @@ class UpdateTagAction
      */
     public function execute(TaxonomyTerm $tag, array $data): TaxonomyTerm
     {
-        Gate::authorize('tag.edit');
-
         return DB::transaction(function () use ($tag, $data) {
             if ($tag->type !== TaxonomyTermTypeEnum::TAG)
                 throw new InvalidArgumentException('Tag type should be "' . TaxonomyTermTypeEnum::TAG->value . '" but "' . $tag->type->value . '" given.');

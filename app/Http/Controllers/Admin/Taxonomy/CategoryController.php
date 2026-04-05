@@ -15,7 +15,7 @@ class CategoryController extends Controller
      */
     public function __invoke(): View
     {
-        Gate::authorize('category.list');
+        Gate::authorize('category.manage');
 
         return view('admin.taxonomy.categories.index');
     }

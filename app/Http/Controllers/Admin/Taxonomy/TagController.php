@@ -15,7 +15,7 @@ class TagController extends Controller
      */
     public function __invoke(): View
     {
-        Gate::authorize('tag.list');
+        Gate::authorize('tag.manage');
 
         return view('admin.taxonomy.tags.index');
     }

@@ -30,8 +30,6 @@ class CreateCategoryAction
      */
     public function execute(array $data): TaxonomyTerm
     {
-        Gate::authorize('category.create');
-
         return DB::transaction(function () use ($data) {
             $categoryData = $data;
 

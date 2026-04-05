@@ -28,8 +28,6 @@ class UpdateCategoryAction
      */
     public function execute(TaxonomyTerm $category, array $data): TaxonomyTerm
     {
-        Gate::authorize('category.edit');
-
         return DB::transaction(function () use ($category, $data) {
             if ($category->type !== TaxonomyTermTypeEnum::CATEGORY)
                 throw new InvalidArgumentException('Taxonomy type should be "' . TaxonomyTermTypeEnum::CATEGORY->value . '" but "' . $category->type->value . '" given.');

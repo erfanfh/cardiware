@@ -29,8 +29,6 @@ class CreateTagAction
      */
     public function execute(array $data): TaxonomyTerm
     {
-        Gate::authorize('tag.create');
-
         return DB::transaction(function () use ($data) {
             $tagData = $data;
 

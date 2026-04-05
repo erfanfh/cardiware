@@ -3,6 +3,7 @@
 namespace App\Application\Taxonomy\Actions;
 
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class ResolveTagIdsAction
@@ -31,6 +32,8 @@ class ResolveTagIdsAction
             ->values();
 
         $newIds = $newTitles->map(function (string $title) {
+            Gate::authorize('tag.manage');
+
             $existing = TaxonomyTerm::query()
                 ->tags()
                 ->whereRaw('LOWER(title) = ?', [mb_strtolower($title)])

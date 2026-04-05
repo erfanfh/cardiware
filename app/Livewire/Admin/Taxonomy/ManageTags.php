@@ -21,6 +21,8 @@ class ManageTags extends ManageTaxonomyTerms
      */
     public function createTerm(): void
     {
+        Gate::authorize('tag.manage');
+
         $term = app(CreateTagAction::class)->execute($this->validate());
 
         $this->highlightedId = $term->id;
@@ -50,6 +52,8 @@ class ManageTags extends ManageTaxonomyTerms
      */
     public function updateTerm(): void
     {
+        Gate::authorize('tag.manage');
+
         abort_unless($this->editingId, 404);
 
         $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
@@ -65,7 +69,7 @@ class ManageTags extends ManageTaxonomyTerms
 
     public function deleteTerm(): void
     {
-        Gate::authorize('tag.delete');
+        Gate::authorize('tag.manage');
 
         abort_unless($this->deletingId, 404);
 
@@ -96,7 +100,7 @@ class ManageTags extends ManageTaxonomyTerms
 
     protected function handleBulkAction(array $selectedIds): mixed
     {
-        Gate::authorize('tag.list');
+        Gate::authorize('tag.manage');
 
         return app(HandleTagBulkAction::class)->execute(
             action: $this->bulkAction,
