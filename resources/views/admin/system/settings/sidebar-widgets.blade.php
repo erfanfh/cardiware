@@ -23,7 +23,7 @@
                                     آیتم‌های ابزارهای کاربردی را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="tools_title"
                                                             :value="get_setting('sidebarWidgets', 'tools_title')"/>
@@ -52,33 +52,35 @@
                                     ]"
                                 >
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                        <x-admin.field
-                                            label="عنوان"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'title')"
-                                                x-model="it.title"
-                                            />
-                                        </x-admin.field>
+                                        <div class="flex flex-col gap-4">
+                                            <x-admin.field
+                                                label="عنوان"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'title')"
+                                                    x-model="it.title"
+                                                />
+                                            </x-admin.field>
 
-                                        <x-admin.field
-                                            label="زیر عنوان"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'subtitle')"
-                                                x-model="it.subtitle"
-                                            />
-                                        </x-admin.field>
+                                            <x-admin.field
+                                                label="زیر عنوان"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'subtitle')"
+                                                    x-model="it.subtitle"
+                                                />
+                                            </x-admin.field>
 
-                                        <x-admin.field
-                                            label="لینک"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'url')"
-                                                x-model="it.url"
-                                                dir="ltr"
-                                            />
-                                        </x-admin.field>
+                                            <x-admin.field
+                                                label="لینک"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'url')"
+                                                    x-model="it.url"
+                                                    dir="ltr"
+                                                />
+                                            </x-admin.field>
+                                        </div>
 
                                         <x-admin.field label="تصویر"
                                         >
@@ -151,7 +153,7 @@
                                     اطلاعات مطالب پربازدید را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="populars_title"
                                                             :value="get_setting('sidebarWidgets', 'populars_title')"/>
@@ -231,7 +233,7 @@
                                     اطلاعات آخرین دیدگاه ها را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="comments_title"
                                                             :value="get_setting('sidebarWidgets', 'comments_title')"/>
