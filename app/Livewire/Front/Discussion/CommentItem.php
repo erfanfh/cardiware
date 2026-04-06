@@ -55,27 +55,6 @@ class CommentItem extends Component
         $this->level = $level;
     }
 
-    public function startReply(): void
-    {
-        $this->replyFormOpen = !$this->replyFormOpen;
-
-        if (!$this->replyFormOpen) {
-            $this->resetReplyState();
-            return;
-        }
-
-        if (Auth::check()) {
-            $this->replyAuthorName = '';
-            $this->replyAuthorEmail = '';
-        }
-    }
-
-    public function closeReply(): void
-    {
-        $this->replyFormOpen = false;
-        $this->resetReplyState();
-    }
-
     public function toggleReplies(): void
     {
         if ($this->repliesOpen || $this->repliesLoading) {

@@ -1,4 +1,29 @@
 <article
+    x-data="{
+        replyOpen: @entangle('replyFormOpen').live,
+        openReplyForm() {
+            this.replyOpen = true;
+
+            this.$nextTick(() => {
+                const form = this.$refs.replyForm;
+                const textarea = this.$refs.replyTextarea;
+
+                if (form) {
+                    form.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start',
+                    });
+                }
+
+                if (textarea) {
+                    textarea.focus();
+                }
+            });
+        },
+        closeReplyForm() {
+            this.replyOpen = false;
+        }
+    }"
     @class([
         'group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5',
         'mt-3' => $level > 0,
@@ -55,7 +80,7 @@
 
                 <div class="flex items-center gap-2 self-start">
                     <button
-                        wire:click="startReply"
+                        @click="openReplyForm()"
                         type="button"
                         class="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white"
                     >
@@ -209,102 +234,111 @@
             @endif
 
             {{-- Reply form --}}
-            @if($replyFormOpen)
-                <div class="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm font-black text-slate-800">
-                            پاسخ به <span class="text-brand-700">{{ $this->comment->display_name }}</span>
-                        </div>
-
-                        <button
-                            wire:click="closeReply"
-                            type="button"
-                            class="grid h-9 w-9 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
-                        >
-                            ×
-                        </button>
+            <div
+                x-show="replyOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 translate-y-1"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 translate-y-1"
+                x-ref="replyForm"
+                class="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4"
+            >
+                <div class="flex items-center justify-between gap-3">
+                    <div class="text-sm font-black text-slate-800">
+                        پاسخ به <span class="text-brand-700">{{ $this->comment->display_name }}</span>
                     </div>
 
-                    @guest
-                        <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                            <div>
-                                <input
-                                    wire:model.live="replyAuthorName"
-                                    type="text"
-                                    placeholder="نام شما"
-                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-                                >
-                                @error('replyAuthorName')
-                                <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <input
-                                    wire:model.live="replyAuthorEmail"
-                                    type="email"
-                                    placeholder="ایمیل شما"
-                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-                                >
-                                @error('replyAuthorEmail')
-                                <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    @endguest
-
-                    @if($replyGeneralError)
-                        <div
-                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
-                            {{ $replyGeneralError }}
-                        </div>
-                    @endif
-
-                    @if($replySuccessMessage)
-                        <div
-                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
-                            {{ $replySuccessMessage }}
-                        </div>
-                    @endif
-
-                    <textarea
-                        wire:model.live="replyContent"
-                        rows="3"
-                        class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
-                        placeholder="پاسخ شما…"
-                    ></textarea>
-
-                    @error('replyContent')
-                    <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
-                    @enderror
-
-                    <div class="mt-3 flex items-center justify-end gap-2">
-                        <button
-                            wire:click="closeReply"
-                            type="button"
-                            class="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
-                        >
-                            لغو
-                        </button>
-
-                        <button
-                            wire:click="submitReply"
-                            wire:loading.attr="disabled"
-                            wire:target="submitReply"
-                            type="button"
-                            class="h-10 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 disabled:opacity-70"
-                        >
-                            <span wire:loading.remove wire:target="submitReply">
-                                ارسال پاسخ
-                            </span>
-
-                            <span wire:loading wire:target="submitReply">
-                                در حال ارسال...
-                            </span>
-                        </button>
-                    </div>
+                    <button
+                        @click="closeReplyForm()"
+                        type="button"
+                        class="grid h-9 w-9 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                    >
+                        ×
+                    </button>
                 </div>
-            @endif
+
+                @guest
+                    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div>
+                            <input
+                                wire:model.live="replyAuthorName"
+                                type="text"
+                                placeholder="نام شما"
+                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                            >
+                            @error('replyAuthorName')
+                            <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <input
+                                wire:model.live="replyAuthorEmail"
+                                type="email"
+                                placeholder="ایمیل شما"
+                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                            >
+                            @error('replyAuthorEmail')
+                            <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                @endguest
+
+                @if($replyGeneralError)
+                    <div
+                        class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                        {{ $replyGeneralError }}
+                    </div>
+                @endif
+
+                @if($replySuccessMessage)
+                    <div
+                        class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                        {{ $replySuccessMessage }}
+                    </div>
+                @endif
+
+                <textarea
+                    x-ref="replyTextarea"
+                    wire:model.live="replyContent"
+                    rows="3"
+                    class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                    placeholder="پاسخ شما…"
+                ></textarea>
+
+                @error('replyContent')
+                <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
+                @enderror
+
+                <div class="mt-3 flex items-center justify-end gap-2">
+                    <button
+                        @click="closeReplyForm()"
+                        type="button"
+                        class="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
+                    >
+                        لغو
+                    </button>
+
+                    <button
+                        wire:click="submitReply"
+                        wire:loading.attr="disabled"
+                        wire:target="submitReply"
+                        type="button"
+                        class="h-10 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 disabled:opacity-70"
+                    >
+                        <span wire:loading.remove wire:target="submitReply">
+                            ارسال پاسخ
+                        </span>
+
+                        <span wire:loading wire:target="submitReply">
+                            در حال ارسال...
+                        </span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </article>
