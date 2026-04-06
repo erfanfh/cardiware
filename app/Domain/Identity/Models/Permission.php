@@ -20,4 +20,14 @@ class Permission extends Model
     {
         return $this->belongsToMany(Role::class);
     }
+
+    /**
+     * Role relationship
+     *
+     * @return BelongsToMany
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
 }
