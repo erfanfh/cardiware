@@ -31,6 +31,18 @@
                     :value="old('display_name', $user?->display_name)"
                 />
             </x-admin.field>
+
+            <x-admin.field label="تصویر">
+                <x-admin.form.media-picker
+                    mode="field"
+                    name="avatar"
+                    :value="[
+                    'id' => old('avatar.id', $user?->avatar_id),
+                    'path' => old('avatar.path', $user?->avatar?->url),
+                ]"
+                    layout="vertical"
+                />
+            </x-admin.field>
         </div>
     </x-admin.metabox>
 

@@ -4,6 +4,7 @@ namespace App\Domain\Identity\Models;
 
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Enums\UserStatusEnum;
+use App\Domain\Media\Models\MediaFile;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,6 +36,7 @@ class User extends Authenticatable
         'email_verified_at',
         'role_id',
         'active',
+        'avatar_id',
     ];
 
     /**
@@ -84,5 +86,13 @@ class User extends Authenticatable
         return Attribute::make(
             fn() => $this->first_name . ' ' . $this->last_name
         );
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function avatar(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class);
     }
 }
