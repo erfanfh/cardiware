@@ -101,30 +101,38 @@ class CommentItem extends Component
             $reply = $createCommentAction->execute($dto);
 
             if ($reply->isApproved()) {
-                $this->replySuccessMessage = 'پاسخ شما با موفقیت ثبت شد.';
                 $this->repliesLoaded = true;
                 $this->repliesOpen = true;
+
+                $this->replyContent = '';
+                $this->replyAuthorName = '';
+                $this->replyAuthorEmail = '';
+                $this->replyFormOpen = false;
 
                 $this->dispatch(
                     'discussion-comment-replied-' . $this->commentId,
                     commentableType: $this->commentableType,
                     commentableId: $this->commentableId,
                 );
+
+                $this->dispatch(
+                    'notify',
+                    type: 'success',
+                    message: 'پاسخ شما با موفقیت ثبت شد.',
+                );
             } else {
+                $this->replyContent = '';
+                $this->replyAuthorName = '';
+                $this->replyAuthorEmail = '';
+
                 $this->replySuccessMessage = 'پاسخ شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
             }
-
-            $this->replyContent = '';
-            $this->replyAuthorName = '';
-            $this->replyAuthorEmail = '';
 
             $this->dispatch(
                 'discussion-comment-created',
                 commentableType: $this->commentableType,
                 commentableId: $this->commentableId,
             );
-
-            $this->replyFormOpen = false;
         } catch (ValidationException $exception) {
             $errors = $exception->validator->errors();
 
