@@ -14,7 +14,7 @@
                     :multiple="true"
                     :value="old('videos_category_ids', get_setting('home', 'videos_category_ids')) ?? []"
                     :selected-options="\App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
-                        ->whereIn('id', old('videos_category_ids', get_setting('home', 'videos_category_ids')))
+                        ->whereIn('id', old('videos_category_ids', get_setting('home', 'videos_category_ids') ?? []))
                         ->get()
                         ->map(fn ($c) => [
                             'value' => $c->id,
