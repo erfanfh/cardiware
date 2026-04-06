@@ -33,9 +33,15 @@ class UpdateRoleRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:255', Rule::unique('roles', 'title')->ignore($roleId)],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['integer', 'exists:permissions,id'],
+            'permissions' => ['nullable', 'array', 'exists:permissions,id'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'permissions' => array_merge(array_filter($this->input('permissions'))),
+        ]);
     }
 
     /**
@@ -63,8 +69,6 @@ class UpdateRoleRequest extends FormRequest
             'title.max' => 'عنوان نقش نباید بیشتر از 255 کاراکتر باشد.',
             'title.unique' => 'این عنوان نقش قبلاً استفاده شده است.',
             'permissions.array' => 'دسترسی‌ها باید آرایه باشند.',
-            'permissions.*.integer' => 'شناسه دسترسی باید عدد باشد.',
-            'permissions.*.exists' => 'دسترسی انتخاب شده معتبر نیست.',
         ];
     }
 }
