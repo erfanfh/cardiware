@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Front\Discussion;
 
+use App\Rules\CommentSubmissionCooldown;
+use App\Rules\UniqueCommentPerModel;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePostCommentRequest extends FormRequest
@@ -23,11 +25,33 @@ class StorePostCommentRequest extends FormRequest
      */
     public function rules(): array
     {
+        $post = $this->route('post');
+        $user = $this->user();
+
         return [
             'parent_id' => ['nullable', 'integer', 'exists:comments,id'],
             'author_name' => ['nullable', 'string', 'max:255'],
             'author_email' => ['nullable', 'email', 'max:255'],
-            'content' => ['required', 'string', 'min:2', 'max:10000'],
+            'content' => [
+                'required',
+                'string',
+                'min:2',
+                'max:10000',
+                new UniqueCommentPerModel(
+                    commentableType: $post->getMorphClass(),
+                    commentableId: $post->getKey(),
+                    userId: $user?->id,
+                    authorEmail: $user ? null : $this->input('author_email'),
+                    parentId: $this->input('parent_id')
+                ),
+                new CommentSubmissionCooldown(
+                    commentableType: $post->getMorphClass(),
+                    commentableId: $post->getKey(),
+                    userId: $user?->id,
+                    authorEmail: $user ? null : $this->input('author_email'),
+                    seconds: 60,
+                ),
+            ],
             'rating_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
         ];
     }
