@@ -31,6 +31,18 @@
                     :value="old('display_name', $user?->display_name)"
                 />
             </x-admin.field>
+
+            <x-admin.field label="تصویر">
+                <x-admin.form.media-picker
+                    mode="field"
+                    name="avatar"
+                    :value="[
+                    'id' => old('avatar.id', $user?->avatar_id),
+                    'path' => old('avatar.path', $user?->avatar?->url),
+                ]"
+                    layout="vertical"
+                />
+            </x-admin.field>
         </div>
     </x-admin.metabox>
 
@@ -99,7 +111,7 @@
                 <button
                     type="button"
                     onclick="generatePassword()"
-                    class="cursor-pointer px-2 py-1 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white text-xs rounded text-sm">
+                    class="cursor-pointer px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded text-sm">
                     تولید رمز عبور
                 </button>
             </div>
