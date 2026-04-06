@@ -6,7 +6,7 @@ use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Discussion\Contracts\CommentableContract;
-use App\Domain\Discussion\Traits\InteractsWithComments;
+use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Download\Models\DownloadSection;
 use App\Domain\Feature\Traits\HasFeatures;
 use App\Domain\Identity\Models\User;
@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface, CommentableContract
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, InteractsWithComments;
+    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments;
 
     protected $fillable = [
         'author_id',

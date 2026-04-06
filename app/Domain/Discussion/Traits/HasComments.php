@@ -5,7 +5,7 @@ namespace App\Domain\Discussion\Traits;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-trait InteractsWithComments
+trait HasComments
 {
     /**
      * Get all comments of the model.
