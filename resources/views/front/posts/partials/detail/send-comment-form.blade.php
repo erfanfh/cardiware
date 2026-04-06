@@ -38,12 +38,25 @@
         ></div>
 
         <div
-            x-show="generalError"
+            x-show="hasAnyError()"
             x-cloak
             x-transition.opacity.duration.300ms
-            class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700"
-            x-text="generalError"
-        ></div>
+            class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+        >
+            <div class="font-extrabold">لطفاً موارد زیر را بررسی کنید:</div>
+
+            <template x-if="generalError">
+                <p class="mt-2 font-medium" x-text="generalError"></p>
+            </template>
+
+            <template x-if="errorList().length">
+                <ul class="mt-2 space-y-1 pr-5 list-disc">
+                    <template x-for="(message, index) in errorList()" :key="'form-error-' + index">
+                        <li x-text="message"></li>
+                    </template>
+                </ul>
+            </template>
+        </div>
 
         @guest
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">

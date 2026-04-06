@@ -21,8 +21,8 @@ window.commentForm = function (config) {
                 return;
             }
 
-            this.newRating = value;
-            this.form.rating_percent = value ? value * 20 : '';
+            this.newRating = this.newRating === value ? 0 : value;
+            this.form.rating_percent = this.newRating ? this.newRating * 20 : '';
             this.clearFieldError('rating_percent');
         },
 
@@ -31,6 +31,18 @@ window.commentForm = function (config) {
                 delete this.errors[field];
                 this.errors = {...this.errors};
             }
+
+            if (!this.hasAnyError()) {
+                this.generalError = '';
+            }
+        },
+
+        hasAnyError() {
+            return Boolean(this.generalError) || this.errorList().length > 0;
+        },
+
+        errorList() {
+            return Object.values(this.errors).filter(Boolean);
         },
 
         resetMessages() {
