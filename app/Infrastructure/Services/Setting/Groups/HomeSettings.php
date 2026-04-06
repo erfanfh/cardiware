@@ -32,6 +32,8 @@ class HomeSettings extends BaseSettings
         'testimonials_title',
         'testimonials_users_avg_scores',
         'testimonials_items',
+        'projects_title',
+        'projects_items',
     ];
 
     protected array $casts = [

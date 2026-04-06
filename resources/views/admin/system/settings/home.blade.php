@@ -51,11 +51,15 @@
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="videos">
-                    @include('admin.system.settings.partials.home-videos')
+{{--                    @include('admin.system.settings.partials.home-videos')--}}
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="testimonials">
                     @include('admin.system.settings.partials.home-testimonials')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="projects">
+                    @include('admin.system.settings.partials.home-projects')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
