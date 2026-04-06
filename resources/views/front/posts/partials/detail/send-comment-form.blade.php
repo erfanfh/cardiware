@@ -1,4 +1,4 @@
-<x-front.cart>
+<x-front.cart id="send-comment-form">
     <x-front.cart-title title="ارسال دیدگاه" iconName="comment-add-01"/>
 
     <form
