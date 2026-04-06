@@ -53,23 +53,10 @@
                         name="author_name"
                         x-model="form.author_name"
                         @input="clearFieldError('author_name')"
-                        required
                         :disabled="loading"
-                        class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
-                        :class="errors.author_name ? 'border-red-300' : 'border-slate-200'"
+                        class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200"
                         placeholder="نام شما (الزامی)"
                     >
-
-                    @error('author_name')
-                    <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-
-                    <p
-                        x-show="errors.author_name"
-                        x-cloak
-                        class="mt-2 text-xs text-red-600"
-                        x-text="errors.author_name"
-                    ></p>
                 </div>
 
                 <div>
@@ -79,23 +66,10 @@
                         name="author_email"
                         x-model="form.author_email"
                         @input="clearFieldError('author_email')"
-                        required
                         :disabled="loading"
-                        class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
-                        :class="errors.author_email ? 'border-red-300' : 'border-slate-200'"
+                        class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200"
                         placeholder="ایمیل شما (الزامی)"
                     >
-
-                    @error('author_email')
-                    <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
-
-                    <p
-                        x-show="errors.author_email"
-                        x-cloak
-                        class="mt-2 text-xs text-red-600"
-                        x-text="errors.author_email"
-                    ></p>
                 </div>
             </div>
         @endguest
@@ -105,41 +79,28 @@
             <textarea
                 name="content"
                 rows="4"
-                required
                 x-model="form.content"
                 @input="clearFieldError('content')"
                 :disabled="loading"
-                class="w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
-                :class="errors.content ? 'border-red-300' : 'border-slate-200'"
+                class="w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200"
                 placeholder="متن دیدگاه خود را بنویسید…"
             ></textarea>
-
-            @error('content')
-            <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
-            @enderror
-
-            <p
-                x-show="errors.content"
-                x-cloak
-                class="mt-2 text-xs text-red-600"
-                x-text="errors.content"
-            ></p>
         </div>
 
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div class="flex items-center gap-1.5" @mouseleave="hoverRating = 0">
+            <div class="flex items-center" @mouseleave="hoverRating = 0">
                 <template x-for="n in 5" :key="'rate'+n">
                     <button
                         type="button"
                         @mouseenter="hoverRating = n"
                         @click="setRating(n)"
                         :disabled="loading"
-                        class="rounded-xl p-1 transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="rounded-xl cursor-pointer p-1 transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
                         :aria-label="'امتیاز ' + n"
                     >
                         <svg
                             viewBox="0 0 20 20"
-                            class="h-7 w-7 transition"
+                            class="h-6 w-6 transition"
                             :class="(hoverRating ? hoverRating : newRating) >= n ? 'text-amber-400' : 'text-slate-200'"
                         >
                             <path
@@ -159,7 +120,7 @@
             <button
                 type="submit"
                 :disabled="loading"
-                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-6 text-sm font-extrabold text-white transition hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                class="inline-flex cursor-pointer h-10 items-center justify-center gap-2 rounded-2xl bg-brand-500 hover:bg-brand-600 px-5 text-sm font-extrabold text-white transition hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
             >
                 <svg
                     x-show="loading"
@@ -187,16 +148,5 @@
                 <span x-text="loading ? 'در حال ارسال...' : 'ارسال دیدگاه'"></span>
             </button>
         </div>
-
-        @error('rating_percent')
-        <p class="mt-3 text-xs text-red-600">{{ $message }}</p>
-        @enderror
-
-        <p
-            x-show="errors.rating_percent"
-            x-cloak
-            class="mt-3 text-xs text-red-600"
-            x-text="errors.rating_percent"
-        ></p>
     </form>
 </x-front.cart>
