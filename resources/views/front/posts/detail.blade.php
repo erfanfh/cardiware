@@ -28,7 +28,7 @@
 @endsection
 
 @push('scripts')
-    @vite(['resources/js/front/post-detail.js'])
+    @vite(['resources/js/front/post-detail/index.js'])
     <script>
         function commentsBlock() {
             return {
