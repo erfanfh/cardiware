@@ -5,31 +5,28 @@ namespace App\Http\Controllers\Front\Discussion;
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Content\Models\Post;
+use App\Domain\Discussion\Enums\CommentStatusEnum;
+use App\Domain\Discussion\Models\Comment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Discussion\StorePostCommentRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 
 class StorePostCommentController extends Controller
 {
     /**
-     * Handle the incoming request.
-     *
-     * @param StorePostCommentRequest $request
-     * @param Post $post
-     * @param CreateCommentAction $createCommentAction
-     * @return RedirectResponse
      * @throws ValidationException
      */
     public function __invoke(
         StorePostCommentRequest $request,
         Post                    $post,
         CreateCommentAction     $createCommentAction,
-    ): RedirectResponse
+    ): RedirectResponse|JsonResponse
     {
         $user = $request->user();
 
-        $createCommentAction->execute(
+        $comment = $createCommentAction->execute(
             new CreateCommentDataDTO(
                 commentable: $post,
                 parentId: $request->integer('parent_id') ?: null,
@@ -45,6 +42,36 @@ class StorePostCommentController extends Controller
             )
         );
 
-        return back()->with('success', 'دیدگاه شما با موفقیت ثبت شد و پس از تأیید نمایش داده می‌شود.');
+        $message = $comment->status === CommentStatusEnum::APPROVED
+            ? 'دیدگاه شما با موفقیت ثبت و منتشر شد.'
+            : 'دیدگاه شما با موفقیت ثبت شد و پس از تأیید نمایش داده می‌شود.';
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+                'status' => $comment->status->value,
+                'comment' => $comment->status === CommentStatusEnum::APPROVED
+                    ? $this->transformCommentForFront($comment)
+                    : null,
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    protected function transformCommentForFront(Comment $comment): array
+    {
+        return [
+            'id' => $comment->id,
+            'name' => $comment->display_name,
+            'time' => 'همین الان',
+            'text' => $comment->content,
+            'rating' => $comment->rating_percent !== null
+                ? (int)round($comment->rating_percent / 20)
+                : 0,
+            'likes' => 0,
+            'liked' => false,
+            'replies' => [],
+        ];
     }
 }
