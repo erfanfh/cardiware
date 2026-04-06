@@ -80,13 +80,6 @@
                                         <span class="ml-1.5 inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
                                         {{ $this->totalComments }} دیدگاه ثبت شده
                                     </span>
-
-                                    @if($this->averageRating)
-                                        <span
-                                            class="inline-flex items-center rounded-2xl border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
-                                            میانگین امتیاز: {{ $this->averageRating }} از 5
-                                        </span>
-                                    @endif
                                 </div>
                             </div>
 

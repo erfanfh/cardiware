@@ -7,6 +7,11 @@
     <div class="flex gap-3 sm:gap-4">
         <div
             class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black {{ $this->avatarColor() }}">
+            @if($this->comment->user->avatar)
+                <div class="bg-white">
+                    <img src="{{ $this->comment->user->avatar->url }}" class="w-full h-full" alt="IMG">
+                </div>
+            @endif
             <span>{{ $this->avatarText() }}</span>
         </div>
 
@@ -21,7 +26,7 @@
                         <span class="h-1 w-1 rounded-full bg-slate-300"></span>
 
                         <span class="text-xs text-slate-500">
-                            {{ $this->comment->time_label }}
+                            {{ time_ago($this->comment->created_at) }}
                         </span>
                     </div>
 

@@ -63,30 +63,13 @@ class CommentsList extends Component
     }
 
     #[Computed]
-    public function averageRating(): ?float
-    {
-        $average = Comment::query()
-            ->forCommentable($this->commentable)
-            ->approved()
-            ->root()
-            ->whereNotNull('rating_percent')
-            ->avg('rating_percent');
-
-        if ($average === null) {
-            return null;
-        }
-
-        return round(((float)$average) / 20, 1);
-    }
-
-    #[Computed]
     public function comments()
     {
         return Comment::query()
             ->forCommentable($this->commentable)
             ->approved()
             ->root()
-            ->with('user')
+            ->with('user.avatar')
             ->withCount('approvedReplies')
             ->when(
                 $this->sort === 'new',
