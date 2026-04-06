@@ -41,7 +41,7 @@ final class ContentController
                 'tags:id,title',
                 'imageGallery.mediaFile',
             ])->loadCount([
-                'comment'
+                'approvedComments'
             ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
