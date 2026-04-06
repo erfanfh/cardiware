@@ -7,12 +7,15 @@
     <div class="flex gap-3 sm:gap-4">
         <div
             class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black {{ $this->avatarColor() }}">
-            @if($this->comment->user->avatar)
-                <div class="bg-white">
-                    <img src="{{ $this->comment->user->avatar->url }}" class="w-full h-full" alt="IMG">
-                </div>
+            @if($this->comment->user?->avatar)
+                <img
+                    src="{{ $this->comment->user->avatar->url }}"
+                    class="h-full w-full object-cover"
+                    alt="{{ $this->comment->display_name }}"
+                >
+            @else
+                <span>{{ $this->avatarText() }}</span>
             @endif
-            <span>{{ $this->avatarText() }}</span>
         </div>
 
         <div class="min-w-0 flex-1">
@@ -58,24 +61,84 @@
                             @include('icons.arrow-left-double')
                         </span>
                     </button>
-
-                    @if($this->comment->approved_replies_count > 0)
-                        <button
-                            wire:click="toggleReplies"
-                            type="button"
-                            class="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-                        >
-                            <span>
-                                {{ $repliesOpen ? 'بستن پاسخ‌ها' : 'نمایش پاسخ‌ها (' . $this->comment->approved_replies_count . ')' }}
-                            </span>
-                        </button>
-                    @endif
                 </div>
             </div>
 
             <div class="tinymce-content mt-3 text-sm leading-8 text-slate-700">
                 {!! $this->comment->safe_content !!}
             </div>
+
+            {{-- Thread CTA --}}
+            @if($this->comment->approved_replies_count > 0)
+                <div class="mt-4">
+                    @if(! $repliesOpen)
+                        <div
+                            class="overflow-hidden rounded-2xl border border-dashed border-slate-200 bg-gradient-to-r from-slate-50 via-white to-slate-50">
+                            <div class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span
+                                            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
+                                            {{ $this->comment->approved_replies_count }}
+                                        </span>
+
+                                        <div class="text-xs font-extrabold text-slate-800">
+                                            {{ $this->comment->approved_replies_count === 1 ? 'یک پاسخ برای این دیدگاه ثبت شده است' : $this->comment->approved_replies_count . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-1 text-xs leading-6 text-slate-500">
+                                        ادامه این گفتگو را مشاهده کنید.
+                                    </p>
+                                </div>
+
+                                <div class="shrink-0">
+                                    <button
+                                        wire:click="toggleReplies"
+                                        type="button"
+                                        class="inline-flex h-10 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                                    >
+                                        <span>نمایش پاسخ‌ها</span>
+
+                                        <span
+                                            class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[11px] text-slate-600">
+                                            {{ $this->comment->approved_replies_count }}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="inline-flex h-8 w-8 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500">
+                                        @includeIf('icons.message-multiple-01')
+                                    </span>
+
+                                    <div>
+                                        <div class="text-xs font-extrabold text-slate-800">
+                                            پاسخ‌های این دیدگاه
+                                        </div>
+                                        <div class="mt-0.5 text-[11px] text-slate-500">
+                                            {{ $this->comment->approved_replies_count }} پاسخ در این گفتگو
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button
+                                    wire:click="toggleReplies"
+                                    type="button"
+                                    class="inline-flex h-10 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50"
+                                >
+                                    بستن پاسخ‌ها
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            @endif
 
             @if($replyFormOpen)
                 <div class="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4">
@@ -174,7 +237,8 @@
                     @foreach($this->replies as $reply)
                         <livewire:front.discussion.comment-item
                             :comment-id="$reply->id"
-                            :commentable="$commentable"
+                            :commentable-type="$commentableType"
+                            :commentable-id="$commentableId"
                             :level="$level + 1"
                             :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id"
                         />
