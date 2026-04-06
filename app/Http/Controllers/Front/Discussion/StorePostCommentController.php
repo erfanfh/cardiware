@@ -33,7 +33,7 @@ class StorePostCommentController extends Controller
                 userId: $user?->id,
                 authorName: $user ? null : $request->input('author_name'),
                 authorEmail: $user ? null : $request->input('author_email'),
-                content: $request->string('content')->toString(),
+                content: (string)$request->input('content'),
                 ratingPercent: $request->input('rating_percent') !== null
                     ? (int)$request->input('rating_percent')
                     : null,

@@ -40,14 +40,24 @@ class StorePostCommentRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'author_name' => is_string($this->author_name) ? trim($this->author_name) : $this->author_name,
-            'author_email' => is_string($this->author_email) ? trim($this->author_email) : $this->author_email,
-            'content' => is_string($this->content) ? trim($this->content) : $this->content,
-            'rating_percent' => $this->rating_percent !== null && $this->rating_percent !== ''
-                ? (int)$this->rating_percent
+            'author_name' => is_string($this->input('author_name'))
+                ? trim($this->input('author_name'))
+                : $this->input('author_name'),
+
+            'author_email' => is_string($this->input('author_email'))
+                ? trim($this->input('author_email'))
+                : $this->input('author_email'),
+
+            'content' => is_string($this->input('content'))
+                ? trim($this->input('content'))
+                : $this->input('content'),
+
+            'rating_percent' => $this->input('rating_percent') !== null && $this->input('rating_percent') !== ''
+                ? (int)$this->input('rating_percent')
                 : null,
-            'parent_id' => $this->parent_id !== null && $this->parent_id !== ''
-                ? (int)$this->parent_id
+
+            'parent_id' => $this->input('parent_id') !== null && $this->input('parent_id') !== ''
+                ? (int)$this->input('parent_id')
                 : null,
         ]);
     }
