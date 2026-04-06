@@ -34,15 +34,17 @@ final class ContentController
 
         if ($resolvedContent->isPost()) {
             /** @var Post $post */
-            $post = $resolvedContent->model->load([
-                'author:id,display_name',
-                'picture.primaryVariant',
-                'categories:id,title',
-                'tags:id,title',
-                'imageGallery.mediaFile',
-            ])->loadCount([
-                'approvedComments'
-            ]);
+            $post = Post::query()
+                ->with([
+                    'author:id,display_name',
+                    'picture.primaryVariant',
+                    'categories:id,title',
+                    'tags:id,title',
+                    'imageGallery.mediaFile',
+                ])
+                ->withCount('approvedComments')
+                ->findOrFail($resolvedContent->model->id);
+
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
             return view('front.posts.detail', compact('post', 'features'));
