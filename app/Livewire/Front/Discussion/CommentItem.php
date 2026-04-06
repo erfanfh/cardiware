@@ -7,6 +7,7 @@ use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
@@ -19,7 +20,9 @@ class CommentItem extends Component
 
     public int $level = 0;
 
-    public Model $commentable;
+    public string $commentableType;
+
+    public int $commentableId;
 
     public bool $repliesOpen = false;
 
@@ -37,10 +40,18 @@ class CommentItem extends Component
 
     public ?string $replySuccessMessage = null;
 
-    public function mount(int $commentId, Model $commentable, int $level = 0): void
+    public bool $repliesLoading = false;
+
+    public function mount(
+        int    $commentId,
+        string $commentableType,
+        int    $commentableId,
+        int    $level = 0
+    ): void
     {
         $this->commentId = $commentId;
-        $this->commentable = $commentable;
+        $this->commentableType = $commentableType;
+        $this->commentableId = $commentableId;
         $this->level = $level;
     }
 
@@ -67,11 +78,22 @@ class CommentItem extends Component
 
     public function toggleReplies(): void
     {
+        if ($this->repliesOpen || $this->repliesLoading) {
+            return;
+        }
+
+        $this->repliesOpen = true;
+        $this->repliesLoading = true;
+
         if (!$this->repliesLoaded) {
             $this->repliesLoaded = true;
         }
 
-        $this->repliesOpen = !$this->repliesOpen;
+        $this->dispatch('$refresh');
+
+        usleep(180000);
+
+        $this->repliesLoading = false;
     }
 
     public function submitReply(CreateCommentAction $createCommentAction): void
@@ -106,8 +128,8 @@ class CommentItem extends Component
 
                 $this->dispatch(
                     'discussion-comment-replied-' . $this->commentId,
-                    commentableType: $this->commentable->getMorphClass(),
-                    commentableId: $this->commentable->getKey(),
+                    commentableType: $this->commentableType,
+                    commentableId: $this->commentableId,
                 );
             } else {
                 $this->replySuccessMessage = 'پاسخ شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
@@ -119,8 +141,8 @@ class CommentItem extends Component
 
             $this->dispatch(
                 'discussion-comment-created',
-                commentableType: $this->commentable->getMorphClass(),
-                commentableId: $this->commentable->getKey(),
+                commentableType: $this->commentableType,
+                commentableId: $this->commentableId,
             );
 
             $this->replyFormOpen = false;
@@ -158,11 +180,19 @@ class CommentItem extends Component
     }
 
     #[Computed]
+    public function commentable(): Model
+    {
+        $class = Relation::getMorphedModel($this->commentableType) ?? $this->commentableType;
+
+        return $class::query()->findOrFail($this->commentableId);
+    }
+
+    #[Computed]
     public function comment(): Comment
     {
         return Comment::query()
             ->approved()
-            ->with('user')
+            ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
     }
@@ -178,7 +208,7 @@ class CommentItem extends Component
             ->forCommentable($this->commentable)
             ->approved()
             ->where('parent_id', $this->commentId)
-            ->with('user')
+            ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->oldestFirst()
             ->get();

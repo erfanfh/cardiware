@@ -189,7 +189,8 @@
                 @foreach($this->comments as $comment)
                     <livewire:front.discussion.comment-item
                         :comment-id="$comment->id"
-                        :commentable="$commentable"
+                        :commentable-type="$this->commentableType"
+                        :commentable-id="$this->commentableId"
                         :level="0"
                         :key="'discussion-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort"
                     />

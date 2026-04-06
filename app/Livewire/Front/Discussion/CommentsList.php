@@ -15,6 +15,10 @@ class CommentsList extends Component
 {
     use WithPagination;
 
+    public string $commentableType;
+
+    public int $commentableId;
+
     public Model $commentable;
 
     public bool $isOpen = false;
@@ -26,6 +30,8 @@ class CommentsList extends Component
     public function mount(Model $commentable): void
     {
         $this->commentable = $commentable;
+        $this->commentableId = $commentable->id;
+        $this->commentableType = $commentable::class;
     }
 
     public function openComments(): void

@@ -5,8 +5,10 @@
     ])
 >
     <div class="flex gap-3 sm:gap-4">
+        {{-- Avatar --}}
         <div
-            class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black {{ $this->avatarColor() }}">
+            class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black {{ $this->avatarColor() }}"
+        >
             @if($this->comment->user?->avatar)
                 <img
                     src="{{ $this->comment->user->avatar->url }}"
@@ -19,6 +21,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
+            {{-- Header --}}
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -57,6 +60,7 @@
                         class="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white"
                     >
                         <span>پاسخ</span>
+
                         <span class="text-slate-400">
                             @include('icons.arrow-left-double')
                         </span>
@@ -64,26 +68,29 @@
                 </div>
             </div>
 
+            {{-- Content --}}
             <div class="tinymce-content mt-3 text-sm leading-8 text-slate-700">
                 {!! $this->comment->safe_content !!}
             </div>
 
-            {{-- Thread CTA --}}
+            {{-- Thread CTA / Replies --}}
             @if($this->comment->approved_replies_count > 0)
-                <div class="mt-4">
-                    @if(! $repliesOpen)
+                @if(! $repliesOpen)
+                    <div class="mt-4">
                         <div
                             class="overflow-hidden rounded-2xl border border-dashed border-slate-200 bg-gradient-to-r from-slate-50 via-white to-slate-50">
                             <div class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <span
-                                            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
-                                            {{ $this->comment->approved_replies_count }}
-                                        </span>
+                            <span
+                                class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
+                                {{ $this->comment->approved_replies_count }}
+                            </span>
 
                                         <div class="text-xs font-extrabold text-slate-800">
-                                            {{ $this->comment->approved_replies_count === 1 ? 'یک پاسخ برای این دیدگاه ثبت شده است' : $this->comment->approved_replies_count . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                            {{ $this->comment->approved_replies_count === 1
+                                                ? 'یک پاسخ برای این دیدگاه ثبت شده است'
+                                                : $this->comment->approved_replies_count . ' پاسخ برای این دیدگاه ثبت شده است' }}
                                         </div>
                                     </div>
 
@@ -95,51 +102,113 @@
                                 <div class="shrink-0">
                                     <button
                                         wire:click="toggleReplies"
+                                        wire:loading.attr="disabled"
+                                        wire:target="toggleReplies"
                                         type="button"
-                                        class="inline-flex h-10 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                                        class="inline-flex h-10 cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
                                     >
-                                        <span>نمایش پاسخ‌ها</span>
+                                        <svg
+                                            wire:loading
+                                            wire:target="toggleReplies"
+                                            class="h-4 w-4 animate-spin"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                        >
+                                            <circle
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                stroke-opacity="0.25"
+                                                stroke-width="4"
+                                            ></circle>
+                                            <path
+                                                d="M22 12a10 10 0 0 1-10 10"
+                                                stroke="currentColor"
+                                                stroke-width="4"
+                                                stroke-linecap="round"
+                                            ></path>
+                                        </svg>
+
+                                        <span wire:loading.remove wire:target="toggleReplies">
+                                نمایش پاسخ‌ها
+                            </span>
+
+                                        <span wire:loading wire:target="toggleReplies">
+                                در حال بارگذاری...
+                            </span>
 
                                         <span
                                             class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[11px] text-slate-600">
-                                            {{ $this->comment->approved_replies_count }}
-                                        </span>
+                                {{ $this->comment->approved_replies_count }}
+                            </span>
                                     </button>
                                 </div>
                             </div>
                         </div>
-                    @else
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                                <div class="flex items-center gap-2">
-                                    <span
-                                        class="inline-flex h-8 w-8 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500">
-                                        @includeIf('icons.message-multiple-01')
-                                    </span>
+                    </div>
+                @endif
 
-                                    <div>
-                                        <div class="text-xs font-extrabold text-slate-800">
-                                            پاسخ‌های این دیدگاه
-                                        </div>
-                                        <div class="mt-0.5 text-[11px] text-slate-500">
-                                            {{ $this->comment->approved_replies_count }} پاسخ در این گفتگو
+                @if($repliesOpen)
+                    {{-- Replies loading state --}}
+                    @if($repliesLoading)
+                        <div class="mt-4 w-full border-r-2 border-slate-100 pr-3 sm:pr-4">
+                            <div class="w-full space-y-3">
+                                @for($i = 0; $i < 2; $i++)
+                                    <div class="w-full rounded-2xl border border-slate-200 bg-white p-4">
+                                        <div class="animate-pulse">
+                                            <div class="flex w-full gap-3">
+                                                <div class="h-10 w-10 shrink-0 rounded-2xl bg-slate-200"></div>
+
+                                                <div class="min-w-0 w-full flex-1">
+                                                    <div class="flex w-full items-center gap-2">
+                                                        <div class="h-4 w-28 rounded bg-slate-200"></div>
+                                                        <div class="h-1 w-1 rounded-full bg-slate-200"></div>
+                                                        <div class="h-3 w-16 rounded bg-slate-100"></div>
+                                                    </div>
+
+                                                    <div class="mt-3 w-full space-y-2">
+                                                        <div class="h-3 w-full rounded bg-slate-100"></div>
+                                                        <div class="h-3 w-full rounded bg-slate-100"></div>
+                                                        <div class="h-3 w-2/3 rounded bg-slate-100"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <button
-                                    wire:click="toggleReplies"
-                                    type="button"
-                                    class="inline-flex h-10 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50"
-                                >
-                                    بستن پاسخ‌ها
-                                </button>
+                                @endfor
                             </div>
                         </div>
                     @endif
-                </div>
+
+                    {{-- Replies loaded --}}
+                    @if(! $repliesLoading && $this->replies->isNotEmpty())
+                        <div
+                            x-data="{ visible: false }"
+                            x-init="setTimeout(() => visible = true, 10)"
+                            x-show="visible"
+                            x-transition:enter="transition ease-out duration-300"
+                            x-transition:enter-start="opacity-0 translate-y-2"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            class="mt-4 w-full border-r-2 border-slate-100 pr-3 sm:pr-4"
+                        >
+                            <div class="w-full">
+                                @foreach($this->replies as $reply)
+                                    <livewire:front.discussion.comment-item
+                                        :comment-id="$reply->id"
+                                        :commentable-type="$this->commentableType"
+                                        :commentable-id="$this->commentableId"
+                                        :level="$level + 1"
+                                        :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id"
+                                    />
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endif
             @endif
 
+            {{-- Reply form --}}
             @if($replyFormOpen)
                 <div class="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4">
                     <div class="flex items-center justify-between gap-3">
@@ -225,24 +294,15 @@
                             type="button"
                             class="h-10 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 disabled:opacity-70"
                         >
-                            <span wire:loading.remove wire:target="submitReply">ارسال پاسخ</span>
-                            <span wire:loading wire:target="submitReply">در حال ارسال...</span>
+                            <span wire:loading.remove wire:target="submitReply">
+                                ارسال پاسخ
+                            </span>
+
+                            <span wire:loading wire:target="submitReply">
+                                در حال ارسال...
+                            </span>
                         </button>
                     </div>
-                </div>
-            @endif
-
-            @if($repliesOpen && $this->replies->isNotEmpty())
-                <div class="mt-4 border-r-2 border-slate-100 pr-3 sm:pr-4">
-                    @foreach($this->replies as $reply)
-                        <livewire:front.discussion.comment-item
-                            :comment-id="$reply->id"
-                            :commentable-type="$commentableType"
-                            :commentable-id="$commentableId"
-                            :level="$level + 1"
-                            :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id"
-                        />
-                    @endforeach
                 </div>
             @endif
         </div>
