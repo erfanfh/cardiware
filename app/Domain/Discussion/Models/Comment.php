@@ -43,6 +43,17 @@ class Comment extends Model
         'score' => 'integer',
     ];
 
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->user) {
+            return $this->user->display_name
+                ?? ($this->user->first_name . ' ' . $this->user->last_name)
+                ?? 'کاربر';
+        }
+
+        return $this->author_name ?: 'کاربر';
+    }
+
     public function commentable(): MorphTo
     {
         return $this->morphTo();
