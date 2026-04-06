@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Content;
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\ResolveContentBySlugAction;
 use App\Domain\Content\Models\Post;
+use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -45,7 +46,27 @@ final class ContentController
             ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
-            return view('front.posts.detail', compact('post', 'features'));
+            $currentPostTagIds = $post->tags()->pluck('id')->toArray();
+            $currentPostCategoryIds = $post->categories()->pluck('id')->toArray();
+
+            if (get_setting('general', 'select_related_content_settings') == 'tag')
+                $relatedPosts = Post::where('id', '!=', $post->id)
+                ->whereHas('tags', function ($query) use ($currentPostTagIds) {
+                    $query->whereIn('taxonomy_terms.id', $currentPostTagIds);
+                })
+                    ->take(3)
+                    ->get();
+            elseif (get_setting('general', 'select_related_content_settings') == 'category')
+                $relatedPosts = Post::where('id', '!=', $post->id)
+                    ->whereHas('categories', function ($query) use ($currentPostCategoryIds) {
+                        $query->whereIn('taxonomy_terms.id', $currentPostCategoryIds);
+                    })
+                    ->take(3)
+                    ->get();
+            else
+                $relatedPosts = collect();
+
+            return view('front.posts.detail', compact('post', 'features', 'relatedPosts'));
         }
 
         throw new NotFoundHttpException();
