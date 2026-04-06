@@ -247,13 +247,13 @@
             >
                 <div class="flex items-center justify-between gap-3">
                     <div class="text-sm font-black text-slate-800">
-                        پاسخ به <span class="text-brand-700">{{ $this->comment->display_name }}</span>
+                        پاسخ به <span class="text-brand-600">{{ $this->comment->display_name }}</span>
                     </div>
 
                     <button
                         @click="closeReplyForm()"
                         type="button"
-                        class="grid h-9 w-9 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+                        class="grid cursor-pointer h-9 w-9 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
                     >
                         ×
                     </button>
@@ -265,8 +265,8 @@
                             <input
                                 wire:model.live="replyAuthorName"
                                 type="text"
-                                placeholder="نام شما"
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                                class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200"
+                                placeholder="نام شما (الزامی)"
                             >
                             @error('replyAuthorName')
                             <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
@@ -277,8 +277,8 @@
                             <input
                                 wire:model.live="replyAuthorEmail"
                                 type="email"
-                                placeholder="ایمیل شما"
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                                class="h-11 w-full rounded-2xl border bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200"
+                                placeholder="ایمیل شما (الزامی)"
                             >
                             @error('replyAuthorEmail')
                             <div class="mt-2 text-xs font-bold text-red-600">{{ $message }}</div>
@@ -305,7 +305,7 @@
                     x-ref="replyTextarea"
                     wire:model.live="replyContent"
                     rows="3"
-                    class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                    class="w-full rounded-2xl border bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 border-slate-200 mt-3"
                     placeholder="پاسخ شما…"
                 ></textarea>
 
@@ -317,7 +317,7 @@
                     <button
                         @click="closeReplyForm()"
                         type="button"
-                        class="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
+                        class="inline-flex cursor-pointer h-9 items-center justify-center gap-2 rounded-2xl text-slate-700 border border-slate-200 hover:bg-slate-50 bg-white px-4 text-xs font-extrabold  transition hover:opacity-95 active:scale-[0.99]"
                     >
                         لغو
                     </button>
@@ -327,7 +327,7 @@
                         wire:loading.attr="disabled"
                         wire:target="submitReply"
                         type="button"
-                        class="h-10 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 disabled:opacity-70"
+                        class="inline-flex cursor-pointer h-9 items-center justify-center gap-2 rounded-2xl bg-brand-500 hover:bg-brand-600 px-4 text-xs font-extrabold text-white transition hover:opacity-95 active:scale-[0.99]"
                     >
                         <span wire:loading.remove wire:target="submitReply">
                             ارسال پاسخ
