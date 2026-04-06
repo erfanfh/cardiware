@@ -23,10 +23,10 @@ class CreateCommentAction
         $this->ensureCommentableIsValid($commentable);
         $this->ensureCommentsAreEnabled($commentable);
         $this->ensureGuestIsAllowedIfNeeded($commentable, $data);
-        $this->ensureRatingIsValid($commentable, $data);
 
         $parent = $this->validateParent($data);
 
+        $this->ensureRatingIsValid($commentable, $data, $parent);
         $this->ensureContentIsNotDuplicate($data, $parent);
         $this->ensureSubmissionCooldown($data);
 
@@ -48,11 +48,11 @@ class CreateCommentAction
             $comment->ip_address = $data->ipAddress;
             $comment->user_agent = $data->userAgent;
 
-            $comment->content = trim($data->content);
-            $comment->rating_percent = $data->ratingPercent;
+            $comment->content = $this->normalizeStoredContent($data->content);
+            $comment->rating_percent = $parent ? null : $data->ratingPercent;
 
             $comment->status = $status;
-            $comment->approved_at = $status === CommentStatusEnum::APPROVED ? now() : null;
+            $comment->approved_at = $status->isApproved() ? now() : null;
 
             $comment->save();
 
@@ -61,7 +61,7 @@ class CreateCommentAction
                 $comment->save();
             }
 
-            return $comment;
+            return $comment->fresh(['user']);
         });
     }
 
@@ -108,9 +108,19 @@ class CreateCommentAction
         }
     }
 
-    protected function ensureRatingIsValid(CommentableContract $commentable, CreateCommentDataDTO $data): void
+    protected function ensureRatingIsValid(
+        CommentableContract  $commentable,
+        CreateCommentDataDTO $data,
+        ?Comment             $parent
+    ): void
     {
-        if ($commentable->requiresCommentRating() && $data->ratingPercent === null) {
+        if ($parent !== null && $data->ratingPercent !== null) {
+            throw ValidationException::withMessages([
+                'rating_percent' => 'ثبت امتیاز فقط برای دیدگاه اصلی مجاز است.',
+            ]);
+        }
+
+        if ($parent === null && $commentable->requiresCommentRating() && $data->ratingPercent === null) {
             throw ValidationException::withMessages([
                 'rating_percent' => 'ثبت نمره الزامی است.',
             ]);
@@ -125,17 +135,15 @@ class CreateCommentAction
 
     protected function ensureContentIsNotDuplicate(CreateCommentDataDTO $data, ?Comment $parent): void
     {
-        $normalizedContent = $this->normalizeCommentContent($data->content);
+        $normalizedContent = $this->normalizeComparisonContent($data->content);
 
         $query = Comment::query()
-            ->where('commentable_type', $data->commentable->getMorphClass())
-            ->where('commentable_id', $data->commentable->getKey());
-
-        if ($parent) {
-            $query->where('parent_id', $parent->id);
-        } else {
-            $query->whereNull('parent_id');
-        }
+            ->forCommentable($data->commentable)
+            ->when(
+                $parent,
+                fn($builder) => $builder->where('parent_id', $parent->id),
+                fn($builder) => $builder->whereNull('parent_id')
+            );
 
         if ($data->userId !== null) {
             $query->where('user_id', $data->userId);
@@ -148,7 +156,7 @@ class CreateCommentAction
             ->select(['id', 'content'])
             ->get()
             ->contains(function (Comment $comment) use ($normalizedContent) {
-                return $this->normalizeCommentContent((string)$comment->content) === $normalizedContent;
+                return $this->normalizeComparisonContent((string)$comment->content) === $normalizedContent;
             });
 
         if ($exists) {
@@ -161,8 +169,7 @@ class CreateCommentAction
     protected function ensureSubmissionCooldown(CreateCommentDataDTO $data): void
     {
         $query = Comment::query()
-            ->where('commentable_type', $data->commentable->getMorphClass())
-            ->where('commentable_id', $data->commentable->getKey())
+            ->forCommentable($data->commentable)
             ->where('created_at', '>=', now()->subSeconds(60));
 
         if ($data->userId !== null) {
@@ -179,25 +186,20 @@ class CreateCommentAction
         }
     }
 
-    protected function normalizeCommentContent(string $content): string
-    {
-        $content = trim($content);
-        $content = preg_replace('/\s+/u', ' ', $content) ?? $content;
-
-        return mb_strtolower($content);
-    }
-
     protected function validateParent(CreateCommentDataDTO $data): ?Comment
     {
         if ($data->parentId === null) {
             return null;
         }
 
-        $parent = Comment::query()->find($data->parentId);
+        /** @var Comment|null $parent */
+        $parent = Comment::query()
+            ->approved()
+            ->find($data->parentId);
 
         if (!$parent) {
             throw ValidationException::withMessages([
-                'parent_id' => 'دیدگاه والد یافت نشد.',
+                'parent_id' => 'دیدگاه والد معتبر نیست.',
             ]);
         }
 
@@ -206,11 +208,24 @@ class CreateCommentAction
             (int)$parent->commentable_id !== (int)$data->commentable->getKey()
         ) {
             throw ValidationException::withMessages([
-                'parent_id' => 'دیدگاه والد متعلق به این دیدگاه نیست.',
+                'parent_id' => 'دیدگاه والد به این محتوا تعلق ندارد.',
             ]);
         }
 
         return $parent;
+    }
+
+    protected function normalizeComparisonContent(string $content): string
+    {
+        $content = trim($content);
+        $content = preg_replace('/\s+/u', ' ', $content) ?? $content;
+
+        return mb_strtolower($content);
+    }
+
+    protected function normalizeStoredContent(string $content): string
+    {
+        return trim($content);
     }
 
     protected function resolveInitialStatus(): CommentStatusEnum

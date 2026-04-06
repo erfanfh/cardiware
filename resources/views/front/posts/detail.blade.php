@@ -11,7 +11,7 @@
                 @include('front.posts.partials.detail.video')
                 @include('front.posts.partials.detail.related-posts')
                 @include('front.posts.partials.detail.send-comment-form')
-                @include('front.posts.partials.detail.comments-list')
+                @livewire('front.discussion.comments-list', ['commentable' => $post])
             </div>
 
             <aside class="lg:col-span-3 space-y-6">

@@ -1,0 +1,213 @@
+<div>
+    <x-front.cart>
+        <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div class="flex items-center gap-3">
+                <span
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 [&_svg]:h-[1.125rem] [&_svg]:w-[1.125rem]">
+                    @includeIf('icons.message-done-01')
+                </span>
+
+                <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-base font-extrabold">دیدگاه‌ها</h2>
+
+                        <span
+                            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-100 px-2 text-xs font-extrabold text-slate-700">
+                            {{ $this->totalComments }}
+                        </span>
+                    </div>
+
+                    <p class="mt-1 text-xs text-slate-500">
+                        دیدگاه کاربران درباره این محتوا را بخوانید.
+                    </p>
+                </div>
+            </div>
+
+            @if($isOpen)
+                <div class="flex items-center gap-2 self-start lg:self-auto">
+                    <span class="text-xs font-semibold text-slate-500">مرتب‌سازی:</span>
+
+                    <div class="relative">
+                        <select
+                            wire:model.live="sort"
+                            class="h-11 appearance-none rounded-2xl border border-slate-200 bg-slate-50 pr-4 pl-10 text-sm font-bold text-slate-700 outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
+                        >
+                            <option value="new">جدیدترین</option>
+                            <option value="top">محبوب‌ترین</option>
+                            <option value="high">بیشترین امتیاز</option>
+                        </select>
+
+                        <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
+                            <svg viewBox="0 0 20 20" class="h-4 w-4 fill-current">
+                                <path d="M5.25 7.5 10 12.25 14.75 7.5"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        @if(! $isOpen)
+            <div class="mt-6">
+                @if($this->totalComments > 0)
+                    <div
+                        class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 sm:p-6">
+                        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex -space-x-2 rtl:space-x-reverse">
+                                        <span
+                                            class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-200 text-xs font-black text-slate-700">A</span>
+                                        <span
+                                            class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-100 text-xs font-black text-slate-700">M</span>
+                                        <span
+                                            class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-50 text-xs font-black text-slate-700">N</span>
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <div class="text-sm font-extrabold text-slate-900">
+                                            نظر کاربران درباره این محتوا
+                                        </div>
+                                        <p class="mt-1 text-sm leading-6 text-slate-500">
+                                            تجربه نصب، کیفیت محتوا و مشکلات احتمالی را از دید کاربران بخوانید.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 flex flex-wrap items-center gap-2">
+                                    <span
+                                        class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">
+                                        <span class="ml-1.5 inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+                                        {{ $this->totalComments }} دیدگاه ثبت شده
+                                    </span>
+
+                                    @if($this->averageRating)
+                                        <span
+                                            class="inline-flex items-center rounded-2xl border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">
+                                            میانگین امتیاز: {{ $this->averageRating }} از 5
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="shrink-0">
+                                <button
+                                    type="button"
+                                    wire:click="openComments"
+                                    wire:loading.attr="disabled"
+                                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:-translate-y-[1px] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    <svg
+                                        wire:loading
+                                        wire:target="openComments"
+                                        class="h-4 w-4 animate-spin"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                                stroke-width="4"></circle>
+                                        <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                              stroke-linecap="round"></path>
+                                    </svg>
+
+                                    مشاهده {{ $this->totalComments }} دیدگاه
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div
+                        class="overflow-hidden rounded-[1.5rem] border border-dashed border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 sm:p-6">
+                        <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                            <div class="min-w-0">
+                                <div class="flex items-start gap-3">
+                                    <div
+                                        class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 [&_svg]:h-6 [&_svg]:w-6">
+                                        @include('icons.add-01')
+                                    </div>
+
+                                    <div class="min-w-0">
+                                        <div class="text-sm font-extrabold text-slate-900">
+                                            هنوز دیدگاهی ثبت نشده است
+                                        </div>
+                                        <p class="mt-1 text-sm leading-6 text-slate-500">
+                                            اولین نفری باشید که تجربه‌تان را درباره این محتوا ثبت می‌کند.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 flex flex-wrap items-center gap-2">
+                                    <span
+                                        class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">
+                                        منتظر اولین دیدگاه
+                                    </span>
+
+                                    <span
+                                        class="inline-flex items-center rounded-2xl border border-brand-100 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700">
+                                        ثبت دیدگاه شما مهم است
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="shrink-0">
+                                <button
+                                    type="button"
+                                    wire:click="openComments"
+                                    wire:loading.attr="disabled"
+                                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white transition hover:bg-brand-600 hover:-translate-y-[1px] disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    <svg
+                                        wire:loading
+                                        wire:target="openComments"
+                                        class="h-4 w-4 animate-spin"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                    >
+                                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                                stroke-width="4"></circle>
+                                        <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                              stroke-linecap="round"></path>
+                                    </svg>
+
+                                    بررسی دیدگاه‌ها
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @else
+            <div class="mt-6 space-y-4 sm:space-y-5">
+                @if($this->comments->count() === 0)
+                    <div
+                        class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                        <div
+                            class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
+                            @include('icons.comment-add-01')
+                        </div>
+
+                        <h3 class="mt-4 text-sm font-extrabold text-slate-800">هنوز دیدگاهی ثبت نشده است</h3>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">
+                            اولین نفری باشید که دیدگاهش را درباره این محتوا ثبت می‌کند.
+                        </p>
+                    </div>
+                @endif
+
+                @foreach($this->comments as $comment)
+                    <livewire:front.discussion.comment-item
+                        :comment-id="$comment->id"
+                        :commentable="$commentable"
+                        :level="0"
+                        :key="'discussion-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort"
+                    />
+                @endforeach
+
+                @if($this->comments->hasPages())
+                    <div class="pt-2">
+                        {{ $this->comments->onEachSide(1)->links() }}
+                    </div>
+                @endif
+            </div>
+        @endif
+    </x-front.cart>
+</div>

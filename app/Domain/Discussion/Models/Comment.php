@@ -43,52 +43,65 @@ class Comment extends Model
         'score' => 'integer',
     ];
 
-    public function getDisplayNameAttribute(): string
-    {
-        if ($this->user) {
-            return $this->user->display_name
-                ?? ($this->user->first_name . ' ' . $this->user->last_name)
-                ?? 'کاربر';
-        }
-
-        return $this->author_name ?: 'کاربر';
-    }
-
+    /**
+     * @return MorphTo
+     */
     public function commentable(): MorphTo
     {
         return $this->morphTo();
     }
 
+    /**
+     * @return BelongsTo<Comment, self>
+     */
     public function root(): BelongsTo
     {
         return $this->belongsTo(self::class, 'root_id');
     }
 
+    /**
+     * @return HasMany<Comment, self>
+     */
     public function threadComments(): HasMany
     {
         return $this->hasMany(self::class, 'root_id');
     }
 
+    /**
+     * @return BelongsTo<Comment, self>
+     */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
+    /**
+     * @return HasMany<Comment, self>
+     */
     public function replies(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->oldestFirst();
     }
 
+    /**
+     * @return HasMany<Comment, self>
+     */
     public function approvedReplies(): HasMany
     {
-        return $this->replies()->where('status', CommentStatusEnum::APPROVED);
+        return $this->replies()->approved();
     }
 
+    /**
+     * @return BelongsTo<User, self>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return HasMany<CommentReaction, self>
+     */
     public function reactions(): HasMany
     {
         return $this->hasMany(CommentReaction::class);
@@ -128,6 +141,10 @@ class Comment extends Model
 
     public function scopeForRootIds(Builder $query, array $rootIds): Builder
     {
+        if (empty($rootIds)) {
+            return $query->whereRaw('1 = 0');
+        }
+
         return $query->whereIn('root_id', $rootIds);
     }
 
@@ -161,6 +178,11 @@ class Comment extends Model
         return $this->status === CommentStatusEnum::PENDING;
     }
 
+    public function isRejected(): bool
+    {
+        return $this->status === CommentStatusEnum::REJECTED;
+    }
+
     public function isDeleted(): bool
     {
         return $this->trashed();
@@ -169,5 +191,53 @@ class Comment extends Model
     public function shouldDisplayAsDeleted(): bool
     {
         return $this->trashed();
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        if ($this->relationLoaded('user') && $this->user) {
+            return $this->resolveUserDisplayName($this->user);
+        }
+
+        if ($this->user) {
+            return $this->resolveUserDisplayName($this->user);
+        }
+
+        return filled($this->author_name) ? trim((string)$this->author_name) : 'کاربر';
+    }
+
+    public function getTimeLabelAttribute(): string
+    {
+        return $this->created_at?->diffForHumans() ?? '';
+    }
+
+    public function getRatingStarsAttribute(): int
+    {
+        if ($this->rating_percent === null) {
+            return 0;
+        }
+
+        return max(0, min(5, (int)round($this->rating_percent / 20)));
+    }
+
+    public function getSafeContentAttribute(): string
+    {
+        return nl2br(e((string)$this->content));
+    }
+
+    protected function resolveUserDisplayName(User $user): string
+    {
+        $displayName = trim((string)($user->display_name ?? ''));
+
+        if ($displayName !== '') {
+            return $displayName;
+        }
+
+        $fullName = trim(collect([
+            $user->first_name,
+            $user->last_name,
+        ])->filter(fn($value) => filled($value))->join(' '));
+
+        return $fullName !== '' ? $fullName : 'کاربر';
     }
 }

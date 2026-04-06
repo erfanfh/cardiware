@@ -27,6 +27,7 @@ class StorePostCommentRequest extends FormRequest
     {
         $post = $this->route('post');
         $user = $this->user();
+        $isReply = $this->filled('parent_id');
 
         return [
             'parent_id' => ['nullable', 'integer', 'exists:comments,id'],
@@ -52,7 +53,9 @@ class StorePostCommentRequest extends FormRequest
                     seconds: 60,
                 ),
             ],
-            'rating_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'rating_percent' => $isReply
+                ? ['nullable']
+                : ['nullable', 'integer', 'min:0', 'max:100'],
             'website' => ['nullable', 'string', 'max:255'],
             'started_at' => ['nullable', 'integer'],
         ];
