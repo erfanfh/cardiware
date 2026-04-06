@@ -33,6 +33,7 @@ class HomeSettings extends BaseSettings
         'testimonials_users_avg_scores',
         'testimonials_items',
         'projects_title',
+        'projects_subtitle',
         'projects_items',
     ];
 
@@ -41,6 +42,7 @@ class HomeSettings extends BaseSettings
         'download_products_items' => RepeaterArrayCast::class,
         'products_items' => RepeaterArrayCast::class,
         'testimonials_items' => RepeaterArrayCast::class,
+        'projects_items' => RepeaterArrayCast::class,
         'videos_category_ids' => ArrayCast::class,
     ];
 }

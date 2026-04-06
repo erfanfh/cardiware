@@ -51,7 +51,7 @@
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="videos">
-{{--                    @include('admin.system.settings.partials.home-videos')--}}
+                    @include('admin.system.settings.partials.home-videos')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="testimonials">

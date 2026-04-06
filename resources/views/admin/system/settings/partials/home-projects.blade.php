@@ -7,6 +7,13 @@
                     :value="old('projects_title', get_setting('home', 'projects_title'))"
                 />
             </x-admin.field>
+
+            <x-admin.field label="زیر عنوان باکس">
+                <x-admin.form.input
+                    name="projects_title"
+                    :value="old('projects_title', get_setting('home', 'projects_subtitle'))"
+                />
+            </x-admin.field>
         </div>
 
         <x-admin.field>
