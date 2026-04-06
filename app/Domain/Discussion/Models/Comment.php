@@ -206,11 +206,6 @@ class Comment extends Model
         return filled($this->author_name) ? trim((string)$this->author_name) : 'کاربر';
     }
 
-    public function getTimeLabelAttribute(): string
-    {
-        return $this->created_at?->diffForHumans() ?? '';
-    }
-
     public function getRatingStarsAttribute(): int
     {
         if ($this->rating_percent === null) {
