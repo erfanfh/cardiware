@@ -14,6 +14,8 @@ window.commentForm = function (config) {
             author_email: config.initialAuthorEmail || '',
             content: config.initialContent || '',
             rating_percent: (config.initialRating ?? 0) ? (config.initialRating * 20) : '',
+            website: '',
+            started_at: config.startedAt || String(Math.floor(Date.now() / 1000)),
         },
 
         setRating(value) {
@@ -58,6 +60,9 @@ window.commentForm = function (config) {
             this.form.parent_id = '';
             this.form.content = '';
             this.form.rating_percent = '';
+            this.form.website = '';
+            this.form.started_at = String(Math.floor(Date.now() / 1000));
+
             this.newRating = 0;
             this.hoverRating = 0;
 

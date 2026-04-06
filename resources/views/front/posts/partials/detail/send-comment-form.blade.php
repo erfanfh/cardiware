@@ -14,6 +14,7 @@
             initialAuthorEmail: @js(old('author_email', '')),
             initialContent: @js(old('content', '')),
             initialRating: {{ (int) old('rating_percent', 0) / 20 }},
+            startedAt: '{{ now()->timestamp }}',
         })"
         @submit.prevent="submit"
     >
@@ -21,6 +22,21 @@
 
         <input type="hidden" name="parent_id" x-model="form.parent_id">
         <input type="hidden" name="rating_percent" :value="form.rating_percent">
+
+        {{-- Honeypot --}}
+        <div class="hidden" aria-hidden="true">
+            <label for="website">Website</label>
+            <input
+                id="website"
+                type="text"
+                name="website"
+                x-model="form.website"
+                tabindex="-1"
+                autocomplete="off"
+            >
+        </div>
+
+        <input type="hidden" name="started_at" x-model="form.started_at">
 
         @if(session('success'))
             <div
