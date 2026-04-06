@@ -70,12 +70,12 @@ class StorePostCommentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'content.required' => 'متن دیدگاه الزامی است.',
+            'content.required' => 'لطفا متن دیدگاه را وارد نمایید.',
             'content.min' => 'متن دیدگاه خیلی کوتاه است.',
             'content.max' => 'متن دیدگاه بیش از حد طولانی است.',
             'author_email.email' => 'ایمیل وارد شده معتبر نیست.',
-            'rating_percent.min' => 'امتیاز نمی‌تواند کمتر از ۰ باشد.',
-            'rating_percent.max' => 'امتیاز نمی‌تواند بیشتر از ۱۰۰ باشد.',
+            'rating_percent.min' => 'امتیاز نمی‌تواند کمتر از :min باشد.',
+            'rating_percent.max' => 'امتیاز نمی‌تواند بیشتر از :max باشد.',
             'parent_id.exists' => 'دیدگاه والد معتبر نیست.',
         ];
     }
