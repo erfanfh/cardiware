@@ -65,7 +65,7 @@ class CreateCommentAction
     {
         if (!$model instanceof CommentableContract) {
             throw ValidationException::withMessages([
-                'commentable' => 'This model does not support comments.',
+                'commentable' => 'امکان ثبت دیدگاه وجود ندارد.',
             ]);
         }
     }
@@ -74,7 +74,7 @@ class CreateCommentAction
     {
         if (!$commentable->commentsEnabled()) {
             throw ValidationException::withMessages([
-                'comments' => 'Comments are disabled for this item.',
+                'comments' => 'امکان ثبت دیدگاه غیرفعال می باشد.',
             ]);
         }
     }
@@ -87,19 +87,19 @@ class CreateCommentAction
 
         if (!$commentable->guestCommentsEnabled()) {
             throw ValidationException::withMessages([
-                'comments' => 'Guests are not allowed to submit comments.',
+                'comments' => 'برای ثبت دیدگاه لطفا به حساب کاربری خود وارد شوید.',
             ]);
         }
 
         if (blank($data->authorName)) {
             throw ValidationException::withMessages([
-                'author_name' => 'Name is required for guest comments.',
+                'author_name' => 'لطفا نام خود را وارد نمایید.',
             ]);
         }
 
         if (blank($data->authorEmail)) {
             throw ValidationException::withMessages([
-                'author_email' => 'Email is required for guest comments.',
+                'author_email' => 'لطفا ایمیل خود را وارد نمایید.',
             ]);
         }
     }
@@ -108,13 +108,13 @@ class CreateCommentAction
     {
         if ($commentable->requiresCommentRating() && $data->ratingPercent === null) {
             throw ValidationException::withMessages([
-                'rating_percent' => 'Rating is required for this item.',
+                'rating_percent' => 'ثبت نمره الزامی است.',
             ]);
         }
 
         if ($data->ratingPercent !== null && ($data->ratingPercent < 0 || $data->ratingPercent > 100)) {
             throw ValidationException::withMessages([
-                'rating_percent' => 'Rating must be between 0 and 100.',
+                'rating_percent' => 'نمره باید بین 0 تا 100 باشد.',
             ]);
         }
     }
@@ -129,7 +129,7 @@ class CreateCommentAction
 
         if (!$parent) {
             throw ValidationException::withMessages([
-                'parent_id' => 'Parent comment not found.',
+                'parent_id' => 'دیدگاه والد یافت نشد.',
             ]);
         }
 
@@ -138,7 +138,7 @@ class CreateCommentAction
             (int)$parent->commentable_id !== (int)$data->commentable->getKey()
         ) {
             throw ValidationException::withMessages([
-                'parent_id' => 'The parent comment does not belong to this item.',
+                'parent_id' => 'دیدگاه والد متعلق به این دیدگاه نیست.',
             ]);
         }
 
