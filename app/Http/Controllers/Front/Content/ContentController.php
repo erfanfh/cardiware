@@ -46,23 +46,22 @@ final class ContentController
             ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
-            $currentPostTagIds = $post->tags()->pluck('id')->toArray();
-            $currentPostCategoryIds = $post->categories()->pluck('id')->toArray();
-
-            if (get_setting('general', 'select_related_content_settings') == 'tag')
+            if (get_setting('general', 'select_related_content_settings') == 'tag') {
                 $relatedPosts = Post::where('id', '!=', $post->id)
-                ->whereHas('tags', function ($query) use ($currentPostTagIds) {
-                    $query->whereIn('taxonomy_terms.id', $currentPostTagIds);
+                ->whereHas('tags', function ($query) use ($post) {
+                    $query->whereIn('taxonomy_terms.id', $post->tags->pluck('id'));
                 })
                     ->take(3)
                     ->get();
-            elseif (get_setting('general', 'select_related_content_settings') == 'category')
+            }
+            elseif (get_setting('general', 'select_related_content_settings') == 'category') {
                 $relatedPosts = Post::where('id', '!=', $post->id)
-                    ->whereHas('categories', function ($query) use ($currentPostCategoryIds) {
-                        $query->whereIn('taxonomy_terms.id', $currentPostCategoryIds);
+                    ->whereHas('categories', function ($query) use ($post) {
+                        $query->whereIn('taxonomy_terms.id', $post->categories->pluck('id'));
                     })
                     ->take(3)
                     ->get();
+            }
             else
                 $relatedPosts = collect();
 
