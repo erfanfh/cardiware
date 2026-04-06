@@ -243,7 +243,7 @@
                 x-transition:leave-start="opacity-100 translate-y-0"
                 x-transition:leave-end="opacity-0 translate-y-1"
                 x-ref="replyForm"
-                class="mt-4 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4"
+                class="mt-4 scroll-mt-40 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-4"
             >
                 <div class="flex items-center justify-between gap-3">
                     <div class="text-sm font-black text-slate-800">
