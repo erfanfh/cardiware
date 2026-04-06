@@ -18,7 +18,7 @@ class FrontCommentResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->display_name,
-            'time' => $this->created_at?->diffForHumans() ?? 'همین الان',
+            'time' => time_ago($this->created_at) ?? 'همین الان',
             'text' => $this->content,
             'rating' => $this->rating_percent !== null
                 ? (int)round($this->rating_percent / 20)
