@@ -44,9 +44,16 @@
 
                         <x-admin.list.td>
                             <div class="min-w-[280px]">
-                                <p
-                                    class="line-clamp-1 text-sm font-bold text-slate-800 transition"
-                                >{{ $role->title }}</p>
+                                <div class="flex gap-2">
+                                    <p class="line-clamp-1 text-sm font-bold text-slate-800 transition">
+                                        {{ $role->title }}
+                                    </p>
+                                    @if($role->is_default)
+                                        <x-admin.badge color="blue">پیش فرض</x-admin.badge>
+                                    @elseif($role->is_super_admin)
+                                        <x-admin.badge color="red">ادمین کل</x-admin.badge>
+                                    @endif
+                                </div>
 
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                                     <span>#{{ $role->id }}</span>
