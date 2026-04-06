@@ -17,6 +17,7 @@ class CreateCommentAction
      */
     public function execute(CreateCommentDataDTO $data): Comment
     {
+        /** @var CommentableContract $commentable */
         $commentable = $data->commentable;
 
         $this->ensureCommentableIsValid($commentable);
@@ -25,6 +26,9 @@ class CreateCommentAction
         $this->ensureRatingIsValid($commentable, $data);
 
         $parent = $this->validateParent($data);
+
+        $this->ensureContentIsNotDuplicate($data, $parent);
+        $this->ensureSubmissionCooldown($data);
 
         $status = $this->resolveInitialStatus();
 
@@ -117,6 +121,70 @@ class CreateCommentAction
                 'rating_percent' => 'نمره باید بین 0 تا 100 باشد.',
             ]);
         }
+    }
+
+    protected function ensureContentIsNotDuplicate(CreateCommentDataDTO $data, ?Comment $parent): void
+    {
+        $normalizedContent = $this->normalizeCommentContent($data->content);
+
+        $query = Comment::query()
+            ->where('commentable_type', $data->commentable->getMorphClass())
+            ->where('commentable_id', $data->commentable->getKey());
+
+        if ($parent) {
+            $query->where('parent_id', $parent->id);
+        } else {
+            $query->whereNull('parent_id');
+        }
+
+        if ($data->userId !== null) {
+            $query->where('user_id', $data->userId);
+        } else {
+            $query->whereNull('user_id')
+                ->where('author_email', $data->authorEmail);
+        }
+
+        $exists = $query
+            ->select(['id', 'content'])
+            ->get()
+            ->contains(function (Comment $comment) use ($normalizedContent) {
+                return $this->normalizeCommentContent((string)$comment->content) === $normalizedContent;
+            });
+
+        if ($exists) {
+            throw ValidationException::withMessages([
+                'content' => 'شما قبلاً همین دیدگاه را برای این مطلب ثبت کرده‌اید.',
+            ]);
+        }
+    }
+
+    protected function ensureSubmissionCooldown(CreateCommentDataDTO $data): void
+    {
+        $query = Comment::query()
+            ->where('commentable_type', $data->commentable->getMorphClass())
+            ->where('commentable_id', $data->commentable->getKey())
+            ->where('created_at', '>=', now()->subSeconds(60));
+
+        if ($data->userId !== null) {
+            $query->where('user_id', $data->userId);
+        } else {
+            $query->whereNull('user_id')
+                ->where('author_email', $data->authorEmail);
+        }
+
+        if ($query->exists()) {
+            throw ValidationException::withMessages([
+                'content' => 'لطفاً 60 ثانیه صبر کنید و دوباره تلاش کنید.',
+            ]);
+        }
+    }
+
+    protected function normalizeCommentContent(string $content): string
+    {
+        $content = trim($content);
+        $content = preg_replace('/\s+/u', ' ', $content) ?? $content;
+
+        return mb_strtolower($content);
     }
 
     protected function validateParent(CreateCommentDataDTO $data): ?Comment
