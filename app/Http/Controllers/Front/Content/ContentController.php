@@ -40,6 +40,8 @@ final class ContentController
                 'categories:id,title',
                 'tags:id,title',
                 'imageGallery.mediaFile',
+            ])->loadCount([
+                'comment'
             ]);
             $features = app(GetPostFeaturesAction::class)->execute($post);
 

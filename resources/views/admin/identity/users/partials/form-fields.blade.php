@@ -6,11 +6,11 @@
     }
 @endphp
 
-<x-admin.page >
+<x-admin.page>
     <x-admin.form.validation-errors class="mb-6"/>
 
     <x-admin.metabox title="اطلاعات شخصی">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <x-admin.field required label="نام">
                 <x-admin.form.input
                     name="first_name"
@@ -31,11 +31,23 @@
                     :value="old('display_name', $user?->display_name)"
                 />
             </x-admin.field>
+
+            <x-admin.field label="تصویر">
+                <x-admin.form.media-picker
+                    mode="field"
+                    name="avatar"
+                    :value="[
+                    'id' => old('avatar.id', $user?->avatar_id),
+                    'path' => old('avatar.path', $user?->avatar?->url),
+                ]"
+                    layout="vertical"
+                />
+            </x-admin.field>
         </div>
     </x-admin.metabox>
 
     <x-admin.metabox title="اطلاعات تماس">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-admin.field required label="ایمیل">
                 <x-admin.form.input
                     dir="ltr"
@@ -55,7 +67,7 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="نقش و وضعیت">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-admin.field required label="نقش">
                 <x-admin.form.select
                     name="role"
@@ -76,7 +88,7 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="امنیت">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-admin.field required label="رمز عبور">
                 <x-admin.form.secret-input
                     id="password"
@@ -99,7 +111,7 @@
                 <button
                     type="button"
                     onclick="generatePassword()"
-                    class="cursor-pointer px-2 py-1 bg-[var(--brand-500)] hover:bg-[var(--brand-600)] text-white text-xs rounded text-sm">
+                    class="cursor-pointer px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded text-sm">
                     تولید رمز عبور
                 </button>
             </div>

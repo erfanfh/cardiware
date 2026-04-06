@@ -9,6 +9,8 @@
                     />
                 </x-admin.list.th>
 
+                <x-admin.list.th width="90px">تصویر</x-admin.list.th>
+
                 <x-admin.list.th>نام کامل</x-admin.list.th>
 
                 <x-admin.list.th>نام نمایشی</x-admin.list.th>
@@ -49,6 +51,14 @@
                                 :value="$user->id"
                                 x-bind:checked="isSelected({{ $user->id }})"
                                 x-on:change="toggleSelection({{ $user->id }})"
+                            />
+                        </x-admin.list.td>
+
+                        <x-admin.list.td>
+                            <x-admin.list.thumbnail
+                                :src="$user->avatar?->url"
+                                :alt="$user->title"
+                                size="md"
                             />
                         </x-admin.list.td>
 
@@ -130,7 +140,11 @@
 
                         <x-admin.list.td>
                             <div class="text-xs leading-6">
-                                <div>{{ $user->posts()->count() }}</div>
+                                <a href="{{ route('admin.posts.index') }}">
+                                    <x-admin.badge
+                                        color="gray"
+                                    >{{ $user->posts()->count() }}</x-admin.badge>
+                                </a>
                             </div>
                         </x-admin.list.td>
 

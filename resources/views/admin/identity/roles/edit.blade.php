@@ -7,10 +7,10 @@
         @include('admin.identity.roles.partials.form-fields', [
             'role' => $role,
             'selectedPermissions' => $role->permissions()
-            ->get(['id', 'title'])
+            ->get(['id', 'label'])
             ->map(fn($i) => [
                     'value' => (string)$i->id,
-                    'label' => $i->title,
+                    'label' => $i->label,
             ])
             ->values()
             ->all(),

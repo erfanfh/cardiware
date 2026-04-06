@@ -43,6 +43,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
             'status' => ['required', Rule::in([UserStatusEnum::ACTIVE, UserStatusEnum::INACTIVE])],
+            'avatar_id' => ['nullable', 'integer', 'exists:media_files,id'],
         ];
     }
 
@@ -88,5 +89,12 @@ class UpdateUserRequest extends FormRequest
             'status.required' => 'وضعیت کاربر الزامی است.',
             'status.in' => 'نقش انتخاب شده معتبر نیست.',
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'avatar_id' => $this->input('avatar.id'),
+        ]);
     }
 }

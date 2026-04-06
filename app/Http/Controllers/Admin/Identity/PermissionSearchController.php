@@ -25,14 +25,14 @@ class PermissionSearchController extends Controller
         }
 
         $items = Permission::query()
-            ->select(['id', 'title'])
-            ->where('title', 'like', '%' . $query . '%')
-            ->orderBy('title')
+            ->select(['id', 'label'])
+            ->where('label', 'like', '%' . $query . '%')
+            ->orderBy('label')
             ->limit(20)
             ->get()
             ->map(fn(Permission $permission) => [
                 'value' => (string)$permission->id,
-                'label' => $permission->title,
+                'label' => $permission->label,
             ])
             ->values();
 

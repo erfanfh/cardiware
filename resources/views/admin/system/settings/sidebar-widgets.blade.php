@@ -3,7 +3,7 @@
 @section('title', 'تنظیمات ابزارک های سایدبار')
 
 @section('content')
-    <x-admin.form class="js-confirm" action="{{ route('admin.settings.sidebar-widgets.store') }}" method="put">
+    <x-admin.form action="{{ route('admin.settings.sidebar-widgets.store') }}" method="put">
         <x-admin.page>
             <x-admin.tabs
                 :tabs="[
@@ -23,7 +23,7 @@
                                     آیتم‌های ابزارهای کاربردی را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="tools_title"
                                                             :value="get_setting('sidebarWidgets', 'tools_title')"/>
@@ -52,33 +52,35 @@
                                     ]"
                                 >
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                        <x-admin.field
-                                            label="عنوان"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'title')"
-                                                x-model="it.title"
-                                            />
-                                        </x-admin.field>
+                                        <div class="flex flex-col gap-4">
+                                            <x-admin.field
+                                                label="عنوان"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'title')"
+                                                    x-model="it.title"
+                                                />
+                                            </x-admin.field>
 
-                                        <x-admin.field
-                                            label="زیر عنوان"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'subtitle')"
-                                                x-model="it.subtitle"
-                                            />
-                                        </x-admin.field>
+                                            <x-admin.field
+                                                label="زیر عنوان"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'subtitle')"
+                                                    x-model="it.subtitle"
+                                                />
+                                            </x-admin.field>
 
-                                        <x-admin.field
-                                            label="لینک"
-                                        >
-                                            <x-admin.form.input
-                                                x-bind:name="field(i, 'url')"
-                                                x-model="it.url"
-                                                dir="ltr"
-                                            />
-                                        </x-admin.field>
+                                            <x-admin.field
+                                                label="لینک"
+                                            >
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'url')"
+                                                    x-model="it.url"
+                                                    dir="ltr"
+                                                />
+                                            </x-admin.field>
+                                        </div>
 
                                         <x-admin.field label="تصویر"
                                         >
@@ -151,7 +153,7 @@
                                     اطلاعات مطالب پربازدید را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="populars_title"
                                                             :value="get_setting('sidebarWidgets', 'populars_title')"/>
@@ -196,9 +198,9 @@
                                 <x-admin.form.repeater
                                     name="projects_items"
                                     :items="old('projects_items', get_setting('sidebarWidgets', 'projects_items') ?? [])"
-                                    title="دسته بندی ها"
-                                    addText="افزودن دسته بندی"
-                                    emptyText="هنوز دسته بندی ای اضافه نشده است."
+                                    title="پروژه ها"
+                                    addText="افزودن پروژه"
+                                    emptyText="هنوز پروژه ای اضافه نشده است."
                                     headingKey="title"
                                     :defaultItem="[
                                         'category_id' => '',
@@ -209,11 +211,11 @@
                                         <x-admin.field>
                                             <x-admin.form.async-select
                                                 x-bind:name="`blocks[${index}][category_id]`"
-                                                label="دسته اصلی"
+                                                label="پروژه"
                                                 :multiple="false"
                                                 :selected-options="[]"
                                                 :search-url="route('admin.projects.ajax-search')"
-                                                placeholder="دسته اصلی را انتخاب کنید..."
+                                                placeholder="پروژه را انتخاب کنید..."
                                             />
                                         </x-admin.field>
                                     </div>
@@ -231,7 +233,7 @@
                                     اطلاعات آخرین دیدگاه ها را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="comments_title"
                                                             :value="get_setting('sidebarWidgets', 'comments_title')"/>

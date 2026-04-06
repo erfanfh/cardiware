@@ -15,6 +15,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 
 /**
@@ -32,6 +33,8 @@ class RoleController extends Controller
      */
     public function index(IndexRoleRequest $request, RoleListing $roleListing): View
     {
+        Gate::authorize('role.list');
+
         $roles = $roleListing
             ->handle(Role::query(), $request->validated())
             ->paginate($roleListing->perPage())
@@ -47,10 +50,10 @@ class RoleController extends Controller
 
         $selectedPermissionOptions = Permission::query()
             ->whereIn('id', $selectedPermissions)
-            ->get(['id', 'title'])
+            ->get(['id', 'label'])
             ->map(fn($tag) => [
                 'value' => (string)$tag->id,
-                'label' => $tag->title,
+                'label' => $tag->label,
             ])
             ->values()
             ->all();
@@ -68,6 +71,8 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request): RedirectResponse
     {
+        Gate::authorize('role.create');
+
         $role = Role::create($request->validated());
         $role->permissions()->sync($request->permissions ?? []);
 
@@ -83,6 +88,8 @@ class RoleController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('role.create');
+
         $permissionGroups = Permission::all()
             ->groupBy(fn($p) => explode('.', $p->title)[0])
             ->map(fn($group) => $group->sortBy('title'));
@@ -98,6 +105,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        Gate::authorize('role.edit');
+
         // Check if role is editable
         if ($role->is_default || $role->is_super_admin) {
             return Redirect::route('admin.roles.index')
@@ -115,6 +124,32 @@ class RoleController extends Controller
     }
 
     /**
+     * Update the specified role in storage
+     *
+     * @param UpdateRoleRequest $request The validated request
+     * @param Role $role The role to update
+     * @return RedirectResponse
+     */
+    public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
+    {
+        Gate::authorize('role.edit');
+
+        // Check if role is editable
+        if ($role->is_default || $role->is_super_admin) {
+            return Redirect::route('admin.roles.index')
+                ->with('error', 'این نقش قابل ویرایش نیست.')
+                ->with('error_title', 'خطا');
+        }
+
+        $role->update($request->validated());
+        $role->permissions()->sync($request->permissions ?? []);
+
+        return Redirect::route('admin.roles.index')
+            ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')
+            ->with('success_title', 'عملیات موفق');
+    }
+
+    /**
      * Delete a role after validation
      * Prevents deletion of default or super admin roles
      * Redirects to assign new role page if role has users
@@ -124,6 +159,8 @@ class RoleController extends Controller
      */
     public function destroy(Role $role): RedirectResponse
     {
+        Gate::authorize('role.delete');
+
         // Prevent deleting default or super admin roles
         if ($role->is_default) {
             return back()->with('error', 'نقش پیش‌فرض قابل حذف نیست.')
@@ -161,6 +198,8 @@ class RoleController extends Controller
      */
     public function showAssignNewRoleForm(Role $role): View
     {
+        Gate::authorize('role.index');
+
         // Get all roles except the one being deleted
         $availableRoles = Role::query()
             ->where('id', '!=', $role->id)
@@ -182,9 +221,12 @@ class RoleController extends Controller
      * @param AssignNewRoleRequest $request The validation request
      * @param Role $role The role to be deleted
      * @return RedirectResponse
+     * @throws \Throwable
      */
     public function assignNewRole(AssignNewRoleRequest $request, Role $role): RedirectResponse
     {
+        Gate::authorize('role.create');
+
         $newRoleId = $request->validated()['new_role_id'];
         $userCount = $role->users()->count();
 
@@ -209,29 +251,5 @@ class RoleController extends Controller
                 ->with('error', 'خطا در حذف نقش. لطفاً دوباره تلاش کنید.')
                 ->with('error_title', 'خطا');
         }
-    }
-
-    /**
-     * Update the specified role in storage
-     *
-     * @param UpdateRoleRequest $request The validated request
-     * @param Role $role The role to update
-     * @return RedirectResponse
-     */
-    public function update(UpdateRoleRequest $request, Role $role): RedirectResponse
-    {
-        // Check if role is editable
-        if ($role->is_default || $role->is_super_admin) {
-            return Redirect::route('admin.roles.index')
-                ->with('error', 'این نقش قابل ویرایش نیست.')
-                ->with('error_title', 'خطا');
-        }
-
-        $role->update($request->validated());
-        $role->permissions()->sync($request->permissions ?? []);
-
-        return Redirect::route('admin.roles.index')
-            ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')
-            ->with('success_title', 'عملیات موفق');
     }
 }

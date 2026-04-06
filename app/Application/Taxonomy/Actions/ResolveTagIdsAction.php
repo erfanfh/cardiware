@@ -31,6 +31,7 @@ class ResolveTagIdsAction
             ->values();
 
         $newIds = $newTitles->map(function (string $title) {
+
             $existing = TaxonomyTerm::query()
                 ->tags()
                 ->whereRaw('LOWER(title) = ?', [mb_strtolower($title)])

@@ -21,6 +21,8 @@
             selected-text="نقش انتخاب شده"
         />
 
+        <x-admin.form.validation-errors/>
+
         @include('admin.identity.roles.partials.list-table')
 
         <x-admin.list.pagination :model="$roles"/>

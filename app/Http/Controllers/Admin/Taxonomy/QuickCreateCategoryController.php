@@ -6,6 +6,7 @@ use App\Application\Taxonomy\Actions\CreateCategoryAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Taxonomy\QuickCreateCategoryRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class QuickCreateCategoryController extends Controller
@@ -20,6 +21,8 @@ class QuickCreateCategoryController extends Controller
         CreateCategoryAction       $action
     ): JsonResponse
     {
+        Gate::authorize('category.manage');
+
         $category = $action->execute($request->validated());
 
         return response()->json([

@@ -5,29 +5,23 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('comment_reactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('comment_id')->constrained('comments');
-            $table->foreignId('user_id')->constrained('users');
-            $table->binary('ip_hash', 32)->nullable();
+            $table->foreignId('comment_id')->constrained('comments')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->binary('ip_hash')->nullable();
             $table->string('type');
             $table->timestamps();
 
-            $table->unique(['comment_id', 'user_id']);
-            $table->unique(['comment_id', 'ip_hash']);
-            $table->index(['comment_id', 'type']);
-            $table->index(['user_id', 'comment_id']);
+            $table->unique(['comment_id', 'user_id'], 'comment_reactions_comment_user_unique');
+            $table->unique(['comment_id', 'ip_hash'], 'comment_reactions_comment_ip_unique');
+            $table->index(['comment_id', 'type'], 'comment_reactions_comment_type_index');
+            $table->index(['user_id', 'comment_id'], 'comment_reactions_user_comment_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('comment_reactions');

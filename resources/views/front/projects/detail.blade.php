@@ -325,13 +325,23 @@
                     </div>
                 </div>
 
-                <!-- Placeholder -->
                 <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
-                    <div class="font-extrabold text-slate-700">بنر / تبلیغات</div>
-                    <div class="mt-2 text-sm text-slate-500">جایگاه پیشنهادی برای بنر مرتبط با بازی</div>
-                    <div class="mt-3 text-xs text-slate-500">size: 320×250</div>
-                </div>
+                    @foreach (get_setting('ads', 'project_ads') as $ad)
+                        <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm mb-4">
+                            <a href="{{ $ad['url'] }}">
+                                <div class="font-extrabold text-slate-700">
+                                    {{ $ad['title'] }}
+                                </div>
 
+                                <div class="mt-4">
+                                    <img src="{{ $ad['image']['path'] }}"
+                                         alt="{{ $ad['title'] }}"
+                                         class="w-full rounded-lg">
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
             </aside>
 
         </section>
