@@ -79,6 +79,11 @@ class Comment extends Model
         return $this->hasMany(self::class, 'parent_id')->oldestFirst();
     }
 
+    public function approvedReplies(): HasMany
+    {
+        return $this->replies()->where('status', CommentStatusEnum::APPROVED);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
