@@ -251,7 +251,7 @@
         {{-- List --}}
         <template x-for="c in comments" :key="c.id">
             <article
-                class="group rounded-[1.5rem] border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5">
+                class="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5">
                 <div class="flex gap-3 sm:gap-4">
                     <div
                         class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-slate-100 text-sm font-black text-slate-700"
@@ -264,7 +264,7 @@
                                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                                     <div class="truncate text-sm font-black text-slate-900"
                                          x-text="c.name"></div>
-                                    <span class="text-xs text-slate-400">•</span>
+                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                     <span class="text-xs text-slate-500" x-text="c.time"></span>
                                 </div>
 
@@ -370,7 +370,7 @@
                                             <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
                                                 <div class="truncate text-sm font-black text-slate-900"
                                                      x-text="r.name"></div>
-                                                <span class="text-xs text-slate-400">•</span>
+                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                                 <div class="text-xs text-slate-500" x-text="r.time"></div>
                                                 <span
                                                     class="inline-flex items-center rounded-xl border border-slate-200 bg-white px-2 py-1 text-[11px] font-extrabold text-slate-600">
