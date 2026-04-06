@@ -254,9 +254,23 @@
                 class="group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5">
                 <div class="flex gap-3 sm:gap-4">
                     <div
-                        class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-slate-100 text-sm font-black text-slate-700"
-                        x-text="avatarText(c.name)"
-                    ></div>
+                        class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black"
+                        :class="c.avatar ? 'bg-white' : avatarColor(c.name)"
+                    >
+                        <!-- اگر تصویر داشت -->
+                        <template x-if="c.avatar">
+                            <img
+                                :src="c.avatar"
+                                alt=""
+                                class="h-full w-full object-cover"
+                            >
+                        </template>
+
+                        <!-- اگر تصویر نداشت -->
+                        <template x-if="!c.avatar">
+                            <span x-text="avatarText(c.name)"></span>
+                        </template>
+                    </div>
 
                     <div class="min-w-0 flex-1">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -286,29 +300,19 @@
 
                             <div class="flex items-center gap-2 self-start">
                                 <button
-                                    @click="toggleLike(c)"
-                                    type="button"
-                                    class="inline-flex h-10 items-center gap-2 rounded-2xl border px-3 text-sm font-extrabold transition"
-                                    :class="c.liked
-                                            ? 'border-brand-200 bg-brand-50 text-brand-700'
-                                            : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-white hover:border-slate-300'"
-                                >
-                                    <span class="text-base leading-none">♥</span>
-                                    <span x-text="c.likes"></span>
-                                </button>
-
-                                <button
                                     @click="startReply(c)"
                                     type="button"
-                                    class="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white"
+                                    class="inline-flex cursor-pointer h-10 items-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white"
                                 >
                                     <span>پاسخ</span>
-                                    <span class="text-slate-400">↩</span>
+                                    <span class="text-slate-400">
+                                        @include('icons.arrow-left-double')
+                                    </span>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="mt-3 text-[0.95rem] leading-8 text-slate-700" x-text="c.text"></div>
+                        <div class="mt-3 text-sm leading-8 text-slate-700" x-html="c.text"></div>
 
                         {{-- Reply Form: فعلاً نگهش می‌داریم برای مرحله بعد --}}
                         <div

@@ -60,6 +60,24 @@ window.commentsWidget = function (config) {
             return value ? value.charAt(0) : 'ک';
         },
 
+        avatarColor(name) {
+            const colors = [
+                'bg-rose-100 text-rose-700',
+                'bg-amber-100 text-amber-700',
+                'bg-emerald-100 text-emerald-700',
+                'bg-sky-100 text-sky-700',
+                'bg-indigo-100 text-indigo-700',
+                'bg-purple-100 text-purple-700',
+            ];
+
+            let index = 0;
+            for (let i = 0; i < name.length; i++) {
+                index += name.charCodeAt(i);
+            }
+
+            return colors[index % colors.length];
+        },
+
         async openComments() {
             if (this.loading) {
                 return;

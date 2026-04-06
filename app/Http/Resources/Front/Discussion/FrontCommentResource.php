@@ -19,7 +19,8 @@ class FrontCommentResource extends JsonResource
             'id' => $this->id,
             'name' => $this->display_name,
             'time' => time_ago($this->created_at) ?? 'همین الان',
-            'text' => $this->content,
+            'text' => nl2br(htmlspecialchars(e($this->content))),
+            'avatar' => $this->user?->avatar?->url ?: null,
             'rating' => $this->rating_percent !== null
                 ? (int)round($this->rating_percent / 20)
                 : 0,
