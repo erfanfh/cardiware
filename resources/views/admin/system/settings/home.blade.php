@@ -57,6 +57,10 @@
                 <x-admin.tabs.panel name="testimonials">
                     @include('admin.system.settings.partials.home-testimonials')
                 </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="projects">
+                    @include('admin.system.settings.partials.home-projects')
+                </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
 
