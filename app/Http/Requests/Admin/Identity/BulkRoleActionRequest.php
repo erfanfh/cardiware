@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Identity;
 
+use App\Domain\Identity\Models\Role;
 use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -24,6 +25,24 @@ class BulkRoleActionRequest extends FormRequest
             'ids' => ['required', 'array', 'min:1'],
             'ids.*' => ['integer', 'distinct', 'exists:roles,id'],
         ];
+    }
+
+    /**
+     * @param $validator
+     * @return void
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $defaultRoles = Role::whereIn('id', $this->input('ids'))
+                ->where('is_default', true)
+                ->orWhere('is_super_admin', true)
+                ->exists();
+
+            if ($defaultRoles) {
+                $validator->errors()->add('ads', 'نقش های پیش‌فرض قابل حذف نیستند.');
+            }
+        });
     }
 
     public function messages(): array
