@@ -77,6 +77,12 @@ window.commentsWidget = function (config) {
             if (success) {
                 this.isOpen = true;
             }
+
+            if (this.displayTotalCount() === 0) {
+                setTimeout(() => {
+                    this.scrollToForm();
+                }, 300);
+            }
         },
 
         async fetchComments(page = 1) {
@@ -205,7 +211,28 @@ window.commentsWidget = function (config) {
         },
 
         startReply(comment) {
-            this.replyTo = this.replyTo === comment.id ? null : comment.id;
+            this.replyTo = comment.id;
+
+            this.$nextTick(() => {
+                const textarea = document.querySelector('[x-show="replyTo === ' + comment.id + '"] textarea');
+                if (textarea) {
+                    textarea.scrollIntoView({behavior: 'smooth', block: 'center'});
+                    textarea.focus();
+                }
+            });
+        },
+
+        scrollToForm() {
+            const el = document.getElementById('send-comment-form');
+            if (!el) return;
+
+            const yOffset = -140;
+            const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+            window.scrollTo({
+                top: y,
+                behavior: 'smooth'
+            });
         },
     };
 };
