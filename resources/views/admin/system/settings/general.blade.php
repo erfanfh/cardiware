@@ -122,35 +122,6 @@
                         </x-admin.field>
                     </div>
                 </x-admin.metabox>
-
-                <x-admin.metabox title="درگاه‌های پرداخت">
-                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        <x-admin.field
-                            label="درگاه پیش‌فرض"
-                            hint="فعلاً نمایشی است و بعداً به بک‌اند وصل می‌شود."
-                        >
-                            <x-admin.form.select
-                                name="default_payment_gateway"
-                                placeholder="انتخاب درگاه"
-                                :options="[
-                            'zarinpal' => 'زرین‌پال',
-                            'nextpay' => 'نکست‌پی',
-                            'idpay' => 'آیدی‌پی',
-                        ]"
-                            />
-                        </x-admin.field>
-
-                        <x-admin.field
-                            label="فعال بودن پرداخت"
-                        >
-                            <x-admin.form.switch
-                                name="payment_enabled"
-                                :checked="true"
-                            />
-                        </x-admin.field>
-                    </div>
-                </x-admin.metabox>
-
             </div>
         </x-admin.page>
 
