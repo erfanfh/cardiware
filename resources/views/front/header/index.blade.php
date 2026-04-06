@@ -22,77 +22,76 @@
             <div
                 class="flex-1 px-2"
                 x-data="{
-  q: '',
-  open: false,
-  loading: false,
+                      q: '',
+                      open: false,
+                      loading: false,
 
-  // Demo results (بعداً از API میاد)
-  all: [
-    { type: 'محصول', title: 'پچ لیگ ایران برای FC26', meta: 'FC/PC • 1.3GB', href: '#' },
-    { type: 'مطلب', title: 'آموزش نصب پچ لیگ ایران روی FC26', meta: '۵ دقیقه مطالعه', href: '#' },
-    { type: 'محصول', title: 'PES Graphic Pack 2026', meta: 'PES/PC • 820MB', href: '#' },
-    { type: 'مطلب', title: 'رفع ارورهای رایج نصب مودها', meta: 'راهنما', href: '#' },
-    { type: 'محصول', title: 'آپدیت نقل‌وانتقالات FC26', meta: 'فایل • 120MB', href: '#' },
-  ],
+                      // Demo results (بعداً از API میاد)
+                      all: [
+                        { type: 'محصول', title: 'پچ لیگ ایران برای FC26', meta: 'FC/PC • 1.3GB', href: '#' },
+                        { type: 'مطلب', title: 'آموزش نصب پچ لیگ ایران روی FC26', meta: '۵ دقیقه مطالعه', href: '#' },
+                        { type: 'محصول', title: 'PES Graphic Pack 2026', meta: 'PES/PC • 820MB', href: '#' },
+                        { type: 'مطلب', title: 'رفع ارورهای رایج نصب مودها', meta: 'راهنما', href: '#' },
+                        { type: 'محصول', title: 'آپدیت نقل‌وانتقالات FC26', meta: 'فایل • 120MB', href: '#' },
+                      ],
 
-  get results() {
-    if (!this.q || this.q.trim().length < 2) return [];
-    const s = this.q.trim().toLowerCase();
-    return this.all.filter(i => i.title.toLowerCase().includes(s)).slice(0, 6);
-  },
+                      get results() {
+                        if (!this.q || this.q.trim().length < 2) return [];
+                        const s = this.q.trim().toLowerCase();
+                        return this.all.filter(i => i.title.toLowerCase().includes(s)).slice(0, 6);
+                      },
 
-  onInput() {
-    this.open = true;
-    this.loading = true;
+                      onInput() {
+                        this.open = true;
+                        this.loading = true;
 
-    // دمو: شبیه‌سازی سرچ آنلاین
-    clearTimeout(this._t);
-    this._t = setTimeout(() => {
-      this.loading = false;
-    }, 250);
-  },
+                        // دمو: شبیه‌سازی سرچ آنلاین
+                        clearTimeout(this._t);
+                        this._t = setTimeout(() => {
+                          this.loading = false;
+                        }, 250);
+                      },
 
-  closeSoon() {
-    setTimeout(() => (this.open = false), 120);
-  }
-}"
+                      closeSoon() {
+                        setTimeout(() => (this.open = false), 120);
+                      }
+                    }"
             >
                 <label class="relative block" @keydown.escape.window="open=false">
                     <span class="sr-only">جستجو</span>
 
                     <!-- Search Icon (right) -->
                     <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-          d="M21 21l-4.3-4.3m1.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-      />
-    </svg>
-  </span>
-
-                    <!-- Input -->
-                    <input
-                        type="search"
-                        x-model="q"
-                        @input="onInput()"
-                        @focus="open = true"
-                        @blur="closeSoon()"
-                        placeholder="دنبال چی می‌گردی؟ (مثلاً: پچ لیگ ایران، FC26، PES...)"
-                        class="w-full rounded-2xl border border-slate-200 bg-slate-50
-           pr-10 pl-12 py-3 text-sm outline-none
-           focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
-           transition"
-                    />
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                          <path
+                              d="M21 21l-4.3-4.3m1.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                          />
+                        </svg>
+                    </span>
+                    <div x-data="typingPlaceholder()">
+                        <input
+                            type="search"
+                            x-model="q"
+                            @input="onInput()"
+                            @focus="open = true"
+                            @blur="closeSoon()"
+                            :placeholder="currentText"
+                            class="w-full rounded-2xl border border-slate-200 bg-slate-50
+                        pr-10 pl-12 py-3 text-sm outline-none
+                        focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
+                        transition"
+                        />
+                    </div>
 
                     <!-- Left action icon (submit / open results) -->
                     <div class="absolute inset-y-0 left-2 flex items-center">
                         <button
                             type="button"
                             @click="open = true"
-                            class="h-9 w-9 rounded-xl border border-slate-200 bg-white
-             hover:bg-slate-50 transition grid place-items-center"
+                            class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
                             aria-label="جستجو"
                         >
                             <!-- Magnifier icon -->
@@ -419,3 +418,50 @@
         </nav>
     </div>
 </header>
+
+@push('scripts')
+    <script>
+        function typingPlaceholder() {
+            return {
+                texts: [
+                    "دنبال چی می‌گردی؟",
+                    "دنبال پچ های لیگ ایران هستی؟",
+                    "فیس پک تیم های فوتبال رو میخوای؟",
+                    "میخوای بازی هاتو آپدیت کنی؟",
+                    "دنبال آموزش های فنی هستی؟",
+                    "کرک بازی های جدید رو میخوای؟",
+                    "تو مودینگ وی همه جیز پیدا میشه!",
+                ],
+                currentText: "",
+                textIndex: 0,
+                charIndex: 0,
+                typing: true,
+
+                init() {
+                    this.loop();
+                },
+
+                loop() {
+                    let current = this.texts[this.textIndex];
+
+                    if (this.typing) {
+                        this.currentText = current.substring(0, this.charIndex++);
+                        if (this.charIndex > current.length) {
+                            this.typing = false;
+                            setTimeout(() => this.loop(), 1200);
+                            return;
+                        }
+                    } else {
+                        this.currentText = current.substring(0, this.charIndex--);
+                        if (this.charIndex <= 0) {
+                            this.typing = true;
+                            this.textIndex = (this.textIndex + 1) % this.texts.length;
+                        }
+                    }
+
+                    setTimeout(() => this.loop(), this.typing ? 70 : 40);
+                }
+            }
+        }
+    </script>
+@endpush
