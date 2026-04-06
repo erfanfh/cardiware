@@ -54,27 +54,132 @@
 
     {{-- Closed State --}}
     <div x-show="!isOpen" x-cloak class="mt-6">
-        <button
-            type="button"
-            @click="openComments()"
-            :disabled="loading"
-            class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm font-extrabold text-slate-800 transition hover:border-slate-300 hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
-        >
-            <svg
-                x-show="loading"
-                x-cloak
-                class="h-4 w-4 animate-spin"
-                viewBox="0 0 24 24"
-                fill="none"
-            >
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
-                        stroke-width="4"></circle>
-                <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
-                      stroke-linecap="round"></path>
-            </svg>
+        {{-- Has Comments --}}
+        <template x-if="displayTotalCount() > 0">
+            <div
+                class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 sm:p-6">
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-3">
+                            <div class="flex -space-x-2 rtl:space-x-reverse">
+                                <span
+                                    class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-200 text-xs font-black text-slate-700 shadow-sm">A</span>
+                                <span
+                                    class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-100 text-xs font-black text-slate-700 shadow-sm">M</span>
+                                <span
+                                    class="grid h-10 w-10 place-items-center rounded-2xl border border-white bg-slate-50 text-xs font-black text-slate-700 shadow-sm">N</span>
+                            </div>
 
-            <span x-text="loading ? 'در حال بارگذاری دیدگاه‌ها...' : openButtonLabel()"></span>
-        </button>
+                            <div class="min-w-0">
+                                <div class="text-sm font-extrabold text-slate-900">
+                                    نظر کاربران درباره این محتوا
+                                </div>
+                                <p class="mt-1 text-sm leading-6 text-slate-500">
+                                    تجربه نصب، کیفیت محتوا و مشکلات احتمالی را از دید کاربران بخوانید.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
+                            <span
+                                class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600"
+                            >
+                                <span class="ml-1.5 inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
+                                <span x-text="`${displayTotalCount()} دیدگاه ثبت شده`"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0">
+                        <button
+                            type="button"
+                            @click="openComments()"
+                            :disabled="loading"
+                            class="cursor-pointer inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white shadow-sm transition hover:-translate-y-[1px] hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            <svg
+                                x-show="loading"
+                                x-cloak
+                                class="h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                        stroke-width="4"></circle>
+                                <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                      stroke-linecap="round"></path>
+                            </svg>
+
+                            <span x-text="loading ? 'در حال بارگذاری...' : openButtonLabel()"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        {{-- Empty Comments --}}
+        <template x-if="displayTotalCount() === 0">
+            <div
+                class="overflow-hidden rounded-[1.5rem] border border-dashed border-slate-200 bg-gradient-to-b from-slate-50 to-white p-5 sm:p-6">
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                    <div class="min-w-0">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="grid h-12 w-12 [&_svg]:w-6 [&_svg]:h-6 shrink-0 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700">
+                                @include('icons.add-01')
+                            </div>
+
+                            <div class="min-w-0">
+                                <div class="text-sm font-extrabold text-slate-900">
+                                    هنوز دیدگاهی ثبت نشده است
+                                </div>
+                                <p class="mt-1 text-sm leading-6 text-slate-500">
+                                    اولین نفری باشید که تجربه‌تان را درباره این محتوا ثبت می‌کند.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap items-center gap-2">
+                        <span
+                            class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600"
+                        >
+                            منتظر اولین دیدگاه
+                        </span>
+
+                            <span
+                                class="inline-flex items-center rounded-2xl border border-brand-100 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700"
+                            >
+                            ثبت دیدگاه شما مهم است
+                        </span>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0">
+                        <button
+                            type="button"
+                            @click="openComments()"
+                            :disabled="loading"
+                            class="cursor-pointer inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-600 hover:-translate-y-[1px] disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            <svg
+                                x-show="loading"
+                                x-cloak
+                                class="h-4 w-4 animate-spin"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                            >
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                        stroke-width="4"></circle>
+                                <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                      stroke-linecap="round"></path>
+                            </svg>
+
+                            <span x-text="loading ? 'در حال بررسی...' : 'بررسی دیدگاه‌ها'"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
 
         <div
             x-show="!isOpen && errorMessage"
@@ -132,12 +237,8 @@
             <div
                 class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
                 <div
-                    class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400">
-                    <svg viewBox="0 0 24 24" class="h-6 w-6" fill="none" stroke="currentColor"
-                         stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M21 15a4 4 0 0 1-4 4H7l-4 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
-                    </svg>
+                    class="mx-auto grid h-14 w-14 [&_svg]:w-6 [&_svg]:h-6 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400">
+                    @include('icons.comment-add-01')
                 </div>
 
                 <h3 class="mt-4 text-sm font-extrabold text-slate-800">هنوز دیدگاهی ثبت نشده است</h3>
