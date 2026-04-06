@@ -8,7 +8,6 @@ return [
         'can' => null,
         'gate' => null,
     ],
-
     [
         'label' => 'نوشته‌ها',
         'route' => 'admin.posts.index',
@@ -17,22 +16,26 @@ return [
             [
                 'label' => 'لیست نوشته‌ها',
                 'route' => 'admin.posts.index',
-                'icon' => 'icons.menu-01'
+                'icon' => 'icons.menu-01',
+                'gate' => 'post.list',
             ],
             [
                 'label' => 'ایجاد نوشته',
                 'route' => 'admin.posts.create',
-                'icon' => 'icons.plus-sign'
+                'icon' => 'icons.plus-sign',
+                'gate' => 'post.create',
             ],
             [
                 'label' => 'دسته‌ها',
                 'route' => 'admin.categories.index',
-                'icon' => 'icons.tag-02'
+                'icon' => 'icons.tag-02',
+                'gate' => 'category.manage',
             ],
             [
                 'label' => 'برچسب‌ها',
                 'route' => 'admin.tags.index',
-                'icon' => 'icons.tag-02'
+                'icon' => 'icons.tag-02',
+                'gate' => 'tag.manage',
             ],
         ],
     ],
@@ -45,12 +48,14 @@ return [
             [
                 'label' => 'لیست برگه‌ها',
                 'route' => 'admin.pages.index',
-                'icon' => 'icons.menu-01'
+                'icon' => 'icons.menu-01',
+                'gate' => 'page.list',
             ],
             [
                 'label' => 'ایجاد برگه',
                 'route' => 'admin.pages.create',
-                'icon' => 'icons.plus-sign'
+                'icon' => 'icons.plus-sign',
+                'gate' => 'page.create',
             ]
         ],
     ],
@@ -59,6 +64,7 @@ return [
         'label' => 'دیدگاه‌ها',
         'route' => 'admin.comments.index',
         'icon' => 'icons.comment-01',
+        'gate' => 'comment.list',
     ],
 
     [
@@ -69,12 +75,14 @@ return [
             [
                 'label' => 'لیست پروژه‌ها',
                 'route' => 'admin.projects.index',
-                'icon' => 'icons.menu-01'
+                'icon' => 'icons.menu-01',
+                'gate' => 'project.list',
             ],
             [
                 'label' => 'ایجاد پروژه',
                 'route' => 'admin.projects.create',
-                'icon' => 'icons.plus-sign'
+                'icon' => 'icons.plus-sign',
+                'gate' => 'project.create',
             ]
         ],
     ],
@@ -87,17 +95,20 @@ return [
             [
                 'label' => 'لیست کاربران',
                 'route' => 'admin.users.index',
-                'icon' => 'icons.menu-01'
+                'icon' => 'icons.menu-01',
+                'gate' => 'user.list',
             ],
             [
                 'label' => 'ایجاد کاربر',
                 'route' => 'admin.users.create',
-                'icon' => 'icons.plus-sign'
+                'icon' => 'icons.plus-sign',
+                'gate' => 'user.create',
             ],
             [
                 'label' => 'لیست نقش‌ها',
                 'route' => 'admin.roles.index',
-                'icon' => 'icons.square-unlock-02'
+                'icon' => 'icons.square-unlock-02',
+                'gate' => 'role.list',
             ]
         ],
     ],
@@ -110,7 +121,8 @@ return [
                 'label' => 'صفحه اصلی',
                 'route' => 'admin.page-layouts.show',
                 'routeParameters' => ['home'],
-                'icon' => 'icons.dashboard-square-setting'
+                'icon' => 'icons.dashboard-square-setting',
+                'gate' => 'page-layouts.home',
             ],
         ],
     ],
@@ -123,37 +135,44 @@ return [
             [
                 'label' => 'عمومی',
                 'route' => 'admin.settings.general',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.general',
             ],
             [
                 'label' => 'هدر (سربرگ)',
                 'route' => 'admin.settings.header',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.header',
             ],
             [
                 'label' => 'فوتر (پابرگ)',
                 'route' => 'admin.settings.footer',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.footer',
             ],
             [
                 'label' => 'صفحه اصلی',
                 'route' => 'admin.settings.home',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.home',
             ],
             [
                 'label' => 'درباره ما',
                 'route' => 'admin.settings.about-us',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.about-us',
             ],
             [
                 'label' => 'تبلیغات',
                 'route' => 'admin.settings.ads',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.ads',
             ],
             [
                 'label' => 'ابزارک های سایدبار',
                 'route' => 'admin.settings.sidebar-widgets',
-                'icon' => 'icons.settings-02'
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.sidebar-widgets',
             ],
         ],
     ],
