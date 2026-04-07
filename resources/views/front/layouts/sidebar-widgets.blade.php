@@ -47,9 +47,12 @@
     </p>
 
     <ul class="mt-4 space-y-3">
-        @foreach(\App\Domain\Taxonomy\Models\TaxonomyTerm::categories()->take(3)->get() as $category) {{--should get from setting--}}
+        @foreach(get_setting('sidebarWidgets', 'categories_items') ?? [] as $categoryItem)
+            @php
+                $category = \App\Domain\Taxonomy\Models\TaxonomyTerm::categories()->findOrFail($categoryItem['category_id']);
+            @endphp
             <li>
-                <a href="#"
+                <a href="{{ route('categories', $category) }}"
                    class="flex items-center justify-between rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition">
                     <span class="font-semibold text-slate-800">{{ $category->title }}</span>
                 </a>
@@ -105,16 +108,23 @@
     </div>
 
     <div class="mt-4 space-y-3">
-        @foreach(\App\Domain\Project\Models\Project::take(3)->get() as $project) {{--should get from setting--}}
+        @foreach(get_setting('sidebarWidgets', 'projects_items') ?? [] as $projectItem)
+            @php
+                $project = \App\Domain\Project\Models\Project::findOrFail($projectItem['project_id']);
+            @endphp
             <div class="rounded-2xl border border-slate-200 p-3">
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                        <div class="text-sm font-extrabold truncate">{{ $project->title }}</div>
+                        <div class="text-sm font-extrabold truncate">
+                            <a href="{{ route('projects.detail', $project) }}">
+                                {{ $project->title }}
+                            </a>
+                        </div>
                         <div class="mt-1 text-xs text-slate-500 truncate">{{ $project->excerpt }}</div>
                     </div>
                     <span
                         class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">
-                        {{ $project->progress_percent }}
+                        {{ $project->progress_percent . '%' }}
                     </span>
                 </div>
                 <div class="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden">
