@@ -49,7 +49,7 @@
                 <span class="h-1 w-1 rounded bg-slate-300"></span>
                 <span>۲.۴k بازدید</span>
                 <span class="h-1 w-1 rounded bg-slate-300"></span>
-                <span>323 دیدگاه</span>
+                <span>{{ $post->approved_comments_count }} دیدگاه</span>
 
                 <span class="mr-auto"></span>
 
