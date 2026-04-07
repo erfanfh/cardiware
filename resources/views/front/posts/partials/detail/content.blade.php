@@ -33,15 +33,16 @@
 
         @include('front.posts.partials.detail.download-box')
 
-        <!-- Tags (NOW after downloads) -->
-        <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-500">برچسب‌ها:</span>
-            <a href="#"
-               class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl hover:bg-brand-100 transition">Patch</a>
-            <a href="#"
-               class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition">Performance</a>
-            <a href="#"
-               class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition">Fix</a>
-        </div>
+        @if($post->tags->isNotEmpty())
+            <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2">
+                <span class="text-xs text-slate-500">برچسب‌ها:</span>
+                @foreach($post->tags as $tag)
+                    <a href="{{ route('tags', $tag) }}"
+                       class="text-[0.7rem] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition">
+                        {{ $tag->title }}
+                    </a>
+                @endforeach
+            </div>
+        @endif
     </div>
 </article>
