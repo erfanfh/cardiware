@@ -71,7 +71,7 @@
                                     <span class="text-slate-300">|</span>
 
                                     <x-admin.form
-                                        :bind-action="route('admin.roles.destroy', $role)"
+                                        :action="route('admin.roles.destroy', $role)"
                                         method="delete"
                                         class="js-confirm cursor-pointer"
                                         data-confirm-title="حذف نقش"
