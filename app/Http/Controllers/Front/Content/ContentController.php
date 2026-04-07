@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Content;
 
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\ResolveContentBySlugAction;
+use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Content\Models\Post;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -25,6 +26,8 @@ final class ContentController
         if ($resolvedContent->shouldRedirect()) {
             return redirect()->to($resolvedContent->redirectUrl, 301);
         }
+
+        app(StoreViewAction::class)->execute($resolvedContent->model);
 
         if ($resolvedContent->isPage()) {
             return view('front.pages.detail', [
