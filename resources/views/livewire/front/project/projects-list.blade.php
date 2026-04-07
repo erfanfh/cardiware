@@ -100,7 +100,17 @@
                                     <span class="font-extrabold text-slate-700">{{ $project->progress_percent }}%</span>
                                 </div>
                                 <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                    <div class="h-full bg-brand-500" style="width: {{ $project->progress_percent . '%' }}"></div>
+                                    <div
+                                        class="h-full rounded-full transition-all duration-300"
+                                        :class="{
+                                            'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
+                                            'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
+                                            'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
+                                            'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
+                                            'bg-slate-300': ({{ $project->progress_percent }} ?? 0) < 1
+                                        }"
+                                        style="width: {{ $project->progress_percent . '%' }}"
+                                    ></div>
                                 </div>
                             </div>
 
@@ -111,9 +121,11 @@
                                     <span class="font-black" dir="ltr">←</span>
                                 </a>
 
-                                <span class="text-xs text-slate-500 hidden sm:inline">
-                                    بروزرسانی: {{ jalali_date($project->last_updated_at) }}
-                                </span>
+                                @if($project->last_updated_at)
+                                    <span class="text-xs text-slate-500 hidden sm:inline">
+                                        بروزرسانی: {{ jalali_date($project->last_updated_at) }}
+                                    </span>
+                                @endif
                             </div>
                         </div>
 
