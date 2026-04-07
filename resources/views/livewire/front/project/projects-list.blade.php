@@ -1,20 +1,6 @@
 <div>
     <section class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div class="relative flex-1">
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                           stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="M21 21l-4.3-4.3"></path>
-                      </svg>
-                    </span>
-                <input wire:model.live="search"
-                       class="w-full rounded-2xl border border-slate-200 bg-slate-50 pr-10 pl-4 py-3 text-sm outline-none
-                    focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
-                       placeholder="جستجو بین پروژه‌ها "/>
-            </div>
-
             <div class="flex flex-wrap items-center gap-2">
                 <button wire:click="noFilter"
                         @if($filter == \App\Domain\Project\Enums\ProjectFilterEnum::ALL->value)
@@ -73,79 +59,72 @@
                 </select>
             </div>
         </div>
-
-        <div class="mt-4 flex flex-wrap gap-2">
-            <button @click="toggleTag('Patch')"
-                    class="text-[11px] font-extrabold px-2 py-1 rounded-xl border transition"
-                    :class="tags.includes('Patch') ? 'text-brand-800 bg-brand-50 border-brand-100' : 'text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-50'">
-                Patch
-            </button>
-            <button @click="toggleTag('Persian')"
-                    class="text-[11px] font-extrabold px-2 py-1 rounded-xl border transition"
-                    :class="tags.includes('Persian') ? 'text-brand-800 bg-brand-50 border-brand-100' : 'text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-50'">
-                Persian
-            </button>
-            <button @click="toggleTag('Installer')"
-                    class="text-[11px] font-extrabold px-2 py-1 rounded-xl border transition"
-                    :class="tags.includes('Installer') ? 'text-brand-800 bg-brand-50 border-brand-100' : 'text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-50'">
-                Installer
-            </button>
-            <button @click="toggleTag('Performance')"
-                    class="text-[11px] font-extrabold px-2 py-1 rounded-xl border transition"
-                    :class="tags.includes('Performance') ? 'text-brand-800 bg-brand-50 border-brand-100' : 'text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-50'">
-                Performance
-            </button>
-
-            <button @click="tags=[]"
-                    class="text-[11px] font-extrabold px-2 py-1 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition">
-                پاک کردن فیلترها
-            </button>
-        </div>
     </section>
 
     <section class="mt-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             @foreach($projects as $project)
-                <a href="{{ route('projects.detail', $project) }}"
-                   class="group rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <div
-                                class="text-sm font-extrabold truncate group-hover:text-brand-700 transition">{{ $project->title }}</div>
-                            <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2">{!! $project->body !!}</div>
-                        </div>
-                    </div>
+                <article
+                    class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm hover:shadow-lg transition">
 
-                    <div class="mt-4">
-                        <div class="flex items-center justify-between text-xs text-slate-500">
-                            <span>پیشرفت</span>
-                            <span class="font-extrabold text-slate-700">{{ $project->progress_percent . '%' }}</span>
-                        </div>
-                        <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
-                            <div
-                                class="h-full bg-emerald-500"
-                                style="width: {{ $project->progress_percent . '%' }}"></div>
-                        </div>
-                    </div>
+                    <div
+                        class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
+                    <div class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
-                    <div class="mt-4 flex items-center justify-between">
-                        <div
-                            class="text-xs text-slate-500">{{ 'آخرین آپدیت: ' . jalali_date($project->last_updated_at, 'Y/m/d') }}</div>
-                        <span
-                            class="text-sm font-extrabold text-brand-700 group-hover:text-brand-800 transition inline-flex items-center gap-2">
-                                  جزئیات <span class="font-black">←</span>
-                                </span>
-                    </div>
-
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        @foreach($project->tags as $tag)
-                            <div>
-                                      <span
-                                          class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl">{{ $tag->title }}</span>
+                    <div class="flex items-center gap-4">
+                        <div class="shrink-0">
+                            <div class="h-12 w-12 rounded-2xl border border-slate-200 bg-white grid place-items-center">
+                                <span class="text-xs font-extrabold text-slate-400">SVG</span>
                             </div>
-                        @endforeach
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-sm sm:text-base font-extrabold truncate">{{ $project->title }}</div>
+                                    <div class="text-xs text-slate-500 mt-1">{{ $project->excerpt }}</div>
+                                </div>
+
+
+                                <span
+                                    class="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-brand-50 border border-brand-100 px-3 py-1.5 text-[11px] font-extrabold text-brand-800">
+                                    <span
+                                        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-[11px] font-black">%</span>
+                                    {{ $project->progress_percent }}٪ تکمیل
+                                  </span>
+                            </div>
+
+                            <div class="mt-3">
+                                <div class="flex items-center justify-between text-xs text-slate-500">
+                                    <span>پیشرفت</span>
+                                    <span class="font-extrabold text-slate-700">{{ $project->progress_percent }}%</span>
+                                </div>
+                                <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
+                                    <div class="h-full bg-brand-500" style="width: {{ $project->progress_percent . '%' }}"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex items-center justify-between gap-3">
+                                <a href="{{ route('projects.detail', $project) }}"
+                                   class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
+                                    اطلاعات پروژه
+                                    <span class="font-black" dir="ltr">←</span>
+                                </a>
+
+                                <span class="text-xs text-slate-500 hidden sm:inline">
+                                    بروزرسانی: {{ jalali_date($project->last_updated_at) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:block shrink-0">
+                            <div
+                                class="h-14 w-14 rounded-3xl border border-slate-200 bg-slate-50 grid place-items-center">
+                                <span class="text-xs font-extrabold text-slate-400">SVG</span>
+                            </div>
+                        </div>
                     </div>
-                </a>
+                </article>
             @endforeach
         </div>
 
