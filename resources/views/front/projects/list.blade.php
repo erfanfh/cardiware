@@ -4,7 +4,7 @@
     <main class="mx-auto max-w-7xl px-4 py-8">
         <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-xl">
             <div
-                class="absolute inset-0 opacity-90 bg-[radial-gradient(700px_circle_at_15%_20%,rgba(249,115,22,.35),transparent_55%),radial-gradient(700px_circle_at_85%_60%,rgba(59,130,246,.14),transparent_60%)]"></div>
+                class="absolute inset-0 opacity-90" style='background-image: url("{{ get_setting('projects', 'first_box_image')?->path }}")'></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
 
             <div class="relative p-6 sm:p-10">
@@ -19,16 +19,15 @@
                         <div
                             class="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-3 py-2 text-white/90 border border-white/10 backdrop-blur">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-400"></span>
-                            پروژه‌های مودینگ‌وی
+                            {{ get_setting('projects', 'first_box_label') }}
                         </div>
 
                         <h1 class="mt-4 text-2xl sm:text-3xl font-black leading-tight text-white">
-                            لیست پروژه‌ها + درصد پیشرفت + وضعیت هر پروژه
+                            {{ get_setting('projects', 'first_box_title') }}
                         </h1>
 
                         <p class="mt-4 text-white/80 text-sm sm:text-base leading-7">
-                            اینجا می‌تونی پروژه‌های فعال، درحال توسعه یا تکمیل‌شده رو ببینی، جزئیاتشون رو دنبال کنی و از
-                            آخرین آپدیت‌ها باخبر بشی.
+                            {!! get_setting('projects', 'first_box_subtitle') !!}
                         </p>
                     </div>
 

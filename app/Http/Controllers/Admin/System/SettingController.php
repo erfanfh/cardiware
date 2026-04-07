@@ -223,6 +223,36 @@ class SettingController extends Controller
     }
 
     /**
+     * General settings page
+     *
+     * @return View
+     */
+    public function projects(): View
+    {
+        Gate::authorize('setting.projects');
+
+        return view('admin.system.settings.projects');
+    }
+
+    /**
+     * Store home settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeProjects(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.projects');
+
+        $this->storeSettings($request, 'projects');
+
+        return redirect()
+            ->route('admin.settings.projects')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * @param Request $request
      * @param string $group
      * @return void
