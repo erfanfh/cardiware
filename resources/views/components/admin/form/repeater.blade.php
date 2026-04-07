@@ -62,7 +62,7 @@
         <template x-for="(it, i) in items" :key="`${it.__key}-${__renderNonce}`">
             <div
                 data-repeater-item
-                class="rounded-2xl border border-slate-200 bg-white overflow-hidden"
+                class="rounded-2xl border border-slate-200 bg-white"
             >
                 <div
                     class="p-4 flex items-center justify-between gap-3 cursor-pointer"
