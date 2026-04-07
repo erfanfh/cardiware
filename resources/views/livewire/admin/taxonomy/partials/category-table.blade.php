@@ -128,6 +128,16 @@
                             <span class="text-slate-300">|</span>
 
                             <x-admin.list.action
+                                tag="a"
+                                :href="route('categories', $item)"
+                                target="_blank"
+                            >
+                                مشاهده
+                            </x-admin.list.action>
+
+                            <span class="text-slate-300">|</span>
+
+                            <x-admin.list.action
                                 tag="button"
                                 x-data
                                 x-on:click="
