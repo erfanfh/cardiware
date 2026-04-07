@@ -15,10 +15,10 @@
                 <div class="absolute top-4 right-4 left-4 flex flex-wrap justify-start items-center gap-2">
                     @php $post->categories @endphp
                     @foreach($post->categories as $category)
-                        <span
-                            class="text-xs font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
+                        <a href="{{ route('categories', $category) }}"
+                           class="text-xs font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
                             {{ $category->title }}
-                        </span>
+                        </a>
                     @endforeach
                 </div>
             </div>
