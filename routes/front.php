@@ -11,5 +11,6 @@ Route::middleware(['web'])
         require __DIR__ . '/front/search.php';
         require __DIR__ . '/front/download.php';
         require __DIR__ . '/front/discussion.php';
+        require __DIR__ . '/front/taxonomy.php';
         require __DIR__ . '/front/content.php'; // This must be the last
     });
