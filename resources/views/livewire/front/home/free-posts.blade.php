@@ -115,7 +115,7 @@
                                 @foreach($this->mainPosts as $post)
                                     <div class="swiper-slide !h-auto">
                                         <a href="{{ $post->url }}"
-                                           class="group w-full hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition h-full">
+                                           class="group w-full hidden lg:block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:scale-[97%] transition duration-300 h-full">
                                             <div class="p-4 h-full flex flex-col">
                                                 <div class="relative rounded-2xl overflow-hidden bg-slate-900">
                                                     <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
