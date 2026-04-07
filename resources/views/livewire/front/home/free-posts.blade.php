@@ -25,18 +25,18 @@
         >
             <div class="relative w-full p-4">
                 {{-- Fancy center loader --}}
-                <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
-                    <div class="relative">
+                <div class="pointer-events-none absolute inset-0 flex justify-center">
+                    <div class="relative top-20">
                         <div
                             class="h-20 w-20 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/70"></div>
 
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="relative flex items-center justify-center">
+                        <div class="absolute inset-0 flex justify-center top-5">
+                            <div class="relative flex justify-center">
                                 <span class="absolute h-10 w-10 rounded-full border-2 border-brand-200"></span>
                                 <span
                                     class="absolute h-10 w-10 rounded-full border-2 border-transparent border-t-brand-600 animate-spin"></span>
                                 <span
-                                    class="h-2.5 w-2.5 rounded-full bg-brand-600 shadow-[0_0_0_6px_rgba(249,115,22,0.14)]"></span>
+                                    class="h-2.5 w-2.5 rounded-full bg-brand-600 shadow-[0_0_0_6px_rgba(249,115,22,0.14)] mt-[15px]"></span>
                             </div>
                         </div>
                     </div>
