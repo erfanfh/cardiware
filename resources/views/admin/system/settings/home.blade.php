@@ -21,17 +21,7 @@
                 active="slider"
             >
                 <x-admin.tabs.panel name="slider">
-                    <div class="space-y-6">
-                        <x-admin.metabox title="اسلایدر صفحه اصلی" :collapsible="false">
-                            <div class="space-y-4">
-                                <div class="text-xs text-slate-500">
-                                    آیتم‌های اسلایدر اصلی صفحه را از این بخش مدیریت کنید.
-                                </div>
-
-                                @include('admin.system.settings.partials.home-slider')
-                            </div>
-                        </x-admin.metabox>
-                    </div>
+                    @include('admin.system.settings.partials.home-slider')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="download-products">
