@@ -53,7 +53,7 @@
 
                 <span class="mr-auto"></span>
 
-                <a href="#comments"
+                <a href="#send-comment-form"
                    class="inline-flex items-center gap-2 font-extrabold text-brand-700 hover:text-brand-800 transition">
                     رفتن به دیدگاه‌ها <span class="font-black">←</span>
                 </a>
