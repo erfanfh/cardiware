@@ -111,11 +111,21 @@ document.addEventListener('alpine:init', () => {
                             this.refreshDropdownState();
                         });
                 }, 300),
+
                 onInitialize: () => {
-                    this.seedInitialOptions();
                     this.decorateControl();
                     this.syncLoadingIndicator();
+
+                    queueMicrotask(() => {
+                        this.seedInitialOptions();
+                        this.dispatchChange();
+                    });
                 },
+
+                onChange: () => {
+                    this.dispatchChange();
+                },
+
                 onItemAdd: () => {
                     if (!this.multiple || !this.tom) {
                         return;
@@ -133,6 +143,7 @@ document.addEventListener('alpine:init', () => {
 
                     this.tom.close();
                 },
+
                 onType: (query) => {
                     if (query.trim().length > 0 && query.trim().length < this.minChars) {
                         this.hasError = false;
@@ -149,6 +160,7 @@ document.addEventListener('alpine:init', () => {
                         );
                     }
                 },
+
                 onDropdownOpen: () => {
                     const query = this.tom?.control_input?.value?.trim() || '';
 
@@ -173,23 +185,108 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
+        getDynamicInitialOptions() {
+            if (!this.element) {
+                return [];
+            }
+
+            const multipleOptions = this.element.dataset.initialOptions;
+            if (multipleOptions) {
+                try {
+                    const parsed = JSON.parse(multipleOptions);
+
+                    if (Array.isArray(parsed)) {
+                        return parsed
+                            .filter((item) => item && item.value !== undefined && item.label !== undefined)
+                            .map((item) => ({
+                                value: String(item.value),
+                                label: String(item.label),
+                            }));
+                    }
+                } catch (_) {
+                }
+            }
+
+            const singleOption = this.element.dataset.initialOption;
+            if (singleOption) {
+                try {
+                    const parsed = JSON.parse(singleOption);
+
+                    if (parsed && parsed.value !== undefined && parsed.label !== undefined) {
+                        return [{
+                            value: String(parsed.value),
+                            label: String(parsed.label),
+                        }];
+                    }
+                } catch (_) {
+                }
+            }
+
+            return [];
+        },
+
         seedInitialOptions() {
-            if (!this.tom || !this.initialOptions.length) {
+            if (!this.tom) {
                 return;
             }
 
-            this.initialOptions.forEach((item) => {
+            const runtimeOptions = this.getDynamicInitialOptions();
+            const options = runtimeOptions.length ? runtimeOptions : this.initialOptions;
+
+            if (!options.length) {
+                return;
+            }
+
+            options.forEach((item) => {
                 if (!item || item.value === undefined || item.label === undefined) {
                     return;
                 }
 
+                const value = String(item.value);
+                const label = String(item.label);
+
                 this.tom.addOption({
-                    value: String(item.value),
-                    label: String(item.label),
+                    value,
+                    label,
                 });
             });
 
+            if (this.multiple) {
+                const values = options.map((item) => String(item.value));
+                this.tom.setValue(values, true);
+            } else {
+                this.tom.setValue(String(options[0].value), true);
+            }
+
             this.tom.refreshOptions(false);
+        },
+
+        dispatchChange() {
+            if (!this.tom || !this.element) {
+                return;
+            }
+
+            const selectedItems = this.tom.items.map((value) => {
+                const option = this.tom.options[value] || {};
+
+                return {
+                    value: String(value),
+                    label: String(option.label ?? option.text ?? ''),
+                };
+            });
+
+            this.element.dispatchEvent(new CustomEvent('mw-async-select-change', {
+                bubbles: true,
+                detail: {
+                    value: this.multiple
+                        ? selectedItems.map((item) => item.value)
+                        : (selectedItems[0]?.value ?? ''),
+                    label: this.multiple
+                        ? selectedItems.map((item) => item.label)
+                        : (selectedItems[0]?.label ?? ''),
+                    items: selectedItems,
+                },
+            }));
         },
 
         decorateControl() {
@@ -223,6 +320,7 @@ document.addEventListener('alpine:init', () => {
 
                     this.tom.clear(true);
                     this.tom.refreshOptions(false);
+                    this.dispatchChange();
                 });
 
                 control.appendChild(clearButton);

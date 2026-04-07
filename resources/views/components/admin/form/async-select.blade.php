@@ -90,7 +90,7 @@
             allowClear: @js($isAllowClear),
             initialOptions: @js($selectedOptions->values()->all()),
         })"
-        x-init="init($refs.select)"
+        x-init="$nextTick(() => init($refs.select))"
         class="mw-async-select {{ $error ? 'mw-async-select--invalid' : '' }}"
     >
         <select
