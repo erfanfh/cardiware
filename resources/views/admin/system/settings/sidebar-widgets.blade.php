@@ -98,13 +98,13 @@
 
                 <x-admin.tabs.panel name="categories">
                     <div class="space-y-6">
-                        <x-admin.metabox title="دسته بندی ها" :collapsible="false">
+                        <x-admin.metabox title="دسته بندی ها" :collapsible="false" class="overflow-visible">
                             <div class="space-y-4">
                                 <div class="text-xs text-slate-500">
                                     آیتم‌های دسته بندی ها را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="categories_title"
                                                             :value="get_setting('sidebarWidgets', 'categories_title')"/>
@@ -115,25 +115,50 @@
                                                             :value="get_setting('sidebarWidgets', 'categories_subtitle')"/>
                                     </x-admin.field>
                                 </div>
+
+                                @php
+                                    $categoryItems = collect(get_setting('sidebarWidgets', 'categories_items') ?? []);
+
+                                    $categoryTitles = \App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
+                                        ->whereIn('id', $categoryItems->pluck('category_id')->filter()->all())
+                                        ->pluck('title', 'id');
+
+                                    $categoryItems = $categoryItems
+                                        ->map(fn ($item) => [
+                                            'category_id' => $item['category_id'] ?? '',
+                                            'category_title' => $categoryTitles[$item['category_id']] ?? null,
+                                            'sort_order' => $item['sort_order'] ?? 0,
+                                        ])
+                                        ->all();
+                                @endphp
+
                                 <x-admin.form.repeater
                                     name="categories_items"
-                                    :items="old('categories_items', get_setting('sidebarWidgets', 'categories_items') ?? [])"
+                                    :items="old('categories_items', $categoryItems)"
                                     title="دسته بندی ها"
                                     addText="افزودن دسته بندی"
                                     emptyText="هنوز دسته بندی ای اضافه نشده است."
-                                    headingKey="title"
+                                    headingKey="category_title"
                                     :defaultItem="[
                                         'category_id' => '',
+                                        'category_title' => '',
                                         'sort_order' => 0,
                                     ]"
                                 >
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <x-admin.field>
                                             <x-admin.form.async-select
-                                                x-bind:name="`blocks[${index}][category_id]`"
+                                                x-bind:name="field(i, 'category_id')"
+                                                x-bind:data-initial-option="it.category_id ? JSON.stringify({
+                                                    value: String(it.category_id),
+                                                    label: it.category_title || ('#' + it.category_id)
+                                                }) : ''"
+                                                x-on:mw-async-select-change="
+                                                    it.category_id = $event.detail.value ?? '';
+                                                    it.category_title = $event.detail.label ?? '';
+                                                "
                                                 label="دسته اصلی"
                                                 :multiple="false"
-                                                :selected-options="[]"
                                                 :search-url="route('admin.categories.ajax-search')"
                                                 placeholder="دسته اصلی را انتخاب کنید..."
                                             />
