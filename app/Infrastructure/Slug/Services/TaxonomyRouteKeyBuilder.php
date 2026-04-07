@@ -15,6 +15,9 @@ class TaxonomyRouteKeyBuilder
      */
     public function build(Model $model, string $finalSlug): string
     {
+        if ($model->parent_id)
+            return app(TaxonomyRouteKeyBuilder::class)->build($model->parent, $model->parent->slug) . '/' . $finalSlug;
+
         return $finalSlug;
     }
 }
