@@ -29,7 +29,8 @@ class FreePosts extends Component
 
     public function changeTab(string $key): void
     {
-        $activeItem = collect($this->postTabs)->where('key', $key)->toArray()[0] ?? null;
+        $this->activeTabKey = $key;
+        $activeItem = collect($this->postTabs)->where('key', $key)->first() ?? null;
 
         if (null === $activeItem)
             return;
