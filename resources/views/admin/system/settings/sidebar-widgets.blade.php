@@ -126,7 +126,7 @@
                                     $categoryItems = $categoryItems
                                         ->map(fn ($item) => [
                                             'category_id' => $item['category_id'] ?? '',
-                                            'category_title' => $categoryTitles[$item['category_id']] ?? null,
+                                            'category_title' => isset($item['category_id']) ? $categoryTitles[$item['category_id']] : null,
                                             'sort_order' => $item['sort_order'] ?? 0,
                                         ])
                                         ->all();
@@ -202,7 +202,7 @@
 
                 <x-admin.tabs.panel name="projects">
                     <div class="space-y-6">
-                        <x-admin.metabox title="پروژه ها" :collapsible="false">
+                        <x-admin.metabox title="پروژه ها" :collapsible="false" class="overflow-visible">
                             <div class="space-y-4">
                                 <div class="text-xs text-slate-500">
                                     آیتم‌های پروژه ها را از این بخش مدیریت کنید.
@@ -220,25 +220,49 @@
                                     </x-admin.field>
                                 </div>
 
+                                @php
+                                    $projectItems = collect(get_setting('sidebarWidgets', 'projects_items') ?? []);
+
+                                    $projectTitles = \App\Domain\Project\Models\Project::whereIn('id', $projectItems->pluck('project_id')->filter()->all())
+                                        ->pluck('title', 'id');
+
+
+                                    $projectItems = $projectItems
+                                        ->map(fn ($item) => [
+                                            'project_id' => $item['project_id'] ?? '',
+                                            'project_title' => isset($item['project_id']) ? $projectTitles[$item['project_id']] : null,
+                                            'sort_order' => $item['sort_order'] ?? 0,
+                                        ])
+                                        ->all();
+                                @endphp
+
                                 <x-admin.form.repeater
                                     name="projects_items"
-                                    :items="old('projects_items', get_setting('sidebarWidgets', 'projects_items') ?? [])"
+                                    :items="old('projects_items', $projectItems)"
                                     title="پروژه ها"
                                     addText="افزودن پروژه"
                                     emptyText="هنوز پروژه ای اضافه نشده است."
-                                    headingKey="title"
+                                    headingKey="project_title"
                                     :defaultItem="[
-                                        'category_id' => '',
+                                        'project_id' => '',
+                                        'project_title' => '',
                                         'sort_order' => 0,
                                     ]"
                                 >
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                         <x-admin.field>
                                             <x-admin.form.async-select
-                                                x-bind:name="`blocks[${index}][category_id]`"
+                                                x-bind:name="field(i, 'project_id')"
+                                                x-bind:data-initial-option="it.project_id ? JSON.stringify({
+                                                    value: String(it.project_id),
+                                                    label: it.project_title || ('#' + it.project_id)
+                                                }) : ''"
+                                                x-on:mw-async-select-change="
+                                                    it.project_id = $event.detail.value ?? '';
+                                                    it.project_title = $event.detail.label ?? '';
+                                                "
                                                 label="پروژه"
                                                 :multiple="false"
-                                                :selected-options="[]"
                                                 :search-url="route('admin.projects.ajax-search')"
                                                 placeholder="پروژه را انتخاب کنید..."
                                             />
