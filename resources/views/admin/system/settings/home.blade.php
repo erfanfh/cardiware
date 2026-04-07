@@ -8,13 +8,13 @@
             <x-admin.tabs
                 :tabs="[
                     'slider' => 'اسلایدر',
+                    'posts' => 'نوشته های رایگان',
                     'download-products' => 'محصولات دانلودی',
-                    'special-posts' => 'نوشته های ویژه',
                     'subscription' => 'اشتراک ویژه',
+                    'special-posts' => 'نوشته های ویژه',
                     'products' => 'محصولات فیزیکی',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
-                    'posts' => 'مطالب',
                     'shortcuts' => 'میانبرها',
                     'projects' => 'پروژه‌ها',
                 ]"
@@ -50,6 +50,10 @@
 
                 <x-admin.tabs.panel name="projects">
                     @include('admin.system.settings.partials.home-projects')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="posts">
+                    @include('admin.system.settings.partials.home-posts')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>

@@ -35,6 +35,7 @@ class HomeSettings extends BaseSettings
         'projects_title',
         'projects_subtitle',
         'projects_items',
+        'posts_items',
     ];
 
     protected array $casts = [
@@ -44,5 +45,6 @@ class HomeSettings extends BaseSettings
         'testimonials_items' => RepeaterArrayCast::class,
         'projects_items' => RepeaterArrayCast::class,
         'videos_category_ids' => ArrayCast::class,
+        'posts_items' => RepeaterArrayCast::class,
     ];
 }
