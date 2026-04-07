@@ -35,7 +35,7 @@ class TaxonomyTerm extends Model
      */
     public function getRouteKeyName(): string
     {
-        return 'slug';
+        return 'path';
     }
 
     /**
