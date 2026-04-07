@@ -146,6 +146,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
                                 'title' => $entry->title,
                                 'content' => $entry->content,
                                 'sort_order' => $entry->sort_order,
+                                'download_click_count' => $entry->download_click_count,
                             ];
                         })
                         ->values()
