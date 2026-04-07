@@ -41,8 +41,8 @@ final class ContentController
                 ->with([
                     'author:id,display_name',
                     'picture.primaryVariant',
-                    'categories:id,title',
-                    'tags:id,title',
+                    'categories:id,title,path',
+                    'tags:id,title,path',
                     'imageGallery.mediaFile',
                 ])
                 ->withCount('approvedComments')
