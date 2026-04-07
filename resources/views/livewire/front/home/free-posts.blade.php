@@ -4,7 +4,9 @@
             <button
                 wire:key="post-tab-{{ $postTab['key'] }}"
                 wire:click="changeTab('{{ $postTab['key'] }}')"
-                class="inline-flex cursor-pointer items-center gap-2 h-10 px-4 rounded-2xl font-extrabold text-sm transition border
+                wire:loading.attr="disabled"
+                wire:target="changeTab"
+                class="inline-flex cursor-pointer items-center gap-2 h-10 px-4 rounded-2xl font-extrabold text-sm transition border disabled:opacity-70 disabled:cursor-wait
                 {{ $postTab['key'] === $activeTabKey ? 'border-brand-100 bg-brand-50 text-slate-900' : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50' }}"
             >
                 <span class="inline-flex h-5 w-5 items-center justify-center rounded-xl text-xs font-black
@@ -14,8 +16,97 @@
         @endforeach
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-        <div class="p-4">
+    <div class="relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        {{-- Loading Overlay --}}
+        <div
+            wire:loading.flex
+            wire:target="changeTab"
+            class="absolute inset-0 z-20 items-center justify-center bg-white/70 backdrop-blur-sm"
+        >
+            <div class="relative w-full p-4">
+                {{-- Fancy center loader --}}
+                <div class="pointer-events-none absolute inset-0 flex items-center justify-center">
+                    <div class="relative">
+                        <div
+                            class="h-20 w-20 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/70"></div>
+
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="relative flex items-center justify-center">
+                                <span class="absolute h-10 w-10 rounded-full border-2 border-brand-200"></span>
+                                <span
+                                    class="absolute h-10 w-10 rounded-full border-2 border-transparent border-t-brand-600 animate-spin"></span>
+                                <span
+                                    class="h-2.5 w-2.5 rounded-full bg-brand-600 shadow-[0_0_0_6px_rgba(249,115,22,0.14)]"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- skeleton main cards --}}
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 overflow-hidden">
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            @for($i = 0; $i < 3; $i++)
+                                <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+                                    <div class="p-4 animate-pulse">
+                                        <div class="rounded-2xl bg-slate-200 h-52 w-full"></div>
+
+                                        <div class="mt-4 space-y-3">
+                                            <div class="h-4 w-3/4 rounded-xl bg-slate-200"></div>
+                                            <div class="h-4 w-2/3 rounded-xl bg-slate-200"></div>
+                                        </div>
+
+                                        <div class="mt-4 flex gap-2">
+                                            <div class="h-8 w-20 rounded-xl bg-slate-200"></div>
+                                            <div class="h-8 w-16 rounded-xl bg-slate-200"></div>
+                                            <div class="h-8 w-24 rounded-xl bg-slate-200"></div>
+                                        </div>
+
+                                        <div class="mt-4 h-10 w-28 rounded-2xl bg-slate-200"></div>
+                                    </div>
+                                </div>
+                            @endfor
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-center gap-3">
+                            <span class="h-2 w-2 rounded-full bg-slate-300 animate-pulse"></span>
+                            <span class="h-2 w-2 rounded-full bg-slate-300 animate-pulse"></span>
+                            <span class="h-2 w-6 rounded-full bg-brand-300 animate-pulse"></span>
+                            <span class="h-2 w-2 rounded-full bg-slate-300 animate-pulse"></span>
+                            <span class="h-2 w-2 rounded-full bg-slate-300 animate-pulse"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- skeleton list boxes --}}
+                <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @for($i = 0; $i < 2; $i++)
+                        <div class="rounded-2xl border border-slate-200 bg-white overflow-hidden">
+                            <div class="p-4 animate-pulse">
+                                <div class="flex items-center justify-end">
+                                    <div class="h-10 w-28 rounded-2xl bg-slate-200"></div>
+                                </div>
+
+                                <div class="mt-4 border-t border-slate-100 pt-4 space-y-4">
+                                    @for($j = 0; $j < 4; $j++)
+                                        <div class="flex items-start gap-3">
+                                            <span class="mt-2 h-1.5 w-1.5 rounded bg-slate-200"></span>
+                                            <div class="h-4 w-full rounded-xl bg-slate-200"></div>
+                                        </div>
+                                    @endfor
+                                </div>
+                            </div>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+        </div>
+
+        <div
+            class="p-4 transition duration-300"
+            wire:loading.class="opacity-40 scale-[0.995]"
+            wire:target="changeTab"
+        >
             @if($this->mainPosts->isNotEmpty())
                 <div class="rounded-2xl border border-slate-200 bg-slate-50/70 overflow-hidden">
                     <div class="relative p-4">
@@ -90,7 +181,6 @@
                                 @endforeach
                             </div>
 
-                            <!-- Dots -->
                             <div
                                 class="mt-4 flex items-center justify-center gap-3 mwFreeModsMainPostsPagination"></div>
                         </div>
