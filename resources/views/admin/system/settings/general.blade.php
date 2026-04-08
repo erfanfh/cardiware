@@ -125,7 +125,7 @@
                 <x-admin.metabox title="نوشته های مرتبط">
                     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         <x-admin.field
-                            label="مطالب نوشته های مرتبط"
+                            label="مبنای نوشته های مرتبط"
                             hint="بر اساس این تنظیمات تعیین کنید نوشته های مرتبط براساس چه تنظیماتی نمایش داده شوند."
                         >
                             <x-admin.form.select
