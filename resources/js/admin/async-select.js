@@ -54,6 +54,7 @@ document.addEventListener('alpine:init', () => {
                 preload: false,
                 create: false,
                 persist: false,
+                placeholder: this.placeholder,
                 hidePlaceholder: false,
                 closeAfterSelect: !this.multiple,
                 selectOnTab: true,
