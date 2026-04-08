@@ -33,7 +33,7 @@
                     />
                 </x-admin.field>
             </div>
-            
+
             <x-admin.field label="تصویر">
                 <x-admin.form.media-picker
                     mode="field"
@@ -110,12 +110,9 @@
                 />
             </x-admin.field>
             <div>
-                <button
-                    type="button"
-                    onclick="generatePassword()"
-                    class="cursor-pointer px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded text-sm">
+                <x-admin.form.button onclick="generatePassword()" variant="dark" size="sm">
                     تولید رمز عبور
-                </button>
+                </x-admin.form.button>
             </div>
         </div>
     </x-admin.metabox>
