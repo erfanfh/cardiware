@@ -10,28 +10,30 @@
     <x-admin.form.validation-errors class="mb-6"/>
 
     <x-admin.metabox title="اطلاعات شخصی">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <x-admin.field required label="نام">
-                <x-admin.form.input
-                    name="first_name"
-                    :value="old('first_name', $user?->first_name)"
-                />
-            </x-admin.field>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-4">
+                <x-admin.field required label="نام">
+                    <x-admin.form.input
+                        name="first_name"
+                        :value="old('first_name', $user?->first_name)"
+                    />
+                </x-admin.field>
 
-            <x-admin.field required label="نام خانوادگی">
-                <x-admin.form.input
-                    name="last_name"
-                    :value="old('last_name', $user?->last_name)"
-                />
-            </x-admin.field>
+                <x-admin.field required label="نام خانوادگی">
+                    <x-admin.form.input
+                        name="last_name"
+                        :value="old('last_name', $user?->last_name)"
+                    />
+                </x-admin.field>
 
-            <x-admin.field label="نام نمایشی">
-                <x-admin.form.input
-                    name="display_name"
-                    :value="old('display_name', $user?->display_name)"
-                />
-            </x-admin.field>
-
+                <x-admin.field label="نام نمایشی">
+                    <x-admin.form.input
+                        name="display_name"
+                        :value="old('display_name', $user?->display_name)"
+                    />
+                </x-admin.field>
+            </div>
+            
             <x-admin.field label="تصویر">
                 <x-admin.form.media-picker
                     mode="field"
