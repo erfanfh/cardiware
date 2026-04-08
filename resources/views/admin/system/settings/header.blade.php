@@ -8,8 +8,8 @@
             <x-admin.tabs
                 :tabs="[
                     'general' => 'عمومی',
+                    'announcement' => 'باکس اطلاعیه',
                     'notification' => 'اعلانات',
-                    'announcement' => 'اطلاعیه ها',
                 ]"
                 active="general"
             >
