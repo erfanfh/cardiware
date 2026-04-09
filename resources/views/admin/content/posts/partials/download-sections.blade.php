@@ -140,7 +140,8 @@
                                         </div>
 
                                         <div class="min-w-0">
-                                            <div class="flex gap-2 truncate text-xs font-bold text-slate-800 max-w-[420px]">
+                                            <div
+                                                class="flex gap-2 truncate text-xs font-bold text-slate-800 max-w-[420px]">
                                                 <span
                                                     x-text="(entry.title && String(entry.title).trim().length)
                                                         ? entry.title
@@ -149,10 +150,10 @@
                                                         ? 'text-slate-400 font-semibold'
                                                         : ''"
                                                 ></span>
-                                                <span>/</span>
-                                                <div class="p-0 m-0 flex items-center gap-2 text-slate-500">
-                                                    <span
-                                                        x-text="(entry.download_click_count && String(entry.download_click_count).trim().length)
+                                                <span x-show="entry.type == 'link'">/</span>
+                                                <div x-show="entry.type == 'link'"
+                                                     class="p-0 m-0 flex items-center gap-1 text-slate-500 [&_svg]:w-3.5 [&_svg]:h-3.5">
+                                                    <span x-text="(entry.download_click_count && String(entry.download_click_count).trim().length)
                                                         ? entry.download_click_count
                                                         : '0'"></span>
                                                     @include('icons.download-01')
