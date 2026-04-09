@@ -1,42 +1,50 @@
-@php
-    $user = auth()->user();
+@can('admin.display')
+    @php
+        $user = auth()->user();
 
-    $quickActions = [
-        [
-            'title' => 'نوشته جدید',
-            'href' => route('admin.posts.create'),
-        ],
-        [
-            'title' => 'پروژه جدید',
-            'href' => route('admin.projects.create'),
-        ],
-        [
-            'title' => 'برگه جدید',
-            'href' => route('admin.pages.create'),
-        ],
-    ];
+        $quickActions = [];
 
-    $contextAction = null;
+        if(\Illuminate\Support\Facades\Gate::allows('post.create')){
+            $quickActions[] = [
+                'title' => 'نوشته جدید',
+                'href' => route('admin.posts.create'),
+            ];
+        }
 
-    if (request()->routeIs('contents.detail') && isset($post)) {
-        $contextAction = [
-            'title' => 'ویرایش نوشته',
-            'href' => route('admin.posts.edit', $post),
-        ];
-    } elseif (request()->routeIs('projects.detail') && isset($project)) {
-        $contextAction = [
-            'title' => 'ویرایش پروژه',
-            'href' => route('admin.projects.edit', $project),
-        ];
-    } elseif (request()->routeIs('contents.detail') && isset($page)) {
-        $contextAction = [
-            'title' => 'ویرایش برگه',
-            'href' => route('admin.pages.edit', $page),
-        ];
-    }
-@endphp
+        if(\Illuminate\Support\Facades\Gate::allows('project.create')){
+            $quickActions[] = [
+                'title' => 'پروژه جدید',
+                'href' => route('admin.projects.create'),
+            ];
+        }
 
-@if($user)
+        if(\Illuminate\Support\Facades\Gate::allows('page.create')){
+            $quickActions[] = [
+                'title' => 'برگه جدید',
+                'href' => route('admin.pages.create'),
+            ];
+        }
+
+        $contextAction = null;
+
+        if (request()->routeIs('contents.detail') and \Illuminate\Support\Facades\Gate::allows('post.edit') and isset($post)) {
+            $contextAction = [
+                'title' => 'ویرایش نوشته',
+                'href' => route('admin.posts.edit', $post),
+            ];
+        } elseif (request()->routeIs('projects.detail') and \Illuminate\Support\Facades\Gate::allows('project.edit') and isset($project)) {
+            $contextAction = [
+                'title' => 'ویرایش پروژه',
+                'href' => route('admin.projects.edit', $project),
+            ];
+        } elseif (request()->routeIs('contents.detail') and \Illuminate\Support\Facades\Gate::allows('page.edit') and isset($page)) {
+            $contextAction = [
+                'title' => 'ویرایش برگه',
+                'href' => route('admin.pages.edit', $page),
+            ];
+        }
+    @endphp
+
     <div
         x-data="{ quickOpen: false, mobileOpen: false }"
         class="fixed inset-x-0 top-0 z-[1000]"
@@ -85,46 +93,48 @@
                             </a>
                         @endif
 
-                        <button
-                            type="button"
-                            @click="quickOpen = !quickOpen"
-                            @click.outside="quickOpen = false"
-                            class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-2.5 leading-7 text-xs cursor-pointer font-medium text-white transition hover:bg-white/15"
-                        >
-                            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none" stroke="currentColor"
-                                 stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
-                            </svg>
-                            <span>ایجاد سریع</span>
-                            <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none" stroke="currentColor"
-                                 stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
-                            </svg>
-                        </button>
+                        @if(count($quickActions) > 0)
+                            <button
+                                type="button"
+                                @click="quickOpen = !quickOpen"
+                                @click.outside="quickOpen = false"
+                                class="inline-flex items-center gap-2 rounded-lg bg-white/10 px-2.5 leading-7 text-xs cursor-pointer font-medium text-white transition hover:bg-white/15"
+                            >
+                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none" stroke="currentColor"
+                                     stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
+                                </svg>
+                                <span>ایجاد سریع</span>
+                                <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 fill-none" stroke="currentColor"
+                                     stroke-width="1.8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/>
+                                </svg>
+                            </button>
 
-                        <div
-                            x-show="quickOpen"
-                            x-transition.origin.top.right
-                            class="absolute left-0 top-[calc(100%+8px)] w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-slate-800 shadow-lg"
-                            style="display: none;"
-                        >
-                            <div class="mb-1 px-2 py-1 text-xs font-bold text-slate-400">
-                                میانبرها
+                            <div
+                                x-show="quickOpen"
+                                x-transition.origin.top.right
+                                class="absolute left-0 top-[calc(100%+8px)] w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-slate-800 shadow-lg"
+                                style="display: none;"
+                            >
+                                <div class="mb-1 px-2 py-1 text-xs font-bold text-slate-400">
+                                    میانبرها
+                                </div>
+
+                                @foreach($quickActions as $action)
+                                    <a
+                                        href="{{ $action['href'] }}"
+                                        class="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-slate-100"
+                                    >
+                                        <span>{{ $action['title'] }}</span>
+                                        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none text-slate-400"
+                                             stroke="currentColor" stroke-width="1.8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
+                                        </svg>
+                                    </a>
+                                @endforeach
                             </div>
-
-                            @foreach($quickActions as $action)
-                                <a
-                                    href="{{ $action['href'] }}"
-                                    class="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-slate-100"
-                                >
-                                    <span>{{ $action['title'] }}</span>
-                                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none text-slate-400"
-                                         stroke="currentColor" stroke-width="1.8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
-                                    </svg>
-                                </a>
-                            @endforeach
-                        </div>
+                        @endif
                     </div>
 
                     <div class="h-4 w-px bg-white/10"></div>
