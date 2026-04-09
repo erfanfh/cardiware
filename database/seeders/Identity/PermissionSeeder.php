@@ -61,7 +61,7 @@ class PermissionSeeder extends Seeder
                 'ads' => 'تنظیمات تبلیغات',
                 'sidebar-widgets' => 'تنظیمات ابزارک های سایدبار',
                 'projects' => 'تنظیمات صفحه پروژه ها',
-                'posts' => 'تنظیمات صفحه پست ها',
+                'posts' => 'تنظیمات صفحه نوشته ها',
             ],
         ];
 
