@@ -157,7 +157,7 @@ return [
                 'gate' => 'setting.home',
             ],
             [
-                'label' => 'صفحه پست ها',
+                'label' => 'صفحه نوشته ها',
                 'route' => 'admin.settings.posts',
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.posts',
