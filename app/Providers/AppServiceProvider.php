@@ -23,5 +23,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if (Request::is('admin/*'))
             Paginator::defaultView('vendor.pagination.admin');
+        else {
+            Paginator::defaultView('vendor.pagination.front');
+        }
     }
 }

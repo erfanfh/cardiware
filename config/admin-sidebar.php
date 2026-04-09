@@ -157,6 +157,18 @@ return [
                 'gate' => 'setting.home',
             ],
             [
+                'label' => 'صفحه نوشته ها',
+                'route' => 'admin.settings.posts',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.posts',
+            ],
+            [
+                'label' => 'صفحه پروژه ها',
+                'route' => 'admin.settings.projects',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.projects',
+            ],
+            [
                 'label' => 'درباره ما',
                 'route' => 'admin.settings.about-us',
                 'icon' => 'icons.settings-02',

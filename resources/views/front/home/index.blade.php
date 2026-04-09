@@ -21,5 +21,5 @@
 @endpush
 
 @push('scripts')
-    @vite(['resources/js/front/home.js'])
+    @vite(['resources/js/front/home/index.js'])
 @endpush

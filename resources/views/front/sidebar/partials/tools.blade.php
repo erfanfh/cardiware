@@ -1,0 +1,25 @@
+<x-front.sidebar.sidebar-item
+    :title="get_setting('sidebarWidgets', 'tools_title')"
+    :subtitle="get_setting('sidebarWidgets', 'tools_subtitle')"
+    iconName="dashboard-square-03"
+>
+    <div class="grid grid-cols-2 gap-3">
+        @foreach(get_setting('sidebarWidgets', 'tools_items') as $item)
+            <a href="{{ $item['url'] }}"
+               class="rounded-2xl border border-slate-200 bg-white p-2 hover:bg-slate-50 hover:shadow-sm transition">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-11 w-11 rounded-2xl bg-slate-50 border border-slate-200 grid place-items-center overflow-hidden">
+                        <img class="w-full h-full object-cover" src="{{ $item['image']['path'] }}"
+                             title="{{ $item['title'] }}"
+                             alt="{{ $item['title'] }}">
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-sm font-extrabold truncate">{{ $item['title'] }}</div>
+                        <div class="text-[0.65rem] mt-0.5 text-slate-500 truncate">{{ $item['subtitle'] }}</div>
+                    </div>
+                </div>
+            </a>
+        @endforeach
+    </div>
+</x-front.sidebar.sidebar-item>

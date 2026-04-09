@@ -1,4 +1,5 @@
 import './hero-slider.js';
+import './free-posts.js';
 
 (function () {
     const tabs = Array.from(document.querySelectorAll(".free-tab"));

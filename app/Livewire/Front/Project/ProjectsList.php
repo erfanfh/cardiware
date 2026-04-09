@@ -27,8 +27,6 @@ class ProjectsList extends Component
 {
     use WithPagination;
 
-    public string $search = '';
-
     public string $sort = ProjectSortEnum::MOST_PROGRESS->value;
 
     public string $filter = ProjectFilterEnum::ALL->value;
@@ -40,12 +38,6 @@ class ProjectsList extends Component
 
     #[NoReturn]
     public function updatedSort(): void
-    {
-        $this->resetPage();
-    }
-
-    #[NoReturn]
-    public function updatedSearch(): void
     {
         $this->resetPage();
     }
@@ -84,10 +76,6 @@ class ProjectsList extends Component
     public function render(): View
     {
         $projects = Project::query()->with('tags');
-
-        if (!empty($this->search)) {
-            $projects->where('title', 'like', '%' . $this->search . '%');
-        }
 
         if ($this->sort == ProjectSortEnum::MOST_PROGRESS->value)
             $projects->orderBy('progress_percent', 'desc');

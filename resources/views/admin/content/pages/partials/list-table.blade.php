@@ -14,7 +14,7 @@
                     'status' => [
                         'value' => $page->status?->value,
                         'label' => $page->status?->label() ?? 'نامشخص',
-                        'color' => $page->status === \App\Domain\Content\Enums\PostStatusEnum::ACTIVE ? 'green' : 'red',
+                        'color' => ($page->status->value === \App\Domain\Content\Enums\PostStatusEnum::ACTIVE->value) ? 'green' : 'red',
                     ],
                 ],
             ];

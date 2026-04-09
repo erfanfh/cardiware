@@ -58,7 +58,7 @@
                             <x-admin.list.thumbnail
                                 :src="$user->avatar?->url"
                                 :alt="$user->title"
-                                size="md"
+                                size="md-square"
                             />
                         </x-admin.list.td>
 
@@ -123,12 +123,14 @@
                             @if($user->status == \App\Domain\Identity\Enums\UserStatusEnum::ACTIVE)
                                 <x-admin.badge
                                     color="green"
-                                >فعال</x-admin.badge>
+                                >فعال
+                                </x-admin.badge>
                             @endif
                             @if($user->status == \App\Domain\Identity\Enums\UserStatusEnum::INACTIVE)
                                 <x-admin.badge
                                     color="red"
-                                >غیرفعال</x-admin.badge>
+                                >غیرفعال
+                                </x-admin.badge>
                             @endif
                         </x-admin.list.td>
 

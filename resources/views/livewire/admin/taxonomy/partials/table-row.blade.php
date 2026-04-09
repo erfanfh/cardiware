@@ -34,6 +34,16 @@
 
             <x-admin.list.row-actions class="mt-3">
                 <x-admin.list.action
+                    tag="a"
+                    :href="route('tags', $item)"
+                    target="_blank"
+                >
+                    مشاهده
+                </x-admin.list.action>
+
+                <span class="text-slate-300">|</span>
+
+                <x-admin.list.action
                     tag="button"
                     wire:click="startEditing({{ $item->id }})"
                     wire:loading.attr="disabled"

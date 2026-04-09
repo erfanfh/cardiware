@@ -8,7 +8,9 @@
 @php
     $sizes = [
         'sm' => 'h-14 w-16',
+        'sm-square' => 'h-14 w-14',
         'md' => 'h-18 w-20',
+        'sm-square' => 'h-18 w-18',
         'lg' => 'h-24 w-28',
     ];
 @endphp

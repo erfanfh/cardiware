@@ -58,137 +58,38 @@
                     }"
             >
                 <label class="relative block" @keydown.escape.window="open=false">
-                    <span class="sr-only">جستجو</span>
+                    <form action="{{ route('search') }}" method="get">
+                        <span class="sr-only">جستجو</span>
 
-                    <!-- Search Icon (right) -->
-                    <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                          <path
-                              d="M21 21l-4.3-4.3m1.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              stroke-linecap="round"
-                          />
-                        </svg>
-                    </span>
-                    <div x-data="typingPlaceholder()">
-                        <input
-                            type="search"
-                            x-model="q"
-                            @input="onInput()"
-                            @focus="open = true"
-                            @blur="closeSoon()"
-                            :placeholder="currentText"
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50
-                        pr-10 pl-12 py-3 text-sm outline-none
-                        focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
-                        transition"
-                        />
-                    </div>
-
-                    <!-- Left action icon (submit / open results) -->
-                    <div class="absolute inset-y-0 left-2 flex items-center">
-                        <button
-                            type="button"
-                            @click="open = true"
-                            class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
-                            aria-label="جستجو"
-                        >
-                            <!-- Magnifier icon -->
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-700">
-                                <path
-                                    d="M21 21l-4.3-4.3m1.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Live results dropdown -->
-                    <div
-                        x-show="open && (q.trim().length > 0)"
-                        x-transition.opacity.duration.120ms
-                        class="absolute right-0 left-0 mt-2 z-50"
-                        style="display:none"
-                    >
-                        <div class="rounded-3xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
-                            <!-- Header -->
-                            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-                                <div class="text-xs font-bold text-slate-500">
-                                    <span x-show="q.trim().length < 2">برای نمایش نتایج، حداقل ۲ حرف تایپ کن…</span>
-                                    <span x-show="q.trim().length >= 2">نتایج برای: <span class="text-slate-800"
-                                                                                          x-text="q"></span></span>
-                                </div>
-
-                                <div class="flex items-center gap-2">
-                                    <span x-show="loading" class="text-xs font-bold text-slate-400">در حال جستجو…</span>
-                                    <button
-                                        type="button"
-                                        class="text-xs font-bold text-brand-700 hover:text-brand-800 transition"
-                                        @click="open=false"
-                                    >
-                                        بستن
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Body -->
-                            <div class="max-h-72 overflow-auto">
-                                <!-- Empty -->
-                                <div x-show="!loading && q.trim().length >= 2 && results.length === 0"
-                                     class="p-4 text-sm text-slate-600">
-                                    نتیجه‌ای پیدا نشد.
-                                </div>
-
-                                <!-- Results -->
-                                <template x-for="item in results" :key="item.title">
-                                    <a
-                                        :href="item.href"
-                                        class="flex items-center justify-between gap-3 px-4 py-3 hover:bg-slate-50 transition"
-                                    >
-                                        <div class="min-w-0">
-                                            <div class="flex items-center gap-2">
-                <span
-                    class="text-[11px] font-extrabold text-brand-700 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl"
-                    x-text="item.type"></span>
-                                                <div class="text-sm font-extrabold text-slate-900 truncate"
-                                                     x-text="item.title"></div>
-                                            </div>
-                                            <div class="mt-1 text-xs text-slate-500" x-text="item.meta"></div>
-                                        </div>
-                                        <span class="shrink-0 text-brand-700 font-extrabold">←</span>
-                                    </a>
-                                </template>
-                            </div>
-
-                            <!-- Footer -->
-                            <div
-                                class="px-4 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
-                                <div class="text-xs text-slate-500">Enter برای رفتن به صفحه نتایج کامل</div>
-                                <a href="#"
-                                   class="text-xs font-extrabold text-brand-700 hover:text-brand-800 transition">
-                                    مشاهده همه نتایج ←
-                                </a>
-                            </div>
+                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                            @include('icons.search-01')
+                        </span>
+                        <div x-data="typingPlaceholder()">
+                            <input
+                                type="search"
+                                name="q"
+                                :placeholder="currentText"
+                                class="w-full rounded-2xl border border-slate-200 bg-slate-50
+                            pr-10 pl-12 py-3 text-sm outline-none
+                            focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
+                            transition"
+                            />
                         </div>
-                    </div>
 
+                        <div class="absolute inset-y-0 left-2 flex items-center">
+                            <button
+                                type="submit"
+                                class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer"
+                                aria-label="جستجو"
+                            >
+                                @include('icons.search-01')
+                            </button>
+                        </div>
+                    </form>
                 </label>
             </div>
 
-            <!-- Actions -->
             <div class="flex items-center gap-2">
-                <button
-                    class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
-                    aria-label="سبد دانلود">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-700">
-                        <path d="M6 7h14l-1.5 12h-11L6 7Z" stroke="currentColor" stroke-width="2"/>
-                        <path d="M9 7a3 3 0 0 1 6 0" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                </button>
-
                 <button
                     class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
                     aria-label="اعلان‌ها">
@@ -207,26 +108,33 @@
                     </svg>
                 </button>
 
-                <a href="#"
-                   class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-white">
-                        <path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9" stroke="currentColor" stroke-width="2"/>
-                        <path d="M10 12h10m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="2"
-                              stroke-linecap="round"/>
-                    </svg>
-                    ورود / عضویت
-                </a>
+                @if(auth()->check())
+                    <a href="{{ route('account') }}"
+                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                        @include('icons.user')
+                        حساب کاربری
+                    </a>
 
-                <a href="#"
-                   class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition"
-                   aria-label="ورود / عضویت">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-white">
-                        <path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9" stroke="currentColor" stroke-width="2"/>
-                        <path d="M10 12h10m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="2"
-                              stroke-linecap="round"/>
-                    </svg>
-                </a>
+                    <a href="{{ route('account') }}"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       aria-label="حساب کاربری">
+                        @include('icons.user')
+                    </a>
+                @else
+                    <a href="{{ route('auth.index') }}"
+                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                        @include('icons.login-square-01')
+                        ورود / عضویت
+                    </a>
+
+                    <a href="{{ route('auth.index') }}"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       aria-label="ورود / عضویت">
+                        @include('icons.login-square-01')
+                    </a>
+                @endif
             </div>
         </div>
 

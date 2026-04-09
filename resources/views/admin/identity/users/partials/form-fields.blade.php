@@ -10,27 +10,29 @@
     <x-admin.form.validation-errors class="mb-6"/>
 
     <x-admin.metabox title="اطلاعات شخصی">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <x-admin.field required label="نام">
-                <x-admin.form.input
-                    name="first_name"
-                    :value="old('first_name', $user?->first_name)"
-                />
-            </x-admin.field>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col gap-4">
+                <x-admin.field required label="نام">
+                    <x-admin.form.input
+                        name="first_name"
+                        :value="old('first_name', $user?->first_name)"
+                    />
+                </x-admin.field>
 
-            <x-admin.field required label="نام خانوادگی">
-                <x-admin.form.input
-                    name="last_name"
-                    :value="old('last_name', $user?->last_name)"
-                />
-            </x-admin.field>
+                <x-admin.field required label="نام خانوادگی">
+                    <x-admin.form.input
+                        name="last_name"
+                        :value="old('last_name', $user?->last_name)"
+                    />
+                </x-admin.field>
 
-            <x-admin.field label="نام نمایشی">
-                <x-admin.form.input
-                    name="display_name"
-                    :value="old('display_name', $user?->display_name)"
-                />
-            </x-admin.field>
+                <x-admin.field label="نام نمایشی">
+                    <x-admin.form.input
+                        name="display_name"
+                        :value="old('display_name', $user?->display_name)"
+                    />
+                </x-admin.field>
+            </div>
 
             <x-admin.field label="تصویر">
                 <x-admin.form.media-picker
@@ -108,12 +110,9 @@
                 />
             </x-admin.field>
             <div>
-                <button
-                    type="button"
-                    onclick="generatePassword()"
-                    class="cursor-pointer px-2 py-1 bg-brand-500 hover:bg-brand-600 text-white rounded text-sm">
+                <x-admin.form.button onclick="generatePassword()" variant="dark" size="sm">
                     تولید رمز عبور
-                </button>
+                </x-admin.form.button>
             </div>
         </div>
     </x-admin.metabox>
