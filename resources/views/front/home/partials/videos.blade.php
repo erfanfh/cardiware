@@ -18,59 +18,53 @@
     <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div class="p-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                @for($i = 0; $i < 4; $i++)
-                    <a href="#"
+                @php
+                    $posts = \App\Domain\Content\Models\Post::whereHas('categories', function ($query) {
+                        $query->whereIn('id', get_setting('home', 'videos_category_ids'));
+                    })->get();
+                @endphp
+
+                @foreach($posts as $post)
+                    <a href="{{ route('contents.detail', $post) }}"
                        class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition">
                         <div class="relative h-40">
                             <img class="absolute inset-0 h-full w-full object-cover opacity-90"
-                                 src="https://moddingway.ir/wp-content/uploads/2022/11/%D8%AA%D8%B3%D8%AA-%D8%A7%D8%AC%D8%B1%D8%A7%DB%8C-efootball-2023-%D8%B1%D9%88%DB%8C-%DA%A9%D8%A7%D9%85%D9%BE%DB%8C%D9%88%D8%AA%D8%B1-%DB%8C%D8%A7-%D9%84%D9%BE-%D8%AA%D8%A7%D9%BE.jpg"
+                                 src="{{ $post->picture?->url }}"
                                  alt="آموزش نصب پچ"/>
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
 
                             <div class="absolute top-3 right-3 flex items-center gap-2">
-                          <span
-                              class="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1 text-xs font-extrabold text-slate-900">
-                            🎬 آموزش
-                          </span>
-                                <span
-                                    class="inline-flex items-center gap-2 rounded-2xl bg-black/40 px-3 py-1 text-xs font-bold text-white ring-1 ring-white/15">
-                            🕒 ۹ دقیقه
-                          </span>
-                            </div>
-
-                            <div class="absolute bottom-3 right-3">
-                          <span
-                              class="inline-flex items-center gap-2 rounded-2xl bg-brand-600 px-3 py-2 text-xs font-extrabold text-white shadow-sm group-hover:bg-brand-700 transition">
-                            ▶ پخش کن
-                          </span>
+                                @foreach($post->categories as $category)
+                                    <span
+                                        class="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1 text-xs font-extrabold text-slate-900">
+                                        {{ $category->title }}
+                                  </span>
+                                @endforeach
                             </div>
                         </div>
 
                         <div class="p-4">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
-                                    <div class="text-sm font-extrabold text-white truncate">نصب و فعال‌سازی Patch برای PES
-                                        2021
+                                    <div class="text-sm font-extrabold text-white truncate">
+                                        {{ $post->title }}
                                     </div>
                                     <div class="mt-2 text-xs text-white/70 line-clamp-2 leading-6">
-                                        قدم‌به‌قدم نصب پچ + رفع خطاهای رایج و نکات قبل از اجرا.
+                                        {{ $post->excerpt }}
                                     </div>
                                 </div>
-                                <span
-                                    class="shrink-0 inline-flex items-center rounded-2xl bg-white/10 px-3 py-1 text-xs font-extrabold text-white ring-1 ring-white/10">
-                                Beginner
-                            </span>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between">
-                                <span class="text-xs text-white/60">آپدیت: امروز</span>
+                                <span class="text-xs text-white/60">آپدیت: {{ time_ago($post->updated_at) }}</span>
                                 <span class="inline-flex items-center gap-2 text-xs font-extrabold text-brand-200">
                                 مشاهده <span class="font-black">←</span>
                             </span>
                             </div>
                         </div>
                     </a>
-                @endfor
+                @endforeach
             </div>
 
             <div

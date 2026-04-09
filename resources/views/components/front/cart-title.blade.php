@@ -1,5 +1,6 @@
 @props([
     'title',
+    'subtitle' => null,
     'iconName' => null,
 ])
 
@@ -11,5 +12,12 @@
         </span>
     @endif
 
-    <h2 class="text-base font-extrabold">{{ $title }}</h2>
+    <div>
+        <h2 class="text-base font-extrabold">{{ $title }}</h2>
+        @if($subtitle)
+            <p class="text-xs text-slate-500 mt-1">
+                {{ $subtitle }}
+            </p>
+        @endif
+    </div>
 </div>

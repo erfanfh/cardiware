@@ -8,7 +8,8 @@ class PostListController
 {
     public function __invoke()
     {
-        $posts = Post::paginate(1);
+        $postsPerPage = get_setting('posts', 'posts_per_page') ?: 12;
+        $posts = Post::latest()->paginate($postsPerPage);
 
         return view('front.posts.list', compact('posts'));
     }

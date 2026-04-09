@@ -23,7 +23,7 @@ class SidebarWidgetsSettings extends BaseSettings
         'projects_items',
         'comments_title',
         'comments_subtitle',
-        'comments_comments_count',
+        'comments_count',
     ];
 
     protected array $casts = [
