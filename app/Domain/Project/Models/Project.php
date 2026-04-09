@@ -84,4 +84,13 @@ class Project extends Model
     {
         return $this->hasMany(ProjectFeature::class)->orderBy('sort_order');
     }
+
+
+    /**
+     * @return HasMany
+     */
+    public function slugs(): HasMany
+    {
+        return $this->hasMany(ProjectSlug::class);
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Infrastructure\Slug\Checkers;
 
 use App\Application\Slug\Contracts\SlugScopeChecker;
 use App\Domain\Project\Models\Project;
+use App\Domain\Project\Models\ProjectSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 
 class ProjectSlugChecker implements SlugScopeChecker
@@ -26,7 +27,7 @@ class ProjectSlugChecker implements SlugScopeChecker
         ?string       $ignoreType = null,
     ): bool
     {
-        return Project::query()
+        return ProjectSlug::query()
             ->where('slug', $slug)
             ->when(
                 $ignoreId !== null,

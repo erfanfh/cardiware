@@ -5,6 +5,7 @@ namespace App\Infrastructure\Slug\Resolvers;
 use App\Application\Slug\Contracts\SlugResolverDriver;
 use App\Application\Slug\DTOs\ResolvedSlugDTO;
 use App\Domain\Project\Models\Project;
+use App\Domain\Project\Models\ProjectSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 
 class ProjectSlugResolverDriver implements SlugResolverDriver
@@ -23,7 +24,7 @@ class ProjectSlugResolverDriver implements SlugResolverDriver
     public function resolve(SlugScopeEnum $scope, string $value): ResolvedSlugDTO
     {
         /** @var Project|null $project */
-        $project = Project::query()
+        $project = ProjectSlug::query()
             ->where('slug', $value)
             ->first();
 
