@@ -60,6 +60,7 @@ class PermissionSeeder extends Seeder
                 'about-us' => 'درباره ما',
                 'ads' => 'تنظیمات تبلیغات',
                 'sidebar-widgets' => 'تنظیمات ابزارک های سایدبار',
+                'auth' => 'ورود/ثبت نام',
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
             ],

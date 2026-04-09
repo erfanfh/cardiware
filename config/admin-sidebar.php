@@ -186,6 +186,12 @@ return [
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.sidebar-widgets',
             ],
+            [
+                'label' => 'ورود/ثبت نام',
+                'route' => 'admin.settings.auth',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.auth',
+            ],
         ],
     ],
 ];
