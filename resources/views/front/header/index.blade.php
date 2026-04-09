@@ -207,26 +207,33 @@
                     </svg>
                 </button>
 
-                <a href="#"
-                   class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-white">
-                        <path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9" stroke="currentColor" stroke-width="2"/>
-                        <path d="M10 12h10m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="2"
-                              stroke-linecap="round"/>
-                    </svg>
-                    ورود / عضویت
-                </a>
+                @if(auth()->check())
+                    <a href="{{ route('account') }}"
+                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                        @include('icons.user')
+                        حساب کاربری
+                    </a>
 
-                <a href="#"
-                   class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition"
-                   aria-label="ورود / عضویت">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-white">
-                        <path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9" stroke="currentColor" stroke-width="2"/>
-                        <path d="M10 12h10m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="2"
-                              stroke-linecap="round"/>
-                    </svg>
-                </a>
+                    <a href="{{ route('account') }}"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       aria-label="حساب کاربری">
+                        @include('icons.user')
+                    </a>
+                @else
+                    <a href="{{ route('auth.index') }}"
+                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                        @include('icons.login-square-01')
+                        ورود / عضویت
+                    </a>
+
+                    <a href="{{ route('auth.index') }}"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       aria-label="ورود / عضویت">
+                        @include('icons.login-square-01')
+                    </a>
+                @endif
             </div>
         </div>
 
