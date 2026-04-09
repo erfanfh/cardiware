@@ -13,6 +13,9 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         $permissions = [
+            'admin' => [
+                'display' => 'مشاهده پنل ادمین',
+            ],
             'post' => [
                 'list' => 'لیست نوشته ها',
                 'create' => 'ایجاد نوشته',
