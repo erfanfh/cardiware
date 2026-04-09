@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Slug\Drivers;
 
 use App\Application\Slug\Contracts\SlugPersistenceDriver;
+use App\Domain\Project\Models\ProjectSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Database\Eloquent\Model;
 
@@ -55,11 +56,28 @@ class ProjectSlugPersistenceDriver implements SlugPersistenceDriver
 
         $model->save();
 
+        ProjectSlug::query()
+            ->where('project_id', $model->getKey())
+            ->where('is_current', true)
+            ->update([
+                'is_current' => false,
+            ]);
+
+        ProjectSlug::query()->updateOrCreate(
+            [
+                'slug' => $finalSlug,
+            ],
+            [
+                'project_id' => $model->getKey(),
+                'is_current' => true,
+            ]
+        );
+
         return [
             'final_slug' => $finalSlug,
             'previous_slug' => $previousSlug,
             'changed' => true,
-            'history_recorded' => false,
+            'history_recorded' => true,
         ];
     }
 }
