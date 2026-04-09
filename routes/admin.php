@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web', 'auth:web'])
+Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
