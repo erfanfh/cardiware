@@ -1,6 +1,18 @@
 @extends('front.master')
 
 @section('content')
+    @php
+        $boxTitle = get_setting('posts', 'first_box_title') ?: 'آخرین نوشته ها';
+        $boxSubtitle = get_setting('posts', 'first_box_subtitle');
+        if(request()->routeIs('categories') and isset($category)){
+            $boxTitle = $category->title;
+            $boxSubtitle = "آخرین نوشته های دسته $category->title";
+        }elseif(request()->routeIs('tags') and isset($tag)){
+            $boxTitle = $tag->title;
+            $boxSubtitle = "آخرین نوشته های برچسب $tag->title";
+        }
+    @endphp
+
     <main class="mx-auto max-w-7xl px-4 py-8">
         <section class="mb-6">
             <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm relative overflow-hidden">
@@ -16,12 +28,12 @@
                     @endif
 
                     <h1 class="text-xl font-black leading-tight">
-                        {{ get_setting('posts', 'first_box_title') ?: 'آخرین نوشته ها' }}
+                        {{ $boxTitle }}
                     </h1>
 
-                    @if(get_setting('posts', 'first_box_subtitle'))
+                    @if($boxSubtitle)
                         <p class="mt-2 text-xs leading-6 text-slate-600">
-                            {!! get_setting('posts', 'first_box_subtitle') !!}
+                            {{ $boxSubtitle }}
                         </p>
                     @endif
                 </div>

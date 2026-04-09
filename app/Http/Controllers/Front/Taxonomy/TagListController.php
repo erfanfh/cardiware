@@ -12,6 +12,6 @@ class TagListController extends Controller
         $tag = TaxonomyTerm::tags()->where('path', $path)->firstOrFail();
         $posts = $tag->posts()->paginate(9);
 
-        return view('front.posts.list', ['posts' => $posts]);
+        return view('front.posts.list', compact('posts', 'tag'));
     }
 }

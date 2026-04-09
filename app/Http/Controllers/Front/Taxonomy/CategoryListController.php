@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Front\Taxonomy;
 
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 
@@ -14,6 +13,6 @@ class CategoryListController extends Controller
 
         $posts = $category->posts()->paginate(9);
 
-        return view('front.posts.list', ['posts' => $posts]);
+        return view('front.posts.list', compact('posts', 'category'));
     }
 }
