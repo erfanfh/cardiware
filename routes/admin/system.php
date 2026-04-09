@@ -19,4 +19,6 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('sidebar-widgets', 'storeSidebarWidgets')->name('sidebar-widgets.store');
     Route::get('projects', 'projects')->name('projects');
     Route::put('projects', 'storeProjects')->name('projects.store');
+    Route::get('posts', 'posts')->name('posts');
+    Route::put('posts', 'storePosts')->name('posts.store');
 });
