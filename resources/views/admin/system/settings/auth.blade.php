@@ -7,8 +7,8 @@
         <x-admin.page>
             <div class="space-y-6">
                 <x-admin.metabox title="اطلاعات باکس هدر" :collapsible="false">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                        <div class="grid grid-cols-1 gap-5">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-4">
                             <x-admin.field
                                 label="لیبل"
                             >
