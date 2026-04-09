@@ -14,9 +14,9 @@
                 @livewire('front.discussion.comments-list', ['commentable' => $post])
             </div>
 
-            <aside class="lg:col-span-3 space-y-6">
+            <div class="lg:col-span-3">
                 @include('front.sidebar.index')
-            </aside>
+            </div>
         </section>
     </main>
 @endsection
