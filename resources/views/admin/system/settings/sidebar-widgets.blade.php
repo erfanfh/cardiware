@@ -208,7 +208,7 @@
                                     آیتم‌های پروژه ها را از این بخش مدیریت کنید.
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <x-admin.field label="عنوان">
                                         <x-admin.form.input name="projects_title"
                                                             :value="get_setting('sidebarWidgets', 'projects_title')"/>
@@ -294,8 +294,8 @@
                                     </x-admin.field>
 
                                     <x-admin.field label="تعداد دیدگاه نمایشی">
-                                        <x-admin.form.input name="comments_comments_count" type="number"
-                                                            :value="get_setting('sidebarWidgets', 'comments_comments_count')"/>
+                                        <x-admin.form.input name="comments_count" type="number"
+                                                            :value="get_setting('sidebarWidgets', 'comments_count')"/>
                                     </x-admin.field>
                                 </div>
 
