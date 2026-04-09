@@ -6,8 +6,6 @@
         <nav class="text-xs text-slate-500 flex flex-wrap gap-2">
             <a href="{{ route('home') }}" class="hover:text-brand-700 font-bold transition">خانه</a>
             <span>—</span>
-            <a href="{{ route('posts.list') }}" class="hover:text-brand-700 font-bold transition">نوشته‌ها</a>
-            <span>—</span>
             <span class="text-slate-600 font-semibold">{{ $page->title }}</span>
         </nav>
 
@@ -16,19 +14,10 @@
                 {{ $page->title }}
             </h1>
 
-            @php
-                $views = approximate_view(page_views($page));
-            @endphp
             <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
                 <span>{{ jalali_date($page->published_at, 'd F Y') }}</span>
                 <span class="h-1 w-1 rounded bg-slate-300"></span>
                 <span>{{ $page->author->display_name }}</span>
-                @if($views)
-                    <span class="h-1 w-1 rounded bg-slate-300"></span>
-                    <span>{{ $views }} بازدید</span>
-                @endif
-                <span class="h-1 w-1 rounded bg-slate-300"></span>
-                <span>{{ $page->approved_comments_count }} دیدگاه</span>
             </div>
         </div>
     </div>
