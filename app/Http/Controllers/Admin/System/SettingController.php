@@ -227,6 +227,36 @@ class SettingController extends Controller
      *
      * @return View
      */
+    public function auth(): View
+    {
+        Gate::authorize('setting.auth');
+
+        return view('admin.system.settings.auth');
+    }
+
+    /**
+     * Store home settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeAuth(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.auth');
+
+        $this->storeSettings($request, 'auth');
+
+        return redirect()
+            ->route('admin.settings.auth')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * General settings page
+     *
+     * @return View
+     */
     public function projects(): View
     {
         Gate::authorize('setting.projects');
