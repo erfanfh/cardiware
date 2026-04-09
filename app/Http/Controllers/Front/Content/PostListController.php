@@ -8,7 +8,7 @@ class PostListController
 {
     public function __invoke()
     {
-        $posts = Post::paginate(9);
+        $posts = Post::paginate(1);
 
         return view('front.posts.list', compact('posts'));
     }
