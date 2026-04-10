@@ -34,7 +34,6 @@ class HomeSettings extends BaseSettings
         'testimonials_users_avg_scores',
         'testimonials_items',
         'projects_title',
-        'projects_subtitle',
         'projects_items',
         'posts_items',
     ];
