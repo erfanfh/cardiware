@@ -90,22 +90,12 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button
-                    class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
-                    aria-label="اعلان‌ها">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-700">
-                        <path d="M18 8a6 6 0 1 0-12 0c0 7-3 7-3 7h18s-3 0-3-7Z" stroke="currentColor" stroke-width="2"/>
-                        <path d="M13.7 21a2 2 0 0 1-3.4 0" stroke="currentColor" stroke-width="2"/>
-                    </svg>
-                </button>
+                @include('front.header.notifications')
 
                 <button
-                    class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
+                    class="cursor-pointer h-10 w-10 [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
                     aria-label="حالت شب">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-700">
-                        <path d="M21 13.2A7.5 7.5 0 0 1 10.8 3 6.5 6.5 0 1 0 21 13.2Z" stroke="currentColor"
-                              stroke-width="2"/>
-                    </svg>
+                    @include('icons.moon-02')
                 </button>
 
                 @if(auth()->check())
