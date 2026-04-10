@@ -7,48 +7,44 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 /**
- * Validation request for updating an existing role
- * Validates role title and permissions data
+ * Validation request for creating/updating a role
  */
 class UpdateRoleRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request
-     *
-     * @return bool
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request
-     *
      * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
-        $roleId = $this->route('role')->id;
+        $roleId = $this->route('role')?->id;
 
         return [
-            'title' => ['required', 'string', 'max:255', Rule::unique('roles', 'title')->ignore($roleId)],
-            'permissions' => ['nullable', 'array', 'exists:permissions,id'],
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles', 'title')->ignore($roleId),
+            ],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ];
     }
 
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'permissions' => array_merge(array_filter($this->input('permissions'))),
+            'permissions' => collect($this->input('permissions'))
+                ->filter()
+                ->keys()
+                ->toArray(),
         ]);
     }
 
-    /**
-     * Get custom attribute names for validator errors
-     *
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [
@@ -57,11 +53,6 @@ class UpdateRoleRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom messages for validator errors
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [
@@ -69,6 +60,7 @@ class UpdateRoleRequest extends FormRequest
             'title.max' => 'عنوان نقش نباید بیشتر از 255 کاراکتر باشد.',
             'title.unique' => 'این عنوان نقش قبلاً استفاده شده است.',
             'permissions.array' => 'دسترسی‌ها باید آرایه باشند.',
+            'permissions.*.exists' => 'یکی از دسترسی‌های انتخاب شده معتبر نیست.',
         ];
     }
 }

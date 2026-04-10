@@ -38,7 +38,7 @@ class PermissionSeeder extends Seeder
                 'manage' => 'مدیریت برچسب ها',
             ],
             'category' => [
-                'manage' => 'مدیریتF دسته بندی ها',
+                'manage' => 'مدیریت دسته بندی ها',
             ],
             'user' => [
                 'list' => 'لیست کاربر ها',

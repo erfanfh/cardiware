@@ -16,6 +16,6 @@
             ->all(),
         ])
 
-        <x-admin.form.save-button label="ویرایش نقش"/>
+        <x-admin.form.save-button label="ذخیره"/>
     </x-admin.form>
 @endsection

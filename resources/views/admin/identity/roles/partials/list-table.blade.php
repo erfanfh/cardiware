@@ -94,7 +94,7 @@
                                 @forelse($role->permissions as $permission)
                                     <span
                                         class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-slate-200"
-                                    >{{ $permission->title }}</span>
+                                    >{{ $permission->label }}</span>
                                 @empty
                                     <span class="text-xs text-slate-400">بدون دسترسی</span>
                                 @endforelse

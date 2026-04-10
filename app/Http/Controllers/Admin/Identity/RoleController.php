@@ -8,12 +8,10 @@ use App\Domain\Identity\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\AssignNewRoleRequest;
 use App\Http\Requests\Admin\Identity\IndexRoleRequest;
-use App\Http\Requests\Admin\Identity\StoreRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
 use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
@@ -66,10 +64,10 @@ class RoleController extends Controller
     /**
      * Store a newly created role in storage
      *
-     * @param StoreRoleRequest $request The validated request
+     * @param UpdateRoleRequest $request
      * @return RedirectResponse
      */
-    public function store(StoreRoleRequest $request): RedirectResponse
+    public function store(UpdateRoleRequest $request): RedirectResponse
     {
         Gate::authorize('role.create');
 
