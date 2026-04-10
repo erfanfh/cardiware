@@ -14,6 +14,6 @@ class ActiveProjectScope implements Scope
         if (request()->routeIs('admin.*'))
             return;
         else
-            $builder->where('status', ProjectStatusEnum::ACTIVE->value);
+            $builder->where('status', ProjectStatusEnum::ACTIVE);
     }
 }
