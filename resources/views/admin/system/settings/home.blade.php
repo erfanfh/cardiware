@@ -8,17 +8,17 @@
             <x-admin.tabs
                 :tabs="[
                     'slider' => 'اسلایدر',
-                    'posts' => 'نوشته های رایگان',
                     'download-products' => 'محصولات دانلودی',
-                    'subscription' => 'اشتراک ویژه',
                     'special-posts' => 'نوشته های ویژه',
+                    'subscription' => 'اشتراک ویژه',
+                    'posts' => 'نوشته های رایگان',
+                    'services' => 'سرویس ها',
                     'products' => 'محصولات فیزیکی',
+                    'projects' => 'پروژه‌ها',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
-                    'shortcuts' => 'میانبرها',
-                    'projects' => 'پروژه‌ها',
                 ]"
-                active="slider"
+                active="{{ request()->input('tab') ?: 'slider' }}"
             >
                 <x-admin.tabs.panel name="slider">
                     @include('admin.system.settings.partials.home-slider')

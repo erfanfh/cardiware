@@ -21,7 +21,7 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.dashboard',
             ],
 
             'hero-slider' => [
@@ -33,7 +33,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'slider'],
             ],
 
             'digital-products' => [
@@ -45,7 +46,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'download-products'],
             ],
 
             'special-posts' => [
@@ -57,7 +59,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'special-posts'],
             ],
 
             'vip-button' => [
@@ -70,7 +73,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'subscription'],
             ],
 
             'poll' => [
@@ -80,7 +84,7 @@ class PageLayoutElementRegistry
                 'allowed_areas' => [
                     'content_sidebar',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.dashboard',
             ],
 
             'posts' => [
@@ -92,7 +96,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'posts'],
             ],
 
             'services' => [
@@ -104,7 +109,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'services'],
             ],
 
             'physical-products' => [
@@ -116,7 +122,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'products'],
             ],
 
             'projects' => [
@@ -128,7 +135,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'projects'],
             ],
 
             'videos' => [
@@ -140,7 +148,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'videos'],
             ],
 
             'testimonials' => [
@@ -152,7 +161,8 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'testimonials'],
             ],
 
             'advertisement_1' => [
@@ -165,7 +175,7 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.ads',
             ],
 
             'advertisement_2' => [
@@ -178,7 +188,7 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.ads',
             ],
 
             'advertisement_3' => [
@@ -191,7 +201,7 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.ads',
             ],
 
             'advertisement_4' => [
@@ -204,7 +214,7 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.ads',
             ],
 
             'advertisement_5' => [
@@ -217,7 +227,7 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.general',
+                'settings_route' => 'admin.settings.ads',
             ],
         ];
     }

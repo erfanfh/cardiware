@@ -95,6 +95,6 @@ class GetPageLayoutBuilderDataAction
             return null;
         }
 
-        return route($definition['settings_route']);
+        return route($definition['settings_route'], $definition['settings_route_parameters'] ?? []);
     }
 }
