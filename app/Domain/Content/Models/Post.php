@@ -15,6 +15,7 @@ use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
+use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface, CommentableContract
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments;
+    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments, HasExcerpt;
 
     protected $fillable = [
         'author_id',
