@@ -105,11 +105,4 @@
             <div class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 heroDots"></div>
         </div>
     @endif
-
-    <!-- Ad slot (Hero wide) -->
-    <div
-        class="mt-4 rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-500 flex items-center justify-between">
-        <div class="font-extrabold text-slate-700">جایگاه تبلیغات (بنر عریض)</div>
-        <div class="text-xs">728×90 یا 970×90</div>
-    </div>
 </div>

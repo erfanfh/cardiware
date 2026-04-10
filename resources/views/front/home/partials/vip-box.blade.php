@@ -1,4 +1,4 @@
-<div class="mt-6 rounded-2xl border border-slate-200 bg-gradient-to-br from-brand-50 to-white p-5 shadow-sm">
+<div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-brand-50 to-white p-5 shadow-sm">
     <div class="flex items-center gap-3">
         <div class="h-11 w-11 rounded-2xl bg-brand-500 text-white grid place-items-center shadow-sm">★</div>
         <div>

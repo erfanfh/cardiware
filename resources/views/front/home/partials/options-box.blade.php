@@ -1,4 +1,4 @@
-<section class="mt-10">
+<section>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <a href="#"
            class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 to-slate-800 shadow-sm hover:shadow-lg transition">

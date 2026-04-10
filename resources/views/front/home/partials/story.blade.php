@@ -1,6 +1,5 @@
 <!-- Stories + Instagram-like Viewer (Circle stories restored) -->
 <section
-    class="mt-6"
     x-data="storyViewer()"
     @keydown.escape.window="close()"
     @keydown.arrow-right.window="next()"

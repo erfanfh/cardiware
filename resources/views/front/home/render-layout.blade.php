@@ -1,6 +1,6 @@
 @foreach($rows as $row)
     @if($row['layout_type'] === 'split' && count($row['areas']) === 2)
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
             @foreach($row['areas'] as $area)
                 @php
                     $widthClass = match ((int) $area['width']) {
@@ -20,13 +20,13 @@
                 @endphp
 
                 @if($area['key'] === 'content_sidebar')
-                    <aside class="{{ $widthClass }} flex flex-col gap-4">
+                    <aside class="{{ $widthClass }} flex flex-col gap-8">
                         @foreach($area['elements'] as $element)
                             @include($element['view'], ['layoutElement' => $element])
                         @endforeach
                     </aside>
                 @else
-                    <div class="{{ $widthClass }}">
+                    <div class="{{ $widthClass }} flex flex-col gap-8">
                         @foreach($area['elements'] as $element)
                             @include($element['view'], ['layoutElement' => $element])
                         @endforeach
@@ -36,9 +36,11 @@
         </section>
     @else
         @foreach($row['areas'] as $area)
-            @foreach($area['elements'] as $element)
-                @include($element['view'], ['layoutElement' => $element])
-            @endforeach
+            <div class="flex flex-col gap-8">
+                @foreach($area['elements'] as $element)
+                    @include($element['view'], ['layoutElement' => $element])
+                @endforeach
+            </div>
         @endforeach
     @endif
 @endforeach

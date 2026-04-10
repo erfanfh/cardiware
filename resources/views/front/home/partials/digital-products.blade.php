@@ -1,11 +1,12 @@
-<section class="pt-5">
+<section>
     <div class="flex items-center justify-between gap-3 mb-4">
         <div class="flex items-center gap-2">
             <span
                 class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 text-brand-700">⬤</span>
             <h3 class="text-base font-extrabold">{{ get_setting('home', 'download_products_title') }}</h3>
         </div>
-        <a href="{{ get_setting('home', 'download_products_all_url') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2">
+        <a href="{{ get_setting('home', 'download_products_all_url') }}"
+           class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2">
             مشاهده همه <span class="font-black">←</span>
         </a>
     </div>
@@ -28,7 +29,8 @@
                                  alt="{{ $item['title'] }}"/>
                             <div
                                 class="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1 text-xs font-extrabold text-slate-900 ring-1 ring-slate-200">
-                                <span class="h-2 w-2 rounded-full bg-brand-500"></span> پیشرفت آپدیت: {{ $item['progress_percent'] }}%
+                                <span class="h-2 w-2 rounded-full bg-brand-500"></span> پیشرفت
+                                آپدیت: {{ $item['progress_percent'] }}%
                             </div>
                         </div>
 
@@ -49,10 +51,12 @@
                                 <div class="mt-3">
                                     <div class="flex items-center justify-between text-xs text-slate-500">
                                         <span>پیشرفت ساخت/آپدیت</span>
-                                        <span class="font-extrabold text-slate-700">{{ $item['progress_percent'] }}%</span>
+                                        <span
+                                            class="font-extrabold text-slate-700">{{ $item['progress_percent'] }}%</span>
                                     </div>
                                     <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                        <div class="h-full bg-brand-500" style="width: {{ $item['progress_percent'] . '%' }}"></div>
+                                        <div class="h-full bg-brand-500"
+                                             style="width: {{ $item['progress_percent'] . '%' }}"></div>
                                     </div>
                                 </div>
                             @endif

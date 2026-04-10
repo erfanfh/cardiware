@@ -1,4 +1,4 @@
-<section class="mt-10">
+<section>
     <div class="mx-auto max-w-7xl px-4">
         <!-- Header -->
         <div class="flex items-end justify-between gap-4 mb-4">
@@ -51,7 +51,8 @@
                                     <span class="font-extrabold text-slate-700">{{ $item->progress_percent }}%</span>
                                 </div>
                                 <div class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                    <div class="h-full bg-brand-500" style="width: {{ $item->progress_percent . '%' }}"></div>
+                                    <div class="h-full bg-brand-500"
+                                         style="width: {{ $item->progress_percent . '%' }}"></div>
                                 </div>
                             </div>
 
