@@ -30,6 +30,7 @@
             :defaultItem="[
                 'title' => '',
                 'short_description' => '',
+                'link' => '',
                 'image_id' => null,
                 'image_path' => null,
                 'enable_progress_percent' => '',
@@ -54,6 +55,16 @@
                         <x-admin.form.input
                             x-bind:name="field(i, 'short_description')"
                             x-model="it.short_description"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field
+                        label="لینک"
+                    >
+                        <x-admin.form.input
+                            x-bind:name="field(i, 'link')"
+                            x-model="it.link"
+                            class="direction-ltr"
                         />
                     </x-admin.field>
 

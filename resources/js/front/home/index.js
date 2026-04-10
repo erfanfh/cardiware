@@ -1,4 +1,5 @@
 import './hero-slider.js';
+import './digital-products.js';
 import './free-posts.js';
 
 (function () {
