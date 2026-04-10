@@ -3,6 +3,7 @@
 namespace App\Domain\Content\Models;
 
 use App\Domain\Content\Enums\PageStatusEnum;
+use App\Domain\Content\Scopes\ActivePageScope;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
@@ -30,6 +31,14 @@ class Page extends Model implements PageViewableInterface
     protected $casts = [
         'status' => PageStatusEnum::class,
     ];
+
+    /**
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ActivePageScope());
+    }
 
     /**
      * @return MorphMany
