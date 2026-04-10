@@ -8,7 +8,10 @@
 
         <a href="{{ get_setting('home', 'download_products_all_url') }}"
            class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2">
-            مشاهده همه <span class="font-black">←</span>
+            مشاهده همه
+            <span class="[&_svg]:w-4 [&_svg]:h-4">
+                @include('icons.arrow-left-02')
+            </span>
         </a>
     </div>
 
