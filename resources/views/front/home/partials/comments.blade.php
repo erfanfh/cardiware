@@ -62,7 +62,7 @@
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
                                 <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
-                                     src="https://i.pravatar.cc/96?img=12" alt="user"/>
+                                     src="{{ $item['image']['path'] }}" alt="{{ $item['title'] }}"/>
                                 <div class="min-w-0">
                                     <div
                                         class="text-sm font-extrabold text-slate-900 truncate">{{ $item['title'] }}</div>
