@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
+use App\Infrastructure\Casts\IntegerCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -46,5 +47,6 @@ class HomeSettings extends BaseSettings
         'projects_items' => RepeaterArrayCast::class,
         'videos_category_ids' => ArrayCast::class,
         'posts_items' => RepeaterArrayCast::class,
+        'special_posts_posts_counts' => IntegerCast::class,
     ];
 }
