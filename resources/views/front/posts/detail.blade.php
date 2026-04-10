@@ -8,7 +8,7 @@
             <div class="lg:col-span-7 space-y-6">
                 @include('front.posts.partials.detail.content')
                 @include('front.posts.partials.detail.image-gallery')
-                @include('front.posts.partials.detail.video')
+                {{--                @include('front.posts.partials.detail.video')--}}
                 @include('front.posts.partials.detail.related-posts')
                 @include('front.posts.partials.detail.send-comment-form')
                 @livewire('front.discussion.comments-list', ['commentable' => $post])
