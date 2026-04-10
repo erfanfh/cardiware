@@ -31,7 +31,7 @@ window.mwRepeater = function (opts = {}) {
                 }
 
                 if (item._open === undefined) {
-                    item._open = true
+                    item._open = false
                 }
 
                 if (item.sort_order === undefined || item.sort_order === null || item.sort_order === '') {
