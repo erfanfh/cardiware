@@ -5,6 +5,7 @@ namespace App\Domain\Content\Models;
 use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Content\Scopes\ActivePostScope;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Download\Models\DownloadSection;
@@ -42,6 +43,14 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'status' => PostStatusEnum::class,
         'is_pinned' => 'boolean',
     ];
+
+    /**
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ActivePostScope());
+    }
 
     /**
      * @return MorphMany
