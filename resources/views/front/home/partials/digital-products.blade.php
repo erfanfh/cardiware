@@ -32,6 +32,7 @@
                                         class="absolute inset-0 h-full w-full object-cover"
                                         src="{{ $item['image']['path'] }}"
                                         alt="{{ $item['title'] }}"
+                                        title="{{ $item['title'] }}"
                                     />
 
                                     <div
