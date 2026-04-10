@@ -1,80 +1,128 @@
 @extends('front.master')
 
 @section('content')
-    <main class="py-8">
+    <main class="py-8" x-data="">
         <div class="mx-auto max-w-7xl px-4">
-            <div class="relative pt-4 pb-10 px-4">
-                <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                    <div class="space-y-3">
-                        <div class="space-y-2">
-                            <h1 class="text-2xl sm:text-3xl font-black leading-tight text-slate-900">
-                                نتایج جستجو برای
-                                <span class="text-brand-600">"{{ request()->q }}"</span>
-                            </h1>
-                        </div>
+            {{-- Header --}}
+            <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 mb-6">
+                {{-- subtle background decoration --}}
+                <div
+                    class="pointer-events-none absolute -top-12 -left-12 h-32 w-32 rounded-[48px] bg-brand-100/60 blur-2xl"></div>
+                <div class="pointer-events-none absolute top-4 left-6 h-2.5 w-2.5 rounded-full bg-brand-500"></div>
+
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="space-y-2">
+                        <h1 class="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-slate-900">
+                            نتایج جستجو برای
+                            <span class="text-brand-600">"{{ request()->q }}"</span>
+                        </h1>
+
+                        <p class="text-sm text-slate-500">
+                            نتایج مرتبط با جستجوی شما در بخش‌های مختلف نمایش داده شده است
+                        </p>
                     </div>
                 </div>
             </div>
 
-            <div class="relative overflow-hidden w-full flex items-center gap-4 bg-white rounded-xl p-3 shadow-sm">
-                <div class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
-                <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
+            <div
+                class="relative overflow-hidden w-full flex flex-wrap items-center gap-2 bg-white rounded-2xl border border-slate-200 p-2">
+                {{-- subtle bg --}}
+                <div
+                    class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/50 blur-xl"></div>
 
-                <a href="{{ route('search', ['q' => request()->q, 'type' => 'posts']) }}" class="flex items-center gap-2 @if($type == 'posts') bg-brand-500 text-white @else text-gray-600 hover:text-gray-800 @endif px-4 py-2 rounded-lg">
-                    <span>{{ $postsCount }}</span>
+                {{-- Posts --}}
+                <a href="{{ route('search', ['q' => request()->q, 'type' => 'posts']) }}"
+                   class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
+                    {{ $type == 'posts' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }}">
+
+                    {{-- active indicator --}}
+                    @if($type == 'posts')
+                        <span class="absolute inset-0 rounded-xl ring-1 ring-black/5"></span>
+                    @endif
+
+                    <span class="opacity-80 group-hover:opacity-100 transition">
+                        {{ $postsCount }}
+                    </span>
+
                     <span>نوشته‌ها</span>
-                    @include('icons.file-02')
+
+                    <span class="opacity-70 group-hover:opacity-100 transition">
+                        @include('icons.file-02')
+                    </span>
                 </a>
 
-                <a href="{{ route('search', ['q' => request()->q, 'type' => 'projects']) }}" class="flex items-center gap-2 @if($type == 'projects') bg-brand-500 text-white @else text-gray-600 hover:text-gray-800 @endif px-4 py-2 rounded-lg">
-                    <span>{{ $projectsCount }}</span>
+
+                {{-- Projects --}}
+                <a href="{{ route('search', ['q' => request()->q, 'type' => 'projects']) }}"
+                   class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
+                    {{ $type == 'projects' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }}">
+
+                    @if($type == 'projects')
+                        <span class="absolute inset-0 rounded-xl ring-1 ring-black/5"></span>
+                    @endif
+
+                    <span class="opacity-80 group-hover:opacity-100 transition">
+                        {{ $projectsCount }}
+                    </span>
+
                     <span>پروژه‌ها</span>
-                    @include('icons.folder-management')
+
+                    <span class="opacity-70 group-hover:opacity-100 transition">
+                        @include('icons.folder-management')
+                    </span>
                 </a>
             </div>
 
             @if($type == 'posts')
                 <section>
                     <div>
-                        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             @foreach($posts as $post)
+                                @php $views = approximate_view(page_views($post)); @endphp
                                 <article
-                                    class="rounded-xl2 border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
-                                    <a href="{{ route('contents.detail', $post) }}" class="block relative">
-                                        <div
-                                            class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
-                                        <img src="{{ $post->picture?->path }}" alt=""
-                                             class="h-40 w-full object-cover group-hover:scale-[1.02] transition duration-500"/>
-                                        <div class="absolute top-3 right-3 inline-flex items-center gap-2">
-                                            @foreach($post->categories as $category)
-                                                <span
-                                                    class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
+                                    class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
+                                    <a class="flex flex-col h-full" href="{{ route('contents.detail', $post) }}">
+                                        <div class="relative">
+                                            <div
+                                                class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
+                                            <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
+                                                 title="{{ $post->title }}"
+                                                 class="h-40 w-full object-cover group-hover:scale-[1.02] transition duration-500"/>
+                                            <div
+                                                class="absolute top-3 right-3 inline-flex flex-wrap items-center gap-2">
+                                                @foreach($post->categories as $category)
+                                                    <span
+                                                        class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
                                             {{ $category->title }}
                                         </span>
-                                            @endforeach
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                        <div class="p-4 flex flex-col gap-2 grow">
+                                            <h3 class="text-sm font-extrabold leading-6 group-hover:text-brand-700 transition">
+                                                {{ $post->title }}
+                                            </h3>
+                                            <p class="text-xs text-slate-500 leading-6 line-clamp-2">
+                                                {{ $post->excerpt }}
+                                            </p>
+                                            <div class="flex items-center justify-between mt-auto">
+                                                <div class="flex items-center gap-2 text-[0.7rem] text-slate-500">
+                                            <span class="inline-flex items-center gap-2">
+                                                {{ jalali_date($post->created_at, 'd F Y') }}
+                                            </span>
+                                                    @if($views)
+                                                        <span class="h-1 w-1 rounded bg-slate-300"></span>
+                                                        <span>{{ $views }} بازدید</span>
+                                                    @endif
+                                                </div>
+                                                <span
+                                                    class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-700 group-hover:text-brand-800 transition [&_svg]:w-3 [&_svg]:h-3">
+                                            ادامه
+                                            @include('icons.arrow-left-double')
+                                        </span>
+                                            </div>
                                         </div>
                                     </a>
-                                    <div class="p-4">
-                                        <h3 class="text-sm font-extrabold leading-6">
-                                            <a href="{{ route('contents.detail', $post) }}" class="hover:text-brand-700 transition">
-                                                {{ $post->title }}
-                                            </a>
-                                        </h3>
-                                        <p class="mt-2 text-xs text-slate-500 leading-6 line-clamp-2">
-                                            {{ $post->excerpt }}
-                                        </p>
-                                        <div class="mt-4 flex items-center justify-between">
-                                            <div class="flex items-center gap-2 text-xs text-slate-500">
-                                    <span class="inline-flex items-center gap-2"><span
-                                            class="h-2 w-2 rounded bg-slate-300"></span>{{ jalali_date($post->created_at, 'd F Y') }}</span>
-                                                <span>•</span><span>{{ approximate_view(0) }} بازدید</span>
-                                            </div>
-                                            <a href="{{ route('contents.detail', $post) }}"
-                                               class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-700 hover:text-brand-800 transition">
-                                                ادامه <span class="font-black">←</span>
-                                            </a>
-                                        </div>
-                                    </div>
                                 </article>
                             @endforeach
                         </div>
@@ -82,7 +130,8 @@
                         @if($posts->isEmpty())
                             <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-6 text-center shadow-sm">
                                 <div class="text-base font-extrabold">نوشته ای پیدا نشد</div>
-                                <div class="mt-2 text-sm text-slate-500">فیلترها را تغییر بده یا عبارت دیگری جستجو کن.</div>
+                                <div class="mt-2 text-sm text-slate-500">فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                                </div>
                             </div>
                         @endif
 
@@ -100,28 +149,17 @@
 
                                 <div
                                     class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
-                                <div class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
+                                <div
+                                    class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
                                 <div class="flex items-center gap-4">
-                                    <div class="shrink-0">
-                                        <div class="h-12 w-12 rounded-2xl border border-slate-200 bg-white grid place-items-center">
-                                            <span class="text-xs font-extrabold text-slate-400">SVG</span>
-                                        </div>
-                                    </div>
-
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center justify-between gap-3">
                                             <div class="min-w-0">
-                                                <div class="text-sm sm:text-base font-extrabold truncate">{{ $project->title }}</div>
-                                                <div class="text-xs text-slate-500 mt-1">{{ $project->excerpt }}</div>
+                                                <div
+                                                    class="text-sm sm:text-base font-extrabold truncate">{{ $project->title }}</div>
+                                                <div class="text-xs text-slate-500 mt-1">{{ $project->excerpt() }}</div>
                                             </div>
-
-                                            <span
-                                                class="shrink-0 inline-flex items-center gap-2 rounded-2xl bg-brand-50 border border-brand-100 px-3 py-1.5 text-[11px] font-extrabold text-brand-800">
-                                    <span
-                                        class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-500 text-white text-[11px] font-black">%</span>
-                                    {{ $project->progress_percent }}٪ تکمیل
-                                  </span>
                                         </div>
 
                                         <div class="mt-3">
@@ -133,12 +171,12 @@
                                                 <div
                                                     class="h-full rounded-full transition-all duration-300"
                                                     :class="{
-                                            'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
-                                            'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
-                                            'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
-                                            'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
-                                            'bg-slate-300': ({{ $project->progress_percent }} ?? 0) < 1
-                                        }"
+                                                        'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
+                                                        'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
+                                                        'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
+                                                        'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
+                                                        'bg-slate-300': ({{ $project->progress_percent }} ?? 0) < 1
+                                                    }"
                                                     style="width: {{ $project->progress_percent . '%' }}"
                                                 ></div>
                                             </div>
@@ -146,23 +184,19 @@
 
                                         <div class="mt-4 flex items-center justify-between gap-3">
                                             <a href="{{ route('projects.detail', $project) }}"
-                                               class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
+                                               class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-[0.8rem] font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                                                 اطلاعات پروژه
-                                                <span class="font-black" dir="ltr">←</span>
+                                                <span class="[&_svg]:w-4 [&_svg]:h-4">
+                                        @include('icons.arrow-left-02')
+                                    </span>
                                             </a>
 
                                             @if($project->last_updated_at)
                                                 <span class="text-xs text-slate-500 hidden sm:inline">
-                                        بروزرسانی: {{ jalali_date($project->last_updated_at) }}
+                                        بروزرسانی:
+                                        {{ time_ago($project->last_updated_at) }}
                                     </span>
                                             @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="hidden sm:block shrink-0">
-                                        <div
-                                            class="h-14 w-14 rounded-3xl border border-slate-200 bg-slate-50 grid place-items-center">
-                                            <span class="text-xs font-extrabold text-slate-400">SVG</span>
                                         </div>
                                     </div>
                                 </div>
