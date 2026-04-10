@@ -4,13 +4,12 @@ namespace App\Domain\Project\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class ProjectSlug extends Model
 {
     protected $fillable = [
         'project_id',
-        'slug',
+        'route_key',
         'is_current',
     ];
 
@@ -21,5 +20,5 @@ class ProjectSlug extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
-   }
+    }
 }

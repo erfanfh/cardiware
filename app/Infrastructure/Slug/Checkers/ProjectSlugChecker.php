@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Slug\Checkers;
 
 use App\Application\Slug\Contracts\SlugScopeChecker;
-use App\Domain\Project\Models\Project;
 use App\Domain\Project\Models\ProjectSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 
@@ -28,10 +27,10 @@ class ProjectSlugChecker implements SlugScopeChecker
     ): bool
     {
         return ProjectSlug::query()
-            ->where('slug', $slug)
+            ->where('route_key', $slug)
             ->when(
                 $ignoreId !== null,
-                fn($query) => $query->whereKeyNot($ignoreId)
+                fn($query) => $query->where('project_id', '!=', $ignoreId)
             )
             ->exists();
     }

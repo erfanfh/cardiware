@@ -65,7 +65,7 @@ class ProjectSlugPersistenceDriver implements SlugPersistenceDriver
 
         ProjectSlug::query()->updateOrCreate(
             [
-                'slug' => $finalSlug,
+                'route_key' => $finalSlug,
             ],
             [
                 'project_id' => $model->getKey(),

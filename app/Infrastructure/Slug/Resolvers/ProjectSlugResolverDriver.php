@@ -25,7 +25,7 @@ class ProjectSlugResolverDriver implements SlugResolverDriver
     {
         /** @var Project|null $project */
         $project = ProjectSlug::query()
-            ->where('slug', $value)
+            ->where('route_key', $value)
             ->first();
 
         if ($project === null) {
