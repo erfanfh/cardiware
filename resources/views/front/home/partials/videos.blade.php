@@ -7,12 +7,6 @@
             </span>
             <h3 class="text-base font-extrabold">{{ get_setting('home', 'videos_title') }}</h3>
         </div>
-
-        <a href="{{ get_setting('home', 'videos_button_url') }}"
-           class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2">
-            {{ get_setting('home', 'videos_button_title') }}
-            <span class="font-black">←</span>
-        </a>
     </div>
 
     <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
@@ -21,7 +15,7 @@
                 @php
                     $posts = \App\Domain\Content\Models\Post::whereHas('categories', function ($query) {
                         $query->whereIn('id', get_setting('home', 'videos_category_ids'));
-                    })->get();
+                    })->limit(4)->get();
                 @endphp
 
                 @foreach($posts as $post)
@@ -30,7 +24,9 @@
                         <div class="relative h-40">
                             <img class="absolute inset-0 h-full w-full object-cover opacity-90"
                                  src="{{ $post->picture?->url }}"
-                                 alt="آموزش نصب پچ"/>
+                                 alt="{{ $post->title }}"
+                                 title="{{ $post->title }}"
+                            />
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
 
@@ -51,16 +47,19 @@
                                         {{ $post->title }}
                                     </div>
                                     <div class="mt-2 text-xs text-white/70 line-clamp-2 leading-6">
-                                        {{ $post->excerpt }}
+                                        {{ $post->excerpt() }}
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between">
-                                <span class="text-xs text-white/60">آپدیت: {{ time_ago($post->updated_at) }}</span>
+                                <span class="text-xs text-white/60">انتشار: {{ time_ago($post->published_at) }}</span>
                                 <span class="inline-flex items-center gap-2 text-xs font-extrabold text-brand-200">
-                                مشاهده <span class="font-black">←</span>
-                            </span>
+                                    مشاهده
+                                    <span class="[&_svg]:w-4 [&_svg]:h-4">
+                                        @include('icons.arrow-left-02')
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     </a>
@@ -70,12 +69,14 @@
             <div
                 class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div class="text-sm text-slate-700 leading-7">
-                    <span class="font-extrabold">پیشنهاد:</span>
                     {!! get_setting('home', 'videos_description') !!}
                 </div>
-                <a href="#"
+                <a href="{{ get_setting('home', 'videos_button_url') }}"
                    class="inline-flex items-center gap-2 rounded-2xl bg-white border border-slate-200 px-4 py-2 text-sm font-extrabold text-brand-700 hover:bg-brand-50 transition">
-                    رفتن به صفحه آموزش‌ها <span class="font-black">←</span>
+                    {{ get_setting('home', 'videos_button_title') }}
+                    <span class="[&_svg]:w-4 [&_svg]:h-4">
+                        @include('icons.arrow-left-02')
+                    </span>
                 </a>
             </div>
         </div>
