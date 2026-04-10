@@ -6,7 +6,6 @@ use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\ResolveContentBySlugAction;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Content\Models\Post;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -51,24 +50,23 @@ final class ContentController
 
             $features = app(GetPostFeaturesAction::class)->execute($post);
 
-            if (get_setting('general', 'select_related_content_settings') == 'tag') {
-                $relatedPosts = Post::where('id', '!=', $post->id)
-                ->whereHas('tags', function ($query) use ($post) {
+            $relatedPosts = Post::where('id', '!=', $post->id);
+
+            if (get_setting('general', 'select_related_content_settings') === 'tag') {
+                $relatedPosts = $relatedPosts->whereHas('tags', function ($query) use ($post) {
                     $query->whereIn('taxonomy_terms.id', $post->tags->pluck('id'));
-                })
-                    ->take(3)
-                    ->get();
+                });
+            } elseif (get_setting('general', 'select_related_content_settings') === 'category') {
+                $relatedPosts = $relatedPosts->whereHas('categories', function ($query) use ($post) {
+                    $query->whereIn('taxonomy_terms.id', $post->categories->pluck('id'));
+                });
             }
-            elseif (get_setting('general', 'select_related_content_settings') == 'category') {
-                $relatedPosts = Post::where('id', '!=', $post->id)
-                    ->whereHas('categories', function ($query) use ($post) {
-                        $query->whereIn('taxonomy_terms.id', $post->categories->pluck('id'));
-                    })
-                    ->take(3)
-                    ->get();
-            }
-            else
-                $relatedPosts = collect();
+
+            $relatedPosts = $relatedPosts
+                ->with(['picture.primaryVariant', 'categories:id,title,path'])
+                ->inRandomOrder()
+                ->take(3)
+                ->get();
 
             return view('front.posts.detail', compact('post', 'features', 'relatedPosts'));
         }
