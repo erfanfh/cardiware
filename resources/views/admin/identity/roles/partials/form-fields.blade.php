@@ -11,6 +11,19 @@
         'permissions',
         $isEdit ? $role->permissions->pluck('id')->map(fn ($id) => (string) $id)->all() : []
     );
+
+    $groupLabels = [
+        'admin' => 'پنل ادمین',
+        'category' => 'دسته‌بندی‌ها',
+        'tag' => 'برچسب‌ها',
+        'post' => 'نوشته‌ها',
+        'page' => 'برگه‌ها',
+        'project' => 'پروژه‌ها',
+        'role' => 'نقش‌ها',
+        'user' => 'کاربران',
+        'setting' => 'تنظیمات',
+        'page-layouts' => 'مدیریت چیدمان',
+    ];
 @endphp
 
 <x-admin.page>
@@ -35,7 +48,7 @@
                         <div class="flex items-center justify-between gap-3">
                             <div>
                                 <h3 class="text-sm font-extrabold text-slate-900">
-                                    {{ $group ?: 'عمومی' }}
+                                    {{ $groupLabels[$group] ?? $group ?: '' }}
                                 </h3>
                                 <p class="mt-1 text-xs text-slate-500">
                                     {{ $items->count() }} دسترسی در این گروه
