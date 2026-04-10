@@ -2,9 +2,10 @@
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-xl">
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl">
             <div
-                class="absolute inset-0 opacity-90" style='background-image: url("{{ get_setting('projects', 'first_box_image')?->path }}")'></div>
+                class="absolute inset-0 opacity-90"
+                style='background-image: url("{{ get_setting('projects', 'first_box_image')?->path }}")'></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
 
             <div class="relative p-6 sm:p-10">
@@ -32,15 +33,15 @@
                     </div>
 
                     <div class="grid grid-cols-3 gap-3 w-full lg:w-[420px]">
-                        <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
+                        <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
                             <div class="text-[11px] font-extrabold text-white/70">شروع نشده</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->not_started }}</div>
                         </div>
-                        <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
+                        <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
                             <div class="text-[11px] font-extrabold text-white/70">در حال تکمیل</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->in_progress }}</div>
                         </div>
-                        <div class="rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-4">
+                        <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
                             <div class="text-[11px] font-extrabold text-white/70">تکمیل</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->completed }}</div>
                         </div>
