@@ -17,29 +17,39 @@
         defaultItem: @js($defaultItem),
         sortable: {{ $sortable ? 'true' : 'false' }},
     })"
-    class="space-y-3"
+    class="space-y-4"
 >
-    <div class="flex items-center justify-between gap-3">
-        <div class="text-xs text-slate-500">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="text-sm font-semibold text-slate-700">
             {{ $title }}
         </div>
 
         <div class="flex items-center gap-2">
-            <button
+            <x-admin.form.button
                 type="button"
-                class="text-xs text-slate-500 hover:text-slate-700"
+                variant="secondary"
+                size="sm"
                 @click="expandAll()"
+                class="text-slate-600 font-normal"
             >
-                باز کردن همه
-            </button>
+                <span class="[&_svg]:w-3 [&_svg]:h-3">
+                    @include('icons.arrow-down-01')
+                </span>
+                <span>باز کردن همه</span>
+            </x-admin.form.button>
 
-            <button
+            <x-admin.form.button
                 type="button"
-                class="text-xs text-slate-500 hover:text-slate-700"
+                variant="secondary"
+                size="sm"
                 @click="collapseAll()"
+                class="text-slate-600 font-normal"
             >
-                بستن همه
-            </button>
+                <span class="[&_svg]:w-3 [&_svg]:h-3">
+                    @include('icons.arrow-right-01')
+                </span>
+                <span>بستن همه</span>
+            </x-admin.form.button>
 
             <x-admin.form.button
                 type="button"
@@ -47,13 +57,16 @@
                 size="sm"
                 @click="add()"
             >
-                + {{ $addText }}
+                <span class="[&_svg]:w-3 [&_svg]:h-3">
+                    @include('icons.plus-sign')
+                </span>
+                <span>{{ $addText }}</span>
             </x-admin.form.button>
         </div>
     </div>
 
     <template x-if="items.length === 0">
-        <div class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500">
+        <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-4 py-6 text-sm text-slate-500">
             {{ $emptyText }}
         </div>
     </template>
@@ -62,41 +75,41 @@
         <template x-for="(it, i) in items" :key="`${it.__key}-${__renderNonce}`">
             <div
                 data-repeater-item
-                class="rounded-2xl border border-slate-200 bg-white"
+                class="rounded-2xl border border-slate-200 bg-white transition hover:border-slate-300"
             >
                 <div
-                    class="p-4 flex items-center justify-between gap-3 cursor-pointer"
+                    class="flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer"
                     @click="toggle(i)"
                 >
-                    <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex min-w-0 items-center gap-3">
                         @if($sortable)
                             <div
-                                class="drag-handle cursor-move text-slate-400 hover:text-slate-600"
+                                class="drag-handle flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-600 cursor-move"
                                 @click.stop
                                 title="جابجایی"
                             >
-                                ☰
+                                <span class="text-sm leading-none">⋮⋮</span>
                             </div>
                         @endif
 
                         <div class="min-w-0">
-                            <div class="text-xs font-bold text-slate-800 truncate max-w-[520px]">
+                            <div class="truncate text-sm font-bold text-slate-800 max-w-[520px]">
                                 <span
                                     x-text="(it['{{ $headingKey }}'] && String(it['{{ $headingKey }}']).trim().length)
                                         ? it['{{ $headingKey }}']
                                         : '{{ $headingPlaceholder }}'"
                                     :class="(!it['{{ $headingKey }}'] || !String(it['{{ $headingKey }}']).trim().length)
-                                        ? 'text-slate-400 font-semibold'
+                                        ? 'text-slate-400 font-medium'
                                         : ''"
                                 ></span>
                             </div>
 
                             <div
-                                class="text-[11px] text-slate-500 truncate max-w-[520px]"
+                                class="mt-1 text-[11px] text-slate-500 truncate max-w-[520px]"
                                 x-show="!it._open"
                                 x-cloak
                             >
-                                برای مشاهده/ویرایش کلیک کنید
+                                برای مشاهده یا ویرایش کلیک کنید
                             </div>
                         </div>
                     </div>
@@ -104,22 +117,28 @@
                     <div class="flex items-center gap-2 shrink-0">
                         <button
                             type="button"
-                            class="h-9 w-9 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                            class="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100 hover:text-rose-700"
                             @click.stop="remove(i)"
                             title="حذف"
                         >
-                            ✕
+                            <span class="text-sm leading-none">✕</span>
                         </button>
 
-                        <div class="text-slate-400 select-none">
-                            <span x-show="it._open" x-cloak>▾</span>
-                            <span x-show="!it._open" x-cloak>▸</span>
+                        <div
+                            class="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition"
+                        >
+                            <span x-show="it._open" x-cloak class="[&_svg]:w-3 [&_svg]:h-3">
+                                @include('icons.arrow-down-01')
+                            </span>
+                            <span x-show="!it._open" x-cloak class="[&_svg]:w-3 [&_svg]:h-3">
+                                @include('icons.arrow-right-01')
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <div
-                    class="p-4 border-t border-slate-200"
+                    class="border-t border-slate-100 bg-slate-50/50 px-4 py-4"
                     x-show="it._open"
                     x-cloak
                 >
