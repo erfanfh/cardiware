@@ -16,14 +16,12 @@ class PageLayoutSeeder extends Seeder
     public function run(): void
     {
         foreach ($this->layouts() as $layoutData) {
-            $layout = PageLayout::query()->updateOrCreate(
-                [
-                    'key' => $layoutData['key'],
-                ],
-                [
-                    'title' => $layoutData['title'],
-                ]
-            );
+            $layout = PageLayout::query()->firstOrNew([
+                'key' => $layoutData['key'],
+            ]);
+
+            $layout->title = $layoutData['title'];
+            $layout->save();
 
             $this->syncRows($layout, $layoutData['rows']);
         }
@@ -238,101 +236,116 @@ class PageLayoutSeeder extends Seeder
     }
 
     /**
+     * فقط row جدید می‌سازد.
+     * برای row موجود، تنظیمات قابل شخصی‌سازی مثل sort_order و layout_type را overwrite نمی‌کند.
+     *
      * @param PageLayout $layout
      * @param array $rows
      * @return void
      */
     private function syncRows(PageLayout $layout, array $rows): void
     {
-        $existingRowIds = [];
-
         foreach ($rows as $rowData) {
-            $row = PageLayoutRow::query()->updateOrCreate(
-                [
-                    'page_layout_id' => $layout->id,
-                    'key' => $rowData['key'],
-                ],
-                [
-                    'layout_type' => $rowData['layout_type'],
-                    'sort_order' => $rowData['sort_order'],
-                ]
-            );
+            $row = PageLayoutRow::query()->firstOrNew([
+                'page_layout_id' => $layout->id,
+                'key' => $rowData['key'],
+            ]);
 
-            $existingRowIds[] = $row->id;
+            if (!$row->exists) {
+                $row->layout_type = $rowData['layout_type'];
+                $row->sort_order = $rowData['sort_order'];
+            }
 
-            $this->syncAreas($row, $rowData['areas']);
+            $row->save();
+
+            $this->syncAreas($layout, $row, $rowData['areas']);
         }
-
-        PageLayoutRow::query()
-            ->where('page_layout_id', $layout->id)
-            ->whereNotIn('id', $existingRowIds)
-            ->delete();
     }
 
     /**
-     * @param PageLayoutRow $row
+     * area را با key در سطح layout پیدا می‌کند تا اگر قبلاً جابه‌جا شده بود،
+     * دوباره به row پیش‌فرض seed برنگردد.
+     *
+     * title و description همیشه sync می‌شوند.
+     * width و sort_order و row placement فقط هنگام ایجاد اولیه ست می‌شوند.
+     *
+     * @param PageLayout $layout
+     * @param PageLayoutRow $defaultRow
      * @param array $areas
      * @return void
      */
-    private function syncAreas(PageLayoutRow $row, array $areas): void
+    private function syncAreas(PageLayout $layout, PageLayoutRow $defaultRow, array $areas): void
     {
-        $existingAreaIds = [];
+        $layoutRowIds = PageLayoutRow::query()
+            ->where('page_layout_id', $layout->id)
+            ->pluck('id');
 
         foreach ($areas as $areaData) {
-            $area = PageLayoutArea::query()->updateOrCreate(
-                [
-                    'page_layout_row_id' => $row->id,
+            $area = PageLayoutArea::query()
+                ->where('key', $areaData['key'])
+                ->whereIn('page_layout_row_id', $layoutRowIds)
+                ->first();
+
+            if (!$area) {
+                $area = new PageLayoutArea([
+                    'page_layout_row_id' => $defaultRow->id,
                     'key' => $areaData['key'],
-                ],
-                [
-                    'title' => $areaData['title'],
-                    'description' => $areaData['description'] ?? null,
                     'width' => $areaData['width'] ?? null,
                     'sort_order' => $areaData['sort_order'],
-                ]
-            );
+                ]);
+            }
 
-            $existingAreaIds[] = $area->id;
+            $area->title = $areaData['title'];
+            $area->description = $areaData['description'] ?? null;
 
-            $this->syncElements($area, $areaData['elements']);
+            $area->save();
+
+            $this->syncElements($layout, $area, $areaData['elements']);
         }
-
-        PageLayoutArea::query()
-            ->where('page_layout_row_id', $row->id)
-            ->whereNotIn('id', $existingAreaIds)
-            ->delete();
     }
 
     /**
-     * @param PageLayoutArea $area
+     * element را با key در سطح layout پیدا می‌کند تا اگر قبلاً جابه‌جا شده بود،
+     * دوباره به area پیش‌فرض seed برنگردد.
+     *
+     * title و description و type همیشه sync می‌شوند.
+     * is_active و sort_order و area placement فقط هنگام ایجاد اولیه ست می‌شوند.
+     *
+     * @param PageLayout $layout
+     * @param PageLayoutArea $defaultArea
      * @param array $elements
      * @return void
      */
-    private function syncElements(PageLayoutArea $area, array $elements): void
+    private function syncElements(PageLayout $layout, PageLayoutArea $defaultArea, array $elements): void
     {
-        $existingElementIds = [];
+        $layoutRowIds = PageLayoutRow::query()
+            ->where('page_layout_id', $layout->id)
+            ->pluck('id');
+
+        $layoutAreaIds = PageLayoutArea::query()
+            ->whereIn('page_layout_row_id', $layoutRowIds)
+            ->pluck('id');
 
         foreach ($elements as $elementData) {
-            $element = PageLayoutElement::query()->updateOrCreate(
-                [
-                    'page_layout_area_id' => $area->id,
+            $element = PageLayoutElement::query()
+                ->where('key', $elementData['key'])
+                ->whereIn('page_layout_area_id', $layoutAreaIds)
+                ->first();
+
+            if (!$element) {
+                $element = new PageLayoutElement([
+                    'page_layout_area_id' => $defaultArea->id,
                     'key' => $elementData['key'],
-                ],
-                [
-                    'type' => $elementData['type'],
-                    'title' => $elementData['title'],
-                    'description' => $elementData['description'] ?? null,
                     'is_active' => $elementData['is_active'],
                     'sort_order' => $elementData['sort_order'],
-                ]
-            );
+                ]);
+            }
 
-            $existingElementIds[] = $element->id;
+            $element->type = $elementData['type'];
+            $element->title = $elementData['title'];
+            $element->description = $elementData['description'] ?? null;
+
+            $element->save();
         }
-
-        PageLayoutElement::query()
-            ->where('page_layout_area_id', $area->id)
-            ->whereNotIn('id', $existingElementIds)
-            ->delete();
     }
 }
