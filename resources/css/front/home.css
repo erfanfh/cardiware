@@ -38,3 +38,7 @@
     width: 1.5rem !important;
     background: rgb(249 115 22) !important; /* brand-600 */
 }
+
+#digital-products .swiper-pagination-bullet-active {
+    background: rgb(249 115 22) !important; /* brand-600 */
+}
