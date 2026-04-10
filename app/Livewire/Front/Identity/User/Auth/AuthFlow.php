@@ -224,6 +224,7 @@ class AuthFlow extends Component
         $user = app(RegisterUserAction::class)->execute(
             firstName: $this->first_name,
             lastName: $this->last_name,
+            displayName: $this->first_name . ' ' . $this->last_name,
             mobile: $this->mobile,
             email: $this->email,
             password: $this->password
