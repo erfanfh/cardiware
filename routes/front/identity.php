@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Front\Identity\AccountController;
 use App\Http\Controllers\Front\Identity\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,5 +11,4 @@ Route::redirect('login', 'auth')->name('login');
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::get('account', function () {
-})->name('account');
+Route::get('account', [AccountController::class, 'dashboard'])->name('account');
