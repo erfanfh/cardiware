@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('comment_id')->constrained('comments')->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->binary('ip_hash')->nullable();
+            $table->char('ip_hash', 64)->nullable();
             $table->string('type');
             $table->timestamps();
 

@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('type');
             $table->string('title');
             $table->string('slug');
-            $table->string('path', 600)->nullable();
+            $table->string('path')->nullable();
             $table->foreignId('parent_id')->nullable()->constrained('taxonomy_terms')->nullOnDelete();
             $table->text('description')->nullable();
             $table->timestamps();
