@@ -27,3 +27,17 @@
     background: rgba(255, 255, 255, 0.22);
     border-radius: 9999px;
 }
+
+.js-copy-button.is-copied {
+    background-color: rgb(30 41 59) !important;
+    border-color: rgb(30 41 59) !important;
+    color: white !important;
+}
+
+.js-copy-button.is-copied .js-copy-icon-default {
+    display: none;
+}
+
+.js-copy-button.is-copied .js-copy-icon-success {
+    display: inline-flex;
+}

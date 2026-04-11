@@ -48,40 +48,69 @@
                             <div class="mr-auto flex gap-2">
                                 <button
                                     type="button"
-                                    @click="copyText(@js($section->password ?? ''), '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}')"
-                                    class="inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 active:bg-slate-800"
+                                    @click="copyText(
+                                        @js($section->password ?? ''),
+                                        $event.currentTarget,
+                                        '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}'
+                                    )"
+                                    data-default-text="کپی رمز"
+                                    data-copied-text="کپی شد"
+                                    class="js-copy-button inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 active:bg-slate-800"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M14.491 15.5h.009m-5 0h.009"/>
-                                            <path stroke-width="1.5"
-                                                  d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                  d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
-                                        </g>
-                                    </svg>
+                                    <span class="js-copy-icon-default inline-flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M14.491 15.5h.009m-5 0h.009"/>
+                                                <path stroke-width="1.5"
+                                                      d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                      d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
+                                            </g>
+                                        </svg>
+                                    </span>
 
-                                    کپی رمز
+                                    <span class="js-copy-icon-success hidden items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24" fill="none">
+                                            <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+
+                                    <span class="js-copy-text">کپی رمز</span>
                                 </button>
 
                                 <button
                                     type="button"
-                                    @click="copyText(@js($copyAllText), 'همه لینک‌های این بخش کپی شد.')"
-                                    class="inline-flex leading-9 gap-1.5 cursor-pointer whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 text-[0.785rem] mr-auto font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700"
+                                    @click="copyText(@js($copyAllText), $event.currentTarget, 'همه لینک‌های این بخش کپی شد.')"
+                                    data-default-text="کپی لینک ها"
+                                    data-copied-text="کپی شد"
+                                    class="js-copy-button inline-flex leading-9 gap-1.5 cursor-pointer whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 text-[0.785rem] mr-auto font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                         viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                           stroke-linejoin="round" stroke-width="1.5">
-                                            <path
-                                                d="M16.964 8.982c-.003-2.95-.047-4.478-.906-5.524a4 4 0 0 0-.553-.554C14.4 2 12.76 2 9.48 2s-4.92 0-6.024.905a4 4 0 0 0-.553.554C1.998 4.56 1.998 6.2 1.998 9.48s0 4.92.906 6.023q.25.304.553.553c1.046.86 2.575.904 5.525.906"/>
-                                            <path
-                                                d="m14.028 9.025l2.966-.043m-2.98 13.02l2.966-.043m4.992-7.937l-.028 2.96M9.01 14.036l-.028 2.96m2.505-7.971c-.832.149-2.17.302-2.477 2.024m10.485 10.91c.835-.137 2.174-.27 2.508-1.986M19.495 9.025c.832.149 2.17.302 2.477 2.024M11.5 21.957c-.833-.148-2.17-.301-2.478-2.023"/>
-                                        </g>
-                                    </svg>
+                                    <span class="js-copy-icon-default inline-flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                               stroke-linejoin="round" stroke-width="1.5">
+                                                <path
+                                                    d="M16.964 8.982c-.003-2.95-.047-4.478-.906-5.524a4 4 0 0 0-.553-.554C14.4 2 12.76 2 9.48 2s-4.92 0-6.024.905a4 4 0 0 0-.553.554C1.998 4.56 1.998 6.2 1.998 9.48s0 4.92.906 6.023q.25.304.553.553c1.046.86 2.575.904 5.525.906"/>
+                                                <path
+                                                    d="m14.028 9.025l2.966-.043m-2.98 13.02l2.966-.043m4.992-7.937l-.028 2.96M9.01 14.036l-.028 2.96m2.505-7.971c-.832.149-2.17.302-2.477 2.024m10.485 10.91c.835-.137 2.174-.27 2.508-1.986M19.495 9.025c.832.149 2.17.302 2.477 2.024M11.5 21.957c-.833-.148-2.17-.301-2.478-2.023"/>
+                                            </g>
+                                        </svg>
+                                    </span>
 
-                                    کپی لینک ها
+                                    <span class="js-copy-icon-success hidden items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24" fill="none">
+                                            <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+
+                                    <span class="js-copy-text">کپی لینک ها</span>
                                 </button>
                             </div>
                         </div>
@@ -104,21 +133,34 @@
                                         <div class="flex items-center gap-2">
                                             <button
                                                 type="button"
-                                                @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), 'لینک دانلود کپی شد.')"
-                                                class="inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                                                @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), $event.currentTarget, 'لینک دانلود کپی شد.')"
+                                                data-default-text="کپی لینک"
+                                                data-copied-text="کپی شد"
+                                                class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                     viewBox="0 0 24 24">
-                                                    <g fill="none" stroke="currentColor" stroke-linecap="round"
-                                                       stroke-linejoin="round" stroke-width="1.5">
-                                                        <path
-                                                            d="M16.964 8.982c-.003-2.95-.047-4.478-.906-5.524a4 4 0 0 0-.553-.554C14.4 2 12.76 2 9.48 2s-4.92 0-6.024.905a4 4 0 0 0-.553.554C1.998 4.56 1.998 6.2 1.998 9.48s0 4.92.906 6.023q.25.304.553.553c1.046.86 2.575.904 5.525.906"/>
-                                                        <path
-                                                            d="m14.028 9.025l2.966-.043m-2.98 13.02l2.966-.043m4.992-7.937l-.028 2.96M9.01 14.036l-.028 2.96m2.505-7.971c-.832.149-2.17.302-2.477 2.024m10.485 10.91c.835-.137 2.174-.27 2.508-1.986M19.495 9.025c.832.149 2.17.302 2.477 2.024M11.5 21.957c-.833-.148-2.17-.301-2.478-2.023"/>
-                                                    </g>
-                                                </svg>
+                                                <span class="js-copy-icon-default inline-flex items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                         viewBox="0 0 24 24">
+                                                        <g fill="none" stroke="currentColor" stroke-linecap="round"
+                                                           stroke-linejoin="round" stroke-width="1.5">
+                                                            <path
+                                                                d="M16.964 8.982c-.003-2.95-.047-4.478-.906-5.524a4 4 0 0 0-.553-.554C14.4 2 12.76 2 9.48 2s-4.92 0-6.024.905a4 4 0 0 0-.553.554C1.998 4.56 1.998 6.2 1.998 9.48s0 4.92.906 6.023q.25.304.553.553c1.046.86 2.575.904 5.525.906"/>
+                                                            <path
+                                                                d="m14.028 9.025l2.966-.043m-2.98 13.02l2.966-.043m4.992-7.937l-.028 2.96M9.01 14.036l-.028 2.96m2.505-7.971c-.832.149-2.17.302-2.477 2.024m10.485 10.91c.835-.137 2.174-.27 2.508-1.986M19.495 9.025c.832.149 2.17.302 2.477 2.024M11.5 21.957c-.833-.148-2.17-.301-2.478-2.023"/>
+                                                        </g>
+                                                    </svg>
+                                                </span>
 
-                                                کپی لینک
+                                                <span class="js-copy-icon-success hidden items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                         viewBox="0 0 24 24" fill="none">
+                                                        <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor"
+                                                              stroke-width="2" stroke-linecap="round"
+                                                              stroke-linejoin="round"/>
+                                                    </svg>
+                                                </span>
+
+                                                <span class="js-copy-text">کپی لینک</span>
                                             </button>
 
                                             <a
@@ -184,21 +226,38 @@
 
                                 <button
                                     type="button"
-                                    @click="copyText(@js($section->password ?? ''), '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}')"
-                                    class="inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700"
+                                    @click="copyText(
+                                        @js($section->password ?? ''),
+                                        $event.currentTarget,
+                                        '{{ filled($section->password) ? 'رمز فایل کپی شد.' : 'رمزی برای این بخش ثبت نشده است.' }}'
+                                    )"
+                                    data-default-text="کپی رمز"
+                                    data-copied-text="کپی شد"
+                                    class="js-copy-button inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24">
-                                        <g fill="none" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M14.491 15.5h.009m-5 0h.009"/>
-                                            <path stroke-width="1.5"
-                                                  d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                  d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
-                                        </g>
-                                    </svg>
+                                    <span class="js-copy-icon-default inline-flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24">
+                                            <g fill="none" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M14.491 15.5h.009m-5 0h.009"/>
+                                                <path stroke-width="1.5"
+                                                      d="M4.268 18.845c.225 1.67 1.608 2.979 3.292 3.056c1.416.065 2.855.099 4.44.099s3.024-.034 4.44-.1c1.684-.076 3.067-1.385 3.292-3.055c.147-1.09.268-2.207.268-3.345s-.121-2.255-.268-3.345c-.225-1.67-1.608-2.979-3.292-3.056A95 95 0 0 0 12 9c-1.585 0-3.024.034-4.44.1c-1.684.076-3.067 1.385-3.292 3.055C4.12 13.245 4 14.362 4 15.5s.121 2.255.268 3.345Z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                                      d="M7.5 9V6.5a4.5 4.5 0 0 1 9 0V9"/>
+                                            </g>
+                                        </svg>
+                                    </span>
 
-                                    کپی رمز
+                                    <span class="js-copy-icon-success hidden items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                             viewBox="0 0 24 24" fill="none">
+                                            <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor" stroke-width="2"
+                                                  stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+
+                                    <span class="js-copy-text">کپی رمز</span>
                                 </button>
                             </div>
                         </div>
@@ -206,70 +265,5 @@
                 </div>
             @endif
         @endforeach
-
-        <div
-            x-show="toast.show"
-            x-transition
-            x-cloak
-            class="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-emerald-200 bg-emerald-50/95 p-3 text-sm text-emerald-900 shadow-lg backdrop-blur"
-        >
-            <div class="flex items-center justify-between gap-3">
-                <div class="font-extrabold" x-text="toast.text"></div>
-
-                <button
-                    type="button"
-                    @click="toast.show = false"
-                    class="grid h-9 w-9 place-items-center rounded-2xl border border-emerald-200 bg-white transition hover:bg-emerald-50"
-                >
-                    ×
-                </button>
-            </div>
-        </div>
     </section>
-
-    <script>
-        function downloadsBlock() {
-            return {
-                toast: {
-                    show: false,
-                    text: '',
-                },
-                _toastTimer: null,
-
-                showToast(text) {
-                    this.toast.text = text;
-                    this.toast.show = true;
-
-                    clearTimeout(this._toastTimer);
-
-                    this._toastTimer = setTimeout(() => {
-                        this.toast.show = false;
-                    }, 2200);
-                },
-
-                async copyText(text, successText = 'متن کپی شد.') {
-                    const normalizedText = text ?? '';
-
-                    try {
-                        await navigator.clipboard.writeText(normalizedText);
-                        this.showToast(successText);
-                    } catch (e) {
-                        const textarea = document.createElement('textarea');
-                        textarea.value = normalizedText;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-
-                        try {
-                            document.execCommand('copy');
-                            this.showToast(successText);
-                        } catch (_) {
-                            this.showToast('کپی انجام نشد.');
-                        }
-
-                        document.body.removeChild(textarea);
-                    }
-                },
-            }
-        }
-    </script>
 @endif
