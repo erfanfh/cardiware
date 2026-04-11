@@ -3,6 +3,7 @@
 namespace App\Domain\Media\Models;
 
 use App\Domain\Media\Enums\MediaFileDiskEnum;
+use App\Domain\Media\Enums\MediaFileFormatEnum;
 use App\Domain\Media\Enums\MediaFileVariantEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,8 @@ class MediaFileVariant extends Model
     protected $casts = [
         'disk' => MediaFileDiskEnum::class,
         'variant' => MediaFileVariantEnum::class,
+        'format' => MediaFileFormatEnum::class,
+        'generated_at' => 'datetime',
     ];
 
     /**

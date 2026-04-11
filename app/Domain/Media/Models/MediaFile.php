@@ -6,6 +6,7 @@ namespace App\Domain\Media\Models;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Enums\MediaFileStatusEnum;
 use App\Domain\Media\Enums\MediaFileTypeEnum;
+use App\Domain\Media\Enums\MediaFileVariantEnum;
 use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +29,7 @@ class MediaFile extends Model
         'type' => MediaFileTypeEnum::class,
         'visibility' => MediaFileVisibilityEnum::class,
         'status' => MediaFileStatusEnum::class,
+        'processed_at' => 'datetime',
     ];
 
     /**
@@ -44,6 +46,17 @@ class MediaFile extends Model
     public function variants(): HasMany
     {
         return $this->hasMany(MediaFileVariant::class);
+    }
+
+    /**
+     * @param MediaFileVariantEnum $variant
+     * @return MediaFileVariant|null
+     */
+    public function getVariant(MediaFileVariantEnum $variant): ?MediaFileVariant
+    {
+        $this->loadMissing('variants');
+
+        return $this->variants->firstWhere('variant', $variant);
     }
 
     /**

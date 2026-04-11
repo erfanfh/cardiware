@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin\Media;
 
 use App\Application\Media\Actions\DeleteMediaFileFromLibraryAction;
-use App\Application\Media\Actions\GetMediaFilePrimaryUrlAction;
+use App\Application\Media\Actions\GetMediaFileUrlAction;
 use App\Application\Media\Actions\ListImageLibraryAction;
 use App\Application\Media\Actions\UploadImageToLibraryAction;
 use App\Domain\Media\Enums\MediaFileDiskEnum;
@@ -121,7 +121,7 @@ class MediaPicker extends Component
             return;
         }
 
-        $url = app(GetMediaFilePrimaryUrlAction::class)->execute($mediaFile);
+        $url = app(GetMediaFileUrlAction::class)->execute($mediaFile);
         $this->selectedUrl = $url;
 
         $path = $mediaFile->primaryVariant?->path;

@@ -8,4 +8,3 @@ enum MediaFileStatusEnum: string
     case READY = 'ready';
     case FAILED = 'failed';
 }
-

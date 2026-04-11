@@ -10,4 +10,3 @@ enum MediaFileTypeEnum: string
     case AUDIO = 'audio';
     case OTHER = 'other';
 }
-

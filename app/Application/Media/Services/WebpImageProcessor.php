@@ -8,16 +8,17 @@ class WebpImageProcessor
 {
     /**
      * Decode an input image binary and re-encode it as WebP.
-     * This strips metadata implicitly (GD does not preserve EXIF metadata).
+     * Keeps aspect ratio and strips metadata by re-encoding through GD.
      *
-     * @param string $binary Raw uploaded file contents
-     * @param int|null $maxWidth Resize down if width exceeds this value (keeps aspect ratio)
-     * @param int $quality WebP quality (0-100)
+     * @param string $binary
+     * @param int|null $maxWidth
+     * @param int $quality
      * @return array{binary:string,width:int,height:int}
      */
     public function toWebp(string $binary, ?int $maxWidth = null, int $quality = 80): array
     {
         $img = @imagecreatefromstring($binary);
+
         if (!$img) {
             throw new RuntimeException('Invalid image data (decode failed).');
         }
@@ -29,21 +30,31 @@ class WebpImageProcessor
         $dstW = $srcW;
         $dstH = $srcH;
 
-        if (!is_null($maxWidth) && $srcW > $maxWidth) {
+        if ($maxWidth !== null && $srcW > $maxWidth) {
             $ratio = $srcH / $srcW;
             $dstW = $maxWidth;
             $dstH = (int)round($dstW * $ratio);
 
             $resized = imagecreatetruecolor($dstW, $dstH);
 
-            // Preserve transparency for PNG/WebP inputs
             imagealphablending($resized, false);
             imagesavealpha($resized, true);
 
-            imagecopyresampled($resized, $img, 0, 0, 0, 0, $dstW, $dstH, $srcW, $srcH);
+            imagecopyresampled(
+                $resized,
+                $img,
+                0,
+                0,
+                0,
+                0,
+                $dstW,
+                $dstH,
+                $srcW,
+                $srcH
+            );
 
-            imagedestroy($img);
             $dst = $resized;
+            imagedestroy($img);
         }
 
         ob_start();
@@ -53,7 +64,7 @@ class WebpImageProcessor
         imagedestroy($dst);
 
         if (!$ok || $webpBinary === '') {
-            throw new RuntimeException('Failed to encode WebP (imagewebp failed).');
+            throw new RuntimeException('Failed to encode WebP.');
         }
 
         return [
@@ -63,4 +74,3 @@ class WebpImageProcessor
         ];
     }
 }
-

@@ -6,4 +6,3 @@ enum MediaFileDiskEnum: string
 {
     case PUBLIC = 'public';
 }
-

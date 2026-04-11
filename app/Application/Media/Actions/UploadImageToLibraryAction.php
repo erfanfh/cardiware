@@ -3,7 +3,7 @@
 namespace App\Application\Media\Actions;
 
 use App\Application\Media\Services\ImageSniffer;
-use App\Application\Media\Services\WebpImageProcessor;
+use App\Application\Media\Services\ImageVariantGenerator;
 use App\Domain\Media\Enums\MediaFileDiskEnum;
 use App\Domain\Media\Enums\MediaFileFormatEnum;
 use App\Domain\Media\Enums\MediaFileStatusEnum;
@@ -14,60 +14,47 @@ use App\Domain\Media\Models\MediaFile;
 use App\Domain\Media\Models\MediaFileVariant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use RuntimeException;
-use Str;
 use Throwable;
 
 /**
- * Uploads an image to the media library with strict validation and sanitization.
+ * Upload an image to the media library and create all configured WebP variants.
  */
 readonly class UploadImageToLibraryAction
 {
-    /**
-     * @param WebpImageProcessor $processor
-     * @param ImageSniffer $sniffer
-     */
     public function __construct(
-        private WebpImageProcessor $processor,
-        private ImageSniffer       $sniffer,
+        private ImageSniffer          $sniffer,
+        private ImageVariantGenerator $variantGenerator,
     )
     {
     }
 
     /**
-     * Upload an image into the library and create media records + variants.
-     *
-     * @param TemporaryUploadedFile $file The temporary uploaded file (Livewire).
-     * @param int|null $createdBy The user ID who initiated the upload (nullable for system actions).
-     * @param MediaFileVisibilityEnum $visibility Storage visibility for persisted files (public/private).
-     * @param MediaFileDiskEnum $disk Storage disk to persist binaries on.
-     *
-     * @return MediaFile The created media file model, freshly loaded with its primary variant relation.
-     *
-     * @throws RuntimeException|Throwable If the file extension is invalid, file cannot be read,
-     *                          MIME/structure checks fail, or dimensions exceed limits.
+     * @throws RuntimeException|Throwable
      */
     public function execute(
         TemporaryUploadedFile   $file,
         ?int                    $createdBy,
         MediaFileVisibilityEnum $visibility = MediaFileVisibilityEnum::PUBLIC,
-        MediaFileDiskEnum       $disk = MediaFileDiskEnum::PUBLIC
+        MediaFileDiskEnum       $disk = MediaFileDiskEnum::PUBLIC,
     ): MediaFile
     {
-        // 1) Basic validation (client/laravel level)
-        // هسته‌ی امنیتی واقعی‌تر (magic bytes سخت‌گیرانه‌تر) رو گام بعد هم می‌تونیم قوی‌تر کنیم
         $ext = strtolower($file->getClientOriginalExtension() ?: '');
+
         if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
             throw new RuntimeException('Invalid image extension.');
         }
 
-        // 2) Read binary
         $binary = file_get_contents($file->getRealPath());
-        // --- Hard validation (magic bytes + image structure)
+
+        if ($binary === false || $binary === '') {
+            throw new RuntimeException('Unable to read uploaded file.');
+        }
+
         $meta = $this->sniffer->sniff($binary);
 
-// فقط این MIMEها مجازند
         $allowedMimes = [
             'image/jpeg',
             'image/png',
@@ -78,10 +65,9 @@ readonly class UploadImageToLibraryAction
             throw new RuntimeException('Invalid MIME type.');
         }
 
-// محدودیت ابعاد برای جلوگیری از image bomb
-        $maxWidth = 8000;
-        $maxHeight = 8000;
-        $maxPixels = 40_000_000; // 40MP
+        $maxWidth = (int)config('media.images.max_width', 8000);
+        $maxHeight = (int)config('media.images.max_height', 8000);
+        $maxPixels = (int)config('media.images.max_pixels', 40_000_000);
 
         if ($meta['width'] <= 0 || $meta['height'] <= 0) {
             throw new RuntimeException('Invalid image dimensions.');
@@ -95,62 +81,57 @@ readonly class UploadImageToLibraryAction
             throw new RuntimeException('Image is too large (pixel count).');
         }
 
-// Optional: چک همخوانی extension با mime (برای UX بهتر)
-        $ext = strtolower($file->getClientOriginalExtension() ?: '');
         $expectedExtByMime = [
             'image/jpeg' => ['jpg', 'jpeg'],
             'image/png' => ['png'],
             'image/webp' => ['webp'],
         ];
 
-        if ($ext !== '' && isset($expectedExtByMime[$meta['mime']]) && !in_array($ext, $expectedExtByMime[$meta['mime']], true)) {
-            // این رو می‌تونی سخت‌گیرانه رد کنی یا فقط log بگیری
+        if (
+            $ext !== ''
+            && isset($expectedExtByMime[$meta['mime']])
+            && !in_array($ext, $expectedExtByMime[$meta['mime']], true)
+        ) {
             throw new RuntimeException('File extension does not match detected MIME type.');
         }
-        if ($binary === false || $binary === '') {
-            throw new RuntimeException('Unable to read uploaded file.');
-        }
 
-        // 3) Re-encode to WebP (sanitize)
-        // variants
-        $original = $this->processor->toWebp($binary, maxWidth: 1600, quality: 80);
-        $thumb = $this->processor->toWebp($binary, maxWidth: 300, quality: 78);
+        $generatedVariants = $this->variantGenerator->generate($binary);
 
-        // 4) Prepare paths
         $baseDir = 'media/images/' . now()->format('Y/m');
         $uuid = (string)Str::uuid();
-
-        $originalPath = "{$baseDir}/{$uuid}.webp";
-        $thumbPath = "{$baseDir}/{$uuid}__thumb.webp";
-
-        // 5) Store binaries
         $storage = Storage::disk($disk->value);
+        $storageVisibility = $visibility->value === 'public' ? 'public' : 'private';
 
-        $storage->put($originalPath, $original['binary'], [
-            'visibility' => $visibility->value === 'public' ? 'public' : 'private',
-        ]);
+        $storedVariants = [];
 
-        $storage->put($thumbPath, $thumb['binary'], [
-            'visibility' => $visibility->value === 'public' ? 'public' : 'private',
-        ]);
+        foreach ($generatedVariants as $variantKey => $variantData) {
+            $suffix = $variantKey === MediaFileVariantEnum::ORIGINAL->value
+                ? ''
+                : "__{$variantKey}";
 
-        $originalChecksum = hash('sha256', $original['binary']);
-        $thumbChecksum = hash('sha256', $thumb['binary']);
+            $path = "{$baseDir}/{$uuid}{$suffix}.webp";
 
-        $originalName = ($file->getClientOriginalName() ?: '');
-        $title = $this->titleFromOriginalName($originalName);
+            $storage->put($path, $variantData['binary'], [
+                'visibility' => $storageVisibility,
+            ]);
 
-        // 6) DB transaction: create media_file + variants + primary_variant_id
+            $storedVariants[$variantKey] = [
+                'path' => $path,
+                'binary' => $variantData['binary'],
+                'width' => (int)$variantData['width'],
+                'height' => (int)$variantData['height'],
+                'checksum' => hash('sha256', $variantData['binary']),
+                'byte_size' => strlen($variantData['binary']),
+            ];
+        }
+
+        $title = $this->titleFromOriginalName((string)$file->getClientOriginalName());
+
         return DB::transaction(function () use (
             $createdBy,
             $visibility,
             $disk,
-            $originalPath,
-            $thumbPath,
-            $original,
-            $thumb,
-            $originalChecksum,
-            $thumbChecksum,
+            $storedVariants,
             $title
         ) {
             $media = MediaFile::query()->create([
@@ -161,53 +142,42 @@ readonly class UploadImageToLibraryAction
                 'title' => $title,
             ]);
 
-            $originalVar = MediaFileVariant::query()->create([
-                'media_file_id' => $media->id,
-                'disk' => $disk,
-                'mime_type' => 'image/webp',
-                'variant' => MediaFileVariantEnum::ORIGINAL,
-                'format' => MediaFileFormatEnum::WEBP,
-                'path' => $originalPath,
-                'byte_size' => strlen($original['binary']),
-                'width' => (int)($original['width'] ?? 0),
-                'height' => (int)($original['height'] ?? 0),
-                'checksum' => $originalChecksum,
-                'generated_at' => now(),
-            ]);
+            $createdVariantModels = [];
 
-            MediaFileVariant::query()->create([
-                'media_file_id' => $media->id,
-                'disk' => $disk,
-                'mime_type' => 'image/webp',
-                'variant' => MediaFileVariantEnum::THUMBNAIL,
-                'format' => MediaFileFormatEnum::WEBP,
-                'path' => $thumbPath,
-                'byte_size' => strlen($thumb['binary']),
-                'width' => (int)($thumb['width'] ?? 0),
-                'height' => (int)($thumb['height'] ?? 0),
-                'checksum' => $thumbChecksum,
-                'generated_at' => now(),
-            ]);
+            foreach ($storedVariants as $variantKey => $variant) {
+                $variantEnum = MediaFileVariantEnum::from($variantKey);
 
-            $media->primary_variant_id = $originalVar->id;
+                $createdVariantModels[$variantKey] = MediaFileVariant::query()->create([
+                    'media_file_id' => $media->id,
+                    'disk' => $disk,
+                    'mime_type' => MediaFileFormatEnum::WEBP->mimeType(),
+                    'variant' => $variantEnum,
+                    'format' => MediaFileFormatEnum::WEBP,
+                    'path' => $variant['path'],
+                    'byte_size' => $variant['byte_size'],
+                    'width' => $variant['width'],
+                    'height' => $variant['height'],
+                    'checksum' => $variant['checksum'],
+                    'generated_at' => now(),
+                ]);
+            }
+
+            $media->primary_variant_id = $createdVariantModels[MediaFileVariantEnum::ORIGINAL->value]->id;
             $media->status = MediaFileStatusEnum::READY;
             $media->processed_at = now();
             $media->save();
 
-            return $media->fresh(['primaryVariant']);
+            return $media->fresh(['primaryVariant', 'variants']);
         });
     }
 
-    /**
-     * @param string $originalName
-     * @return string|null
-     */
     private function titleFromOriginalName(string $originalName): ?string
     {
         $name = trim($originalName);
 
-        if ($name === '')
+        if ($name === '') {
             return null;
+        }
 
         $name = basename($name);
         $name = pathinfo($name, PATHINFO_FILENAME);
@@ -216,8 +186,9 @@ readonly class UploadImageToLibraryAction
         $name = preg_replace('/\s+/u', ' ', $name) ?? $name;
         $name = trim($name);
 
-        if ($name === '')
+        if ($name === '') {
             return null;
+        }
 
         return mb_substr($name, 0, 190);
     }

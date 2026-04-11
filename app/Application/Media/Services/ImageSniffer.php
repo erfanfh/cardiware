@@ -2,7 +2,6 @@
 
 namespace App\Application\Media\Services;
 
-
 use RuntimeException;
 
 /**
@@ -24,29 +23,18 @@ class ImageSniffer
     /**
      * Inspect an image binary and extract trusted metadata.
      *
-     * This method validates the binary using both:
-     * - `finfo` for real MIME type detection (magic bytes),
-     * - `getimagesizefromstring()` for structural integrity and dimensions.
-     *
-     * @param string $binary Raw binary contents of the image file.
-     *
+     * @param string $binary
      * @return array{
      *     mime: string,
      *     width: int,
      *     height: int,
      *     image_type: int
      * }
-     * An associative array containing:
-     * - `mime`        : Detected MIME type (e.g. image/jpeg, image/png, image/webp)
-     * - `width`       : Image width in pixels
-     * - `height`      : Image height in pixels
-     * - `image_type`  : One of the IMAGETYPE_* constants (or 0 if unavailable)
      *
      * @throws RuntimeException If MIME detection fails or the image structure is invalid.
      */
     public function sniff(string $binary): array
     {
-        // 1) MIME واقعی با finfo (magic bytes)
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $mime = $finfo->buffer($binary);
 
@@ -54,8 +42,8 @@ class ImageSniffer
             throw new RuntimeException('Unable to detect MIME type.');
         }
 
-        // 2) ساختار تصویر + ابعاد واقعی
         $info = @getimagesizefromstring($binary);
+
         if ($info === false || empty($info[0]) || empty($info[1]) || empty($info['mime'])) {
             throw new RuntimeException('Invalid image structure (getimagesize failed).');
         }
