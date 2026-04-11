@@ -23,6 +23,8 @@ class WebpImageProcessor
             throw new RuntimeException('Invalid image data (decode failed).');
         }
 
+        $img = $this->ensureTrueColor($img);
+
         $srcW = imagesx($img);
         $srcH = imagesy($img);
 
@@ -40,6 +42,9 @@ class WebpImageProcessor
             imagealphablending($resized, false);
             imagesavealpha($resized, true);
 
+            $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+            imagefilledrectangle($resized, 0, 0, $dstW, $dstH, $transparent);
+
             imagecopyresampled(
                 $resized,
                 $img,
@@ -53,9 +58,11 @@ class WebpImageProcessor
                 $srcH
             );
 
-            $dst = $resized;
             imagedestroy($img);
+            $dst = $resized;
         }
+
+        $dst = $this->ensureTrueColor($dst);
 
         ob_start();
         $ok = imagewebp($dst, null, max(0, min(100, $quality)));
@@ -72,5 +79,44 @@ class WebpImageProcessor
             'width' => $dstW,
             'height' => $dstH,
         ];
+    }
+
+    /**
+     * Convert palette-based GD images to truecolor so they can be encoded as WebP.
+     *
+     * @param \GdImage $image
+     * @return \GdImage
+     */
+    private function ensureTrueColor(\GdImage $image): \GdImage
+    {
+        if (imageistruecolor($image)) {
+            return $image;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        $trueColor = imagecreatetruecolor($width, $height);
+
+        imagealphablending($trueColor, false);
+        imagesavealpha($trueColor, true);
+
+        $transparent = imagecolorallocatealpha($trueColor, 0, 0, 0, 127);
+        imagefilledrectangle($trueColor, 0, 0, $width, $height, $transparent);
+
+        imagecopy(
+            $trueColor,
+            $image,
+            0,
+            0,
+            0,
+            0,
+            $width,
+            $height
+        );
+
+        imagedestroy($image);
+
+        return $trueColor;
     }
 }
