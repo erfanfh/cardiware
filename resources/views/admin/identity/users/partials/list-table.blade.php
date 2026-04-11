@@ -142,10 +142,10 @@
 
                         <x-admin.list.td>
                             <div class="text-xs leading-6">
-                                <a href="{{ route('admin.posts.index') }}">
+                                <a href="{{ route('admin.posts.index', ['author_ids' => [$user->id]]) }}">
                                     <x-admin.badge
                                         color="gray"
-                                    >{{ $user->posts()->count() }}</x-admin.badge>
+                                    >{{ $user->posts_count }}</x-admin.badge>
                                 </a>
                             </div>
                         </x-admin.list.td>

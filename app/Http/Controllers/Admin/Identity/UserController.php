@@ -38,6 +38,7 @@ class UserController extends Controller
 
         $users = $userListing
             ->handle(User::query(), $request->validated())
+            ->withCount('posts')
             ->paginate($userListing->perPage())
             ->withQueryString();
 
