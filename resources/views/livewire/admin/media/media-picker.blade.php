@@ -529,6 +529,7 @@
                                             class="mfip-hiddenInput"
                                             accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
                                             wire:model="upload"
+                                            @change="tab = 'library'"
                                         >
                                         <div class="mfip-dropzoneContent">
                                             <div class="mfip-dropzoneTitle">آپلود تصویر</div>
