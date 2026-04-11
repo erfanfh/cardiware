@@ -17,7 +17,6 @@ use App\Http\Requests\Admin\Content\IndexPostRequest;
 use App\Http\Requests\Admin\Content\UpdatePostRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
@@ -211,81 +210,5 @@ class PostController extends Controller
         return redirect()
             ->route('admin.posts.index')
             ->with('success', 'نوشته موردنظر با موفقیت حذف شد');
-    }
-
-    /**
-     * @param Request $request
-     * @return View
-     */
-    public function history(Request $request): View
-    {
-        Gate::authorize('post.index');
-
-        $sort = $request->get('sort', 'published_at');
-        $direction = $request->get('direction', 'desc');
-
-        $allowedSorts = ['title', 'published_at'];
-
-        if (!in_array($sort, $allowedSorts)) {
-            $sort = 'published_at';
-        }
-
-        if (!in_array($direction, ['asc', 'desc'])) {
-            $direction = 'desc';
-        }
-
-        $posts = Post::query()->withTrashed()->whereNotNull('deleted_at')
-            ->when($request->filled('title'), function ($query) use ($request) {
-                $query->where('title', 'like', '%' . $request->title . '%');
-            })->when($request->filled('id'), function ($query) use ($request) {
-                $query->where('id', $request->id);
-            })->when($request->filled('category'), function ($query) use ($request) {
-                $query->whereHas('categories', function ($q) use ($request) {
-                    $q->where('id', $request->category);
-                });
-            })->when($request->filled('tag'), function ($query) use ($request) {
-                $query->whereHas('tags', function ($q) use ($request) {
-                    $q->where('id', $request->tag);
-                });
-            })->when($request->filled('author'), function ($query) use ($request) {
-                $query->whereHas('author', function ($q) use ($request) {
-                    $q->whereRaw('CONCAT(first_name, " ", last_name) LIKE ?', ['%' . $request->author . '%']);
-                });
-            })->when($request->filled('from_published_at'), function ($query) use ($request) {
-                $query->where('created_at', '>=', gregorian_date($request->from_published_at));
-            })->when($request->filled('to_published_at'), function ($query) use ($request) {
-                $query->where('created_at', '<=', gregorian_date($request->to_published_at));
-            })->when($request->filled('status'), function ($query) use ($request) {
-                $query->where('status', $request->status);
-            })
-            ->orderBy($sort, $direction)
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('admin.content.posts.history', compact('posts'));
-    }
-
-    /**
-     * @param int $id
-     * @return RedirectResponse
-     */
-    public function restore(int $id): RedirectResponse
-    {
-        Gate::authorize('post.create');
-
-        $post = Post::withTrashed()->findOrFail($id);
-        $post->restore();
-
-        return redirect()->route('admin.posts.history')->with('success', 'نوشته موردنظر با موفقیت بازیابی شد');
-    }
-
-    public function forceDelete(int $id): RedirectResponse
-    {
-        Gate::authorize('post.delete');
-
-        $post = Post::withTrashed()->findOrFail($id);
-        $post->forceDelete();
-
-        return redirect()->route('admin.posts.history')->with('success', 'نوشته موردنظر با موفقیت به وطر کامل حذف شد');
     }
 }
