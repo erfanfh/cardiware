@@ -1,3 +1,7 @@
+{{--
+Template Name: صفحه درباره ما
+--}}
+
 @extends('front.master')
 
 @section('content')

@@ -34,6 +34,27 @@
             </div>
         </x-admin.metabox>
 
+        <x-admin.metabox title="تنظیمات">
+            <div class="grid grid-cols-12 gap-5">
+                <x-admin.field
+                    class="col-span-12"
+                    label="قالب صفحه"
+                >
+                    @inject('templates', \App\Application\Content\Services\PageTemplateService::class)
+
+                    <x-admin.form.select name="template">
+                        <option value="">پیش‌فرض</option>
+
+                        @foreach($templates->all() as $key => $label)
+                            <option value="{{ $key }}" @selected(old('template', $page?->template) === $key)>
+                                {{ $label }}
+                            </option>
+                        @endforeach
+                    </x-admin.form.select>
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+
         <x-admin.metabox title="تصویر شاخص">
             <x-admin.form.media-picker
                 mode="field"

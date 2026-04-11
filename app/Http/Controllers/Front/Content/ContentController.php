@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Front\Content;
 
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\ResolveContentBySlugAction;
+use App\Application\Content\Services\PageTemplateService;
 use App\Application\System\Actions\StoreViewAction;
+use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -30,9 +32,17 @@ final class ContentController
         app(StoreViewAction::class)->execute($resolvedContent->model);
 
         if ($resolvedContent->isPage()) {
-            return view('front.pages.detail', [
-                'page' => $resolvedContent->model,
-            ]);
+            /** @var Page $page */
+            $page = $resolvedContent->model;
+
+            $args = compact('page');
+            $viewName = 'front.pages.detail';
+
+            if ($page->template and app(PageTemplateService::class)->exists($page->template)) {
+                $viewName = "templates.$page->template";
+            }
+
+            return view($viewName, $args);
         }
 
         if ($resolvedContent->isPost()) {

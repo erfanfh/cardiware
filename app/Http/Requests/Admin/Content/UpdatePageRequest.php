@@ -2,9 +2,8 @@
 
 namespace App\Http\Requests\Admin\Content;
 
+use App\Application\Content\Services\PageTemplateService;
 use App\Domain\Content\Enums\PostStatusEnum;
-use App\Domain\Download\Enums\DownloadEntryTypeEnum;
-use App\Domain\Feature\Enums\FrontBadgeOptionEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -20,6 +19,8 @@ class UpdatePageRequest extends FormRequest
      */
     public function rules(): array
     {
+        $templates = app(PageTemplateService::class)->all();
+
         return [
             'title' => ['required', 'string', 'max:255'],
             'slug' => [
@@ -29,6 +30,7 @@ class UpdatePageRequest extends FormRequest
                 'alpha_dash',
             ],
             'status' => ['required', Rule::enum(PostStatusEnum::class)],
+            'template' => ['nullable', 'string', 'in:' . implode(',', array_keys($templates))],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'author_id' => ['nullable', 'integer', 'exists:users,id'],
             'body' => ['required', 'string'],
