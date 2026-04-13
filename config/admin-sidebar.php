@@ -114,6 +114,20 @@ return [
     ],
 
     [
+        'label' => 'فهرست ها',
+        'icon' => 'icons.right-to-left-list-bullet',
+        'children' => [
+            [
+                'label' => 'هدر سایت',
+                'route' => 'admin.navigation-menus.show',
+                'routeParameters' => ['header'],
+                'icon' => 'icons.right-to-left-list-bullet',
+                'gate' => 'navigation-menu.manage',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'چیدمان صفحات',
         'icon' => 'icons.dashboard-square-setting',
         'children' => [
