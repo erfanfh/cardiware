@@ -17,8 +17,6 @@ return new class extends Migration {
             $table->unsignedTinyInteger('max_depth')->nullable();
             $table->json('settings')->nullable();
             $table->timestamps();
-
-            $table->index(['is_active']);
         });
     }
 
