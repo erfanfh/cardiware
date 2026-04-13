@@ -15,7 +15,7 @@ class NavigationMenuSeeder extends Seeder
         $menus = [
             [
                 'slug' => 'header',
-                'title' => 'فهرست اصلی هدر',
+                'title' => 'هدر سایت',
             ]
         ];
 
