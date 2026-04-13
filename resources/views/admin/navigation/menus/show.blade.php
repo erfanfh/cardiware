@@ -45,6 +45,30 @@
                             searchUrl: @json(route('admin.tags.ajax-search')),
                             topItems: @json($topTags ?? []),
                         },
+
+                        post: {
+                            label: 'جستجوی نوشته',
+                            emptyText: 'نوشته‌ای پیدا نشد.',
+                            topText: 'نوشته‌های پیشنهادی',
+                            searchUrl: @json(route('admin.posts.ajax-search')),
+                            topItems: @json($topPosts ?? []),
+                        },
+
+                        page: {
+                            label: 'جستجوی برگه',
+                            emptyText: 'برگه‌ای پیدا نشد.',
+                            topText: 'برگه‌های پیشنهادی',
+                            searchUrl: @json(route('admin.pages.ajax-search')),
+                            topItems: @json($topPages ?? []),
+                        },
+
+                        project: {
+                            label: 'جستجوی پروژه',
+                            emptyText: 'پروژه‌ای پیدا نشد.',
+                            topText: 'پروژه‌های پیشنهادی',
+                            searchUrl: @json(route('admin.projects.ajax-search')),
+                            topItems: @json($topProjects ?? []),
+                        },
                     },
 
                     entityPicker: {
@@ -62,7 +86,7 @@
                     },
 
                     isSearchableEntityType(type) {
-                        return ['category', 'tag'].includes(type);
+                        return ['category', 'tag', 'post', 'page', 'project'].includes(type);
                     },
 
                     activateEntityPicker(type) {
@@ -266,31 +290,6 @@
                             megaMenuStyle: 'default',
                             children: [],
                         },
-                    ],
-
-                    tags: [
-                        {id: 1, title: 'آپدیت', path: '/tags/update'},
-                        {id: 2, title: 'گرافیک', path: '/tags/graphics'},
-                        {id: 3, title: 'مود رایگان', path: '/tags/free-mod'},
-                        {id: 4, title: 'پچ', path: '/tags/patch'},
-                    ],
-
-                    posts: [
-                        {id: 1, title: 'بهترین مودهای PES 2025', path: '/posts/best-pes-mods-2025'},
-                        {id: 2, title: 'آموزش نصب پچ ETS 2', path: '/posts/install-ets2-patch'},
-                        {id: 3, title: 'بررسی مود جدید FIFA', path: '/posts/new-fifa-mod-review'},
-                    ],
-
-                    pages: [
-                        {id: 1, title: 'درباره ما', path: '/about-us'},
-                        {id: 2, title: 'تماس با ما', path: '/contact-us'},
-                        {id: 3, title: 'سوالات متداول', path: '/faq'},
-                    ],
-
-                    projects: [
-                        {id: 1, title: 'پروژه مودینگ وی', path: '/projects/moddingway'},
-                        {id: 2, title: 'پروژه دانلود سنتر', path: '/projects/download-center'},
-                        {id: 3, title: 'پروژه هاب بازی‌ها', path: '/projects/games-hub'},
                     ],
 
                     typeLabels: {
