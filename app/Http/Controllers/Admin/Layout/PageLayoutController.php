@@ -20,7 +20,7 @@ class PageLayoutController
      */
     public function show(PageLayout $pageLayout, GetPageLayoutBuilderDataAction $getPageLayoutBuilderDataAction): View
     {
-        Gate::authorize('page-layouts.home');
+        Gate::authorize('page-layout.home');
 
         $builderData = $getPageLayoutBuilderDataAction->execute($pageLayout);
 
@@ -42,7 +42,7 @@ class PageLayoutController
                            UpdatePageLayoutAction  $updatePageLayoutAction,
     ): RedirectResponse
     {
-        Gate::authorize('page-layouts.home');
+        Gate::authorize('page-layout.home');
 
         $updatePageLayoutAction->execute($pageLayout, $request->layoutState(), $request->elementStates());
 
