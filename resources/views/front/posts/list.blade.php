@@ -43,7 +43,7 @@
         <section class="grid grid-cols-1 lg:grid-cols-10 gap-6">
             <div class="lg:col-span-7 space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($posts as $post)
+                    @forelse($posts as $post)
                         @php $views = approximate_view(page_views($post)); @endphp
                         <article
                             class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group">
@@ -89,12 +89,27 @@
                                 </div>
                             </a>
                         </article>
-                    @endforeach
+                    @empty
+                        <div
+                            class="col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                            <div
+                                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
+                                @include('icons.inbox')
+                            </div>
+
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800">نوشته ای یافت شد!</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">
+                                فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                            </p>
+                        </div>
+                    @endforelse
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <x-front.list.pagination :model="$posts"/>
-                </div>
+                @if($posts->hasMorePages())
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <x-front.list.pagination :model="$posts"/>
+                    </div>
+                @endif
             </div>
 
             <div class="lg:col-span-3">
