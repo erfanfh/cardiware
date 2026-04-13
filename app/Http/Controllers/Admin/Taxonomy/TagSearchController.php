@@ -18,14 +18,12 @@ class TagSearchController extends Controller
         $query = trim((string)$request->string('q'));
 
         if (mb_strlen($query) < 2) {
-            return response()->json([
-                'items' => [],
-            ]);
+            return response()->json(['items' => []]);
         }
 
         $items = TaxonomyTerm::query()
             ->tags()
-            ->select(['id', 'title'])
+            ->select(['id', 'title', 'path', 'slug'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -33,6 +31,7 @@ class TagSearchController extends Controller
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
                 'value' => (string)$taxonomyTerm->id,
                 'label' => $taxonomyTerm->title,
+                'path' => $taxonomyTerm->path ?: '/tags/' . $taxonomyTerm->slug,
             ])
             ->values();
 
