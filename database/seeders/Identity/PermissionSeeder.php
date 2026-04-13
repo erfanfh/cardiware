@@ -67,6 +67,9 @@ class PermissionSeeder extends Seeder
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
             ],
+            'navigation-menu' => [
+                'manage' => 'مدیریت فهرست ها',
+            ],
         ];
 
         $permissionIds = [];
