@@ -25,7 +25,7 @@ class CategorySearchController extends Controller
 
         $items = TaxonomyTerm::query()
             ->categories()
-            ->select(['id', 'title'])
+            ->select(['id', 'title', 'path', 'slug'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -33,6 +33,7 @@ class CategorySearchController extends Controller
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
                 'value' => (string)$taxonomyTerm->id,
                 'label' => $taxonomyTerm->title,
+                'path' => $taxonomyTerm->path ?: '/categories/' . $taxonomyTerm->slug,
             ])
             ->values();
 
