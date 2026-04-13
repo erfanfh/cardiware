@@ -26,7 +26,7 @@ class NavigationMenuSeeder extends Seeder
                 'slug' => $menu['slug'],
             ], [
                 'title' => $menu['title'],
-            ]);
+            ])->id;
         }
 
         NavigationMenu::whereNotIn('id', $items)->delete();
