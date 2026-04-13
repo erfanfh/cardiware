@@ -16,7 +16,6 @@
 
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
 
-
         <script>
             function navigationManager() {
                 return {
@@ -28,6 +27,146 @@
                     customLink: {
                         title: '',
                         url: '',
+                    },
+
+                    pickerConfigs: {
+                        category: {
+                            label: 'جستجوی دسته‌بندی',
+                            emptyText: 'دسته‌بندی‌ای پیدا نشد.',
+                            topText: 'دسته‌بندی‌های پیشنهادی',
+                            searchUrl: @json(route('admin.categories.ajax-search')),
+                            topItems: @json($topCategories ?? []),
+                        },
+
+                        tag: {
+                            label: 'جستجوی برچسب',
+                            emptyText: 'برچسبی پیدا نشد.',
+                            topText: 'برچسب‌های پیشنهادی',
+                            searchUrl: @json(route('admin.tags.ajax-search')),
+                            topItems: @json($topTags ?? []),
+                        },
+                    },
+
+                    entityPicker: {
+                        type: null,
+                        label: '',
+                        emptyText: 'موردی پیدا نشد.',
+                        topText: 'آیتم‌های پیشنهادی',
+                        search: '',
+                        loading: false,
+                        items: [],
+                        topItems: [],
+                        searched: false,
+                        debounceTimer: null,
+                        searchUrl: null,
+                    },
+
+                    isSearchableEntityType(type) {
+                        return ['category', 'tag'].includes(type);
+                    },
+
+                    activateEntityPicker(type) {
+                        const config = this.pickerConfigs[type];
+
+                        if (!config) {
+                            this.resetEntityPickerState();
+                            return;
+                        }
+
+                        this.entityPicker.type = type;
+                        this.entityPicker.label = config.label;
+                        this.entityPicker.emptyText = config.emptyText;
+                        this.entityPicker.topText = config.topText;
+                        this.entityPicker.search = '';
+                        this.entityPicker.loading = false;
+                        this.entityPicker.searched = false;
+                        this.entityPicker.searchUrl = config.searchUrl;
+                        this.entityPicker.topItems = [...config.topItems];
+                        this.entityPicker.items = [...config.topItems];
+                    },
+
+                    resetEntityPickerState() {
+                        this.entityPicker.type = null;
+                        this.entityPicker.label = '';
+                        this.entityPicker.emptyText = 'موردی پیدا نشد.';
+                        this.entityPicker.topText = 'آیتم‌های پیشنهادی';
+                        this.entityPicker.search = '';
+                        this.entityPicker.loading = false;
+                        this.entityPicker.items = [];
+                        this.entityPicker.topItems = [];
+                        this.entityPicker.searched = false;
+                        this.entityPicker.searchUrl = null;
+                    },
+
+                    onEntitySearchInput() {
+                        clearTimeout(this.entityPicker.debounceTimer);
+
+                        this.entityPicker.debounceTimer = setTimeout(() => {
+                            this.searchEntities();
+                        }, 300);
+                    },
+
+                    async searchEntities() {
+                        const query = this.entityPicker.search.trim();
+
+                        if (!query) {
+                            this.entityPicker.items = [...this.entityPicker.topItems];
+                            this.entityPicker.loading = false;
+                            this.entityPicker.searched = false;
+                            return;
+                        }
+
+                        if (query.length < 2) {
+                            this.entityPicker.items = [];
+                            this.entityPicker.loading = false;
+                            this.entityPicker.searched = true;
+                            return;
+                        }
+
+                        if (!this.entityPicker.searchUrl) {
+                            return;
+                        }
+
+                        this.entityPicker.loading = true;
+                        this.entityPicker.searched = true;
+
+                        try {
+                            const url = new URL(this.entityPicker.searchUrl, window.location.origin);
+                            url.searchParams.set('q', query);
+
+                            const response = await fetch(url.toString(), {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                },
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Entity search failed.');
+                            }
+
+                            const result = await response.json();
+
+                            this.entityPicker.items = Array.isArray(result.items)
+                                ? result.items.map((item) => ({
+                                    id: Number(item.value),
+                                    title: item.label,
+                                    path: item.path ?? '',
+                                }))
+                                : [];
+                        } catch (error) {
+                            console.error(error);
+                            this.entityPicker.items = [];
+                        } finally {
+                            this.entityPicker.loading = false;
+                        }
+                    },
+
+                    resetEntitySearch() {
+                        this.entityPicker.search = '';
+                        this.entityPicker.items = [...this.entityPicker.topItems];
+                        this.entityPicker.loading = false;
+                        this.entityPicker.searched = false;
                     },
 
                     menuItems: [
@@ -129,13 +268,6 @@
                         },
                     ],
 
-                    categories: [
-                        {id: 1, title: 'PES', path: '/categories/pes'},
-                        {id: 2, title: 'FIFA', path: '/categories/fifa'},
-                        {id: 3, title: 'ETS 2', path: '/categories/ets-2'},
-                        {id: 4, title: 'ATS', path: '/categories/ats'},
-                    ],
-
                     tags: [
                         {id: 1, title: 'آپدیت', path: '/tags/update'},
                         {id: 2, title: 'گرافیک', path: '/tags/graphics'},
@@ -171,6 +303,18 @@
                     },
 
                     init() {
+                        this.$watch('activeType', (value) => {
+                            if (this.isSearchableEntityType(value)) {
+                                this.activateEntityPicker(value);
+                            } else {
+                                this.resetEntityPickerState();
+                            }
+                        });
+
+                        if (this.isSearchableEntityType(this.activeType)) {
+                            this.activateEntityPicker(this.activeType);
+                        }
+
                         this.$nextTick(() => {
                             this.renderTree();
                             this.bindTreeEvents();
@@ -239,6 +383,11 @@
 
                     addEntityItem(type, item) {
                         this.menuItems.unshift(this.makeBaseItem(type, item.title, item.path, item.id));
+
+                        if (this.isSearchableEntityType(type)) {
+                            this.resetEntitySearch();
+                        }
+
                         this.fullRefresh();
                     },
 
@@ -562,6 +711,7 @@
                                 onEnd: () => {
                                     frame?.classList.remove('is-dragging');
                                     this.menuItems = this.serializeTree();
+                                    this.fullRefresh();
                                 },
                             });
 
@@ -600,26 +750,12 @@
 
                             const cloned = this.cloneMenuItem(oldItem);
 
-                            const childContainer = Array.from(itemEl.children).find((child) => {
-                                return child.classList?.contains('mt-2');
-                            });
-
-                            const nestedZone = childContainer
-                                ? Array.from(childContainer.children).find((child) => child.classList?.contains('nested-zone'))
-                                : null;
-
-                            const childList = nestedZone
-                                ? Array.from(nestedZone.children).find((child) => child.classList?.contains('nested-sortable'))
-                                : null;
+                            const childList = itemEl.querySelector(':scope > .mt-2 > .nested-sortable');
 
                             cloned.children = childList ? this.serializeList(childList) : [];
 
                             return cloned;
                         }).filter(Boolean);
-                    },
-
-                    fullRefresh() {
-                        this.renderTree();
                     },
 
                     findItem(uid, items = this.menuItems) {
