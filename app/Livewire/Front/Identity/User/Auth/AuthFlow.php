@@ -3,6 +3,7 @@
 namespace App\Livewire\Front\Identity\User\Auth;
 
 use App\Application\Identity\Actions\Auth\GenerateOtpAction;
+use App\Application\Identity\Actions\Auth\RedirectLoggedInUserAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Application\System\RateLimiterAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
@@ -152,9 +153,8 @@ class AuthFlow extends Component
             $loginField => $this->username,
             'password' => $this->password
         ])) {
-
             request()->session()->regenerate();
-            return redirect('/');
+            return (new RedirectLoggedInUserAction())->execute();
         }
 
         $this->addError('password', 'شماره موبایل یا ایمیل یا رمز عبور اشتباه است.');
@@ -184,7 +184,7 @@ class AuthFlow extends Component
         Auth::login($user);
         request()->session()->regenerate();
 
-        return redirect('/');
+        return (new RedirectLoggedInUserAction())->execute();
     }
 
     /**
@@ -233,7 +233,7 @@ class AuthFlow extends Component
         Auth::login($user);
         request()->session()->regenerate();
 
-        return redirect('/');
+        return (new RedirectLoggedInUserAction())->execute();
     }
 
     public function sendOtp(): void
@@ -266,6 +266,7 @@ class AuthFlow extends Component
 
     /**
      * @return void
+     * @throws RandomException
      */
     public function resendOtp(): void
     {
@@ -423,6 +424,6 @@ class AuthFlow extends Component
         Auth::login($user);
         request()->session()->regenerate();
 
-        return redirect('/');
+        return (new RedirectLoggedInUserAction())->execute();
     }
 }
