@@ -18,4 +18,5 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/discussion.php';
         require __DIR__ . '/admin/layout.php';
         require __DIR__ . '/admin/slug.php';
+        require __DIR__ . '/admin/navigation.php';
     });
