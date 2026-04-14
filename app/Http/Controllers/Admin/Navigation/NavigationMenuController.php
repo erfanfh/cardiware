@@ -35,7 +35,8 @@ class NavigationMenuController extends Controller
         $topCategories = TaxonomyTerm::query()
             ->categories()
             ->select(['id', 'title'])
-            ->orderBy('title')
+            ->withCount('posts')
+            ->orderByDesc('posts_count')
             ->limit(8)
             ->get()
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
@@ -47,7 +48,8 @@ class NavigationMenuController extends Controller
         $topTags = TaxonomyTerm::query()
             ->tags()
             ->select(['id', 'title'])
-            ->orderBy('title')
+            ->withCount('posts')
+            ->orderByDesc('posts_count')
             ->limit(8)
             ->get()
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
@@ -58,7 +60,7 @@ class NavigationMenuController extends Controller
 
         $topPosts = Post::query()
             ->select(['id', 'title'])
-            ->latest('id')
+            ->latest('published_at')
             ->limit(8)
             ->get()
             ->map(fn(Post $post) => [
@@ -69,7 +71,7 @@ class NavigationMenuController extends Controller
 
         $topPages = Page::query()
             ->select(['id', 'title'])
-            ->latest('id')
+            ->latest('published_at')
             ->limit(8)
             ->get()
             ->map(fn(Page $page) => [
@@ -80,7 +82,7 @@ class NavigationMenuController extends Controller
 
         $topProjects = Project::query()
             ->select(['id', 'title'])
-            ->latest('id')
+            ->latest('published_at')
             ->limit(8)
             ->get()
             ->map(fn(Project $project) => [
