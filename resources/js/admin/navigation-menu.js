@@ -404,7 +404,7 @@ window.navigationManager = function (config = {}) {
             const isCustomLink = item.type === 'custom_link';
 
             return `
-                <li class="sortable-item list-none" data-uid="${item.uid}">
+                <li class="sortable-item group list-none" data-uid="${item.uid}">
                     <div class="sortable-card overflow-hidden rounded-3xl border bg-white shadow-sm transition ${item.isOpen ? 'border-brand-200 ring-4 ring-brand-50' : 'border-slate-200 hover:border-slate-300'}">
                         <div class="flex items-center justify-between gap-4 px-4 py-4">
                             <div class="flex min-w-0 items-center gap-3">
@@ -428,6 +428,40 @@ window.navigationManager = function (config = {}) {
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2">
+                            <div class="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                                    <button type="button"
+                                            data-action="move-up"
+                                            data-uid="${item.uid}"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            title="انتقال به بالا">
+                                        ↑
+                                    </button>
+
+                                    <button type="button"
+                                            data-action="move-down"
+                                            data-uid="${item.uid}"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            title="انتقال به پایین">
+                                        ↓
+                                    </button>
+
+                                    <button type="button"
+                                            data-action="indent"
+                                            data-uid="${item.uid}"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            title="تبدیل به زیرمجموعه">
+                                        →
+                                    </button>
+
+                                    <button type="button"
+                                            data-action="outdent"
+                                            data-uid="${item.uid}"
+                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            title="خارج کردن از زیرمجموعه">
+                                        ←
+                                    </button>
+                                </div>
+
                                 <button type="button"
                                         data-action="toggle"
                                         data-uid="${item.uid}"
@@ -568,16 +602,29 @@ window.navigationManager = function (config = {}) {
                     return;
                 }
 
+                event.preventDefault();
+                event.stopPropagation();
+
                 const action = actionEl.dataset.action;
                 const uid = actionEl.dataset.uid;
 
+                let changed = false;
+
                 if (action === 'toggle') {
-                    this.toggleItem(uid);
-                    this.fullRefresh();
+                    changed = this.toggleItem(uid);
+                } else if (action === 'remove') {
+                    changed = this.removeItem(uid);
+                } else if (action === 'move-up') {
+                    changed = this.moveItemUp(uid);
+                } else if (action === 'move-down') {
+                    changed = this.moveItemDown(uid);
+                } else if (action === 'indent') {
+                    changed = this.indentItem(uid);
+                } else if (action === 'outdent') {
+                    changed = this.outdentItem(uid);
                 }
 
-                if (action === 'remove') {
-                    this.removeItem(uid);
+                if (changed) {
                     this.fullRefresh();
                 }
             });
@@ -636,6 +683,156 @@ window.navigationManager = function (config = {}) {
                     this.fullRefresh();
                 }
             });
+        },
+
+        findItemPath(uid, items = this.menuItems, path = []) {
+            for (let index = 0; index < items.length; index++) {
+                const item = items[index];
+
+                if (item.uid === uid) {
+                    return [...path, index];
+                }
+
+                if (item.children?.length) {
+                    const found = this.findItemPath(uid, item.children, [...path, index, 'children']);
+
+                    if (found) {
+                        return found;
+                    }
+                }
+            }
+
+            return null;
+        },
+
+        getListByPath(path) {
+            let current = this.menuItems;
+
+            for (const segment of path) {
+                current = current[segment];
+            }
+
+            return current;
+        },
+
+        getItemByPath(path) {
+            const parentPath = path.slice(0, -1);
+            const index = path[path.length - 1];
+            const list = this.getListByPath(parentPath);
+
+            return list[index] ?? null;
+        },
+
+        moveItemUp(uid) {
+            const path = this.findItemPath(uid);
+
+            if (!path) {
+                return false;
+            }
+
+            const parentPath = path.slice(0, -1);
+            const index = path[path.length - 1];
+
+            if (typeof index !== 'number' || index === 0) {
+                return false;
+            }
+
+            const list = this.getListByPath(parentPath);
+
+            [list[index - 1], list[index]] = [list[index], list[index - 1]];
+
+            return true;
+        },
+
+        moveItemDown(uid) {
+            const path = this.findItemPath(uid);
+
+            if (!path) {
+                return false;
+            }
+
+            const parentPath = path.slice(0, -1);
+            const index = path[path.length - 1];
+
+            if (typeof index !== 'number') {
+                return false;
+            }
+
+            const list = this.getListByPath(parentPath);
+
+            if (index >= list.length - 1) {
+                return false;
+            }
+
+            [list[index], list[index + 1]] = [list[index + 1], list[index]];
+
+            return true;
+        },
+
+        indentItem(uid) {
+            const path = this.findItemPath(uid);
+
+            if (!path) {
+                return false;
+            }
+
+            const parentPath = path.slice(0, -1);
+            const index = path[path.length - 1];
+
+            if (typeof index !== 'number' || index === 0) {
+                return false;
+            }
+
+            const list = this.getListByPath(parentPath);
+            const item = list[index];
+            const previousItem = list[index - 1];
+
+            if (!previousItem) {
+                return false;
+            }
+
+            list.splice(index, 1);
+
+            previousItem.children = previousItem.children ?? [];
+            previousItem.children.push(item);
+
+            if (item.isMegaMenu) {
+                item.isMegaMenu = false;
+                item.megaMenuTitle = '';
+            }
+
+            return true;
+        },
+
+        outdentItem(uid) {
+            const path = this.findItemPath(uid);
+
+            if (!path) {
+                return false;
+            }
+
+            const index = path[path.length - 1];
+            const childrenKey = path[path.length - 2];
+            const parentIndex = path[path.length - 3];
+
+            if (
+                typeof index !== 'number' ||
+                childrenKey !== 'children' ||
+                typeof parentIndex !== 'number'
+            ) {
+                return false;
+            }
+
+            const childListPath = path.slice(0, -1);
+            const childList = this.getListByPath(childListPath);
+            const [item] = childList.splice(index, 1);
+
+            const grandParentListPath = path.slice(0, -3);
+            const grandParentList = this.getListByPath(grandParentListPath);
+
+            grandParentList.splice(parentIndex + 1, 0, item);
+
+            return true;
         },
 
         mountNestedSortables() {
