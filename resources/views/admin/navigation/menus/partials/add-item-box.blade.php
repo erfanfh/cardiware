@@ -15,39 +15,53 @@
     </div>
 
     <div>
-        <div x-show="activeType === 'custom_link'" x-transition.opacity.duration.150ms
-             class="space-y-4">
-            <div>
-                <label class="mb-2 block text-sm font-bold text-slate-700">عنوان لینک</label>
-                <input x-model="customLink.title" type="text" placeholder="مثلاً دانلودها"
-                       class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-            </div>
+        <div
+            x-show="activeType === 'custom_link'"
+            x-transition.opacity.duration.150ms
+            @keydown.enter.prevent="addCustomLink()"
+            class="space-y-4"
+        >
+            <x-admin.field
+                class="col-span-12"
+                label="عنوان لینک"
+            >
+                <x-admin.form.input
+                    x-model="customLink.title"
+                />
+            </x-admin.field>
 
-            <div>
-                <label class="mb-2 block text-sm font-bold text-slate-700">آدرس لینک</label>
-                <input x-model="customLink.url" type="text" placeholder="/downloads"
-                       class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-            </div>
+            <x-admin.field
+                class="col-span-12"
+                label="آدرس لینک"
+            >
+                <x-admin.form.input
+                    x-model="customLink.url"
+                    class="direction-ltr"
+                />
+            </x-admin.field>
 
-            <button type="button"
-                    @click="addCustomLink()"
-                    class="inline-flex w-full items-center justify-center rounded-2xl bg-brand-600 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-brand-700">
-                افزودن به فهرست
-            </button>
+            <div class="flex flex-row-reverse">
+                <x-admin.form.button @click="addCustomLink()">
+                    افزودن به فهرست
+                </x-admin.form.button>
+            </div>
         </div>
 
         <div x-show="isSearchableEntityType(activeType)" x-transition.opacity.duration.150ms class="space-y-4">
-            <div>
-                <label class="mb-2 block text-sm font-bold text-slate-700" x-text="entityPicker.label"></label>
+            <div class="mb-6">
+                <label class="text-xs font-bold text-slate-500 mb-2 block" x-text="entityPicker.label"></label>
 
                 <div class="relative">
-                    <input
-                        x-model="entityPicker.search"
-                        @input="onEntitySearchInput()"
-                        type="text"
-                        placeholder="حداقل ۲ حرف وارد کنید"
-                        class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
+                    <x-admin.field
+                        class="w-full"
                     >
+                        <x-admin.form.input
+                            x-model="entityPicker.search"
+                            @input="onEntitySearchInput()"
+                            placeholder="حداقل ۲ حرف وارد کنید"
+                            class="placeholder:text-xs"
+                        />
+                    </x-admin.field>
 
                     <button
                         x-show="entityPicker.search"
@@ -60,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center justify-between text-xs mb-3">
                 <span class="font-bold text-slate-500" x-show="!entityPicker.searched"
                       x-text="entityPicker.topText"></span>
 
@@ -88,20 +102,14 @@
                 <template x-for="item in entityPicker.items" :key="`${activeType}-${item.id}`">
                     <button type="button"
                             @click="addEntityItem(activeType, item)"
-                            class="flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right transition hover:border-brand-200 hover:bg-brand-50/40">
+                            class="cursor-pointer flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-3 text-right transition hover:border-brand-200 hover:bg-brand-50/40">
                         <div class="min-w-0">
-                            <div class="truncate text-sm font-black text-slate-900" x-text="item.title"></div>
-
-                            <template x-if="item.path">
-                                <div class="mt-1 truncate text-xs text-slate-500 dir-ltr text-left"
-                                     x-text="item.path"></div>
-                            </template>
+                            <div class="truncate text-[0.8rem] font-black text-slate-900" x-text="item.title"></div>
                         </div>
 
                         <span
-                            class="mr-3 shrink-0 rounded-xl bg-brand-50 px-3 py-1 text-xs font-extrabold text-brand-700">
-                    افزودن
-                </span>
+                            class="mr-3 shrink-0 rounded-xl bg-brand-50 px-3 py-1 text-[0.7rem] text-brand-700">افزودن
+                        </span>
                     </button>
                 </template>
             </div>
