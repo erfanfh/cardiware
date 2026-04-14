@@ -599,10 +599,6 @@ window.navigationManager = function (config = {}) {
                 item[field] = event.target.type === 'checkbox'
                     ? event.target.checked
                     : event.target.value;
-
-                if (field === 'isMegaMenu' || ['title', 'url', 'icon', 'badge'].includes(field)) {
-                    this.fullRefresh();
-                }
             });
 
             this.$refs.treeRoot.addEventListener('change', (event) => {
@@ -624,6 +620,19 @@ window.navigationManager = function (config = {}) {
                     : event.target.value;
 
                 if (field === 'isMegaMenu') {
+                    this.fullRefresh();
+                }
+            });
+
+            this.$refs.treeRoot.addEventListener('focusout', (event) => {
+                const field = event.target.dataset.field;
+                const uid = event.target.dataset.uid;
+
+                if (!field || !uid) {
+                    return;
+                }
+
+                if (['title', 'badge'].includes(field)) {
                     this.fullRefresh();
                 }
             });
