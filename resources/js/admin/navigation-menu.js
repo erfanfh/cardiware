@@ -431,14 +431,14 @@ window.navigationManager = function (config = {}) {
                                 <button type="button"
                                         data-action="toggle"
                                         data-uid="${item.uid}"
-                                        class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-50">
+                                        class="cursor-pointer inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-[0.7rem] font-bold text-slate-700 transition hover:bg-slate-50">
                                     ${item.isOpen ? 'بستن تنظیمات' : 'تنظیمات'}
                                 </button>
 
                                 <button type="button"
                                         data-action="remove"
                                         data-uid="${item.uid}"
-                                        class="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-white px-3 py-2 text-xs font-bold text-rose-600 transition hover:bg-rose-50">
+                                        class="cursor-pointer inline-flex items-center justify-center rounded-xl border border-rose-200 bg-white px-3 py-2 text-[0.7rem] font-bold text-rose-600 transition hover:bg-rose-50">
                                     حذف
                                 </button>
                             </div>
