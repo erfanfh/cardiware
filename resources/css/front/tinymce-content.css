@@ -2,6 +2,7 @@
     unicode-bidi: plaintext;
     line-height: 1.75rem;
     font-size: 0.9rem;
+    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 /* Spacing base */
