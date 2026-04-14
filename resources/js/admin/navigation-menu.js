@@ -13,7 +13,6 @@ window.navigationManager = function (config = {}) {
         },
 
         pickerConfigs: config.pickerConfigs ?? {},
-        referenceTypes: config.referenceTypes ?? {},
 
         entityPicker: {
             type: null,
@@ -75,7 +74,6 @@ window.navigationManager = function (config = {}) {
                 title: item.title ?? '',
                 url: item.url ?? '',
                 referenceId: item.referenceId ?? null,
-                referenceType: item.referenceType ?? null,
                 isOpen: !!item.isOpen,
                 target: item.target ?? '_self',
                 icon: item.icon ?? '',
@@ -113,10 +111,6 @@ window.navigationManager = function (config = {}) {
 
         isSearchableEntityType(type) {
             return ['category', 'tag', 'post', 'page', 'project'].includes(type);
-        },
-
-        resolveReferenceType(type) {
-            return this.referenceTypes[type] ?? null;
         },
 
         activateEntityPicker(type) {
@@ -271,7 +265,6 @@ window.navigationManager = function (config = {}) {
                          title,
                          url = '',
                          referenceId = null,
-                         referenceType = null,
                      }) {
             return {
                 uid: this.buildUid(),
@@ -281,7 +274,6 @@ window.navigationManager = function (config = {}) {
                 title,
                 url,
                 referenceId,
-                referenceType,
                 isOpen: true,
                 target: '_self',
                 icon: '',
@@ -304,7 +296,6 @@ window.navigationManager = function (config = {}) {
                 title: item.title,
                 url: item.url,
                 referenceId: item.referenceId ?? null,
-                referenceType: item.referenceType ?? null,
                 isOpen: !!item.isOpen,
                 target: item.target ?? '_self',
                 icon: item.icon ?? '',
@@ -342,7 +333,6 @@ window.navigationManager = function (config = {}) {
                 type,
                 title: item.title,
                 referenceId: item.id,
-                referenceType: this.resolveReferenceType(type),
             }));
 
             if (this.isSearchableEntityType(type)) {
@@ -733,7 +723,6 @@ window.navigationManager = function (config = {}) {
                 url: item.type === 'custom_link' ? (item.url ?? '') : '',
                 target: item.target ?? '_self',
                 reference_id: item.referenceId ?? null,
-                reference_type: item.referenceType ?? null,
                 icon: item.icon ?? '',
                 badge: item.badge ?? '',
                 css_class: item.cssClass ?? '',

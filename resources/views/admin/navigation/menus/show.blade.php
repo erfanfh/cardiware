@@ -42,14 +42,6 @@
             ],
         ],
 
-        'referenceTypes' => [
-            'category' => \App\Domain\Taxonomy\Models\TaxonomyTerm::class,
-            'tag' => \App\Domain\Taxonomy\Models\TaxonomyTerm::class,
-            'post' => \App\Domain\Content\Models\Post::class,
-            'page' => \App\Domain\Content\Models\Page::class,
-            'project' => \App\Domain\Project\Models\Project::class,
-        ],
-
         'menuItems' => $menuItems ?? [],
     ];
 @endphp

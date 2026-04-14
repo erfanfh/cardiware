@@ -3,10 +3,14 @@
 namespace App\Application\Navigation\Actions;
 
 use App\Application\Navigation\Support\NavigationItemUrlResolver;
+use App\Domain\Content\Models\Page;
+use App\Domain\Content\Models\Post;
 use App\Domain\Navigation\Enums\NavigationItemTargetEnum;
 use App\Domain\Navigation\Enums\NavigationItemTypeEnum;
 use App\Domain\Navigation\Models\NavigationItem;
 use App\Domain\Navigation\Models\NavigationMenu;
+use App\Domain\Project\Models\Project;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -112,7 +116,7 @@ class SyncNavigationMenuItemsAction
         }
 
         $referenceId = $item['reference_id'] ?? null;
-        $referenceType = $item['reference_type'] ?? null;
+        $referenceType = null;
         $url = trim((string)($item['url'] ?? ''));
 
         if ($type === NavigationItemTypeEnum::CUSTOM_LINK->value) {
@@ -123,18 +127,25 @@ class SyncNavigationMenuItemsAction
             }
 
             $referenceId = null;
-            $referenceType = null;
         } else {
-            if ($referenceId === null || $referenceType === null) {
+            if ($referenceId === null) {
                 throw ValidationException::withMessages([
                     'items_payload' => 'مرجع یکی از آیتم‌های فهرست معتبر نیست.',
+                ]);
+            }
+
+            $referenceType = $this->resolveReferenceTypeByItemType($type);
+
+            if ($referenceType === null) {
+                throw ValidationException::withMessages([
+                    'items_payload' => 'نوع مرجع یکی از آیتم‌های فهرست معتبر نیست.',
                 ]);
             }
 
             $url = $this->urlResolver->resolve(
                 type: $type,
                 referenceId: (int)$referenceId,
-                referenceType: (string)$referenceType,
+                referenceType: $referenceType,
             );
         }
 
@@ -144,7 +155,7 @@ class SyncNavigationMenuItemsAction
             'url' => $url,
             'target' => $target,
             'reference_id' => $referenceId !== null ? (int)$referenceId : null,
-            'reference_type' => $referenceType ? (string)$referenceType : null,
+            'reference_type' => $referenceType,
             'icon' => $this->nullableTrimmedString($item['icon'] ?? null),
             'badge' => $this->nullableTrimmedString($item['badge'] ?? null),
             'css_class' => $this->nullableTrimmedString($item['css_class'] ?? null),
@@ -154,6 +165,18 @@ class SyncNavigationMenuItemsAction
             'mega_menu_style' => $this->nullableTrimmedString($item['mega_menu_style'] ?? 'default') ?? 'default',
             'children' => is_array($item['children'] ?? null) ? $item['children'] : [],
         ];
+    }
+
+    protected function resolveReferenceTypeByItemType(string $type): ?string
+    {
+        return match ($type) {
+            NavigationItemTypeEnum::CATEGORY->value => TaxonomyTerm::class,
+            NavigationItemTypeEnum::TAG->value => TaxonomyTerm::class,
+            NavigationItemTypeEnum::POST->value => Post::class,
+            NavigationItemTypeEnum::PAGE->value => Page::class,
+            NavigationItemTypeEnum::PROJECT->value => Project::class,
+            default => null,
+        };
     }
 
     protected function nullableTrimmedString(mixed $value): ?string

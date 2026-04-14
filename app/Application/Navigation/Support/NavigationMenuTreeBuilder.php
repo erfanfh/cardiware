@@ -8,8 +8,6 @@ use Illuminate\Support\Collection;
 class NavigationMenuTreeBuilder
 {
     /**
-     * Build nested tree for admin builder from flat items collection.
-     *
      * @param Collection<int, NavigationItem> $items
      * @return array<int, array<string, mixed>>
      */
@@ -47,7 +45,6 @@ class NavigationMenuTreeBuilder
                     'title' => $item->title,
                     'url' => $item->type->isCustomLink() ? $item->url : '',
                     'referenceId' => $item->reference_id,
-                    'referenceType' => $item->reference_type,
                     'isOpen' => false,
                     'target' => $item->target->value,
                     'icon' => $item->icon,
