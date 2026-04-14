@@ -274,7 +274,7 @@ window.navigationManager = function (config = {}) {
                 title,
                 url,
                 referenceId,
-                isOpen: true,
+                isOpen: false,
                 target: '_self',
                 icon: '',
                 badge: '',
@@ -317,7 +317,7 @@ window.navigationManager = function (config = {}) {
                 return;
             }
 
-            this.menuItems.unshift(this.makeBaseItem({
+            this.menuItems.push(this.makeBaseItem({
                 type: 'custom_link',
                 title,
                 url,
@@ -329,7 +329,7 @@ window.navigationManager = function (config = {}) {
         },
 
         addEntityItem(type, item) {
-            this.menuItems.unshift(this.makeBaseItem({
+            this.menuItems.push(this.makeBaseItem({
                 type,
                 title: item.title,
                 referenceId: item.id,
