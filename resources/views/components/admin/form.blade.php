@@ -23,6 +23,7 @@
 @endphp
 
 <form
+    class="confirmationForm"
     method="{{ $formMethod }}"
     {{ $baseAttributes }}
     x-data
