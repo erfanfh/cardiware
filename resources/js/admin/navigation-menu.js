@@ -382,7 +382,7 @@ window.navigationManager = function (config = {}) {
         buildChildrenHtml(items, level = 0, isRoot = false) {
             return `
                 <ul class="nested-sortable space-y-2.5 ${
-                isRoot ? '' : 'pr-4 border-r border-slate-200/80'
+                isRoot ? '' : 'pr-5 mr-2 border-r-2 border-slate-200'
             }" data-root="${isRoot ? 'true' : 'false'}">
                     ${items.map((item) => this.buildItemHtml(item, level)).join('')}
                 </ul>
@@ -399,7 +399,8 @@ window.navigationManager = function (config = {}) {
                 : '';
 
             const settingsHidden = item.isOpen ? '' : 'hidden';
-            const megaHidden = item.isMegaMenu ? '' : 'hidden';
+            const isRootItem = level === 0;
+            const megaHidden = item.isMegaMenu && isRootItem ? '' : 'hidden';
             const isCustomLink = item.type === 'custom_link';
 
             return `
@@ -408,7 +409,7 @@ window.navigationManager = function (config = {}) {
                         <div class="flex items-center justify-between gap-4 px-4 py-4">
                             <div class="flex min-w-0 items-center gap-3">
                                 <button type="button"
-                                        class="drag-handle flex h-10 w-10 shrink-0 cursor-move items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 transition hover:bg-slate-100"
+                                        class="drag-handle flex h-10 w-10 shrink-0 cursor-move items-center justify-center rounded-2xl border border-slate-300 bg-slate-100 text-slate-500 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
                                         title="جابجایی">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
                                         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -494,16 +495,18 @@ window.navigationManager = function (config = {}) {
                                                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                     </div>
 
-                                    <div class="space-y-3">
-                                        <label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                                            <div>
-                                                <div class="text-sm font-black text-slate-900">فعال‌سازی مگامنو</div>
-                                                <div class="mt-1 text-xs text-slate-500">برای آیتم‌های سطح بالا</div>
-                                            </div>
-                                            <input type="checkbox" data-field="isMegaMenu" data-uid="${item.uid}" ${item.isMegaMenu ? 'checked' : ''}
-                                                   class="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-                                        </label>
-                                    </div>
+                                    ${isRootItem ? `
+                                        <div class="space-y-3">
+                                            <label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                                                <div>
+                                                    <div class="text-sm font-black text-slate-900">فعال‌سازی مگامنو</div>
+                                                    <div class="mt-1 text-xs text-slate-500">فقط برای آیتم‌های سطح اول</div>
+                                                </div>
+                                                <input type="checkbox" data-field="isMegaMenu" data-uid="${item.uid}" ${item.isMegaMenu ? 'checked' : ''}
+                                                       class="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
+                                            </label>
+                                        </div>
+                                    ` : ``}
                                 </div>
                             </div>
 
@@ -683,10 +686,10 @@ window.navigationManager = function (config = {}) {
                 return [];
             }
 
-            return this.serializeList(root);
+            return this.serializeList(root, 0);
         },
 
-        serializeList(listEl) {
+        serializeList(listEl, level = 0) {
             const directItems = Array.from(listEl.children).filter((child) =>
                 child.classList.contains('sortable-item')
             );
@@ -703,7 +706,12 @@ window.navigationManager = function (config = {}) {
                     const cloned = this.cloneMenuItem(oldItem);
                     const childList = itemEl.querySelector(':scope > .mt-2 > .nested-sortable');
 
-                    cloned.children = childList ? this.serializeList(childList) : [];
+                    cloned.children = childList ? this.serializeList(childList, level + 1) : [];
+
+                    if (level > 0) {
+                        cloned.isMegaMenu = false;
+                        cloned.megaMenuTitle = '';
+                    }
 
                     return cloned;
                 })
