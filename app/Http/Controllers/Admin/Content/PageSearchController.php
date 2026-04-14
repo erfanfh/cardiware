@@ -18,7 +18,7 @@ class PageSearchController extends Controller
         }
 
         $items = Page::query()
-            ->select(['id', 'title', 'slug'])
+            ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -26,7 +26,6 @@ class PageSearchController extends Controller
             ->map(fn(Page $page) => [
                 'value' => (string)$page->id,
                 'label' => $page->title,
-                'path' => $page->url,
             ])
             ->values();
 

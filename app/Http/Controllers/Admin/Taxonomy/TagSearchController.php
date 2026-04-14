@@ -23,7 +23,7 @@ class TagSearchController extends Controller
 
         $items = TaxonomyTerm::query()
             ->tags()
-            ->select(['id', 'title', 'path', 'slug'])
+            ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -31,7 +31,6 @@ class TagSearchController extends Controller
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
                 'value' => (string)$taxonomyTerm->id,
                 'label' => $taxonomyTerm->title,
-                'path' => $taxonomyTerm->path ?: '/tags/' . $taxonomyTerm->slug,
             ])
             ->values();
 

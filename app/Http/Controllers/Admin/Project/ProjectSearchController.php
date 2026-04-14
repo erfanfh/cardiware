@@ -18,7 +18,7 @@ class ProjectSearchController extends Controller
         }
 
         $items = Project::query()
-            ->select(['id', 'title', 'slug'])
+            ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -26,7 +26,6 @@ class ProjectSearchController extends Controller
             ->map(fn(Project $project) => [
                 'value' => (string)$project->id,
                 'label' => $project->title,
-                'path' => '/projects/' . ltrim($project->slug, '/'),
             ])
             ->values();
 

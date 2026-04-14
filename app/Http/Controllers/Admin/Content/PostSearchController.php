@@ -18,7 +18,7 @@ class PostSearchController extends Controller
         }
 
         $items = Post::query()
-            ->select(['id', 'title', 'slug'])
+            ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')
             ->limit(20)
@@ -26,7 +26,6 @@ class PostSearchController extends Controller
             ->map(fn(Post $post) => [
                 'value' => (string)$post->id,
                 'label' => $post->title,
-                'path' => $post->url,
             ])
             ->values();
 
