@@ -39,18 +39,4 @@ class NavigationMenu extends Model
     {
         return $this->hasMany(NavigationItem::class, 'menu_id');
     }
-
-    /**
-     * Get root items of the menu.
-     */
-    public function rootItems(): HasMany
-    {
-        return $this->hasMany(NavigationItem::class, 'menu_id')
-            ->whereNull('parent_id')
-            ->with([
-                'children.children',
-            ])
-            ->orderBy('sort_order')
-            ->orderBy('id');
-    }
 }

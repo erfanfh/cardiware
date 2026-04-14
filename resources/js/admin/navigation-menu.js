@@ -266,7 +266,13 @@ window.navigationManager = function (config = {}) {
             return `menu-item-${this.nextId++}`;
         },
 
-        makeBaseItem(type, title, url, referenceId = null, referenceType = null) {
+        makeBaseItem({
+                         type,
+                         title,
+                         url = '',
+                         referenceId = null,
+                         referenceType = null,
+                     }) {
             return {
                 uid: this.buildUid(),
                 id: null,
@@ -320,22 +326,24 @@ window.navigationManager = function (config = {}) {
                 return;
             }
 
-            this.menuItems.unshift(this.makeBaseItem('custom_link', title, url));
+            this.menuItems.unshift(this.makeBaseItem({
+                type: 'custom_link',
+                title,
+                url,
+            }));
+
             this.customLink.title = '';
             this.customLink.url = '';
             this.fullRefresh();
         },
 
         addEntityItem(type, item) {
-            this.menuItems.unshift(
-                this.makeBaseItem(
-                    type,
-                    item.title,
-                    '',
-                    item.id,
-                    this.resolveReferenceType(type)
-                )
-            );
+            this.menuItems.unshift(this.makeBaseItem({
+                type,
+                title: item.title,
+                referenceId: item.id,
+                referenceType: this.resolveReferenceType(type),
+            }));
 
             if (this.isSearchableEntityType(type)) {
                 this.resetEntitySearch();
