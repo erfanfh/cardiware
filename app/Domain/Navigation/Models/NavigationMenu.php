@@ -15,7 +15,6 @@ class NavigationMenu extends Model
     protected $fillable = [
         'title',
         'slug',
-        'max_depth',
         'settings',
     ];
 
