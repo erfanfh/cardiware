@@ -46,7 +46,7 @@
                                         {!! nl2br(htmlspecialchars(e($item['description']))) !!}
                                     </p>
 
-                                    <div class="mt-6 flex flex-wrap gap-3">
+                                    <div class="my-6 grid grid-cols-2 lg:flex lg:flex-wrap gap-3">
                                         @if($item['primary_button_text'])
                                             <a href="{{ $item['primary_button_url'] }}"
                                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
