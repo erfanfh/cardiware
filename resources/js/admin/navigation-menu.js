@@ -390,6 +390,17 @@ window.navigationManager = function (config = {}) {
         },
 
         buildItemHtml(item, level = 0) {
+            const positionMeta = this.getItemPositionMeta(item.uid);
+
+            const actionBtnBase =
+                'inline-flex h-9 w-9 items-center justify-center rounded-xl border transition';
+
+            const actionBtnEnabled =
+                'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 cursor-pointer';
+
+            const actionBtnDisabled =
+                'border-slate-200 bg-slate-50 text-slate-300 cursor-not-allowed opacity-60';
+
             const megaBadge = item.isMegaMenu
                 ? `<span class="inline-flex items-center rounded-xl bg-violet-50 px-2.5 py-1 text-[11px] font-bold text-violet-700">مگامنو</span>`
                 : '';
@@ -428,37 +439,41 @@ window.navigationManager = function (config = {}) {
                             </div>
 
                             <div class="flex shrink-0 items-center gap-2">
-                            <div class="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
+                                <div class="flex shrink-0 items-center gap-1 opacity-0 transition group-hover:opacity-100">
                                     <button type="button"
                                             data-action="move-up"
                                             data-uid="${item.uid}"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            ${positionMeta.canMoveUp ? '' : 'disabled'}
+                                            class="${actionBtnBase} ${positionMeta.canMoveUp ? actionBtnEnabled : actionBtnDisabled}"
                                             title="انتقال به بالا">
-                                        ↑
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 15s-4.42-6-6-6s-6 6-6 6"/></svg>
                                     </button>
 
                                     <button type="button"
                                             data-action="move-down"
                                             data-uid="${item.uid}"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            ${positionMeta.canMoveDown ? '' : 'disabled'}
+                                            class="${actionBtnBase} ${positionMeta.canMoveDown ? actionBtnEnabled : actionBtnDisabled}"
                                             title="انتقال به پایین">
-                                        ↓
-                                    </button>
-
-                                    <button type="button"
-                                            data-action="indent"
-                                            data-uid="${item.uid}"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
-                                            title="تبدیل به زیرمجموعه">
-                                        →
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 9s-4.419 6-6 6s-6-6-6-6"/></svg>
                                     </button>
 
                                     <button type="button"
                                             data-action="outdent"
                                             data-uid="${item.uid}"
-                                            class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                            ${positionMeta.canOutdent ? '' : 'disabled'}
+                                            class="${actionBtnBase} ${positionMeta.canOutdent ? actionBtnEnabled : actionBtnDisabled}"
                                             title="خارج کردن از زیرمجموعه">
-                                        ←
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 6s6 4.419 6 6s-6 6-6 6"/></svg>
+                                    </button>
+
+                                    <button type="button"
+                                            data-action="indent"
+                                            data-uid="${item.uid}"
+                                            ${positionMeta.canIndent ? '' : 'disabled'}
+                                            class="${actionBtnBase} ${positionMeta.canIndent ? actionBtnEnabled : actionBtnDisabled}"
+                                            title="تبدیل به زیرمجموعه">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 6s-6 4.419-6 6s6 6 6 6"/></svg>
                                     </button>
                                 </div>
 
@@ -602,6 +617,10 @@ window.navigationManager = function (config = {}) {
                     return;
                 }
 
+                if (actionEl.hasAttribute('disabled')) {
+                    return;
+                }
+
                 event.preventDefault();
                 event.stopPropagation();
 
@@ -683,6 +702,41 @@ window.navigationManager = function (config = {}) {
                     this.fullRefresh();
                 }
             });
+        },
+
+        getItemPositionMeta(uid) {
+            const path = this.findItemPath(uid);
+
+            if (!path) {
+                return {
+                    canMoveUp: false,
+                    canMoveDown: false,
+                    canIndent: false,
+                    canOutdent: false,
+                };
+            }
+
+            const index = path[path.length - 1];
+            const parentPath = path.slice(0, -1);
+
+            if (typeof index !== 'number') {
+                return {
+                    canMoveUp: false,
+                    canMoveDown: false,
+                    canIndent: false,
+                    canOutdent: false,
+                };
+            }
+
+            const list = this.getListByPath(parentPath);
+            const isNested = path.length >= 3 && path[path.length - 2] === 'children';
+
+            return {
+                canMoveUp: index > 0,
+                canMoveDown: index < list.length - 1,
+                canIndent: index > 0,
+                canOutdent: isNested,
+            };
         },
 
         findItemPath(uid, items = this.menuItems, path = []) {
