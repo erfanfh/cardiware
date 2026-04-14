@@ -33,3 +33,7 @@
 .nav-builder-tree .nested-sortable {
     transition: background-color 0.2s ease;
 }
+
+#tree-root > .nested-sortable {
+    padding-bottom: 20px;
+}

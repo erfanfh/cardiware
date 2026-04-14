@@ -32,11 +32,11 @@ window.navigationManager = function (config = {}) {
 
         typeLabels: {
             custom_link: 'لینک اختصاصی',
-            category: 'Category',
-            tag: 'Tag',
-            post: 'Post',
-            page: 'Page',
-            project: 'Project',
+            category: 'دسته‌بندی',
+            tag: 'برچسب',
+            post: 'نوشته',
+            page: 'برگه',
+            project: 'پروژه',
         },
 
         isSearchableEntityType(type) {
@@ -321,29 +321,12 @@ window.navigationManager = function (config = {}) {
         },
 
         buildItemHtml(item, level = 0) {
-            const inactiveBadge = !item.isActive
-                ? `<span class="inline-flex items-center rounded-xl bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-600">غیرفعال</span>`
-                : '';
-
             const megaBadge = item.isMegaMenu
                 ? `<span class="inline-flex items-center rounded-xl bg-violet-50 px-2.5 py-1 text-[11px] font-bold text-violet-700">مگامنو</span>`
                 : '';
 
-            const levelBadge =
-                level > 0
-                    ? `<span class="inline-flex items-center rounded-xl border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-sky-700">زیرمجموعه سطح ${level + 1}</span>`
-                    : '';
-
-            const iconBadge = item.icon
-                ? `<span class="rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-600">آیکون: ${this.escapeHtml(item.icon)}</span>`
-                : '';
-
             const badgeBadge = item.badge
                 ? `<span class="rounded-lg bg-amber-50 px-2 py-1 text-[11px] font-bold text-amber-700">${this.escapeHtml(item.badge)}</span>`
-                : '';
-
-            const childBadge = item.children?.length
-                ? `<span class="rounded-lg bg-emerald-50 px-2 py-1 text-[11px] font-bold text-emerald-700">${item.children.length} زیرآیتم</span>`
                 : '';
 
             const settingsHidden = item.isOpen ? '' : 'hidden';
@@ -352,28 +335,23 @@ window.navigationManager = function (config = {}) {
             return `
                 <li class="sortable-item list-none" data-uid="${item.uid}">
                     <div class="sortable-card overflow-hidden rounded-3xl border bg-white shadow-sm transition ${item.isOpen ? 'border-brand-200 ring-4 ring-brand-50' : 'border-slate-200 hover:border-slate-300'}">
-                        <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-5">
+                        <div class="flex items-center justify-between gap-4 px-4 py-4">
                             <div class="flex min-w-0 items-center gap-3">
                                 <button type="button"
-                                        class="drag-handle flex h-11 w-11 shrink-0 cursor-move items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 transition hover:bg-slate-100"
+                                        class="drag-handle flex h-10 w-10 shrink-0 cursor-move items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 transition hover:bg-slate-100"
                                         title="جابجایی">
-                                    ⋮⋮
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                              d="M6 5a1 1 0 1 1 0 2a1 1 0 0 1 0-2m0 6a1 1 0 1 1 0 2a1 1 0 0 1 0-2m0 6a1 1 0 1 1 0 2a1 1 0 0 1 0-2M18 5a1 1 0 1 1 0 2a1 1 0 0 1 0-2m0 6a1 1 0 1 1 0 2a1 1 0 0 1 0-2m-6 0a1 1 0 1 1 0 2a1 1 0 0 1 0-2m0-6a1 1 0 1 1 0 2a1 1 0 0 1 0-2m6 12a1 1 0 1 1 0 2a1 1 0 0 1 0-2m-6 0a1 1 0 1 1 0 2a1 1 0 0 1 0-2"/>
+                                    </svg>
                                 </button>
 
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <h3 class="truncate text-sm font-black text-slate-900">${this.escapeHtml(item.title)}</h3>
                                         <span class="inline-flex items-center rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">${this.escapeHtml(item.typeLabel)}</span>
-                                        ${levelBadge}
                                         ${megaBadge}
-                                        ${inactiveBadge}
-                                    </div>
-
-                                    <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                        <span class="truncate dir-ltr text-left">${this.escapeHtml(item.url)}</span>
-                                        ${iconBadge}
                                         ${badgeBadge}
-                                        ${childBadge}
                                     </div>
                                 </div>
                             </div>
