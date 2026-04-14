@@ -4,8 +4,7 @@
 
 @section('content')
     <main class="min-h-screen flex">
-
-        <section class="relative flex-1 overflow-hidden">
+        <section class="relative hidden lg:block flex-1 overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/75 via-slate-950/45 to-slate-950/15"></div>
 
             <div class="absolute -top-24 -left-24 h-80 w-80 rounded-[90px] bg-orange-500/25 blur-3xl"></div>
@@ -43,18 +42,12 @@
             </div>
         </section>
 
-        <aside class="relative hidden md:block bg-slate-50">
-            <div class="w-[620px] max-w-[55vw] h-full flex items-center justify-center px-10">
+        <aside class="relative bg-slate-50 w-full lg:w-2/5">
+            <div class="w-full h-full flex items-center justify-center px-4 md:px-10">
                 <div class="w-full max-w-lg rounded-2xl bg-white shadow-xl border border-slate-200 p-8 my-4">
                     <livewire:front.identity.user.auth.auth-flow/>
                 </div>
             </div>
         </aside>
-
-        <section class="md:hidden w-full bg-slate-50 px-4 py-8">
-            <div class="mx-auto max-w-md rounded-2xl bg-white shadow-xl border border-slate-200 p-6">
-                <div id="mobile-auth-mount"></div>
-            </div>
-        </section>
     </main>
 @endsection
