@@ -13,6 +13,7 @@ window.navigationManager = function (config = {}) {
         },
 
         pickerConfigs: config.pickerConfigs ?? {},
+        referenceTypes: config.referenceTypes ?? {},
 
         entityPicker: {
             type: null,
@@ -39,8 +40,83 @@ window.navigationManager = function (config = {}) {
             project: 'پروژه',
         },
 
+        init() {
+            this.normalizeInitialItems();
+
+            this.$watch('activeType', (value) => {
+                if (this.isSearchableEntityType(value)) {
+                    this.activateEntityPicker(value);
+                } else {
+                    this.resetEntityPickerState();
+                }
+            });
+
+            if (this.isSearchableEntityType(this.activeType)) {
+                this.activateEntityPicker(this.activeType);
+            }
+
+            this.$nextTick(() => {
+                this.renderTree();
+                this.bindTreeEvents();
+            });
+        },
+
+        normalizeInitialItems() {
+            this.menuItems = this.normalizeItems(this.menuItems);
+            this.nextId = this.resolveNextId(this.menuItems);
+        },
+
+        normalizeItems(items = []) {
+            return items.map((item) => ({
+                uid: item.uid ?? this.buildUid(),
+                id: item.id ?? null,
+                type: item.type,
+                typeLabel: item.typeLabel ?? this.typeLabels[item.type] ?? item.type,
+                title: item.title ?? '',
+                url: item.url ?? '',
+                referenceId: item.referenceId ?? null,
+                referenceType: item.referenceType ?? null,
+                isOpen: !!item.isOpen,
+                target: item.target ?? '_self',
+                icon: item.icon ?? '',
+                badge: item.badge ?? '',
+                cssClass: item.cssClass ?? '',
+                isMegaMenu: !!item.isMegaMenu,
+                megaMenuTitle: item.megaMenuTitle ?? '',
+                megaMenuColumns: String(item.megaMenuColumns ?? '4'),
+                megaMenuStyle: item.megaMenuStyle ?? 'default',
+                children: this.normalizeItems(item.children ?? []),
+            }));
+        },
+
+        resolveNextId(items = []) {
+            let max = 100;
+
+            const walk = (nodes) => {
+                for (const item of nodes) {
+                    const matched = String(item.uid ?? '').match(/(\d+)$/);
+
+                    if (matched) {
+                        max = Math.max(max, Number(matched[1]) + 1);
+                    }
+
+                    if (item.children?.length) {
+                        walk(item.children);
+                    }
+                }
+            };
+
+            walk(items);
+
+            return max;
+        },
+
         isSearchableEntityType(type) {
             return ['category', 'tag', 'post', 'page', 'project'].includes(type);
+        },
+
+        resolveReferenceType(type) {
+            return this.referenceTypes[type] ?? null;
         },
 
         activateEntityPicker(type) {
@@ -157,7 +233,6 @@ window.navigationManager = function (config = {}) {
                     ? result.items.map((item) => ({
                         id: Number(item.value),
                         title: item.label,
-                        path: item.path ?? '',
                     }))
                     : [];
 
@@ -187,39 +262,21 @@ window.navigationManager = function (config = {}) {
             this.entityPicker.searched = false;
         },
 
-        init() {
-            this.$watch('activeType', (value) => {
-                if (this.isSearchableEntityType(value)) {
-                    this.activateEntityPicker(value);
-                } else {
-                    this.resetEntityPickerState();
-                }
-            });
-
-            if (this.isSearchableEntityType(this.activeType)) {
-                this.activateEntityPicker(this.activeType);
-            }
-
-            this.$nextTick(() => {
-                this.renderTree();
-                this.bindTreeEvents();
-            });
-        },
-
         buildUid() {
             return `menu-item-${this.nextId++}`;
         },
 
-        makeBaseItem(type, title, url, sourceId = null) {
+        makeBaseItem(type, title, url, referenceId = null, referenceType = null) {
             return {
                 uid: this.buildUid(),
+                id: null,
                 type,
                 typeLabel: this.typeLabels[type],
                 title,
                 url,
-                sourceId,
+                referenceId,
+                referenceType,
                 isOpen: true,
-                isActive: true,
                 target: '_self',
                 icon: '',
                 badge: '',
@@ -235,20 +292,21 @@ window.navigationManager = function (config = {}) {
         cloneMenuItem(item) {
             return {
                 uid: item.uid,
+                id: item.id ?? null,
                 type: item.type,
                 typeLabel: item.typeLabel,
                 title: item.title,
                 url: item.url,
-                sourceId: item.sourceId ?? null,
+                referenceId: item.referenceId ?? null,
+                referenceType: item.referenceType ?? null,
                 isOpen: !!item.isOpen,
-                isActive: !!item.isActive,
                 target: item.target ?? '_self',
                 icon: item.icon ?? '',
                 badge: item.badge ?? '',
                 cssClass: item.cssClass ?? '',
                 isMegaMenu: !!item.isMegaMenu,
                 megaMenuTitle: item.megaMenuTitle ?? '',
-                megaMenuColumns: item.megaMenuColumns ?? '4',
+                megaMenuColumns: String(item.megaMenuColumns ?? '4'),
                 megaMenuStyle: item.megaMenuStyle ?? 'default',
                 children: [],
             };
@@ -258,7 +316,9 @@ window.navigationManager = function (config = {}) {
             const title = this.customLink.title.trim();
             const url = this.customLink.url.trim();
 
-            if (!title || !url) return;
+            if (!title || !url) {
+                return;
+            }
 
             this.menuItems.unshift(this.makeBaseItem('custom_link', title, url));
             this.customLink.title = '';
@@ -267,7 +327,15 @@ window.navigationManager = function (config = {}) {
         },
 
         addEntityItem(type, item) {
-            this.menuItems.unshift(this.makeBaseItem(type, item.title, item.path, item.id));
+            this.menuItems.unshift(
+                this.makeBaseItem(
+                    type,
+                    item.title,
+                    '',
+                    item.id,
+                    this.resolveReferenceType(type)
+                )
+            );
 
             if (this.isSearchableEntityType(type)) {
                 this.resetEntitySearch();
@@ -305,7 +373,10 @@ window.navigationManager = function (config = {}) {
         },
 
         renderTree() {
-            if (!this.$refs.treeRoot) return;
+            if (!this.$refs.treeRoot) {
+                return;
+            }
+
             this.$refs.treeRoot.innerHTML = this.buildChildrenHtml(this.menuItems, 0, true);
             this.mountNestedSortables();
         },
@@ -331,6 +402,7 @@ window.navigationManager = function (config = {}) {
 
             const settingsHidden = item.isOpen ? '' : 'hidden';
             const megaHidden = item.isMegaMenu ? '' : 'hidden';
+            const isCustomLink = item.type === 'custom_link';
 
             return `
                 <li class="sortable-item list-none" data-uid="${item.uid}">
@@ -382,11 +454,13 @@ window.navigationManager = function (config = {}) {
                                                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                     </div>
 
-                                    <div>
-                                        <label class="mb-2 block text-sm font-bold text-slate-700">لینک</label>
-                                        <input type="text" data-field="url" data-uid="${item.uid}" value="${this.escapeHtml(item.url)}"
-                                               class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
-                                    </div>
+                                    ${isCustomLink ? `
+                                        <div>
+                                            <label class="mb-2 block text-sm font-bold text-slate-700">لینک</label>
+                                            <input type="text" data-field="url" data-uid="${item.uid}" value="${this.escapeHtml(item.url)}"
+                                                   class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                        </div>
+                                    ` : ''}
 
                                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div>
@@ -423,15 +497,6 @@ window.navigationManager = function (config = {}) {
                                     </div>
 
                                     <div class="space-y-3">
-                                        <label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                                            <div>
-                                                <div class="text-sm font-black text-slate-900">وضعیت آیتم</div>
-                                                <div class="mt-1 text-xs text-slate-500">نمایش یا عدم نمایش در فهرست</div>
-                                            </div>
-                                            <input type="checkbox" data-field="isActive" data-uid="${item.uid}" ${item.isActive ? 'checked' : ''}
-                                                   class="h-5 w-5 rounded border-slate-300 text-brand-600 focus:ring-brand-500">
-                                        </label>
-
                                         <label class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3">
                                             <div>
                                                 <div class="text-sm font-black text-slate-900">فعال‌سازی مگامنو</div>
@@ -489,12 +554,18 @@ window.navigationManager = function (config = {}) {
         },
 
         bindTreeEvents() {
-            if (this.treeEventsBound || !this.$refs.treeRoot) return;
+            if (this.treeEventsBound || !this.$refs.treeRoot) {
+                return;
+            }
+
             this.treeEventsBound = true;
 
             this.$refs.treeRoot.addEventListener('click', (event) => {
                 const actionEl = event.target.closest('[data-action]');
-                if (!actionEl) return;
+
+                if (!actionEl) {
+                    return;
+                }
 
                 const action = actionEl.dataset.action;
                 const uid = actionEl.dataset.uid;
@@ -513,10 +584,16 @@ window.navigationManager = function (config = {}) {
             this.$refs.treeRoot.addEventListener('input', (event) => {
                 const field = event.target.dataset.field;
                 const uid = event.target.dataset.uid;
-                if (!field || !uid) return;
+
+                if (!field || !uid) {
+                    return;
+                }
 
                 const item = this.findItem(uid);
-                if (!item) return;
+
+                if (!item) {
+                    return;
+                }
 
                 item[field] = event.target.type === 'checkbox'
                     ? event.target.checked
@@ -530,10 +607,16 @@ window.navigationManager = function (config = {}) {
             this.$refs.treeRoot.addEventListener('change', (event) => {
                 const field = event.target.dataset.field;
                 const uid = event.target.dataset.uid;
-                if (!field || !uid) return;
+
+                if (!field || !uid) {
+                    return;
+                }
 
                 const item = this.findItem(uid);
-                if (!item) return;
+
+                if (!item) {
+                    return;
+                }
 
                 item[field] = event.target.type === 'checkbox'
                     ? event.target.checked
@@ -548,7 +631,9 @@ window.navigationManager = function (config = {}) {
         mountNestedSortables() {
             this.destroySortables();
 
-            if (!this.$refs.treeRoot) return;
+            if (!this.$refs.treeRoot) {
+                return;
+            }
 
             const frame = this.$refs.treeFrame;
             const lists = this.$refs.treeRoot.querySelectorAll('.nested-sortable');
@@ -595,7 +680,11 @@ window.navigationManager = function (config = {}) {
 
         serializeTree() {
             const root = this.$refs.treeRoot.querySelector('.nested-sortable[data-root="true"]');
-            if (!root) return [];
+
+            if (!root) {
+                return [];
+            }
+
             return this.serializeList(root);
         },
 
@@ -623,13 +712,43 @@ window.navigationManager = function (config = {}) {
                 .filter(Boolean);
         },
 
+        serializedItemsPayload() {
+            return JSON.stringify(this.prepareItemsForSubmit(this.menuItems));
+        },
+
+        prepareItemsForSubmit(items = []) {
+            return items.map((item) => ({
+                id: item.id ?? null,
+                uid: item.uid,
+                type: item.type,
+                title: item.title ?? '',
+                url: item.type === 'custom_link' ? (item.url ?? '') : '',
+                target: item.target ?? '_self',
+                reference_id: item.referenceId ?? null,
+                reference_type: item.referenceType ?? null,
+                icon: item.icon ?? '',
+                badge: item.badge ?? '',
+                css_class: item.cssClass ?? '',
+                is_mega_menu: !!item.isMegaMenu,
+                mega_menu_title: item.megaMenuTitle ?? '',
+                mega_menu_columns: Number(item.megaMenuColumns ?? 4),
+                mega_menu_style: item.megaMenuStyle ?? 'default',
+                children: this.prepareItemsForSubmit(item.children ?? []),
+            }));
+        },
+
         findItem(uid, items = this.menuItems) {
             for (const item of items) {
-                if (item.uid === uid) return item;
+                if (item.uid === uid) {
+                    return item;
+                }
 
                 if (item.children?.length) {
                     const found = this.findItem(uid, item.children);
-                    if (found) return found;
+
+                    if (found) {
+                        return found;
+                    }
                 }
             }
 
@@ -645,7 +764,10 @@ window.navigationManager = function (config = {}) {
 
                 if (item.children?.length) {
                     const found = this.toggleItem(uid, item.children);
-                    if (found) return true;
+
+                    if (found) {
+                        return true;
+                    }
                 }
             }
 
@@ -663,7 +785,10 @@ window.navigationManager = function (config = {}) {
             for (const item of items) {
                 if (item.children?.length) {
                     const removed = this.removeItem(uid, item.children);
-                    if (removed) return true;
+
+                    if (removed) {
+                        return true;
+                    }
                 }
             }
 
