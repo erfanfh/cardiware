@@ -125,6 +125,24 @@
                     onEntitySearchInput() {
                         clearTimeout(this.entityPicker.debounceTimer);
 
+                        const query = this.entityPicker.search.trim();
+
+                        if (!query) {
+                            this.entityPicker.items = [...this.entityPicker.topItems];
+                            this.entityPicker.loading = false;
+                            this.entityPicker.searched = false;
+                            return;
+                        }
+
+                        this.entityPicker.items = [];
+                        this.entityPicker.loading = query.length >= 2;
+                        this.entityPicker.searched = false;
+
+                        if (query.length < 2) {
+                            this.entityPicker.loading = false;
+                            return;
+                        }
+
                         this.entityPicker.debounceTimer = setTimeout(() => {
                             this.searchEntities();
                         }, 300);
@@ -143,20 +161,26 @@
                         if (query.length < 2) {
                             this.entityPicker.items = [];
                             this.entityPicker.loading = false;
-                            this.entityPicker.searched = true;
+                            this.entityPicker.searched = false;
                             return;
                         }
 
                         if (!this.entityPicker.searchUrl) {
+                            this.entityPicker.items = [];
+                            this.entityPicker.loading = false;
+                            this.entityPicker.searched = true;
                             return;
                         }
 
+                        const requestedQuery = query;
+
                         this.entityPicker.loading = true;
-                        this.entityPicker.searched = true;
+                        this.entityPicker.searched = false;
+                        this.entityPicker.items = [];
 
                         try {
                             const url = new URL(this.entityPicker.searchUrl, window.location.origin);
-                            url.searchParams.set('q', query);
+                            url.searchParams.set('q', requestedQuery);
 
                             const response = await fetch(url.toString(), {
                                 headers: {
@@ -171,6 +195,10 @@
 
                             const result = await response.json();
 
+                            if (this.entityPicker.search.trim() !== requestedQuery) {
+                                return;
+                            }
+
                             this.entityPicker.items = Array.isArray(result.items)
                                 ? result.items.map((item) => ({
                                     id: Number(item.value),
@@ -178,15 +206,27 @@
                                     path: item.path ?? '',
                                 }))
                                 : [];
+
+                            this.entityPicker.searched = true;
                         } catch (error) {
                             console.error(error);
+
+                            if (this.entityPicker.search.trim() !== requestedQuery) {
+                                return;
+                            }
+
                             this.entityPicker.items = [];
+                            this.entityPicker.searched = true;
                         } finally {
-                            this.entityPicker.loading = false;
+                            if (this.entityPicker.search.trim() === requestedQuery) {
+                                this.entityPicker.loading = false;
+                            }
                         }
                     },
 
                     resetEntitySearch() {
+                        clearTimeout(this.entityPicker.debounceTimer);
+
                         this.entityPicker.search = '';
                         this.entityPicker.items = [...this.entityPicker.topItems];
                         this.entityPicker.loading = false;
