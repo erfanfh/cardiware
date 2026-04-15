@@ -136,7 +136,7 @@ return [
                 'route' => 'admin.page-layouts.show',
                 'routeParameters' => ['home'],
                 'icon' => 'icons.dashboard-square-setting',
-                'gate' => 'page-layouts.home',
+                'gate' => 'page-layout.home',
             ],
         ],
     ],
