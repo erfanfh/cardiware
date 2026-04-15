@@ -78,8 +78,7 @@
                         <div class="relative">
                             <input
                                 id="username"
-                                type="tel"
-                                inputmode="numeric"
+                                type="text"
                                 dir="ltr"
                                 wire:model.defer="username"
                                 class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
@@ -321,8 +320,7 @@
                         <div class="relative">
                             <input
                                 id="username"
-                                type="tel"
-                                inputmode="numeric"
+                                type="text"
                                 dir="ltr"
                                 wire:model.defer="username"
                                 class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
@@ -498,7 +496,6 @@
                             <input
                                 id="username"
                                 type="text"
-                                inputmode="numeric"
                                 dir="ltr"
                                 wire:model.defer="username"
                                 class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm
