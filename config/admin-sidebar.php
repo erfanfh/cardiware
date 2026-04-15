@@ -114,6 +114,20 @@ return [
     ],
 
     [
+        'label' => 'فهرست ها',
+        'icon' => 'icons.right-to-left-list-bullet',
+        'children' => [
+            [
+                'label' => 'هدر سایت',
+                'route' => 'admin.navigation-menus.show',
+                'routeParameters' => ['header'],
+                'icon' => 'icons.right-to-left-list-bullet',
+                'gate' => 'navigation-menu.manage',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'چیدمان صفحات',
         'icon' => 'icons.dashboard-square-setting',
         'children' => [
@@ -122,7 +136,7 @@ return [
                 'route' => 'admin.page-layouts.show',
                 'routeParameters' => ['home'],
                 'icon' => 'icons.dashboard-square-setting',
-                'gate' => 'page-layouts.home',
+                'gate' => 'page-layout.home',
             ],
         ],
     ],

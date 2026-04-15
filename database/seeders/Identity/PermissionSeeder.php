@@ -52,7 +52,7 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش نقش',
                 'delete' => 'حذف نقش',
             ],
-            'page-layouts' => [
+            'page-layout' => [
                 'home' => 'مدیریت چیدمان - صفحه اصلی',
             ],
             'setting' => [
@@ -66,6 +66,9 @@ class PermissionSeeder extends Seeder
                 'auth' => 'ورود/ثبت نام',
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
+            ],
+            'navigation-menu' => [
+                'manage' => 'مدیریت فهرست ها',
             ],
         ];
 

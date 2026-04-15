@@ -39,6 +39,7 @@
 
     <div class="relative">
         <textarea
+
             id="{{ $editorId }}"
             @if($name) name="{{ $name }}" @endif
             placeholder="{{ $placeholder }}"

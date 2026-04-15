@@ -1,0 +1,45 @@
+.nav-builder-tree.is-dragging .drop-slot {
+    border-color: rgb(59 130 246 / 0.45);
+    background-color: rgb(239 246 255 / 0.95);
+}
+
+.nav-builder-tree .drop-slot.drop-slot-active {
+    border-color: rgb(59 130 246 / 0.6) !important;
+    background-color: rgb(219 234 254 / 0.95) !important;
+}
+
+.nav-builder-tree .nested-sortable.drop-target-active {
+    background-color: rgb(239 246 255 / 1) !important;
+    border-color: rgb(147 197 253 / 0.9) !important;
+}
+
+.nav-builder-tree.is-dragging .nested-sortable {
+    background: rgba(248, 250, 252, 0.7);
+    border-radius: 18px;
+}
+
+.nav-builder-tree .sortable-ghost {
+    opacity: 0.4;
+}
+
+.nav-builder-tree .sortable-chosen .sortable-card {
+    border-color: rgb(129 140 248);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+}
+
+.nav-builder-tree .sortable-drag .sortable-card {
+    transform: scale(1.02);
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+}
+
+.nav-builder-tree .nested-sortable {
+    transition: background-color 0.2s ease;
+}
+
+#tree-root > .nested-sortable {
+    padding-bottom: 20px;
+}
+
+.nav-builder-tree.is-dragging .sortable-item {
+    transition: transform 0.18s ease;
+}

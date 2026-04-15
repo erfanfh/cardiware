@@ -18,9 +18,7 @@ class TagSearchController extends Controller
         $query = trim((string)$request->string('q'));
 
         if (mb_strlen($query) < 2) {
-            return response()->json([
-                'items' => [],
-            ]);
+            return response()->json(['items' => []]);
         }
 
         $items = TaxonomyTerm::query()

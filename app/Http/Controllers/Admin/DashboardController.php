@@ -21,8 +21,6 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
-        Gate::authorize('admin.display');
-
         $startOfMonth = Jalalian::now()->getFirstDayOfMonth()->toCarbon();
         $endOfMonth = Jalalian::now()->getEndDayOfMonth()->toCarbon();
 
