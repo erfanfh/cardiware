@@ -363,3 +363,19 @@ window.mwWpSlugEditor = function (opts) {
     }
 };
 /*** ================== End Slug management ================== ***/
+
+// --- Form confirmation befor closing ---
+let formChanged = false;
+document.querySelector('.confirmationForm').addEventListener("input", function () {
+    formChanged = true;
+});
+window.addEventListener("beforeunload", function (event) {
+    if (formChanged) {
+        event.preventDefault();
+        event.returnValue = "";
+    }
+});
+document.querySelector('.confirmationForm').addEventListener("submit", function () {
+    formChanged = false;
+});
+/*** ================== End Form confirmation befor closing ================== ***/
