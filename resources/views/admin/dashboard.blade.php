@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:w-[340px]">
-                    @can('product.index')
+                    @can('product.list')
                         <a href="#"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -86,7 +86,7 @@
                         </a>
                     @endcan
 
-                    @can('user.index')
+                    @can('user.list')
                         <a href="{{ route('admin.users.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -144,7 +144,7 @@
 
         {{-- Main Stats --}}
         <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            @can('post.index')
+            @can('post.list')
                 <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -164,7 +164,7 @@
                 </div>
             @endcan
 
-            @can('project.index')
+            @can('project.list')
                 <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -184,7 +184,7 @@
                 </div>
             @endcan
 
-            @can('post.index')
+            @can('post.list')
                 <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -205,7 +205,7 @@
                 </div>
             @endcan
 
-            @can('comment.index')
+            @can('comment.list')
                 <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
@@ -238,7 +238,7 @@
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-                    @can('post.index')
+                    @can('post.list')
                         <a href="{{ route('admin.posts.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -256,7 +256,7 @@
                         </a>
                     @endcan
 
-                    @can('page.index')
+                    @can('page.list')
                         <a href="{{ route('admin.pages.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -274,7 +274,7 @@
                         </a>
                     @endcan
 
-                    @can('comment.index')
+                    @can('comment.list')
                         <a href="{{ route('admin.comments.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -292,7 +292,7 @@
                         </a>
                     @endcan
 
-                    @can('project.index')
+                    @can('project.list')
                         <a href="{{ route('admin.projects.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -310,7 +310,7 @@
                         </a>
                     @endcan
 
-                    @can('user.index')
+                    @can('user.list')
                         <a href="{{ route('admin.users.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
@@ -357,7 +357,7 @@
                 </div>
 
                 <div class="mt-5 space-y-3">
-                    @can('comment.index')
+                    @can('comment.list')
                         <a href="{{ route('admin.comments.index') }}"
                            class="flex items-center justify-between rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 transition hover:bg-rose-100/70">
                             <div>
@@ -369,7 +369,7 @@
                         </a>
                     @endcan
 
-                    @can('post.index')
+                    @can('post.list')
                         <a href="{{ route('admin.posts.index', ['status' => 'inactive']) }}"
                            class="flex items-center justify-between rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 transition hover:bg-amber-100/70">
                             <div>
@@ -381,7 +381,7 @@
                         </a>
                     @endcan
 
-                    @can('product.index')
+                    @can('product.list')
                         <a href="#"
                            class="flex items-center justify-between rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 transition hover:bg-sky-100/70">
                             <div>
@@ -397,7 +397,7 @@
         </section>
 
         <section class="grid grid-cols-1 gap-4 xl:grid-cols-12">
-            @can('post.index')
+            @can('post.list')
                 <div class="xl:col-span-7 rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-center justify-between gap-3">
                         <div>
@@ -413,7 +413,8 @@
 
                     <div class="mt-5 space-y-3">
                         @forelse($topYesterdayPosts as $post)
-                            <div class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                            <div
+                                class="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                                 <div
                                     class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white border border-slate-200 text-slate-500">
                             <span class="[&_svg]:h-5 [&_svg]:w-5">
@@ -425,7 +426,8 @@
                                     <div class="truncate text-sm font-black text-slate-900">
                                         {{ $post->title }}
                                     </div>
-                                    <div class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                                    <div
+                                        class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
                                         <span>{{ $post->author?->display_name ?? '—' }}</span>
                                         <span class="w-1 h-1 rounded-full bg-slate-200"></span>
                                         <span>{{ jalali_date($post->published_at, 'Y/n/j - H:i') }}</span>
@@ -453,61 +455,61 @@
                 </div>
             @endcan
 
-            @can('comment.index')
+            @can('comment.list')
                 <div class="xl:col-span-5 rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
-                        <div class="flex items-center justify-between gap-3">
-                            <div>
-                                <h2 class="text-base font-black text-slate-900">آخرین دیدگاه‌ها</h2>
-                                <p class="mt-1 text-sm text-slate-500">جدیدترین تعاملات کاربران</p>
-                            </div>
-
-                            <a href="{{ route('admin.comments.index') }}"
-                               class="text-sm font-bold text-orange-600 transition hover:text-orange-700">
-                                مدیریت دیدگاه‌ها
-                            </a>
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-base font-black text-slate-900">آخرین دیدگاه‌ها</h2>
+                            <p class="mt-1 text-sm text-slate-500">جدیدترین تعاملات کاربران</p>
                         </div>
 
-                        <div class="mt-5 space-y-3">
-                            @forelse($recentComments as $comment)
-                                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="min-w-0">
-                                            <div class="flex items-center gap-2">
-                                                <div class="text-sm font-black text-slate-900 truncate">
-                                                    {{ $comment->user?->display_name ?? $comment->author_name }}
-                                                </div>
+                        <a href="{{ route('admin.comments.index') }}"
+                           class="text-sm font-bold text-orange-600 transition hover:text-orange-700">
+                            مدیریت دیدگاه‌ها
+                        </a>
+                    </div>
 
-                                                <span
-                                                    class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold
+                    <div class="mt-5 space-y-3">
+                        @forelse($recentComments as $comment)
+                            <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <div class="text-sm font-black text-slate-900 truncate">
+                                                {{ $comment->user?->display_name ?? $comment->author_name }}
+                                            </div>
+
+                                            <span
+                                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold
                                         {{ $comment->isApproved() ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
                                         {{ $comment->isApproved() ? 'تایید شده' : 'در انتظار' }}
                                     </span>
-                                            </div>
-
-                                            <div class="mt-1 text-xs text-slate-500">
-                                                برای:
-                                                <span
-                                                    class="font-bold text-slate-700">{{ $comment->commentable?->title ?? '—' }}</span>
-                                            </div>
                                         </div>
 
-                                        <div class="text-[11px] text-slate-400 whitespace-nowrap">
-                                            {{ jalali_date($comment->created_at, 'Y/n/j') }}
+                                        <div class="mt-1 text-xs text-slate-500">
+                                            برای:
+                                            <span
+                                                class="font-bold text-slate-700">{{ $comment->commentable?->title ?? '—' }}</span>
                                         </div>
                                     </div>
 
-                                    <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
-                                        {{ $comment->content }}
-                                    </p>
+                                    <div class="text-[11px] text-slate-400 whitespace-nowrap">
+                                        {{ jalali_date($comment->created_at, 'Y/n/j') }}
+                                    </div>
                                 </div>
-                            @empty
-                                <div
-                                    class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
-                                    هنوز دیدگاهی ثبت نشده.
-                                </div>
-                            @endforelse
-                        </div>
+
+                                <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+                                    {{ $comment->content }}
+                                </p>
+                            </div>
+                        @empty
+                            <div
+                                class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                                هنوز دیدگاهی ثبت نشده.
+                            </div>
+                        @endforelse
                     </div>
+                </div>
             @endcan
         </section>
     </div>
