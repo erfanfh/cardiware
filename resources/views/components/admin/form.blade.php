@@ -27,13 +27,12 @@
     method="{{ $formMethod }}"
     {{ $baseAttributes }}
     x-data
-    @keydown.enter.prevent="
-        if (
-            $event.target.tagName.toLowerCase() !== 'textarea' &&
-            $event.target.type !== 'submit' &&
-            $event.target.type !== 'button'
-        ) {
-            $event.preventDefault()
+    @keydown.enter="
+        const tag = $event.target.tagName.toLowerCase();
+        const type = ($event.target.type || '').toLowerCase();
+
+        if (tag !== 'textarea' && type !== 'submit' && type !== 'button') {
+            $event.preventDefault();
         }
     "
 >
