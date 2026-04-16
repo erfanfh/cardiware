@@ -128,18 +128,17 @@
                         </div>
 
                         @if($posts->isEmpty())
-                            <div
-                                class="col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                            <x-front.cart class="text-center">
                                 <div
                                     class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
                                     @include('icons.inbox')
                                 </div>
 
-                                <h3 class="mt-4 text-sm font-extrabold text-slate-800">نوشه ای یافت شد!</h3>
+                                <h3 class="mt-4 text-sm font-extrabold text-slate-800">نوشته ای یافت نشد!</h3>
                                 <p class="mt-2 text-sm leading-6 text-slate-500">
                                     فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
                                 </p>
-                            </div>
+                            </x-front.cart>
                         @endif
 
                         @if($posts->hasMorePages())
