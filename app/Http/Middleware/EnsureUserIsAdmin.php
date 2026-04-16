@@ -17,10 +17,10 @@ class EnsureUserIsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (!auth()->check())
-            abort(403);
+            return redirect()->route('login');
 
         if (!Gate::allows('admin.display'))
-            abort(403);
+            return redirect()->route('account');
 
         return $next($request);
     }
