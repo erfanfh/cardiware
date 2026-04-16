@@ -324,24 +324,6 @@
                         </a>
                     </div>
                 </div>
-
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
-                    @foreach (get_setting('ads', 'project_ads') as $ad)
-                        <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm mb-4">
-                            <a href="{{ $ad['url'] }}">
-                                <div class="font-extrabold text-slate-700">
-                                    {{ $ad['title'] }}
-                                </div>
-
-                                <div class="mt-4">
-                                    <img src="{{ $ad['image']['path'] }}"
-                                         alt="{{ $ad['title'] }}"
-                                         class="w-full rounded-lg">
-                                </div>
-                            </a>
-                        </div>
-                    @endforeach
-                </div>
             </aside>
 
         </section>

@@ -189,12 +189,6 @@ return [
                 'gate' => 'setting.about-us',
             ],
             [
-                'label' => 'تبلیغات',
-                'route' => 'admin.settings.ads',
-                'icon' => 'icons.settings-02',
-                'gate' => 'setting.ads',
-            ],
-            [
                 'label' => 'ابزارک های سایدبار',
                 'route' => 'admin.settings.sidebar-widgets',
                 'icon' => 'icons.settings-02',

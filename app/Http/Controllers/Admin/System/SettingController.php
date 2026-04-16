@@ -133,36 +133,6 @@ class SettingController extends Controller
     }
 
     /**
-     * Ads settings page
-     *
-     * @return View
-     */
-    public function ads(): View
-    {
-        Gate::authorize('setting.ads');
-
-        return view('admin.system.settings.ads');
-    }
-
-    /**
-     * Store ads settings
-     *
-     * @param Request $request
-     * @return RedirectResponse
-     * @throws BindingResolutionException
-     */
-    public function storeAds(Request $request): RedirectResponse
-    {
-        Gate::authorize('setting.ads');
-
-        $this->storeSettings($request, 'ads');
-
-        return redirect()
-            ->route('admin.settings.ads')
-            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
-    }
-
-    /**
      * General settings page
      *
      * @return View
