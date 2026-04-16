@@ -20,7 +20,7 @@
 
                 @foreach($posts as $post)
                     <a href="{{ route('contents.detail', $post) }}"
-                       class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg hover:bg-slate-800 transition duration-300">
+                       class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-xl hover:scale-[102%] transition duration-300">
                         <div class="relative h-40">
                             <img class="absolute inset-0 h-full w-full object-cover opacity-90"
                                  src="{{ $post->picture?->url }}"
