@@ -128,16 +128,25 @@
                         </div>
 
                         @if($posts->isEmpty())
-                            <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-6 text-center shadow-sm">
-                                <div class="text-base font-extrabold">نوشته ای پیدا نشد</div>
-                                <div class="mt-2 text-sm text-slate-500">فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                            <div
+                                class="col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                                <div
+                                    class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
+                                    @include('icons.inbox')
                                 </div>
+
+                                <h3 class="mt-4 text-sm font-extrabold text-slate-800">نوشه ای یافت شد!</h3>
+                                <p class="mt-2 text-sm leading-6 text-slate-500">
+                                    فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                                </p>
                             </div>
                         @endif
 
-                        <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
-                            <x-front.list.pagination :model="$posts"/>
-                        </div>
+                        @if($posts->hasMorePages())
+                            <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
+                                <x-front.list.pagination :model="$posts"/>
+                            </div>
+                        @endif
                     </div>
                 </section>
             @elseif($type == 'projects')
@@ -205,15 +214,25 @@
                     </div>
 
                     @if($projects->isEmpty())
-                        <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-6 text-center shadow-sm">
-                            <div class="text-base font-extrabold">پروژه‌ای پیدا نشد</div>
-                            <div class="mt-2 text-sm text-slate-500">فیلترها را تغییر بده یا عبارت دیگری جستجو کن.</div>
+                        <div
+                            class="col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                            <div
+                                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
+                                @include('icons.inbox')
+                            </div>
+
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800">پروژه ای یافت شد!</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">
+                                فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                            </p>
                         </div>
                     @endif
 
-                    <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
-                        <x-front.list.pagination :model="$projects"/>
-                    </div>
+                    @if($projects->hasMorePages())
+                        <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
+                            <x-front.list.pagination :model="$projects"/>
+                        </div>
+                    @endif
                 </section>
             @endif
         </div>
