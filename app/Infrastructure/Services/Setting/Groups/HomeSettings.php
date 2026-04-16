@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
+use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\IntegerCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
@@ -36,6 +37,16 @@ class HomeSettings extends BaseSettings
         'projects_title',
         'projects_items',
         'posts_items',
+        'ads_1_display_background',
+        'ads_2_display_background',
+        'ads_3_display_background',
+        'ads_4_display_background',
+        'ads_5_display_background',
+        'ads_1_body',
+        'ads_2_body',
+        'ads_3_body',
+        'ads_4_body',
+        'ads_5_body',
     ];
 
     protected array $casts = [
@@ -47,5 +58,10 @@ class HomeSettings extends BaseSettings
         'videos_category_ids' => ArrayCast::class,
         'posts_items' => RepeaterArrayCast::class,
         'special_posts_posts_counts' => IntegerCast::class,
+        'ads_1_display_background' => BooleanCast::class,
+        'ads_2_display_background' => BooleanCast::class,
+        'ads_3_display_background' => BooleanCast::class,
+        'ads_4_display_background' => BooleanCast::class,
+        'ads_5_display_background' => BooleanCast::class,
     ];
 }

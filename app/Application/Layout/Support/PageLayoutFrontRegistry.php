@@ -47,19 +47,19 @@ class PageLayoutFrontRegistry
                 'view' => 'front.home.partials.comments',
             ],
             'advertisement_1' => [
-                'view' => 'front.home.partials.advertisement',
+                'view' => 'front.home.partials.ads-1',
             ],
             'advertisement_2' => [
-                'view' => 'front.home.partials.advertisement',
+                'view' => 'front.home.partials.ads-2',
             ],
             'advertisement_3' => [
-                'view' => 'front.home.partials.advertisement',
+                'view' => 'front.home.partials.ads-3',
             ],
             'advertisement_4' => [
-                'view' => 'front.home.partials.advertisement',
+                'view' => 'front.home.partials.ads-4',
             ],
             'advertisement_5' => [
-                'view' => 'front.home.partials.advertisement',
+                'view' => 'front.home.partials.ads-5',
             ],
         ];
     }

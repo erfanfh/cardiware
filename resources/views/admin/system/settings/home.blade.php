@@ -17,6 +17,7 @@
                     'projects' => 'پروژه‌ها',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
+                    'ads' => 'تبلیغات',
                 ]"
                 active="{{ request()->input('tab') ?: 'slider' }}"
             >
@@ -54,6 +55,10 @@
 
                 <x-admin.tabs.panel name="posts">
                     @include('admin.system.settings.partials.home-posts')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="ads">
+                    @include('admin.system.settings.partials.home-ads')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
