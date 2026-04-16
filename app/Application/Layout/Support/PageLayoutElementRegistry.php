@@ -175,7 +175,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.ads',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'ads'],
             ],
 
             'advertisement_2' => [
@@ -188,7 +189,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.ads',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'ads'],
             ],
 
             'advertisement_3' => [
@@ -201,7 +203,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.ads',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'ads'],
             ],
 
             'advertisement_4' => [
@@ -214,7 +217,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.ads',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'ads'],
             ],
 
             'advertisement_5' => [
@@ -227,7 +231,8 @@ class PageLayoutElementRegistry
                     'content_sidebar',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.settings.ads',
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'ads'],
             ],
         ];
     }
