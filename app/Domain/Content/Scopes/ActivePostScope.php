@@ -11,7 +11,7 @@ class ActivePostScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        if (request()->routeIs('admin.*'))
+        if (request()->routeIs(['admin.*', 'livewire.*']))
             return;
         else
             $builder->where('status', PostStatusEnum::ACTIVE);
