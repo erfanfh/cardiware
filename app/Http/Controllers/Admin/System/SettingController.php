@@ -43,6 +43,36 @@ class SettingController extends Controller
     }
 
     /**
+     * General settings page
+     *
+     * @return View
+     */
+    public function seo(): View
+    {
+        Gate::authorize('setting.seo');
+
+        return view('admin.system.settings.seo');
+    }
+
+    /**
+     * Store seo settings
+     *
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeSeo(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.seo');
+
+        $this->storeSettings($request, 'seo');
+
+        return redirect()
+            ->route('admin.settings.seo')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * Header settings page
      *
      * @return View

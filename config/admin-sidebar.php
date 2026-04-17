@@ -153,6 +153,12 @@ return [
                 'gate' => 'setting.general',
             ],
             [
+                'label' => 'سئو',
+                'route' => 'admin.settings.seo',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.seo',
+            ],
+            [
                 'label' => 'هدر (سربرگ)',
                 'route' => 'admin.settings.header',
                 'icon' => 'icons.settings-02',

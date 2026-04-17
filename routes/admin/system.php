@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\System\SettingController;
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
     Route::get('general', 'general')->name('general');
     Route::put('general', 'storeGeneral')->name('general.store');
+    Route::get('seo', 'seo')->name('seo');
+    Route::put('seo', 'storeSeo')->name('seo.store');
     Route::get('header', 'header')->name('header');
     Route::put('header', 'storeHeader')->name('header.store');
     Route::get('footer', 'footer')->name('footer');

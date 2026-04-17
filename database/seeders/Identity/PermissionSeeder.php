@@ -57,6 +57,7 @@ class PermissionSeeder extends Seeder
             ],
             'setting' => [
                 'general' => 'تنظیمات عمومی',
+                'seo' => 'تنظیمات سئو',
                 'header' => 'تنظیمات هدر',
                 'footer' => 'تنظیمات فوتر',
                 'home' => 'صفحه اصلی',

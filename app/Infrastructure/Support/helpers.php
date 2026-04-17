@@ -1,5 +1,6 @@
 <?php
 
+use App\Application\Seo\Support\SeoManager;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\System\Models\PageView;
 use App\Infrastructure\Services\Date\DateConverterService;
@@ -242,5 +243,12 @@ if (!function_exists('approximate_view')) {
             return '+' . (floor($number / 1000)) . 'K';
         else
             return '+1M';
+    }
+}
+
+if (!function_exists('seo_head')) {
+    function seo_head(): string
+    {
+        return app(SeoManager::class)->render();
     }
 }
