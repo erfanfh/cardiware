@@ -17,6 +17,13 @@ class SeoSettings extends BaseSettings
         'twitter_card',
         'google_site_verification',
         'bing_site_verification',
+        'organization_name',
+        'organization_alternate_name',
+        'organization_url',
+        'organization_logo',
+        'organization_email',
+        'organization_phone',
+        'organization_same_as',
     ];
 
     protected array $casts = [

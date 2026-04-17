@@ -14,7 +14,13 @@ readonly class SeoDataDTO
         public ?OpenGraphDataDTO        $openGraph = null,
         public ?TwitterCardDataDTO      $twitter = null,
         public ?VerificationMetaDataDTO $verification = null,
+        public ?string                  $schemaJson = null,
     )
     {
+    }
+
+    public function hasSchema(): bool
+    {
+        return filled($this->schemaJson);
     }
 }

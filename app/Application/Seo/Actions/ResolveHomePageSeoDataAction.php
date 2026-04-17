@@ -9,6 +9,12 @@ use App\Application\Seo\DTOs\VerificationMetaDataDTO;
 
 class ResolveHomePageSeoDataAction
 {
+    public function __construct(
+        private readonly BuildHomePageSchemaAction $buildHomePageSchemaAction,
+    )
+    {
+    }
+
     public function execute(): SeoDataDTO
     {
         $siteName = get_setting('seo', 'site_name') ?: get_setting('general', 'title') ?: config('app.name');
@@ -17,6 +23,17 @@ class ResolveHomePageSeoDataAction
         $canonicalUrl = rtrim(url('/'), '/') . '/';
         $robots = get_setting('seo', 'robots') ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
         $ogImage = get_setting('seo', 'og_image') ?: null;
+
+        $schemaGraph = $this->buildHomePageSchemaAction->execute(
+            canonicalUrl: $canonicalUrl,
+            title: $title,
+            description: $description,
+        );
+
+        $schemaJson = json_encode([
+            '@context' => 'https://schema.org',
+            '@graph' => $schemaGraph,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 
         return new SeoDataDTO(
             title: $title,
@@ -44,6 +61,7 @@ class ResolveHomePageSeoDataAction
                 googleSiteVerification: get_setting('seo', 'google_site_verification') ?: null,
                 bingSiteVerification: get_setting('seo', 'bing_site_verification') ?: null,
             ),
+            schemaJson: $schemaJson ?: null,
         );
     }
 }
