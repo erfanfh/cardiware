@@ -2,7 +2,7 @@
 
 namespace App\Application\Seo\Resolvers;
 
-use App\Application\Seo\Actions\ResolveHomePageSeoDataAction;
+use App\Application\Seo\Actions\SeoData\ResolveHomePageSeoDataAction;
 use App\Application\Seo\Contracts\SeoResolverInterface;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\Support\SeoContext;
