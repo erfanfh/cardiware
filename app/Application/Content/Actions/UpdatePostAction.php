@@ -23,6 +23,7 @@ class UpdatePostAction
         protected ContentSlugCacheService    $contentSlugCacheService,
         protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
         protected SyncPostImageGalleryAction $syncPostImageGalleryAction,
+        protected SyncPostSeoAction          $syncPostSeoAction,
     )
     {
     }
@@ -44,6 +45,7 @@ class UpdatePostAction
                 $postData['slug'],
                 $postData['download_sections'],
                 $postData['image_gallery_items'],
+                $postData['seo'],
             );
 
             $post->update($postData);
@@ -58,6 +60,7 @@ class UpdatePostAction
                 )
             );
 
+            $this->syncPostSeoAction->execute($post, $data['seo'] ?? []);
             $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);

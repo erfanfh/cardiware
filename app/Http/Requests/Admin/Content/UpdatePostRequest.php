@@ -73,6 +73,8 @@ class UpdatePostRequest extends FormRequest
             'image_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
             'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
             'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'seo' => ['nullable', 'array'],
         ];
     }
 
