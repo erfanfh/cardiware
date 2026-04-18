@@ -180,6 +180,13 @@
     </x-admin.metabox>
 
     <x-admin.metabox
+        title="سئو"
+        storageKey="seo-section"
+    >
+        @include('admin.content.posts.partials.seo-box')
+    </x-admin.metabox>
+
+    <x-admin.metabox
         title="باکس دانلود"
         storageKey="post-download-sections"
     >
