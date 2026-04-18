@@ -25,12 +25,14 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-4">
             <x-admin.field
                 label="زبان (Open Graph)"
-                hint="مقدار باید به صورت fa_IR یا en_US باشد"
             >
-                <x-admin.form.input
+                <x-admin.form.select
                     name="og_locale"
-                    class="direction-ltr"
                     :value="old('og_locale', get_setting('seo', 'og_locale'))"
+                    :options="[
+                        'fa_IR' => 'فارسی',
+                        'en_US' => 'انگلیسی',
+                    ]"
                 />
             </x-admin.field>
 
