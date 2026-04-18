@@ -2,7 +2,7 @@
 
 namespace App\Application\Seo\Resolvers;
 
-use App\Application\Seo\Actions\ResolvePostSeoDataAction;
+use App\Application\Seo\Actions\SeoData\ResolvePostSeoDataAction;
 use App\Application\Seo\Contracts\SeoResolverInterface;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\Support\SeoContext;
@@ -18,14 +18,11 @@ class PostSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('contents.detail');
+        return $context->routeIs('contents.detail') and Post::where('slug', $context->request->slug)->exists();
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
     {
-        /** @var Post $post */
-        $post = Post::where('slug', $context->request->slug)->first();
-
-        return $this->resolvePostSeoDataAction->execute($post);
+        return $this->resolvePostSeoDataAction->execute();
     }
 }
