@@ -18,9 +18,11 @@ class ResolveHomePageSeoDataAction
         $defaults = $this->getSeoDefaultsAction->execute();
 
         $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
+        $description = get_setting('seo', 'home_description') ?: null;
 
         return new SeoDataDTO(
             title: $title,
+            description: $description,
         );
     }
 }

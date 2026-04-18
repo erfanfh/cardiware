@@ -5,3 +5,6 @@
 @if(filled($seoData->title))
     <title>{{ $seoData->title }}</title>
 @endif
+@if(filled($seoData->description))
+    <meta name="description" content="{{ $seoData->description }}">
+@endif
