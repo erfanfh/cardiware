@@ -24,6 +24,9 @@ class SeoSettings extends BaseSettings
         'organization_email',
         'organization_phone',
         'organization_same_as',
+
+        'post_seo_title',
+        'post_seo_description',
     ];
 
     protected array $casts = [
