@@ -1,9 +1,15 @@
 @php
-    use App\Domain\Content\Enums\PostStatusEnum;$isEdit = isset($post) && $post;
+    use App\Application\Seo\Support\SeoTemplateVariableRegistry;
+    use App\Domain\Content\Enums\PostStatusEnum;
+
+    $isEdit = isset($post) && $post;
+
     $statuses = [];
     foreach (PostStatusEnum::cases() as $status){
         $statuses[$status->value] = $status->label();
     }
+
+    $postSeoVariables = app(SeoTemplateVariableRegistry::class)->forContext('post');
 @endphp
 
 <x-admin.page columns="2">
