@@ -17,7 +17,6 @@ class GetSeoDefaultsAction
             'og_locale' => get_setting('seo', 'og_locale') ?: 'fa_IR',
             'og_image' => get_setting('seo', 'og_image') ?: null,
             'twitter_card' => get_setting('seo', 'twitter_card') ?: 'summary_large_image',
-            'canonical_home' => rtrim(url('/'), '/') . '/',
         ];
     }
 }
