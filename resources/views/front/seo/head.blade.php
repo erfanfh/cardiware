@@ -8,3 +8,6 @@
 @if(filled($seoData->description))
     <meta name="description" content="{{ $seoData->description }}">
 @endif
+@if(filled($seoData->canonicalUrl))
+    <link rel="canonical" href="{{ $seoData->canonicalUrl }}">
+@endif

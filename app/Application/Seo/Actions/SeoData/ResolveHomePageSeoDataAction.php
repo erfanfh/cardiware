@@ -19,10 +19,12 @@ class ResolveHomePageSeoDataAction
 
         $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
         $description = get_setting('seo', 'home_description') ?: null;
+        $canonicalUrl = rtrim(url('/'), '/') . '/';
 
         return new SeoDataDTO(
             title: $title,
             description: $description,
+            canonicalUrl: $canonicalUrl,
         );
     }
 }
