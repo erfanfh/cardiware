@@ -66,4 +66,14 @@ final class ResolvedContentDTO
     {
         return $this->type === ResolvedContentTypeEnum::POST;
     }
+
+    public function getPage(): ?Page
+    {
+        return $this->model instanceof Page ? $this->model : null;
+    }
+
+    public function getPost(): ?Post
+    {
+        return $this->model instanceof Post ? $this->model : null;
+    }
 }
