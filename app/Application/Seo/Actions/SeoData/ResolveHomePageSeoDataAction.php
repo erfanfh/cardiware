@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
 
 class ResolveHomePageSeoDataAction
@@ -25,6 +26,9 @@ class ResolveHomePageSeoDataAction
             title: $title,
             description: $description,
             canonicalUrl: $canonicalUrl,
+            openGraph: new OpenGraphDataDTO(
+                locale: $defaults['og_locale'],
+            )
         );
     }
 }
