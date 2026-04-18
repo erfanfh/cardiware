@@ -14,6 +14,9 @@
 @if(filled($seoData->canonicalUrl))
     <link rel="canonical" href="{{ $seoData->canonicalUrl }}">
 @endif
+@if(filled($seoData->author))
+    <meta name="author" content="{{ $seoData->author }}">
+@endif
 @if($seoData->openGraph)
     @foreach($seoData->openGraph->toMetaArray() as $property => $content)
         <meta property="{{ $property }}" content="{{ $content }}">

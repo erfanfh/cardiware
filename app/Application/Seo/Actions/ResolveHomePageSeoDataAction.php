@@ -11,18 +11,18 @@ class ResolveHomePageSeoDataAction
 {
     public function __construct(
         private readonly BuildHomePageSchemaAction $buildHomePageSchemaAction,
+        private readonly GetSeoDefaultsAction      $getSeoDefaultsAction,
     )
     {
     }
 
     public function execute(): SeoDataDTO
     {
-        $siteName = get_setting('seo', 'site_name') ?: get_setting('general', 'title') ?: config('app.name');
-        $title = get_setting('seo', 'home_title') ?: $siteName;
+        $defaults = $this->getSeoDefaultsAction->execute();
+
+        $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
         $description = get_setting('seo', 'home_description') ?: null;
-        $canonicalUrl = rtrim(url('/'), '/') . '/';
-        $robots = get_setting('seo', 'robots') ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
-        $ogImage = get_setting('seo', 'og_image') ?: null;
+        $canonicalUrl = $defaults['canonical_home'];
 
         $schemaGraph = $this->buildHomePageSchemaAction->execute(
             canonicalUrl: $canonicalUrl,
@@ -38,30 +38,28 @@ class ResolveHomePageSeoDataAction
         return new SeoDataDTO(
             title: $title,
             description: $description,
-            robots: $robots,
+            robots: $defaults['robots'],
             canonicalUrl: $canonicalUrl,
-            nextUrl: null,
-            prevUrl: null,
+            schemaJson: $schemaJson ?: null,
             openGraph: new OpenGraphDataDTO(
                 type: 'website',
-                title: $siteName,
+                title: $defaults['site_name'],
                 description: $description,
                 url: $canonicalUrl,
-                siteName: $siteName,
-                locale: get_setting('seo', 'og_locale') ?: 'fa_IR',
-                image: $ogImage,
+                siteName: $defaults['site_name'],
+                locale: $defaults['og_locale'],
+                image: $defaults['og_image'],
             ),
             twitter: new TwitterCardDataDTO(
-                card: get_setting('seo', 'twitter_card') ?: 'summary_large_image',
-                title: $siteName,
+                card: $defaults['twitter_card'],
+                title: $defaults['site_name'],
                 description: $description,
-                image: $ogImage,
+                image: $defaults['og_image'],
             ),
             verification: new VerificationMetaDataDTO(
                 googleSiteVerification: get_setting('seo', 'google_site_verification') ?: null,
                 bingSiteVerification: get_setting('seo', 'bing_site_verification') ?: null,
             ),
-            schemaJson: $schemaJson ?: null,
         );
     }
 }

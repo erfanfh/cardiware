@@ -12,6 +12,7 @@ use App\Domain\Download\Models\DownloadSection;
 use App\Domain\Feature\Traits\HasFeatures;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
@@ -25,7 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface, CommentableContract
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments, HasExcerpt;
+    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments, HasExcerpt, HasSeoMeta;
 
     protected $fillable = [
         'author_id',
