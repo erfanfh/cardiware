@@ -72,14 +72,14 @@ final class ResolveContentBySlugAction
         if ($model instanceof Page) {
             return [
                 'type' => ResolvedContentTypeEnum::PAGE->value,
-                'id' => $model->id,
+                'id' => $model->getKey(),
             ];
         }
 
         if ($model instanceof Post) {
             return [
                 'type' => ResolvedContentTypeEnum::POST->value,
-                'id' => $model->id,
+                'id' => $model->getKey(),
             ];
         }
 
