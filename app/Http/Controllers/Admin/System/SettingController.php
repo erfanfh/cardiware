@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\System;
 
+use App\Application\Seo\Support\SeoTemplateVariableRegistry;
 use App\Application\System\Actions\UpdateSettingAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -51,7 +52,10 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.seo');
 
-        return view('admin.system.settings.seo');
+        $seoVariableRegistry = app(SeoTemplateVariableRegistry::class);
+        $postSeoVariables = $seoVariableRegistry->forContext('post');
+
+        return view('admin.system.settings.seo', compact('postSeoVariables'));
     }
 
     /**
