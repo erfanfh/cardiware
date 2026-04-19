@@ -31,11 +31,27 @@ class ResolvePostSeoDataAction
         $ogTitleTemplate = $post->seoMeta?->og_title ?: get_setting('seo', 'post_social_seo_title') ?: $title;
         $ogTitle = app(SeoTemplateParser::class)->parse($ogTitleTemplate, $data);
 
+        $xTitleTemplate = $post->seoMeta?->x_title;
+        $xTitle = $xTitleTemplate ? app(SeoTemplateParser::class)->parse($xTitleTemplate, $data) : null;
+
         $descriptionTemplate = $post->seoMeta?->description ?: get_setting('seo', 'post_seo_description') ?: $post->excerpt();
         $description = app(SeoTemplateParser::class)->parse($descriptionTemplate, $data);
 
         $ogDescriptionTemplate = $post->seoMeta?->og_description ?: get_setting('seo', 'post_social_seo_description') ?: $description;
         $ogDescription = app(SeoTemplateParser::class)->parse($ogDescriptionTemplate, $data);
+
+        $xDescriptionTemplate = $post->seoMeta?->x_description;
+        $xDescription = $xDescriptionTemplate ? app(SeoTemplateParser::class)->parse($xDescriptionTemplate, $data) : null;
+
+        $ogImage = $post->seoMeta?->ogImage ?: $post->picture;
+        $ogImageData = [
+            'url' => $ogImage?->url,
+            'width' => $ogImage?->primaryVariant?->width,
+            'height' => $ogImage?->primaryVariant?->height,
+            'type' => $ogImage?->primaryVariant?->mime_type,
+        ];
+
+        $xImageUrl = $post->seoMeta?->xImage?->url;
 
         $canonicalUrl = rtrim($post->url, '/') . '/';
 
@@ -56,15 +72,18 @@ class ResolvePostSeoDataAction
                 url: $canonicalUrl,
                 siteName: $defaults['site_name'],
                 locale: $defaults['og_locale'],
-                image: $post->picture?->url ?? null,
-                imageWidth: $post->picture->primaryVariant->width ?? null,
-                imageHeight: $post->picture->primaryVariant->height ?? null,
-                imageType: $post->picture->primaryVariant->mime_type ?? null,
+                image: $ogImageData['url'],
+                imageWidth: $ogImageData['width'],
+                imageHeight: $ogImageData['height'],
+                imageType: $ogImageData['type'],
                 publishedTime: $publishedTime,
                 modifiedTime: $modifiedTime,
             ),
             twitter: new TwitterCardDataDTO(
                 card: $defaults['twitter_card'],
+                title: $xTitle,
+                description: $xDescription,
+                image: $xImageUrl,
                 label1: $author ? 'نوشته‌شده بدست' : null,
                 data1: $author,
                 label2: 'زمان تقریبی برای خواندن',
