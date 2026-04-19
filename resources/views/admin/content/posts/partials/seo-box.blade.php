@@ -40,7 +40,7 @@
             seoDescription: @js(old('seo.description', $post->seoMeta?->description ?? '')),
 
             canonicalUrl: @js(old('seo.canonical_url', $post->seoMeta?->canonical_url ?? '')),
-            robots: @js(old('seo.robots', $post->seoMeta?->robots ?? 'index, follow')),
+            robots: @js(old('seo.robots', $post->seoMeta?->robots ?? '')),
 
             ogTitle: @js(old('seo.og_title', $post->seoMeta?->og_title ?? '')),
             ogDescription: @js(old('seo.og_description', $post->seoMeta?->og_description ?? '')),
@@ -104,7 +104,7 @@
 
         <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
             <div class="text-xs text-slate-500">Robots</div>
-            <div class="mt-1 text-sm font-medium text-slate-800" x-text="robots.trim() || 'index, follow'"></div>
+            <div class="mt-1 text-sm font-medium text-slate-800" x-text="robots.trim() || 'پیش‌فرض'"></div>
         </div>
     </div>
 
@@ -484,13 +484,14 @@
     >
         <div class="grid grid-cols-12 gap-5">
             <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-slate-200 p-4">
+                <div class="rounded-2xl border border-dashed border-slate-200 p-4">
                     <h3 class="mb-4 text-sm font-semibold text-slate-800">Canonical</h3>
 
                     <x-admin.field label="نشانی قانونی">
                         <x-admin.form.input
                             name="seo[canonical_url]"
                             x-model="canonicalUrl"
+                            class="direction-ltr"
                         />
                         <p class="mt-2 text-xs text-slate-500">
                             اگر خالی بماند، نشانی پیش‌فرض همین نوشته استفاده می‌شود.
@@ -500,13 +501,14 @@
             </div>
 
             <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-slate-200 p-4">
+                <div class="rounded-2xl border border-dashed border-slate-200 p-4">
                     <h3 class="mb-4 text-sm font-semibold text-slate-800">Meta Robots</h3>
 
                     <x-admin.field label="مقدار robots">
                         <x-admin.form.input
                             name="seo[robots]"
                             x-model="robots"
+                            class="direction-ltr"
                         />
                         <p class="mt-2 text-xs text-slate-500">
                             مثال: index, follow یا noindex, nofollow
@@ -743,7 +745,7 @@
                 seoDescription: config.values?.seoDescription ?? '',
 
                 canonicalUrl: config.values?.canonicalUrl ?? '',
-                robots: config.values?.robots ?? 'index, follow',
+                robots: config.values?.robots ?? '',
 
                 ogTitle: config.values?.ogTitle ?? '',
                 ogDescription: config.values?.ogDescription ?? '',
