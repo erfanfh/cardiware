@@ -28,6 +28,7 @@
         <input
             name="{{ $titleName }}"
             x-model="title"
+            @input="$dispatch('title-changed', title)"
             type="text"
             class="w-full rounded-2xl border border-slate-200 shadow-sm bg-white px-4 py-3 text-xl font-black leading-tight outline-none transition focus:ring-2 focus:ring-orange-200 focus:border-orange-300 placeholder:text-slate-400"
             placeholder="افزودن عنوان"
