@@ -21,3 +21,8 @@
         <meta name="{{ $name }}" content="{{ $content }}">
     @endforeach
 @endif
+@if($seoData->verification)
+    @foreach($seoData->verification->toMetaArray() as $name => $content)
+        <meta name="{{ $name }}" content="{{ $content }}">
+    @endforeach
+@endif
