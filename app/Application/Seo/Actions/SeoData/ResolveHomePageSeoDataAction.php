@@ -5,6 +5,7 @@ namespace App\Application\Seo\Actions\SeoData;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
+use App\Application\Seo\DTOs\TwitterCardDataDTO;
 
 class ResolveHomePageSeoDataAction
 {
@@ -27,8 +28,15 @@ class ResolveHomePageSeoDataAction
             description: $description,
             canonicalUrl: $canonicalUrl,
             openGraph: new OpenGraphDataDTO(
+                title: $defaults['site_name'],
+                description: $description,
+                url: $canonicalUrl,
+                siteName: $defaults['site_name'],
                 locale: $defaults['og_locale'],
-            )
+            ),
+            twitter: new TwitterCardDataDTO(
+                card: $defaults['twitter_card'],
+            ),
         );
     }
 }
