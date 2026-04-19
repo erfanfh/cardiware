@@ -8,6 +8,7 @@ readonly class SeoDataDTO
         public ?string                  $title = null,
         public ?string                  $description = null,
         public ?string                  $canonicalUrl = null,
+        public ?string                  $author = null,
         public ?OpenGraphDataDTO        $openGraph = null,
         public ?TwitterCardDataDTO      $twitter = null,
         public ?VerificationMetaDataDTO $verification = null,
