@@ -38,12 +38,14 @@
 
             <x-admin.field
                 label="نوع کارت توییتر (Twitter Card)"
-                hint="summary_large_image یا summary"
             >
-                <x-admin.form.input
+                <x-admin.form.select
                     name="twitter_card"
-                    class="direction-ltr"
                     :value="old('twitter_card', get_setting('seo', 'twitter_card'))"
+                    :options="[
+                        'summary_large_image' => 'summary_large_image',
+                        'summary' => 'summary',
+                    ]"
                 />
             </x-admin.field>
 
