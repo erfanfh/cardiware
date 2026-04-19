@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
-use App\Application\Seo\Resolvers\PageSeoResolver;
 use App\Application\Seo\Resolvers\PostSeoResolver;
 use App\Application\Seo\Support\SeoManager;
 use App\Application\Seo\Support\SeoResolverRegistry;
@@ -21,7 +20,6 @@ class SeoServiceProvider extends ServiceProvider
             return new SeoResolverRegistry([
                 $app->make(HomePageSeoResolver::class),
                 $app->make(PostSeoResolver::class),
-                $app->make(PageSeoResolver::class),
             ]);
         });
 
