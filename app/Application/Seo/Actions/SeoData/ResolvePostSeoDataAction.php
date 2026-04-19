@@ -10,6 +10,7 @@ use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
 use App\Domain\Seo\Enums\OgTypeEnum;
+use App\Infrastructure\Support\ReadingTimeEstimator;
 
 class ResolvePostSeoDataAction
 {
@@ -41,10 +42,13 @@ class ResolvePostSeoDataAction
         $publishedTime = $post->published_at?->utc()->toIso8601String();
         $modifiedTime = $post->updated_at > $post->published_at ? $post->updated_at?->utc()->toIso8601String() : $publishedTime;
 
+        $author = $post->author?->display_name;
+
         return new SeoDataDTO(
             title: $title,
             description: $description,
             canonicalUrl: $canonicalUrl,
+            author: $author,
             openGraph: new OpenGraphDataDTO(
                 type: OgTypeEnum::ARTICLE,
                 title: $ogTitle,
@@ -61,6 +65,10 @@ class ResolvePostSeoDataAction
             ),
             twitter: new TwitterCardDataDTO(
                 card: $defaults['twitter_card'],
+                label1: $author ? 'نوشته‌شده بدست' : null,
+                data1: $author,
+                label2: 'زمان تقریبی برای خواندن',
+                data2: app(ReadingTimeEstimator::class)->estimate($post->body) . ' دقیقه',
             ),
         );
     }
