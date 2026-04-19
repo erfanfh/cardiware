@@ -15,6 +15,10 @@
         $tags[] = '<link rel="canonical" href="' . e($seoData->canonicalUrl) . '">';
     }
 
+    if (filled($seoData->author)) {
+        $tags[] = '<meta name="author" content="' . e($seoData->author) . '">';
+    }
+
     foreach (($seoData->openGraph?->toMetaArray() ?? []) as $property => $content) {
         if (filled($content)) {
             $tags[] = '<meta property="' . e($property) . '" content="' . e($content) . '">';
