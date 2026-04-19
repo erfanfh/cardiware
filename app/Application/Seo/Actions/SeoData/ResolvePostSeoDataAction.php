@@ -53,7 +53,7 @@ class ResolvePostSeoDataAction
 
         $xImageUrl = $post->seoMeta?->xImage?->url;
 
-        $canonicalUrl = rtrim($post->url, '/') . '/';
+        $canonicalUrl = $post->seoMeta?->canonical_url ?: rtrim($post->url, '/') . '/';
 
         $publishedTime = $post->published_at?->utc()->toIso8601String();
         $modifiedTime = $post->updated_at > $post->published_at ? $post->updated_at?->utc()->toIso8601String() : $publishedTime;
