@@ -5,6 +5,7 @@ namespace App\Application\Seo\DTOs;
 readonly class SeoDataDTO
 {
     public function __construct(
+        public ?string                  $robots = null,
         public ?string                  $title = null,
         public ?string                  $description = null,
         public ?string                  $canonicalUrl = null,
