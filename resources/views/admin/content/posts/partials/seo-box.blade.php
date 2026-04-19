@@ -17,41 +17,42 @@
 
 <div
     x-data="postSeoBox({
-            variables: @js($seoVariables),
+        variables: @js($seoVariables),
 
-            templates: {
-                title: @js($postSeoTitleTemplate),
-                description: @js($postSeoDescriptionTemplate),
-            },
+        templates: {
+            title: @js($postSeoTitleTemplate),
+            description: @js($postSeoDescriptionTemplate),
+        },
 
-            values: {
-                postTitle: @js(old('title', $post->title ?? '')),
-                slug: @js(old('slug', $post->slug ?? '')),
-                siteTitle: @js(get_setting('general', 'site_title') ?: config('app.name')),
-                separator: @js(get_setting('seo', 'separator') ?: '|'),
+        values: {
+            postTitle: @js(old('title', $post->title ?? '')),
+            slug: @js(old('slug', $post->slug ?? '')),
+            siteTitle: @js(get_setting('general', 'site_title') ?: config('app.name')),
+            separator: @js(get_setting('seo', 'separator') ?: '|'),
 
-                focusKeyword: @js(old('seo.focus_keyword', $post->seoMeta?->focus_keyword ?? '')),
+            focusKeyword: @js(old('seo.focus_keyword', $post->seoMeta?->focus_keyword ?? '')),
 
-                seoTitle: @js(old('seo.title', $post->seoMeta?->title ?? '')),
-                seoDescription: @js(old('seo.description', $post->seoMeta?->description ?? '')),
+            seoTitle: @js(old('seo.title', $post->seoMeta?->title ?? '')),
+            seoDescription: @js(old('seo.description', $post->seoMeta?->description ?? '')),
 
-                canonicalUrl: @js(old('seo.canonical_url', $post->seoMeta?->canonical_url ?? '')),
-                robots: @js(old('seo.robots', $post->seoMeta?->robots ?? 'index, follow')),
+            canonicalUrl: @js(old('seo.canonical_url', $post->seoMeta?->canonical_url ?? '')),
+            robots: @js(old('seo.robots', $post->seoMeta?->robots ?? 'index, follow')),
 
-                ogTitle: @js(old('seo.og_title', $post->seoMeta?->og_title ?? '')),
-                ogDescription: @js(old('seo.og_description', $post->seoMeta?->og_description ?? '')),
-                ogImageId: @js(old('seo.og_image.id', $post->seoMeta?->og_image_id ?? null)),
-                ogImagePath: @js(old('seo.og_image.path', $post->seoMeta?->ogImage?->url ?? '')),
+            ogTitle: @js(old('seo.og_title', $post->seoMeta?->og_title ?? '')),
+            ogDescription: @js(old('seo.og_description', $post->seoMeta?->og_description ?? '')),
+            ogImageId: @js(old('seo.og_image.id', $post->seoMeta?->og_image_id ?? null)),
+            ogImagePath: @js(old('seo.og_image.path', $post->seoMeta?->ogImage?->url ?? '')),
 
-                xTitle: @js(old('seo.x_title', $post->seoMeta?->x_title ?? '')),
-                xDescription: @js(old('seo.x_description', $post->seoMeta?->x_description ?? '')),
-                xImageId: @js(old('seo.x_image.id', $post->seoMeta?->x_image_id ?? null)),
-                xImagePath: @js(old('seo.x_image.path', $post->seoMeta?->xImage?->url ?? '')),
+            xTitle: @js(old('seo.x_title', $post->seoMeta?->x_title ?? '')),
+            xDescription: @js(old('seo.x_description', $post->seoMeta?->x_description ?? '')),
+            xImageId: @js(old('seo.x_image.id', $post->seoMeta?->x_image_id ?? null)),
+            xImagePath: @js(old('seo.x_image.path', $post->seoMeta?->xImage?->url ?? '')),
 
-                schemaType: @js(old('seo.schema_type', $post->seoMeta?->schema_type ?? 'article')),
-                schemaSettings: @js(old('seo.schema_settings', $post->seoMeta?->schema_settings ?? [])),
-            }
-        })"
+            schemaType: @js(old('seo.schema_type', $post->seoMeta?->schema_type ?? 'article')),
+            schemaSettings: @js(old('seo.schema_settings', $post->seoMeta?->schema_settings ?? [])),
+        }
+    })"
+    @title-changed.window="postTitle = $event.detail"
     class="space-y-5"
 >
     {{-- Summary Strip --}}
@@ -145,10 +146,8 @@
                     <x-admin.form.input
                         name="seo[focus_keyword]"
                         x-model="focusKeyword"
+                        x-bind:placeholder="postTitle"
                     />
-                    <p class="mt-2 text-xs text-slate-500">
-                        این مقدار فعلاً برای تحلیل داخلی استفاده می‌شود و مستقیماً در خروجی HTML چاپ نمی‌شود.
-                    </p>
                 </x-admin.field>
             </div>
 
