@@ -1,7 +1,7 @@
 @php
     use App\Domain\Seo\Enums\SeoTemplateVariableEnum;
 
-    $seoVariables = collect(SeoTemplateVariableEnum::cases())
+    $postSeoVariables = collect(SeoTemplateVariableEnum::cases())
         ->filter(fn (SeoTemplateVariableEnum $variable) => $variable->isAvailableFor('post'))
         ->map(fn (SeoTemplateVariableEnum $variable) => [
             'token' => $variable->token(),
@@ -11,14 +11,14 @@
         ->values()
         ->all();
 
-    $postSeoTitleTemplate = get_setting('seo', 'post_seo_title') ?: '{post_title} {separator} {site_title}';
-    $postSeoDescriptionTemplate = get_setting('seo', 'post_seo_description') ?: '';
+    $postSeoTitleTemplate = get_setting('seo', 'post_seo_title');
+    $postSeoDescriptionTemplate = get_setting('seo', 'post_seo_description');
+
+    $siteTitle = app(\App\Application\Seo\Actions\GetSeoDefaultsAction::class)->execute()['site_name'];
 @endphp
 
 <div
     x-data="postSeoBox({
-        variables: @js($seoVariables),
-
         templates: {
             title: @js($postSeoTitleTemplate),
             description: @js($postSeoDescriptionTemplate),
@@ -27,8 +27,8 @@
         values: {
             postTitle: @js(old('title', $post->title ?? '')),
             slug: @js(old('slug', $post->slug ?? '')),
-            siteTitle: @js(get_setting('general', 'site_title') ?: config('app.name')),
-            separator: @js(get_setting('seo', 'separator') ?: '|'),
+            siteTitle: @js($siteTitle),
+            separator: @js(get_setting('seo', 'separator')),
 
             focusKeyword: @js(old('seo.focus_keyword', $post->seoMeta?->focus_keyword ?? '')),
 
@@ -140,7 +140,7 @@
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
-        <div class="grid grid-cols-12 gap-5">
+        <div class="grid grid-cols-12 gap-6">
             <div class="col-span-12">
                 <x-admin.field label="کلیدواژه کانونی">
                     <x-admin.form.input
@@ -152,55 +152,37 @@
             </div>
 
             <div class="col-span-12">
-                <div class="flex items-start justify-between gap-3">
-                    <x-admin.field class="flex-1" label="عنوان سئو">
-                        <x-admin.form.input
-                            name="seo[title]"
-                            x-model="seoTitle"
-                        />
-                        <p class="mt-2 text-xs text-slate-500">
-                            اگر خالی بماند، از الگوی پیش‌فرض تنظیمات استفاده می‌شود.
-                        </p>
-                    </x-admin.field>
+                <x-admin.field class="flex-1 pt-2 relative" label="عنوان سئو">
+                    <x-admin.form.input
+                        x-ref="seoTitleInput"
+                        name="seo[title]"
+                        x-model="seoTitle"
+                        x-bind:placeholder="parsedTitleTemplatePlaceholder"
+                    />
 
-                    <div class="w-full max-w-[220px] pt-8">
-                        <div class="relative">
+                    <div class="mt-1 flex flex-wrap gap-2 items-center absolute top-0 left-0">
+                        <span class="text-xs text-gray-500">متغیرها: </span>
+                        @foreach($postSeoVariables as $variable)
                             <button
                                 type="button"
-                                class="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                                @click="toggleVariableMenu('seoTitle')"
+                                @click="insertAtCursor('seoTitleInput', '{{ $variable['token'] }}', 'seoTitle')"
+                                class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                title="{{ $variable['description'] }}"
                             >
-                                درج متغیر
+                                {{ $variable['label'] }}
                             </button>
-
-                            <div
-                                x-show="variableMenuTarget === 'seoTitle'"
-                                @click.outside="closeVariableMenu()"
-                                x-transition
-                                class="absolute left-0 z-20 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg"
-                            >
-                                <template x-for="variable in variables" :key="variable.token">
-                                    <button
-                                        type="button"
-                                        class="block w-full rounded-xl px-3 py-2 text-right transition hover:bg-slate-50"
-                                        @click="insertVariable('seoTitle', variable.token)"
-                                    >
-                                        <div class="text-sm font-semibold text-slate-800"
-                                             x-text="variable.label"></div>
-                                        <div class="mt-1 text-xs text-slate-500"
-                                             x-text="variable.token + ' — ' + variable.description"></div>
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                </div>
+                </x-admin.field>
 
-                <div class="mt-3">
+                <div class="mt-1.5">
                     <div class="mb-1 flex items-center justify-between text-xs">
                         <span class="text-slate-500">طول عنوان</span>
-                        <span class="font-medium" :class="titleBar.textClass"
-                              x-text="resolvedSeoTitleLength + ' کاراکتر'"></span>
+                        <span
+                            class="font-medium"
+                            :class="titleBar.textClass"
+                            x-text="resolvedSeoTitleLength + ' کاراکتر'"
+                        ></span>
                     </div>
 
                     <div class="h-2.5 overflow-hidden rounded-full bg-slate-100">
@@ -214,56 +196,39 @@
             </div>
 
             <div class="col-span-12">
-                <div class="flex items-start justify-between gap-3">
-                    <x-admin.field class="flex-1" label="توضیح متا">
-                        <x-admin.form.textarea
-                            rows="4"
-                            name="seo[description]"
-                            x-model="seoDescription"
-                        />
-                        <p class="mt-2 text-xs text-slate-500">
-                            اگر خالی بماند، از الگوی پیش‌فرض تنظیمات استفاده می‌شود.
-                        </p>
-                    </x-admin.field>
+                <x-admin.field class="flex-1 relative pt-2" label="توضیح متا">
+                    <x-admin.form.textarea
+                        x-ref="seoDescriptionInput"
+                        rows="4"
+                        name="seo[description]"
+                        x-model="seoDescription"
+                        x-bind:placeholder="parsedDescriptionTemplatePlaceholder"
+                        class="mb-0"
+                    />
 
-                    <div class="w-full max-w-[220px] pt-8">
-                        <div class="relative">
+                    <div class="mt-1 flex flex-wrap gap-2 items-center absolute top-0 left-0">
+                        <span class="text-xs text-gray-500">متغیرها: </span>
+                        @foreach($postSeoVariables as $variable)
                             <button
                                 type="button"
-                                class="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
-                                @click="toggleVariableMenu('seoDescription')"
+                                @click="insertAtCursor('seoDescriptionInput', '{{ $variable['token'] }}', 'seoTitle')"
+                                class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                title="{{ $variable['description'] }}"
                             >
-                                درج متغیر
+                                {{ $variable['label'] }}
                             </button>
-
-                            <div
-                                x-show="variableMenuTarget === 'seoDescription'"
-                                @click.outside="closeVariableMenu()"
-                                x-transition
-                                class="absolute left-0 z-20 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg"
-                            >
-                                <template x-for="variable in variables" :key="variable.token">
-                                    <button
-                                        type="button"
-                                        class="block w-full rounded-xl px-3 py-2 text-right transition hover:bg-slate-50"
-                                        @click="insertVariable('seoDescription', variable.token)"
-                                    >
-                                        <div class="text-sm font-semibold text-slate-800"
-                                             x-text="variable.label"></div>
-                                        <div class="mt-1 text-xs text-slate-500"
-                                             x-text="variable.token + ' — ' + variable.description"></div>
-                                    </button>
-                                </template>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
-                </div>
+                </x-admin.field>
 
-                <div class="mt-3">
+                <div class="mt-1.5">
                     <div class="mb-1 flex items-center justify-between text-xs">
                         <span class="text-slate-500">طول توضیح متا</span>
-                        <span class="font-medium" :class="descriptionBar.textClass"
-                              x-text="resolvedSeoDescriptionLength + ' کاراکتر'"></span>
+                        <span
+                            class="font-medium"
+                            :class="descriptionBar.textClass"
+                            x-text="resolvedSeoDescriptionLength + ' کاراکتر'"
+                        ></span>
                     </div>
 
                     <div class="h-2.5 overflow-hidden rounded-full bg-slate-100">
@@ -277,28 +242,61 @@
             </div>
 
             <div class="col-span-12">
-                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <div class="text-sm font-semibold text-slate-800">پیش‌نمایش نتیجه گوگل</div>
-                        <div class="rounded-full bg-white px-3 py-1 text-[11px] text-slate-500">
-                            نمای فشرده
+                <div
+                    class="w-full rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-[0_10px_30px_-20px_rgba(15,23,42,0.35)]">
+                    <div class="mb-3 flex items-start gap-3">
+                        <div
+                            class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100">
+                            <img src="{{ asset('favicon/favicon-32x32.webp') }}" alt="favicon" class="w-6 h-6">
+                        </div>
+
+                        <div class="min-w-0">
+                            <div class="truncate text-sm font-medium text-slate-800">
+                                <span x-text="siteTitle || 'نام سایت'"></span>
+                            </div>
+
+                            <div class="mt-0.5 flex items-center gap-2 text-xs text-slate-500">
+                                <span class="truncate direction-ltr" x-text="previewUrl"></span>
+                                <span class="bg-slate-300 w-1 h-1 rounded-full inline-block"></span>
+                                <span>در دسترس</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <div
-                            class="line-clamp-2 text-lg font-medium leading-7 text-blue-700"
-                            x-text="resolvedSeoTitle || 'عنوان سئو اینجا نمایش داده می‌شود'"
-                        ></div>
+                    <div
+                        class="line-clamp-2 text-lg font-medium leading-8 text-blue-700"
+                        x-text="resolvedSeoTitle || 'عنوان سئو اینجا نمایش داده می‌شود'"
+                    ></div>
 
-                        <div class="text-sm text-emerald-700">
-                            <span x-text="previewUrl"></span>
-                        </div>
+                    <div class="mt-2 text-sm leading-6 text-slate-600">
+                    <span
+                        class="line-clamp-3"
+                        x-text="resolvedSeoDescription || '---'"
+                    ></span>
+                    </div>
 
-                        <div
-                            class="line-clamp-3 text-sm leading-6 text-slate-600"
-                            x-text="resolvedSeoDescription || 'توضیح متا اینجا نمایش داده می‌شود.'"
-                        ></div>
+                    <div class="mt-4 flex flex-wrap items-center gap-2">
+                    <span
+                        class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                        عنوان:
+                        <span class="ms-1" x-text="resolvedSeoTitleLength"></span>
+                    </span>
+
+                        <span
+                            class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                        توضیحات:
+                        <span class="ms-1" x-text="resolvedSeoDescriptionLength"></span>
+                    </span>
+
+                        <span
+                            class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium"
+                            :class="hasCustomSeoTitle || hasCustomSeoDescription
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'bg-amber-50 text-amber-700'"
+                        >
+                        <span
+                            x-text="hasCustomSeoTitle || hasCustomSeoDescription ? 'سفارشی شده' : 'بر پایه الگوی پیش‌فرض'"></span>
+                    </span>
                     </div>
                 </div>
             </div>
@@ -762,24 +760,6 @@
                     ],
                 },
 
-                toggleVariableMenu(target) {
-                    this.variableMenuTarget = this.variableMenuTarget === target ? null : target;
-                },
-
-                closeVariableMenu() {
-                    this.variableMenuTarget = null;
-                },
-
-                insertVariable(target, token) {
-                    if (!Object.prototype.hasOwnProperty.call(this, target)) {
-                        return;
-                    }
-
-                    const currentValue = this[target] ?? '';
-                    this[target] = currentValue ? `${currentValue} ${token}` : token;
-                    this.closeVariableMenu();
-                },
-
                 parseTemplate(template) {
                     if (!template) {
                         return '';
@@ -800,20 +780,59 @@
                     return parsed.replace(/\s+/g, ' ').trim();
                 },
 
+                get parsedTitleTemplatePlaceholder() {
+                    return this.parseTemplate(this.templates.title);
+                },
+
+                get parsedDescriptionTemplatePlaceholder() {
+                    return this.parseTemplate(this.templates.description);
+                },
+
                 get resolvedSeoTitle() {
                     return this.seoTitle?.trim()
                         ? this.parseTemplate(this.seoTitle)
                         : this.parseTemplate(this.templates.title);
                 },
 
+                get resolvedSeoTitleLength() {
+                    return this.resolvedSeoTitle.length;
+                },
+
+                insertAtCursor(refName, token, modelName) {
+                    const input = this.$refs[refName];
+
+                    if (!input) {
+                        if (Object.prototype.hasOwnProperty.call(this, modelName)) {
+                            const currentValue = this[modelName] ?? '';
+                            this[modelName] = currentValue ? `${currentValue} ${token}` : token;
+                        }
+
+                        return;
+                    }
+
+                    const start = input.selectionStart ?? input.value.length;
+                    const end = input.selectionEnd ?? input.value.length;
+                    const currentValue = this[modelName] ?? '';
+
+                    const newValue = currentValue.slice(0, start) + token + currentValue.slice(end);
+
+                    this[modelName] = newValue;
+
+                    this.$nextTick(() => {
+                        input.focus();
+
+                        const newCursorPosition = start + token.length;
+
+                        if (typeof input.setSelectionRange === 'function') {
+                            input.setSelectionRange(newCursorPosition, newCursorPosition);
+                        }
+                    });
+                },
+
                 get resolvedSeoDescription() {
                     return this.seoDescription?.trim()
                         ? this.parseTemplate(this.seoDescription)
                         : this.parseTemplate(this.templates.description);
-                },
-
-                get resolvedSeoTitleLength() {
-                    return this.resolvedSeoTitle.length;
                 },
 
                 get resolvedSeoDescriptionLength() {
@@ -872,7 +891,7 @@
 
                 get previewUrl() {
                     const cleanedSlug = (this.slug || '').replace(/^\/+|\/+$/g, '');
-                    return cleanedSlug ? `example.com/${cleanedSlug}` : 'example.com/post-slug';
+                    return cleanedSlug ? `https://moddingway.ir/${cleanedSlug}` : 'https://moddingway.ir/post-slug';
                 },
 
                 get socialStatusLabel() {
