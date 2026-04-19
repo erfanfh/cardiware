@@ -61,6 +61,7 @@ class ResolvePostSeoDataAction
         $author = $post->author?->display_name;
 
         return new SeoDataDTO(
+            robots: $post->seoMeta?->robots ?: $defaults['robots'],
             title: $title,
             description: $description,
             canonicalUrl: $canonicalUrl,
