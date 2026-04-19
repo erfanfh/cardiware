@@ -43,6 +43,8 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     protected $casts = [
         'status' => PostStatusEnum::class,
         'is_pinned' => 'boolean',
+        'published_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
