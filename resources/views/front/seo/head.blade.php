@@ -1,28 +1,39 @@
 @php
     /** @var \App\Application\Seo\DTOs\SeoDataDTO $seoData */
+
+    $tags = ['<!-- Moddingway.ir SEO Module -->'];
+
+    if (filled($seoData->title)) {
+        $tags[] = '<title>' . e($seoData->title) . '</title>';
+    }
+
+    if (filled($seoData->description)) {
+        $tags[] = '<meta name="description" content="' . e($seoData->description) . '">';
+    }
+
+    if (filled($seoData->canonicalUrl)) {
+        $tags[] = '<link rel="canonical" href="' . e($seoData->canonicalUrl) . '">';
+    }
+
+    foreach (($seoData->openGraph?->toMetaArray() ?? []) as $property => $content) {
+        if (filled($content)) {
+            $tags[] = '<meta property="' . e($property) . '" content="' . e($content) . '">';
+        }
+    }
+
+    foreach (($seoData->twitter?->toMetaArray() ?? []) as $name => $content) {
+        if (filled($content)) {
+            $tags[] = '<meta name="' . e($name) . '" content="' . e($content) . '">';
+        }
+    }
+
+    foreach (($seoData->verification?->toMetaArray() ?? []) as $name => $content) {
+        if (filled($content)) {
+            $tags[] = '<meta name="' . e($name) . '" content="' . e($content) . '">';
+        }
+    }
+
+    $tags[] = '<!-- Moddingway.ir SEO Module -->';
 @endphp
 
-@if(filled($seoData->title))
-    <title>{{ $seoData->title }}</title>
-@endif
-@if(filled($seoData->description))
-    <meta name="description" content="{{ $seoData->description }}">
-@endif
-@if(filled($seoData->canonicalUrl))
-    <link rel="canonical" href="{{ $seoData->canonicalUrl }}">
-@endif
-@if($seoData->openGraph)
-    @foreach($seoData->openGraph->toMetaArray() as $property => $content)
-        <meta property="{{ $property }}" content="{{ $content }}">
-    @endforeach
-@endif
-@if($seoData->twitter)
-    @foreach($seoData->twitter->toMetaArray() as $name => $content)
-        <meta name="{{ $name }}" content="{{ $content }}">
-    @endforeach
-@endif
-@if($seoData->verification)
-    @foreach($seoData->verification->toMetaArray() as $name => $content)
-        <meta name="{{ $name }}" content="{{ $content }}">
-    @endforeach
-@endif
+{!! implode("\n\t", $tags) !!}
