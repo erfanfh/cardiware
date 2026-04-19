@@ -13,6 +13,8 @@
 
     $postSeoTitleTemplate = get_setting('seo', 'post_seo_title');
     $postSeoDescriptionTemplate = get_setting('seo', 'post_seo_description');
+    $postSocialSeoTitleTemplate = get_setting('seo', 'post_social_seo_title');
+    $postSocialSeoDescriptionTemplate = get_setting('seo', 'post_social_seo_description');
 
     $siteTitle = app(\App\Application\Seo\Actions\GetSeoDefaultsAction::class)->execute()['site_name'];
 @endphp
@@ -22,6 +24,8 @@
         templates: {
             title: @js($postSeoTitleTemplate),
             description: @js($postSeoDescriptionTemplate),
+            ogTitle: @js($postSocialSeoTitleTemplate),
+            ogDescription: @js($postSocialSeoDescriptionTemplate),
         },
 
         values: {
@@ -309,98 +313,163 @@
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700 mb-5">
+            توجه: پر کردن مقادیر زیر اختیاری است. در صورتی که پر نشود، از مقادیر کنونی نوشته استفاده خواهد
+            شد.
+        </div>
+
         <div class="grid grid-cols-12 gap-5">
             <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-slate-200 p-4">
+                <div class="rounded-2xl border border-dashed border-slate-200 p-4">
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-slate-800">Open Graph</h3>
                         <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Facebook / LinkedIn / ...</span>
                     </div>
 
-                    <div class="space-y-4">
-                        <x-admin.field label="تصویر اجتماعی">
-                            <x-admin.form.media-picker
-                                mode="field"
-                                name="seo[og_image]"
-                                :value="[
+                    <div class="space-y-6">
+                        <div class="col-span-12">
+                            <x-admin.field class="flex-1 relative" label="عنوان در شبکه های اجتماعی">
+                                <x-admin.form.input
+                                    x-ref="ogTitleInput"
+                                    name="seo[og_title]"
+                                    x-model="ogTitle"
+                                    x-bind:placeholder="parsedOgTitleTemplatePlaceholder"
+                                />
+
+                                <div class="mt-1 flex flex-wrap gap-2 items-center">
+                                    <span class="text-xs text-gray-500">متغیرها: </span>
+
+                                    @foreach($postSeoVariables as $variable)
+                                        <button
+                                            type="button"
+                                            @click="insertAtCursor('ogTitleInput', '{{ $variable['token'] }}', 'ogTitle')"
+                                            class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                            title="{{ $variable['description'] }}"
+                                        >
+                                            {{ $variable['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </x-admin.field>
+                        </div>
+
+                        <div class="col-span-12">
+                            <x-admin.field class="flex-1 relative" label="توضیح در شبکه های اجتماعی">
+                                <x-admin.form.textarea
+                                    x-ref="ogDescriptionInput"
+                                    rows="4"
+                                    name="seo[og_description]"
+                                    x-model="ogDescription"
+                                    x-bind:placeholder="parsedOgDescriptionTemplatePlaceholder"
+                                />
+
+                                <div class="mt-1 flex flex-wrap items-center gap-2">
+                                    <span class="text-xs text-gray-500">متغیرها: </span>
+
+                                    @foreach($postSeoVariables as $variable)
+                                        <button
+                                            type="button"
+                                            @click="insertAtCursor('ogDescriptionInput', '{{ $variable['token'] }}', 'ogDescription')"
+                                            class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                            title="{{ $variable['description'] }}"
+                                        >
+                                            {{ $variable['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </x-admin.field>
+                        </div>
+
+                        <div class="col-span-12">
+                            <x-admin.field label="تصویر در شبکه های اجتماعی">
+                                <x-admin.form.media-picker
+                                    mode="field"
+                                    name="seo[og_image]"
+                                    :value="[
                                         'id' => old('seo.og_image.id', $post->seoMeta?->og_image_id),
                                         'path' => old('seo.og_image.path', $post->seoMeta?->ogImage?->url),
                                     ]"
-                                layout="vertical"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، می‌توانید بعداً از تصویر شاخص نوشته fallback بگیرید.
-                            </p>
-                        </x-admin.field>
-
-                        <x-admin.field label="عنوان اجتماعی">
-                            <x-admin.form.input
-                                name="seo[og_title]"
-                                x-model="ogTitle"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، از عنوان سئو استفاده می‌شود.
-                            </p>
-                        </x-admin.field>
-
-                        <x-admin.field label="توضیح اجتماعی">
-                            <x-admin.form.textarea
-                                rows="4"
-                                name="seo[og_description]"
-                                x-model="ogDescription"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، از توضیح متا استفاده می‌شود.
-                            </p>
-                        </x-admin.field>
+                                    layout="vertical"
+                                />
+                            </x-admin.field>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-slate-200 p-4">
+                <div class="rounded-2xl border border-dashed border-slate-200 p-4">
                     <div class="mb-4 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-slate-800">X</h3>
                         <span
-                            class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Override اختیاری</span>
+                            class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">X (Twitter)</span>
                     </div>
 
-                    <div class="space-y-4">
-                        <x-admin.field label="تصویر X">
-                            <x-admin.form.media-picker
-                                mode="field"
-                                name="seo[x_image]"
-                                :value="[
+                    <div class="space-y-6">
+                        <div class="col-span-12">
+                            <x-admin.field class="flex-1 relative" label="عنوان در X">
+                                <x-admin.form.input
+                                    x-ref="xTitleInput"
+                                    name="seo[x_title]"
+                                    x-model="xTitle"
+                                />
+
+                                <div class="mt-1 flex flex-wrap gap-2 items-center">
+                                    <span class="text-xs text-gray-500">متغیرها: </span>
+
+                                    @foreach($postSeoVariables as $variable)
+                                        <button
+                                            type="button"
+                                            @click="insertAtCursor('xTitleInput', '{{ $variable['token'] }}', 'xTitle')"
+                                            class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                            title="{{ $variable['description'] }}"
+                                        >
+                                            {{ $variable['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </x-admin.field>
+                        </div>
+
+                        <div class="col-span-12">
+                            <x-admin.field class="flex-1 relative" label="توضیح در X">
+                                <x-admin.form.textarea
+                                    x-ref="xDescriptionInput"
+                                    rows="4"
+                                    name="seo[x_description]"
+                                    x-model="xDescription"
+                                />
+
+                                <div class="mt-1 flex flex-wrap items-center gap-2">
+                                    <span class="text-xs text-gray-500">متغیرها: </span>
+
+                                    @foreach($postSeoVariables as $variable)
+                                        <button
+                                            type="button"
+                                            @click="insertAtCursor('xDescriptionInput', '{{ $variable['token'] }}', 'xDescription')"
+                                            class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                                            title="{{ $variable['description'] }}"
+                                        >
+                                            {{ $variable['label'] }}
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </x-admin.field>
+                        </div>
+
+                        <div class="col-span-12">
+                            <x-admin.field label="تصویر در X">
+                                <x-admin.form.media-picker
+                                    mode="field"
+                                    name="seo[x_image]"
+                                    :value="[
                                         'id' => old('seo.x_image.id', $post->seoMeta?->x_image_id),
                                         'path' => old('seo.x_image.path', $post->seoMeta?->xImage?->url),
                                     ]"
-                                layout="vertical"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، از تصویر اجتماعی استفاده می‌شود.
-                            </p>
-                        </x-admin.field>
-
-                        <x-admin.field label="عنوان X">
-                            <x-admin.form.input
-                                name="seo[x_title]"
-                                x-model="xTitle"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، از عنوان اجتماعی استفاده می‌شود.
-                            </p>
-                        </x-admin.field>
-
-                        <x-admin.field label="توضیح X">
-                            <x-admin.form.textarea
-                                rows="4"
-                                name="seo[x_description]"
-                                x-model="xDescription"
-                            />
-                            <p class="mt-2 text-xs text-slate-500">
-                                در صورت خالی بودن، از توضیح اجتماعی استفاده می‌شود.
-                            </p>
-                        </x-admin.field>
+                                    layout="vertical"
+                                />
+                            </x-admin.field>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -788,10 +857,36 @@
                     return this.parseTemplate(this.templates.description);
                 },
 
+                get parsedOgTitleTemplatePlaceholder() {
+                    return this.parseTemplate(this.templates.ogTitle);
+                },
+
+                get parsedOgDescriptionTemplatePlaceholder() {
+                    return this.parseTemplate(this.templates.ogDescription);
+                },
+
                 get resolvedSeoTitle() {
                     return this.seoTitle?.trim()
                         ? this.parseTemplate(this.seoTitle)
                         : this.parseTemplate(this.templates.title);
+                },
+
+                get resolvedOgTitle() {
+                    return this.ogTitle?.trim()
+                        ? this.parseTemplate(this.ogTitle)
+                        : this.parseTemplate(this.templates.ogTitle);
+                },
+
+                get resolvedOgDescription() {
+                    if (this.ogDescription?.trim()) {
+                        return this.parseTemplate(this.ogDescription);
+                    }
+
+                    if (this.seoDescription?.trim()) {
+                        return this.parseTemplate(this.seoDescription);
+                    }
+
+                    return this.parseTemplate(this.templates.ogDescription);
                 },
 
                 get resolvedSeoTitleLength() {
