@@ -1,306 +1,906 @@
+@php
+    use App\Domain\Seo\Enums\SeoTemplateVariableEnum;
+
+    $seoVariables = collect(SeoTemplateVariableEnum::cases())
+        ->filter(fn (SeoTemplateVariableEnum $variable) => $variable->isAvailableFor('post'))
+        ->map(fn (SeoTemplateVariableEnum $variable) => [
+            'token' => $variable->token(),
+            'label' => $variable->label(),
+            'description' => $variable->description(),
+        ])
+        ->values()
+        ->all();
+
+    $postSeoTitleTemplate = get_setting('seo', 'post_seo_title') ?: '{post_title} {separator} {site_title}';
+    $postSeoDescriptionTemplate = get_setting('seo', 'post_seo_description') ?: '';
+@endphp
+
 <div
     x-data="postSeoBox({
-        title: @js(old('title', $post->title ?? '')),
-        seoTitle: @js(old('seo.title', $post->seoMeta?->title ?? '')),
-        seoDescription: @js(old('seo.description', $post->seoMeta?->description ?? '')),
-        titleTemplate: @js(get_setting('seo', 'post_seo_title')),
-        descriptionTemplate: @js(get_setting('seo', 'post_seo_description')),
-        siteTitle: @js(get_setting('seo', 'site_name')),
-        separator: @js(get_setting('seo', 'separator')),
-        variables: @js(collect($postSeoVariables ?? [])->map(fn ($item) => [
-            'key' => $item['key'],
-            'token' => $item['token'],
-            'label' => $item['label'],
-            'description' => $item['description'] ?? null,
-        ])->values()->all()),
-    })"
+            variables: @js($seoVariables),
+
+            templates: {
+                title: @js($postSeoTitleTemplate),
+                description: @js($postSeoDescriptionTemplate),
+            },
+
+            values: {
+                postTitle: @js(old('title', $post->title ?? '')),
+                slug: @js(old('slug', $post->slug ?? '')),
+                siteTitle: @js(get_setting('general', 'site_title') ?: config('app.name')),
+                separator: @js(get_setting('seo', 'separator') ?: '|'),
+
+                focusKeyword: @js(old('seo.focus_keyword', $post->seoMeta?->focus_keyword ?? '')),
+
+                seoTitle: @js(old('seo.title', $post->seoMeta?->title ?? '')),
+                seoDescription: @js(old('seo.description', $post->seoMeta?->description ?? '')),
+
+                canonicalUrl: @js(old('seo.canonical_url', $post->seoMeta?->canonical_url ?? '')),
+                robots: @js(old('seo.robots', $post->seoMeta?->robots ?? 'index, follow')),
+
+                ogTitle: @js(old('seo.og_title', $post->seoMeta?->og_title ?? '')),
+                ogDescription: @js(old('seo.og_description', $post->seoMeta?->og_description ?? '')),
+                ogImageId: @js(old('seo.og_image.id', $post->seoMeta?->og_image_id ?? null)),
+                ogImagePath: @js(old('seo.og_image.path', $post->seoMeta?->ogImage?->url ?? '')),
+
+                xTitle: @js(old('seo.x_title', $post->seoMeta?->x_title ?? '')),
+                xDescription: @js(old('seo.x_description', $post->seoMeta?->x_description ?? '')),
+                xImageId: @js(old('seo.x_image.id', $post->seoMeta?->x_image_id ?? null)),
+                xImagePath: @js(old('seo.x_image.path', $post->seoMeta?->xImage?->url ?? '')),
+
+                schemaType: @js(old('seo.schema_type', $post->seoMeta?->schema_type ?? 'article')),
+                schemaSettings: @js(old('seo.schema_settings', $post->seoMeta?->schema_settings ?? [])),
+            }
+        })"
     class="space-y-5"
 >
-    <div class="flex items-center gap-2">
-        <button
-            type="button"
-            @click="activeTab = 'general'"
-            :class="activeTab === 'general'
-            ? 'bg-orange-500 text-white shadow-sm'
-            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            class="cursor-pointer px-4 py-2 text-sm font-medium rounded-2xl transition-all duration-200"
-        >
-            عمومی
-        </button>
+    {{-- Summary Strip --}}
+    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div class="text-xs text-slate-500">عنوان سئو</div>
+            <div class="mt-1 flex items-center gap-2">
+                    <span
+                        class="inline-flex h-2.5 w-2.5 rounded-full"
+                        :class="hasCustomSeoTitle ? 'bg-emerald-500' : 'bg-amber-500'"
+                    ></span>
+                <div class="text-sm font-medium text-slate-800"
+                     x-text="hasCustomSeoTitle ? 'اختصاصی' : 'از الگو'"></div>
+            </div>
+        </div>
 
-        <button
-            type="button"
-            @click="activeTab = 'advanced'"
-            :class="activeTab === 'advanced'
-            ? 'bg-orange-500 text-white shadow-sm'
-            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            class="cursor-pointer px-4 py-2 text-sm font-medium rounded-2xl transition-all duration-200"
-        >
-            پیشرفته
-        </button>
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div class="text-xs text-slate-500">توضیح متا</div>
+            <div class="mt-1 flex items-center gap-2">
+                    <span
+                        class="inline-flex h-2.5 w-2.5 rounded-full"
+                        :class="hasCustomSeoDescription ? 'bg-emerald-500' : 'bg-amber-500'"
+                    ></span>
+                <div class="text-sm font-medium text-slate-800"
+                     x-text="hasCustomSeoDescription ? 'اختصاصی' : 'از الگو'"></div>
+            </div>
+        </div>
 
-        <button
-            type="button"
-            @click="activeTab = 'social'"
-            :class="activeTab === 'social'
-            ? 'bg-orange-500 text-white shadow-sm'
-            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-            class="cursor-pointer px-4 py-2 text-sm font-medium rounded-2xl transition-all duration-200"
-        >
-            شبکه‌های اجتماعی
-        </button>
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div class="text-xs text-slate-500">شبکه‌های اجتماعی</div>
+            <div class="mt-1 flex items-center gap-2">
+                    <span
+                        class="inline-flex h-2.5 w-2.5 rounded-full"
+                        :class="socialStatusColor"
+                    ></span>
+                <div class="text-sm font-medium text-slate-800" x-text="socialStatusLabel"></div>
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div class="text-xs text-slate-500">Canonical</div>
+            <div class="mt-1 text-sm font-medium text-slate-800"
+                 x-text="canonicalUrl.trim() ? 'سفارشی' : 'پیش‌فرض'"></div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+            <div class="text-xs text-slate-500">Robots</div>
+            <div class="mt-1 text-sm font-medium text-slate-800" x-text="robots.trim() || 'index, follow'"></div>
+        </div>
     </div>
 
-    <div x-show="activeTab === 'general'" x-cloak class="space-y-6">
-        {{-- SEO Title --}}
-        <section class="space-y-4">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <label class="text-sm font-bold text-slate-800">
-                    عنوان سئو
-                </label>
+    {{-- Tabs --}}
+    <div class="sticky top-3 z-10">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-1.5">
+            <div class="flex gap-1.5 overflow-x-auto">
+                <template x-for="tab in tabs" :key="tab.key">
+                    <button
+                        type="button"
+                        @click="activeTab = tab.key"
+                        class="cursor-pointer inline-flex shrink-0 items-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition-all duration-200"
+                        :class="activeTab === tab.key
+                        ? 'bg-brand-600 text-white shadow-sm'
+                        : 'text-slate-600 hover:bg-white hover:text-slate-900'"
+                    >
+                        <template x-if="tab.badge !== null">
+                        <span
+                            class="inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-[11px] font-bold"
+                            :class="activeTab === tab.key
+                                ? 'bg-orange-100 text-orange-600'
+                                : 'bg-slate-200 text-slate-600'"
+                            x-text="tab.badge"
+                        ></span>
+                        </template>
 
-                <div class="flex flex-wrap gap-2">
-                    <template x-for="variable in titleVariables" :key="'title-' + variable.token">
-                        <button
-                            type="button"
-                            @click="insertAtCursor('titleInput', variable.token)"
-                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700"
-                            x-text="variable.label"
-                        ></button>
-                    </template>
-                </div>
+                        <span class="whitespace-nowrap" x-text="tab.label"></span>
+                    </button>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    {{-- Tab 1: General --}}
+    <section
+        x-show="activeTab === 'general'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12">
+                <x-admin.field label="کلیدواژه کانونی">
+                    <x-admin.form.input
+                        name="seo[focus_keyword]"
+                        x-model="focusKeyword"
+                    />
+                    <p class="mt-2 text-xs text-slate-500">
+                        این مقدار فعلاً برای تحلیل داخلی استفاده می‌شود و مستقیماً در خروجی HTML چاپ نمی‌شود.
+                    </p>
+                </x-admin.field>
             </div>
 
-            <x-admin.form.input
-                x-ref="titleInput"
-                name="seo[title]"
-                x-model="seoTitle"
-                x-bind:placeholder="titleTemplate"
-            />
+            <div class="col-span-12">
+                <div class="flex items-start justify-between gap-3">
+                    <x-admin.field class="flex-1" label="عنوان سئو">
+                        <x-admin.form.input
+                            name="seo[title]"
+                            x-model="seoTitle"
+                        />
+                        <p class="mt-2 text-xs text-slate-500">
+                            اگر خالی بماند، از الگوی پیش‌فرض تنظیمات استفاده می‌شود.
+                        </p>
+                    </x-admin.field>
 
-            <div class="space-y-2">
-                <div class="flex items-center justify-between gap-3 text-xs">
-                    <div class="truncate text-slate-600" x-text="resolvedSeoTitle || '—'"></div>
-                    <div class="shrink-0 font-medium" :class="titleScoreTextClass">
-                        <span x-text="`${titleScore}%`"></span>
-                        <span class="text-slate-400">•</span>
-                        <span class="text-slate-500" x-text="`${resolvedSeoTitle.length} کاراکتر`"></span>
+                    <div class="w-full max-w-[220px] pt-8">
+                        <div class="relative">
+                            <button
+                                type="button"
+                                class="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                                @click="toggleVariableMenu('seoTitle')"
+                            >
+                                درج متغیر
+                            </button>
+
+                            <div
+                                x-show="variableMenuTarget === 'seoTitle'"
+                                @click.outside="closeVariableMenu()"
+                                x-transition
+                                class="absolute left-0 z-20 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg"
+                            >
+                                <template x-for="variable in variables" :key="variable.token">
+                                    <button
+                                        type="button"
+                                        class="block w-full rounded-xl px-3 py-2 text-right transition hover:bg-slate-50"
+                                        @click="insertVariable('seoTitle', variable.token)"
+                                    >
+                                        <div class="text-sm font-semibold text-slate-800"
+                                             x-text="variable.label"></div>
+                                        <div class="mt-1 text-xs text-slate-500"
+                                             x-text="variable.token + ' — ' + variable.description"></div>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                        class="h-full rounded-full transition-all duration-300"
-                        :class="titleScoreBarClass"
-                        :style="`width: ${titleScore}%`"
-                    ></div>
-                </div>
-            </div>
-        </section>
+                <div class="mt-3">
+                    <div class="mb-1 flex items-center justify-between text-xs">
+                        <span class="text-slate-500">طول عنوان</span>
+                        <span class="font-medium" :class="titleBar.textClass"
+                              x-text="resolvedSeoTitleLength + ' کاراکتر'"></span>
+                    </div>
 
-        {{-- Meta Description --}}
-        <section class="space-y-3">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <label class="text-sm font-bold text-slate-800">
-                    توضیحات متا
-                </label>
-
-                <div class="flex flex-wrap gap-2">
-                    <template x-for="variable in descriptionVariables" :key="'description-' + variable.token">
-                        <button
-                            type="button"
-                            @click="insertAtCursor('descriptionInput', variable.token)"
-                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:-translate-y-0.5 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700"
-                            x-text="variable.label"
-                        ></button>
-                    </template>
+                    <div class="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                            class="h-full rounded-full transition-all"
+                            :class="titleBar.barClass"
+                            :style="`width: ${titleBar.width}%`"
+                        ></div>
+                    </div>
                 </div>
             </div>
 
-            <x-admin.form.textarea
-                x-ref="descriptionInput"
-                name="seo[description]"
-                rows="4"
-                x-model="seoDescription"
-                x-bind:placeholder="descriptionTemplate"
-            />
+            <div class="col-span-12">
+                <div class="flex items-start justify-between gap-3">
+                    <x-admin.field class="flex-1" label="توضیح متا">
+                        <x-admin.form.textarea
+                            rows="4"
+                            name="seo[description]"
+                            x-model="seoDescription"
+                        />
+                        <p class="mt-2 text-xs text-slate-500">
+                            اگر خالی بماند، از الگوی پیش‌فرض تنظیمات استفاده می‌شود.
+                        </p>
+                    </x-admin.field>
 
-            <div class="space-y-2">
-                <div class="flex items-center justify-between gap-3 text-xs">
-                    <div class="truncate text-slate-600" x-text="resolvedSeoDescription || '—'"></div>
-                    <div class="shrink-0 font-medium" :class="descriptionScoreTextClass">
-                        <span x-text="`${descriptionScore}%`"></span>
-                        <span class="text-slate-400">•</span>
-                        <span class="text-slate-500" x-text="`${resolvedSeoDescription.length} کاراکتر`"></span>
+                    <div class="w-full max-w-[220px] pt-8">
+                        <div class="relative">
+                            <button
+                                type="button"
+                                class="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                                @click="toggleVariableMenu('seoDescription')"
+                            >
+                                درج متغیر
+                            </button>
+
+                            <div
+                                x-show="variableMenuTarget === 'seoDescription'"
+                                @click.outside="closeVariableMenu()"
+                                x-transition
+                                class="absolute left-0 z-20 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg"
+                            >
+                                <template x-for="variable in variables" :key="variable.token">
+                                    <button
+                                        type="button"
+                                        class="block w-full rounded-xl px-3 py-2 text-right transition hover:bg-slate-50"
+                                        @click="insertVariable('seoDescription', variable.token)"
+                                    >
+                                        <div class="text-sm font-semibold text-slate-800"
+                                             x-text="variable.label"></div>
+                                        <div class="mt-1 text-xs text-slate-500"
+                                             x-text="variable.token + ' — ' + variable.description"></div>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="h-2 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                        class="h-full rounded-full transition-all duration-300"
-                        :class="descriptionScoreBarClass"
-                        :style="`width: ${descriptionScore}%`"
-                    ></div>
+                <div class="mt-3">
+                    <div class="mb-1 flex items-center justify-between text-xs">
+                        <span class="text-slate-500">طول توضیح متا</span>
+                        <span class="font-medium" :class="descriptionBar.textClass"
+                              x-text="resolvedSeoDescriptionLength + ' کاراکتر'"></span>
+                    </div>
+
+                    <div class="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                        <div
+                            class="h-full rounded-full transition-all"
+                            :class="descriptionBar.barClass"
+                            :style="`width: ${descriptionBar.width}%`"
+                        ></div>
+                    </div>
                 </div>
             </div>
-        </section>
-    </div>
+
+            <div class="col-span-12">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <div class="text-sm font-semibold text-slate-800">پیش‌نمایش نتیجه گوگل</div>
+                        <div class="rounded-full bg-white px-3 py-1 text-[11px] text-slate-500">
+                            نمای فشرده
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div
+                            class="line-clamp-2 text-lg font-medium leading-7 text-blue-700"
+                            x-text="resolvedSeoTitle || 'عنوان سئو اینجا نمایش داده می‌شود'"
+                        ></div>
+
+                        <div class="text-sm text-emerald-700">
+                            <span x-text="previewUrl"></span>
+                        </div>
+
+                        <div
+                            class="line-clamp-3 text-sm leading-6 text-slate-600"
+                            x-text="resolvedSeoDescription || 'توضیح متا اینجا نمایش داده می‌شود.'"
+                        ></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Tab 2: Social --}}
+    <section
+        x-show="activeTab === 'social'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="mb-4 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-slate-800">Open Graph</h3>
+                        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Facebook / LinkedIn / ...</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <x-admin.field label="تصویر اجتماعی">
+                            <x-admin.form.media-picker
+                                mode="field"
+                                name="seo[og_image]"
+                                :value="[
+                                        'id' => old('seo.og_image.id', $post->seoMeta?->og_image_id),
+                                        'path' => old('seo.og_image.path', $post->seoMeta?->ogImage?->url),
+                                    ]"
+                                layout="vertical"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، می‌توانید بعداً از تصویر شاخص نوشته fallback بگیرید.
+                            </p>
+                        </x-admin.field>
+
+                        <x-admin.field label="عنوان اجتماعی">
+                            <x-admin.form.input
+                                name="seo[og_title]"
+                                x-model="ogTitle"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، از عنوان سئو استفاده می‌شود.
+                            </p>
+                        </x-admin.field>
+
+                        <x-admin.field label="توضیح اجتماعی">
+                            <x-admin.form.textarea
+                                rows="4"
+                                name="seo[og_description]"
+                                x-model="ogDescription"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، از توضیح متا استفاده می‌شود.
+                            </p>
+                        </x-admin.field>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="mb-4 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-slate-800">X</h3>
+                        <span
+                            class="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] text-slate-600">Override اختیاری</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <x-admin.field label="تصویر X">
+                            <x-admin.form.media-picker
+                                mode="field"
+                                name="seo[x_image]"
+                                :value="[
+                                        'id' => old('seo.x_image.id', $post->seoMeta?->x_image_id),
+                                        'path' => old('seo.x_image.path', $post->seoMeta?->xImage?->url),
+                                    ]"
+                                layout="vertical"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، از تصویر اجتماعی استفاده می‌شود.
+                            </p>
+                        </x-admin.field>
+
+                        <x-admin.field label="عنوان X">
+                            <x-admin.form.input
+                                name="seo[x_title]"
+                                x-model="xTitle"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، از عنوان اجتماعی استفاده می‌شود.
+                            </p>
+                        </x-admin.field>
+
+                        <x-admin.field label="توضیح X">
+                            <x-admin.form.textarea
+                                rows="4"
+                                name="seo[x_description]"
+                                x-model="xDescription"
+                            />
+                            <p class="mt-2 text-xs text-slate-500">
+                                در صورت خالی بودن، از توضیح اجتماعی استفاده می‌شود.
+                            </p>
+                        </x-admin.field>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Tab 3: Advanced --}}
+    <section
+        x-show="activeTab === 'advanced'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-slate-200 p-4">
+                    <h3 class="mb-4 text-sm font-semibold text-slate-800">Canonical</h3>
+
+                    <x-admin.field label="نشانی قانونی">
+                        <x-admin.form.input
+                            name="seo[canonical_url]"
+                            x-model="canonicalUrl"
+                        />
+                        <p class="mt-2 text-xs text-slate-500">
+                            اگر خالی بماند، نشانی پیش‌فرض همین نوشته استفاده می‌شود.
+                        </p>
+                    </x-admin.field>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-slate-200 p-4">
+                    <h3 class="mb-4 text-sm font-semibold text-slate-800">Meta Robots</h3>
+
+                    <x-admin.field label="مقدار robots">
+                        <x-admin.form.input
+                            name="seo[robots]"
+                            x-model="robots"
+                        />
+                        <p class="mt-2 text-xs text-slate-500">
+                            مثال: index, follow یا noindex, nofollow
+                        </p>
+                    </x-admin.field>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Tab 4: Schema --}}
+    <section
+        x-show="activeTab === 'schema'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-slate-200 p-4">
+                    <h3 class="mb-4 text-sm font-semibold text-slate-800">تنظیمات اسکیما</h3>
+
+                    <x-admin.field label="نوع اسکیما اصلی">
+                        <select
+                            name="seo[schema_type]"
+                            x-model="schemaType"
+                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
+                        >
+                            <option value="article">Article</option>
+                            <option value="blog_posting">BlogPosting</option>
+                            <option value="news_article">NewsArticle</option>
+                            <option value="none">بدون اسکیما</option>
+                        </select>
+                    </x-admin.field>
+
+                    <div class="mt-4 grid grid-cols-1 gap-3">
+                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
+                            <input type="checkbox" name="seo[schema_settings][breadcrumb]" value="1">
+                            <span class="text-sm text-slate-700">فعال بودن Breadcrumb Schema</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
+                            <input type="checkbox" name="seo[schema_settings][faq]" value="1">
+                            <span class="text-sm text-slate-700">فعال بودن FAQ Schema</span>
+                        </label>
+
+                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
+                            <input type="checkbox" name="seo[schema_settings][howto]" value="1">
+                            <span class="text-sm text-slate-700">فعال بودن HowTo Schema</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-6">
+                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                    <h3 class="mb-3 text-sm font-semibold text-slate-800">خلاصه</h3>
+
+                    <div class="space-y-2 text-sm text-slate-600">
+                        <div>
+                            <span class="font-medium text-slate-800">نوع انتخاب‌شده:</span>
+                            <span x-text="schemaType || 'article'"></span>
+                        </div>
+                        <div>
+                            در این مرحله فقط فرانت این بخش پیاده‌سازی شده و در گام بعدی می‌توانیم ساختار واقعی تولید
+                            و اعتبارسنجی اسکیما را اضافه کنیم.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Tab 5: SEO Analysis --}}
+    <section
+        x-show="activeTab === 'analysis'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-red-700">مشکلات</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-red-700"
+                              x-text="analysis.badges.problems"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in analysis.problems" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-amber-700">نیاز به بهبود</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-amber-700"
+                              x-text="analysis.badges.improvements"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in analysis.improvements" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                              x-text="analysis.badges.good"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in analysis.good" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Tab 6: Readability --}}
+    <section
+        x-show="activeTab === 'readability'"
+        x-transition.opacity.duration.200ms
+        class="rounded-2xl border border-slate-200 bg-white p-5"
+    >
+        <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-red-700">مشکلات خوانایی</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-red-700"
+                              x-text="readability.badges.problems"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in readability.problems" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-amber-700">پیشنهادها</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-amber-700"
+                              x-text="readability.badges.improvements"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in readability.improvements" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-12 xl:col-span-4">
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                    <div class="mb-3 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>
+                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                              x-text="readability.badges.good"></span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <template x-for="item in readability.good" :key="item.title">
+                            <div class="rounded-xl bg-white p-3">
+                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 
 @push('scripts')
     <script>
-        function postSeoBox(config = {}) {
+        function postSeoBox(config) {
             return {
                 activeTab: 'general',
+                variableMenuTarget: null,
 
-                title: config.title ?? '',
-                excerpt: config.excerpt ?? '',
-
-                seoTitle: config.seoTitle ?? '',
-                seoDescription: config.seoDescription ?? '',
-
-                titleTemplate: config.titleTemplate ?? '{post_title} {separator} {site_title}',
-                descriptionTemplate: config.descriptionTemplate ?? 'مشاهده {post_title} در {site_title}',
-
-                siteTitle: config.siteTitle ?? '',
-                separator: config.separator ?? '|',
+                tabs: [
+                    {key: 'general', label: 'عمومی', badge: null},
+                    {key: 'social', label: 'اجتماعی', badge: null},
+                    {key: 'advanced', label: 'پیشرفته', badge: null},
+                    {key: 'schema', label: 'اسکیما', badge: null},
+                    {key: 'analysis', label: 'تجزیه و تحلیل سئو', badge: 6},
+                    {key: 'readability', label: 'آنالیز خوانایی', badge: 5},
+                ],
 
                 variables: config.variables ?? [],
+                templates: config.templates ?? {},
+                schemaSettings: config.values?.schemaSettings ?? {},
 
-                insertAtCursor(refName, value) {
-                    const el = this.$refs[refName];
+                postTitle: config.values?.postTitle ?? '',
+                slug: config.values?.slug ?? '',
+                siteTitle: config.values?.siteTitle ?? '',
+                separator: config.values?.separator ?? '|',
 
-                    if (!el) {
+                focusKeyword: config.values?.focusKeyword ?? '',
+
+                seoTitle: config.values?.seoTitle ?? '',
+                seoDescription: config.values?.seoDescription ?? '',
+
+                canonicalUrl: config.values?.canonicalUrl ?? '',
+                robots: config.values?.robots ?? 'index, follow',
+
+                ogTitle: config.values?.ogTitle ?? '',
+                ogDescription: config.values?.ogDescription ?? '',
+                ogImageId: config.values?.ogImageId ?? null,
+                ogImagePath: config.values?.ogImagePath ?? '',
+
+                xTitle: config.values?.xTitle ?? '',
+                xDescription: config.values?.xDescription ?? '',
+                xImageId: config.values?.xImageId ?? null,
+                xImagePath: config.values?.xImagePath ?? '',
+
+                schemaType: config.values?.schemaType ?? 'article',
+
+                analysis: {
+                    badges: {
+                        problems: 2,
+                        improvements: 2,
+                        good: 2,
+                    },
+                    problems: [
+                        {
+                            title: 'کلیدواژه کانونی در عنوان دیده نمی‌شود',
+                            description: 'بهتر است کلیدواژه کانونی در عنوان سئو حضور داشته باشد تا ارتباط صفحه واضح‌تر شود.',
+                        },
+                        {
+                            title: 'تصویر اجتماعی تنظیم نشده است',
+                            description: 'برای نمایش بهتر لینک در شبکه‌های اجتماعی، یک تصویر اختصاصی انتخاب کنید.',
+                        },
+                    ],
+                    improvements: [
+                        {
+                            title: 'طول توضیح متا می‌تواند بهتر شود',
+                            description: 'توضیح متا کمی کوتاه به نظر می‌رسد و می‌تواند کامل‌تر و جذاب‌تر باشد.',
+                        },
+                        {
+                            title: 'Canonical هنوز سفارشی نشده است',
+                            description: 'اگر این صفحه نسخه خاصی دارد، بررسی کنید که canonical درست تنظیم شده باشد.',
+                        },
+                    ],
+                    good: [
+                        {
+                            title: 'عنوان صفحه موجود است',
+                            description: 'برای این نوشته عنوان سئو یا الگوی پیش‌فرض در دسترس است.',
+                        },
+                        {
+                            title: 'ساختار تب‌بندی و داده‌ها آماده است',
+                            description: 'بخش سئو برای توسعه تحلیل‌های حرفه‌ای در گام‌های بعدی آماده شده است.',
+                        },
+                    ],
+                },
+
+                readability: {
+                    badges: {
+                        problems: 2,
+                        improvements: 2,
+                        good: 1,
+                    },
+                    problems: [
+                        {
+                            title: 'بعضی جمله‌ها طولانی هستند',
+                            description: 'بهتر است جمله‌های خیلی طولانی به چند جمله کوتاه‌تر تقسیم شوند.',
+                        },
+                        {
+                            title: 'پاراگراف‌های بلند دیده می‌شود',
+                            description: 'پاراگراف‌های کوتاه‌تر خوانایی متن را بهتر می‌کنند.',
+                        },
+                    ],
+                    improvements: [
+                        {
+                            title: 'استفاده از تیترهای فرعی می‌تواند بیشتر شود',
+                            description: 'افزودن تیترهای فرعی باعث اسکن‌پذیری بهتر محتوا می‌شود.',
+                        },
+                        {
+                            title: 'تنوع واژگان قابل بهبود است',
+                            description: 'در بعضی بخش‌ها تکرار واژه‌ها زیاد است و می‌توان متن را روان‌تر کرد.',
+                        },
+                    ],
+                    good: [
+                        {
+                            title: 'ساختار کلی محتوا قابل توسعه است',
+                            description: 'محتوا ظرفیت خوبی برای بهبود خوانایی و تحلیل خودکار دارد.',
+                        },
+                    ],
+                },
+
+                toggleVariableMenu(target) {
+                    this.variableMenuTarget = this.variableMenuTarget === target ? null : target;
+                },
+
+                closeVariableMenu() {
+                    this.variableMenuTarget = null;
+                },
+
+                insertVariable(target, token) {
+                    if (!Object.prototype.hasOwnProperty.call(this, target)) {
                         return;
                     }
 
-                    const start = el.selectionStart ?? el.value.length;
-                    const end = el.selectionEnd ?? el.value.length;
-                    const currentValue = el.value ?? '';
-
-                    el.value = currentValue.substring(0, start) + value + currentValue.substring(end);
-                    el.dispatchEvent(new Event('input', {bubbles: true}));
-
-                    this.$nextTick(() => {
-                        el.focus();
-
-                        const caret = start + value.length;
-
-                        if (typeof el.setSelectionRange === 'function') {
-                            el.setSelectionRange(caret, caret);
-                        }
-                    });
+                    const currentValue = this[target] ?? '';
+                    this[target] = currentValue ? `${currentValue} ${token}` : token;
+                    this.closeVariableMenu();
                 },
 
-                replaceVariables(template) {
-                    const map = {
-                        post_title: this.title ?? '',
-                        site_title: this.siteTitle ?? '',
-                        separator: this.separator ?? '',
-                        excerpt: this.excerpt ?? '',
+                parseTemplate(template) {
+                    if (!template) {
+                        return '';
+                    }
+
+                    const replacements = {
+                        '{site_title}': this.siteTitle?.trim() || '',
+                        '{separator}': this.separator?.trim() || '',
+                        '{post_title}': this.postTitle?.trim() || '',
                     };
 
-                    return (template ?? '')
-                        .replace(/\{([a-zA-Z0-9_]+)\}/g, (full, key) => {
-                            return Object.prototype.hasOwnProperty.call(map, key)
-                                ? String(map[key] ?? '')
-                                : '';
-                        })
-                        .replace(/\s+/g, ' ')
-                        .trim();
-                },
+                    let parsed = template;
 
-                get effectiveSeoTitleTemplate() {
-                    return (this.seoTitle ?? '').trim() !== ''
-                        ? this.seoTitle
-                        : this.titleTemplate;
-                },
+                    Object.entries(replacements).forEach(([token, value]) => {
+                        parsed = parsed.split(token).join(value);
+                    });
 
-                get effectiveSeoDescriptionTemplate() {
-                    return (this.seoDescription ?? '').trim() !== ''
-                        ? this.seoDescription
-                        : this.descriptionTemplate;
+                    return parsed.replace(/\s+/g, ' ').trim();
                 },
 
                 get resolvedSeoTitle() {
-                    return this.replaceVariables(this.effectiveSeoTitleTemplate);
+                    return this.seoTitle?.trim()
+                        ? this.parseTemplate(this.seoTitle)
+                        : this.parseTemplate(this.templates.title);
                 },
 
                 get resolvedSeoDescription() {
-                    return this.replaceVariables(this.effectiveSeoDescriptionTemplate);
+                    return this.seoDescription?.trim()
+                        ? this.parseTemplate(this.seoDescription)
+                        : this.parseTemplate(this.templates.description);
                 },
 
-                scoreByLength(length, minIdeal, maxIdeal, warningMax) {
+                get resolvedSeoTitleLength() {
+                    return this.resolvedSeoTitle.length;
+                },
+
+                get resolvedSeoDescriptionLength() {
+                    return this.resolvedSeoDescription.length;
+                },
+
+                get hasCustomSeoTitle() {
+                    return !!this.seoTitle?.trim();
+                },
+
+                get hasCustomSeoDescription() {
+                    return !!this.seoDescription?.trim();
+                },
+
+                progressMeta(length, goodMin, goodMax, max) {
+                    let width = Math.min((length / max) * 100, 100);
+
                     if (length === 0) {
-                        return 0;
+                        return {
+                            width: 0,
+                            barClass: 'bg-slate-300',
+                            textClass: 'text-slate-500',
+                        };
                     }
 
-                    if (length >= minIdeal && length <= maxIdeal) {
-                        return 100;
+                    if (length >= goodMin && length <= goodMax) {
+                        return {
+                            width,
+                            barClass: 'bg-emerald-500',
+                            textClass: 'text-emerald-600',
+                        };
                     }
 
-                    if (length < minIdeal) {
-                        return Math.max(20, Math.round((length / minIdeal) * 100));
+                    if ((length >= goodMin - 10 && length < goodMin) || (length > goodMax && length <= max)) {
+                        return {
+                            width,
+                            barClass: 'bg-amber-500',
+                            textClass: 'text-amber-600',
+                        };
                     }
 
-                    if (length <= warningMax) {
-                        const overflowRange = warningMax - maxIdeal;
-                        const overflow = length - maxIdeal;
+                    return {
+                        width,
+                        barClass: 'bg-red-500',
+                        textClass: 'text-red-600',
+                    };
+                },
 
-                        return Math.max(50, 100 - Math.round((overflow / overflowRange) * 50));
+                get titleBar() {
+                    return this.progressMeta(this.resolvedSeoTitleLength, 45, 60, 70);
+                },
+
+                get descriptionBar() {
+                    return this.progressMeta(this.resolvedSeoDescriptionLength, 120, 160, 180);
+                },
+
+                get previewUrl() {
+                    const cleanedSlug = (this.slug || '').replace(/^\/+|\/+$/g, '');
+                    return cleanedSlug ? `example.com/${cleanedSlug}` : 'example.com/post-slug';
+                },
+
+                get socialStatusLabel() {
+                    const hasOg = !!(this.ogTitle?.trim() || this.ogDescription?.trim() || this.ogImagePath?.trim());
+                    const hasX = !!(this.xTitle?.trim() || this.xDescription?.trim() || this.xImagePath?.trim());
+
+                    if (hasOg && hasX) {
+                        return 'کامل';
                     }
 
-                    return 25;
+                    if (hasOg || hasX) {
+                        return 'نیمه‌کامل';
+                    }
+
+                    return 'تنظیم نشده';
                 },
 
-                get titleScore() {
-                    return this.scoreByLength(this.resolvedSeoTitle.length, 35, 60, 75);
-                },
+                get socialStatusColor() {
+                    if (this.socialStatusLabel === 'کامل') {
+                        return 'bg-emerald-500';
+                    }
 
-                get descriptionScore() {
-                    return this.scoreByLength(this.resolvedSeoDescription.length, 70, 160, 190);
-                },
+                    if (this.socialStatusLabel === 'نیمه‌کامل') {
+                        return 'bg-amber-500';
+                    }
 
-                scoreTextClass(score) {
-                    if (score >= 85) return 'text-emerald-600';
-                    if (score >= 60) return 'text-amber-600';
-
-                    return 'text-rose-600';
-                },
-
-                scoreBarClass(score) {
-                    if (score >= 85) return 'bg-emerald-500';
-                    if (score >= 60) return 'bg-amber-500';
-
-                    return 'bg-rose-500';
-                },
-
-                get titleScoreTextClass() {
-                    return this.scoreTextClass(this.titleScore);
-                },
-
-                get descriptionScoreTextClass() {
-                    return this.scoreTextClass(this.descriptionScore);
-                },
-
-                get titleScoreBarClass() {
-                    return this.scoreBarClass(this.titleScore);
-                },
-
-                get descriptionScoreBarClass() {
-                    return this.scoreBarClass(this.descriptionScore);
-                },
-
-                get titleVariables() {
-                    return this.variables.filter(variable =>
-                        ['{post_title}', '{site_title}', '{separator}'].includes(variable.token)
-                    );
-                },
-
-                get descriptionVariables() {
-                    return this.variables.filter(variable =>
-                        ['{post_title}', '{site_title}', '{excerpt}'].includes(variable.token)
-                    );
+                    return 'bg-slate-400';
                 },
             };
         }
