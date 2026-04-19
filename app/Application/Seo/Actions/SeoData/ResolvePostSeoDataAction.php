@@ -9,6 +9,7 @@ use App\Application\Seo\DTOs\TwitterCardDataDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
+use App\Domain\Seo\Enums\OgTypeEnum;
 
 class ResolvePostSeoDataAction
 {
@@ -42,6 +43,7 @@ class ResolvePostSeoDataAction
             description: $description,
             canonicalUrl: $canonicalUrl,
             openGraph: new OpenGraphDataDTO(
+                type: OgTypeEnum::ARTICLE,
                 title: $ogTitle,
                 description: $ogDescription,
                 url: $canonicalUrl,
