@@ -1,8 +1,10 @@
 <div class="space-y-6">
     <div
         x-data="{
-            seoTitle: @js(old('post_seo_title', get_setting('seo', 'post_seo_title', '{post_title} {separator} {site_title}'))),
-            seoDescription: @js(old('post_seo_description', get_setting('seo', 'post_seo_description', 'مشاهده {post_title} در {site_title}'))),
+            seoTitle: @js(old('post_seo_title', get_setting('seo', 'post_seo_title'))),
+            seoDescription: @js(old('post_seo_description', get_setting('seo', 'post_seo_description'))),
+            socialSeoTitle: @js(old('post_social_seo_title', get_setting('seo', 'post_social_seo_title'))),
+            socialSeoDescription: @js(old('post_social_seo_description', get_setting('seo', 'post_social_seo_description'))),
 
             insertAtCursor(field, value) {
                 const el = this.$refs[field];
@@ -33,7 +35,6 @@
                         x-ref="title"
                         name="post_seo_title"
                         x-model="seoTitle"
-                        placeholder="{post_title} {separator} {site_title}"
                     />
 
                     <div class="flex flex-wrap gap-2">
@@ -57,7 +58,6 @@
                         name="post_seo_description"
                         rows="4"
                         x-model="seoDescription"
-                        placeholder="مشاهده {post_title} در {site_title}"
                     />
 
                     <div class="flex flex-wrap gap-2">
@@ -65,6 +65,55 @@
                             <button
                                 type="button"
                                 @click="insertAtCursor('description', '{{ $variable['token'] }}')"
+                                class="cursor-pointer px-2.5 py-1 text-xs rounded-lg border border-slate-200 bg-white hover:border-primary-300 hover:text-primary-600 transition"
+                            >
+                                {{ $variable['label'] }}
+                            </button>
+                        @endforeach
+                    </div>
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+
+        <x-admin.metabox title="تنظیمات شبکه های اجتماعی" :collapsible="false">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-4">
+                <x-admin.field
+                    label="الگوی عنوان سئو در شبکه های اجتماعی"
+                >
+                    <x-admin.form.input
+                        x-ref="social_title"
+                        name="post_social_seo_title"
+                        x-model="socialSeoTitle"
+                    />
+
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($postSeoVariables as $variable)
+                            <button
+                                type="button"
+                                @click="insertAtCursor('social_title', '{{ $variable['token'] }}')"
+                                class="cursor-pointer px-2.5 py-1 text-xs rounded-lg border border-slate-200 bg-white hover:border-primary-300 hover:text-primary-600 transition"
+                            >
+                                {{ $variable['label'] }}
+                            </button>
+                        @endforeach
+                    </div>
+                </x-admin.field>
+
+                <x-admin.field
+                    label="الگوی توضیح متا در شبکه های اجتماعی"
+                >
+                    <x-admin.form.textarea
+                        x-ref="social_description"
+                        name="post_social_seo_description"
+                        rows="4"
+                        x-model="socialSeoDescription"
+                    />
+
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($postSeoVariables as $variable)
+                            <button
+                                type="button"
+                                @click="insertAtCursor('social_description', '{{ $variable['token'] }}')"
                                 class="cursor-pointer px-2.5 py-1 text-xs rounded-lg border border-slate-200 bg-white hover:border-primary-300 hover:text-primary-600 transition"
                             >
                                 {{ $variable['label'] }}
