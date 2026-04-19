@@ -16,3 +16,8 @@
         <meta property="{{ $property }}" content="{{ $content }}">
     @endforeach
 @endif
+@if($seoData->twitter)
+    @foreach($seoData->twitter->toMetaArray() as $name => $content)
+        <meta name="{{ $name }}" content="{{ $content }}">
+    @endforeach
+@endif
