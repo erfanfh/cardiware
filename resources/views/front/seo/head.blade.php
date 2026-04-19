@@ -7,6 +7,10 @@
         $tags[] = '<title>' . e($seoData->title) . '</title>';
     }
 
+    if (filled($seoData->robots)) {
+        $tags[] = '<meta name="robots" content="' . e($seoData->robots) . '">';
+    }
+
     if (filled($seoData->description)) {
         $tags[] = '<meta name="description" content="' . e($seoData->description) . '">';
     }
