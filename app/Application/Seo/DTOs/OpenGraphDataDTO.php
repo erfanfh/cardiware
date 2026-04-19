@@ -2,21 +2,23 @@
 
 namespace App\Application\Seo\DTOs;
 
+use App\Domain\Seo\Enums\OgTypeEnum;
+
 readonly class OpenGraphDataDTO
 {
     public function __construct(
-        public ?string $type = null,
-        public ?string $title = null,
-        public ?string $description = null,
-        public ?string $url = null,
-        public ?string $siteName = null,
-        public ?string $locale = null,
-        public ?string $image = null,
-        public ?int    $imageWidth = null,
-        public ?int    $imageHeight = null,
-        public ?string $imageType = null,
-        public ?string $publishedTime = null,
-        public ?string $modifiedTime = null,
+        public ?OgTypeEnum $type = null,
+        public ?string     $title = null,
+        public ?string     $description = null,
+        public ?string     $url = null,
+        public ?string     $siteName = null,
+        public ?string     $locale = null,
+        public ?string     $image = null,
+        public ?int        $imageWidth = null,
+        public ?int        $imageHeight = null,
+        public ?string     $imageType = null,
+        public ?string     $publishedTime = null,
+        public ?string     $modifiedTime = null,
     )
     {
     }
@@ -27,7 +29,7 @@ readonly class OpenGraphDataDTO
     public function toMetaArray(): array
     {
         return array_filter([
-            'og:type' => $this->type,
+            'og:type' => $this->type->value,
             'og:title' => $this->title,
             'og:description' => $this->description,
             'og:url' => $this->url,
