@@ -38,6 +38,9 @@ class ResolvePostSeoDataAction
 
         $canonicalUrl = rtrim($post->url, '/') . '/';
 
+        $publishedTime = $post->published_at?->utc()->toIso8601String();
+        $modifiedTime = $post->updated_at > $post->published_at ? $post->updated_at?->utc()->toIso8601String() : $publishedTime;
+
         return new SeoDataDTO(
             title: $title,
             description: $description,
@@ -49,6 +52,12 @@ class ResolvePostSeoDataAction
                 url: $canonicalUrl,
                 siteName: $defaults['site_name'],
                 locale: $defaults['og_locale'],
+                image: $post->picture?->url ?? null,
+                imageWidth: $post->picture->primaryVariant->width ?? null,
+                imageHeight: $post->picture->primaryVariant->height ?? null,
+                imageType: $post->picture->primaryVariant->mime_type ?? null,
+                publishedTime: $publishedTime,
+                modifiedTime: $modifiedTime,
             ),
             twitter: new TwitterCardDataDTO(
                 card: $defaults['twitter_card'],
