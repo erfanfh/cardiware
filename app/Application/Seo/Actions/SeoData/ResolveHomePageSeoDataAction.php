@@ -6,6 +6,8 @@ use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
+use App\Application\Seo\DTOs\VerificationMetaDataDTO;
+use App\Domain\Seo\Enums\OgTypeEnum;
 
 class ResolveHomePageSeoDataAction
 {
@@ -28,6 +30,7 @@ class ResolveHomePageSeoDataAction
             description: $description,
             canonicalUrl: $canonicalUrl,
             openGraph: new OpenGraphDataDTO(
+                type: OgTypeEnum::WEBSITE,
                 title: $defaults['site_name'],
                 description: $description,
                 url: $canonicalUrl,
@@ -36,6 +39,10 @@ class ResolveHomePageSeoDataAction
             ),
             twitter: new TwitterCardDataDTO(
                 card: $defaults['twitter_card'],
+            ),
+            verification: new VerificationMetaDataDTO(
+                googleSiteVerification: get_setting('seo', 'google_site_verification') ?: null,
+                bingSiteVerification: get_setting('seo', 'bing_site_verification') ?: null,
             ),
         );
     }
