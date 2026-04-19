@@ -26,6 +26,7 @@ class ResolveHomePageSeoDataAction
         $canonicalUrl = rtrim(url('/'), '/') . '/';
 
         return new SeoDataDTO(
+            robots: $defaults['robots'],
             title: $title,
             description: $description,
             canonicalUrl: $canonicalUrl,
