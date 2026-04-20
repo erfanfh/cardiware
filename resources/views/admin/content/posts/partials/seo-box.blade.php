@@ -51,9 +51,6 @@
             xDescription: @js(old('seo.x_description', $post->seoMeta?->x_description ?? '')),
             xImageId: @js(old('seo.x_image.id', $post->seoMeta?->x_image_id ?? null)),
             xImagePath: @js(old('seo.x_image.path', $post->seoMeta?->xImage?->url ?? '')),
-
-            schemaType: @js(old('seo.schema_type', $post->seoMeta?->schema_type ?? 'article')),
-            schemaSettings: @js(old('seo.schema_settings', $post->seoMeta?->schema_settings ?? [])),
         }
     })"
     @title-changed.window="postTitle = $event.detail"
@@ -138,7 +135,7 @@
         </div>
     </div>
 
-    {{-- Tab 1: General --}}
+    {{-- Tab: General --}}
     <section
         x-show="activeTab === 'general'"
         x-transition.opacity.duration.200ms
@@ -307,7 +304,7 @@
         </div>
     </section>
 
-    {{-- Tab 2: Social --}}
+    {{-- Tab: Social --}}
     <section
         x-show="activeTab === 'social'"
         x-transition.opacity.duration.200ms
@@ -476,7 +473,7 @@
         </div>
     </section>
 
-    {{-- Tab 3: Advanced --}}
+    {{-- Tab: Advanced --}}
     <section
         x-show="activeTab === 'advanced'"
         x-transition.opacity.duration.200ms
@@ -519,69 +516,7 @@
         </div>
     </section>
 
-    {{-- Tab 4: Schema --}}
-    <section
-        x-show="activeTab === 'schema'"
-        x-transition.opacity.duration.200ms
-        class="rounded-2xl border border-slate-200 bg-white p-5"
-    >
-        <div class="grid grid-cols-12 gap-5">
-            <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-slate-200 p-4">
-                    <h3 class="mb-4 text-sm font-semibold text-slate-800">تنظیمات اسکیما</h3>
-
-                    <x-admin.field label="نوع اسکیما اصلی">
-                        <select
-                            name="seo[schema_type]"
-                            x-model="schemaType"
-                            class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100"
-                        >
-                            <option value="article">Article</option>
-                            <option value="blog_posting">BlogPosting</option>
-                            <option value="news_article">NewsArticle</option>
-                            <option value="none">بدون اسکیما</option>
-                        </select>
-                    </x-admin.field>
-
-                    <div class="mt-4 grid grid-cols-1 gap-3">
-                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
-                            <input type="checkbox" name="seo[schema_settings][breadcrumb]" value="1">
-                            <span class="text-sm text-slate-700">فعال بودن Breadcrumb Schema</span>
-                        </label>
-
-                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
-                            <input type="checkbox" name="seo[schema_settings][faq]" value="1">
-                            <span class="text-sm text-slate-700">فعال بودن FAQ Schema</span>
-                        </label>
-
-                        <label class="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3">
-                            <input type="checkbox" name="seo[schema_settings][howto]" value="1">
-                            <span class="text-sm text-slate-700">فعال بودن HowTo Schema</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 xl:col-span-6">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
-                    <h3 class="mb-3 text-sm font-semibold text-slate-800">خلاصه</h3>
-
-                    <div class="space-y-2 text-sm text-slate-600">
-                        <div>
-                            <span class="font-medium text-slate-800">نوع انتخاب‌شده:</span>
-                            <span x-text="schemaType || 'article'"></span>
-                        </div>
-                        <div>
-                            در این مرحله فقط فرانت این بخش پیاده‌سازی شده و در گام بعدی می‌توانیم ساختار واقعی تولید
-                            و اعتبارسنجی اسکیما را اضافه کنیم.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Tab 5: SEO Analysis --}}
+    {{-- Tab: SEO Analysis --}}
     <section
         x-show="activeTab === 'analysis'"
         x-transition.opacity.duration.200ms
@@ -647,7 +582,7 @@
         </div>
     </section>
 
-    {{-- Tab 6: Readability --}}
+    {{-- Tab: Readability --}}
     <section
         x-show="activeTab === 'readability'"
         x-transition.opacity.duration.200ms
@@ -725,14 +660,12 @@
                     {key: 'general', label: 'عمومی', badge: null},
                     {key: 'social', label: 'اجتماعی', badge: null},
                     {key: 'advanced', label: 'پیشرفته', badge: null},
-                    {key: 'schema', label: 'اسکیما', badge: null},
                     {key: 'analysis', label: 'تجزیه و تحلیل سئو', badge: 6},
                     {key: 'readability', label: 'آنالیز خوانایی', badge: 5},
                 ],
 
                 variables: config.variables ?? [],
                 templates: config.templates ?? {},
-                schemaSettings: config.values?.schemaSettings ?? {},
 
                 postTitle: config.values?.postTitle ?? '',
                 slug: config.values?.slug ?? '',
@@ -756,8 +689,6 @@
                 xDescription: config.values?.xDescription ?? '',
                 xImageId: config.values?.xImageId ?? null,
                 xImagePath: config.values?.xImagePath ?? '',
-
-                schemaType: config.values?.schemaType ?? 'article',
 
                 analysis: {
                     badges: {
