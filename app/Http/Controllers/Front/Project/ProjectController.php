@@ -38,7 +38,7 @@ class ProjectController extends Controller
             ")
             ->first();
 
-        $projects = Project::latest()->where('id', 98787)->paginate(9);
+        $projects = Project::latest()->paginate(9);
 
         return view('front.projects.list', compact('stats', 'projects'));
     }
