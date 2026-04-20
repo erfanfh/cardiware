@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
+use App\Infrastructure\Casts\MediaFileCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
 class SeoSettings extends BaseSettings
@@ -9,20 +10,26 @@ class SeoSettings extends BaseSettings
     protected string $group = 'seo';
     protected array $allowedKeys = [
         'site_name',
+        'alternative_site_name',
+        'blog_description',
+        'separator',
         'robots',
-        'home_title',
-        'home_description',
+
         'og_locale',
-        'og_image',
         'twitter_card',
         'google_site_verification',
         'bing_site_verification',
+
+        'home_title',
+        'home_description',
+
         'organization_name',
         'organization_alternate_name',
         'organization_url',
         'organization_logo',
         'organization_email',
         'organization_phone',
+        'organization_legal_name',
         'organization_same_as',
 
         'post_seo_title',
@@ -32,5 +39,6 @@ class SeoSettings extends BaseSettings
     ];
 
     protected array $casts = [
+        'organization_logo' => MediaFileCast::class,
     ];
 }

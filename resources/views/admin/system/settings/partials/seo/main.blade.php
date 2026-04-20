@@ -8,6 +8,33 @@
                 />
             </x-admin.field>
 
+            <x-admin.field label="نام سایت جایگزین">
+                <x-admin.form.input
+                    name="alternative_site_name"
+                    :value="old('alternative_site_name', get_setting('seo', 'alternative_site_name'))"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="شعار">
+                <x-admin.form.input
+                    name="blog_description"
+                    :value="old('blog_description', get_setting('seo', 'blog_description'))"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="کاراکتر جدا کننده">
+                <x-admin.form.select
+                    name="separator"
+                    :value="old('separator', get_setting('seo', 'separator'))"
+                    :options="[
+                        '|' => '|',
+                        '-' => '-',
+                        ':' => ':',
+                        '*' => '*',
+                    ]"
+                />
+            </x-admin.field>
+
             <x-admin.field
                 label="مقدار robots"
                 hint="پیشفرض: index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
@@ -46,14 +73,6 @@
                         'summary_large_image' => 'summary_large_image',
                         'summary' => 'summary',
                     ]"
-                />
-            </x-admin.field>
-
-            <x-admin.field label="تصویر پیش‌فرض Open Graph">
-                <x-admin.form.input
-                    name="og_image"
-                    class="direction-ltr"
-                    :value="old('og_image', get_setting('seo', 'og_image'))"
                 />
             </x-admin.field>
 

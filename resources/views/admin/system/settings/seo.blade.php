@@ -15,15 +15,15 @@
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
                 <x-admin.tabs.panel name="main">
-                    @include('admin.system.settings.partials.seo-main')
+                    @include('admin.system.settings.partials.seo.main')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="schema">
-                    @include('admin.system.settings.partials.seo-schema')
+                    @include('admin.system.settings.partials.seo.schema')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="home">
-                    @include('admin.system.settings.partials.seo-home')
+                    @include('admin.system.settings.partials.seo.home')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="post">
