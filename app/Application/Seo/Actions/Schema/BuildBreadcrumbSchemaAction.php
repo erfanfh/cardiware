@@ -16,7 +16,7 @@ final class BuildBreadcrumbSchemaAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context): array
+    public function execute(SchemaContextDTO $context): array
     {
         return [
             '@type' => 'BreadcrumbList',

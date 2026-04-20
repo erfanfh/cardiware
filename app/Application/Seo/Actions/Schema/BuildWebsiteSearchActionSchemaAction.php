@@ -9,7 +9,7 @@ final class BuildWebsiteSearchActionSchemaAction
      * @param string $queryParameterName
      * @return array<string, mixed>
      */
-    public function handle(
+    public function execute(
         string $searchUrlTemplate,
         string $queryParameterName = 'search_term_string',
     ): array

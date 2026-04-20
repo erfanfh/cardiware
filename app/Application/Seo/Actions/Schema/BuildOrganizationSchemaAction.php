@@ -17,7 +17,7 @@ final class BuildOrganizationSchemaAction
      * @param array<string, mixed> $logoNode
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context, array $logoNode = [], array $numberOfEmployeesNode = []): array
+    public function execute(SchemaContextDTO $context, array $logoNode = [], array $numberOfEmployeesNode = []): array
     {
         $organizationId = $this->schemaIdGenerator->organization($context->siteUrl);
 

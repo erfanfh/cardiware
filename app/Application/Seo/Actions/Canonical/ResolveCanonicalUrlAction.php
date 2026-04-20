@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\Canonical;
 
 final class ResolveCanonicalUrlAction
 {
-    public function handle(?string $customCanonicalUrl = null, ?string $fallbackUrl = null): string
+    public function execute(?string $customCanonicalUrl = null, ?string $fallbackUrl = null): string
     {
         $url = $this->firstFilled($customCanonicalUrl, $fallbackUrl, url('/'));
 

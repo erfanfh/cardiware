@@ -7,7 +7,7 @@ final class RenderSchemaGraphAction
     /**
      * @param array<string, mixed> $graph
      */
-    public function handle(array $graph): string
+    public function execute(array $graph): string
     {
         return json_encode(
             $graph,

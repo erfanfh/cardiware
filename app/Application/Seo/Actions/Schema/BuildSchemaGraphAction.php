@@ -24,27 +24,27 @@ final class BuildSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context, SeoPageSchemaNodeInterface $pageNodeAction): array
+    public function execute(SchemaContextDTO $context, SeoPageSchemaNodeInterface $pageNodeAction): array
     {
-        $logoNode = $this->buildLogoImageSchemaAction->handle($context);
-        $numberOfEmployeesNode = $this->buildNumberOfEmployeesSchemaAction->handle($context);
+        $logoNode = $this->buildLogoImageSchemaAction->execute($context);
+        $numberOfEmployeesNode = $this->buildNumberOfEmployeesSchemaAction->execute($context);
 
-        $organizationNode = $this->buildOrganizationSchemaAction->handle($context, $logoNode, $numberOfEmployeesNode);
+        $organizationNode = $this->buildOrganizationSchemaAction->execute($context, $logoNode, $numberOfEmployeesNode);
 
-        $searchActionNode = $this->buildWebsiteSearchActionSchemaAction->handle(
+        $searchActionNode = $this->buildWebsiteSearchActionSchemaAction->execute(
             searchUrlTemplate: route('search') . '/?q={search_term_string}',
             queryParameterName: 'search_term_string',
         );
 
-        $websiteNode = $this->buildWebsiteSchemaAction->handle(
+        $websiteNode = $this->buildWebsiteSchemaAction->execute(
             $context,
             $organizationNode,
             $searchActionNode,
         );
 
-        $breadcrumbNode = $this->buildBreadcrumbSchemaAction->handle($context);
+        $breadcrumbNode = $this->buildBreadcrumbSchemaAction->execute($context);
 
-        $pageNode = $pageNodeAction->handle(
+        $pageNode = $pageNodeAction->execute(
             $context,
             $websiteNode,
             $organizationNode,

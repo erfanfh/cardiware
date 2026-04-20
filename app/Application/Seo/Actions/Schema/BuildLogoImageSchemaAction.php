@@ -16,7 +16,7 @@ final class BuildLogoImageSchemaAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context): array
+    public function execute(SchemaContextDTO $context): array
     {
         if (blank($context->logoUrl)) {
             return [];

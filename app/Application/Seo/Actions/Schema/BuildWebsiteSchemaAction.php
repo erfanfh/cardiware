@@ -18,7 +18,7 @@ final class BuildWebsiteSchemaAction
      * @param array<string, mixed> $searchActionNode
      * @return array<string, mixed>
      */
-    public function handle(
+    public function execute(
         SchemaContextDTO $context,
         array            $organizationNode = [],
         array            $searchActionNode = [],

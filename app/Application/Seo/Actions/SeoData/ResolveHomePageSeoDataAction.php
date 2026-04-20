@@ -29,15 +29,15 @@ class ResolveHomePageSeoDataAction
 
         $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
         $description = get_setting('seo', 'home_description') ?: null;
-        $canonicalUrl = $this->resolveCanonicalUrlAction->handle(
+        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
             customCanonicalUrl: url('/'),
         );
 
-        $schemaGraph = app(BuildSchemaGraphAction::class)->handle(
-            app(BuildHomePageSchemaContextAction::class)->handle(),
+        $schemaGraph = app(BuildSchemaGraphAction::class)->execute(
+            app(BuildHomePageSchemaContextAction::class)->execute(),
             app(BuildHomePageSchemaAction::class)
         );
-        $schemaJson = app(RenderSchemaGraphAction::class)->handle($schemaGraph);
+        $schemaJson = app(RenderSchemaGraphAction::class)->execute($schemaGraph);
 
         return new SeoDataDTO(
             robots: $defaults['robots'],

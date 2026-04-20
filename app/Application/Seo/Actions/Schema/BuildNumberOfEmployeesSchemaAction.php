@@ -9,7 +9,7 @@ final class BuildNumberOfEmployeesSchemaAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context): array
+    public function execute(SchemaContextDTO $context): array
     {
         $employees = explode('-', $context->organizationNumberOfEmployees);
 

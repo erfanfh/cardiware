@@ -20,7 +20,7 @@ final class BuildHomePageSchemaAction implements SeoPageSchemaNodeInterface
      * @param array<string, mixed> $breadcrumbNode
      * @return array<string, mixed>
      */
-    public function handle(
+    public function execute(
         SchemaContextDTO $context,
         array            $websiteNode = [],
         array            $organizationNode = [],

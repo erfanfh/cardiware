@@ -15,9 +15,9 @@ final class BuildHomePageSchemaContextAction
     {
     }
 
-    public function handle(): SchemaContextDTO
+    public function execute(): SchemaContextDTO
     {
-        $canonicalUrl = $this->resolveCanonicalUrlAction->handle(
+        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
             customCanonicalUrl: url('/'),
         );
 
