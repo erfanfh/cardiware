@@ -4,23 +4,38 @@ namespace App\Application\Seo\Support;
 
 final class SchemaIdGenerator
 {
-    public function website(string $baseUrl): string
+    public function website(string $siteUrl): string
     {
-        return rtrim($baseUrl, '/') . '/#website';
+        return rtrim($siteUrl, '/') . '/#website';
     }
 
-    public function organization(string $baseUrl): string
+    public function organization(string $siteUrl): string
     {
-        return rtrim($baseUrl, '/') . '/#organization';
+        return rtrim($siteUrl, '/') . '/#organization';
     }
 
-    public function breadcrumb(string $baseUrl): string
+    public function breadcrumb(string $url): string
     {
-        return rtrim($baseUrl, '/') . '/#breadcrumb';
+        return rtrim($url, '/') . '/#breadcrumb';
     }
 
-    public function logoImage(string $baseUrl): string
+    public function logoImage(string $siteUrl): string
     {
-        return rtrim($baseUrl, '/') . '/#/schema/logo/image/';
+        return rtrim($siteUrl, '/') . '/#/schema/logo/image/';
+    }
+
+    public function primaryImage(string $pageUrl): string
+    {
+        return rtrim($pageUrl, '/') . '/#primaryimage';
+    }
+
+    public function article(string $pageUrl): string
+    {
+        return rtrim($pageUrl, '/') . '/#article';
+    }
+
+    public function person(string $siteUrl, string $identifier): string
+    {
+        return rtrim($siteUrl, '/') . '/#/schema/person/' . md5($identifier);
     }
 }

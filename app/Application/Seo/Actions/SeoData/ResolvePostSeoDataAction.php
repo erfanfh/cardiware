@@ -2,7 +2,10 @@
 
 namespace App\Application\Seo\Actions\SeoData;
 
+use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\Schema\Graphs\BuildPostSchemaGraphAction;
+use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
@@ -15,7 +18,10 @@ use App\Infrastructure\Support\ReadingTimeEstimator;
 class ResolvePostSeoDataAction
 {
     public function __construct(
-        private readonly GetSeoDefaultsAction $getSeoDefaultsAction,
+        protected GetSeoDefaultsAction       $getSeoDefaultsAction,
+        protected ResolveCanonicalUrlAction  $resolveCanonicalUrlAction,
+        protected BuildPostSchemaGraphAction $buildPostSchemaGraphAction,
+        protected RenderSchemaGraphAction    $renderSchemaGraphAction,
     )
     {
     }
@@ -53,12 +59,18 @@ class ResolvePostSeoDataAction
 
         $xImageUrl = $post->seoMeta?->xImage?->url;
 
-        $canonicalUrl = $post->seoMeta?->canonical_url ?: rtrim($post->url, '/') . '/';
+        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
+            customCanonicalUrl: $post->seoMeta?->canonical_url,
+            fallbackUrl: $post->url
+        );
 
         $publishedTime = $post->published_at?->utc()->toIso8601String();
         $modifiedTime = $post->updated_at > $post->published_at ? $post->updated_at?->utc()->toIso8601String() : $publishedTime;
 
         $author = $post->author?->display_name;
+
+        $schemaGraph = $this->buildPostSchemaGraphAction->execute($post);
+        $schemaJson = $this->renderSchemaGraphAction->execute($schemaGraph);
 
         return new SeoDataDTO(
             robots: $post->seoMeta?->robots ?: $defaults['robots'],
@@ -90,6 +102,7 @@ class ResolvePostSeoDataAction
                 label2: 'زمان تقریبی برای خواندن',
                 data2: app(ReadingTimeEstimator::class)->estimate($post->body) . ' دقیقه',
             ),
+            schemaJson: $schemaJson,
         );
     }
 }

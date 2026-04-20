@@ -11,6 +11,7 @@ final class BuildHomePageSchemaContextAction
 {
     public function __construct(
         protected ResolveCanonicalUrlAction $resolveCanonicalUrlAction,
+        protected GetSeoDefaultsAction      $getSeoDefaultsAction,
     )
     {
     }
@@ -21,19 +22,19 @@ final class BuildHomePageSchemaContextAction
             customCanonicalUrl: url('/'),
         );
 
-        $siteName = app(GetSeoDefaultsAction::class)->execute()['site_name'] ?? null;
+        $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
         $logo = MediaFile::with('primaryVariant')->where('id', get_setting('seo', 'organization_logo')->id)->first();
 
         return new SchemaContextDTO(
             pageUrl: $canonicalUrl,
             pageTitle: (string)get_setting('seo', 'home_title'),
             pageDescription: get_setting('seo', 'home_description'),
+            pageType: 'CollectionPage',
             siteUrl: $canonicalUrl,
             siteName: (string)$siteName,
             siteAlternateName: get_setting('seo', 'site_alternate_name'),
             siteDescription: get_setting('seo', 'site_description'),
             inLanguage: (string)get_setting('seo', 'schema_language', 'fa-IR'),
-            pageType: 'CollectionPage',
             organizationName: get_setting('seo', 'organization_name', get_setting('seo', 'site_name', config('app.name'))),
             organizationAlternateName: get_setting('seo', 'organization_alternate_name'),
             organizationLegalName: get_setting('seo', 'organization_legal_name'),

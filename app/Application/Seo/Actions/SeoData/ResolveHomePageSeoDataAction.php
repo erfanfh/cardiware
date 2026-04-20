@@ -4,9 +4,7 @@ namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\Actions\Schema\BuildSchemaGraphAction;
-use App\Application\Seo\Actions\Schema\Contexts\BuildHomePageSchemaContextAction;
-use App\Application\Seo\Actions\Schema\Pages\BuildHomePageSchemaAction;
+use App\Application\Seo\Actions\Schema\Graphs\BuildHomePageSchemaGraphAction;
 use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
@@ -17,8 +15,10 @@ use App\Domain\Seo\Enums\OgTypeEnum;
 class ResolveHomePageSeoDataAction
 {
     public function __construct(
-        private readonly GetSeoDefaultsAction $getSeoDefaultsAction,
-        protected ResolveCanonicalUrlAction   $resolveCanonicalUrlAction,
+        protected GetSeoDefaultsAction           $getSeoDefaultsAction,
+        protected ResolveCanonicalUrlAction      $resolveCanonicalUrlAction,
+        protected BuildHomePageSchemaGraphAction $buildHomePageSchemaGraphAction,
+        protected RenderSchemaGraphAction        $renderSchemaGraphAction,
     )
     {
     }
@@ -33,11 +33,8 @@ class ResolveHomePageSeoDataAction
             customCanonicalUrl: url('/'),
         );
 
-        $schemaGraph = app(BuildSchemaGraphAction::class)->execute(
-            app(BuildHomePageSchemaContextAction::class)->execute(),
-            app(BuildHomePageSchemaAction::class)
-        );
-        $schemaJson = app(RenderSchemaGraphAction::class)->execute($schemaGraph);
+        $schemaGraph = $this->buildHomePageSchemaGraphAction->execute();
+        $schemaJson = $this->renderSchemaGraphAction->execute($schemaGraph);
 
         return new SeoDataDTO(
             robots: $defaults['robots'],
