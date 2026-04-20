@@ -20,6 +20,7 @@ final class BuildPostSchemaContextAction
     public function execute(Post $post, ResolvedPostSeoPayloadDTO $payload): SchemaContextDTO
     {
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
+        $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;
 
         return new SchemaContextDTO(
             pageUrl: $payload->canonicalUrl,
@@ -27,7 +28,7 @@ final class BuildPostSchemaContextAction
             pageDescription: $payload->description,
             pageType: 'WebPage',
 
-            siteUrl: url('/'),
+            siteUrl: $siteUrl,
             siteName: (string)$siteName,
             siteAlternateName: get_setting('seo', 'site_alternate_name'),
             siteDescription: get_setting('seo', 'site_description'),

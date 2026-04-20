@@ -13,6 +13,7 @@ class GetSeoDefaultsAction
 
         return [
             'site_name' => $siteName,
+            'site_url' => rtrim(url('/'), '/') . '/',
             'robots' => get_setting('seo', 'robots') ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
             'og_locale' => get_setting('seo', 'og_locale') ?: 'fa_IR',
             'og_image' => get_setting('seo', 'og_image') ?: null,

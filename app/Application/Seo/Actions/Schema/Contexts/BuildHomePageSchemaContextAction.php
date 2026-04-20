@@ -18,6 +18,7 @@ final class BuildHomePageSchemaContextAction
     public function execute(ResolvedHomePageSeoPayloadDTO $payload): SchemaContextDTO
     {
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
+        $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;
 
         $logoSetting = get_setting('seo', 'organization_logo');
         $logo = null;
@@ -32,7 +33,7 @@ final class BuildHomePageSchemaContextAction
             pageDescription: $payload->description,
             pageType: 'CollectionPage',
 
-            siteUrl: url('/'),
+            siteUrl: $siteUrl,
             siteName: (string)$siteName,
             siteAlternateName: get_setting('seo', 'site_alternate_name'),
             siteDescription: get_setting('seo', 'site_description'),
