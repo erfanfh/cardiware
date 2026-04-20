@@ -37,8 +37,8 @@ final class ResolveCanonicalUrlAction
         $port = isset($parts['port']) ? ':' . $parts['port'] : '';
         $path = $parts['path'] ?? '/';
 
-        $normalizedPath = $path === '/' ? '/' : rtrim($path, '/');
+        $normalizedPath = $path === '/' ? '' : rtrim($path, '/');
 
-        return "{$scheme}://{$host}{$port}{$normalizedPath}";
+        return "{$scheme}://{$host}{$port}{$normalizedPath}/";
     }
 }
