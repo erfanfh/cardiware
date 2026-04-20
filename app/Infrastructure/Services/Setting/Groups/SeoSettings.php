@@ -10,8 +10,8 @@ class SeoSettings extends BaseSettings
     protected string $group = 'seo';
     protected array $allowedKeys = [
         'site_name',
-        'alternative_site_name',
-        'blog_description',
+        'site_alternate_name',
+        'site_description',
         'separator',
         'robots',
 
@@ -23,14 +23,17 @@ class SeoSettings extends BaseSettings
         'home_title',
         'home_description',
 
+        'schema_language',
+
         'organization_name',
         'organization_alternate_name',
-        'organization_url',
+        'organization_founding_date',
         'organization_logo',
         'organization_email',
         'organization_phone',
         'organization_legal_name',
         'organization_same_as',
+        'organization_number_of_employees',
 
         'post_seo_title',
         'post_seo_description',

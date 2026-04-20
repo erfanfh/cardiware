@@ -10,15 +10,15 @@
 
             <x-admin.field label="نام سایت جایگزین">
                 <x-admin.form.input
-                    name="alternative_site_name"
-                    :value="old('alternative_site_name', get_setting('seo', 'alternative_site_name'))"
+                    name="site_alternate_name"
+                    :value="old('site_alternate_name', get_setting('seo', 'site_alternate_name'))"
                 />
             </x-admin.field>
 
             <x-admin.field label="شعار">
                 <x-admin.form.input
-                    name="blog_description"
-                    :value="old('blog_description', get_setting('seo', 'blog_description'))"
+                    name="site_description"
+                    :value="old('site_description', get_setting('seo', 'site_description'))"
                 />
             </x-admin.field>
 
