@@ -31,7 +31,7 @@ final class BuildPostBreadcrumbSchemaAction
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
-                    'name' => $context->pageTitle,
+                    'name' => $context->headline,
                 ],
             ],
         ];
