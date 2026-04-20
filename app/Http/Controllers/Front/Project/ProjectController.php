@@ -38,6 +38,8 @@ class ProjectController extends Controller
             ")
             ->first();
 
-        return view('front.projects.list', compact('stats'));
+        $projects = Project::latest()->paginate(9);
+
+        return view('front.projects.list', compact('stats', 'projects'));
     }
 }

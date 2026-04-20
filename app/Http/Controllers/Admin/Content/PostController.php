@@ -43,7 +43,7 @@ class PostController extends Controller
         Gate::authorize('post.list');
 
         $posts = $postListing
-            ->handle(Post::with(['author']), $request->validated())
+            ->handle(Post::with(['author'])->withCount('comments'), $request->validated())
             ->paginate($postListing->perPage())
             ->withQueryString();
 

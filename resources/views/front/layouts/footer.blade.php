@@ -117,15 +117,14 @@
 
     <div class="mx-auto max-w-7xl px-4 py-8">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 items-start">
-            <div class="lg:col-span-4">
+            <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-4">
                 <div class="font-extrabold mb-3">{{ get_setting('footer', 'column1_title') }}</div>
 
                 @if(!empty(get_setting('footer', 'address_1')))
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ get_setting('footer', 'address_1') }}
                             </p>
                         </div>
@@ -136,8 +135,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ get_setting('footer', 'address_2') }}
                             </p>
                         </div>
@@ -148,8 +146,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ get_setting('footer', 'address_3') }}
                             </p>
                         </div>
@@ -160,8 +157,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ get_setting('footer', 'address_4') }}
                             </p>
                         </div>
@@ -172,8 +168,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ 'شماره تماس: ' . get_setting('footer', 'phone') }}
                             </p>
                         </div>
@@ -184,8 +179,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <p
-                                class="group text-sm inline-flex items-center gap-2 text-slate-600 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                                class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
                                 {{ 'ایمیل: ' . get_setting('footer', 'email') }}
                             </p>
                         </div>
@@ -203,15 +197,14 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-3">
+            <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-3">
                 <div class="font-extrabold mb-3">{{ get_setting('footer', 'column2_title') }}</div>
 
                 <ul class="grid gap-2 text-sm">
                     @foreach(get_setting('footer', 'column2_items') as $item)
                         <li>
                             <a href="{{ $item['url'] }}"
-                               class="group inline-flex items-center gap-2 font-semibold text-slate-600 hover:text-brand-700 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                               class="group inline-flex items-center gap-2 text-gray-500 font-thin hover:text-brand-700 transition">
                                 <span>{{ $item['title'] }}</span>
                             </a>
                         </li>
@@ -219,15 +212,14 @@
                 </ul>
             </div>
 
-            <div class="lg:col-span-3">
+            <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-3">
                 <div class="font-extrabold mb-3">{{ get_setting('footer', 'column3_title') }}</div>
 
                 <ul class="grid gap-2 text-sm">
                     @foreach(get_setting('footer', 'column3_items') as $item)
                         <li>
                             <a href="{{ $item['url']}}"
-                               class="group inline-flex items-center gap-2 font-semibold text-slate-600 hover:text-brand-700 transition">
-                                <span class="text-brand-500 font-black" dir="ltr">←</span>
+                               class="group inline-flex items-center gap-2 font-thin text-gray-500  hover:text-brand-700 transition">
                                 <span>{{ $item['title'] }}</span>
                             </a>
                         </li>
@@ -235,14 +227,13 @@
                 </ul>
             </div>
 
-            <div class="lg:col-span-2">
+            <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-2">
                 <div class="font-extrabold mb-3">{{ get_setting('footer', 'column4_title') }}</div>
 
                 <div>
                     <img src="https://moddingway.ir/wp-content/uploads/2023/03/moddingway-namads.png" alt="enamad">
                 </div>
             </div>
-
         </div>
     </div>
 
