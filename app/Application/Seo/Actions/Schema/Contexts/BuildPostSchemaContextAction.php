@@ -7,6 +7,7 @@ use App\Application\Seo\DTOs\ResolvedPostSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 use App\Domain\Content\Models\Post;
+use App\Domain\Media\Models\MediaFile;
 
 final class BuildPostSchemaContextAction
 {
@@ -21,6 +22,13 @@ final class BuildPostSchemaContextAction
     {
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
         $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;
+
+        $logoSetting = get_setting('seo', 'organization_logo');
+        $logo = null;
+
+        if ($logoSetting?->id) {
+            $logo = MediaFile::with('primaryVariant')->find($logoSetting->id);
+        }
 
         return new SchemaContextDTO(
             pageUrl: $payload->canonicalUrl,
@@ -45,6 +53,9 @@ final class BuildPostSchemaContextAction
             ),
             organizationNumberOfEmployees: get_setting('seo', 'organization_number_of_employees'),
 
+            logoUrl: $logo?->url,
+            logoWidth: $logo?->primaryVariant?->width,
+            logoHeight: $logo?->primaryVariant?->height,
             logoCaption: $siteName,
 
             pageImageUrl: $payload->pageImageUrl,
