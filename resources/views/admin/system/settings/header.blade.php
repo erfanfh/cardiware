@@ -24,9 +24,9 @@
                                         mode="field"
                                         name="logo"
                                         :value="[
-                                    'id' => old('hero_image.id', get_setting('header', 'logo')->id),
-                                    'path' => old('hero_image.path', get_setting('header', 'logo')->path),
-                                ]"
+                                            'id' => old('logo.id', get_setting('header', 'logo')->id),
+                                            'path' => old('logo.path', get_setting('header', 'logo')->path),
+                                        ]"
                                     />
                                 </x-admin.field>
                             </div>
