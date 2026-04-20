@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Application\Seo\Actions\Schema;
+namespace App\Application\Seo\Actions\Schema\Pages;
 
+use App\Application\Seo\Contracts\SeoPageSchemaNodeInterface;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 
-final class BuildHomePageSchemaAction
+final class BuildHomePageSchemaAction implements SeoPageSchemaNodeInterface
 {
     public function __construct(
         protected SchemaIdGenerator $schemaIdGenerator,

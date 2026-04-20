@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Seo\Actions\Schema;
+namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;

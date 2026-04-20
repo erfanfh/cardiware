@@ -2,6 +2,7 @@
 
 namespace App\Application\Seo\Actions\Schema;
 
+use App\Application\Seo\Contracts\SeoPageSchemaNodeInterface;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaGraph;
 use App\Application\Seo\Support\SchemaSanitizer;
@@ -15,7 +16,6 @@ final class BuildSchemaGraphAction
         protected BuildWebsiteSearchActionSchemaAction $buildWebsiteSearchActionSchemaAction,
         protected BuildWebsiteSchemaAction             $buildWebsiteSchemaAction,
         protected BuildBreadcrumbSchemaAction          $buildBreadcrumbSchemaAction,
-        protected BuildHomePageSchemaAction            $buildHomePageSchemaAction,
         protected SchemaSanitizer                      $schemaSanitizer,
     )
     {
@@ -24,7 +24,7 @@ final class BuildSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function handle(SchemaContextDTO $context): array
+    public function handle(SchemaContextDTO $context, SeoPageSchemaNodeInterface $pageNodeAction): array
     {
         $logoNode = $this->buildLogoImageSchemaAction->handle($context);
         $numberOfEmployeesNode = $this->buildNumberOfEmployeesSchemaAction->handle($context);
@@ -44,7 +44,7 @@ final class BuildSchemaGraphAction
 
         $breadcrumbNode = $this->buildBreadcrumbSchemaAction->handle($context);
 
-        $pageNode = $this->buildHomePageSchemaAction->handle(
+        $pageNode = $pageNodeAction->handle(
             $context,
             $websiteNode,
             $organizationNode,

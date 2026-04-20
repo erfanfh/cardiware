@@ -4,6 +4,10 @@ namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\Schema\BuildSchemaGraphAction;
+use App\Application\Seo\Actions\Schema\Contexts\BuildHomePageSchemaContextAction;
+use App\Application\Seo\Actions\Schema\Pages\BuildHomePageSchemaAction;
+use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
@@ -29,6 +33,12 @@ class ResolveHomePageSeoDataAction
             customCanonicalUrl: url('/'),
         );
 
+        $schemaGraph = app(BuildSchemaGraphAction::class)->handle(
+            app(BuildHomePageSchemaContextAction::class)->handle(),
+            app(BuildHomePageSchemaAction::class)
+        );
+        $schemaJson = app(RenderSchemaGraphAction::class)->handle($schemaGraph);
+
         return new SeoDataDTO(
             robots: $defaults['robots'],
             title: $title,
@@ -49,6 +59,7 @@ class ResolveHomePageSeoDataAction
                 googleSiteVerification: get_setting('seo', 'google_site_verification') ?: null,
                 bingSiteVerification: get_setting('seo', 'bing_site_verification') ?: null,
             ),
+            schemaJson: $schemaJson,
         );
     }
 }

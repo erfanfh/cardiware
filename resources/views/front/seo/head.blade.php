@@ -35,18 +35,14 @@
         }
     }
 
+    if($seoData->schemaJson){
+        $tags[] = '<script type="application/ld+json">' . $seoData->schemaJson . '</script>';
+    }
+
     foreach (($seoData->verification?->toMetaArray() ?? []) as $name => $content) {
         if (filled($content)) {
             $tags[] = '<meta name="' . e($name) . '" content="' . e($content) . '">';
         }
-    }
-
-    $schemaContext = app(\App\Application\Seo\Actions\Schema\BuildHomePageSchemaContextAction::class)->handle();
-    $schemaGraph = app(\App\Application\Seo\Actions\Schema\BuildSchemaGraphAction::class)->handle($schemaContext);
-    $schemaJson = app(\App\Application\Seo\Actions\Schema\RenderSchemaGraphAction::class)->handle($schemaGraph);
-
-    if($schemaJson){
-        $tags[] = '<script type="application/ld+json">' . $schemaJson . '</script>';
     }
 
     $tags[] = '<!-- Moddingway.ir SEO Module -->';
