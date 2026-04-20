@@ -34,13 +34,13 @@ Template Name: صفحه درباره ما
                             {!! get_setting('aboutUs', 'hero_description')  !!}
                         </div>
 
-                        <div class="mt-6 flex flex-wrap items-center gap-3">
+                        <div class="mt-6 grid grid-cols-2 items-center gap-3">
                             <a href="#projects"
-                               class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
+                               class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
                                 پروژه‌های ما <span class="font-black">←</span>
                             </a>
                             <a href="#contact"
-                               class="inline-flex items-center gap-2 rounded-2xl bg-white/10 text-white border border-white/10 backdrop-blur px-5 py-3 text-sm font-extrabold hover:bg-white/15 transition">
+                               class="flex items-center justify-center gap-2 rounded-2xl bg-white/10 text-white border border-white/10 backdrop-blur px-5 py-3 text-sm font-extrabold hover:bg-white/15 transition">
                                 ارتباط با ما
                                 @include('icons.bubble-chat')
                             </a>
