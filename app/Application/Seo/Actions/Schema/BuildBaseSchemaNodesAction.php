@@ -30,7 +30,7 @@ final class BuildBaseSchemaNodesAction
         );
 
         $searchActionNode = $this->buildWebsiteSearchActionSchemaAction->execute(
-            searchUrlTemplate: route('search', absolute: true) . '?q={search_term_string}',
+            searchUrlTemplate: route('search', absolute: true) . '/?q={search_term_string}',
             queryParameterName: 'search_term_string',
         );
 
