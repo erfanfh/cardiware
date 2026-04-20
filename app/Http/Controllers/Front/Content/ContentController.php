@@ -92,7 +92,7 @@ final class ContentController
     private function loadPostForDetail(Post $post): Post
     {
         $post->load([
-            'author:id,display_name',
+            'author:id,username,display_name',
             'picture.primaryVariant',
             'categories:id,title,path',
             'tags:id,title,path',
