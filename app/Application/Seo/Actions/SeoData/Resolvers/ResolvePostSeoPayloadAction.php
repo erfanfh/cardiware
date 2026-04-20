@@ -98,9 +98,9 @@ final class ResolvePostSeoPayloadAction
             modifiedTime: $modifiedTime,
 
             authorName: $author?->display_name,
-//            authorUrl: $author
-//                ? route('author.show', $author->slug ?? $author->id, absolute: true)
-//                : null,
+            authorUrl: $author
+                ? rtrim(route('author', ['username' => $author->username]), '/') . '/'
+                : null,
             authorIdentifier: $author?->id
                 ? (string)$author->id
                 : $author?->display_name,
@@ -112,7 +112,7 @@ final class ResolvePostSeoPayloadAction
             pageImageCaption: $post->title,
 
             wordCount: $this->estimateWordCount($post),
-            commentCount: $post->approved_comments_count ?? $post->comments_count ?? null,
+            commentCount: $post->approved_comments_count ?? 0,
             keywords: $this->resolveKeywords($post),
             articleSections: $this->resolveArticleSections($post),
 
