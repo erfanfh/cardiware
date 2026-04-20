@@ -235,11 +235,11 @@
                         </x-admin.list.td>
 
                         <x-admin.list.td>
-                            <x-admin.badge size="md">{{ $post->comments()->count() }}</x-admin.badge>
+                            <x-admin.badge size="md">{{ $post->comments_count }}</x-admin.badge>
                         </x-admin.list.td>
 
                         <x-admin.list.td>
-                            <x-admin.badge size="md">{{ approximate_view(page_views($post)) }}</x-admin.badge>
+                            <x-admin.badge size="md">{{ page_views($post) }}</x-admin.badge>
                         </x-admin.list.td>
 
                         <x-admin.list.td muted>
