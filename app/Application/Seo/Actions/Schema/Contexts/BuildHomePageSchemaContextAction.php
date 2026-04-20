@@ -2,39 +2,42 @@
 
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
-use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\DTOs\ResolvedHomePageSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Domain\Media\Models\MediaFile;
 
 final class BuildHomePageSchemaContextAction
 {
     public function __construct(
-        protected ResolveCanonicalUrlAction $resolveCanonicalUrlAction,
-        protected GetSeoDefaultsAction      $getSeoDefaultsAction,
+        protected GetSeoDefaultsAction $getSeoDefaultsAction,
     )
     {
     }
 
-    public function execute(): SchemaContextDTO
+    public function execute(ResolvedHomePageSeoPayloadDTO $payload): SchemaContextDTO
     {
-        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            customCanonicalUrl: url('/'),
-        );
-
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
-        $logo = MediaFile::with('primaryVariant')->where('id', get_setting('seo', 'organization_logo')->id)->first();
+
+        $logoSetting = get_setting('seo', 'organization_logo');
+        $logo = null;
+
+        if ($logoSetting?->id) {
+            $logo = MediaFile::with('primaryVariant')->find($logoSetting->id);
+        }
 
         return new SchemaContextDTO(
-            pageUrl: $canonicalUrl,
-            pageTitle: (string)get_setting('seo', 'home_title'),
-            pageDescription: get_setting('seo', 'home_description'),
+            pageUrl: $payload->canonicalUrl,
+            pageTitle: $payload->title,
+            pageDescription: $payload->description,
             pageType: 'CollectionPage',
-            siteUrl: $canonicalUrl,
+
+            siteUrl: url('/'),
             siteName: (string)$siteName,
             siteAlternateName: get_setting('seo', 'site_alternate_name'),
             siteDescription: get_setting('seo', 'site_description'),
             inLanguage: (string)get_setting('seo', 'schema_language', 'fa-IR'),
+
             organizationName: get_setting('seo', 'organization_name', get_setting('seo', 'site_name', config('app.name'))),
             organizationAlternateName: get_setting('seo', 'organization_alternate_name'),
             organizationLegalName: get_setting('seo', 'organization_legal_name'),
@@ -45,9 +48,10 @@ final class BuildHomePageSchemaContextAction
                 get_setting('seo', 'organization_same_as', [])
             ),
             organizationNumberOfEmployees: get_setting('seo', 'organization_number_of_employees'),
-            logoUrl: $logo->url,
-            logoWidth: $logo->primaryVariant?->width,
-            logoHeight: $logo->primaryVariant?->height,
+
+            logoUrl: $logo?->url,
+            logoWidth: $logo?->primaryVariant?->width,
+            logoHeight: $logo?->primaryVariant?->height,
             logoCaption: $siteName,
         );
     }

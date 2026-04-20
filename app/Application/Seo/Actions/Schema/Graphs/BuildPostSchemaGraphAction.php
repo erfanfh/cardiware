@@ -10,6 +10,7 @@ use App\Application\Seo\Actions\Schema\BuildPostBreadcrumbSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPostSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPostSchemaAction;
+use App\Application\Seo\DTOs\ResolvedPostSeoPayloadDTO;
 use App\Domain\Content\Models\Post;
 
 final class BuildPostSchemaGraphAction
@@ -22,7 +23,7 @@ final class BuildPostSchemaGraphAction
         protected BuildPostArticleSchemaAction    $buildPostArticleSchemaAction,
         protected BuildPostBreadcrumbSchemaAction $buildPostBreadcrumbSchemaAction,
         protected BuildPostSchemaAction           $buildPostSchemaAction,
-        protected AssembleSchemaGraphAction       $buildSchemaGraphAction,
+        protected AssembleSchemaGraphAction       $assembleSchemaGraphAction,
     )
     {
     }
@@ -30,9 +31,9 @@ final class BuildPostSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(Post $post): array
+    public function execute(Post $post, ResolvedPostSeoPayloadDTO $payload): array
     {
-        $context = $this->buildPostSchemaContextAction->execute($post);
+        $context = $this->buildPostSchemaContextAction->execute($post, $payload);
 
         $baseNodes = $this->buildBaseSchemaNodesAction->execute($context);
 
@@ -54,7 +55,7 @@ final class BuildPostSchemaGraphAction
             $breadcrumbNode,
         );
 
-        return $this->buildSchemaGraphAction->execute(
+        return $this->assembleSchemaGraphAction->execute(
             pageNode: $pageNode,
             breadcrumbNode: $breadcrumbNode,
             websiteNode: $baseNodes->websiteNode,

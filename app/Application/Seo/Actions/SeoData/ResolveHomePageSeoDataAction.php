@@ -2,23 +2,23 @@
 
 namespace App\Application\Seo\Actions\SeoData;
 
-use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\Actions\Schema\Graphs\BuildHomePageSchemaGraphAction;
 use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
+use App\Application\Seo\Actions\SeoData\Resolvers\ResolveHomePageSeoPayloadAction;
 use App\Application\Seo\DTOs\OpenGraphDataDTO;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
 use App\Application\Seo\DTOs\VerificationMetaDataDTO;
 use App\Domain\Seo\Enums\OgTypeEnum;
 
-class ResolveHomePageSeoDataAction
+final class ResolveHomePageSeoDataAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction           $getSeoDefaultsAction,
-        protected ResolveCanonicalUrlAction      $resolveCanonicalUrlAction,
-        protected BuildHomePageSchemaGraphAction $buildHomePageSchemaGraphAction,
-        protected RenderSchemaGraphAction        $renderSchemaGraphAction,
+        protected GetSeoDefaultsAction            $getSeoDefaultsAction,
+        protected ResolveHomePageSeoPayloadAction $resolveHomePageSeoPayloadAction,
+        protected BuildHomePageSchemaGraphAction  $buildHomePageSchemaGraphAction,
+        protected RenderSchemaGraphAction         $renderSchemaGraphAction,
     )
     {
     }
@@ -26,26 +26,21 @@ class ResolveHomePageSeoDataAction
     public function execute(): SeoDataDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
+        $payload = $this->resolveHomePageSeoPayloadAction->execute();
 
-        $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
-        $description = get_setting('seo', 'home_description') ?: null;
-        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            customCanonicalUrl: url('/'),
-        );
-
-        $schemaGraph = $this->buildHomePageSchemaGraphAction->execute();
+        $schemaGraph = $this->buildHomePageSchemaGraphAction->execute($payload);
         $schemaJson = $this->renderSchemaGraphAction->execute($schemaGraph);
 
         return new SeoDataDTO(
-            robots: $defaults['robots'],
-            title: $title,
-            description: $description,
-            canonicalUrl: $canonicalUrl,
+            robots: $payload->robots ?: $defaults['robots'],
+            title: $payload->title,
+            description: $payload->description,
+            canonicalUrl: $payload->canonicalUrl,
             openGraph: new OpenGraphDataDTO(
                 type: OgTypeEnum::WEBSITE,
-                title: $defaults['site_name'],
-                description: $description,
-                url: $canonicalUrl,
+                title: $payload->ogTitle,
+                description: $payload->ogDescription,
+                url: $payload->canonicalUrl,
                 siteName: $defaults['site_name'],
                 locale: $defaults['og_locale'],
             ),
