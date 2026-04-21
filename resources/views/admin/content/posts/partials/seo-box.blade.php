@@ -516,12 +516,12 @@
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
-        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700 mb-5">
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700">
             توجه: آنالیز سئو بعد از ذخیره سازی تغییرات، به روز می شود.
         </div>
 
         @if($post?->seoMeta)
-            <div class="grid grid-cols-12 gap-5">
+            <div class="grid grid-cols-12 gap-5 mt-5">
                 <div class="col-span-12">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div class="flex flex-wrap items-center justify-between gap-4">
@@ -683,63 +683,9 @@
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
-        <div class="grid grid-cols-12 gap-5">
-            <div class="col-span-12 xl:col-span-4">
-                <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-red-700">مشکلات خوانایی</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-red-700"
-                              x-text="readability.badges.problems"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in readability.problems" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 xl:col-span-4">
-                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-amber-700">پیشنهادها</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-amber-700"
-                              x-text="readability.badges.improvements"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in readability.improvements" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12 xl:col-span-4">
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700"
-                              x-text="readability.badges.good"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in readability.good" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
+        <div
+            class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700 text-center">
+            به زودی!
         </div>
     </section>
 </div>
@@ -761,7 +707,7 @@
                             label: 'تجزیه و تحلیل سئو',
                             badge: this.analysis.badges.problems + this.analysis.badges.improvements + this.analysis.badges.good
                         },
-                        {key: 'readability', label: 'آنالیز خوانایی', badge: 5},
+                        {key: 'readability', label: 'آنالیز خوانایی', badge: 0},
                     ];
                 },
 
