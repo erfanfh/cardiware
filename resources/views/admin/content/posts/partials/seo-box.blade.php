@@ -18,7 +18,10 @@
 
     $siteTitle = app(\App\Application\Seo\Actions\GetSeoDefaultsAction::class)->execute()['site_name'];
 
-    $analysisData = app(\App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisViewDataAction::class)->execute($post);
+    if($post)
+        $analysisData = app(\App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisViewDataAction::class)->execute($post);
+    else
+        $analysisData = null;
 @endphp
 
 <div
@@ -96,55 +99,6 @@
     @title-changed.window="postTitle = $event.detail"
     class="space-y-5"
 >
-    {{-- Summary Strip --}}
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <div class="text-xs text-slate-500">عنوان سئو</div>
-            <div class="mt-1 flex items-center gap-2">
-                    <span
-                        class="inline-flex h-2.5 w-2.5 rounded-full"
-                        :class="hasCustomSeoTitle ? 'bg-emerald-500' : 'bg-amber-500'"
-                    ></span>
-                <div class="text-sm font-medium text-slate-800"
-                     x-text="hasCustomSeoTitle ? 'اختصاصی' : 'از الگو'"></div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <div class="text-xs text-slate-500">توضیح متا</div>
-            <div class="mt-1 flex items-center gap-2">
-                    <span
-                        class="inline-flex h-2.5 w-2.5 rounded-full"
-                        :class="hasCustomSeoDescription ? 'bg-emerald-500' : 'bg-amber-500'"
-                    ></span>
-                <div class="text-sm font-medium text-slate-800"
-                     x-text="hasCustomSeoDescription ? 'اختصاصی' : 'از الگو'"></div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <div class="text-xs text-slate-500">شبکه‌های اجتماعی</div>
-            <div class="mt-1 flex items-center gap-2">
-                    <span
-                        class="inline-flex h-2.5 w-2.5 rounded-full"
-                        :class="socialStatusColor"
-                    ></span>
-                <div class="text-sm font-medium text-slate-800" x-text="socialStatusLabel"></div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <div class="text-xs text-slate-500">Canonical</div>
-            <div class="mt-1 text-sm font-medium text-slate-800"
-                 x-text="canonicalUrl.trim() ? 'سفارشی' : 'پیش‌فرض'"></div>
-        </div>
-
-        <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <div class="text-xs text-slate-500">Robots</div>
-            <div class="mt-1 text-sm font-medium text-slate-800" x-text="robots.trim() || 'پیش‌فرض'"></div>
-        </div>
-    </div>
-
     {{-- Tabs --}}
     <div class="sticky top-3 z-10">
         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-1.5">
@@ -562,157 +516,165 @@
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
-        <div class="grid grid-cols-12 gap-5">
-            <div class="col-span-12">
-                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                    <div class="flex flex-wrap items-center justify-between gap-4">
-                        <div>
-                            <div class="text-sm font-semibold text-slate-800">امتیاز سئو</div>
-                            <div class="mt-1 text-xs text-slate-500">
-                                خلاصه وضعیت سئوی این نوشته بر اساس تحلیل فعلی
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="flex h-16 w-16 items-center justify-center rounded-full text-lg font-black"
-                                :class="analysisScoreClass"
-                                x-text="analysis.score"
-                            ></div>
-
-                            <div class="text-sm">
-                                <div class="font-semibold text-slate-800">از 100</div>
-                                <div
-                                    class="mt-1 font-medium"
-                                    :class="analysisScoreTextClass"
-                                    x-text="analysisScoreLabel"
-                                ></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <div class="rounded-xl bg-white px-4 py-3">
-                            <div class="text-xs text-slate-500">مشکلات</div>
-                            <div class="mt-1 text-base font-bold text-red-600" x-text="analysis.badges.problems"></div>
-                        </div>
-
-                        <div class="rounded-xl bg-white px-4 py-3">
-                            <div class="text-xs text-slate-500">نیاز به بهبود</div>
-                            <div class="mt-1 text-base font-bold text-amber-600"
-                                 x-text="analysis.badges.improvements"></div>
-                        </div>
-
-                        <div class="rounded-xl bg-white px-4 py-3">
-                            <div class="text-xs text-slate-500">موارد خوب</div>
-                            <div class="mt-1 text-base font-bold text-emerald-600" x-text="analysis.badges.good"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12">
-                <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-red-700">مشکلات</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-red-700"
-                              x-text="analysis.badges.problems"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in analysis.problems" :key="item.key ?? item.title">
-                            <div class="rounded-xl bg-white p-3 shadow-sm">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-
-                                    <template x-if="item.key">
-                                        <span
-                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
-                                            x-text="item.key"></span>
-                                    </template>
-                                </div>
-
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-
-                        <template x-if="analysis.problems.length === 0">
-                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
-                                در حال حاضر مشکلی برای این نوشته ثبت نشده است.
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12">
-                <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-amber-700">نیاز به بهبود</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-amber-700"
-                              x-text="analysis.badges.improvements"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in analysis.improvements" :key="item.key ?? item.title">
-                            <div class="rounded-xl bg-white p-3 shadow-sm">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-
-                                    <template x-if="item.key">
-                                        <span
-                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
-                                            x-text="item.key"></span>
-                                    </template>
-                                </div>
-
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-
-                        <template x-if="analysis.improvements.length === 0">
-                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
-                                موردی برای بهبود ثبت نشده است.
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-span-12">
-                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                    <div class="mb-3 flex items-center justify-between">
-                        <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>
-                        <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700"
-                              x-text="analysis.badges.good"></span>
-                    </div>
-
-                    <div class="space-y-3">
-                        <template x-for="item in analysis.good" :key="item.key ?? item.title">
-                            <div class="rounded-xl bg-white p-3 shadow-sm">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
-
-                                    <template x-if="item.key">
-                                        <span
-                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
-                                            x-text="item.key"></span>
-                                    </template>
-                                </div>
-
-                                <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
-                            </div>
-                        </template>
-
-                        <template x-if="analysis.good.length === 0">
-                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
-                                هنوز نتیجه مثبتی برای نمایش ثبت نشده است.
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold text-amber-700 mb-5">
+            توجه: آنالیز سئو بعد از ذخیره سازی تغییرات، به روز می شود.
         </div>
+
+        @if($post?->seoMeta)
+            <div class="grid grid-cols-12 gap-5">
+                <div class="col-span-12">
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <div class="text-sm font-semibold text-slate-800">امتیاز سئو</div>
+                                <div class="mt-1 text-xs text-slate-500">
+                                    خلاصه وضعیت سئوی این نوشته بر اساس تحلیل فعلی
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="flex h-16 w-16 items-center justify-center rounded-full text-lg font-black"
+                                    :class="analysisScoreClass"
+                                    x-text="analysis.score"
+                                ></div>
+
+                                <div class="text-sm">
+                                    <div class="font-semibold text-slate-800">از 100</div>
+                                    <div
+                                        class="mt-1 font-medium"
+                                        :class="analysisScoreTextClass"
+                                        x-text="analysisScoreLabel"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                            <div class="rounded-xl bg-white px-4 py-3">
+                                <div class="text-xs text-slate-500">مشکلات</div>
+                                <div class="mt-1 text-base font-bold text-red-600"
+                                     x-text="analysis.badges.problems"></div>
+                            </div>
+
+                            <div class="rounded-xl bg-white px-4 py-3">
+                                <div class="text-xs text-slate-500">نیاز به بهبود</div>
+                                <div class="mt-1 text-base font-bold text-amber-600"
+                                     x-text="analysis.badges.improvements"></div>
+                            </div>
+
+                            <div class="rounded-xl bg-white px-4 py-3">
+                                <div class="text-xs text-slate-500">موارد خوب</div>
+                                <div class="mt-1 text-base font-bold text-emerald-600"
+                                     x-text="analysis.badges.good"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-12">
+                    <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h3 class="text-sm font-semibold text-red-700">مشکلات</h3>
+                            <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-red-700"
+                                  x-text="analysis.badges.problems"></span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <template x-for="item in analysis.problems" :key="item.key ?? item.title">
+                                <div class="rounded-xl bg-white p-3 shadow-sm">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                        <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                        </template>
+                                    </div>
+
+                                    <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                                </div>
+                            </template>
+
+                            <template x-if="analysis.problems.length === 0">
+                                <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                    در حال حاضر مشکلی برای این نوشته ثبت نشده است.
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-12">
+                    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h3 class="text-sm font-semibold text-amber-700">نیاز به بهبود</h3>
+                            <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-amber-700"
+                                  x-text="analysis.badges.improvements"></span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <template x-for="item in analysis.improvements" :key="item.key ?? item.title">
+                                <div class="rounded-xl bg-white p-3 shadow-sm">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                        <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                        </template>
+                                    </div>
+
+                                    <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                                </div>
+                            </template>
+
+                            <template x-if="analysis.improvements.length === 0">
+                                <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                    موردی برای بهبود ثبت نشده است.
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-span-12">
+                    <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                        <div class="mb-3 flex items-center justify-between">
+                            <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>
+                            <span class="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                                  x-text="analysis.badges.good"></span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <template x-for="item in analysis.good" :key="item.key ?? item.title">
+                                <div class="rounded-xl bg-white p-3 shadow-sm">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                        <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                        </template>
+                                    </div>
+
+                                    <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                                </div>
+                            </template>
+
+                            <template x-if="analysis.good.length === 0">
+                                <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                    هنوز نتیجه مثبتی برای نمایش ثبت نشده است.
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </section>
 
     {{-- Tab: Readability --}}
