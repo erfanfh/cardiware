@@ -4,6 +4,7 @@ namespace App\Application\Content\Actions;
 
 use App\Application\Content\Services\ContentSlugCacheService;
 use App\Application\Download\Actions\SyncDownloadSectionsAction;
+use App\Application\Seo\Actions\Analysis\StorePostSeoAnalysisAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelCategoriesAction;
@@ -24,6 +25,7 @@ class UpdatePostAction
         protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
         protected SyncPostImageGalleryAction $syncPostImageGalleryAction,
         protected SyncPostSeoAction          $syncPostSeoAction,
+        protected StorePostSeoAnalysisAction $storePostSeoAnalysisAction,
     )
     {
     }
@@ -61,6 +63,7 @@ class UpdatePostAction
             );
 
             $this->syncPostSeoAction->execute($post, $data['seo'] ?? []);
+            $this->storePostSeoAnalysisAction->execute($post);
             $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
             $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);

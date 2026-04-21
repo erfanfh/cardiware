@@ -17,6 +17,8 @@
     $postSocialSeoDescriptionTemplate = get_setting('seo', 'post_social_seo_description');
 
     $siteTitle = app(\App\Application\Seo\Actions\GetSeoDefaultsAction::class)->execute()['site_name'];
+
+    $analysisData = app(\App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisViewDataAction::class)->execute($post);
 @endphp
 
 <div
@@ -51,7 +53,45 @@
             xDescription: @js(old('seo.x_description', $post->seoMeta?->x_description ?? '')),
             xImageId: @js(old('seo.x_image.id', $post->seoMeta?->x_image_id ?? null)),
             xImagePath: @js(old('seo.x_image.path', $post->seoMeta?->xImage?->url ?? '')),
-        }
+        },
+
+        analysis: @js($analysisData),
+
+        get analysisScoreLabel() {
+            if (this.analysis.score >= 80) {
+                return 'وضعیت خوب';
+            }
+
+            if (this.analysis.score >= 50) {
+                return 'نیاز به بهبود';
+            }
+
+            return 'دارای مشکل';
+        },
+
+        get analysisScoreClass() {
+            if (this.analysis.score >= 80) {
+                return 'bg-emerald-100 text-emerald-700';
+            }
+
+            if (this.analysis.score >= 50) {
+                return 'bg-amber-100 text-amber-700';
+            }
+
+            return 'bg-red-100 text-red-700';
+        },
+
+        get analysisScoreTextClass() {
+            if (this.analysis.score >= 80) {
+                return 'text-emerald-700';
+            }
+
+            if (this.analysis.score >= 50) {
+                return 'text-amber-700';
+            }
+
+            return 'text-red-700';
+        },
     })"
     @title-changed.window="postTitle = $event.detail"
     class="space-y-5"
@@ -212,7 +252,7 @@
                         @foreach($postSeoVariables as $variable)
                             <button
                                 type="button"
-                                @click="insertAtCursor('seoDescriptionInput', '{{ $variable['token'] }}', 'seoTitle')"
+                                @click="insertAtCursor('seoDescriptionInput', '{{ $variable['token'] }}', 'seoDescription')"
                                 class="cursor-pointer rounded-2xl border border-slate-200 bg-slate-100 px-2 py-0.5 text-[0.7rem] text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
                                 title="{{ $variable['description'] }}"
                             >
@@ -523,6 +563,54 @@
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
         <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <div class="text-sm font-semibold text-slate-800">امتیاز سئو</div>
+                            <div class="mt-1 text-xs text-slate-500">
+                                خلاصه وضعیت سئوی این نوشته بر اساس تحلیل فعلی
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex h-16 w-16 items-center justify-center rounded-full text-lg font-black"
+                                :class="analysisScoreClass"
+                                x-text="analysis.score"
+                            ></div>
+
+                            <div class="text-sm">
+                                <div class="font-semibold text-slate-800">از 100</div>
+                                <div
+                                    class="mt-1 font-medium"
+                                    :class="analysisScoreTextClass"
+                                    x-text="analysisScoreLabel"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                        <div class="rounded-xl bg-white px-4 py-3">
+                            <div class="text-xs text-slate-500">مشکلات</div>
+                            <div class="mt-1 text-base font-bold text-red-600" x-text="analysis.badges.problems"></div>
+                        </div>
+
+                        <div class="rounded-xl bg-white px-4 py-3">
+                            <div class="text-xs text-slate-500">نیاز به بهبود</div>
+                            <div class="mt-1 text-base font-bold text-amber-600"
+                                 x-text="analysis.badges.improvements"></div>
+                        </div>
+
+                        <div class="rounded-xl bg-white px-4 py-3">
+                            <div class="text-xs text-slate-500">موارد خوب</div>
+                            <div class="mt-1 text-base font-bold text-emerald-600" x-text="analysis.badges.good"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="col-span-12 xl:col-span-4">
                 <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
                     <div class="mb-3 flex items-center justify-between">
@@ -532,10 +620,25 @@
                     </div>
 
                     <div class="space-y-3">
-                        <template x-for="item in analysis.problems" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                        <template x-for="item in analysis.problems" :key="item.key ?? item.title">
+                            <div class="rounded-xl bg-white p-3 shadow-sm">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                    <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                    </template>
+                                </div>
+
                                 <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+
+                        <template x-if="analysis.problems.length === 0">
+                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                در حال حاضر مشکلی برای این نوشته ثبت نشده است.
                             </div>
                         </template>
                     </div>
@@ -551,10 +654,25 @@
                     </div>
 
                     <div class="space-y-3">
-                        <template x-for="item in analysis.improvements" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                        <template x-for="item in analysis.improvements" :key="item.key ?? item.title">
+                            <div class="rounded-xl bg-white p-3 shadow-sm">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                    <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                    </template>
+                                </div>
+
                                 <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+
+                        <template x-if="analysis.improvements.length === 0">
+                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                موردی برای بهبود ثبت نشده است.
                             </div>
                         </template>
                     </div>
@@ -570,10 +688,25 @@
                     </div>
 
                     <div class="space-y-3">
-                        <template x-for="item in analysis.good" :key="item.title">
-                            <div class="rounded-xl bg-white p-3">
-                                <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+                        <template x-for="item in analysis.good" :key="item.key ?? item.title">
+                            <div class="rounded-xl bg-white p-3 shadow-sm">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="text-sm font-semibold text-slate-800" x-text="item.title"></div>
+
+                                    <template x-if="item.key">
+                                        <span
+                                            class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                            x-text="item.key"></span>
+                                    </template>
+                                </div>
+
                                 <div class="mt-1 text-xs leading-5 text-slate-600" x-text="item.description"></div>
+                            </div>
+                        </template>
+
+                        <template x-if="analysis.good.length === 0">
+                            <div class="rounded-xl bg-white p-3 text-sm text-slate-500">
+                                هنوز نتیجه مثبتی برای نمایش ثبت نشده است.
                             </div>
                         </template>
                     </div>
@@ -656,13 +789,19 @@
                 activeTab: 'general',
                 variableMenuTarget: null,
 
-                tabs: [
-                    {key: 'general', label: 'عمومی', badge: null},
-                    {key: 'social', label: 'اجتماعی', badge: null},
-                    {key: 'advanced', label: 'پیشرفته', badge: null},
-                    {key: 'analysis', label: 'تجزیه و تحلیل سئو', badge: 6},
-                    {key: 'readability', label: 'آنالیز خوانایی', badge: 5},
-                ],
+                get tabs() {
+                    return [
+                        {key: 'general', label: 'عمومی', badge: null},
+                        {key: 'social', label: 'اجتماعی', badge: null},
+                        {key: 'advanced', label: 'پیشرفته', badge: null},
+                        {
+                            key: 'analysis',
+                            label: 'تجزیه و تحلیل سئو',
+                            badge: this.analysis.badges.problems + this.analysis.badges.improvements + this.analysis.badges.good
+                        },
+                        {key: 'readability', label: 'آنالیز خوانایی', badge: 5},
+                    ];
+                },
 
                 variables: config.variables ?? [],
                 templates: config.templates ?? {},
@@ -690,42 +829,16 @@
                 xImageId: config.values?.xImageId ?? null,
                 xImagePath: config.values?.xImagePath ?? '',
 
-                analysis: {
+                analysis: config.analysis ?? {
+                    score: 0,
                     badges: {
-                        problems: 2,
-                        improvements: 2,
-                        good: 2,
+                        problems: 0,
+                        improvements: 0,
+                        good: 0,
                     },
-                    problems: [
-                        {
-                            title: 'کلیدواژه کانونی در عنوان دیده نمی‌شود',
-                            description: 'بهتر است کلیدواژه کانونی در عنوان سئو حضور داشته باشد تا ارتباط صفحه واضح‌تر شود.',
-                        },
-                        {
-                            title: 'تصویر اجتماعی تنظیم نشده است',
-                            description: 'برای نمایش بهتر لینک در شبکه‌های اجتماعی، یک تصویر اختصاصی انتخاب کنید.',
-                        },
-                    ],
-                    improvements: [
-                        {
-                            title: 'طول توضیح متا می‌تواند بهتر شود',
-                            description: 'توضیح متا کمی کوتاه به نظر می‌رسد و می‌تواند کامل‌تر و جذاب‌تر باشد.',
-                        },
-                        {
-                            title: 'Canonical هنوز سفارشی نشده است',
-                            description: 'اگر این صفحه نسخه خاصی دارد، بررسی کنید که canonical درست تنظیم شده باشد.',
-                        },
-                    ],
-                    good: [
-                        {
-                            title: 'عنوان صفحه موجود است',
-                            description: 'برای این نوشته عنوان سئو یا الگوی پیش‌فرض در دسترس است.',
-                        },
-                        {
-                            title: 'ساختار تب‌بندی و داده‌ها آماده است',
-                            description: 'بخش سئو برای توسعه تحلیل‌های حرفه‌ای در گام‌های بعدی آماده شده است.',
-                        },
-                    ],
+                    problems: [],
+                    improvements: [],
+                    good: [],
                 },
 
                 readability: {
