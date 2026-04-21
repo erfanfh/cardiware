@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Application\Seo\Services\PersianTextNormalizer;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
@@ -24,7 +25,7 @@ final class FocusKeywordInSlugCheck extends AbstractSeoCheck
         return 7;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
         $keyword = trim((string)$input->focusKeyword);
         $slug = trim((string)$input->slug);
@@ -49,14 +50,10 @@ final class FocusKeywordInSlugCheck extends AbstractSeoCheck
             );
         }
 
-        $matched = 0;
+        $normalizedSlug = $this->persianTextNormalizer->normalize(urldecode($slug));
+        $slugTokens = preg_split('/[-_\s\/]+/u', $normalizedSlug, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
-        foreach ($keywordWords as $word) {
-            if ($word !== '' && str_contains($slug, str_replace(' ', '-', $word))) {
-                $matched++;
-            }
-        }
-
+        $matched = count(array_intersect($keywordWords, $slugTokens));
         $ratio = $matched / count($keywordWords);
 
         if ($ratio >= 0.5) {
@@ -64,7 +61,11 @@ final class FocusKeywordInSlugCheck extends AbstractSeoCheck
                 title: 'کلیدواژه در نامک',
                 description: 'بیش از نیمی از کلیدواژه در نامک دیده می‌شود. خیلی عالی!',
                 status: SeoCheckStatusEnum::GOOD,
-                meta: ['matched_ratio' => $ratio],
+                meta: [
+                    'matched_ratio' => $ratio,
+                    'matched_words' => $matched,
+                    'total_words' => count($keywordWords),
+                ],
                 priority: 82,
             );
         }
@@ -72,18 +73,26 @@ final class FocusKeywordInSlugCheck extends AbstractSeoCheck
         if ($ratio > 0) {
             return $this->makeResult(
                 title: 'کلیدواژه در نامک',
-                description: 'بخشی از کلیدواژه در نامک دیده می‌شود، اما بهتر است نامک دقیق‌تر شود.',
+                description: 'بخشی از کلیدواژه در نامک دیده می‌شود، اما بهتر است نامک دقیق‌تر و نزدیک‌تر به عبارت کانونی باشد.',
                 status: SeoCheckStatusEnum::IMPROVEMENT,
-                meta: ['matched_ratio' => $ratio],
+                meta: [
+                    'matched_ratio' => $ratio,
+                    'matched_words' => $matched,
+                    'total_words' => count($keywordWords),
+                ],
                 priority: 82,
             );
         }
 
         return $this->makeResult(
             title: 'کلیدواژه در نامک',
-            description: 'بخشی از کلیدواژه شما در نامک دیده نمی‌شود. آن را تغییر دهید.',
+            description: 'کلیدواژه کانونی در نامک دیده نمی‌شود. بهتر است نامک را تغییر دهید.',
             status: SeoCheckStatusEnum::PROBLEM,
-            meta: ['matched_ratio' => $ratio],
+            meta: [
+                'matched_ratio' => $ratio,
+                'matched_words' => $matched,
+                'total_words' => count($keywordWords),
+            ],
             priority: 82,
         );
     }

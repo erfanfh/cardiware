@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
 final class HasMetaDescriptionCheck extends AbstractSeoCheck
@@ -17,12 +18,12 @@ final class HasMetaDescriptionCheck extends AbstractSeoCheck
         return 7;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
         if (trim((string)$input->resolvedSeoDescription) !== '') {
             return $this->makeResult(
                 title: 'توضیح متا',
-                description: 'برای این صفحه توضیح متا وجود دارد. خیلی خوب است.',
+                description: 'برای این صفحه توضیح متای قابل استفاده وجود دارد. خیلی خوب است.',
                 status: SeoCheckStatusEnum::GOOD,
                 priority: 88,
             );
@@ -30,7 +31,7 @@ final class HasMetaDescriptionCheck extends AbstractSeoCheck
 
         return $this->makeResult(
             title: 'توضیح متا',
-            description: 'برای این صفحه توضیح متا تنظیم نشده است.',
+            description: 'برای این صفحه هیچ توضیح متای قابل استفاده‌ای پیدا نشد.',
             status: SeoCheckStatusEnum::PROBLEM,
             priority: 88,
         );

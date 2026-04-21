@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
 final class HasTitleCheck extends AbstractSeoCheck
@@ -17,11 +18,11 @@ final class HasTitleCheck extends AbstractSeoCheck
         return 5;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
-        if (trim($input->title) !== '') {
+        if (!blank($input->title)) {
             return $this->makeResult(
-                title: 'Title',
+                title: 'وجود عنوان صفحه',
                 description: 'صفحه شما عنوان دارد. عالی است.',
                 status: SeoCheckStatusEnum::GOOD,
                 priority: 90,
@@ -29,8 +30,8 @@ final class HasTitleCheck extends AbstractSeoCheck
         }
 
         return $this->makeResult(
-            title: 'Title',
-            description: 'این صفحه عنوان ندارد. باید برای آن عنوان مشخص شود.',
+            title: 'وجود عنوان صفحه',
+            description: 'این صفحه عنوان ندارد. یک عنوان مناسب و مرتبط با محتوا اضافه کنید.',
             status: SeoCheckStatusEnum::PROBLEM,
             priority: 90,
         );

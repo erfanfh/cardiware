@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
 final class HasSeoTitleCheck extends AbstractSeoCheck
@@ -17,7 +18,7 @@ final class HasSeoTitleCheck extends AbstractSeoCheck
         return 7;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
         if (trim((string)$input->resolvedSeoTitle) !== '') {
             return $this->makeResult(
@@ -30,7 +31,7 @@ final class HasSeoTitleCheck extends AbstractSeoCheck
 
         return $this->makeResult(
             title: 'عنوان سئو',
-            description: 'عنوان سئو برای این صفحه تنظیم نشده است.',
+            description: 'برای این صفحه هیچ عنوان سئوی قابل استفاده‌ای پیدا نشد.',
             status: SeoCheckStatusEnum::PROBLEM,
             priority: 95,
         );

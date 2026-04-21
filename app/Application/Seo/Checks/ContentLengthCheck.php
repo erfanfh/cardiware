@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
 final class ContentLengthCheck extends AbstractSeoCheck
@@ -17,9 +18,9 @@ final class ContentLengthCheck extends AbstractSeoCheck
         return 7;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
-        $count = $input->wordCount;
+        $count = max(0, (int)$input->wordCount);
 
         if ($count >= 300) {
             return $this->makeResult(
@@ -43,7 +44,7 @@ final class ContentLengthCheck extends AbstractSeoCheck
 
         return $this->makeResult(
             title: 'طول متن',
-            description: "متن شامل {$count} واژه است و برای سئو کوتاه به نظر می‌رسد.",
+            description: "متن شامل {$count} واژه است و برای سئو کوتاه به نظر می‌رسد. بهتر است محتوای کامل‌تری اضافه کنید.",
             status: SeoCheckStatusEnum::PROBLEM,
             meta: ['word_count' => $count],
             priority: 75,

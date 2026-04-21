@@ -611,7 +611,7 @@
                 </div>
             </div>
 
-            <div class="col-span-12 xl:col-span-4">
+            <div class="col-span-12">
                 <div class="rounded-2xl border border-red-200 bg-red-50 p-4">
                     <div class="mb-3 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-red-700">مشکلات</h3>
@@ -645,7 +645,7 @@
                 </div>
             </div>
 
-            <div class="col-span-12 xl:col-span-4">
+            <div class="col-span-12">
                 <div class="rounded-2xl border border-amber-200 bg-amber-50 p-4">
                     <div class="mb-3 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-amber-700">نیاز به بهبود</h3>
@@ -679,7 +679,7 @@
                 </div>
             </div>
 
-            <div class="col-span-12 xl:col-span-4">
+            <div class="col-span-12">
                 <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
                     <div class="mb-3 flex items-center justify-between">
                         <h3 class="text-sm font-semibold text-emerald-700">موارد خوب</h3>

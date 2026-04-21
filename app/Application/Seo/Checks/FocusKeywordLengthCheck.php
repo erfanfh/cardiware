@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Checks;
 
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
+use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Application\Seo\Services\PersianTextNormalizer;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 
@@ -24,7 +25,7 @@ final class FocusKeywordLengthCheck extends AbstractSeoCheck
         return 5;
     }
 
-    public function analyze(SeoAnalysisInputDTO $input): \App\Application\Seo\DTOs\SeoCheckResultDTO
+    public function analyze(SeoAnalysisInputDTO $input): SeoCheckResultDTO
     {
         $keyword = trim((string)$input->focusKeyword);
 
@@ -52,7 +53,7 @@ final class FocusKeywordLengthCheck extends AbstractSeoCheck
         if ($count === 5) {
             return $this->makeResult(
                 title: 'طول عبارت کلیدی',
-                description: 'عبارت کلیدی شامل 5 واژه محتوایی است. بهتر است کوتاه‌تر شود.',
+                description: 'عبارت کلیدی شامل 5 واژه است. بهتر است کوتاه‌تر شود.',
                 status: SeoCheckStatusEnum::IMPROVEMENT,
                 meta: ['word_count' => $count],
                 priority: 70,
