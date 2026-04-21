@@ -33,12 +33,12 @@ final class BuildPostSeoAnalysisInputAction
         $resolvedSeoTitle = $this->seoTemplateParser->parse($titleTemplate, $data);
         $resolvedSeoDescription = $this->seoTemplateParser->parse($descriptionTemplate, $data);
 
-        $contentAnalysis = $this->htmlContentAnalyzer->analyze((string)$post->content);
+        $contentAnalysis = $this->htmlContentAnalyzer->analyze((string)$post->body);
 
         return new SeoAnalysisInputDTO(
             title: (string)($post->title ?? ''),
             slug: (string)($post->slug ?? ''),
-            htmlContent: (string)($post->content ?? ''),
+            htmlContent: (string)($post->body ?? ''),
             plainTextContent: $contentAnalysis['plain_text'],
             wordCount: $this->persianTextNormalizer->wordCount($contentAnalysis['plain_text']),
             focusKeyword: $seoMeta?->focus_keyword,
