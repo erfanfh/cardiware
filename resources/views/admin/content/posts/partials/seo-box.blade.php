@@ -383,8 +383,8 @@
                                     mode="field"
                                     name="seo[og_image]"
                                     :value="[
-                                        'id' => old('seo.og_image.id', $post->seoMeta?->og_image_id),
-                                        'path' => old('seo.og_image.path', $post->seoMeta?->ogImage?->url),
+                                        'id' => old('seo.og_image.id', $post?->seoMeta?->og_image_id),
+                                        'path' => old('seo.og_image.path', $post?->seoMeta?->ogImage?->url),
                                     ]"
                                     layout="vertical"
                                 />
@@ -460,8 +460,8 @@
                                     mode="field"
                                     name="seo[x_image]"
                                     :value="[
-                                        'id' => old('seo.x_image.id', $post->seoMeta?->x_image_id),
-                                        'path' => old('seo.x_image.path', $post->seoMeta?->xImage?->url),
+                                        'id' => old('seo.x_image.id', $post?->seoMeta?->x_image_id),
+                                        'path' => old('seo.x_image.path', $post?->seoMeta?->xImage?->url),
                                     ]"
                                     layout="vertical"
                                 />
