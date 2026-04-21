@@ -2,10 +2,9 @@
 
 namespace App\Application\Seo\Actions\Schema\Pages;
 
-use App\Application\Seo\Contracts\SeoPageSchemaNodeInterface;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 
-final class BuildPostSchemaAction implements SeoPageSchemaNodeInterface
+final class BuildPostSchemaAction
 {
     /**
      * @param array<string, mixed> $websiteNode
