@@ -13,7 +13,8 @@
                     name="videos_category_ids"
                     :multiple="true"
                     :value="old('videos_category_ids', get_setting('home', 'videos_category_ids')) ?? []"
-                    :selected-options="\App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
+                    :selected-options="\App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+                        ->where('taxonomy', \App\Domain\Taxonomy\Enums\TaxonomyKeyEnum::POST_CATEGORY)
                         ->whereIn('id', old('videos_category_ids', get_setting('home', 'videos_category_ids') ?? []))
                         ->get()
                         ->map(fn ($c) => [
@@ -21,7 +22,7 @@
                             'label' => $c->title,
                         ])
                         ->all() ?? []"
-                    :search-url="route('admin.categories.ajax-search')"
+                    :search-url="route('admin.posts.categories.ajax-search')"
                     placeholder="دسته‌ها را جستجو کنید..."
                     :error="$errors->first('videos_category_ids')"
                 />

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Taxonomy;
 
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CategorySearchController extends Controller
+class ProjectTagSearchController extends Controller
 {
     /**
      * @param Request $request
@@ -18,13 +19,11 @@ class CategorySearchController extends Controller
         $query = trim((string)$request->string('q'));
 
         if (mb_strlen($query) < 2) {
-            return response()->json([
-                'items' => [],
-            ]);
+            return response()->json(['items' => []]);
         }
 
         $items = TaxonomyTerm::query()
-            ->categories()
+            ->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG)
             ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')

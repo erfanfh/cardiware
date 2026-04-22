@@ -13,7 +13,8 @@
         ->unique()
         ->values();
 
-    $categoryTitles = \App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
+    $categoryTitles = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+        ->where('taxonomy', \App\Domain\Taxonomy\Enums\TaxonomyKeyEnum::POST_CATEGORY)
         ->whereIn('id', $categoryIds)
         ->pluck('title', 'id');
 
@@ -132,7 +133,7 @@
                                 }))
                             "
                             :multiple="true"
-                            :search-url="route('admin.categories.ajax-search')"
+                            :search-url="route('admin.posts.categories.ajax-search')"
                             placeholder="دسته های اصلی را انتخاب کنید..."
                         />
                     </x-admin.field>
@@ -170,7 +171,7 @@
                                 }))
                             "
                             :multiple="true"
-                            :search-url="route('admin.categories.ajax-search')"
+                            :search-url="route('admin.posts.categories.ajax-search')"
                             placeholder="دسته بندی های باکس لیستی 1 را انتخاب کنید..."
                         />
                     </x-admin.field>
@@ -208,7 +209,7 @@
                                 }))
                             "
                             :multiple="true"
-                            :search-url="route('admin.categories.ajax-search')"
+                            :search-url="route('admin.posts.categories.ajax-search')"
                             placeholder="دسته بندی های باکس لیستی 2 را انتخاب کنید..."
                         />
                     </x-admin.field>

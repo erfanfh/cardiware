@@ -144,7 +144,7 @@
                 name="category_ids"
                 :items="$allCategories"
                 :selected="old('category_ids', $selectedCategoryIds ?? [])"
-                quick-create-url="{{ route('admin.categories.quick-create') }}"
+                quick-create-url="{{ route('admin.posts.categories.quick-create') }}"
             />
         </x-admin.metabox>
     </x-slot:sidebar>

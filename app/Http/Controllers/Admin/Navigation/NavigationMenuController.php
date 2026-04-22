@@ -8,6 +8,7 @@ use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Navigation\Models\NavigationMenu;
 use App\Domain\Project\Models\Project;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Navigation\UpdateNavigationMenuRequest;
@@ -33,7 +34,7 @@ class NavigationMenuController extends Controller
         );
 
         $topCategories = TaxonomyTerm::query()
-            ->categories()
+            ->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY)
             ->select(['id', 'title'])
             ->withCount('posts')
             ->orderByDesc('posts_count')
@@ -46,7 +47,7 @@ class NavigationMenuController extends Controller
             ->values();
 
         $topTags = TaxonomyTerm::query()
-            ->tags()
+            ->where('taxonomy', \App\Domain\Taxonomy\Enums\TaxonomyKeyEnum::POST_TAG)
             ->select(['id', 'title'])
             ->withCount('posts')
             ->orderByDesc('posts_count')

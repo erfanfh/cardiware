@@ -119,7 +119,8 @@
                                 @php
                                     $categoryItems = collect(get_setting('sidebarWidgets', 'categories_items') ?? []);
 
-                                    $categoryTitles = \App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
+                                    $categoryTitles = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+                                        ->where('taxonomy', \App\Domain\Taxonomy\Enums\TaxonomyKeyEnum::POST_CATEGORY)
                                         ->whereIn('id', $categoryItems->pluck('category_id')->filter()->all())
                                         ->pluck('title', 'id');
 
@@ -159,7 +160,7 @@
                                                 "
                                                 label="دسته اصلی"
                                                 :multiple="false"
-                                                :search-url="route('admin.categories.ajax-search')"
+                                                :search-url="route('admin.posts.categories.ajax-search')"
                                                 placeholder="دسته اصلی را انتخاب کنید..."
                                             />
                                         </x-admin.field>

@@ -4,10 +4,10 @@
     @php
         $boxTitle = get_setting('posts', 'first_box_title') ?: 'آخرین نوشته ها';
         $boxSubtitle = get_setting('posts', 'first_box_subtitle');
-        if(request()->routeIs('categories') and isset($category)){
+        if(request()->routeIs('posts.categories') and isset($category)){
             $boxTitle = $category->title;
             $boxSubtitle = "آخرین نوشته های دسته $category->title";
-        }elseif(request()->routeIs('tags') and isset($tag)){
+        }elseif(request()->routeIs('posts.tags') and isset($tag)){
             $boxTitle = $tag->title;
             $boxSubtitle = "آخرین نوشته های برچسب $tag->title";
         }

@@ -3,7 +3,9 @@
 namespace App\Infrastructure\Slug\Drivers;
 
 use App\Application\Slug\Contracts\SlugPersistenceDriver;
+use App\Application\Taxonomy\Actions\RefreshDescendantTaxonomyPathsAction;
 use App\Domain\Slug\Enums\SlugScopeEnum;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use App\Infrastructure\Slug\Services\TaxonomyRouteKeyBuilder;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,8 @@ use Illuminate\Database\Eloquent\Model;
 class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 {
     public function __construct(
-        private readonly TaxonomyRouteKeyBuilder $routeKeyBuilder,
+        private readonly TaxonomyRouteKeyBuilder              $routeKeyBuilder,
+        private readonly RefreshDescendantTaxonomyPathsAction $refreshDescendantTaxonomyPathsAction,
     )
     {
     }
@@ -68,6 +71,7 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 
         $taxonomy = SlugScopeEnum::extractTaxonomyEnum($scope);
         $routeKey = $this->routeKeyBuilder->build($model, $finalSlug);
+        $previousPath = (string)($model->getAttribute('path') ?? '');
 
         $model->forceFill([
             'slug' => $finalSlug,
@@ -93,6 +97,14 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
                 'is_current' => true,
             ]
         );
+
+        if (
+            $model instanceof TaxonomyTerm &&
+            $model->isHierarchical() &&
+            $previousPath !== $routeKey
+        ) {
+            $this->refreshDescendantTaxonomyPathsAction->execute($model);
+        }
 
         return [
             'final_slug' => $finalSlug,

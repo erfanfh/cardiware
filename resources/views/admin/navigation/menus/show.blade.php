@@ -9,14 +9,14 @@
                 'label' => 'جستجوی دسته‌بندی',
                 'emptyText' => 'دسته‌بندی‌ای پیدا نشد.',
                 'topText' => 'دسته‌بندی‌های پیشنهادی',
-                'searchUrl' => route('admin.categories.ajax-search'),
+                'searchUrl' => route('admin.posts.categories.ajax-search'),
                 'topItems' => $topCategories ?? [],
             ],
             'tag' => [
                 'label' => 'جستجوی برچسب',
                 'emptyText' => 'برچسبی پیدا نشد.',
                 'topText' => 'برچسب‌های پیشنهادی',
-                'searchUrl' => route('admin.tags.ajax-search'),
+                'searchUrl' => route('admin.posts.tags.ajax-search'),
                 'topItems' => $topTags ?? [],
             ],
             'post' => [

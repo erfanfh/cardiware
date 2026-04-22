@@ -1,6 +1,10 @@
 @php
-    $categories = \App\Domain\Taxonomy\Models\TaxonomyTerm::categories()
-        ->whereIn('id', collect(get_setting('sidebarWidgets', 'categories_items'))->pluck('category_id')->toArray())
+    $categories = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+        ->forTaxonomy(\App\Domain\Taxonomy\Enums\TaxonomyKeyEnum::POST_CATEGORY)
+        ->whereIn(
+            'id',
+            collect(get_setting('sidebarWidgets', 'categories_items'))->pluck('category_id')->toArray()
+        )
         ->select(['id', 'title', 'path'])
         ->withCount('posts')
         ->get();
@@ -18,7 +22,7 @@
                 if(!$category) continue;
             @endphp
             <li>
-                <a href="{{ route('categories', $category) }}"
+                <a href="{{ route('posts.categories', $category) }}"
                    class="flex items-center justify-between text-sm rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition">
                     <span class="font-semibold text-slate-800">{{ $category->title }}</span>
                     <span

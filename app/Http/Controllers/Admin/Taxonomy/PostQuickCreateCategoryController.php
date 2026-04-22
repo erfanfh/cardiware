@@ -10,7 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
-class QuickCreateCategoryController extends Controller
+class PostQuickCreateCategoryController extends Controller
 {
     /**
      * Handle the incoming request.
