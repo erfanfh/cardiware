@@ -3,10 +3,10 @@
 namespace App\Application\Seo\Actions\Schema\Graphs;
 
 use App\Application\Seo\Actions\Schema\AssembleSchemaGraphAction;
+use App\Application\Seo\Actions\Schema\Breadcrumbs\BuildPostBreadcrumbSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\BuildPersonSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildPostArticleSchemaAction;
-use App\Application\Seo\Actions\Schema\BuildPostBreadcrumbSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPostSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPostSchemaAction;

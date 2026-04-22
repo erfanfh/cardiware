@@ -6,7 +6,9 @@ use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Scopes\ActivePageScope;
 use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\System\Interfaces\PageViewableInterface;
+use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -14,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Page extends Model implements PageViewableInterface
 {
-    use SoftDeletes;
+    use SoftDeletes, HasExcerpt, HasSeoMeta;
 
     protected $fillable = [
         'author_id',
@@ -30,6 +32,8 @@ class Page extends Model implements PageViewableInterface
 
     protected $casts = [
         'status' => PageStatusEnum::class,
+        'published_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**

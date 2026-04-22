@@ -39,6 +39,11 @@ class SeoSettings extends BaseSettings
         'post_seo_description',
         'post_social_seo_title',
         'post_social_seo_description',
+
+        'page_seo_title',
+        'page_seo_description',
+        'page_social_seo_title',
+        'page_social_seo_description',
     ];
 
     protected array $casts = [

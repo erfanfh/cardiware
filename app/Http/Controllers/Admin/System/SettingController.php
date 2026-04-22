@@ -54,8 +54,9 @@ class SettingController extends Controller
 
         $seoVariableRegistry = app(SeoTemplateVariableRegistry::class);
         $postSeoVariables = $seoVariableRegistry->forContext('post');
+        $pageSeoVariables = $seoVariableRegistry->forContext('page');
 
-        return view('admin.system.settings.seo', compact('postSeoVariables'));
+        return view('admin.system.settings.seo', compact('postSeoVariables', 'pageSeoVariables'));
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Seo\Actions\Schema;
+namespace App\Application\Seo\Actions\Schema\Breadcrumbs;
 
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;

@@ -11,6 +11,7 @@
                     'schema' => 'اسکیما',
                     'home' => 'صفحه اصلی',
                     'post' => 'صفحه نوشته',
+                    'page' => 'صفحه برگه',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
@@ -28,6 +29,10 @@
 
                 <x-admin.tabs.panel name="post">
                     @include('admin.system.settings.partials.seo.post')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="page">
+                    @include('admin.system.settings.partials.seo.page')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
