@@ -15,7 +15,7 @@
                 <div class="absolute top-4 right-4 left-4 flex flex-wrap justify-start items-center gap-2">
                     @php $post->categories @endphp
                     @foreach($post->categories as $category)
-                        <a href="{{ route('categories', $category) }}"
+                        <a href="{{ route('posts.categories', $category) }}"
                            class="text-xs font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
                             {{ $category->title }}
                         </a>
@@ -37,7 +37,7 @@
             <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2">
                 <span class="text-xs text-slate-500">برچسب‌ها:</span>
                 @foreach($post->tags as $tag)
-                    <a href="{{ route('tags', $tag) }}"
+                    <a href="{{ route('posts.tags', $tag) }}"
                        class="text-[0.7rem] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition">
                         {{ $tag->title }}
                     </a>

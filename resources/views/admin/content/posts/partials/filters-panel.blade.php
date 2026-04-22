@@ -57,7 +57,7 @@
                         :selected-options="$selectedCategoryOptions"
                         placeholder="جستجو در دسته‌بندی‌ها..."
                         :multiple="true"
-                        :search-url="route('admin.categories.ajax-search')"
+                        :search-url="route('admin.posts.categories.ajax-search')"
                     />
                 </x-admin.filters.item>
 
@@ -68,7 +68,7 @@
                         :selected-options="$selectedTagOptions"
                         placeholder="جستجو در برچسب‌ها..."
                         :multiple="true"
-                        :search-url="route('admin.tags.ajax-search')"
+                        :search-url="route('admin.posts.tags.ajax-search')"
                     />
                 </x-admin.filters.item>
 

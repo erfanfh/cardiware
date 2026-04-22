@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Gate;
 
-class TagController extends Controller
+class PostTagController extends Controller
 {
     /**
      * Display a listing of tags.

@@ -36,12 +36,12 @@ enum TaxonomyKeyEnum: string
         };
     }
 
-    public function archiveRouteName(): string
+    public function archiveRouteName(): ?string
     {
         return match ($this) {
-            self::POST_CATEGORY => 'posts.categories.show',
-            self::POST_TAG => 'posts.tags.show',
-            self::PROJECT_TAG => 'projects.tags.show',
+            self::POST_CATEGORY => 'posts.categories',
+            self::POST_TAG => 'posts.tags',
+            self::PROJECT_TAG => null,
         };
     }
 

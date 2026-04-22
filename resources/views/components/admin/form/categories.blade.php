@@ -195,7 +195,7 @@
                                     x-model="newCategoryParentId"
                                     placeholder="بدون والد"
                                     :multiple="false"
-                                    :search-url="route('admin.categories.ajax-search')"
+                                    :search-url="route('admin.posts.categories.ajax-search')"
                                 />
                             </div>
                         </template>

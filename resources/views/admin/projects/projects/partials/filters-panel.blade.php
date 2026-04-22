@@ -100,7 +100,7 @@
                         :selected-options="$selectedTagOptions"
                         placeholder="جستجو در برچسب‌ها..."
                         :multiple="true"
-                        :search-url="route('admin.tags.ajax-search')"
+                        :search-url="route('admin.projects.tags.ajax-search')"
                     />
                 </x-admin.filters.item>
 

@@ -27,13 +27,13 @@ return [
             ],
             [
                 'label' => 'دسته‌ها',
-                'route' => 'admin.categories.index',
+                'route' => 'admin.posts.categories.index',
                 'icon' => 'icons.tag-02',
                 'gate' => 'category.manage',
             ],
             [
                 'label' => 'برچسب‌ها',
-                'route' => 'admin.tags.index',
+                'route' => 'admin.posts.tags.index',
                 'icon' => 'icons.tag-02',
                 'gate' => 'tag.manage',
             ],

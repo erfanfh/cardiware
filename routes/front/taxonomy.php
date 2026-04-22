@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Front\Taxonomy\CategoryListController;
-use App\Http\Controllers\Front\Taxonomy\TagListController;
+use App\Http\Controllers\Front\Taxonomy\PostCategoryListController;
+use App\Http\Controllers\Front\Taxonomy\PostTagListController;
 
-Route::get('tag/{path}', TagListController::class)->name('tags');
-Route::get('category/{path}', CategoryListController::class)->where('path', '.*')->name('categories');
+Route::get('tag/{path}', PostTagListController::class)->name('posts.tags');
+Route::get('category/{path}', PostCategoryListController::class)->where('path', '.*')->name('posts.categories');

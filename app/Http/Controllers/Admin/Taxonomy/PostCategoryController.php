@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class CategoryController extends Controller
+class PostCategoryController extends Controller
 {
     /**
      * Display a listing of categories.

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Taxonomy;
 
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class TagSearchController extends Controller
+class PostTagSearchController extends Controller
 {
     /**
      * @param Request $request
@@ -22,7 +23,7 @@ class TagSearchController extends Controller
         }
 
         $items = TaxonomyTerm::query()
-            ->tags()
+            ->where('taxonomy', TaxonomyKeyEnum::POST_TAG)
             ->select(['id', 'title'])
             ->where('title', 'like', '%' . $query . '%')
             ->orderBy('title')

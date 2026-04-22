@@ -89,7 +89,7 @@ class TaxonomyTerm extends Model
      */
     public function scopePostCategories(Builder $query): Builder
     {
-        return $query->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY->value);
+        return $query->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY);
     }
 
     /**
@@ -100,7 +100,7 @@ class TaxonomyTerm extends Model
      */
     public function scopePostTags(Builder $query): Builder
     {
-        return $query->where('taxonomy', TaxonomyKeyEnum::POST_TAG->value);
+        return $query->where('taxonomy', TaxonomyKeyEnum::POST_TAG);
     }
 
     /**
@@ -111,7 +111,7 @@ class TaxonomyTerm extends Model
      */
     public function scopeProjectTags(Builder $query): Builder
     {
-        return $query->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG->value);
+        return $query->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG);
     }
 
     /**

@@ -103,7 +103,7 @@
                         <x-admin.list.row-actions class="mt-2">
                             <x-admin.list.action
                                 tag="a"
-                                :href="route('categories', $item)"
+                                :href="route('posts.categories', $item)"
                                 target="_blank"
                             >
                                 مشاهده
