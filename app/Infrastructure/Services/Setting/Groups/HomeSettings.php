@@ -19,6 +19,7 @@ class HomeSettings extends BaseSettings
         'download_products_items',
         'special_posts_title',
         'special_posts_posts_counts',
+        'special_posts_items',
         'subscription_title',
         'subscription_subtitle',
         'subscription_button_title',
@@ -52,6 +53,7 @@ class HomeSettings extends BaseSettings
     protected array $casts = [
         'hero_slider' => RepeaterArrayCast::class,
         'download_products_items' => RepeaterArrayCast::class,
+        'special_posts_items' => RepeaterArrayCast::class,
         'products_items' => RepeaterArrayCast::class,
         'testimonials_items' => RepeaterArrayCast::class,
         'projects_items' => RepeaterArrayCast::class,
