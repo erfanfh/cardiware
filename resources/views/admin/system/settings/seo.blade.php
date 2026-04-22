@@ -13,6 +13,8 @@
                     'post' => 'صفحه نوشته',
                     'page' => 'صفحه برگه',
                     'project' => 'صفحه پروژه',
+                    'post-category' => 'صفحه دسته‌بندی نوشته',
+                    'post-tag' => 'صفحه برچسب نوشته',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
@@ -38,6 +40,14 @@
 
                 <x-admin.tabs.panel name="project">
                     @include('admin.system.settings.partials.seo.project')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="post-category">
+                    @include('admin.system.settings.partials.seo.post-category')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="post-tag">
+                    @include('admin.system.settings.partials.seo.post-tag')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
