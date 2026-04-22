@@ -38,4 +38,9 @@ final class SchemaIdGenerator
     {
         return rtrim($siteUrl, '/') . '/#/schema/person/' . md5($identifier);
     }
+
+    public function custom(string $pageUrl, string $suffix): string
+    {
+        return rtrim($pageUrl, '/') . $suffix;
+    }
 }

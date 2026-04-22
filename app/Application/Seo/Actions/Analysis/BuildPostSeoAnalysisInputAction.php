@@ -5,14 +5,17 @@ namespace App\Application\Seo\Actions\Analysis;
 use App\Application\Seo\Actions\ExtractFirstParagraphAction;
 use App\Application\Seo\Actions\ExtractImageStatsAction;
 use App\Application\Seo\Actions\ExtractLinkStatsAction;
+use App\Application\Seo\Contracts\SeoAnalysisInputBuilderInterface;
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
 use App\Application\Seo\Services\HtmlContentAnalyzer;
 use App\Application\Seo\Services\PersianTextNormalizer;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
+use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
-final class BuildPostSeoAnalysisInputAction
+final class BuildPostSeoAnalysisInputAction implements SeoAnalysisInputBuilderInterface
 {
     public function __construct(
         protected HtmlContentAnalyzer         $htmlContentAnalyzer,
@@ -26,20 +29,30 @@ final class BuildPostSeoAnalysisInputAction
     {
     }
 
-    public function execute(Post $post): SeoAnalysisInputDTO
+    public function execute(Model $model): SeoAnalysisInputDTO
     {
+        if (!$model instanceof Post) {
+            throw new InvalidArgumentException('Model must be instance of Post.');
+        }
+
+        $post = $model;
         $post->loadMissing('seoMeta');
 
         $seoMeta = $post->seoMeta;
         $data = $this->postSeoVariableDataBuilder->build($post);
 
-        $titleTemplate = $seoMeta?->title ?: get_setting('seo', 'post_seo_title') ?: $post->title;
-        $descriptionTemplate = $seoMeta?->description ?: get_setting('seo', 'post_seo_description') ?: '';
+        $titleTemplate = $seoMeta?->title
+            ?: get_setting('seo', 'post_seo_title')
+                ?: $post->title;
+
+        $descriptionTemplate = $seoMeta?->description
+            ?: get_setting('seo', 'post_seo_description')
+                ?: '';
 
         $resolvedSeoTitle = $this->seoTemplateParser->parse((string)$titleTemplate, $data);
         $resolvedSeoDescription = $this->seoTemplateParser->parse((string)$descriptionTemplate, $data);
 
-        $htmlContent = (string)($post->body ?? '');
+        $htmlContent = $this->resolveMainContent($post);
         $contentAnalysis = $this->htmlContentAnalyzer->analyze($htmlContent);
         $plainTextContent = (string)($contentAnalysis['plain_text'] ?? '');
 
@@ -54,7 +67,8 @@ final class BuildPostSeoAnalysisInputAction
         $imageStats = $this->extractImageStatsAction->execute($htmlContent);
 
         return new SeoAnalysisInputDTO(
-            postId: $post->id ? (int)$post->id : null,
+            seoableType: Post::class,
+            seoableId: $post->id ? (int)$post->id : null,
             title: (string)($post->title ?? ''),
             slug: (string)($post->slug ?? ''),
             htmlContent: $htmlContent,
@@ -75,5 +89,14 @@ final class BuildPostSeoAnalysisInputAction
             imageAltTexts: array_values((array)($imageStats['image_alt_texts'] ?? [])),
             internalLinkAnchorTexts: array_values((array)($linkStats['internal_link_anchor_texts'] ?? [])),
         );
+    }
+
+    protected function resolveMainContent(Post $post): string
+    {
+        if (isset($post->body) && is_string($post->body)) {
+            return $post->body;
+        }
+
+        return (string)($post->content ?? '');
     }
 }

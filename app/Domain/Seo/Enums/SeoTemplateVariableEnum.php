@@ -8,6 +8,7 @@ enum SeoTemplateVariableEnum: string
     case SEPARATOR = 'separator';
     case POST_TITLE = 'post_title';
     case PAGE_TITLE = 'page_title';
+    case PROJECT_TITLE = 'project_title';
 
     public function token(): string
     {
@@ -21,6 +22,7 @@ enum SeoTemplateVariableEnum: string
             self::SEPARATOR => 'جداکننده',
             self::POST_TITLE => 'عنوان نوشته',
             self::PAGE_TITLE => 'عنوان برگه',
+            self::PROJECT_TITLE => 'عنوان پروژه',
         };
     }
 
@@ -31,6 +33,7 @@ enum SeoTemplateVariableEnum: string
             self::SEPARATOR => 'جداکننده عنوان سئو',
             self::POST_TITLE => 'عنوان نوشته',
             self::PAGE_TITLE => 'عنوان برگه',
+            self::PROJECT_TITLE => 'عنوان پروژه',
         };
     }
 
@@ -47,6 +50,12 @@ enum SeoTemplateVariableEnum: string
                 self::SITE_TITLE,
                 self::SEPARATOR,
                 self::PAGE_TITLE,
+            ], true),
+
+            'project' => in_array($this, [
+                self::SITE_TITLE,
+                self::SEPARATOR,
+                self::PROJECT_TITLE,
             ], true),
 
             default => in_array($this, [

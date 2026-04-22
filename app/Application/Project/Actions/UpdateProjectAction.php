@@ -2,6 +2,9 @@
 
 namespace App\Application\Project\Actions;
 
+use App\Application\Seo\Actions\Analysis\BuildProjectSeoAnalysisInputAction;
+use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
+use App\Application\Seo\Actions\SyncSeoMetaAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelTagsAction;
@@ -18,6 +21,8 @@ class UpdateProjectAction
         protected SyncProjectRoadmapItemsAction $syncProjectRoadmapItemsAction,
         protected SyncProjectChangelogsAction   $syncProjectChangelogsAction,
         protected AssignSlugAction              $assignSlugAction,
+        protected SyncSeoMetaAction             $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
     )
     {
     }
@@ -57,6 +62,9 @@ class UpdateProjectAction
             $this->syncProjectFeaturesAction->execute($project, $data['features'] ?? []);
             $this->syncProjectRoadmapItemsAction->execute($project, $data['roadmap_items'] ?? []);
             $this->syncProjectChangelogsAction->execute($project, $data['changelogs'] ?? []);
+
+            $this->syncSeoMetaAction->execute($project, $data['seo'] ?? []);
+            $this->storeSeoAnalysisAction->execute($project, app(BuildProjectSeoAnalysisInputAction::class));
 
             return $project;
         });

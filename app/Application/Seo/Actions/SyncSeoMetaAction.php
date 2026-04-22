@@ -1,19 +1,32 @@
 <?php
 
-namespace App\Application\Content\Actions;
+namespace App\Application\Seo\Actions;
 
-use App\Domain\Content\Models\Post;
+use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 
-class SyncPostSeoAction
+final class SyncSeoMetaAction
 {
     /**
-     * @param Post $post
+     * @param Model $seoable
      * @param array<string, mixed> $data
-     * @return void
      */
-    public function execute(Post $post, array $data): void
+    public function execute(Model $seoable, array $data): void
     {
-        $post->seoMeta()->updateOrCreate([], [
+        if (!method_exists($seoable, 'seoMeta')) {
+            throw new RuntimeException('The given model does not support seoMeta relation.');
+        }
+
+        $seoable->seoMeta()->updateOrCreate([], $this->buildPayload($data));
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    protected function buildPayload(array $data): array
+    {
+        return [
             'focus_keyword' => $data['focus_keyword'] ?? null,
             'title' => $data['title'] ?? null,
             'description' => $data['description'] ?? null,
@@ -30,6 +43,6 @@ class SyncPostSeoAction
 
             'schema_type' => $data['schema_type'] ?? null,
             'schema_settings' => $data['schema_settings'] ?? null,
-        ]);
+        ];
     }
 }

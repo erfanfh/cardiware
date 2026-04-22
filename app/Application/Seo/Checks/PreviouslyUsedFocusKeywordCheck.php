@@ -2,7 +2,7 @@
 
 namespace App\Application\Seo\Checks;
 
-use App\Application\Seo\Actions\Analysis\CountOtherPostsUsingFocusKeywordAction;
+use App\Application\Seo\Actions\Analysis\CountOtherSeoablesUsingFocusKeywordAction;
 use App\Application\Seo\DTOs\SeoAnalysisInputDTO;
 use App\Application\Seo\DTOs\SeoCheckResultDTO;
 use App\Domain\Seo\Enums\SeoCheckStatusEnum;
@@ -10,7 +10,7 @@ use App\Domain\Seo\Enums\SeoCheckStatusEnum;
 final class PreviouslyUsedFocusKeywordCheck extends AbstractSeoCheck
 {
     public function __construct(
-        protected CountOtherPostsUsingFocusKeywordAction $countOtherPostsUsingFocusKeywordAction,
+        protected CountOtherSeoablesUsingFocusKeywordAction $countOtherSeoablesUsingFocusKeywordAction,
     )
     {
     }
@@ -38,9 +38,19 @@ final class PreviouslyUsedFocusKeywordCheck extends AbstractSeoCheck
             );
         }
 
-        $usageCount = $this->countOtherPostsUsingFocusKeywordAction->execute(
-            focusKeyword: $keyword,
-            exceptPostId: $input->postId,
+        if (blank($input->seoableType)) {
+            return $this->makeResult(
+                title: 'تعداد دفعات استفاده از کلمه کلیدی',
+                description: 'نوع محتوای قابل بررسی برای کلیدواژه مشخص نیست.',
+                status: SeoCheckStatusEnum::IMPROVEMENT,
+                priority: 71,
+            );
+        }
+
+        $usageCount = $this->countOtherSeoablesUsingFocusKeywordAction->execute(
+            $input->seoableType,
+            $keyword,
+            $input->seoableId,
         );
 
         if ($usageCount === 0) {
@@ -58,7 +68,7 @@ final class PreviouslyUsedFocusKeywordCheck extends AbstractSeoCheck
         if ($usageCount === 1) {
             return $this->makeResult(
                 title: 'تعداد دفعات استفاده از کلمه کلیدی',
-                description: 'این کلمه کلیدی قبلاً در یک نوشته دیگر هم استفاده شده است. بهتر است احتمال رقابت داخلی را بررسی کنید.',
+                description: 'این کلمه کلیدی قبلاً در یک محتوای دیگر هم استفاده شده است. بهتر است احتمال رقابت داخلی را بررسی کنید.',
                 status: SeoCheckStatusEnum::IMPROVEMENT,
                 meta: [
                     'usage_count' => $usageCount,
@@ -69,7 +79,7 @@ final class PreviouslyUsedFocusKeywordCheck extends AbstractSeoCheck
 
         return $this->makeResult(
             title: 'تعداد دفعات استفاده از کلمه کلیدی',
-            description: "این کلمه کلیدی قبلاً در {$usageCount} نوشته دیگر هم استفاده شده است و ممکن است باعث رقابت داخلی شود.",
+            description: "این کلمه کلیدی قبلاً در {$usageCount} محتوای دیگر هم استفاده شده است و ممکن است باعث رقابت داخلی شود.",
             status: SeoCheckStatusEnum::PROBLEM,
             meta: [
                 'usage_count' => $usageCount,

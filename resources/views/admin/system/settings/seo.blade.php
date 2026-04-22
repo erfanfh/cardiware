@@ -12,6 +12,7 @@
                     'home' => 'صفحه اصلی',
                     'post' => 'صفحه نوشته',
                     'page' => 'صفحه برگه',
+                    'project' => 'صفحه پروژه',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
@@ -33,6 +34,10 @@
 
                 <x-admin.tabs.panel name="page">
                     @include('admin.system.settings.partials.seo.page')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="project">
+                    @include('admin.system.settings.partials.seo.project')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>

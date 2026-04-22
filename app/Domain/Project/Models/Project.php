@@ -5,6 +5,7 @@ namespace App\Domain\Project\Models;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Scopes\ActiveProjectScope;
+use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasTaxonomyTerms, HasExcerpt, SoftDeletes;
+    use HasTaxonomyTerms, HasExcerpt, HasSeoMeta, SoftDeletes;
 
     protected $fillable = [
         'title',

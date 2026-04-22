@@ -1,10 +1,15 @@
 @php
+    use App\Application\Seo\Support\SeoTemplateVariableRegistry;
     use App\Domain\Project\Enums\ProjectStatusEnum;
+
     $isEdit = isset($project) && $project;
+
     $statuses = [];
     foreach (ProjectStatusEnum::cases() as $status){
         $statuses[$status->value] = $status->label();
     }
+
+    $projectSeoVariables = app(SeoTemplateVariableRegistry::class)->forContext('project');
 @endphp
 
 <x-admin.page columns="2">
@@ -168,6 +173,13 @@
                 placeholder="یک خلاصه کوتاه از پروژه ..."
                 value="{{ old('excerpt', $project->excerpt ?? '') }}"/>
         </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="سئو"
+        storageKey="seo-section"
+    >
+        @include('admin.projects.projects.partials.seo-box')
     </x-admin.metabox>
 
     <x-admin.metabox title="ویژگی‌ها">

@@ -2,16 +2,21 @@
 
 namespace App\Application\Seo\Actions\Analysis;
 
-use App\Domain\Content\Models\Post;
+use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 
-final class BuildPostSeoAnalysisViewDataAction
+final class BuildSeoAnalysisViewDataAction
 {
     /**
      * @return array<string, mixed>
      */
-    public function execute(Post $post): array
+    public function execute(Model $seoable): array
     {
-        $analysis = $post->seoAnalysis;
+        if (!method_exists($seoable, 'seoAnalysis')) {
+            throw new RuntimeException('The given model does not support seoAnalysis relation.');
+        }
+
+        $analysis = $seoable->seoAnalysis;
 
         if (!$analysis || !is_array($analysis->results)) {
             return [

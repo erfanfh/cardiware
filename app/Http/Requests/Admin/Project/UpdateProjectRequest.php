@@ -70,6 +70,8 @@ class UpdateProjectRequest extends FormRequest
             'ads.*.title' => ['nullable', 'string', 'max:255'],
             'ads.*.link' => ['nullable', 'string', 'max:255'],
             'ads.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'seo' => ['nullable', 'array'],
         ];
     }
 
