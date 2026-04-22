@@ -2,21 +2,19 @@
 
 namespace App\Application\Taxonomy\Actions;
 
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 
-final class GetAllCategoriesAction
+final class GetAllPostCategoriesAction
 {
     /**
-     * Get all category options for form components.
-     *
      * @return array<int, array{id:int,title:string,parent_id:int|null}>
      */
     public function execute(): array
     {
         return TaxonomyTerm::query()
             ->select(['id', 'title', 'parent_id'])
-            ->where('type', TaxonomyTermTypeEnum::CATEGORY)
+            ->forTaxonomy(TaxonomyKeyEnum::POST_CATEGORY)
             ->orderBy('title')
             ->get()
             ->map(fn(TaxonomyTerm $term) => [

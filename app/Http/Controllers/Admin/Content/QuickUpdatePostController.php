@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Content;
 
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
-use App\Application\Taxonomy\Actions\SyncModelTagsAction;
+use App\Application\Taxonomy\Actions\SyncModelPostTagsAction;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
 use App\Domain\Slug\Enums\SlugScopeEnum;
@@ -18,8 +18,8 @@ use Throwable;
 class QuickUpdatePostController extends Controller
 {
     public function __construct(
-        protected SyncModelTagsAction $syncModelTagsAction,
-        protected AssignSlugAction    $assignSlugAction
+        protected SyncModelPostTagsAction $syncModelPostTagsAction,
+        protected AssignSlugAction        $assignSlugAction
     )
     {
     }
@@ -50,7 +50,7 @@ class QuickUpdatePostController extends Controller
                 )
             );
 
-            $this->syncModelTagsAction->execute($post, [
+            $this->syncModelPostTagsAction->execute($post, [
                 'new' => $this->extractTagTitles($data['tags'] ?? null),
             ]);
         });

@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Admin\Taxonomy;
 
-use App\Application\Taxonomy\Actions\CreateCategoryAction;
-use App\Application\Taxonomy\Actions\HandleCategoryBulkAction;
-use App\Application\Taxonomy\Actions\UpdateCategoryAction;
+use App\Application\Taxonomy\Actions\CreateTaxonomyTermAction;
+use App\Application\Taxonomy\Actions\HandleTaxonomyBulkAction;
+use App\Application\Taxonomy\Actions\UpdateTaxonomyTermAction;
 use App\Application\Taxonomy\Support\CategoryBulkActions;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Livewire\Admin\Taxonomy\Base\ManageTaxonomyTerms;
 use Illuminate\Contracts\View\View;
@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
-class ManageCategories extends ManageTaxonomyTerms
+class ManagePostCategories extends ManageTaxonomyTerms
 {
     public string $parentId = '';
 
@@ -35,15 +35,17 @@ class ManageCategories extends ManageTaxonomyTerms
                         return;
                     }
 
-                    $parent = TaxonomyTerm::categories()->find($parentId);
+                    $parent = $this->taxonomyTermsBaseQuery()->find($parentId);
 
                     if (!$parent) {
                         $fail('دسته‌بندی والد معتبر نیست.');
+
                         return;
                     }
 
                     if ($this->editingId !== null && $parentId === $this->editingId) {
                         $fail('دسته‌بندی نمی‌تواند والد خودش باشد.');
+
                         return;
                     }
 
@@ -61,6 +63,11 @@ class ManageCategories extends ManageTaxonomyTerms
         ]);
     }
 
+    protected function taxonomyKey(): TaxonomyKeyEnum
+    {
+        return TaxonomyKeyEnum::POST_CATEGORY;
+    }
+
     /**
      * @throws Throwable
      */
@@ -68,19 +75,22 @@ class ManageCategories extends ManageTaxonomyTerms
     {
         Gate::authorize('category.manage');
 
-        $term = app(CreateCategoryAction::class)->execute($this->validatedCategoryData());
+        $term = app(CreateTaxonomyTermAction::class)->execute(
+            $this->taxonomyKey(),
+            $this->validatedCategoryData()
+        );
 
         $this->highlightedId = $term->id;
 
         $this->resetForm();
         $this->resetPage();
 
-        session()->flash('success', 'دسته‌بندی با موفقیت ایجاد شد.');
+        session()->flash('success', 'دسته‌بندی نوشته با موفقیت ایجاد شد.');
     }
 
     public function startEditing(int $id): void
     {
-        $term = TaxonomyTerm::categories()->findOrFail($id);
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($id);
 
         $this->editingId = $term->id;
         $this->title = $term->title;
@@ -99,15 +109,19 @@ class ManageCategories extends ManageTaxonomyTerms
 
         abort_unless($this->editingId, 404);
 
-        $term = TaxonomyTerm::categories()->findOrFail($this->editingId);
-        $term = app(UpdateCategoryAction::class)->execute($term, $this->validatedCategoryData());
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($this->editingId);
+        $term = app(UpdateTaxonomyTermAction::class)->execute(
+            $term,
+            $this->taxonomyKey(),
+            $this->validatedCategoryData()
+        );
 
         $updatedId = $term->id;
 
         $this->resetForm();
         $this->highlightedId = $updatedId;
 
-        session()->flash('success', 'دسته‌بندی با موفقیت به‌روزرسانی شد.');
+        session()->flash('success', 'دسته‌بندی نوشته با موفقیت به‌روزرسانی شد.');
     }
 
     public function deleteTerm(): void
@@ -116,7 +130,7 @@ class ManageCategories extends ManageTaxonomyTerms
 
         abort_unless($this->deletingId, 404);
 
-        $term = TaxonomyTerm::categories()->findOrFail($this->deletingId);
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($this->deletingId);
         $termId = $term->id;
 
         $term->delete();
@@ -128,7 +142,7 @@ class ManageCategories extends ManageTaxonomyTerms
         $this->selectedIds = array_values(array_diff($this->selectedIds, [$termId]));
         $this->deletingId = null;
 
-        session()->flash('success', 'دسته‌بندی با موفقیت حذف شد.');
+        session()->flash('success', 'دسته‌بندی نوشته با موفقیت حذف شد.');
 
         $this->dispatch('taxonomy-list-updating-stop');
     }
@@ -136,7 +150,7 @@ class ManageCategories extends ManageTaxonomyTerms
     protected function getTermsQuery(): Builder
     {
         return $this->taxonomyTermListing->handle(
-            TaxonomyTerm::categories()->with('parent')->withCount('posts'),
+            $this->taxonomyTermsBaseQuery()->with('parent')->withCount('posts'),
             [
                 'search' => $this->search,
             ]
@@ -147,7 +161,8 @@ class ManageCategories extends ManageTaxonomyTerms
     {
         Gate::authorize('category.manage');
 
-        return app(HandleCategoryBulkAction::class)->execute(
+        return app(HandleTaxonomyBulkAction::class)->execute(
+            taxonomy: $this->taxonomyKey(),
             action: $this->bulkAction,
             ids: $selectedIds,
         );
@@ -155,22 +170,10 @@ class ManageCategories extends ManageTaxonomyTerms
 
     protected function bulkActionSuccessMessage(mixed $result): string
     {
-        return app(HandleCategoryBulkAction::class)->successMessage($result);
-    }
-
-    protected function taxonomyLabel(): string
-    {
-        return 'دسته‌بندی';
-    }
-
-    protected function taxonomyLabelPlural(): string
-    {
-        return 'دسته‌بندی‌ها';
-    }
-
-    protected function taxonomyTypeValue(): string|int
-    {
-        return TaxonomyTermTypeEnum::CATEGORY->value;
+        return app(HandleTaxonomyBulkAction::class)->successMessage(
+            $this->taxonomyKey(),
+            $result
+        );
     }
 
     protected function resetExtraFormFields(): void
@@ -193,7 +196,7 @@ class ManageCategories extends ManageTaxonomyTerms
 
     protected function parentOptions(): array
     {
-        $categories = TaxonomyTerm::categories()
+        $categories = $this->taxonomyTermsBaseQuery()
             ->when(
                 $this->editingId !== null,
                 fn(Builder $query) => $query->whereKeyNot($this->editingId)
@@ -236,7 +239,7 @@ class ManageCategories extends ManageTaxonomyTerms
                 return true;
             }
 
-            $currentParentId = TaxonomyTerm::categories()
+            $currentParentId = $this->taxonomyTermsBaseQuery()
                 ->whereKey($currentParentId)
                 ->value('parent_id');
 
@@ -438,7 +441,7 @@ class ManageCategories extends ManageTaxonomyTerms
      */
     protected function categoryPathMap(): array
     {
-        $categories = TaxonomyTerm::categories()
+        $categories = $this->taxonomyTermsBaseQuery()
             ->orderBy('title')
             ->get([
                 'id',
@@ -521,11 +524,16 @@ class ManageCategories extends ManageTaxonomyTerms
         return str_repeat('— ', $depth) . $title;
     }
 
+    protected function taxonomyTermsBaseQuery(): Builder
+    {
+        return TaxonomyTerm::query()->forTaxonomy($this->taxonomyKey());
+    }
+
     public function render(): View
     {
         $terms = $this->paginatedItems();
 
-        return view('livewire.admin.taxonomy.manage-categories', [
+        return view('livewire.admin.taxonomy.manage-post-categories', [
             'items' => $terms,
             'taxonomyLabel' => $this->taxonomyLabel(),
             'taxonomyLabelPlural' => $this->taxonomyLabelPlural(),

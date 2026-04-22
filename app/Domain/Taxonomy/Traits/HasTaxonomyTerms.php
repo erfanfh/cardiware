@@ -2,21 +2,15 @@
 
 namespace App\Domain\Taxonomy\Traits;
 
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 trait HasTaxonomyTerms
 {
-    public function categories(): MorphToMany
-    {
-        return $this->taxonomyTerms()
-            ->withPivot('type')
-            ->wherePivot('type', TaxonomyTermTypeEnum::CATEGORY->value)
-            ->withTimestamps();
-    }
-
     /**
+     * Base taxonomy terms relation.
+     *
      * @return MorphToMany
      */
     public function taxonomyTerms(): MorphToMany
@@ -27,17 +21,18 @@ trait HasTaxonomyTerms
             'taxonomables',
             'taxonomable_id',
             'taxonomy_term_id'
-        );
+        )->withTimestamps();
     }
 
     /**
+     * Taxonomy terms relation filtered by taxonomy key.
+     *
+     * @param TaxonomyKeyEnum $taxonomy
      * @return MorphToMany
      */
-    public function tags(): MorphToMany
+    public function taxonomyTermsFor(TaxonomyKeyEnum $taxonomy): MorphToMany
     {
         return $this->taxonomyTerms()
-            ->withPivot('type')
-            ->wherePivot('type', TaxonomyTermTypeEnum::TAG->value)
-            ->withTimestamps();
+            ->where('taxonomy', $taxonomy->value);
     }
 }

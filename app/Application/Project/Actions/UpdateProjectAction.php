@@ -7,7 +7,7 @@ use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
-use App\Application\Taxonomy\Actions\SyncModelTagsAction;
+use App\Application\Taxonomy\Actions\SyncModelProjectTagsAction;
 use App\Domain\Project\Models\Project;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +16,7 @@ use Throwable;
 class UpdateProjectAction
 {
     public function __construct(
-        protected SyncModelTagsAction           $syncModelTagsAction,
+        protected SyncModelProjectTagsAction    $syncModelProjectTagsAction,
         protected SyncProjectFeaturesAction     $syncProjectFeaturesAction,
         protected SyncProjectRoadmapItemsAction $syncProjectRoadmapItemsAction,
         protected SyncProjectChangelogsAction   $syncProjectChangelogsAction,
@@ -58,7 +58,7 @@ class UpdateProjectAction
                 )
             );
 
-            $this->syncModelTagsAction->execute($project, $data['tags'] ?? []);
+            $this->syncModelProjectTagsAction->execute($project, $data['tags'] ?? []);
             $this->syncProjectFeaturesAction->execute($project, $data['features'] ?? []);
             $this->syncProjectRoadmapItemsAction->execute($project, $data['roadmap_items'] ?? []);
             $this->syncProjectChangelogsAction->execute($project, $data['changelogs'] ?? []);

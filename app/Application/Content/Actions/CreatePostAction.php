@@ -9,8 +9,8 @@ use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
-use App\Application\Taxonomy\Actions\SyncModelCategoriesAction;
-use App\Application\Taxonomy\Actions\SyncModelTagsAction;
+use App\Application\Taxonomy\Actions\SyncModelPostCategoriesAction;
+use App\Application\Taxonomy\Actions\SyncModelPostTagsAction;
 use App\Domain\Content\Models\Post;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
@@ -19,15 +19,15 @@ use Throwable;
 class CreatePostAction
 {
     public function __construct(
-        protected SyncModelTagsAction        $syncModelTagsAction,
-        protected SyncModelCategoriesAction  $syncModelCategoriesAction,
-        protected SyncPostFeaturesAction     $syncPostFeaturesAction,
-        protected AssignSlugAction           $assignSlugAction,
-        protected ContentSlugCacheService    $contentSlugCacheService,
-        protected SyncDownloadSectionsAction $syncDownloadSectionsAction,
-        protected SyncPostImageGalleryAction $syncPostImageGalleryAction,
-        protected SyncSeoMetaAction          $syncSeoMetaAction,
-        protected StoreSeoAnalysisAction     $storeSeoAnalysisAction,
+        protected SyncModelPostTagsAction       $syncModelPostTagsAction,
+        protected SyncModelPostCategoriesAction $syncModelPostCategoriesAction,
+        protected SyncPostFeaturesAction        $syncPostFeaturesAction,
+        protected AssignSlugAction              $assignSlugAction,
+        protected ContentSlugCacheService       $contentSlugCacheService,
+        protected SyncDownloadSectionsAction    $syncDownloadSectionsAction,
+        protected SyncPostImageGalleryAction    $syncPostImageGalleryAction,
+        protected SyncSeoMetaAction             $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
     )
     {
     }
@@ -65,8 +65,8 @@ class CreatePostAction
                 )
             );
 
-            $this->syncModelTagsAction->execute($post, $data['tags'] ?? []);
-            $this->syncModelCategoriesAction->execute($post, $data['category_ids'] ?? []);
+            $this->syncModelPostTagsAction->execute($post, $data['tags'] ?? []);
+            $this->syncModelPostCategoriesAction->execute($post, $data['category_ids'] ?? []);
             $this->syncPostFeaturesAction->execute($post, $data);
             $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
             $this->syncPostImageGalleryAction->execute($post, $data['image_gallery'] ?? []);

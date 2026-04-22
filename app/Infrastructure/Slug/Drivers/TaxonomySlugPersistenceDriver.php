@@ -18,6 +18,9 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 
     /**
      * Determine whether this driver supports the given scope.
+     *
+     * @param SlugScopeEnum $scope
+     * @return bool
      */
     public function supports(SlugScopeEnum $scope): bool
     {
@@ -26,6 +29,9 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 
     /**
      * Get the current slug value from the model.
+     *
+     * @param Model $model
+     * @return string|null
      */
     public function getCurrentSlug(Model $model): ?string
     {
@@ -37,6 +43,9 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
     /**
      * Persist the final slug on the taxonomy model and register route key history.
      *
+     * @param Model $model
+     * @param SlugScopeEnum $scope
+     * @param string $finalSlug
      * @return array{
      *     final_slug: string,
      *     previous_slug: ?string,
@@ -57,7 +66,7 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
             ];
         }
 
-        $type = SlugScopeEnum::extractTaxonomyType($scope);
+        $taxonomy = SlugScopeEnum::extractTaxonomyEnum($scope);
         $routeKey = $this->routeKeyBuilder->build($model, $finalSlug);
 
         $model->forceFill([
@@ -76,7 +85,7 @@ class TaxonomySlugPersistenceDriver implements SlugPersistenceDriver
 
         TaxonomyTermSlug::query()->updateOrCreate(
             [
-                'type' => $type,
+                'taxonomy' => $taxonomy,
                 'route_key' => $routeKey,
             ],
             [

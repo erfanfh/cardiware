@@ -3,5 +3,5 @@
 @section('title', 'مدیریت دسته‌بندی‌ها')
 
 @section('content')
-    @livewire('admin.taxonomy.manage-categories')
+    @livewire('admin.taxonomy.manage-post-categories')
 @endsection

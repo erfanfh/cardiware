@@ -10,6 +10,9 @@ class TaxonomySlugChecker implements SlugScopeChecker
 {
     /**
      * Determine whether this checker supports the given scope.
+     *
+     * @param SlugScopeEnum $scope
+     * @return bool
      */
     public function supports(SlugScopeEnum $scope): bool
     {
@@ -19,9 +22,11 @@ class TaxonomySlugChecker implements SlugScopeChecker
     /**
      * Determine whether the given route key exists in the taxonomy scope.
      *
-     * Note:
-     * For hierarchical taxonomies, the provided slug value should be the final
-     * route key that is stored in taxonomy_term_slugs.route_key.
+     * @param SlugScopeEnum $scope
+     * @param string $slug
+     * @param int|null $ignoreId
+     * @param string|null $ignoreType
+     * @return bool
      */
     public function exists(
         SlugScopeEnum $scope,
@@ -30,10 +35,10 @@ class TaxonomySlugChecker implements SlugScopeChecker
         ?string       $ignoreType = null,
     ): bool
     {
-        $type = SlugScopeEnum::extractTaxonomyType($scope);
+        $taxonomy = SlugScopeEnum::extractTaxonomyEnum($scope);
 
         return TaxonomyTermSlug::query()
-            ->where('type', $type)
+            ->where('taxonomy', $taxonomy)
             ->where('route_key', $slug)
             ->when(
                 $ignoreId !== null,

@@ -14,14 +14,14 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\System\Interfaces\PageViewableInterface;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
-use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface, CommentableContract
@@ -87,20 +87,6 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     public function picture(): BelongsTo
     {
         return $this->belongsTo(MediaFile::class);
-    }
-
-    /**
-     * @param array|string|null $tags
-     * @return array
-     */
-    public function resolveTagIds(array|string|null $tags): array
-    {
-        return collect($tags)->map(function ($tagName) {
-            return TaxonomyTerm::firstOrCreate(
-                ['title' => $tagName, 'type' => TaxonomyTermTypeEnum::TAG->value],
-//                ['slug' => (new GenerateUniqueSlugAction())->execute($tagName, TaxonomyTermTypeEnum::TAG)]
-            )->id;
-        })->all();
     }
 
     /**
@@ -223,5 +209,25 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     public function requiresCommentRating(): bool
     {
         return true;
+    }
+
+    /**
+     * Post categories relation.
+     *
+     * @return MorphToMany
+     */
+    public function categories(): MorphToMany
+    {
+        return $this->taxonomyTermsFor(TaxonomyKeyEnum::POST_CATEGORY);
+    }
+
+    /**
+     * Post tags relation.
+     *
+     * @return MorphToMany
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->taxonomyTermsFor(TaxonomyKeyEnum::POST_TAG);
     }
 }

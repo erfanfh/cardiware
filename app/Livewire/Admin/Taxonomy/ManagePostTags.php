@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Admin\Taxonomy;
 
-use App\Application\Taxonomy\Actions\CreateTagAction;
-use App\Application\Taxonomy\Actions\HandleTagBulkAction;
-use App\Application\Taxonomy\Actions\UpdateTagAction;
+use App\Application\Taxonomy\Actions\CreateTaxonomyTermAction;
+use App\Application\Taxonomy\Actions\HandleTaxonomyBulkAction;
+use App\Application\Taxonomy\Actions\UpdateTaxonomyTermAction;
 use App\Application\Taxonomy\Support\TagBulkActions;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Livewire\Admin\Taxonomy\Base\ManageTaxonomyTerms;
 use Illuminate\Contracts\View\View;
@@ -14,28 +14,36 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
-class ManageTags extends ManageTaxonomyTerms
+class ManagePostTags extends ManageTaxonomyTerms
 {
+    protected function taxonomyKey(): TaxonomyKeyEnum
+    {
+        return TaxonomyKeyEnum::POST_TAG;
+    }
+
     /**
      * @throws Throwable
      */
-    public function createTerm(): void
+    protected function createTerm(): void
     {
         Gate::authorize('tag.manage');
 
-        $term = app(CreateTagAction::class)->execute($this->validate());
+        $term = app(CreateTaxonomyTermAction::class)->execute(
+            $this->taxonomyKey(),
+            $this->validate()
+        );
 
         $this->highlightedId = $term->id;
 
         $this->resetForm();
         $this->resetPage();
 
-        session()->flash('success', 'برچسب با موفقیت ایجاد شد.');
+        session()->flash('success', 'برچسب نوشته با موفقیت ایجاد شد.');
     }
 
     public function startEditing(int $id): void
     {
-        $term = TaxonomyTerm::tags()->findOrFail($id);
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($id);
 
         $this->editingId = $term->id;
         $this->title = $term->title;
@@ -50,30 +58,34 @@ class ManageTags extends ManageTaxonomyTerms
     /**
      * @throws Throwable
      */
-    public function updateTerm(): void
+    protected function updateTerm(): void
     {
         Gate::authorize('tag.manage');
 
         abort_unless($this->editingId, 404);
 
-        $term = TaxonomyTerm::tags()->findOrFail($this->editingId);
-        $term = app(UpdateTagAction::class)->execute($term, $this->validate());
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($this->editingId);
+        $term = app(UpdateTaxonomyTermAction::class)->execute(
+            $term,
+            $this->taxonomyKey(),
+            $this->validate()
+        );
 
         $updatedId = $term->id;
 
         $this->resetForm();
         $this->highlightedId = $updatedId;
 
-        session()->flash('success', 'برچسب با موفقیت به‌روزرسانی شد.');
+        session()->flash('success', 'برچسب نوشته با موفقیت به‌روزرسانی شد.');
     }
 
-    public function deleteTerm(): void
+    protected function deleteTerm(): void
     {
         Gate::authorize('tag.manage');
 
         abort_unless($this->deletingId, 404);
 
-        $term = TaxonomyTerm::tags()->findOrFail($this->deletingId);
+        $term = $this->taxonomyTermsBaseQuery()->findOrFail($this->deletingId);
         $termId = $term->id;
 
         $term->delete();
@@ -85,7 +97,7 @@ class ManageTags extends ManageTaxonomyTerms
         $this->selectedIds = array_values(array_diff($this->selectedIds, [$termId]));
         $this->deletingId = null;
 
-        session()->flash('success', 'برچسب با موفقیت حذف شد.');
+        session()->flash('success', 'برچسب نوشته با موفقیت حذف شد.');
 
         $this->dispatch('taxonomy-list-updating-stop');
     }
@@ -93,7 +105,7 @@ class ManageTags extends ManageTaxonomyTerms
     protected function getTermsQuery(): Builder
     {
         return $this->taxonomyTermListing->handle(
-            TaxonomyTerm::tags()->withCount('posts'),
+            $this->taxonomyTermsBaseQuery()->withCount('posts'),
             $this->listingFilters()
         );
     }
@@ -102,7 +114,8 @@ class ManageTags extends ManageTaxonomyTerms
     {
         Gate::authorize('tag.manage');
 
-        return app(HandleTagBulkAction::class)->execute(
+        return app(HandleTaxonomyBulkAction::class)->execute(
+            taxonomy: $this->taxonomyKey(),
             action: $this->bulkAction,
             ids: $selectedIds,
         );
@@ -110,22 +123,15 @@ class ManageTags extends ManageTaxonomyTerms
 
     protected function bulkActionSuccessMessage(mixed $result): string
     {
-        return app(HandleTagBulkAction::class)->successMessage($result);
+        return app(HandleTaxonomyBulkAction::class)->successMessage(
+            $this->taxonomyKey(),
+            $result
+        );
     }
 
-    protected function taxonomyLabel(): string
+    protected function taxonomyTermsBaseQuery(): Builder
     {
-        return 'برچسب';
-    }
-
-    protected function taxonomyLabelPlural(): string
-    {
-        return 'برچسب‌ها';
-    }
-
-    protected function taxonomyTypeValue(): string|int
-    {
-        return TaxonomyTermTypeEnum::TAG->value;
+        return TaxonomyTerm::query()->forTaxonomy($this->taxonomyKey());
     }
 
     public function render(): View
@@ -134,7 +140,7 @@ class ManageTags extends ManageTaxonomyTerms
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate($this->taxonomyTermListing->perPage());
 
-        return view('livewire.admin.taxonomy.manage-tags', [
+        return view('livewire.admin.taxonomy.manage-post-tags', [
             'items' => $terms,
             'taxonomyLabel' => $this->taxonomyLabel(),
             'taxonomyLabelPlural' => $this->taxonomyLabelPlural(),

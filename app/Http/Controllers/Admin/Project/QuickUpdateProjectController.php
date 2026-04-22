@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Project;
 
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
-use App\Application\Taxonomy\Actions\SyncModelTagsAction;
+use App\Application\Taxonomy\Actions\SyncModelProjectTagsAction;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Domain\Slug\Enums\SlugScopeEnum;
@@ -18,8 +18,8 @@ use Throwable;
 class QuickUpdateProjectController extends Controller
 {
     public function __construct(
-        protected SyncModelTagsAction $syncModelTagsAction,
-        protected AssignSlugAction    $assignSlugAction
+        protected SyncModelProjectTagsAction $syncModelProjectTagsAction,
+        protected AssignSlugAction           $assignSlugAction
     )
     {
     }
@@ -51,7 +51,7 @@ class QuickUpdateProjectController extends Controller
                 )
             );
 
-            $this->syncModelTagsAction->execute($project, [
+            $this->syncModelProjectTagsAction->execute($project, [
                 'new' => $this->extractTagTitles($data['tags'] ?? null),
             ]);
         });

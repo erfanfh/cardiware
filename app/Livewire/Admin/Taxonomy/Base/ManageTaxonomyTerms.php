@@ -3,6 +3,8 @@
 namespace App\Livewire\Admin\Taxonomy\Base;
 
 use App\Application\Taxonomy\Listings\TaxonomyTermListing;
+use App\Domain\Taxonomy\Enums\TaxonomyAdminTemplateEnum;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -193,12 +195,13 @@ abstract class ManageTaxonomyTerms extends Component
             ->values()
             ->all();
 
+        $selectedBulkAction = $this->bulkAction;
         $result = $this->handleBulkAction($selectedIds);
 
         if (
             $this->editingId !== null &&
             in_array($this->editingId, $selectedIds, true) &&
-            $this->bulkAction === 'delete'
+            $selectedBulkAction === 'delete'
         ) {
             $this->resetForm();
         }
@@ -314,6 +317,23 @@ abstract class ManageTaxonomyTerms extends Component
             ->all();
     }
 
+    protected function taxonomyLabel(): string
+    {
+        return $this->taxonomyKey()->label();
+    }
+
+    protected function taxonomyLabelPlural(): string
+    {
+        return $this->taxonomyKey()->pluralLabel();
+    }
+
+    protected function taxonomyAdminTemplate(): TaxonomyAdminTemplateEnum
+    {
+        return $this->taxonomyKey()->adminTemplate();
+    }
+
+    abstract protected function taxonomyKey(): TaxonomyKeyEnum;
+
     abstract protected function getTermsQuery(): Builder;
 
     abstract protected function createTerm(): void;
@@ -329,8 +349,4 @@ abstract class ManageTaxonomyTerms extends Component
     abstract protected function handleBulkAction(array $selectedIds): mixed;
 
     abstract protected function bulkActionSuccessMessage(mixed $result): string;
-
-    abstract protected function taxonomyLabel(): string;
-
-    abstract protected function taxonomyLabelPlural(): string;
 }

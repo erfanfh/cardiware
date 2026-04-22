@@ -3,7 +3,8 @@
 namespace App\Domain\Taxonomy\Models;
 
 use App\Domain\Content\Models\Post;
-use App\Domain\Taxonomy\Enums\TaxonomyTermTypeEnum;
+use App\Domain\Portfolio\Models\Project;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,7 @@ class TaxonomyTerm extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'type',
+        'taxonomy',
         'title',
         'slug',
         'path',
@@ -25,7 +26,7 @@ class TaxonomyTerm extends Model
     ];
 
     protected $casts = [
-        'type' => TaxonomyTermTypeEnum::class,
+        'taxonomy' => TaxonomyKeyEnum::class,
     ];
 
     /**
@@ -39,6 +40,8 @@ class TaxonomyTerm extends Model
     }
 
     /**
+     * Parent term relation.
+     *
      * @return BelongsTo
      */
     public function parent(): BelongsTo
@@ -47,6 +50,8 @@ class TaxonomyTerm extends Model
     }
 
     /**
+     * Children relation.
+     *
      * @return HasMany
      */
     public function children(): HasMany
@@ -55,6 +60,8 @@ class TaxonomyTerm extends Model
     }
 
     /**
+     * Slug history relation.
+     *
      * @return HasMany
      */
     public function slugs(): HasMany
@@ -63,30 +70,85 @@ class TaxonomyTerm extends Model
     }
 
     /**
+     * Scope terms by taxonomy key.
+     *
      * @param Builder $query
+     * @param TaxonomyKeyEnum $taxonomy
      * @return Builder
      */
-    public function scopeCategories(Builder $query): Builder
+    public function scopeForTaxonomy(Builder $query, TaxonomyKeyEnum $taxonomy): Builder
     {
-        return $query->where('type', TaxonomyTermTypeEnum::CATEGORY);
+        return $query->where('taxonomy', $taxonomy->value);
     }
 
     /**
+     * Scope post categories.
+     *
      * @param Builder $query
      * @return Builder
      */
-    public function scopeTags(Builder $query): Builder
+    public function scopePostCategories(Builder $query): Builder
     {
-        return $query->where('type', TaxonomyTermTypeEnum::TAG);
+        return $query->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY->value);
     }
 
     /**
+     * Scope post tags.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopePostTags(Builder $query): Builder
+    {
+        return $query->where('taxonomy', TaxonomyKeyEnum::POST_TAG->value);
+    }
+
+    /**
+     * Scope project tags.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeProjectTags(Builder $query): Builder
+    {
+        return $query->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG->value);
+    }
+
+    /**
+     * Whether the taxonomy of this term is hierarchical.
+     *
+     * @return bool
+     */
+    public function isHierarchical(): bool
+    {
+        return $this->taxonomy->isHierarchical();
+    }
+
+    /**
+     * Posts related to this taxonomy term.
+     *
      * @return MorphToMany
      */
     public function posts(): MorphToMany
     {
         return $this->morphedByMany(
             Post::class,
+            'taxonomable',
+            'taxonomables',
+            'taxonomy_term_id',
+            'taxonomable_id'
+        );
+    }
+
+    /**
+     * Projects related to this taxonomy term.
+     *
+     * @return MorphToMany
+     */
+    public function projects(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Project::class,
             'taxonomable',
             'taxonomables',
             'taxonomy_term_id',

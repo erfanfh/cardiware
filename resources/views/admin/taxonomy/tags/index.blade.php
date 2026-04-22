@@ -3,5 +3,5 @@
 @section('title', 'مدیریت برچسب‌ها')
 
 @section('content')
-    @livewire('admin.taxonomy.manage-tags')
+    @livewire('admin.taxonomy.manage-post-tags')
 @endsection

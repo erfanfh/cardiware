@@ -6,11 +6,13 @@ use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Scopes\ActiveProjectScope;
 use App\Domain\Seo\Traits\HasSeoMeta;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
@@ -93,5 +95,15 @@ class Project extends Model
     public function slugs(): HasMany
     {
         return $this->hasMany(ProjectSlug::class);
+    }
+
+    /**
+     * Project tags relation.
+     *
+     * @return MorphToMany
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->taxonomyTermsFor(TaxonomyKeyEnum::PROJECT_TAG);
     }
 }

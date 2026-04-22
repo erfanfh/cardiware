@@ -2,21 +2,23 @@
 
 namespace App\Application\Taxonomy\Actions;
 
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use Throwable;
 
-class HandleTagBulkAction
+class HandleTaxonomyBulkAction
 {
     /**
+     * @param TaxonomyKeyEnum $taxonomy
      * @param string $action
      * @param array<int|string> $ids
      * @return BulkActionResultDTO
      * @throws Throwable
      */
-    public function execute(string $action, array $ids): BulkActionResultDTO
+    public function execute(TaxonomyKeyEnum $taxonomy, string $action, array $ids): BulkActionResultDTO
     {
         $ids = $this->normalizeIds($ids);
 
@@ -27,9 +29,9 @@ class HandleTagBulkAction
             );
         }
 
-        return DB::transaction(function () use ($action, $ids) {
+        return DB::transaction(function () use ($taxonomy, $action, $ids) {
             $affectedCount = match ($action) {
-                'delete' => $this->delete($ids),
+                'delete' => $this->delete($taxonomy, $ids),
                 default => throw new InvalidArgumentException("Unsupported bulk action [{$action}]"),
             };
 
@@ -58,9 +60,10 @@ class HandleTagBulkAction
      * @param list<int> $ids
      * @return int
      */
-    protected function delete(array $ids): int
+    protected function delete(TaxonomyKeyEnum $taxonomy, array $ids): int
     {
-        $terms = TaxonomyTerm::tags()
+        $terms = TaxonomyTerm::query()
+            ->forTaxonomy($taxonomy)
             ->whereIn('id', $ids)
             ->get();
 
@@ -73,10 +76,10 @@ class HandleTagBulkAction
         return $count;
     }
 
-    public function successMessage(BulkActionResultDTO $result): string
+    public function successMessage(TaxonomyKeyEnum $taxonomy, BulkActionResultDTO $result): string
     {
         return match ($result->action) {
-            'delete' => "{$result->affectedCount} برچسب با موفقیت حذف شد.",
+            'delete' => "{$result->affectedCount} {$taxonomy->label()} با موفقیت حذف شد.",
             default => "{$result->affectedCount} مورد با موفقیت به‌روزرسانی شد.",
         };
     }
