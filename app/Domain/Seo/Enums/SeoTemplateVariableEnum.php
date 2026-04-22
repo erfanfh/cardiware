@@ -10,6 +10,7 @@ enum SeoTemplateVariableEnum: string
     case PAGE_TITLE = 'page_title';
     case PROJECT_TITLE = 'project_title';
     case TAXONOMY_TITLE = 'taxonomy_title';
+    case AUTHOR_NAME = 'author_name';
 
     public function token(): string
     {
@@ -25,6 +26,7 @@ enum SeoTemplateVariableEnum: string
             self::PAGE_TITLE => 'عنوان برگه',
             self::PROJECT_TITLE => 'عنوان پروژه',
             self::TAXONOMY_TITLE => 'عنوان',
+            self::AUTHOR_NAME => 'نام نویسنده',
         };
     }
 
@@ -37,6 +39,7 @@ enum SeoTemplateVariableEnum: string
             self::PAGE_TITLE => 'عنوان برگه',
             self::PROJECT_TITLE => 'عنوان پروژه',
             self::TAXONOMY_TITLE => 'عنوان',
+            self::AUTHOR_NAME => 'نام نویسنده',
         };
     }
 

@@ -10,6 +10,9 @@
         }elseif(request()->routeIs('posts.tags') and isset($tag)){
             $boxTitle = $tag->title;
             $boxSubtitle = "آخرین نوشته های برچسب $tag->title";
+        }elseif(request()->routeIs('author') and isset($author)){
+            $boxTitle = $author->display_name;
+            $boxSubtitle = "آخرین نوشته های $author->display_name";
         }
     @endphp
 
