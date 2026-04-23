@@ -9,10 +9,7 @@
             })
         "
     >
-        <form
-            wire:submit.prevent="submit"
-            class="space-y-4"
-        >
+        <form wire:submit.prevent="submit" class="space-y-4">
             <input type="hidden" wire:model="parentId">
             <input type="hidden" wire:model="ratingPercent">
 
@@ -95,10 +92,7 @@
                 ></textarea>
             </div>
 
-            <div
-                x-data="{ hoverRating: 0 }"
-                class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-            >
+            <div x-data="{ hoverRating: 0 }" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div class="flex items-center" @mouseleave="hoverRating = 0">
                     @for($n = 1; $n <= 5; $n++)
                         <button

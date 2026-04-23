@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Comment extends Model
 {
@@ -234,5 +235,43 @@ class Comment extends Model
         ])->filter(fn($value) => filled($value))->join(' '));
 
         return $fullName !== '' ? $fullName : 'کاربر';
+    }
+
+    public function scopeVisibleForFrontend(Builder $query, array $guestPendingCommentIds = []): Builder
+    {
+        $authUserId = Auth::id();
+
+        return $query->where(function (Builder $builder) use ($authUserId, $guestPendingCommentIds) {
+            $builder->approved();
+
+            if ($authUserId) {
+                $builder->orWhere(function (Builder $pendingQuery) use ($authUserId) {
+                    $pendingQuery
+                        ->where('status', CommentStatusEnum::PENDING)
+                        ->where('user_id', $authUserId);
+                });
+            }
+
+            if (!empty($guestPendingCommentIds)) {
+                $builder->orWhere(function (Builder $pendingQuery) use ($guestPendingCommentIds) {
+                    $pendingQuery
+                        ->where('status', CommentStatusEnum::PENDING)
+                        ->whereIn('id', $guestPendingCommentIds);
+                });
+            }
+        });
+    }
+
+    public function isPendingForCurrentViewer(array $guestPendingCommentIds = []): bool
+    {
+        if ($this->isApproved()) {
+            return false;
+        }
+
+        if (Auth::check() && (int)$this->user_id === (int)Auth::id()) {
+            return true;
+        }
+
+        return in_array((int)$this->id, $guestPendingCommentIds, true);
     }
 }

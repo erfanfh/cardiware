@@ -4,6 +4,7 @@ namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
+use App\Application\Discussion\Support\PendingCommentSessionStore;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
@@ -75,7 +76,10 @@ class CommentItem extends Component
         $this->repliesLoading = false;
     }
 
-    public function submitReply(CreateCommentAction $createCommentAction): void
+    public function submitReply(
+        CreateCommentAction        $createCommentAction,
+        PendingCommentSessionStore $pendingCommentSessionStore
+    ): void
     {
         $this->replyGeneralError = null;
         $this->replySuccessMessage = null;
@@ -119,6 +123,8 @@ class CommentItem extends Component
                     message: 'پاسخ شما با موفقیت ثبت شد.',
                 );
             } else {
+                $pendingCommentSessionStore->add((int)$reply->id);
+
                 $this->resetReplyState();
                 $this->replySuccessMessage = 'پاسخ شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
             }
@@ -162,6 +168,12 @@ class CommentItem extends Component
     }
 
     #[Computed]
+    public function guestPendingCommentIds(): array
+    {
+        return app(PendingCommentSessionStore::class)->all();
+    }
+
+    #[Computed]
     public function commentable(): Model
     {
         $class = Relation::getMorphedModel($this->commentableType) ?? $this->commentableType;
@@ -173,7 +185,7 @@ class CommentItem extends Component
     public function comment(): Comment
     {
         return Comment::query()
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
@@ -188,12 +200,17 @@ class CommentItem extends Component
 
         return Comment::query()
             ->forCommentable($this->commentable)
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->where('parent_id', $this->commentId)
             ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->oldestFirst()
             ->get();
+    }
+
+    public function isPendingVisibleToCurrentViewer(): bool
+    {
+        return $this->comment->isPendingForCurrentViewer($this->guestPendingCommentIds);
     }
 
     public function avatarText(): string

@@ -4,6 +4,7 @@ namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
+use App\Application\Discussion\Support\PendingCommentSessionStore;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -43,11 +44,6 @@ class SendCommentForm extends Component
         $this->commentableId = (int)$commentable->getKey();
         $this->parentId = $parentId;
         $this->startedAt = now()->timestamp;
-
-        if (Auth::check()) {
-            $this->authorName = '';
-            $this->authorEmail = '';
-        }
     }
 
     public function updated(string $property): void
@@ -71,7 +67,10 @@ class SendCommentForm extends Component
         $this->generalError = null;
     }
 
-    public function submit(CreateCommentAction $createCommentAction): void
+    public function submit(
+        CreateCommentAction        $createCommentAction,
+        PendingCommentSessionStore $pendingCommentSessionStore
+    ): void
     {
         $this->generalError = null;
         $this->successMessage = null;
@@ -101,6 +100,7 @@ class SendCommentForm extends Component
             if ($comment->isApproved()) {
                 $this->successMessage = 'دیدگاه شما با موفقیت ثبت شد.';
             } else {
+                $pendingCommentSessionStore->add((int)$comment->id);
                 $this->successMessage = 'دیدگاه شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
             }
 

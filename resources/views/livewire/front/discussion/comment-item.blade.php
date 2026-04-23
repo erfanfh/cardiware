@@ -25,7 +25,9 @@
         }
     }"
     @class([
-        'group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5',
+        'group rounded-2xl border p-4 transition sm:p-5',
+        'border-slate-200 bg-white hover:border-slate-300' => ! $this->isPendingVisibleToCurrentViewer(),
+        'border-amber-200 bg-amber-50/40' => $this->isPendingVisibleToCurrentViewer(),
         'mt-3' => $level > 0,
     ])
 >
@@ -92,6 +94,15 @@
                     </button>
                 </div>
             </div>
+
+            @if($this->isPendingVisibleToCurrentViewer())
+                <div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    <div class="font-extrabold">دیدگاه شما در انتظار تأیید است.</div>
+                    <p class="mt-1 text-xs leading-6 text-amber-700">
+                        این دیدگاه فقط برای شما نمایش داده می‌شود و پس از بررسی منتشر خواهد شد.
+                    </p>
+                </div>
+            @endif
 
             {{-- Content --}}
             <div class="tinymce-content mt-3 text-sm leading-8 text-slate-700">

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Discussion;
 
+use App\Application\Discussion\Support\PendingCommentSessionStore;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,7 +31,7 @@ class CommentsList extends Component
     public function mount(Model $commentable): void
     {
         $this->commentable = $commentable;
-        $this->commentableId = $commentable->id;
+        $this->commentableId = (int)$commentable->getKey();
         $this->commentableType = $commentable::class;
     }
 
@@ -56,7 +57,12 @@ class CommentsList extends Component
         }
 
         $this->resetPage();
-        unset($this->comments, $this->totalComments);
+    }
+
+    #[Computed]
+    public function guestPendingCommentIds(): array
+    {
+        return app(PendingCommentSessionStore::class)->all();
     }
 
     #[Computed]
@@ -74,7 +80,7 @@ class CommentsList extends Component
     {
         return Comment::query()
             ->forCommentable($this->commentable)
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->root()
             ->with('user.avatar')
             ->withCount('approvedReplies')
