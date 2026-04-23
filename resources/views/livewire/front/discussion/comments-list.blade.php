@@ -193,7 +193,7 @@
             <div class="relative mt-6">
                 <div
                     wire:loading.flex
-                    wire:target="gotoPage,previousPage,nextPage"
+                    wire:target="gotoPage,previousPage,nextPage,sort"
                     class="absolute inset-0 z-20 items-start justify-center rounded-[1.5rem] bg-white/70 pt-10 backdrop-blur-[1px]"
                 >
                     <div
@@ -211,7 +211,7 @@
                 <div
                     class="space-y-4 sm:space-y-5"
                     wire:loading.class="pointer-events-none opacity-60"
-                    wire:target="gotoPage,previousPage,nextPage"
+                    wire:target="gotoPage,previousPage,nextPage,sort"
                 >
                     @if($this->comments->count() === 0)
                         <div
