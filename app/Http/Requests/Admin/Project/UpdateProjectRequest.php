@@ -19,9 +19,9 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 'alpha_dash',
@@ -34,7 +34,7 @@ class UpdateProjectRequest extends FormRequest
             'current_version' => ['nullable', 'string', 'max:255'],
             'creator_name' => ['nullable', 'string', 'max:255'],
             'platform' => ['nullable', 'string', 'max:255'],
-            'body' => ['required', 'string'],
+            'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
 
             'tags' => ['nullable', 'array'],
