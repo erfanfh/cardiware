@@ -28,7 +28,7 @@ class CommentsList extends Component
 
     public ?int $pendingScrollToCommentId = null;
 
-    protected string $paginationTheme = 'tailwind';
+    protected string $paginationTheme = 'custom-pagination';
 
     public function mount(Model $commentable): void
     {
@@ -91,7 +91,6 @@ class CommentsList extends Component
         return Comment::query()
             ->forCommentable($this->commentable)
             ->approved()
-            ->root()
             ->count();
     }
 
