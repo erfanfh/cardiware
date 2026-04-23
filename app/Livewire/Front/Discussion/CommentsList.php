@@ -56,6 +56,7 @@ class CommentsList extends Component
         }
 
         $this->resetPage();
+        unset($this->comments, $this->totalComments);
     }
 
     #[Computed]

@@ -104,9 +104,7 @@ class CommentItem extends Component
                 $this->repliesLoaded = true;
                 $this->repliesOpen = true;
 
-                $this->replyContent = '';
-                $this->replyAuthorName = '';
-                $this->replyAuthorEmail = '';
+                $this->resetReplyState();
                 $this->replyFormOpen = false;
 
                 $this->dispatch(
@@ -121,10 +119,7 @@ class CommentItem extends Component
                     message: 'پاسخ شما با موفقیت ثبت شد.',
                 );
             } else {
-                $this->replyContent = '';
-                $this->replyAuthorName = '';
-                $this->replyAuthorEmail = '';
-
+                $this->resetReplyState();
                 $this->replySuccessMessage = 'پاسخ شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
             }
 
