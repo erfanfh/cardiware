@@ -208,6 +208,39 @@ class CommentItem extends Component
             ->get();
     }
 
+    #[Computed]
+    public function approvedRepliesCount(): int
+    {
+        return (int)($this->comment->approved_replies_count ?? 0);
+    }
+
+    #[Computed]
+    public function pendingVisibleRepliesCount(): int
+    {
+        return Comment::query()
+            ->forCommentable($this->commentable)
+            ->where('parent_id', $this->commentId)
+            ->where('status', 'pending')
+            ->when(
+                Auth::check(),
+                fn($query) => $query->where('user_id', Auth::id()),
+                fn($query) => $query->whereIn('id', $this->guestPendingCommentIds)
+            )
+            ->count();
+    }
+
+    #[Computed]
+    public function visibleRepliesCount(): int
+    {
+        return $this->approvedRepliesCount + $this->pendingVisibleRepliesCount;
+    }
+
+    #[Computed]
+    public function hasVisibleReplies(): bool
+    {
+        return $this->visibleRepliesCount > 0;
+    }
+
     public function isPendingVisibleToCurrentViewer(): bool
     {
         return $this->comment->isPendingForCurrentViewer($this->guestPendingCommentIds);

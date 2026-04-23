@@ -110,7 +110,7 @@
             </div>
 
             {{-- Thread CTA / Replies --}}
-            @if($this->comment->approved_replies_count > 0)
+            @if($this->hasVisibleReplies)
                 @if(! $repliesOpen)
                     <div class="mt-4">
                         <div
@@ -118,15 +118,23 @@
                             <div class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
-                                {{ $this->comment->approved_replies_count }}
-                            </span>
+                                        <span
+                                            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
+                                            {{ $this->visibleRepliesCount }}
+                                        </span>
 
                                         <div class="text-xs font-extrabold text-slate-800">
-                                            {{ $this->comment->approved_replies_count === 1
-                                                ? 'یک پاسخ برای این دیدگاه ثبت شده است'
-                                                : $this->comment->approved_replies_count . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                            @if($this->approvedRepliesCount > 0 && $this->pendingVisibleRepliesCount > 0)
+                                                {{ $this->visibleRepliesCount }} پاسخ برای این دیدگاه قابل مشاهده است
+                                            @elseif($this->approvedRepliesCount > 0)
+                                                {{ $this->approvedRepliesCount === 1
+                                                    ? 'یک پاسخ برای این دیدگاه ثبت شده است'
+                                                    : $this->approvedRepliesCount . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                            @else
+                                                {{ $this->pendingVisibleRepliesCount === 1
+                                                    ? 'پاسخ شما برای این دیدگاه در انتظار تأیید است'
+                                                    : $this->pendingVisibleRepliesCount . ' پاسخ شما برای این دیدگاه در انتظار تأیید است' }}
+                                            @endif
                                         </div>
                                     </div>
 
@@ -176,8 +184,8 @@
 
                                         <span
                                             class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[11px] text-slate-600">
-                                {{ $this->comment->approved_replies_count }}
-                            </span>
+                                            {{ $this->visibleRepliesCount }}
+                                        </span>
                                     </button>
                                 </div>
                             </div>
