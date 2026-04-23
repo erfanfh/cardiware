@@ -1,4 +1,5 @@
 <article
+    id="discussion-comment-{{ $this->comment->id }}"
     x-data="{
         replyOpen: @entangle('replyFormOpen').live,
         openReplyForm() {
@@ -300,6 +301,20 @@
                         </button>
                     </div>
 
+                    @if($replyGeneralError)
+                        <div
+                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                            {{ $replyGeneralError }}
+                        </div>
+                    @endif
+
+                    @if($replySuccessMessage)
+                        <div
+                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                            {{ $replySuccessMessage }}
+                        </div>
+                    @endif
+
                     @guest
                         <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div>
@@ -331,20 +346,6 @@
                             </div>
                         </div>
                     @endguest
-
-                    @if($replyGeneralError)
-                        <div
-                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
-                            {{ $replyGeneralError }}
-                        </div>
-                    @endif
-
-                    @if($replySuccessMessage)
-                        <div
-                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
-                            {{ $replySuccessMessage }}
-                        </div>
-                    @endif
 
                     <textarea
                         x-ref="replyTextarea"

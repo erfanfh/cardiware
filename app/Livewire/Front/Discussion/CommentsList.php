@@ -26,6 +26,8 @@ class CommentsList extends Component
 
     public string $sort = 'new';
 
+    public ?int $pendingScrollToCommentId = null;
+
     protected string $paginationTheme = 'tailwind';
 
     public function mount(Model $commentable): void
@@ -46,7 +48,11 @@ class CommentsList extends Component
     }
 
     #[On('discussion-comment-created')]
-    public function handleCommentCreated(string $commentableType, int $commentableId): void
+    public function handleCommentCreated(
+        string $commentableType,
+        int    $commentableId,
+        ?int   $commentId = null
+    ): void
     {
         if ($commentableType !== $this->commentable->getMorphClass()) {
             return;
@@ -56,7 +62,21 @@ class CommentsList extends Component
             return;
         }
 
+        $this->pendingScrollToCommentId = $commentId;
+
         $this->resetPage();
+
+        if ($this->isOpen && $commentId) {
+            $this->dispatch(
+                'discussion-comment-list-refresh-requested',
+                commentId: $commentId,
+            );
+        }
+    }
+
+    public function finishIncomingCommentTransition(): void
+    {
+        $this->pendingScrollToCommentId = null;
     }
 
     #[Computed]

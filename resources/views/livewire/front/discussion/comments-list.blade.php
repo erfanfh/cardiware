@@ -1,4 +1,48 @@
-<div>
+<div
+    x-data="{
+        scrollToComment(commentId) {
+            const run = () => {
+                const target = document.getElementById('discussion-comment-' + commentId);
+
+                if (! target) {
+                    return false;
+                }
+
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+
+                target.classList.add('ring-2', 'ring-brand-200');
+
+                setTimeout(() => {
+                    target.classList.remove('ring-2', 'ring-brand-200');
+                }, 1800);
+
+                return true;
+            };
+
+            let attempts = 0;
+
+            const timer = setInterval(() => {
+                attempts++;
+
+                if (run() || attempts >= 12) {
+                    clearInterval(timer);
+
+                    $wire.finishIncomingCommentTransition();
+                }
+            }, 120);
+        }
+    }"
+    x-on:discussion-comment-list-refresh-requested.window="
+        const commentId = $event.detail.commentId;
+
+        $nextTick(() => {
+            scrollToComment(commentId);
+        });
+    "
+>
     <x-front.cart>
         <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex items-center gap-3">

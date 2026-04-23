@@ -108,6 +108,7 @@ class SendCommentForm extends Component
                 'discussion-comment-created',
                 commentableType: $this->commentableType,
                 commentableId: $this->commentableId,
+                commentId: (int)$comment->id,
             );
 
             $this->dispatch(

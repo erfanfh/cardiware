@@ -133,26 +133,39 @@ class CommentItem extends Component
                 'discussion-comment-created',
                 commentableType: $this->commentableType,
                 commentableId: $this->commentableId,
+                commentId: (int)$reply->id,
             );
         } catch (ValidationException $exception) {
             $errors = $exception->validator->errors();
 
-            if ($errors->has('comments')) {
-                $this->replyGeneralError = $errors->first('comments');
-                return;
+            $this->resetErrorBag();
+            $this->replyGeneralError = null;
+
+            $fieldMap = [
+                'replyContent' => ['replyContent', 'content'],
+                'replyAuthorName' => ['replyAuthorName', 'author_name'],
+                'replyAuthorEmail' => ['replyAuthorEmail', 'author_email'],
+            ];
+
+            foreach ($fieldMap as $targetField => $possibleKeys) {
+                foreach ($possibleKeys as $key) {
+                    if ($errors->has($key)) {
+                        $this->addError($targetField, $errors->first($key));
+                        break;
+                    }
+                }
             }
 
-            if ($errors->has('commentable')) {
-                $this->replyGeneralError = $errors->first('commentable');
-                return;
+            foreach (['comments', 'commentable', 'parent_id'] as $generalKey) {
+                if ($errors->has($generalKey)) {
+                    $this->replyGeneralError = $errors->first($generalKey);
+                    break;
+                }
             }
 
-            if ($errors->has('parent_id')) {
-                $this->replyGeneralError = $errors->first('parent_id');
-                return;
-            }
+            $this->replyFormOpen = true;
 
-            throw $exception;
+            return;
         } catch (\Throwable $throwable) {
             report($throwable);
 
