@@ -92,22 +92,37 @@
                 ></textarea>
             </div>
 
-            <div x-data="{ hoverRating: 0 }" class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div
+                x-data="{
+                    hoverRating: 0,
+                    selectedRating: @entangle('ratingPercent'),
+                    get currentStars() {
+                        return this.selectedRating ? Math.floor(this.selectedRating / 20) : 0;
+                    },
+                    setRating(value) {
+                        const nextValue = this.currentStars === value ? null : value * 20;
+
+                        this.selectedRating = nextValue;
+                        $wire.generalError = null;
+                    }
+                }"
+                class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+            >
                 <div class="flex items-center" @mouseleave="hoverRating = 0">
                     @for($n = 1; $n <= 5; $n++)
                         <button
                             type="button"
                             @mouseenter="hoverRating = {{ $n }}"
-                            wire:click="setRating({{ $n }})"
+                            @click="setRating({{ $n }})"
                             wire:loading.attr="disabled"
-                            wire:target="setRating,submit"
+                            wire:target="submit"
                             class="cursor-pointer rounded-xl p-1 transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
                             aria-label="امتیاز {{ $n }}"
                         >
                             <svg
                                 viewBox="0 0 20 20"
                                 class="h-6 w-6 transition"
-                                :class="(hoverRating ? hoverRating : {{ $this->currentRatingStars }}) >= {{ $n }} ? 'text-amber-400' : 'text-slate-200'"
+                                :class="(hoverRating ? hoverRating : currentStars) >= {{ $n }} ? 'text-amber-400' : 'text-slate-200'"
                             >
                                 <path
                                     fill="currentColor"
@@ -117,9 +132,8 @@
                         </button>
                     @endfor
 
-                    <span class="mr-2 text-xs font-bold text-slate-500">
-                        {{ $this->currentRatingStars ? $this->currentRatingStars . ' از 5' : 'بدون امتیاز' }}
-                    </span>
+                    <span class="mr-2 text-xs font-bold text-slate-500"
+                          x-text="currentStars ? `${currentStars} از 5` : 'بدون امتیاز'"></span>
                 </div>
 
                 <button

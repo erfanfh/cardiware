@@ -57,16 +57,6 @@ class SendCommentForm extends Component
         }
     }
 
-    public function setRating(int $value): void
-    {
-        $currentStars = $this->ratingPercent ? (int)($this->ratingPercent / 20) : 0;
-
-        $this->ratingPercent = $currentStars === $value ? null : $value * 20;
-
-        $this->resetValidation('ratingPercent');
-        $this->generalError = null;
-    }
-
     public function submit(
         CreateCommentAction        $createCommentAction,
         PendingCommentSessionStore $pendingCommentSessionStore
