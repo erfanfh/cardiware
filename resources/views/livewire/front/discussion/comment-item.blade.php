@@ -1,4 +1,5 @@
 <article
+    id="discussion-comment-{{ $this->comment->id }}"
     x-data="{
         replyOpen: @entangle('replyFormOpen').live,
         openReplyForm() {
@@ -25,7 +26,9 @@
         }
     }"
     @class([
-        'group rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-slate-300 sm:p-5',
+        'group rounded-2xl border p-4 transition sm:p-5',
+        'border-slate-200 bg-white hover:border-slate-300' => ! $this->isPendingVisibleToCurrentViewer(),
+        'border-amber-200 bg-amber-50/40' => $this->isPendingVisibleToCurrentViewer(),
         'mt-3' => $level > 0,
     ])
 >
@@ -93,13 +96,22 @@
                 </div>
             </div>
 
+            @if($this->isPendingVisibleToCurrentViewer())
+                <div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                    <div class="font-extrabold">دیدگاه شما در انتظار تأیید است.</div>
+                    <p class="mt-1 text-xs leading-6 text-amber-700">
+                        این دیدگاه فقط برای شما نمایش داده می‌شود و پس از بررسی منتشر خواهد شد.
+                    </p>
+                </div>
+            @endif
+
             {{-- Content --}}
             <div class="tinymce-content mt-3 text-sm leading-8 text-slate-700">
                 {!! $this->comment->safe_content !!}
             </div>
 
             {{-- Thread CTA / Replies --}}
-            @if($this->comment->approved_replies_count > 0)
+            @if($this->hasVisibleReplies)
                 @if(! $repliesOpen)
                     <div class="mt-4">
                         <div
@@ -107,15 +119,23 @@
                             <div class="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div class="min-w-0">
                                     <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
-                                {{ $this->comment->approved_replies_count }}
-                            </span>
+                                        <span
+                                            class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-white px-2 text-[11px] font-extrabold text-slate-700">
+                                            {{ $this->visibleRepliesCount }}
+                                        </span>
 
                                         <div class="text-xs font-extrabold text-slate-800">
-                                            {{ $this->comment->approved_replies_count === 1
-                                                ? 'یک پاسخ برای این دیدگاه ثبت شده است'
-                                                : $this->comment->approved_replies_count . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                            @if($this->approvedRepliesCount > 0 && $this->pendingVisibleRepliesCount > 0)
+                                                {{ $this->visibleRepliesCount }} پاسخ برای این دیدگاه قابل مشاهده است
+                                            @elseif($this->approvedRepliesCount > 0)
+                                                {{ $this->approvedRepliesCount === 1
+                                                    ? 'یک پاسخ برای این دیدگاه ثبت شده است'
+                                                    : $this->approvedRepliesCount . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                            @else
+                                                {{ $this->pendingVisibleRepliesCount === 1
+                                                    ? 'پاسخ شما برای این دیدگاه در انتظار تأیید است'
+                                                    : $this->pendingVisibleRepliesCount . ' پاسخ شما برای این دیدگاه در انتظار تأیید است' }}
+                                            @endif
                                         </div>
                                     </div>
 
@@ -165,8 +185,8 @@
 
                                         <span
                                             class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[11px] text-slate-600">
-                                {{ $this->comment->approved_replies_count }}
-                            </span>
+                                            {{ $this->visibleRepliesCount }}
+                                        </span>
                                     </button>
                                 </div>
                             </div>
@@ -281,6 +301,20 @@
                         </button>
                     </div>
 
+                    @if($replyGeneralError)
+                        <div
+                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                            {{ $replyGeneralError }}
+                        </div>
+                    @endif
+
+                    @if($replySuccessMessage)
+                        <div
+                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                            {{ $replySuccessMessage }}
+                        </div>
+                    @endif
+
                     @guest
                         <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <div>
@@ -312,20 +346,6 @@
                             </div>
                         </div>
                     @endguest
-
-                    @if($replyGeneralError)
-                        <div
-                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
-                            {{ $replyGeneralError }}
-                        </div>
-                    @endif
-
-                    @if($replySuccessMessage)
-                        <div
-                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
-                            {{ $replySuccessMessage }}
-                        </div>
-                    @endif
 
                     <textarea
                         x-ref="replyTextarea"

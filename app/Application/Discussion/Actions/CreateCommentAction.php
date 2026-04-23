@@ -176,12 +176,15 @@ class CreateCommentAction
             $query->where('user_id', $data->userId);
         } else {
             $query->whereNull('user_id')
-                ->where('author_email', $data->authorEmail);
+                ->where(function ($query) use ($data) {
+                    $query->where('author_email', $data->authorEmail)
+                        ->orWhere('ip_address', $data->ipAddress);
+                });
         }
 
         if ($query->exists()) {
             throw ValidationException::withMessages([
-                'content' => 'لطفاً 60 ثانیه صبر کنید و دوباره تلاش کنید.',
+                'content' => 'در هر دقیقه امکان ثبت بیش از 1 دیدگاه وجود ندارد.',
             ]);
         }
     }

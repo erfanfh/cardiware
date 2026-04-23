@@ -1,5 +1,25 @@
-<div>
+<div
+    x-data="{
+        scrollToCommentsTop() {
+            this.$refs.commentsListTop?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        },
+        handlePaginationClick(event) {
+            const clickable = event.target.closest('button,a');
+
+            if (! clickable) {
+                return;
+            }
+
+            this.scrollToCommentsTop();
+        }
+    }"
+>
     <x-front.cart>
+        <div class="scroll-mt-40" x-ref="commentsListTop"></div>
+
         <div class="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div class="flex items-center gap-3">
                 <span
@@ -170,37 +190,63 @@
                 @endif
             </div>
         @else
-            <div class="mt-6 space-y-4 sm:space-y-5">
-                @if($this->comments->count() === 0)
+            <div class="relative mt-6">
+                <div
+                    wire:loading.flex
+                    wire:target="gotoPage,previousPage,nextPage,sort"
+                    class="absolute inset-0 z-20 items-start justify-center rounded-[1.5rem] bg-white/70 pt-10 backdrop-blur-[1px]"
+                >
                     <div
-                        class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                        class="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 shadow-sm">
+                        <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                    stroke-width="4"></circle>
+                            <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                  stroke-linecap="round"></path>
+                        </svg>
+                        در حال بارگذاری دیدگاه‌ها...
+                    </div>
+                </div>
+
+                <div
+                    class="space-y-4 sm:space-y-5"
+                    wire:loading.class="pointer-events-none opacity-60"
+                    wire:target="gotoPage,previousPage,nextPage,sort"
+                >
+                    @if($this->comments->count() === 0)
                         <div
-                            class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
-                            @include('icons.comment-add-01')
+                            class="rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8">
+                            <div
+                                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6">
+                                @include('icons.comment-add-01')
+                            </div>
+
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800">هنوز دیدگاهی ثبت نشده است</h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-500">
+                                اولین نفری باشید که دیدگاهش را درباره این محتوا ثبت می‌کند.
+                            </p>
                         </div>
+                    @endif
 
-                        <h3 class="mt-4 text-sm font-extrabold text-slate-800">هنوز دیدگاهی ثبت نشده است</h3>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            اولین نفری باشید که دیدگاهش را درباره این محتوا ثبت می‌کند.
-                        </p>
-                    </div>
-                @endif
+                    @foreach($this->comments as $comment)
+                        <livewire:front.discussion.comment-item
+                            :comment-id="$comment->id"
+                            :commentable-type="$this->commentableType"
+                            :commentable-id="$this->commentableId"
+                            :level="0"
+                            :key="'discussion-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort"
+                        />
+                    @endforeach
 
-                @foreach($this->comments as $comment)
-                    <livewire:front.discussion.comment-item
-                        :comment-id="$comment->id"
-                        :commentable-type="$this->commentableType"
-                        :commentable-id="$this->commentableId"
-                        :level="0"
-                        :key="'discussion-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort"
-                    />
-                @endforeach
-
-                @if($this->comments->hasPages())
-                    <div class="pt-2">
-                        {{ $this->comments->onEachSide(1)->links() }}
-                    </div>
-                @endif
+                    @if($this->comments->hasPages())
+                        <div
+                            class="pt-2"
+                            x-on:click.capture="handlePaginationClick($event)"
+                        >
+                            {{ $this->comments->onEachSide(1)->links(data: ['scrollTo' => false]) }}
+                        </div>
+                    @endif
+                </div>
             </div>
         @endif
     </x-front.cart>

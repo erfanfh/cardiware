@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Application\Seo\Resolvers\AuthorSeoResolver;
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
 use App\Application\Seo\Resolvers\PageSeoResolver;
 use App\Application\Seo\Resolvers\PostCategorySeoResolver;
@@ -28,6 +29,7 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(PageSeoResolver::class),
                 $app->make(PostTagSeoResolver::class),
                 $app->make(PostCategorySeoResolver::class),
+                $app->make(AuthorSeoResolver::class),
             ]);
         });
 

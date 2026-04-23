@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Discussion;
 
+use App\Application\Discussion\Support\PendingCommentSessionStore;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,12 +26,14 @@ class CommentsList extends Component
 
     public string $sort = 'new';
 
-    protected string $paginationTheme = 'tailwind';
+    public ?int $pendingScrollToCommentId = null;
+
+    protected string $paginationTheme = 'custom-pagination';
 
     public function mount(Model $commentable): void
     {
         $this->commentable = $commentable;
-        $this->commentableId = $commentable->id;
+        $this->commentableId = (int)$commentable->getKey();
         $this->commentableType = $commentable::class;
     }
 
@@ -45,7 +48,11 @@ class CommentsList extends Component
     }
 
     #[On('discussion-comment-created')]
-    public function handleCommentCreated(string $commentableType, int $commentableId): void
+    public function handleCommentCreated(
+        string $commentableType,
+        int    $commentableId,
+        ?int   $commentId = null
+    ): void
     {
         if ($commentableType !== $this->commentable->getMorphClass()) {
             return;
@@ -55,7 +62,27 @@ class CommentsList extends Component
             return;
         }
 
+        $this->pendingScrollToCommentId = $commentId;
+
         $this->resetPage();
+
+        if ($this->isOpen && $commentId) {
+            $this->dispatch(
+                'discussion-comment-list-refresh-requested',
+                commentId: $commentId,
+            );
+        }
+    }
+
+    public function finishIncomingCommentTransition(): void
+    {
+        $this->pendingScrollToCommentId = null;
+    }
+
+    #[Computed]
+    public function guestPendingCommentIds(): array
+    {
+        return app(PendingCommentSessionStore::class)->all();
     }
 
     #[Computed]
@@ -64,7 +91,6 @@ class CommentsList extends Component
         return Comment::query()
             ->forCommentable($this->commentable)
             ->approved()
-            ->root()
             ->count();
     }
 
@@ -73,7 +99,7 @@ class CommentsList extends Component
     {
         return Comment::query()
             ->forCommentable($this->commentable)
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->root()
             ->with('user.avatar')
             ->withCount('approvedReplies')

@@ -6,4 +6,5 @@ enum OgTypeEnum: string
 {
     case WEBSITE = 'website';
     case ARTICLE = 'article';
+    case PROFILE = 'profile';
 }

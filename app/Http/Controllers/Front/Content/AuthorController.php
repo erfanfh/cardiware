@@ -8,13 +8,12 @@ use Illuminate\View\View;
 
 class AuthorController
 {
-    public function __invoke(string $username): View
+    public function __invoke(User $user): View
     {
-        $author = User::where('username', $username)->firstOrFail();
-
+        $author = $user;
         $postsPerPage = get_setting('posts', 'posts_per_page') ?: 12;
         $posts = Post::where('author_id', $author->id)->latest()->paginate($postsPerPage);
 
-        return view('front.posts.list', compact('posts'));
+        return view('front.posts.list', compact('posts', 'author'));
     }
 }

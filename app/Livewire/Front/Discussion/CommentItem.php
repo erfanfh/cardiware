@@ -4,6 +4,7 @@ namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
+use App\Application\Discussion\Support\PendingCommentSessionStore;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
@@ -75,7 +76,10 @@ class CommentItem extends Component
         $this->repliesLoading = false;
     }
 
-    public function submitReply(CreateCommentAction $createCommentAction): void
+    public function submitReply(
+        CreateCommentAction        $createCommentAction,
+        PendingCommentSessionStore $pendingCommentSessionStore
+    ): void
     {
         $this->replyGeneralError = null;
         $this->replySuccessMessage = null;
@@ -104,9 +108,7 @@ class CommentItem extends Component
                 $this->repliesLoaded = true;
                 $this->repliesOpen = true;
 
-                $this->replyContent = '';
-                $this->replyAuthorName = '';
-                $this->replyAuthorEmail = '';
+                $this->resetReplyState();
                 $this->replyFormOpen = false;
 
                 $this->dispatch(
@@ -121,10 +123,9 @@ class CommentItem extends Component
                     message: 'پاسخ شما با موفقیت ثبت شد.',
                 );
             } else {
-                $this->replyContent = '';
-                $this->replyAuthorName = '';
-                $this->replyAuthorEmail = '';
+                $pendingCommentSessionStore->add((int)$reply->id);
 
+                $this->resetReplyState();
                 $this->replySuccessMessage = 'پاسخ شما ثبت شد و پس از بررسی نمایش داده می‌شود.';
             }
 
@@ -132,26 +133,39 @@ class CommentItem extends Component
                 'discussion-comment-created',
                 commentableType: $this->commentableType,
                 commentableId: $this->commentableId,
+                commentId: (int)$reply->id,
             );
         } catch (ValidationException $exception) {
             $errors = $exception->validator->errors();
 
-            if ($errors->has('comments')) {
-                $this->replyGeneralError = $errors->first('comments');
-                return;
+            $this->resetErrorBag();
+            $this->replyGeneralError = null;
+
+            $fieldMap = [
+                'replyContent' => ['replyContent', 'content'],
+                'replyAuthorName' => ['replyAuthorName', 'author_name'],
+                'replyAuthorEmail' => ['replyAuthorEmail', 'author_email'],
+            ];
+
+            foreach ($fieldMap as $targetField => $possibleKeys) {
+                foreach ($possibleKeys as $key) {
+                    if ($errors->has($key)) {
+                        $this->addError($targetField, $errors->first($key));
+                        break;
+                    }
+                }
             }
 
-            if ($errors->has('commentable')) {
-                $this->replyGeneralError = $errors->first('commentable');
-                return;
+            foreach (['comments', 'commentable', 'parent_id'] as $generalKey) {
+                if ($errors->has($generalKey)) {
+                    $this->replyGeneralError = $errors->first($generalKey);
+                    break;
+                }
             }
 
-            if ($errors->has('parent_id')) {
-                $this->replyGeneralError = $errors->first('parent_id');
-                return;
-            }
+            $this->replyFormOpen = true;
 
-            throw $exception;
+            return;
         } catch (\Throwable $throwable) {
             report($throwable);
 
@@ -167,6 +181,12 @@ class CommentItem extends Component
     }
 
     #[Computed]
+    public function guestPendingCommentIds(): array
+    {
+        return app(PendingCommentSessionStore::class)->all();
+    }
+
+    #[Computed]
     public function commentable(): Model
     {
         $class = Relation::getMorphedModel($this->commentableType) ?? $this->commentableType;
@@ -178,7 +198,7 @@ class CommentItem extends Component
     public function comment(): Comment
     {
         return Comment::query()
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
@@ -193,12 +213,50 @@ class CommentItem extends Component
 
         return Comment::query()
             ->forCommentable($this->commentable)
-            ->approved()
+            ->visibleForFrontend($this->guestPendingCommentIds)
             ->where('parent_id', $this->commentId)
             ->with(['user.avatar'])
             ->withCount('approvedReplies')
             ->oldestFirst()
             ->get();
+    }
+
+    #[Computed]
+    public function approvedRepliesCount(): int
+    {
+        return (int)($this->comment->approved_replies_count ?? 0);
+    }
+
+    #[Computed]
+    public function pendingVisibleRepliesCount(): int
+    {
+        return Comment::query()
+            ->forCommentable($this->commentable)
+            ->where('parent_id', $this->commentId)
+            ->where('status', 'pending')
+            ->when(
+                Auth::check(),
+                fn($query) => $query->where('user_id', Auth::id()),
+                fn($query) => $query->whereIn('id', $this->guestPendingCommentIds)
+            )
+            ->count();
+    }
+
+    #[Computed]
+    public function visibleRepliesCount(): int
+    {
+        return $this->approvedRepliesCount + $this->pendingVisibleRepliesCount;
+    }
+
+    #[Computed]
+    public function hasVisibleReplies(): bool
+    {
+        return $this->visibleRepliesCount > 0;
+    }
+
+    public function isPendingVisibleToCurrentViewer(): bool
+    {
+        return $this->comment->isPendingForCurrentViewer($this->guestPendingCommentIds);
     }
 
     public function avatarText(): string
