@@ -1,9 +1,17 @@
 <x-admin.list.table>
     <x-admin.list.thead>
         <tr>
+            <x-admin.list.th width="44px" align="center">
+                <x-admin.list.bulk-checkbox
+                        :x-bind:checked="'isAllSelected(' . \Illuminate\Support\Js::from($commentIds) . ')'"
+                        :x-on:change="'toggleAll(' . \Illuminate\Support\Js::from($commentIds) . ')'"
+                />
+            </x-admin.list.th>
+
             <x-admin.list.th>نویسنده</x-admin.list.th>
             <x-admin.list.th>متن دیدگاه</x-admin.list.th>
             <x-admin.list.th>محتوای مرتبط</x-admin.list.th>
+
             <x-admin.list.th
                     width="130px"
                     label="تاریخ ارسال"
@@ -20,9 +28,9 @@
             @foreach($comments as $comment)
                 @php
                     $rowClass = match ($comment->status?->value) {
-                        'approved' => '!bg-slate-50/80',
-                        'pending' => '!bg-amber-50/70',
-                        'rejected' => '!bg-rose-50/70',
+                        'approved' => '!border-b-slate-200',
+                        'pending' => '!bg-amber-50 !border-b-amber-200/70',
+                        'rejected' => '!bg-rose-50 !border-b-rose-200/70',
                         default => '',
                     };
 
@@ -41,7 +49,21 @@
                     $commentableType = $commentable ? class_basename($commentable) : '---';
                 @endphp
 
-                <x-admin.list.tr :class="$rowClass">
+                <x-admin.list.tr
+                        :class="$rowClass"
+                        ::class="{
+                        'bg-slate-100/90 ring-1 ring-inset ring-slate-200': isSelected({{ $comment->id }})
+                    }"
+                >
+                    <x-admin.list.td align="center">
+                        <x-admin.list.bulk-checkbox
+                                name="ids[]"
+                                :value="$comment->id"
+                                x-bind:checked="isSelected({{ $comment->id }})"
+                                x-on:change="toggleSelection({{ $comment->id }})"
+                        />
+                    </x-admin.list.td>
+
                     <x-admin.list.td>
                         <div class="min-w-[220px] space-y-2">
                             <div class="text-sm font-bold text-slate-800">

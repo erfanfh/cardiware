@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Admin\Discussion;
 
 use App\Domain\Discussion\Models\Comment;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Support\BulkActions\CommentBulkActions;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class CommentController extends Controller
+class CommentListController extends Controller
 {
-    public function index(): View
+    public function __invoke(): View
     {
         Gate::authorize('comment.list');
 
@@ -20,6 +21,8 @@ class CommentController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.discussion.comments.index', compact('comments'));
+        $bulkActionOptions = CommentBulkActions::set()->toOptions();
+
+        return view('admin.discussion.comments.index', compact('comments', 'bulkActionOptions'));
     }
 }
