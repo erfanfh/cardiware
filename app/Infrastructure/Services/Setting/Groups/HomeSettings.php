@@ -13,6 +13,7 @@ class HomeSettings extends BaseSettings
     protected string $group = 'home';
 
     protected array $allowedKeys = [
+        'active_tab',
         'hero_slider',
         'download_products_title',
         'download_products_all_url',
