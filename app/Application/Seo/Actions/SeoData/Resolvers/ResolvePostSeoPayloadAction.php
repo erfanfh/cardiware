@@ -99,7 +99,7 @@ final class ResolvePostSeoPayloadAction
 
             authorName: $author?->display_name,
             authorUrl: $author
-                ? rtrim(route('author', ['username' => $author->username]), '/') . '/'
+                ? rtrim(route('author', $author), '/') . '/'
                 : null,
             authorIdentifier: $author?->id
                 ? (string)$author->id
