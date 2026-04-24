@@ -31,8 +31,8 @@ class QuickUpdatePageController extends Controller
     public function __invoke(QuickUpdatePageRequest $request, Page $page): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
-        $data['title'] = $data['title'] ?? 'بدون عنوان';
-        $data['slug'] = $data['slug'] ?? 'untitled-page';
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
 
         DB::transaction(function () use ($page, $data): void {
             $page->update([
