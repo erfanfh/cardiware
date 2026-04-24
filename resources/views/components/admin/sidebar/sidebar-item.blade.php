@@ -40,12 +40,18 @@
     $isItemActive = function (array $sidebarItem) use (&$isItemActive): bool {
         $itemRoute = $sidebarItem['route'] ?? null;
         $itemChildren = $sidebarItem['children'] ?? [];
+        $itemParams = $sidebarItem['routeParameters'][0] ?? null;
         $itemHasChildren = is_array($itemChildren) && count($itemChildren) > 0;
 
         $activePatterns = (array)($sidebarItem['active'] ?? ($itemRoute ? [$itemRoute, $itemRoute . '.*'] : []));
 
         foreach ($activePatterns as $pattern) {
             if (request()->routeIs($pattern)) {
+                if (!empty($itemParams)) {
+                    $expectedRoute = route($itemRoute, $itemParams);
+                    $currentRoute = url()->current();
+                    return $currentRoute === $expectedRoute;
+                }
                 return true;
             }
         }
@@ -94,7 +100,7 @@
                     hover:text-gray-700
                 "
                 >
-                    <span class="shrink-0">
+                    <span class="shrink-0 [&_svg]:w-4 [&_svg]:h-4">
                         @if($iconView)
                             @includeIf($iconView)
                         @else
@@ -123,7 +129,7 @@
                 "
                     @click="open = !open"
                 >
-                    <span class="shrink-0">
+                    <span class="shrink-0 [&_svg]:w-4 [&_svg]:h-4">
                         @if($iconView)
                             @includeIf($iconView)
                         @else

@@ -232,12 +232,126 @@ class PageLayoutSeeder extends Seeder
                     ],
                 ],
             ],
+            [
+                'key' => 'post-content',
+                'title' => 'چیدمان صفحه نوشته',
+                'rows' => [
+                    [
+                        'key' => 'post_content',
+                        'layout_type' => 'split',
+                        'sort_order' => 1,
+                        'areas' => [
+                            [
+                                'key' => 'post_content_main',
+                                'title' => 'بدنه اصلی نوشته',
+                                'description' => 'محتوای اصلی شامل عنوان و متن',
+                                'width' => 12,
+                                'sort_order' => 1,
+                                'elements' => [
+                                    [
+                                        'key' => 'content',
+                                        'type' => 'content',
+                                        'title' => 'متن بدنه',
+                                        'description' => 'نمایش محتوای اصلی نوشته',
+                                        'is_active' => true,
+                                        'sort_order' => 1,
+                                    ],
+                                    [
+                                        'key' => 'image_gallery',
+                                        'type' => 'image_gallery',
+                                        'title' => 'گالری تصاویر',
+                                        'description' => 'نمایش گالری تصاویر',
+                                        'is_active' => true,
+                                        'sort_order' => 2,
+                                    ],
+                                    [
+                                        'key' => 'related_contents',
+                                        'type' => 'related_contents',
+                                        'title' => 'نوشته‌های مرتبط',
+                                        'description' => 'نمایش نوشته‌های مرتبط با این نوشته',
+                                        'is_active' => true,
+                                        'sort_order' => 3,
+                                    ],
+                                    [
+                                        'key' => 'comment_form',
+                                        'type' => 'comment_form',
+                                        'title' => 'فرم ارسال دیدگاه',
+                                        'description' => 'فرم ثبت نظر کاربر',
+                                        'is_active' => true,
+                                        'sort_order' => 4,
+                                    ],
+                                    [
+                                        'key' => 'content_comments_list',
+                                        'type' => 'content_comments_list',
+                                        'title' => 'لیست دیدگاه‌های این نوشته',
+                                        'description' => 'نمایش نظرات ارسالی روی این نوشته خاص',
+                                        'is_active' => true,
+                                        'sort_order' => 5,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'sidebar',
+                'title' => 'چیدمان سایدبار',
+                'rows' => [
+                    [
+                        'key' => 'sidebar_main',
+                        'layout_type' => 'single',
+                        'sort_order' => 1,
+                        'areas' => [
+                            [
+                                'key' => 'sidebar_area',
+                                'title' => 'بخش سایدبار',
+                                'description' => 'ناحیه نمایش ابزارک‌های سایدبار',
+                                'width' => 12,
+                                'sort_order' => 1,
+                                'elements' => [
+                                    [
+                                        'key' => 'tools',
+                                        'type' => 'tools',
+                                        'title' => 'ابزارهای کاربردی',
+                                        'description' => 'ابزارهای پیشنهادی',
+                                        'is_active' => true,
+                                        'sort_order' => 1,
+                                    ],
+                                    [
+                                        'key' => 'categories',
+                                        'type' => 'categories',
+                                        'title' => 'دسته‌بندی‌ها',
+                                        'description' => 'لیست دسته‌بندی نوشته‌ها',
+                                        'is_active' => true,
+                                        'sort_order' => 2,
+                                    ],
+                                    [
+                                        'key' => 'sidebar_projects',
+                                        'type' => 'projects',
+                                        'title' => 'پروژه‌ها',
+                                        'description' => 'نمایش نمونه کارها یا پروژه‌ها',
+                                        'is_active' => true,
+                                        'sort_order' => 3,
+                                    ],
+                                    [
+                                        'key' => 'comments',
+                                        'type' => 'comments',
+                                        'title' => 'آخرین دیدگاه‌ها',
+                                        'description' => 'نمایش آخرین نظرات ثبت شده در سایت',
+                                        'is_active' => true,
+                                        'sort_order' => 4,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 
     /**
-     * فقط row جدید می‌سازد.
-     * برای row موجود، تنظیمات قابل شخصی‌سازی مثل sort_order و layout_type را overwrite نمی‌کند.
      *
      * @param PageLayout $layout
      * @param array $rows

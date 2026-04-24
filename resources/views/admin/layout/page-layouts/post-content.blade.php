@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'مدیریت چیدمان ')
+@section('title', 'مدیریت چیدمان صفحه نوشته')
 
 @section('content')
     <x-admin.form action="{{ route('admin.page-layouts.update', $layout['key']) }}" method="put">

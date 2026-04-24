@@ -61,6 +61,34 @@ class PageLayoutFrontRegistry
             'advertisement_5' => [
                 'view' => 'front.home.partials.ads-5',
             ],
+            'content' => [
+                'view' => 'front.posts.partials.detail.content',
+            ],
+            'image_gallery' => [
+                'view' => 'front.posts.partials.detail.image-gallery',
+            ],
+            'related_contents' => [
+                'view' => 'front.posts.partials.detail.related-posts',
+            ],
+            'comment_form' => [
+                'view' => 'front.posts.partials.detail.comment',
+            ],
+            'content_comments_list' => [
+                'view' => 'front.posts.partials.detail.comment-list',
+            ],
+
+            'tools' => [
+                'view' => 'front.sidebar.partials.tools',
+            ],
+            'categories' => [
+                'view' => 'front.sidebar.partials.categories',
+            ],
+            'sidebar_projects' => [
+                'view' => 'front.sidebar.partials.projects',
+            ],
+            'comments' => [
+                'view' => 'front.sidebar.partials.comments',
+            ],
         ];
     }
 

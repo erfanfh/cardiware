@@ -23,7 +23,6 @@ class PageLayoutElementRegistry
                 ],
                 'settings_route' => 'admin.dashboard',
             ],
-
             'hero-slider' => [
                 'type' => 'hero_slider',
                 'type_label' => 'اسلایدر',
@@ -36,7 +35,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'slider'],
             ],
-
             'digital-products' => [
                 'type' => 'digital_products',
                 'type_label' => 'محصولات دانلودی',
@@ -49,7 +47,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'download-products'],
             ],
-
             'special-posts' => [
                 'type' => 'special_posts',
                 'type_label' => 'مطالب ویژه',
@@ -62,7 +59,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'special-posts'],
             ],
-
             'vip-button' => [
                 'type' => 'vip_button',
                 'type_label' => 'دکمه ویژه',
@@ -76,7 +72,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'subscription'],
             ],
-
             'poll' => [
                 'type' => 'poll',
                 'type_label' => 'نظرسنجی',
@@ -86,7 +81,6 @@ class PageLayoutElementRegistry
                 ],
                 'settings_route' => 'admin.dashboard',
             ],
-
             'posts' => [
                 'type' => 'posts',
                 'type_label' => 'مطالب',
@@ -99,7 +93,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'posts'],
             ],
-
             'services' => [
                 'type' => 'services',
                 'type_label' => 'سرویس‌ها',
@@ -112,7 +105,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'services'],
             ],
-
             'physical-products' => [
                 'type' => 'physical_products',
                 'type_label' => 'محصولات فیزیکی',
@@ -125,7 +117,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'products'],
             ],
-
             'projects' => [
                 'type' => 'projects',
                 'type_label' => 'پروژه‌ها',
@@ -138,7 +129,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'projects'],
             ],
-
             'videos' => [
                 'type' => 'videos',
                 'type_label' => 'ویدیوها',
@@ -151,7 +141,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'videos'],
             ],
-
             'testimonials' => [
                 'type' => 'testimonials',
                 'type_label' => 'نظرات کاربران',
@@ -164,7 +153,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'testimonials'],
             ],
-
             'advertisement_1' => [
                 'type' => 'advertisement',
                 'type_label' => 'تبلیغات',
@@ -178,7 +166,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
-
             'advertisement_2' => [
                 'type' => 'advertisement',
                 'type_label' => 'تبلیغات',
@@ -192,7 +179,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
-
             'advertisement_3' => [
                 'type' => 'advertisement',
                 'type_label' => 'تبلیغات',
@@ -206,7 +192,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
-
             'advertisement_4' => [
                 'type' => 'advertisement',
                 'type_label' => 'تبلیغات',
@@ -220,7 +205,6 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
-
             'advertisement_5' => [
                 'type' => 'advertisement',
                 'type_label' => 'تبلیغات',
@@ -234,12 +218,95 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
+
+            'content' => [
+                'type' => 'content',
+                'type_label' => 'متن بدنه',
+                'type_color' => 'orange',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
+            'image_gallery' => [
+                'type' => 'image_gallery',
+                'type_label' => 'گالری تصاویر',
+                'type_color' => 'fuchsia',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
+            'related_contents' => [
+                'type' => 'related_contents',
+                'type_label' => 'نوشته‌های مرتبط',
+                'type_color' => 'indigo',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
+            'comment_form' => [
+                'type' => 'comment_form',
+                'type_label' => 'فرم ارسال دیدگاه',
+                'type_color' => 'pink',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
+            'content_comments_list' => [
+                'type' => 'content_comments_list',
+                'type_label' => 'لیست دیدگاه‌های نوشته',
+                'type_color' => 'teal',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
+
+            'tools' => [
+                'type' => 'tools',
+                'type_label' => 'ابزارهای کاربردی',
+                'type_color' => 'sky',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'tools'],
+            ],
+            'categories' => [
+                'type' => 'categories',
+                'type_label' => 'دسته‌بندی‌ها',
+                'type_color' => 'orange',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'categories'],
+            ],
+            'sidebar_projects' => [
+                'type' => 'projects',
+                'type_label' => 'پروژه ها',
+                'type_color' => 'pink',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'projects'],
+            ],
+            'comments' => [
+                'type' => 'comments',
+                'type_label' => 'آخرین دیدگاه‌ها',
+                'type_color' => 'teal',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'comments'],
+            ],
         ];
     }
 
     /**
      * Get a single element definition by key.
      *
+     * @param string $key
      * @return array<string, mixed>|null
      */
     public function get(string $key): ?array
