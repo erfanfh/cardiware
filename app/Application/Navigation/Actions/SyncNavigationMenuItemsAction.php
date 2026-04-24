@@ -117,15 +117,10 @@ class SyncNavigationMenuItemsAction
 
         $referenceId = $item['reference_id'] ?? null;
         $referenceType = null;
-        $url = trim((string)($item['url'] ?? ''));
+        $url = null;
 
         if ($type === NavigationItemTypeEnum::CUSTOM_LINK->value) {
-            if ($url === '') {
-                throw ValidationException::withMessages([
-                    'items_payload' => 'لینک یکی از آیتم‌های اختصاصی خالی است.',
-                ]);
-            }
-
+            $url = trim((string)($item['url'] ?? ''));
             $referenceId = null;
         } else {
             if ($referenceId === null) {
@@ -142,7 +137,7 @@ class SyncNavigationMenuItemsAction
                 ]);
             }
 
-            $url = $this->urlResolver->resolve(
+            $this->urlResolver->assertResolvable(
                 type: $type,
                 referenceId: (int)$referenceId,
                 referenceType: $referenceType,

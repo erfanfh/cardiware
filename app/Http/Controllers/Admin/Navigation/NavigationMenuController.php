@@ -83,7 +83,7 @@ class NavigationMenuController extends Controller
 
         $topProjects = Project::query()
             ->select(['id', 'title'])
-            ->latest('published_at')
+            ->latest('created_at')
             ->limit(8)
             ->get()
             ->map(fn(Project $project) => [
