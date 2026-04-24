@@ -160,5 +160,93 @@ document.addEventListener('alpine:init', () => {
 
             return 'bg-slate-100 text-slate-700 border-slate-200';
         },
+
+        replyModal: {
+            open: false,
+            processing: false,
+            id: null,
+            author: '',
+            parentContent: '',
+            content: '',
+            error: null,
+            replyUrl: '',
+        },
+
+        openReplyModal(payload) {
+            this.replyModal.open = true;
+            this.replyModal.processing = false;
+            this.replyModal.id = Number(payload.id);
+            this.replyModal.author = payload.author || 'کاربر';
+            this.replyModal.parentContent = payload.content || '';
+            this.replyModal.content = '';
+            this.replyModal.error = null;
+            this.replyModal.replyUrl = payload.replyUrl || '';
+
+            this.$nextTick(() => {
+                const textarea = document.querySelector('[x-model="replyModal.content"]');
+                textarea?.focus();
+            });
+        },
+
+        closeReplyModal(force = false) {
+            if (this.replyModal.processing && !force) {
+                return;
+            }
+
+            this.replyModal.open = false;
+            this.replyModal.id = null;
+            this.replyModal.author = '';
+            this.replyModal.parentContent = '';
+            this.replyModal.content = '';
+            this.replyModal.error = null;
+            this.replyModal.replyUrl = '';
+        },
+
+        async submitReply() {
+            const content = String(this.replyModal.content || '').trim();
+
+            if (!content) {
+                this.replyModal.error = 'لطفاً متن پاسخ را وارد کنید.';
+                return;
+            }
+
+            this.replyModal.processing = true;
+            this.replyModal.error = null;
+
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+
+                const response = await fetch(this.replyModal.replyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                    },
+                    body: formData,
+                });
+
+                const data = await this.parseJsonResponse(response);
+
+                if (!response.ok || !data?.ok) {
+                    throw new Error(
+                        data?.message ||
+                        data?.errors?.content?.[0] ||
+                        data?.errors?.comment?.[0] ||
+                        'ثبت پاسخ با خطا مواجه شد.'
+                    );
+                }
+
+                this.notifySuccess(data.message || 'پاسخ با موفقیت ثبت شد.');
+                this.closeReplyModal(true);
+            } catch (error) {
+                console.error(error);
+                this.replyModal.error = error.message || 'خطایی در ثبت پاسخ رخ داد.';
+                this.notifyError(this.replyModal.error);
+            } finally {
+                this.replyModal.processing = false;
+            }
+        },
     }));
 });

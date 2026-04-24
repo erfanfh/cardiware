@@ -233,6 +233,22 @@
                                     حذف
                                 </x-admin.list.action>
 
+                                <span class="text-slate-300">|</span>
+
+                                <button
+                                    type="button"
+                                    class="cursor-pointer text-xs font-medium text-slate-600 transition hover:text-brand-600"
+                                    x-on:click="openReplyModal({
+                                        id: {{ $comment->id }},
+                                        author: @js($comment->display_name),
+                                        content: @js($comment->content),
+                                        replyUrl: @js(route('admin.comments.reply', $comment)),
+                                    })"
+                                    x-bind:disabled="isProcessing({{ $comment->id }})"
+                                >
+                                    پاسخ
+                                </button>
+
                                 <template x-if="isProcessing({{ $comment->id }})">
                                     <span class="text-slate-400">در حال انجام...</span>
                                 </template>

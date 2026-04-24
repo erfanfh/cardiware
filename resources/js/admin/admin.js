@@ -1,6 +1,7 @@
 import TomSelect from "tom-select";
 import "tom-select/dist/css/tom-select.css";
 import collapse from '@alpinejs/collapse'
+import './toast.js'
 import './repeater.js'
 import './colorpicker.js'
 import './async-select.js'
