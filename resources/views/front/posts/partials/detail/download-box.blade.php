@@ -28,9 +28,8 @@
 
             @if($entries->isNotEmpty())
                 <div class="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
-                    <div
-                        class="border-b border-slate-200 bg-[linear-gradient(135deg,#fff7ed,#ffffff)] px-5 py-4">
-                        <div class="flex items-center gap-3">
+                    <div class="border-b border-slate-200 bg-[linear-gradient(135deg,#fff7ed,#ffffff)] px-5 py-4">
+                        <div class="flex flex-wrap items-center gap-3 max-sm:items-start">
                             <span
                                 class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-orange-200 bg-orange-50 text-orange-600 whitespace-nowrap">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -41,11 +40,11 @@
                                 </svg>
                             </span>
 
-                            <h2 class="truncate text-sm font-extrabold text-slate-900 sm:text-base">
+                            <h2 class="min-w-0 flex-1 text-sm font-extrabold leading-7 text-slate-900 sm:truncate sm:text-base">
                                 {{ $section->title }}
                             </h2>
 
-                            <div class="mr-auto flex gap-2">
+                            <div class="mr-auto flex gap-2 max-sm:mr-0 max-sm:grid max-sm:w-full max-sm:grid-cols-2">
                                 <button
                                     type="button"
                                     @click="copyText(
@@ -55,7 +54,7 @@
                                     )"
                                     data-default-text="کپی رمز"
                                     data-copied-text="کپی شد"
-                                    class="js-copy-button inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 active:bg-slate-800"
+                                    class="js-copy-button inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 active:bg-slate-800 max-sm:w-full max-sm:justify-center max-sm:px-3"
                                 >
                                     <span class="js-copy-icon-default inline-flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -87,7 +86,7 @@
                                     @click="copyText(@js($copyAllText), $event.currentTarget, 'همه لینک‌های این بخش کپی شد.')"
                                     data-default-text="کپی لینک ها"
                                     data-copied-text="کپی شد"
-                                    class="js-copy-button inline-flex leading-9 gap-1.5 cursor-pointer whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 text-[0.785rem] mr-auto font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700"
+                                    class="js-copy-button inline-flex leading-9 gap-1.5 cursor-pointer whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 text-[0.785rem] mr-auto font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:mr-0 max-sm:w-full max-sm:px-3"
                                 >
                                     <span class="js-copy-icon-default inline-flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -116,27 +115,29 @@
                         </div>
                     </div>
 
-                    <div class="px-5 py-5 space-y-4">
+                    <div class="space-y-4 px-5 py-5 max-sm:px-3.5 max-sm:py-4">
                         @foreach($entries as $entry)
                             @if($entry->isLink())
-                                <div
-                                    class="group rounded-2xl bg-slate-100/80 p-3">
-                                    <div class="flex gap-3 items-center justify-between flex-wrap">
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+                                <div class="group rounded-2xl bg-slate-100/80 p-3">
+                                    <div
+                                        class="flex items-center justify-between gap-3 max-sm:flex-col max-sm:items-stretch">
+                                        <div class="flex min-w-0 items-center gap-1.5">
+                                            <span
+                                                class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
+
                                             <a href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
-                                               class="truncate text-sm font-extrabold text-slate-900">
+                                               class="min-w-0 truncate text-sm font-extrabold leading-7 text-slate-900">
                                                 {{ $entry->title }}
                                             </a>
                                         </div>
 
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2 max-sm:grid max-sm:grid-cols-2">
                                             <button
                                                 type="button"
                                                 @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), $event.currentTarget, 'لینک دانلود کپی شد.')"
                                                 data-default-text="کپی لینک"
                                                 data-copied-text="کپی شد"
-                                                class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700"
+                                                class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 max-sm:w-full max-sm:px-3"
                                             >
                                                 <span class="js-copy-icon-default inline-flex items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
@@ -165,7 +166,7 @@
 
                                             <a
                                                 href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
-                                                class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700"
+                                                class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:w-full max-sm:px-3"
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                      viewBox="0 0 24 24">
@@ -189,7 +190,7 @@
 
                                     @if($entry->content)
                                         <div
-                                            class="mt-2 break-words px-3 py-2.5 text-sm leading-7 text-slate-700">
+                                            class="mt-2 break-words px-3 py-2.5 text-sm leading-7 text-slate-700 max-sm:px-0">
                                             {{ $entry->content }}
                                         </div>
                                     @endif
@@ -199,10 +200,10 @@
                     </div>
 
                     @if(filled($section->password))
-                        <div class="border-t border-slate-200 mt-2 px-5 py-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-brand-600">
+                        <div class="mt-2 border-t border-slate-200 px-5 py-4 max-sm:px-3.5">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex min-w-0 items-center gap-2">
+                                    <span class="shrink-0 text-brand-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                              viewBox="0 0 24 24">
                                             <g fill="none" stroke="currentColor">
@@ -216,9 +217,9 @@
                                         </svg>
                                     </span>
 
-                                    <div class="text-sm">
+                                    <div class="min-w-0 text-sm leading-7">
                                         <span class="font-extrabold text-brand-600">رمز فایل ها:</span>
-                                        <span class="font-extrabold text-slate-800 mr-2" dir="ltr">
+                                        <span class="mr-2 break-all font-extrabold text-slate-800" dir="ltr">
                                             {{ $section->password }}
                                         </span>
                                     </div>
@@ -233,7 +234,7 @@
                                     )"
                                     data-default-text="کپی رمز"
                                     data-copied-text="کپی شد"
-                                    class="js-copy-button inline-flex leading-9 items-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700"
+                                    class="js-copy-button inline-flex leading-9 items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-700 max-sm:w-full"
                                 >
                                     <span class="js-copy-icon-default inline-flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
