@@ -46,10 +46,8 @@ class CommentBulkActionController
     protected function authorizeBulkAction(string $action): void
     {
         match ($action) {
-            'approve' => Gate::authorize('comment.approve'),
-            'reject' => Gate::authorize('comment.reject'),
             'delete' => Gate::authorize('comment.delete'),
-            default => Gate::authorize('comment.list'),
+            default => Gate::authorize('comment.edit'),
         };
     }
 }

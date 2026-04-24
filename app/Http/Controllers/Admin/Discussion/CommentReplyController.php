@@ -18,7 +18,7 @@ class CommentReplyController
         CreateCommentAction   $createCommentAction,
     ): JsonResponse
     {
-        Gate::authorize('comment.reply');
+        Gate::authorize('comment.edit');
 
         if ($comment->trashed()) {
             throw ValidationException::withMessages([
