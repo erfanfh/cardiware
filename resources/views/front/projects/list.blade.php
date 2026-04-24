@@ -1,7 +1,7 @@
 @extends('front.master')
 
 @section('content')
-    <main class="mx-auto max-w-7xl px-4 py-8">
+    <main class="mx-auto max-w-7xl px-4 py-8" x-data="">
         <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl">
             <div
                 class="absolute inset-0 opacity-90"
@@ -18,7 +18,7 @@
                 <div class="mt-4 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="max-w-2xl">
                         <div
-                            class="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-3 py-2 text-white/90 border border-white/10 backdrop-blur">
+                            class="inline-flex text-xs items-center gap-2 rounded-2xl bg-white/10 px-3 py-2 text-white/90 border border-white/10 backdrop-blur">
                             <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-400"></span>
                             {{ get_setting('projects', 'first_box_label') }}
                         </div>
@@ -59,7 +59,8 @@
 
                             <div
                                 class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
-                            <div class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
+                            <div
+                                class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
                             <div class="flex items-center gap-4">
                                 <div class="min-w-0 flex-1">
@@ -67,7 +68,8 @@
                                         <div class="min-w-0">
                                             <div
                                                 class="text-sm sm:text-base font-extrabold truncate">{{ $project->title }}</div>
-                                            <div class="text-xs text-slate-500 mt-1">{{ $project->excerpt() }}</div>
+                                            <div
+                                                class="text-xs text-slate-500 truncate mt-1">{{ $project->excerpt() }}</div>
                                         </div>
                                     </div>
 
@@ -80,12 +82,12 @@
                                             <div
                                                 class="h-full rounded-full transition-all duration-300"
                                                 :class="{
-                                            'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
-                                            'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
-                                            'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
-                                            'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
-                                            'bg-slate-300': ({{ $project->progress_percent }} ?? 0) < 1
-                                        }"
+                                                    'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
+                                                    'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
+                                                    'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
+                                                    'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
+                                                    'bg-slate-300': ({{ $project->progress_percent }} ?? 0) < 1
+                                                }"
                                                 style="width: {{ $project->progress_percent . '%' }}"
                                             ></div>
                                         </div>

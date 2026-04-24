@@ -6,7 +6,7 @@ Template Name: صفحه درباره ما
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="relative overflow-hidden rounded-xl2 border border-slate-200 bg-slate-900 shadow-xl">
+        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl">
             <div
                 class="absolute inset-0 opacity-90 bg-[radial-gradient(700px_circle_at_15%_20%,rgba(249,115,22,.35),transparent_55%),radial-gradient(700px_circle_at_80%_60%,rgba(34,197,94,.18),transparent_60%),radial-gradient(700px_circle_at_55%_10%,rgba(59,130,246,.15),transparent_60%)]"></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
@@ -78,7 +78,7 @@ Template Name: صفحه درباره ما
 
         <section class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div
-                class="lg:col-span-7 rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden">
+                class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden">
                 <div class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
                 <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
@@ -96,7 +96,7 @@ Template Name: صفحه درباره ما
             </div>
 
             <div class="lg:col-span-5 space-y-6">
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
                     <div class="flex items-center gap-3">
                         <span
                             class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
@@ -137,7 +137,7 @@ Template Name: صفحه درباره ما
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach(\App\Domain\Project\Models\Project::orderBy('created_at')->take(3)->get() as $project)
                     <div
-                        class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
+                        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-sm font-extrabold truncate">{{ $project->title }}</div>
@@ -173,7 +173,7 @@ Template Name: صفحه درباره ما
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=12" alt="">
@@ -193,7 +193,7 @@ Template Name: صفحه درباره ما
                     </div>
                 </div>
 
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=32" alt="">
@@ -213,7 +213,7 @@ Template Name: صفحه درباره ما
                     </div>
                 </div>
 
-                <div class="rounded-xl2 border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
                     <div class="flex items-center gap-3">
                         <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
                              src="https://i.pravatar.cc/120?img=47" alt="">
@@ -246,7 +246,7 @@ Template Name: صفحه درباره ما
                 </div>
             </div>
 
-            <div class="rounded-xl2 border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                 @foreach(get_setting('aboutUs', 'faqs_items') as $item)
                     <button @click="open = open === {{ $item['sort_order'] }} ? 0 : {{ $item['sort_order'] }}"
                             class="w-full text-right p-5 sm:p-6 flex items-center justify-between gap-3 hover:bg-slate-50 transition">
@@ -269,7 +269,7 @@ Template Name: صفحه درباره ما
 
         <section id="contact" class="mt-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-7 rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
                     <div class="flex items-center gap-3">
                         <span
                             class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
@@ -300,7 +300,7 @@ Template Name: صفحه درباره ما
                 </div>
 
                 <div class="lg:col-span-5 space-y-6">
-                    <div class="rounded-xl2 border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
                         <div class="text-sm font-extrabold">{{ get_setting('aboutUs', 'contact_box_title') }}</div>
                         <div class="mt-4 space-y-3 text-sm text-slate-700">
                             <div class="flex items-start gap-3">
@@ -331,7 +331,7 @@ Template Name: صفحه درباره ما
                         </div>
                     </div>
 
-                    <div class="rounded-xl2 border border-dashed border-slate-300 bg-white p-5 shadow-sm">
+                    <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
                         <div class="font-extrabold text-slate-700">تبلیغات / بنر</div>
                         <div class="mt-2 text-sm text-slate-500">جایگاه پیشنهادی برای بنر یا اطلاعیه</div>
                         <div class="mt-3 text-xs text-slate-500">size: 320×250</div>

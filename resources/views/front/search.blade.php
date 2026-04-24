@@ -142,7 +142,7 @@
                         @endif
 
                         @if($posts->hasMorePages())
-                            <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
+                            <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                                 <x-front.list.pagination :model="$posts"/>
                             </div>
                         @endif
@@ -228,7 +228,7 @@
                     @endif
 
                     @if($projects->hasMorePages())
-                        <div class="mt-6 rounded-xl2 border border-slate-200 bg-white p-4 shadow-sm">
+                        <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                             <x-front.list.pagination :model="$projects"/>
                         </div>
                     @endif

@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
-use App\Infrastructure\Casts\MediaFileCast;
+use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
 class AboutUsSettings extends BaseSettings
@@ -27,5 +27,10 @@ class AboutUsSettings extends BaseSettings
         'contact_email',
         'contact_phone',
         'contact_hour',
+    ];
+
+    protected array $casts = [
+        'what_we_build_items' => RepeaterArrayCast::class,
+        'faqs_items' => RepeaterArrayCast::class,
     ];
 }
