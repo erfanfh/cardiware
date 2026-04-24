@@ -3,7 +3,7 @@
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPostSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 use App\Domain\Content\Models\Post;
@@ -18,7 +18,7 @@ final class BuildPostSchemaContextAction
     {
     }
 
-    public function execute(Post $post, ResolvedPostSeoPayloadDTO $payload): SchemaContextDTO
+    public function execute(Post $post, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
         $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;

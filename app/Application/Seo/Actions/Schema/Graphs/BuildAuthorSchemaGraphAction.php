@@ -9,7 +9,7 @@ use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildAuthorSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildAuthorSchemaAction;
-use App\Application\Seo\DTOs\ResolvedAuthorSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Identity\Models\User;
 
 final class BuildAuthorSchemaGraphAction
@@ -29,7 +29,7 @@ final class BuildAuthorSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(User $author, ResolvedAuthorSeoPayloadDTO $payload): array
+    public function execute(User $author, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildAuthorSchemaContextAction->execute($author, $payload);
 

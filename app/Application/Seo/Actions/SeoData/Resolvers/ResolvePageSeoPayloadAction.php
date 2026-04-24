@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPageSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PageSeoVariableDataBuilder;
 use App\Domain\Content\Models\Page;
@@ -22,7 +22,7 @@ final class ResolvePageSeoPayloadAction
     {
     }
 
-    public function execute(Page $page): ResolvedPageSeoPayloadDTO
+    public function execute(Page $page): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->pageSeoVariableDataBuilder->build($page);
@@ -68,7 +68,7 @@ final class ResolvePageSeoPayloadAction
             fallbackUrl: $page->url,
         );
 
-        return new ResolvedPageSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $page->seoMeta?->robots ?: $defaults['robots'],
 

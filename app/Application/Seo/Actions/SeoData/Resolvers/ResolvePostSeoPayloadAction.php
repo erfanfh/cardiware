@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPostSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
@@ -22,7 +22,7 @@ final class ResolvePostSeoPayloadAction
     {
     }
 
-    public function execute(Post $post): ResolvedPostSeoPayloadDTO
+    public function execute(Post $post): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->postSeoVariableDataBuilder->build($post);
@@ -73,7 +73,7 @@ final class ResolvePostSeoPayloadAction
 
         $author = $post->author;
 
-        return new ResolvedPostSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $post->seoMeta?->robots ?: $defaults['robots'],
 
@@ -94,6 +94,10 @@ final class ResolvePostSeoPayloadAction
             xDescription: $xDescription,
             xImageUrl: $post->seoMeta?->xImage?->url,
 
+            pageImageUrl: $post->picture?->url,
+            pageImageWidth: $post->picture?->primaryVariant?->width,
+            pageImageHeight: $post->picture?->primaryVariant?->height,
+            pageImageCaption: $post->title,
             publishedTime: $publishedTime,
             modifiedTime: $modifiedTime,
 
@@ -105,11 +109,6 @@ final class ResolvePostSeoPayloadAction
                 ? (string)$author->id
                 : $author?->display_name,
             authorSameAs: [url('/')],
-
-            pageImageUrl: $post->picture?->url,
-            pageImageWidth: $post->picture?->primaryVariant?->width,
-            pageImageHeight: $post->picture?->primaryVariant?->height,
-            pageImageCaption: $post->title,
 
             wordCount: $this->estimateWordCount($post),
             commentCount: $post->approved_comments_count ?? 0,

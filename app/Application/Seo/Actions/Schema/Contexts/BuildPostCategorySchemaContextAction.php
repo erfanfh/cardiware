@@ -3,7 +3,7 @@
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPostCategorySeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 use App\Domain\Media\Models\MediaFile;
@@ -18,7 +18,7 @@ final class BuildPostCategorySchemaContextAction
     {
     }
 
-    public function execute(TaxonomyTerm $category, ResolvedPostCategorySeoPayloadDTO $payload): SchemaContextDTO
+    public function execute(TaxonomyTerm $category, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $siteName = $defaults['site_name'] ?? null;

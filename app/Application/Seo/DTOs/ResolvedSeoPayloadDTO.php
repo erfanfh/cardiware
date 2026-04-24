@@ -2,11 +2,13 @@
 
 namespace App\Application\Seo\DTOs;
 
-final class ResolvedPostTagSeoPayloadDTO
+final class ResolvedSeoPayloadDTO
 {
     /**
      * @param array<string, mixed> $ogImage
      * @param array<int, string> $keywords
+     * @param array<int, string> $articleSections
+     * @param array<int, string> $sameAs
      */
     public function __construct(
         public readonly string  $canonicalUrl,
@@ -29,7 +31,26 @@ final class ResolvedPostTagSeoPayloadDTO
         public readonly ?int    $pageImageHeight = null,
         public readonly ?string $pageImageCaption = null,
 
+        public readonly ?string $publishedTime = null,
+        public readonly ?string $modifiedTime = null,
+
+        public readonly ?string $authorName = null,
+        public readonly ?string $authorUrl = null,
+        public readonly ?string $authorIdentifier = null,
+        public readonly array   $authorSameAs = [],
+
+        public readonly ?string $personName = null,
+        public readonly ?string $personUrl = null,
+        public readonly array   $sameAs = [],
+
+        public readonly ?int    $wordCount = null,
+        public readonly ?int    $commentCount = null,
         public readonly array   $keywords = [],
+        public readonly array   $articleSections = [],
+
+        public readonly ?string $readingTimeLabel = null,
+
+        public readonly ?string $projectStatus = null,
     )
     {
     }

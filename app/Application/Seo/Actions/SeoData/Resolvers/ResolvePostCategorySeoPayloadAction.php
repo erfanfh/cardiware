@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPostCategorySeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\TaxonomySeoVariableDataBuilder;
 use App\Domain\Media\Models\MediaFile;
@@ -22,7 +22,7 @@ final class ResolvePostCategorySeoPayloadAction
     {
     }
 
-    public function execute(TaxonomyTerm $category): ResolvedPostCategorySeoPayloadDTO
+    public function execute(TaxonomyTerm $category): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->taxonomySeoVariableDataBuilder->build($category);
@@ -50,7 +50,7 @@ final class ResolvePostCategorySeoPayloadAction
             fallbackUrl: $this->resolveCurrentPageUrl($category),
         );
 
-        return new ResolvedPostCategorySeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $defaults['robots'],
 

@@ -8,7 +8,7 @@ use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPostTagSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPostTagSchemaAction;
-use App\Application\Seo\DTOs\ResolvedPostTagSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 
 final class BuildPostTagSchemaGraphAction
@@ -27,7 +27,7 @@ final class BuildPostTagSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(TaxonomyTerm $tag, ResolvedPostTagSeoPayloadDTO $payload): array
+    public function execute(TaxonomyTerm $tag, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildPostTagSchemaContextAction->execute($tag, $payload);
 

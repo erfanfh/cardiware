@@ -7,7 +7,7 @@ use App\Application\Seo\Actions\Schema\Breadcrumbs\BuildPageBreadcrumbSchemaActi
 use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPageSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPageSchemaAction;
-use App\Application\Seo\DTOs\ResolvedPageSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Content\Models\Page;
 
 final class BuildPageSchemaGraphAction
@@ -25,7 +25,7 @@ final class BuildPageSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(Page $page, ResolvedPageSeoPayloadDTO $payload): array
+    public function execute(Page $page, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildPageSchemaContextAction->execute($page, $payload);
 

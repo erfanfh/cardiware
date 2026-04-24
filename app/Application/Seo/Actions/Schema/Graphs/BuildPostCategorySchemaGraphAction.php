@@ -8,7 +8,7 @@ use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPostCategorySchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPostCategorySchemaAction;
-use App\Application\Seo\DTOs\ResolvedPostCategorySeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 
 final class BuildPostCategorySchemaGraphAction
@@ -27,7 +27,7 @@ final class BuildPostCategorySchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(TaxonomyTerm $category, ResolvedPostCategorySeoPayloadDTO $payload): array
+    public function execute(TaxonomyTerm $category, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildPostCategorySchemaContextAction->execute($category, $payload);
 

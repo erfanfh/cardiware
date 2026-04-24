@@ -3,7 +3,7 @@
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedAuthorSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 use App\Domain\Identity\Models\User;
@@ -18,7 +18,7 @@ final class BuildAuthorSchemaContextAction
     {
     }
 
-    public function execute(User $author, ResolvedAuthorSeoPayloadDTO $payload): SchemaContextDTO
+    public function execute(User $author, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $siteName = $defaults['site_name'] ?? null;

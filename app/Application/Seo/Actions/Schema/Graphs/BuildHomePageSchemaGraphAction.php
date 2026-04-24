@@ -7,7 +7,7 @@ use App\Application\Seo\Actions\Schema\BuildBaseSchemaNodesAction;
 use App\Application\Seo\Actions\Schema\BuildBreadcrumbSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildHomePageSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildHomePageSchemaAction;
-use App\Application\Seo\DTOs\ResolvedHomePageSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 
 final class BuildHomePageSchemaGraphAction
 {
@@ -24,7 +24,7 @@ final class BuildHomePageSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(ResolvedHomePageSeoPayloadDTO $payload): array
+    public function execute(ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildHomePageSchemaContextAction->execute($payload);
 

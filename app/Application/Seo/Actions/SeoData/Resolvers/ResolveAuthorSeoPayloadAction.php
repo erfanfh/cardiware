@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedAuthorSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\AuthorSeoVariableDataBuilder;
 use App\Domain\Identity\Models\User;
@@ -22,7 +22,7 @@ final class ResolveAuthorSeoPayloadAction
     {
     }
 
-    public function execute(User $author): ResolvedAuthorSeoPayloadDTO
+    public function execute(User $author): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->authorSeoVariableDataBuilder->build($author);
@@ -46,7 +46,7 @@ final class ResolveAuthorSeoPayloadAction
 
         $sameAs = array_merge([$defaults['site_url']], $this->resolveSameAs($author));
 
-        return new ResolvedAuthorSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $defaults['robots'],
 

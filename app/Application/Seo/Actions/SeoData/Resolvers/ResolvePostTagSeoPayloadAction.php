@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPostTagSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\TaxonomySeoVariableDataBuilder;
 use App\Domain\Media\Models\MediaFile;
@@ -22,7 +22,7 @@ final class ResolvePostTagSeoPayloadAction
     {
     }
 
-    public function execute(TaxonomyTerm $tag): ResolvedPostTagSeoPayloadDTO
+    public function execute(TaxonomyTerm $tag): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->taxonomySeoVariableDataBuilder->build($tag);
@@ -50,7 +50,7 @@ final class ResolvePostTagSeoPayloadAction
             fallbackUrl: $this->resolveCurrentPageUrl($tag),
         );
 
-        return new ResolvedPostTagSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $defaults['robots'],
 

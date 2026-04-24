@@ -3,7 +3,7 @@
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedPageSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
 use App\Domain\Content\Models\Page;
@@ -18,7 +18,7 @@ final class BuildPageSchemaContextAction
     {
     }
 
-    public function execute(Page $age, ResolvedPageSeoPayloadDTO $payload): SchemaContextDTO
+    public function execute(Page $age, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
         $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;

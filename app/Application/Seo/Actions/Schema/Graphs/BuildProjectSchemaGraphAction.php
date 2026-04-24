@@ -9,7 +9,7 @@ use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildProjectEntitySchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildProjectSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildProjectSchemaAction;
-use App\Application\Seo\DTOs\ResolvedProjectSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Project\Models\Project;
 
 final class BuildProjectSchemaGraphAction
@@ -29,7 +29,7 @@ final class BuildProjectSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(Project $project, ResolvedProjectSeoPayloadDTO $payload): array
+    public function execute(Project $project, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildProjectSchemaContextAction->execute($project, $payload);
 

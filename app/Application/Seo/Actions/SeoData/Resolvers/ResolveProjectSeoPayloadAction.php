@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedProjectSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\ProjectSeoVariableDataBuilder;
 use App\Domain\Project\Models\Project;
@@ -20,7 +20,7 @@ final class ResolveProjectSeoPayloadAction
     {
     }
 
-    public function execute(Project $project): ResolvedProjectSeoPayloadDTO
+    public function execute(Project $project): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->projectSeoVariableDataBuilder->build($project);
@@ -69,7 +69,7 @@ final class ResolveProjectSeoPayloadAction
         $publishedTime = $project->created_at?->utc()->toIso8601String();
         $modifiedTime = $this->resolveModifiedTime($project, $publishedTime);
 
-        return new ResolvedProjectSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $project->seoMeta?->robots ?: $defaults['robots'],
 
@@ -90,13 +90,13 @@ final class ResolveProjectSeoPayloadAction
             xDescription: $xDescription,
             xImageUrl: $project->seoMeta?->xImage?->url,
 
-            publishedTime: $publishedTime,
-            modifiedTime: $modifiedTime,
-
             pageImageUrl: $project->cover?->url,
             pageImageWidth: $project->cover?->primaryVariant?->width,
+
             pageImageHeight: $project->cover?->primaryVariant?->height,
             pageImageCaption: $project->title,
+            publishedTime: $publishedTime,
+            modifiedTime: $modifiedTime,
 
             keywords: $this->resolveKeywords($project),
             projectStatus: $this->resolveProjectStatus($project),

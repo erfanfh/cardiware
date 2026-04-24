@@ -4,7 +4,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
-use App\Application\Seo\DTOs\ResolvedHomePageSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 
 final class ResolveHomePageSeoPayloadAction
 {
@@ -15,7 +15,7 @@ final class ResolveHomePageSeoPayloadAction
     {
     }
 
-    public function execute(): ResolvedHomePageSeoPayloadDTO
+    public function execute(): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
 
@@ -26,7 +26,7 @@ final class ResolveHomePageSeoPayloadAction
         $title = get_setting('seo', 'home_title') ?: $defaults['site_name'];
         $description = get_setting('seo', 'home_description') ?: null;
 
-        return new ResolvedHomePageSeoPayloadDTO(
+        return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $defaults['robots'],
             title: $title,

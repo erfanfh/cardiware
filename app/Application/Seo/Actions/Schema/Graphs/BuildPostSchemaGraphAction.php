@@ -10,7 +10,7 @@ use App\Application\Seo\Actions\Schema\BuildPostArticleSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildPrimaryImageSchemaAction;
 use App\Application\Seo\Actions\Schema\Contexts\BuildPostSchemaContextAction;
 use App\Application\Seo\Actions\Schema\Pages\BuildPostSchemaAction;
-use App\Application\Seo\DTOs\ResolvedPostSeoPayloadDTO;
+use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Domain\Content\Models\Post;
 
 final class BuildPostSchemaGraphAction
@@ -31,7 +31,7 @@ final class BuildPostSchemaGraphAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(Post $post, ResolvedPostSeoPayloadDTO $payload): array
+    public function execute(Post $post, ResolvedSeoPayloadDTO $payload): array
     {
         $context = $this->buildPostSchemaContextAction->execute($post, $payload);
 
