@@ -8,7 +8,7 @@
             <div class="space-y-6">
                 <x-admin.metabox title="باکس ابتدایی">
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-                        <div>
+                        <div class="flex flex-col gap-4">
                             <x-admin.field
                                 label="عنوان"
                             >

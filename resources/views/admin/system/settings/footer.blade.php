@@ -81,7 +81,7 @@
                             />
                         </x-admin.field>
 
-                        <div class="flex flex-col gap-5">
+                        <div class="flex flex-col gap-4">
                             <x-admin.field
                                 label="عنوان باکس فروشگاه"
                             >
