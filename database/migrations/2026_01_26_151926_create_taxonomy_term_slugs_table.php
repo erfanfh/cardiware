@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('taxonomy_term_id')->constrained('taxonomy_terms')->cascadeOnDelete();
             $table->string('type');
-            $table->string('route_key', 600);
+            $table->string('route_key', 255);
             $table->boolean('is_current')->default(false);
             $table->timestamps();
 

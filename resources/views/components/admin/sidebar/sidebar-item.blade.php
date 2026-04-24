@@ -33,12 +33,18 @@
     $isItemActive = function (array $sidebarItem) use (&$isItemActive): bool {
         $itemRoute = $sidebarItem['route'] ?? null;
         $itemChildren = $sidebarItem['children'] ?? [];
+        $itemParams = $sidebarItem['routeParameters'][0] ?? null;
         $itemHasChildren = is_array($itemChildren) && count($itemChildren) > 0;
 
         $activePatterns = (array)($sidebarItem['active'] ?? ($itemRoute ? [$itemRoute, $itemRoute . '.*'] : []));
 
         foreach ($activePatterns as $pattern) {
             if (request()->routeIs($pattern)) {
+                if (!empty($itemParams)) {
+                    $expectedRoute = route($itemRoute, $itemParams);
+                    $currentRoute = url()->current();
+                    return $currentRoute === $expectedRoute;
+                }
                 return true;
             }
         }

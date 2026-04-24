@@ -20,11 +20,21 @@ class PageLayoutController
      */
     public function show(PageLayout $pageLayout, GetPageLayoutBuilderDataAction $getPageLayoutBuilderDataAction): View
     {
-        Gate::authorize('page-layout.home');
-
+        $view = 'admin.layout.page-layouts.home';
+        $gate = "page-layout.{$pageLayout->key}";
+        switch ($pageLayout->key) {
+            case 'home':
+                break;
+            case 'sidebar':
+                $view = 'admin.layout.page-layouts.sidebar';
+                break;
+            case 'content':
+                $view = 'admin.layout.page-layouts.content';
+        }
+        Gate::authorize($gate);
         $builderData = $getPageLayoutBuilderDataAction->execute($pageLayout);
 
-        return view('admin.layout.page-layouts.show', [
+        return view($view, [
             'layout' => $builderData['layout'],
             'layoutRows' => $builderData['rows'],
         ]);
@@ -42,12 +52,13 @@ class PageLayoutController
                            UpdatePageLayoutAction  $updatePageLayoutAction,
     ): RedirectResponse
     {
-        Gate::authorize('page-layout.home');
+        $gate = "page-layout.{$pageLayout->key}";
+        Gate::authorize($gate);
 
         $updatePageLayoutAction->execute($pageLayout, $request->layoutState(), $request->elementStates());
 
         return redirect()
             ->route('admin.page-layouts.show', $pageLayout)
-            ->with('success', 'چیدمان صفحه با موفقیت ذخیره شد.');
+            ->with('success', 'چیدمان با موفقیت ذخیره شد.');
     }
 }

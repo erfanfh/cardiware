@@ -1,29 +1,18 @@
 @extends('front.master')
-
 @section('content')
-    <main class="mx-auto max-w-7xl px-4 py-8">
-        @include('front.posts.partials.detail.title')
-
-        <section class="grid grid-cols-1 lg:grid-cols-10 gap-6">
+    <section class="mx-auto max-w-7xl px-4 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-10 gap-8">
             <div class="lg:col-span-7 space-y-6">
-                @include('front.posts.partials.detail.content')
-                @include('front.posts.partials.detail.image-gallery')
-                {{--                @include('front.posts.partials.detail.video')--}}
-                @include('front.posts.partials.detail.related-posts')
-                @livewire('front.discussion.send-comment-form', [
-                    'commentable'=> $post,
-                    'key'=> 'send-comment-form-'.$post->getMorphClass().'-'.$post->getKey()
+                @include('front.home.render-layout', [
+                    'rows' => $layoutData['rows'],
                 ])
-                @livewire('front.discussion.comments-list', ['commentable' => $post])
             </div>
-
-            <div class="lg:col-span-3">
+            <div class="lg:col-span-3 space-y-6">
                 @include('front.sidebar.index')
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 @endsection
-
 @push('scripts')
     @vite(['resources/js/front/post-detail/index.js'])
     <script>

@@ -137,6 +137,18 @@ return [
                 'routeParameters' => ['home'],
                 'icon' => 'icons.dashboard-square-setting',
                 'gate' => 'page-layout.home',
+            ],[
+                'label' => 'ساید بار',
+                'route' => 'admin.page-layouts.show',
+                'routeParameters' => ['sidebar'],
+                'icon' => 'icons.menu-01',
+                'gate' => 'page-layout.sidebar',
+            ],[
+                'label' => 'صفحه محتوا',
+                'route' => 'admin.page-layouts.show',
+                'routeParameters' => ['content'],
+                'icon' => 'icons.file-empty-02',
+                'gate' => 'page-layout.content',
             ],
         ],
     ],

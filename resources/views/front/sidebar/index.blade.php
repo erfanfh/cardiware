@@ -1,7 +1,5 @@
 <aside class="space-y-6">
-    @include('front.sidebar.partials.tools')
-    @include('front.sidebar.partials.categories')
-    {{--@include('front.sidebar.partials.populars')--}}
-    @include('front.sidebar.partials.projects')
-    @include('front.sidebar.partials.comments')
+    @include('front.home.render-layout', [
+           'rows' => $sidebarLayoutData['rows'],
+       ])
 </aside>
