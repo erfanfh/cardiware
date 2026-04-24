@@ -3,6 +3,16 @@
 <header id="header" class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="mx-auto max-w-7xl px-4 py-4">
         <div class="flex items-center gap-3">
+            <button
+                type="button"
+                class="md:hidden cursor-pointer h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
+                x-data
+                x-on:click="$dispatch('open-mobile-navigation')"
+                aria-label="باز کردن منو"
+            >
+                @include('icons.menu-01')
+            </button>
+            
             <a href="{{ route('home') }}" class="flex items-center gap-2">
                 <div class="h-10 w-10 grid place-items-center">
                     <img
@@ -134,6 +144,10 @@
         ])
     </div>
 </header>
+
+@include('front.header.navigation.mobile', [
+    'items' => $headerNavigationItems ?? collect(),
+])
 
 @push('scripts')
     <script>
