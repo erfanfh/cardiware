@@ -13,7 +13,10 @@
                         >
                             <x-admin.form.media-picker
                                 name="logo"
-                                :mediaId="get_setting('footer', 'logo')->id"
+                                :value="[
+                                    'id' => old('logo.id', get_setting('footer', 'logo')->id),
+                                    'path' => old('logo.path', get_setting('footer', 'logo')->path),
+                                ]"
                             />
                         </x-admin.field>
 
@@ -305,6 +308,19 @@
                             <x-admin.form.input
                                 name="column4_title"
                                 value="{{ get_setting('footer', 'column4_title') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-4"
+                            label="تصویر نمادها"
+                        >
+                            <x-admin.form.media-picker
+                                name="column4_image"
+                                :value="[
+                                    'id' => old('column4_image.id', get_setting('footer', 'column4_image')->id),
+                                    'path' => old('column4_image.path', get_setting('footer', 'column4_image')->path),
+                                ]"
                             />
                         </x-admin.field>
                     </div>

@@ -34,11 +34,13 @@ class FooterSettings extends BaseSettings
         'column3_title',
         'column3_items',
         'column4_title',
+        'column4_image',
     ];
 
     protected array $casts = [
         'logo' => MediaFileCast::class,
         'column2_items' => ArrayCast::class,
         'column3_items' => ArrayCast::class,
+        'column4_image' => MediaFileCast::class,
     ];
 }

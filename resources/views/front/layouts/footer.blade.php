@@ -7,28 +7,32 @@
                 <div class="flex flex-col items-center">
                     @include('icons.cart-check-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +۱۱۰ سفارش
+                        +{{ number_format(12000) }}
+                        سفارش
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center">
                     @include('icons.chat-unread-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +۱۱۰ دیدگاه
+                        +{{ number_format(floor(\App\Domain\Discussion\Models\Comment::approved()->count() / 10) * 10) }}
+                        دیدگاه
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center">
                     @include('icons.clipboard-list-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +۱۵۰ مطلب
+                        +{{ number_format(floor(\App\Domain\Content\Models\Post::where('status', \App\Domain\Content\Enums\PostStatusEnum::ACTIVE)->count() / 10) * 10) }}
+                        نوشته
                     </div>
                 </div>
 
                 <div class="flex flex-col items-center">
                     @include('icons.shop-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +۴۰ محصول
+                        +{{ number_format(30) }}
+                        محصول
                     </div>
                 </div>
 
@@ -37,14 +41,15 @@
 
         <div class="pb-12 border-b border-neutral-200">
             <div class="flex flex-col md:flex-row items-center md:items-end justify-between gap-6">
-                <div class="shrink-0">
-                    <img
-                        src="https://moddingway.ir/wp-content/uploads/2025/12/mw-150x138-1.png"
-                        alt="ModdingWay"
-                        class="h-16 md:h-20 w-auto"
-                        loading="lazy"
-                    />
-                </div>
+                @if(get_setting('footer', 'logo')->path)
+                    <div class="shrink-0">
+                        <img
+                            src="{{ get_setting('footer', 'logo')->path }}"
+                            alt="{{ get_setting('general', 'title') }}"
+                            class="h-16 md:h-20 w-auto"
+                        />
+                    </div>
+                @endif
 
                 <p class="text-neutral-700 leading-7 text-sm text-center md:text-justify">
                     {{ get_setting('footer', 'about') }}
@@ -125,6 +130,8 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
                                 {{ get_setting('footer', 'address_1') }}
                             </p>
                         </div>
@@ -136,6 +143,8 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
                                 {{ get_setting('footer', 'address_2') }}
                             </p>
                         </div>
@@ -147,6 +156,8 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
                                 {{ get_setting('footer', 'address_3') }}
                             </p>
                         </div>
@@ -158,6 +169,8 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
                                 {{ get_setting('footer', 'address_4') }}
                             </p>
                         </div>
@@ -169,7 +182,9 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
-                                {{ 'شماره تماس: ' . get_setting('footer', 'phone') }}
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
+                                <a href="tel:{{ get_setting('footer', 'phone') }}">{{ 'شماره تماس: ' . get_setting('footer', 'phone') }}</a>
                             </p>
                         </div>
                     </div>
@@ -180,18 +195,20 @@
                         <div class="flex items-center gap-2">
                             <p
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition">
-                                {{ 'ایمیل: ' . get_setting('footer', 'email') }}
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
+
+                                <a href="mailto:{{ get_setting('footer', 'email') }}">{{ 'ایمیل: ' . get_setting('footer', 'email') }}</a>
                             </p>
                         </div>
                     </div>
                 @endif
 
 
-                <div class="flex gap-3">
-                    <a href="{{ get_setting('footer', 'telegram') }}">
+                <div class="flex gap-4 mt-3">
+                    <a href="{{ get_setting('footer', 'telegram') }}" class="transition hover:opacity-70">
                         @include('icons.instagram')
                     </a>
-                    <a href="{{ get_setting('footer', 'instagram') }}">
+                    <a href="{{ get_setting('footer', 'instagram') }}" class="transition hover:opacity-70">
                         @include('icons.telegram')
                     </a>
                 </div>
@@ -204,7 +221,8 @@
                     @foreach(get_setting('footer', 'column2_items') as $item)
                         <li>
                             <a href="{{ $item['url'] }}"
-                               class="group inline-flex items-center gap-2 text-gray-500 font-thin hover:text-brand-700 transition">
+                               class="group inline-flex items-center gap-2 text-gray-500 font-thin hover:text-brand-600 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
                                 <span>{{ $item['title'] }}</span>
                             </a>
                         </li>
@@ -218,8 +236,9 @@
                 <ul class="grid gap-2 text-sm">
                     @foreach(get_setting('footer', 'column3_items') as $item)
                         <li>
-                            <a href="{{ $item['url']}}"
-                               class="group inline-flex items-center gap-2 font-thin text-gray-500  hover:text-brand-700 transition">
+                            <a href="{{ $item['url'] }}"
+                               class="group inline-flex items-center gap-2 text-gray-500 font-thin hover:text-brand-600 transition">
+                                <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
                                 <span>{{ $item['title'] }}</span>
                             </a>
                         </li>
@@ -230,16 +249,27 @@
             <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-2">
                 <div class="font-extrabold mb-3">{{ get_setting('footer', 'column4_title') }}</div>
 
-                <div>
-                    <img src="https://moddingway.ir/wp-content/uploads/2023/03/moddingway-namads.png" alt="enamad">
-                </div>
+                @if(get_setting('footer', 'column4_image')->path)
+                    <div>
+                        <img
+                            src="{{ get_setting('footer', 'column4_image')->path }}"
+                            alt="{{ get_setting('footer', 'column4_title') }}"
+                        />
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
     <div class="h-px w-full bg-gray-200"></div>
 
-    <div class="text-xs text-center text-gray-600 py-3">
-        {{ get_setting('footer', 'copyright') }}
+    <div class="mx-auto max-w-7xl px-4 text-xs flex justify-between text-gray-600 py-3">
+        <div>
+            &copy; {{ get_setting('footer', 'copyright') }}
+        </div>
+
+        <div>
+            طراحی و توسعه توسط Avino
+        </div>
     </div>
 </footer>
