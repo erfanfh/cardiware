@@ -514,14 +514,12 @@ window.navigationManager = function (config = {}) {
                                         <div>
                                             <label class="mb-2 block text-sm font-bold text-slate-700">آیکون</label>
                                             <input type="text" data-field="icon" data-uid="${item.uid}" value="${this.escapeHtml(item.icon)}"
-                                                   placeholder="مثلاً home-03"
                                                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                         </div>
 
                                         <div>
                                             <label class="mb-2 block text-sm font-bold text-slate-700">Badge</label>
                                             <input type="text" data-field="badge" data-uid="${item.uid}" value="${this.escapeHtml(item.badge)}"
-                                                   placeholder="مثلاً جدید"
                                                    class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                         </div>
                                     </div>
@@ -540,7 +538,6 @@ window.navigationManager = function (config = {}) {
                                     <div>
                                         <label class="mb-2 block text-sm font-bold text-slate-700">کلاس سفارشی</label>
                                         <input type="text" data-field="cssClass" data-uid="${item.uid}" value="${this.escapeHtml(item.cssClass)}"
-                                               placeholder="مثلاً nav-item-featured"
                                                class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
                                     </div>
 

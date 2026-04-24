@@ -13,7 +13,8 @@
                target="{{ $item['target'] }}"
                @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
                class="flex items-center gap-2">
-                <span class="line-clamp-1 text-sm font-extrabold text-slate-900 hover:text-brand-700 transition">
+                <span
+                    class="line-clamp-1 text-sm font-extrabold text-slate-900 hover:text-brand-700 transition inline-block w-full">
                     {{ $item['title'] }}
                 </span>
 
