@@ -136,18 +136,20 @@ return [
                 'label' => 'صفحه اصلی',
                 'route' => 'admin.page-layouts.show',
                 'routeParameters' => ['home'],
-                'icon' => 'icons.dashboard-square-setting',
+                'icon' => 'icons.home-12',
                 'gate' => 'page-layout.home',
-            ],[
-                'label' => 'ساید بار',
+            ],
+            [
+                'label' => 'سایدبار',
                 'route' => 'admin.page-layouts.show',
                 'routeParameters' => ['sidebar'],
                 'icon' => 'icons.menu-01',
                 'gate' => 'page-layout.sidebar',
-            ],[
+            ],
+            [
                 'label' => 'صفحه محتوا',
                 'route' => 'admin.page-layouts.show',
-                'routeParameters' => ['content'],
+                'routeParameters' => ['post-content'],
                 'icon' => 'icons.file-empty-02',
                 'gate' => 'page-layout.content',
             ],

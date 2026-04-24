@@ -1,6 +1,15 @@
+@php
+    $gap = (int) ($gapSize ?? 8);
+
+    $gapClass = match ($gap) {
+        6 => 'gap-6',
+        default => 'gap-8',
+    };
+@endphp
+
 @foreach($rows as $row)
     @if($row['layout_type'] === 'split' && count($row['areas']) === 2)
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <section class="grid grid-cols-1 lg:grid-cols-12 {{ $gapClass }} items-stretch">
             @foreach($row['areas'] as $area)
                 @php
                     $widthClass = match ((int) $area['width']) {
@@ -20,13 +29,13 @@
                 @endphp
 
                 @if($area['key'] === 'content_sidebar')
-                    <aside class="{{ $widthClass }} flex flex-col gap-8">
+                    <aside class="{{ $widthClass }} flex flex-col {{ $gapClass }}">
                         @foreach($area['elements'] as $element)
                             @include($element['view'], ['layoutElement' => $element])
                         @endforeach
                     </aside>
                 @else
-                    <div class="{{ $widthClass }} flex flex-col gap-8">
+                    <div class="{{ $widthClass }} flex flex-col {{ $gapClass }}">
                         @foreach($area['elements'] as $element)
                             @include($element['view'], ['layoutElement' => $element])
                         @endforeach
@@ -36,7 +45,7 @@
         </section>
     @else
         @foreach($row['areas'] as $area)
-            <div class="flex flex-col gap-8">
+            <div class="flex flex-col {{ $gapClass }}">
                 @foreach($area['elements'] as $element)
                     @include($element['view'], ['layoutElement' => $element])
                 @endforeach

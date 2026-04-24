@@ -85,7 +85,7 @@ final class ContentController
 
     private function renderPost(Post $resolvedPost): View
     {
-        $layout = PageLayout::where('key', 'content')->first();
+        $layout = PageLayout::where('key', 'post-content')->first();
         $layoutData = $this->getLayoutRenderDataAction->execute($layout);
         $sidebarLayout = PageLayout::where('key', 'sidebar')->first();
         $sidebarLayoutData = $sidebarLayout ? $this->getLayoutRenderDataAction->execute($sidebarLayout) : null;
@@ -95,7 +95,7 @@ final class ContentController
 
         $relatedPosts = $this->resolveRelatedPosts($post);
 
-        return view('front.posts.detail', compact('layoutData','sidebarLayoutData','post', 'features', 'relatedPosts'));
+        return view('front.posts.detail', compact('layoutData', 'sidebarLayoutData', 'post', 'features', 'relatedPosts'));
     }
 
     private function loadPostForDetail(Post $post): Post

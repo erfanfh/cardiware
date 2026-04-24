@@ -231,35 +231,36 @@ class PageLayoutSeeder extends Seeder
                         ],
                     ],
                 ],
-            ], [
-                'key' => 'content',
-                'title' => 'چیدمان صفحه محتوا',
+            ],
+            [
+                'key' => 'post-content',
+                'title' => 'چیدمان صفحه نوشته',
                 'rows' => [
                     [
-                        'key' => 'single_content',
+                        'key' => 'post_content',
                         'layout_type' => 'split',
                         'sort_order' => 1,
                         'areas' => [
                             [
-                                'key' => 'content_main_area',
+                                'key' => 'post_content_main',
                                 'title' => 'بدنه اصلی نوشته',
                                 'description' => 'محتوای اصلی شامل عنوان و متن',
                                 'width' => 12,
                                 'sort_order' => 1,
                                 'elements' => [
                                     [
-                                        'key' => 'content_title',
-                                        'type' => 'content_title',
-                                        'title' => 'عنوان نوشته',
-                                        'description' => 'نمایش عنوان نوشته',
-                                        'is_active' => true,
-                                        'sort_order' => 1,
-                                    ],
-                                    [
                                         'key' => 'content',
                                         'type' => 'content',
                                         'title' => 'متن بدنه',
                                         'description' => 'نمایش محتوای اصلی نوشته',
+                                        'is_active' => true,
+                                        'sort_order' => 1,
+                                    ],
+                                    [
+                                        'key' => 'image_gallery',
+                                        'type' => 'image_gallery',
+                                        'title' => 'گالری تصاویر',
+                                        'description' => 'نمایش گالری تصاویر',
                                         'is_active' => true,
                                         'sort_order' => 2,
                                     ],
@@ -270,7 +271,8 @@ class PageLayoutSeeder extends Seeder
                                         'description' => 'نمایش نوشته‌های مرتبط با این نوشته',
                                         'is_active' => true,
                                         'sort_order' => 3,
-                                    ], [
+                                    ],
+                                    [
                                         'key' => 'comment_form',
                                         'type' => 'comment_form',
                                         'title' => 'فرم ارسال دیدگاه',
@@ -284,7 +286,7 @@ class PageLayoutSeeder extends Seeder
                                         'title' => 'لیست دیدگاه‌های این نوشته',
                                         'description' => 'نمایش نظرات ارسالی روی این نوشته خاص',
                                         'is_active' => true,
-                                        'sort_order' => 4,
+                                        'sort_order' => 5,
                                     ],
                                 ],
                             ],

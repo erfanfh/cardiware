@@ -20,16 +20,17 @@ class PageLayoutController
      */
     public function show(PageLayout $pageLayout, GetPageLayoutBuilderDataAction $getPageLayoutBuilderDataAction): View
     {
-        $view = 'admin.layout.page-layouts.home';
+        $view = '';
         $gate = "page-layout.{$pageLayout->key}";
         switch ($pageLayout->key) {
             case 'home':
+                $view = 'admin.layout.page-layouts.home';
                 break;
             case 'sidebar':
                 $view = 'admin.layout.page-layouts.sidebar';
                 break;
-            case 'content':
-                $view = 'admin.layout.page-layouts.content';
+            case 'post-content':
+                $view = 'admin.layout.page-layouts.post-content';
         }
         Gate::authorize($gate);
         $builderData = $getPageLayoutBuilderDataAction->execute($pageLayout);

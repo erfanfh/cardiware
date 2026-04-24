@@ -100,7 +100,7 @@
                     hover:text-gray-700
                 "
                 >
-                    <span class="shrink-0">
+                    <span class="shrink-0 [&_svg]:w-4 [&_svg]:h-4">
                         @if($iconView)
                             @includeIf($iconView)
                         @else
@@ -129,7 +129,7 @@
                 "
                     @click="open = !open"
                 >
-                    <span class="shrink-0">
+                    <span class="shrink-0 [&_svg]:w-4 [&_svg]:h-4">
                         @if($iconView)
                             @includeIf($iconView)
                         @else

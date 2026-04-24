@@ -61,11 +61,11 @@ class PageLayoutFrontRegistry
             'advertisement_5' => [
                 'view' => 'front.home.partials.ads-5',
             ],
-            'content_title' => [
-                'view' => 'front.posts.partials.detail.title',
-            ],
             'content' => [
                 'view' => 'front.posts.partials.detail.content',
+            ],
+            'image_gallery' => [
+                'view' => 'front.posts.partials.detail.image-gallery',
             ],
             'related_contents' => [
                 'view' => 'front.posts.partials.detail.related-posts',

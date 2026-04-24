@@ -219,39 +219,36 @@ class PageLayoutElementRegistry
                 'settings_route_parameters' => ['tab' => 'ads'],
             ],
 
-            'content_title' => [
-                'type' => 'content_title',
-                'type_label' => 'عنوان نوشته',
-                'type_color' => 'slate',
-                'allowed_areas' => [
-                    'content_main_area',
-                ],
-                'settings_route' => 'admin.posts.index',
-            ],
             'content' => [
                 'type' => 'content',
                 'type_label' => 'متن بدنه',
-                'type_color' => 'slate',
+                'type_color' => 'orange',
                 'allowed_areas' => [
-                    'content_main_area',
+                    'post_content_main',
                 ],
-                'settings_route' => 'admin.posts.index',
+            ],
+            'image_gallery' => [
+                'type' => 'image_gallery',
+                'type_label' => 'گالری تصاویر',
+                'type_color' => 'fuchsia',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
             ],
             'related_contents' => [
                 'type' => 'related_contents',
                 'type_label' => 'نوشته‌های مرتبط',
                 'type_color' => 'indigo',
                 'allowed_areas' => [
-                    'content_main_area',
+                    'post_content_main',
                 ],
-                'settings_route' => 'admin.posts.index',
             ],
             'comment_form' => [
                 'type' => 'comment_form',
                 'type_label' => 'فرم ارسال دیدگاه',
-                'type_color' => 'teal',
+                'type_color' => 'pink',
                 'allowed_areas' => [
-                    'content_main_area',
+                    'post_content_main',
                 ],
             ],
             'content_comments_list' => [
@@ -259,9 +256,8 @@ class PageLayoutElementRegistry
                 'type_label' => 'لیست دیدگاه‌های نوشته',
                 'type_color' => 'teal',
                 'allowed_areas' => [
-                    'content_main_area',
+                    'post_content_main',
                 ],
-                'settings_route' => 'admin.comments.index',
             ],
 
             'tools' => [
@@ -293,7 +289,7 @@ class PageLayoutElementRegistry
                 ],
                 'settings_route' => 'admin.settings.sidebar-widgets',
                 'settings_route_parameters' => ['tab' => 'projects'],
-                ],
+            ],
             'comments' => [
                 'type' => 'comments',
                 'type_label' => 'آخرین دیدگاه‌ها',
@@ -303,7 +299,7 @@ class PageLayoutElementRegistry
                 ],
                 'settings_route' => 'admin.settings.sidebar-widgets',
                 'settings_route_parameters' => ['tab' => 'comments'],
-                ],
+            ],
         ];
     }
 
