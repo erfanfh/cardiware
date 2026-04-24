@@ -90,18 +90,6 @@
                                 {{ $comment->content }}
                             </div>
 
-                            <div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                @if($comment->isRoot())
-                                    <x-admin.badge size="md" class="whitespace-nowrap">
-                                        دیدگاه اصلی
-                                    </x-admin.badge>
-                                @else
-                                    <x-admin.badge color="slate" size="md" class="whitespace-nowrap">
-                                        پاسخ به #{{ $comment->parent_id }}
-                                    </x-admin.badge>
-                                @endif
-                            </div>
-
                             <x-admin.list.row-actions>
                                 <x-admin.list.action tag="button" type="button">
                                     تایید
@@ -145,7 +133,7 @@
         @else
             <x-admin.list.empty
                     title="دیدگاهی برای نمایش وجود ندارد"
-                    description="هنوز هیچ دیدگاهی ثبت نشده است."
+                    description="هنوز هیچ دیدگاهی ثبت نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
             />
         @endif
     </x-admin.list.tbody>
