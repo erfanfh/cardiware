@@ -1,7 +1,5 @@
 @extends('front.identity.users.auth.master')
 
-@section('title', 'ورود / ثبت‌نام')
-
 @section('content')
     <main class="min-h-screen flex">
         <section class="relative hidden lg:block flex-1 overflow-hidden">
