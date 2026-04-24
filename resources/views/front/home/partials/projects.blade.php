@@ -32,7 +32,7 @@
                         <div class="flex items-center justify-between gap-3">
                             <div class="min-w-0">
                                 <div class="text-sm sm:text-base font-extrabold truncate">{{ $project->title }}</div>
-                                <div class="text-xs text-slate-500 mt-2">{{ $project->excerpt() }}</div>
+                                <div class="text-xs text-slate-500 mt-2 truncate">{{ $project->excerpt() }}</div>
                             </div>
 
 
