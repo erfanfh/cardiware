@@ -32,10 +32,10 @@
     </a>
 
     @if($item['children']->isNotEmpty())
-        <div class="absolute right-full top-0 z-50 mr-2 min-w-64
-            opacity-0 invisible translate-x-2 pointer-events-none
-            group-hover/sub:opacity-100 group-hover/sub:visible group-hover/sub:translate-x-0 group-hover/sub:pointer-events-auto
-            transition duration-200">
+        <div class="absolute right-full -top-2 z-50 min-w-64 pr-2
+            opacity-0 invisible translate-x-2 scale-[0.98] pointer-events-none
+            group-hover/sub:opacity-100 group-hover/sub:visible group-hover/sub:translate-x-0 group-hover/sub:scale-100 group-hover/sub:pointer-events-auto
+            transition-all duration-200 ease-out">
             <div class="rounded-3xl border border-slate-100 bg-white p-2 shadow-2xl">
                 @foreach($item['children'] as $child)
                     @include('front.header.navigation.dropdown-sub-item', [

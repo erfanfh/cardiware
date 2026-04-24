@@ -26,10 +26,10 @@
         </svg>
     </a>
 
-    <div class="absolute right-0 top-full z-40 mt-3 min-w-64
-        opacity-0 invisible translate-y-2 pointer-events-none
-        group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto
-        transition duration-200">
+    <div class="absolute right-0 top-full z-40 min-w-64 pt-3
+        opacity-0 invisible translate-y-2 scale-[0.98] pointer-events-none
+        group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto
+        transition-all duration-200 ease-out">
         <div class="rounded-3xl border border-slate-200 bg-white p-2 shadow-2xl">
             @foreach($item['children'] as $child)
                 @include('front.header.navigation.dropdown-sub-item', [

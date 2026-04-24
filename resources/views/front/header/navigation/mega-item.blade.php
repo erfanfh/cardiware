@@ -30,10 +30,10 @@
         </svg>
     </a>
 
-    <div class="absolute right-0 top-full z-40 mt-3 w-[min(1080px,92vw)]
-        opacity-0 invisible translate-y-2 pointer-events-none
-        group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto
-        transition duration-200">
+    <div class="absolute right-0 top-full z-40 w-[min(1080px,92vw)] pt-3
+        opacity-0 invisible translate-y-2 scale-[0.98] pointer-events-none
+        group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto
+        transition-all duration-200 ease-out">
         <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-2xl">
             <div class="grid grid-cols-12">
 
