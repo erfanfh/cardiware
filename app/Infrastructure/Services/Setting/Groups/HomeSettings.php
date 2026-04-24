@@ -4,7 +4,6 @@ namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
 use App\Infrastructure\Casts\BooleanCast;
-use App\Infrastructure\Casts\IntegerCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -19,7 +18,6 @@ class HomeSettings extends BaseSettings
         'download_products_all_url',
         'download_products_items',
         'special_posts_title',
-        'special_posts_posts_counts',
         'special_posts_items',
         'subscription_title',
         'subscription_subtitle',
@@ -60,7 +58,6 @@ class HomeSettings extends BaseSettings
         'projects_items' => RepeaterArrayCast::class,
         'videos_category_ids' => ArrayCast::class,
         'posts_items' => RepeaterArrayCast::class,
-        'special_posts_posts_counts' => IntegerCast::class,
         'ads_1_display_background' => BooleanCast::class,
         'ads_2_display_background' => BooleanCast::class,
         'ads_3_display_background' => BooleanCast::class,
