@@ -28,7 +28,9 @@ class CreateCommentAction
 
         $this->ensureRatingIsValid($commentable, $data, $parent);
         $this->ensureContentIsNotDuplicate($data, $parent);
-        $this->ensureSubmissionCooldown($data);
+        if (!$data->bypassCooldown) {
+            $this->ensureSubmissionCooldown($data);
+        }
 
         $status = $this->resolveInitialStatus();
 
@@ -195,10 +197,14 @@ class CreateCommentAction
             return null;
         }
 
+        $parentQuery = Comment::query();
+
+        if (!$data->allowReplyToUnapprovedParent) {
+            $parentQuery->approved();
+        }
+
         /** @var Comment|null $parent */
-        $parent = Comment::query()
-            ->approved()
-            ->find($data->parentId);
+        $parent = $parentQuery->find($data->parentId);
 
         if (!$parent) {
             throw ValidationException::withMessages([

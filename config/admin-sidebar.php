@@ -65,6 +65,7 @@ return [
         'route' => 'admin.comments.index',
         'icon' => 'icons.comment-01',
         'gate' => 'comment.list',
+        'badge' => 'pending_comments',
     ],
 
     [

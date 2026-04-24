@@ -18,7 +18,7 @@
                 wire:key="taxonomy-form-{{ $editingId ? 'edit-' . $editingId : 'create' }}"
                 wire:loading.class="opacity-70"
                 wire:target="save,cancelEditing"
-                class="space-y-5 transition"
+                class="space-y-5 transition confirmationForm"
             >
                 <x-admin.form.simple-validation-errors/>
 

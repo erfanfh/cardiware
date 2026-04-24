@@ -52,8 +52,17 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش نقش',
                 'delete' => 'حذف نقش',
             ],
+            'comment' => [
+                'list' => 'لیست دیدگاه ها',
+                'edit' => 'ویرایش دیدگاه',
+                'delete' => 'حذف دیدگاه',
+                'auto_approve' => 'تایید اتوماتیک دیدگاه',
+            ],
             'page-layout' => [
                 'home' => 'مدیریت چیدمان - صفحه اصلی',
+            ],
+            'navigation-menu' => [
+                'manage' => 'مدیریت فهرست ها',
             ],
             'setting' => [
                 'general' => 'تنظیمات عمومی',
@@ -67,9 +76,6 @@ class PermissionSeeder extends Seeder
                 'auth' => 'ورود/ثبت نام',
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
-            ],
-            'navigation-menu' => [
-                'manage' => 'مدیریت فهرست ها',
             ],
         ];
 

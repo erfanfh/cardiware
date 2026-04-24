@@ -1,5 +1,14 @@
 <?php
 
-use App\Http\Controllers\Admin\Discussion\CommentController;
+use App\Http\Controllers\Admin\Discussion\CommentBulkActionController;
+use App\Http\Controllers\Admin\Discussion\CommentListController;
+use App\Http\Controllers\Admin\Discussion\CommentReplyController;
+use Illuminate\Support\Facades\Route;
 
-Route::resource('comments', CommentController::class);
+Route::prefix('comments')
+    ->name('comments.')
+    ->group(function () {
+        Route::get('/', CommentListController::class)->name('index');
+        Route::post('/bulk-action', CommentBulkActionController::class)->name('bulk-action');
+        Route::post('/{comment}/reply', CommentReplyController::class)->name('reply');
+    });

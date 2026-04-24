@@ -16,6 +16,8 @@ class CreateCommentDataDTO
         public ?int    $ratingPercent,
         public ?string $ipAddress,
         public ?string $userAgent,
+        public bool    $allowReplyToUnapprovedParent = false,
+        public bool    $bypassCooldown = false,
     )
     {
     }

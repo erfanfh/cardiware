@@ -163,9 +163,10 @@ class SettingController extends Controller
         Gate::authorize('setting.home');
 
         $this->storeSettings($request, 'home');
+        $activeTab = $request->input('active_tab', 'slider');
 
         return redirect()
-            ->route('admin.settings.home')
+            ->route('admin.settings.home', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 

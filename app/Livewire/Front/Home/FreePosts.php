@@ -25,7 +25,6 @@ class FreePosts extends Component
         $this->postTabs = app(GetHomePostTabsAction::class)->execute();
         $this->activeTabKey = $this->postTabs[0]['key'] ?? null;
         $this->changeTab($this->activeTabKey);
-
         $this->mainPosts = collect();
         $this->list1Posts = collect();
         $this->list2Posts = collect();

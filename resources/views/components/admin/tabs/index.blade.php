@@ -1,16 +1,39 @@
 @props([
    'tabs' => [],
    'active' => null,
+   'url' => null
 ])
 
 @php
-    $firstTab = collect($tabs)->keys()->first();
+    $currentUrlTab = request()->input('tab');
     $initialTab = $active ?: $firstTab;
+
+     if (!$initialTab) {
+        $initialTab = collect($tabs)->keys()->first();
+    }
+     $baseUrl = $url ?: url()->current();
 @endphp
 
 <div
     {{ $attributes->merge(['class' => 'space-y-4']) }}
-    x-data="{ activeTab: @js($initialTab) }"
+    x-data="{
+        activeTab: @js($initialTab),
+        tabs: @js($tabs),
+        baseUrl: @js($baseUrl)
+     }"
+    x-init="
+        const params = new URLSearchParams(window.location.search);
+        const urlTab = params.get('tab');
+        if (urlTab && tabs[urlTab]) {
+            activeTab = urlTab;
+        }
+         $watch('activeTab', (value) => {
+            const hiddenInput = document.getElementById('active_tab_input');
+            if (hiddenInput) {
+                hiddenInput.value = value;
+            }
+        });
+    "
 >
     <div class="overflow-x-auto">
         <div class="inline-flex min-w-full gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-1">

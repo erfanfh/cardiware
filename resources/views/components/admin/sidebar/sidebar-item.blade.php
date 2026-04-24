@@ -1,4 +1,7 @@
-@props(['item'])
+@props([
+    'item',
+    'badges' => [],
+])
 
 @php
     $label = $item['label'] ?? '';
@@ -10,6 +13,10 @@
 
     $can  = $item['can']  ?? null;
     $gate = $item['gate'] ?? null;
+
+    $badgeKey = $item['badge'] ?? null;
+    $badgeValue = $badgeKey ? (int) ($badges[$badgeKey] ?? 0) : 0;
+    $hasBadge = $badgeValue > 0;
 
     $children = $item['children'] ?? [];
     $hasChildren = is_array($children) && count($children) > 0;
@@ -103,7 +110,15 @@
                             </svg>
                         @endif
                     </span>
-                    <span class="mx-3 font-medium text-sm">{{ $label }}</span>
+                    <span class="mx-3 font-medium text-sm flex-1">{{ $label }}</span>
+
+                    @if($hasBadge)
+                        <span
+                            class="inline-flex min-w-6 items-center justify-center rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600 ring-1 ring-rose-100"
+                        >
+                            {{ $badgeValue > 99 ? '+99' : $badgeValue }}
+                        </span>
+                    @endif
                 </a>
             @else
                 {{-- Parent (toggle) --}}
@@ -127,6 +142,14 @@
 
                     <span class="mx-3 font-medium text-sm flex-1">{{ $label }}</span>
 
+                    @if($hasBadge)
+                        <span
+                            class="ml-2 inline-flex min-w-6 items-center justify-center rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-600 ring-1 ring-rose-100"
+                        >
+                            {{ $badgeValue > 99 ? '+99' : $badgeValue }}
+                        </span>
+                    @endif
+
                     <svg class="shrink-0 transition-transform duration-200"
                          :class="open ? 'rotate-180' : ''"
                          style="width:16px;height:16px"
@@ -143,7 +166,7 @@
                 >
                     <ul class="space-y-1">
                         @foreach($allowedChildren as $child)
-                            <x-admin.sidebar.sidebar-item :item="$child"/>
+                            <x-admin.sidebar.sidebar-item :item="$child" :badges="$badges"/>
                         @endforeach
                     </ul>
                 </div>

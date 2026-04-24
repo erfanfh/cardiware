@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/admin/admin.js',
                 'resources/js/admin/page-layout.js',
                 'resources/js/admin/list-table.js',
+                'resources/js/admin/comment-actions.js',
                 'resources/js/admin/navigation-menu.js',
 
                 'resources/js/front/main.js',
