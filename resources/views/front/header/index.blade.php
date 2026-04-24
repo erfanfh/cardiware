@@ -2,7 +2,7 @@
 
 <header id="header" class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
     <div class="mx-auto max-w-7xl px-4 py-4">
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
             <button
                 type="button"
                 class="md:hidden cursor-pointer h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
@@ -12,8 +12,8 @@
             >
                 @include('icons.menu-01')
             </button>
-            
-            <a href="{{ route('home') }}" class="flex items-center gap-2">
+
+            <a href="{{ route('home') }}" class="flex min-w-0 flex-1 items-center gap-2 md:flex-none">
                 <div class="h-10 w-10 grid place-items-center">
                     <img
                         src="{{ get_setting('header', 'logo')->path }}"
@@ -22,15 +22,19 @@
                         class="max-h-11 h-auto object-contain"
                     />
                 </div>
-                <div class="leading-tight">
-                    <div class="font-extrabold text-lg">{{ get_setting('general', 'title') }}</div>
-                    <div class="text-xs text-slate-500">{{ get_setting('general', 'subtitle') }}</div>
+                <div class="min-w-0 leading-tight max-[380px]:hidden">
+                    <div class="truncate text-base font-extrabold sm:text-lg">
+                        {{ get_setting('general', 'title') }}
+                    </div>
+                    <div class="truncate text-xs text-slate-500 max-sm:hidden">
+                        {{ get_setting('general', 'subtitle') }}
+                    </div>
                 </div>
             </a>
 
             <!-- Search (with live results dropdown) -->
             <div
-                class="flex-1 px-2"
+                class="order-3 w-full px-0 md:order-none md:w-auto md:flex-1 md:px-2"
                 x-data="{
                       q: '',
                       open: false,
@@ -100,7 +104,7 @@
                 </label>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex shrink-0 items-center gap-2 max-sm:gap-1.5">
                 @include('front.header.notifications')
 
                 <button

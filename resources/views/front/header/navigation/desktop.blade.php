@@ -1,5 +1,5 @@
 @if($items->isNotEmpty())
-    <nav class="mt-4">
+    <nav class="md:mt-4">
         <div class="flex items-center justify-between gap-3">
             <div class="hidden md:flex items-center text-sm font-extrabold text-slate-800">
                 @foreach($items as $item)

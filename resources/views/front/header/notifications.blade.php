@@ -32,7 +32,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-        class="absolute top-full left-0 z-[100] mt-3 w-[24rem] max-w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
+        class="absolute top-full left-0 z-[100] mt-3 w-[24rem] max-w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl max-sm:right-auto max-sm:left-0 max-sm:mt-2 max-sm:w-[calc(100vw-8rem)] max-sm:max-w-none"
     >
         <div class="border-b border-slate-100 px-4 py-3">
             <div class="text-sm font-extrabold text-slate-900">اعلان‌ها</div>
