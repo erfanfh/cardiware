@@ -21,7 +21,7 @@ class CommentListController extends Controller
 
         $comments = $commentListing
             ->handle(
-                Comment::query()->with(['user', 'commentable']),
+                Comment::query()->with(['user', 'commentable', 'parent.user']),
                 $request->validated()
             )
             ->paginate($commentListing->perPage())
