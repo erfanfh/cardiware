@@ -51,8 +51,6 @@
                             $commentableTitle = $commentable->name;
                         }
                     }
-
-                    $commentableType = $commentable ? class_basename($commentable) : '---';
                 @endphp
 
                 <x-admin.list.tr
@@ -258,13 +256,10 @@
 
                     <x-admin.list.td>
                         <div class="min-w-[220px] space-y-2">
-                            <div class="text-sm font-bold text-slate-800">
+                            <a href="{{ $commentable->url }}"
+                               class="text-sm font-bold text-slate-700 hover:text-brand-600 transition">
                                 {{ $commentableTitle }}
-                            </div>
-
-                            <div class="text-xs text-slate-500">
-                                نوع: {{ $commentableType }}
-                            </div>
+                            </a>
                         </div>
                     </x-admin.list.td>
 
