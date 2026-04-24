@@ -74,7 +74,6 @@ class NavigationItem extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')
-            ->with(['children', 'reference'])
             ->orderBy('sort_order')
             ->orderBy('id');
     }

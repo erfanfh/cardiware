@@ -11,6 +11,7 @@ use App\Domain\Navigation\Models\NavigationItem;
 use App\Domain\Navigation\Models\NavigationMenu;
 use App\Domain\Project\Models\Project;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -36,6 +37,8 @@ class SyncNavigationMenuItemsAction
                 parentId: null,
                 depth: 0,
             );
+
+            Cache::forget("navigation.frontend.{$menu->slug}");
         });
     }
 

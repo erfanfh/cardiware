@@ -21,7 +21,7 @@ class NavigationServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('front.header.*', function ($view) {
+        View::composer('front.header.index', function ($view) {
             $view->with(
                 'headerNavigationItems',
                 app(ResolveFrontendNavigationMenuAction::class)->execute('header')
