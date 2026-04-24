@@ -1,4 +1,12 @@
-@php $items = config('admin-sidebar', []); @endphp
+@php
+    $items = config('admin-sidebar', []);
+
+    $sidebarBadges = [
+        'pending_comments' => \App\Domain\Discussion\Models\Comment::query()
+            ->where('status', \App\Domain\Discussion\Enums\CommentStatusEnum::PENDING)
+            ->count(),
+    ];
+@endphp
 
 <aside
     class="sidebar bg-white text-gray-900 shadow"
@@ -16,7 +24,10 @@
     <nav class="sidebar__nav">
         <ul class="space-y-2">
             @foreach($items as $item)
-                <x-admin.sidebar.sidebar-item :item="$item"/>
+                <x-admin.sidebar.sidebar-item
+                    :item="$item"
+                    :badges="$sidebarBadges"
+                />
             @endforeach
         </ul>
     </nav>
