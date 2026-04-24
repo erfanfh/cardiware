@@ -1,5 +1,5 @@
 @php
-    $columns = max(1, min((int) $item['mega_menu_columns'], 6));
+    $columns = max(1, min((int) $item['mega_menu_columns'], 5));
 @endphp
 
 <div class="relative group flex items-center">
@@ -30,63 +30,72 @@
         </svg>
     </a>
 
-    <div class="absolute right-0 top-full z-40 mt-3 w-[min(980px,92vw)]
+    <div class="absolute right-0 top-full z-40 mt-3 w-[min(1080px,92vw)]
         opacity-0 invisible translate-y-2 pointer-events-none
         group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto
         transition duration-200">
-        <div class="rounded-3xl border border-slate-200 bg-white shadow-2xl overflow-hidden">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-5">
-                    <div class="text-sm font-extrabold text-slate-900">
-                        {{ $item['mega_menu_title'] ?: $item['title'] }}
+        <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-2xl">
+            <div class="grid grid-cols-12">
+
+                <div class="col-span-12 lg:col-span-9 p-6">
+                    <div class="mb-5 flex items-center justify-between gap-4">
+                        <div>
+                            <div class="text-sm font-extrabold text-slate-900">
+                                {{ $item['mega_menu_title'] ?: $item['title'] }}
+                            </div>
+                            <div class="mt-1 text-xs font-medium text-slate-500">
+                                دسته‌بندی‌ها و لینک‌های مرتبط
+                            </div>
+                        </div>
+
+                        <a href="{{ $item['url'] }}"
+                           class="shrink-0 rounded-2xl bg-slate-100 px-3 py-2 text-xs font-extrabold text-slate-700 hover:bg-slate-200 transition">
+                            مشاهده همه
+                        </a>
                     </div>
 
-                    <a href="{{ $item['url'] }}"
-                       class="text-xs font-bold text-brand-600 hover:text-brand-700 transition">
-                        مشاهده همه
-                    </a>
+                    <div @class([
+                        'grid gap-4',
+                        'grid-cols-1' => $columns === 1,
+                        'grid-cols-2' => $columns === 2,
+                        'grid-cols-2 md:grid-cols-3' => $columns === 3,
+                        'grid-cols-2 md:grid-cols-4' => $columns === 4,
+                        'grid-cols-2 md:grid-cols-5' => $columns >= 5,
+                    ])>
+                        @foreach($item['children'] as $child)
+                            @include('front.header.navigation.mega-card', [
+                                'item' => $child,
+                                'level' => 1,
+                            ])
+                        @endforeach
+                    </div>
                 </div>
 
-                <div @class([
-                    'grid gap-3',
-                    'grid-cols-1' => $columns === 1,
-                    'grid-cols-2' => $columns === 2,
-                    'grid-cols-2 md:grid-cols-3' => $columns === 3,
-                    'grid-cols-2 md:grid-cols-4' => $columns === 4,
-                    'grid-cols-2 md:grid-cols-5' => $columns === 5,
-                    'grid-cols-2 md:grid-cols-6' => $columns >= 6,
-                ])>
-                    @foreach($item['children'] as $child)
-                        <a href="{{ $child['url'] }}"
-                           target="{{ $child['target'] }}"
-                           @if($child['target'] === '_blank') rel="noopener noreferrer" @endif
-                           class="group/item rounded-2xl bg-slate-50 p-3 hover:bg-white hover:shadow-md hover:ring-1 hover:ring-slate-200 transition {{ $child['css_class'] }}">
-                            <div class="flex items-center gap-3">
-                                @if($child['icon'])
+                <div
+                    class="col-span-12 lg:col-span-3 border-t border-slate-200 bg-slate-50/80 p-6 lg:border-r lg:border-t-0">
+                    <div class="text-sm font-extrabold text-slate-900">
+                        دسترسی سریع
+                    </div>
+
+                    <div class="mt-4 space-y-2">
+                        @foreach($item['children']->take(4) as $quickItem)
+                            <a href="{{ $quickItem['url'] }}"
+                               target="{{ $quickItem['target'] }}"
+                               @if($quickItem['target'] === '_blank') rel="noopener noreferrer" @endif
+                               class="flex items-center gap-3 rounded-2xl bg-white p-3 text-sm font-bold text-slate-700 ring-1 ring-slate-200 hover:text-slate-900 hover:shadow-md transition">
+                                @if($quickItem['icon'])
                                     <span
-                                        class="h-10 w-10 shrink-0 rounded-2xl bg-white ring-1 ring-slate-200 grid place-items-center text-base">
-                                        {{ $child['icon'] }}
+                                        class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base">
+                                        {{ $quickItem['icon'] }}
                                     </span>
                                 @endif
 
-                                <div class="min-w-0">
-                                    <div class="text-sm font-extrabold text-slate-900 line-clamp-1">
-                                        {{ $child['title'] }}
-                                    </div>
-
-                                    @if($child['badge'])
-                                        <div class="mt-1">
-                                            <span
-                                                class="rounded-full bg-white px-2 py-0.5 text-[10px] font-extrabold text-slate-500 ring-1 ring-slate-200">
-                                                {{ $child['badge'] }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </a>
-                    @endforeach
+                                <span class="line-clamp-1">{{ $quickItem['title'] }}</span>
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
