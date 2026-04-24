@@ -17,7 +17,7 @@
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="text-sm font-extrabold truncate">{{ $item['title'] }}</div>
-                    <div class="text-[0.7rem] mt-1 text-slate-500">{{ $item['short_description']  }}</div>
+                    <div class="text-[0.7rem] mt-1 text-slate-500 truncate">{{ $item['short_description']  }}</div>
                 </div>
             </a>
         @endforeach

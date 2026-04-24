@@ -11,7 +11,7 @@
             >
                 <span class="inline-flex h-5 w-5 items-center justify-center rounded-xl text-xs font-black
                     {{ $postTab['key'] === $activeTabKey ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-900' }}"></span>
-                <h2>{{ $postTab['main_title'] }}</h2>
+                <h2 class="whitespace-nowrap">{{ $postTab['main_title'] }}</h2>
             </button>
         @endforeach
     </div>
