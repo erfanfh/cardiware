@@ -22,9 +22,9 @@ class UpdatePageRequest extends FormRequest
         $templates = app(PageTemplateService::class)->all();
 
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 'alpha_dash',
@@ -33,7 +33,7 @@ class UpdatePageRequest extends FormRequest
             'template' => ['nullable', 'string', 'in:' . implode(',', array_keys($templates))],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'author_id' => ['nullable', 'integer', 'exists:users,id'],
-            'body' => ['required', 'string'],
+            'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
         ];

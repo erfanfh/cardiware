@@ -40,6 +40,10 @@ class UpdatePostAction
      */
     public function execute(Post $post, array $data): Post
     {
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
+
         $post = DB::transaction(function () use ($post, $data) {
             $postData = $data;
 

@@ -13,8 +13,8 @@ use Throwable;
 class CreatePageAction
 {
     public function __construct(
-        protected AssignSlugAction           $assignSlugAction,
-        protected ContentSlugCacheService    $contentSlugCacheService,
+        protected AssignSlugAction        $assignSlugAction,
+        protected ContentSlugCacheService $contentSlugCacheService,
     )
     {
     }
@@ -28,6 +28,10 @@ class CreatePageAction
      */
     public function execute(array $data): Page
     {
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
+
         $page = DB::transaction(function () use ($data) {
             $pageData = $data;
 

@@ -33,6 +33,8 @@ class QuickUpdatePostController extends Controller
     public function __invoke(QuickUpdatePostRequest $request, Post $post): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
+        $data['title'] = $data['title'] ?? 'بدون عنوان';
+        $data['slug'] = $data['slug'] ?? 'untitled-page';
 
         DB::transaction(function () use ($post, $data): void {
             $post->update([

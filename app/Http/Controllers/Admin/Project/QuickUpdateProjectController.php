@@ -33,7 +33,8 @@ class QuickUpdateProjectController extends Controller
     public function __invoke(QuickUpdateProjectRequest $request, Project $project): JsonResponse|RedirectResponse
     {
         $data = $request->validated();
-
+        $data['title'] = $data['title'] ?? 'بدون عنوان';
+        $data['slug'] = $data['slug'] ?? 'untitled-page';
         DB::transaction(function () use ($project, $data): void {
             $project->update([
                 'title' => $data['title'],

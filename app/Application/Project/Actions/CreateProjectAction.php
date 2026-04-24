@@ -36,6 +36,10 @@ class CreateProjectAction
      */
     public function execute(array $data): Project
     {
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
+
         return DB::transaction(function () use ($data) {
             $projectData = $data;
 
