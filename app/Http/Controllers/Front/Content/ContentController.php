@@ -78,24 +78,20 @@ final class ContentController
         if ($page->template && $this->pageTemplateService->exists($page->template)) {
             $viewName = "templates.{$page->template}";
         }
-        $sidebarLayout = PageLayout::where('key', 'sidebar')->first();
-        $sidebarLayoutData = $sidebarLayout ? $this->getLayoutRenderDataAction->execute($sidebarLayout) : null;
-        return view($viewName, compact('page', 'sidebarLayoutData'));
+        return view($viewName, compact('page'));
     }
 
     private function renderPost(Post $resolvedPost): View
     {
         $layout = PageLayout::where('key', 'post-content')->first();
         $layoutData = $this->getLayoutRenderDataAction->execute($layout);
-        $sidebarLayout = PageLayout::where('key', 'sidebar')->first();
-        $sidebarLayoutData = $sidebarLayout ? $this->getLayoutRenderDataAction->execute($sidebarLayout) : null;
         $post = $this->loadPostForDetail($resolvedPost);
 
         $features = $this->getPostFeaturesAction->execute($post);
 
         $relatedPosts = $this->resolveRelatedPosts($post);
 
-        return view('front.posts.detail', compact('layoutData', 'sidebarLayoutData', 'post', 'features', 'relatedPosts'));
+        return view('front.posts.detail', compact('layoutData', 'post', 'features', 'relatedPosts'));
     }
 
     private function loadPostForDetail(Post $post): Post
