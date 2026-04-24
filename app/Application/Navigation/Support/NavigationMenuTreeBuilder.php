@@ -52,8 +52,8 @@ class NavigationMenuTreeBuilder
                     'cssClass' => $item->css_class,
                     'isMegaMenu' => $item->is_mega_menu,
                     'megaMenuTitle' => $item->mega_menu_title,
+                    'megaMenuDescription' => $item->mega_menu_description,
                     'megaMenuColumns' => (string)$item->mega_menu_columns,
-                    'megaMenuStyle' => $item->mega_menu_style ?? 'default',
                     'children' => $this->buildChildren(
                         groupedByParent: $groupedByParent,
                         parentId: $item->id,

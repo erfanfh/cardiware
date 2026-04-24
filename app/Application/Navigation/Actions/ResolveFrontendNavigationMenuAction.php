@@ -55,8 +55,8 @@ class ResolveFrontendNavigationMenuAction
             'css_class' => $item->css_class,
             'is_mega_menu' => $item->is_mega_menu,
             'mega_menu_title' => $item->mega_menu_title,
+            'mega_menu_description' => $item->mega_menu_description,
             'mega_menu_columns' => $item->mega_menu_columns,
-            'mega_menu_style' => $item->mega_menu_style,
             'children' => $item->children
                 ->map(fn($child) => $this->mapItem($child))
                 ->filter()

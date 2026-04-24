@@ -81,8 +81,8 @@ window.navigationManager = function (config = {}) {
                 cssClass: item.cssClass ?? '',
                 isMegaMenu: !!item.isMegaMenu,
                 megaMenuTitle: item.megaMenuTitle ?? '',
+                megaMenuDescription: item.megaMenuDescription ?? '',
                 megaMenuColumns: String(item.megaMenuColumns ?? '4'),
-                megaMenuStyle: item.megaMenuStyle ?? 'default',
                 children: this.normalizeItems(item.children ?? []),
             }));
         },
@@ -281,8 +281,8 @@ window.navigationManager = function (config = {}) {
                 cssClass: '',
                 isMegaMenu: false,
                 megaMenuTitle: '',
+                megaMenuDescription: '',
                 megaMenuColumns: '4',
-                megaMenuStyle: 'default',
                 children: [],
             };
         },
@@ -303,8 +303,8 @@ window.navigationManager = function (config = {}) {
                 cssClass: item.cssClass ?? '',
                 isMegaMenu: !!item.isMegaMenu,
                 megaMenuTitle: item.megaMenuTitle ?? '',
+                megaMenuDescription: item.megaMenuDescription ?? '',
                 megaMenuColumns: String(item.megaMenuColumns ?? '4'),
-                megaMenuStyle: item.megaMenuStyle ?? 'default',
                 children: [],
             };
         },
@@ -572,6 +572,12 @@ window.navigationManager = function (config = {}) {
                                     </div>
 
                                     <div>
+                                        <label class="mb-2 block text-sm font-bold text-violet-900">توضیحات مگامنو</label>
+                                        <input type="text" data-field="megaMenuDescription" data-uid="${item.uid}" value="${this.escapeHtml(item.megaMenuDescription)}"
+                                               class="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
+                                    </div>
+
+                                    <div>
                                         <label class="mb-2 block text-sm font-bold text-violet-900">تعداد ستون</label>
                                         <select data-field="megaMenuColumns" data-uid="${item.uid}"
                                                 class="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
@@ -579,16 +585,6 @@ window.navigationManager = function (config = {}) {
                                             <option value="3" ${item.megaMenuColumns === '3' ? 'selected' : ''}>3 ستون</option>
                                             <option value="4" ${item.megaMenuColumns === '4' ? 'selected' : ''}>4 ستون</option>
                                             <option value="5" ${item.megaMenuColumns === '5' ? 'selected' : ''}>5 ستون</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="mb-2 block text-sm font-bold text-violet-900">استایل</label>
-                                        <select data-field="megaMenuStyle" data-uid="${item.uid}"
-                                                class="w-full rounded-2xl border border-violet-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
-                                            <option value="default" ${item.megaMenuStyle === 'default' ? 'selected' : ''}>پیش‌فرض</option>
-                                            <option value="highlighted" ${item.megaMenuStyle === 'highlighted' ? 'selected' : ''}>برجسته</option>
-                                            <option value="compact" ${item.megaMenuStyle === 'compact' ? 'selected' : ''}>فشرده</option>
                                         </select>
                                     </div>
                                 </div>
@@ -996,8 +992,8 @@ window.navigationManager = function (config = {}) {
                 css_class: item.cssClass ?? '',
                 is_mega_menu: !!item.isMegaMenu,
                 mega_menu_title: item.megaMenuTitle ?? '',
+                mega_menu_description: item.megaMenuDescription ?? '',
                 mega_menu_columns: Number(item.megaMenuColumns ?? 4),
-                mega_menu_style: item.megaMenuStyle ?? 'default',
                 children: this.prepareItemsForSubmit(item.children ?? []),
             }));
         },

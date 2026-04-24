@@ -66,8 +66,8 @@ class SyncNavigationMenuItemsAction
                 'css_class' => $validatedItem['css_class'],
                 'is_mega_menu' => $validatedItem['is_mega_menu'],
                 'mega_menu_title' => $validatedItem['mega_menu_title'],
+                'mega_menu_description' => $validatedItem['mega_menu_description'],
                 'mega_menu_columns' => $validatedItem['mega_menu_columns'],
-                'mega_menu_style' => $validatedItem['mega_menu_style'],
                 'sort_order' => $sortOrder,
                 'depth' => $depth,
                 'settings' => null,
@@ -156,8 +156,8 @@ class SyncNavigationMenuItemsAction
             'css_class' => $this->nullableTrimmedString($item['css_class'] ?? null),
             'is_mega_menu' => (bool)($item['is_mega_menu'] ?? false),
             'mega_menu_title' => $this->nullableTrimmedString($item['mega_menu_title'] ?? null),
+            'mega_menu_description' => $this->nullableTrimmedString($item['mega_menu_description'] ?? null),
             'mega_menu_columns' => max(1, (int)($item['mega_menu_columns'] ?? 4)),
-            'mega_menu_style' => $this->nullableTrimmedString($item['mega_menu_style'] ?? 'default') ?? 'default',
             'children' => is_array($item['children'] ?? null) ? $item['children'] : [],
         ];
     }

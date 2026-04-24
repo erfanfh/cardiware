@@ -44,7 +44,7 @@
                                 {{ $item['mega_menu_title'] ?: $item['title'] }}
                             </div>
                             <div class="mt-1 text-xs font-medium text-slate-500">
-                                دسته‌بندی‌ها و لینک‌های مرتبط
+                                {{ $item['mega_menu_description'] ?? '' }}
                             </div>
                         </div>
 
