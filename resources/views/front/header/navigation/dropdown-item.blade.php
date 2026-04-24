@@ -32,22 +32,10 @@
         transition duration-200">
         <div class="rounded-3xl border border-slate-200 bg-white p-2 shadow-2xl">
             @foreach($item['children'] as $child)
-                <a href="{{ $child['url'] }}"
-                   target="{{ $child['target'] }}"
-                   @if($child['target'] === '_blank') rel="noopener noreferrer" @endif
-                   class="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition {{ $child['css_class'] }}">
-                    @if($child['icon'])
-                        <span class="text-base">{{ $child['icon'] }}</span>
-                    @endif
-
-                    <span class="flex-1">{{ $child['title'] }}</span>
-
-                    @if($child['badge'])
-                        <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-extrabold text-slate-600">
-                            {{ $child['badge'] }}
-                        </span>
-                    @endif
-                </a>
+                @include('front.header.navigation.dropdown-sub-item', [
+                    'item' => $child,
+                    'level' => 1,
+                ])
             @endforeach
         </div>
     </div>
