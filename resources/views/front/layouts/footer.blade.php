@@ -263,7 +263,7 @@
 
     <div class="h-px w-full bg-gray-200"></div>
 
-    <div class="mx-auto max-w-7xl px-4 text-xs flex justify-between text-gray-600 py-3">
+    <div class="mx-auto max-w-7xl px-4 text-xs flex flex-wrap gap-3 justify-between text-gray-600 py-3">
         <div>
             &copy; {{ get_setting('footer', 'copyright') }}
         </div>
