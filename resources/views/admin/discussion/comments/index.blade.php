@@ -10,7 +10,13 @@
     @endphp
 
     <div
-        x-data="adminBulkSelection()"
+        x-data="{
+            ...adminBulkSelection(),
+            ...adminCommentActions({
+                bulkActionUrl: @js(route('admin.comments.bulk-action')),
+                csrfToken: @js(csrf_token()),
+            })
+        }"
         class="space-y-4"
     >
         <div class="rounded-2xl border px-4 py-2 transition-all duration-200 border-slate-200 bg-white">
@@ -86,5 +92,5 @@
 @endsection
 
 @push('scripts')
-    @vite(['resources/js/admin/list-table.js'])
+    @vite(['resources/js/admin/list-table.js', 'resources/js/admin/comment-actions.js'])
 @endpush

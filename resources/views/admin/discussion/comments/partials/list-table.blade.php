@@ -56,10 +56,14 @@
                 @endphp
 
                 <x-admin.list.tr
+                    data-comment-row="{{ $comment->id }}"
+                    x-show="!isHidden({{ $comment->id }})"
+                    x-transition.opacity.duration.200ms
                     :class="$rowClass"
                     ::class="{
-                        'bg-slate-100/90 ring-1 ring-inset ring-slate-200': isSelected({{ $comment->id }})
-                    }"
+                            'bg-slate-100/90 ring-1 ring-inset ring-slate-200': isSelected({{ $comment->id }}),
+                            'opacity-60 pointer-events-none': isProcessing({{ $comment->id }})
+                        }"
                 >
                     <x-admin.list.td align="center">
                         <x-admin.list.bulk-checkbox
@@ -188,21 +192,45 @@
                             </div>
 
                             <x-admin.list.row-actions>
-                                <x-admin.list.action tag="button" type="button">
-                                    تایید
-                                </x-admin.list.action>
+                                @if(!$comment->isApproved())
+                                    <x-admin.list.action
+                                        tag="button"
+                                        type="button"
+                                        x-on:click="runAction({{ $comment->id }}, 'approve')"
+                                        x-bind:disabled="isProcessing({{ $comment->id }})"
+                                    >
+                                        تایید
+                                    </x-admin.list.action>
 
-                                <span class="text-slate-300">|</span>
+                                    <span class="text-slate-300">|</span>
+                                @endif
 
-                                <x-admin.list.action tag="button" type="button">
-                                    رد
-                                </x-admin.list.action>
+                                @if(!$comment->isRejected())
+                                    <x-admin.list.action
+                                        tag="button"
+                                        type="button"
+                                        x-on:click="runAction({{ $comment->id }}, 'reject')"
+                                        x-bind:disabled="isProcessing({{ $comment->id }})"
+                                    >
+                                        رد
+                                    </x-admin.list.action>
 
-                                <span class="text-slate-300">|</span>
+                                    <span class="text-slate-300">|</span>
+                                @endif
 
-                                <x-admin.list.action tag="button" type="button" variant="danger">
+                                <x-admin.list.action
+                                    tag="button"
+                                    type="button"
+                                    variant="danger"
+                                    x-on:click="confirmAndRun({{ $comment->id }}, 'delete', 'آیا از حذف این دیدگاه مطمئن هستید؟')"
+                                    x-bind:disabled="isProcessing({{ $comment->id }})"
+                                >
                                     حذف
                                 </x-admin.list.action>
+
+                                <template x-if="isProcessing({{ $comment->id }})">
+                                    <span class="text-slate-400">در حال انجام...</span>
+                                </template>
                             </x-admin.list.row-actions>
                         </div>
                     </x-admin.list.td>
@@ -235,3 +263,4 @@
         @endif
     </x-admin.list.tbody>
 </x-admin.list.table>
+

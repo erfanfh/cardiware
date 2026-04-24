@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Discussion;
 
 use App\Application\Discussion\Actions\HandleCommentBulkAction;
 use App\Http\Requests\Admin\Discussion\BulkCommentActionRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
@@ -16,7 +17,7 @@ class CommentBulkActionController
     public function __invoke(
         BulkCommentActionRequest $request,
         HandleCommentBulkAction  $actionHandler
-    ): RedirectResponse
+    ): JsonResponse|RedirectResponse
     {
         $this->authorizeBulkAction($request->bulkAction());
 
@@ -25,9 +26,21 @@ class CommentBulkActionController
             ids: $request->commentIds(),
         );
 
+        $message = $actionHandler->successMessage($result);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'ok' => true,
+                'message' => $message,
+                'action' => $request->bulkAction(),
+                'ids' => $request->commentIds(),
+                'result' => $result,
+            ]);
+        }
+
         return redirect()
             ->route('admin.comments.index')
-            ->with('success', $actionHandler->successMessage($result));
+            ->with('success', $message);
     }
 
     protected function authorizeBulkAction(string $action): void
