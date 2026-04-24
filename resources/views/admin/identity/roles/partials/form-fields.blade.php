@@ -22,7 +22,9 @@
         'role' => 'نقش‌ها',
         'user' => 'کاربران',
         'setting' => 'تنظیمات',
-        'page-layouts' => 'مدیریت چیدمان',
+        'page-layout' => 'مدیریت چیدمان',
+        'comment' => 'دیدگاه‌ها',
+        'navigation-menu' => 'فهرست‌ها',
     ];
 @endphp
 
