@@ -193,7 +193,7 @@
                                 {!! nl2br(htmlspecialchars(e($comment->content))) !!}
                             </div>
 
-                            <x-admin.list.row-actions x-cloak class="mt-2">
+                            <x-admin.list.row-actions x-cloak class="mt-4">
                                 <template x-if="rowStatus({{ $comment->id }}) !== 'approved'">
                                     <x-admin.list.action
                                         tag="button"
