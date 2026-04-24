@@ -35,9 +35,9 @@ class UpdateProjectAction
      */
     public function execute(Project $project, array $data): Project
     {
-        $data['title'] = $data['title'] ?? 'بدون عنوان';
-        $data['body'] = $data['body'] ?? 'بدون متن';
-        $data['slug'] = $data['slug'] ?? 'untitled-page';
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
 
         return DB::transaction(function () use ($project, $data) {
             $projectData = $data;

@@ -41,9 +41,9 @@ class CreatePostAction
      */
     public function execute(array $data): Post
     {
-        $data['title'] = $data['title'] ?? 'بدون عنوان';
-        $data['body'] = $data['body'] ?? 'بدون متن';
-        $data['slug'] = $data['slug'] ?? 'untitled-page';
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
 
         $post = DB::transaction(function () use ($data) {
             $postData = $data;

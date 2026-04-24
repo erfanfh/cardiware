@@ -27,9 +27,9 @@ class UpdatePageAction
      */
     public function execute(Page $page, array $data): Page
     {
-        $data['title'] = $data['title'] ?? 'بدون عنوان';
-        $data['body'] = $data['body'] ?? 'بدون متن';
-        $data['slug'] = $data['slug'] ?? 'untitled-page';
+        $data['title'] = $data['title'] ?: 'بدون عنوان';
+        $data['body'] = $data['body'] ?: '';
+        $data['slug'] = $data['slug'] ?: 'untitled-page';
 
         $page = DB::transaction(function () use ($page, $data) {
             $pageData = $data;
