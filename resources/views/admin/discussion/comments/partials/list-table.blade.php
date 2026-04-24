@@ -61,9 +61,9 @@
                     x-transition.opacity.duration.200ms
                     :class="$rowClass"
                     ::class="{
-                            'bg-slate-100/90 ring-1 ring-inset ring-slate-200': isSelected({{ $comment->id }}),
-                            'opacity-60 pointer-events-none': isProcessing({{ $comment->id }})
-                        }"
+                        'bg-slate-100/90 ring-1 ring-inset ring-slate-200': isSelected({{ $comment->id }}),
+                        'opacity-60 pointer-events-none': isProcessing({{ $comment->id }})
+                    }"
                 >
                     <x-admin.list.td align="center">
                         <x-admin.list.bulk-checkbox
@@ -105,7 +105,9 @@
 
                                 <div class="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
                                     <span
-                                        class="inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-medium {{ $replyBadgeClass }}">
+                                        class="inline-flex items-center rounded-lg border px-2 py-1 text-[11px] font-medium"
+                                        :class="replyBadgeClass({{ $comment->id }})"
+                                    >
                                         پاسخ
                                     </span>
 
@@ -191,8 +193,8 @@
                                 {!! nl2br(htmlspecialchars(e($comment->content))) !!}
                             </div>
 
-                            <x-admin.list.row-actions>
-                                @if(!$comment->isApproved())
+                            <x-admin.list.row-actions x-cloak class="mt-2">
+                                <template x-if="rowStatus({{ $comment->id }}) !== 'approved'">
                                     <x-admin.list.action
                                         tag="button"
                                         type="button"
@@ -201,11 +203,14 @@
                                     >
                                         تایید
                                     </x-admin.list.action>
+                                </template>
 
+                                <template
+                                    x-if="rowStatus({{ $comment->id }}) !== 'approved' && rowStatus({{ $comment->id }}) !== 'rejected'">
                                     <span class="text-slate-300">|</span>
-                                @endif
+                                </template>
 
-                                @if(!$comment->isRejected())
+                                <template x-if="rowStatus({{ $comment->id }}) !== 'rejected'">
                                     <x-admin.list.action
                                         tag="button"
                                         type="button"
@@ -214,9 +219,9 @@
                                     >
                                         رد
                                     </x-admin.list.action>
+                                </template>
 
-                                    <span class="text-slate-300">|</span>
-                                @endif
+                                <span class="text-slate-300">|</span>
 
                                 <x-admin.list.action
                                     tag="button"
@@ -263,4 +268,3 @@
         @endif
     </x-admin.list.tbody>
 </x-admin.list.table>
-

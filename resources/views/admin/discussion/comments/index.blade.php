@@ -7,6 +7,12 @@
 
     @php
         $commentIds = $comments->pluck('id')->values()->all();
+
+        $commentStatuses = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => $comment->status?->value,
+            ])
+            ->all();
     @endphp
 
     <div
@@ -15,6 +21,7 @@
             ...adminCommentActions({
                 bulkActionUrl: @js(route('admin.comments.bulk-action')),
                 csrfToken: @js(csrf_token()),
+                initialStatuses: @js($commentStatuses),
             })
         }"
         class="space-y-4"

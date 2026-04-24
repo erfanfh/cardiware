@@ -1,5 +1,11 @@
 document.addEventListener('alpine:init', () => {
-    Alpine.data('adminCommentActions', ({bulkActionUrl = '', csrfToken = ''}) => ({
+    Alpine.data('adminCommentActions', (
+        {
+            bulkActionUrl = '',
+            csrfToken = '',
+            initialStatuses = {},
+        }
+    ) => ({
         bulkActionUrl,
         csrfToken,
         processingIds: [],
@@ -78,10 +84,12 @@ document.addEventListener('alpine:init', () => {
             );
 
             if (action === 'approve') {
+                this.setRowStatus(id, 'approved');
                 row.classList.add('!border-b-slate-200');
             }
 
             if (action === 'reject') {
+                this.setRowStatus(id, 'rejected');
                 row.classList.add('!bg-rose-50', '!border-b-rose-200/70');
             }
         },
@@ -125,6 +133,32 @@ document.addEventListener('alpine:init', () => {
             }
 
             alert(message);
+        },
+
+        rowStatuses: Object.fromEntries(
+            Object.entries(initialStatuses).map(([id, status]) => [Number(id), status || 'unknown'])
+        ),
+
+        rowStatus(id) {
+            return this.rowStatuses[Number(id)] || 'unknown';
+        },
+
+        setRowStatus(id, status) {
+            this.rowStatuses[Number(id)] = status || 'unknown';
+        },
+
+        replyBadgeClass(id) {
+            const status = this.rowStatus(id);
+
+            if (status === 'pending') {
+                return 'bg-amber-100 text-amber-700 border-amber-200';
+            }
+
+            if (status === 'rejected') {
+                return 'bg-rose-100 text-rose-700 border-rose-200';
+            }
+
+            return 'bg-slate-100 text-slate-700 border-slate-200';
         },
     }));
 });
