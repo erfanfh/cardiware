@@ -22,6 +22,7 @@ class HandleCommentBulkAction
             $affected = match ($action) {
                 'approve' => $this->approve($ids),
                 'reject' => $this->reject($ids),
+                'pending' => $this->pending($ids),
                 'delete' => $this->delete($ids),
                 default => throw new InvalidArgumentException('Bulk action is not supported.'),
             };
@@ -42,6 +43,7 @@ class HandleCommentBulkAction
 
         return match ($result['action']) {
             'approve' => "{$count} دیدگاه با موفقیت تایید شد.",
+            'pending' => "{$count} دیدگاه با موفقیت به در حال انتظار منتقل شد.",
             'reject' => "{$count} دیدگاه با موفقیت رد شد.",
             'delete' => "{$count} دیدگاه با موفقیت حذف شد.",
             default => 'عملیات با موفقیت انجام شد.',
@@ -58,6 +60,19 @@ class HandleCommentBulkAction
             ->update([
                 'status' => CommentStatusEnum::APPROVED,
                 'approved_at' => now(),
+            ]);
+    }
+
+    /**
+     * @param array<int> $ids
+     */
+    protected function pending(array $ids): int
+    {
+        return Comment::query()
+            ->whereIn('id', $ids)
+            ->update([
+                'status' => CommentStatusEnum::PENDING,
+                'approved_at' => null,
             ]);
     }
 

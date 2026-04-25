@@ -192,31 +192,79 @@
                             </div>
 
                             <x-admin.list.row-actions x-cloak class="mt-4">
-                                <template x-if="rowStatus({{ $comment->id }}) !== 'approved'">
-                                    <x-admin.list.action
-                                        tag="button"
-                                        type="button"
-                                        x-on:click="runAction({{ $comment->id }}, 'approve')"
-                                        x-bind:disabled="isProcessing({{ $comment->id }})"
-                                    >
-                                        تایید
-                                    </x-admin.list.action>
+                                {{-- Pending: approve / reject / delete / reply --}}
+                                <template x-if="rowStatus({{ $comment->id }}) === 'pending'">
+                                    <div class="inline-flex items-center gap-2">
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'approve')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            تأیید
+                                        </x-admin.list.action>
+
+                                        <span class="text-slate-300">|</span>
+
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'reject')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            رد کردن
+                                        </x-admin.list.action>
+                                    </div>
                                 </template>
 
-                                <template
-                                    x-if="rowStatus({{ $comment->id }}) !== 'approved' && rowStatus({{ $comment->id }}) !== 'rejected'">
-                                    <span class="text-slate-300">|</span>
+                                {{-- Approved: pending / reject / delete / reply --}}
+                                <template x-if="rowStatus({{ $comment->id }}) === 'approved'">
+                                    <div class="inline-flex items-center gap-2">
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'pending')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            انتقال به انتظار
+                                        </x-admin.list.action>
+
+                                        <span class="text-slate-300">|</span>
+
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'reject')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            رد کردن
+                                        </x-admin.list.action>
+                                    </div>
                                 </template>
 
-                                <template x-if="rowStatus({{ $comment->id }}) !== 'rejected'">
-                                    <x-admin.list.action
-                                        tag="button"
-                                        type="button"
-                                        x-on:click="runAction({{ $comment->id }}, 'reject')"
-                                        x-bind:disabled="isProcessing({{ $comment->id }})"
-                                    >
-                                        رد
-                                    </x-admin.list.action>
+                                {{-- Rejected: pending / approve / delete / reply --}}
+                                <template x-if="rowStatus({{ $comment->id }}) === 'rejected'">
+                                    <div class="inline-flex items-center gap-2">
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'pending')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            انتقال به انتظار
+                                        </x-admin.list.action>
+
+                                        <span class="text-slate-300">|</span>
+
+                                        <x-admin.list.action
+                                            tag="button"
+                                            type="button"
+                                            x-on:click="runAction({{ $comment->id }}, 'approve')"
+                                            x-bind:disabled="isProcessing({{ $comment->id }})"
+                                        >
+                                            تأیید
+                                        </x-admin.list.action>
+                                    </div>
                                 </template>
 
                                 <span class="text-slate-300">|</span>
@@ -235,7 +283,7 @@
 
                                 <button
                                     type="button"
-                                    class="cursor-pointer text-xs font-medium text-slate-600 transition hover:text-brand-600"
+                                    class="cursor-pointer text-xs font-medium text-slate-600 transition hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
                                     x-on:click="openReplyModal({
                                         id: {{ $comment->id }},
                                         author: @js($comment->display_name),

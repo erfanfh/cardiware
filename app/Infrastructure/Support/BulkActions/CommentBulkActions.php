@@ -12,6 +12,11 @@ class CommentBulkActions
                 label: 'تایید دیدگاه‌ها',
             ),
 
+            'pending' => new BulkActionDefinition(
+                value: 'pending',
+                label: 'انتقال به انتظار بررسی',
+            ),
+
             'reject' => new BulkActionDefinition(
                 value: 'reject',
                 label: 'رد دیدگاه‌ها',

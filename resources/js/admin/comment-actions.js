@@ -86,11 +86,18 @@ document.addEventListener('alpine:init', () => {
             if (action === 'approve') {
                 this.setRowStatus(id, 'approved');
                 row.classList.add('!border-b-slate-200');
+                return;
             }
 
             if (action === 'reject') {
                 this.setRowStatus(id, 'rejected');
                 row.classList.add('!bg-rose-50', '!border-b-rose-200/70');
+                return;
+            }
+
+            if (action === 'pending') {
+                this.setRowStatus(id, 'pending');
+                row.classList.add('!bg-amber-50', '!border-b-amber-200/70');
             }
         },
 
