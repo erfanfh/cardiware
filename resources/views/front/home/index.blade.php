@@ -9,7 +9,7 @@
 @section('title', $title)
 
 @section('content')
-    <main class="mx-auto max-w-7xl px-4 py-8 flex flex-col gap-8">
+    <main class="mx-auto max-w-7xl px-4 py-8 flex flex-col gap-8 dark:text-slate-100">
         @include('front.render-layout', [
             'rows' => $layoutData['rows'],
         ])

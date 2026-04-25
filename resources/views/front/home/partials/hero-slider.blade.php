@@ -29,8 +29,9 @@
                                 <div class="mt-8">
                                     <div class="flex items-center gap-3">
                                         @if($item['square_label_text'])
-                                            <div class="h-12 w-12 rounded-2xl bg-white grid place-items-center">
-                                                <span class="font-black text-slate-900">
+                                            <div
+                                                class="h-12 w-12 rounded-2xl bg-white grid place-items-center dark:bg-slate-950">
+                                                <span class="font-black text-slate-900 dark:text-slate-100">
                                                     {{ $item['square_label_text'] }}
                                                 </span>
                                             </div>
@@ -50,7 +51,7 @@
                                         @if($item['primary_button_text'])
                                             <a href="{{ $item['primary_button_url'] }}"
                                                class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
-                          hover:bg-brand-600 active:bg-brand-700 transition shadow-lg">
+                          hover:bg-brand-600 active:bg-brand-700 transition shadow-lg dark:hover:bg-brand-400">
                                                 {{ $item['primary_button_text'] }}
                                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                                                     <path d="M12 3v10m0 0 4-4m-4 4-4-4" stroke="currentColor"

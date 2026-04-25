@@ -1,11 +1,12 @@
 @include('front.header.announcement')
 
-<header id="header" class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200">
+<header id="header"
+        class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-slate-200 dark:border-slate-800 dark:bg-slate-950/80">
     <div class="mx-auto max-w-7xl px-4 py-4">
         <div class="flex flex-wrap items-center gap-3">
             <button
                 type="button"
-                class="md:hidden cursor-pointer h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center"
+                class="md:hidden cursor-pointer h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 x-data
                 x-on:click="$dispatch('open-mobile-navigation')"
                 aria-label="باز کردن منو"
@@ -23,10 +24,10 @@
                     />
                 </div>
                 <div class="min-w-0 leading-tight max-[380px]:hidden">
-                    <div class="truncate text-base font-extrabold sm:text-lg">
+                    <div class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
                         {{ get_setting('general', 'title') }}
                     </div>
-                    <div class="truncate text-xs text-slate-500 max-sm:hidden">
+                    <div class="truncate text-xs text-slate-500 max-sm:hidden dark:text-slate-400">
                         {{ get_setting('general', 'subtitle') }}
                     </div>
                 </div>
@@ -75,7 +76,8 @@
                     <form action="{{ route('search') }}" method="get">
                         <span class="sr-only">جستجو</span>
 
-                        <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400">
+                        <span
+                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 dark:text-slate-500">
                             @include('icons.search-01')
                         </span>
                         <div x-data="typingPlaceholder()">
@@ -87,14 +89,14 @@
                                 class="w-full rounded-2xl border border-slate-200 bg-slate-50
                             pr-10 pl-12 py-3 text-sm outline-none
                             focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
-                            transition"
+                            transition dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:bg-slate-950 dark:focus:ring-brand-500/10"
                             />
                         </div>
 
                         <div class="absolute inset-y-0 left-2 flex items-center">
                             <button
                                 type="submit"
-                                class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer"
+                                class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800"
                                 aria-label="جستجو"
                             >
                                 @include('icons.search-01')
@@ -126,26 +128,26 @@
                 @if(auth()->check())
                     <a href="{{ route('account') }}"
                        class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
                         @include('icons.user')
                         حساب کاربری
                     </a>
 
                     <a href="{{ route('account') }}"
-                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="حساب کاربری">
                         @include('icons.user')
                     </a>
                 @else
                     <a href="{{ route('auth.index') }}"
                        class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]">
+                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
                         @include('icons.login-square-01')
                         ورود / عضویت
                     </a>
 
                     <a href="{{ route('auth.index') }}"
-                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem]"
+                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="ورود / عضویت">
                         @include('icons.login-square-01')
                     </a>

@@ -1,8 +1,10 @@
-<article class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+<article
+    class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
 
     <div class="p-5 pb-0 sm:p-6 sm:pb-0">
         <div class="text-center">
-            <div class="relative inline-block overflow-hidden rounded-2xl border border-slate-200">
+            <div
+                class="relative inline-block overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
                 <img
                     src="{{ $post->picture?->url }}"
                     alt="{{ $post->title }}"
@@ -27,18 +29,18 @@
 
     <!-- body -->
     <div class="p-5 sm:p-6">
-        <div class="tinymce-content">
+        <div class="tinymce-content dark:text-slate-200 dark:prose-invert">
             {!! $post->body !!}
         </div>
 
         @include('front.posts.partials.detail.download-box')
 
         @if($post->tags->isNotEmpty())
-            <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2">
-                <span class="text-xs text-slate-500">برچسب‌ها:</span>
+            <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2 dark:border-slate-800">
+                <span class="text-xs text-slate-500 dark:text-slate-400">برچسب‌ها:</span>
                 @foreach($post->tags as $tag)
                     <a href="{{ route('posts.tags', $tag) }}"
-                       class="text-[0.7rem] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition">
+                       class="text-[0.7rem] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
                         {{ $tag->title }}
                     </a>
                 @endforeach

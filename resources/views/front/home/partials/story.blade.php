@@ -13,83 +13,84 @@
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0 text-right"
                     @click="openByIndex(0)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img src="https://moddingway.ir/wp-content/uploads/2025/10/FC-26-Unlock-All-1.0-TU4-300x300.jpg"
                              alt="" class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
-                <span class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">پچ جدید</span>
+                <span
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">پچ جدید</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(1)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img
                             src="https://moddingway.ir/wp-content/uploads/2025/09/%D8%A7%D8%AC%D8%B1%D8%A7-%D8%B1%D8%A7%DB%8C%DA%AF%D8%A7%D9%86-FC26-%D8%A2%D9%85%D9%88%D8%B2%D8%B4-%DA%A9%D8%B1%DA%A9-FC26-300x300.webp"
                             class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">لیگ ایران</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">لیگ ایران</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(2)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img
                             src="https://moddingway.ir/wp-content/uploads/2025/11/FC-26-WZRD-PCK-v9-TU-1.3.0-300x300.jpg"
                             class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">آموزش نصب</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">آموزش نصب</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(3)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img
                             src="https://moddingway.ir/wp-content/uploads/2026/01/PES-2021-Molineux-Stadium-2026-300x300.png"
                             class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">نسخه جدید فیفا</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">نسخه جدید فیفا</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(4)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img
                             src="https://moddingway.ir/wp-content/uploads/2026/01/PES-2021-Face-Ruben-Dias-2026-By-Unknown-300x300.png"
                             class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">لیگ اسپانیا</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">لیگ اسپانیا</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(5)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img
                             src="https://moddingway.ir/wp-content/uploads/2026/01/PES-2017-Face-Evan-Ndicka-2026-By-Andrew-Facemaker-300x300.png"
                             class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">پچ PGL V5</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">پچ PGL V5</span>
             </button>
 
             <button type="button" class="group flex flex-col items-center gap-2 shrink-0" @click="openByIndex(6)">
                 <div class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                    <div class="h-full w-full rounded-full bg-white grid place-items-center">
+                    <div class="h-full w-full rounded-full bg-white grid place-items-center dark:bg-slate-900">
                         <img src="https://moddingway.ir/wp-content/uploads/2025/11/FC-26-BRFP-v1-TU-1.2.1-300x300.jpg"
                              class="h-14 w-14 rounded-full object-cover"/>
                     </div>
                 </div>
                 <span
-                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition">ماد آنلاکر</span>
+                    class="text-xs font-semibold text-slate-600 group-hover:text-slate-800 transition dark:text-slate-400 dark:group-hover:text-slate-200">ماد آنلاکر</span>
             </button>
 
         </div>
@@ -120,7 +121,7 @@
                 <div class="mt-3 flex items-center justify-between">
                     <div class="flex items-center gap-2 min-w-0">
                         <div class="h-9 w-9 rounded-2xl bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px] shrink-0">
-                            <div class="h-full w-full rounded-2xl bg-white grid place-items-center">
+                            <div class="h-full w-full rounded-2xl bg-white grid place-items-center dark:bg-slate-900">
                                 <img :src="current.thumb" class="h-8 w-8 rounded-xl object-cover" alt=""/>
                             </div>
                         </div>

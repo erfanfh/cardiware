@@ -15,11 +15,11 @@
     @livewireStyles
 </head>
 
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 @include('front.header.index')
 @yield('content')
 @include('front.partials.admin-bar')
-@include('front.layouts.footer')
+@include('front.footer.index')
 <x-front.lightbox-gallery/>
 @vite(['resources/js/front/main.js'])
 @stack('scripts')

@@ -6,7 +6,8 @@
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/75 via-slate-950/45 to-slate-950/15"></div>
 
             <div class="absolute -top-24 -left-24 h-80 w-80 rounded-[90px] bg-orange-500/25 blur-3xl"></div>
-            <div class="absolute -bottom-28 -right-28 h-96 w-96 rounded-[100px] bg-orange-100/35 blur-3xl"></div>
+            <div
+                class="absolute -bottom-28 -right-28 h-96 w-96 rounded-[100px] bg-orange-100/35 blur-3xl dark:bg-orange-500/10"></div>
             <div class="absolute top-10 right-10 h-3 w-3 rounded-full bg-orange-500"></div>
 
             <div class="relative h-full flex items-center justify-center px-6">
@@ -30,7 +31,7 @@
                             <div class="mt-7">
                                 <a id="heroCta" href="{{ get_setting('auth', 'button_link') }}"
                                    class="inline-flex items-center justify-center rounded-2xl bg-orange-500 px-8 py-3 text-sm font-extrabold text-white shadow-xl
-                            hover:bg-orange-600 active:bg-orange-700 transition">
+                            hover:bg-orange-600 active:bg-orange-700 transition dark:hover:bg-orange-400">
                                     {{ get_setting('auth', 'button_title') }}
                                 </a>
                             </div>
@@ -40,9 +41,10 @@
             </div>
         </section>
 
-        <aside class="relative bg-slate-50 w-full lg:w-2/5">
+        <aside class="relative bg-slate-50 w-full lg:w-2/5 dark:bg-slate-950">
             <div class="w-full h-full flex items-center justify-center px-4 md:px-10">
-                <div class="w-full max-w-lg rounded-2xl bg-white shadow-xl border border-slate-200 p-8 my-4">
+                <div
+                    class="w-full max-w-lg rounded-2xl bg-white shadow-xl border border-slate-200 p-8 my-4 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30">
                     <livewire:front.identity.user.auth.auth-flow/>
                 </div>
             </div>

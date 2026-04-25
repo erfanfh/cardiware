@@ -6,7 +6,8 @@ Template Name: صفحه درباره ما
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl">
+        <section
+            class="relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-xl dark:border-slate-800 dark:shadow-black/30">
             <div
                 class="absolute inset-0 opacity-90 bg-[radial-gradient(700px_circle_at_15%_20%,rgba(249,115,22,.35),transparent_55%),radial-gradient(700px_circle_at_80%_60%,rgba(34,197,94,.18),transparent_60%),radial-gradient(700px_circle_at_55%_10%,rgba(59,130,246,.15),transparent_60%)]"></div>
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/70 via-slate-950/40 to-slate-950/10"></div>
@@ -36,7 +37,7 @@ Template Name: صفحه درباره ما
 
                         <div class="mt-6 grid grid-cols-2 items-center gap-3">
                             <a href="#projects"
-                               class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
+                               class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
                                 پروژه‌های ما <span class="font-black">←</span>
                             </a>
                             <a href="#contact"
@@ -78,38 +79,42 @@ Template Name: صفحه درباره ما
 
         <section class="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div
-                class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden">
-                <div class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px]"></div>
+                class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm relative overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                <div
+                    class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] dark:bg-brand-500/10"></div>
                 <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
                 <div class="flex items-center gap-3">
                     <span
-                        class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                        class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                       @include('icons.award-03')
                     </span>
-                    <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'our_mission_box_title') }}</h2>
+                    <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'our_mission_box_title') }}</h2>
                 </div>
 
-                <div class="mt-4 text-sm leading-7 text-slate-700">
+                <div class="mt-4 text-sm leading-7 text-slate-700 dark:text-slate-300">
                     {!! get_setting('aboutUs', 'our_mission_description') !!}
                 </div>
             </div>
 
             <div class="lg:col-span-5 space-y-6">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                     <div class="flex items-center gap-3">
                         <span
-                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                             @include('icons.legal-hammer')
                         </span>
-                        <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'what_we_build_box_title') }}</h2>
+                        <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'what_we_build_box_title') }}</h2>
                     </div>
 
                     <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @foreach(get_setting('aboutUs', 'what_we_build_items') as $item)
-                            <div class="rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition">
-                                <div class="text-sm font-extrabold">{{ $item['title'] }}</div>
-                                <div class="mt-1 text-xs text-slate-500 leading-6">{{ $item['subtitle'] }}</div>
+                            <div
+                                class="rounded-2xl border border-slate-200 p-4 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
+                                <div class="text-sm font-extrabold dark:text-slate-100">{{ $item['title'] }}</div>
+                                <div
+                                    class="mt-1 text-xs text-slate-500 leading-6 dark:text-slate-400">{{ $item['subtitle'] }}</div>
                             </div>
                         @endforeach
                     </div>
@@ -121,15 +126,15 @@ Template Name: صفحه درباره ما
             <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-3">
                     <span
-                        class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                        class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                         @include('icons.dashboard-square-02')
                     </span>
                     <div>
-                        <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'projects_box_title') }}</h2>
+                        <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'projects_box_title') }}</h2>
                     </div>
                 </div>
                 <a href="{{ route('projects.list') }}"
-                   class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2">
+                   class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
                     مشاهده همه <span class="font-black">←</span>
                 </a>
             </div>
@@ -137,23 +142,24 @@ Template Name: صفحه درباره ما
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach(\App\Domain\Project\Models\Project::orderBy('created_at')->take(3)->get() as $project)
                     <div
-                        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden">
+                        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition relative overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
-                                <div class="text-sm font-extrabold truncate">{{ $project->title }}</div>
-                                <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2">
+                                <div
+                                    class="text-sm font-extrabold truncate dark:text-slate-100">{{ $project->title }}</div>
+                                <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2 dark:text-slate-400">
                                     {!! $project->body !!}
                                 </div>
                             </div>
                             <span
-                                class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">{{ $project->progress_percent . '%' }}</span>
+                                class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">{{ $project->progress_percent . '%' }}</span>
                         </div>
-                        <div class="mt-4 h-2 rounded-full bg-slate-100 overflow-hidden">
+                        <div class="mt-4 h-2 rounded-full bg-slate-100 overflow-hidden dark:bg-slate-800">
                             <div class="h-full bg-brand-500 w-[62%]"></div>
                         </div>
-                        <div class="mt-4 flex items-center justify-between text-xs text-slate-500">
+                        <div class="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                             <span>{{ 'آخرین آپدیت: ' . jalali_date($project->last_updated_at, 'Y/m/d') }}</span>
-                            <a class="font-extrabold text-brand-700 hover:text-brand-800 transition"
+                            <a class="font-extrabold text-brand-700 hover:text-brand-800 transition dark:text-brand-300 dark:hover:text-brand-200"
                                href="{{ route('projects.detail', $project) }}">جزئیات</a>
                         </div>
                     </div>
@@ -164,72 +170,75 @@ Template Name: صفحه درباره ما
         <section class="mt-10">
             <div class="flex items-center gap-3 mb-4">
                 <span
-                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                     @include('icons.user-multiple')
                 </span>
                 <div>
-                    <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'our_team_box_title') }}</h2>
+                    <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'our_team_box_title') }}</h2>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                     <div class="flex items-center gap-3">
-                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
+                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700"
                              src="https://i.pravatar.cc/120?img=12" alt="">
                         <div class="min-w-0">
-                            <div class="text-sm font-extrabold truncate">Mod Lead</div>
-                            <div class="text-xs text-slate-500">مدیریت پروژه و انتشار</div>
+                            <div class="text-sm font-extrabold truncate dark:text-slate-100">Mod Lead</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">مدیریت پروژه و انتشار</div>
                         </div>
                     </div>
-                    <p class="mt-4 text-sm text-slate-700 leading-7">
+                    <p class="mt-4 text-sm text-slate-700 leading-7 dark:text-slate-300">
                         مسئول برنامه‌ریزی نسخه‌ها، چنج‌لاگ و هماهنگی انتشار پایدار.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <span
-                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">Release</span>
+                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">Release</span>
                         <span
-                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl">QA</span>
+                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">QA</span>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                     <div class="flex items-center gap-3">
-                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
+                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700"
                              src="https://i.pravatar.cc/120?img=32" alt="">
                         <div class="min-w-0">
-                            <div class="text-sm font-extrabold truncate">Patch Engineer</div>
-                            <div class="text-xs text-slate-500">توسعه پچ‌ها و رفع باگ</div>
+                            <div class="text-sm font-extrabold truncate dark:text-slate-100">Patch Engineer</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">توسعه پچ‌ها و رفع باگ</div>
                         </div>
                     </div>
-                    <p class="mt-4 text-sm text-slate-700 leading-7">
+                    <p class="mt-4 text-sm text-slate-700 leading-7 dark:text-slate-300">
                         تمرکز روی اصلاح باگ‌های رایج و بهبود سازگاری نسخه‌ها با سیستم‌های مختلف.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <span
-                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">Fix</span>
+                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">Fix</span>
                         <span
-                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl">Performance</span>
+                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">Performance</span>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                     <div class="flex items-center gap-3">
-                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200"
+                        <img class="h-12 w-12 rounded-2xl object-cover border border-slate-200 dark:border-slate-700"
                              src="https://i.pravatar.cc/120?img=47" alt="">
                         <div class="min-w-0">
-                            <div class="text-sm font-extrabold truncate">Support</div>
-                            <div class="text-xs text-slate-500">پشتیبانی و مدیریت جامعه</div>
+                            <div class="text-sm font-extrabold truncate dark:text-slate-100">Support</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">پشتیبانی و مدیریت جامعه</div>
                         </div>
                     </div>
-                    <p class="mt-4 text-sm text-slate-700 leading-7">
+                    <p class="mt-4 text-sm text-slate-700 leading-7 dark:text-slate-300">
                         پاسخ‌گویی به دیدگاه‌ها، جمع‌آوری گزارش‌ها و پیگیری مشکلات تا انتشار نسخه اصلاحی.
                     </p>
                     <div class="mt-4 flex flex-wrap gap-2">
                         <span
-                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">Community</span>
+                            class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">Community</span>
                         <span
-                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl">Support</span>
+                            class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">Support</span>
                     </div>
                 </div>
             </div>
@@ -238,30 +247,32 @@ Template Name: صفحه درباره ما
         <section class="mt-10" x-data="{ open: 1 }">
             <div class="flex items-center gap-3 mb-4">
                 <span
-                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                    class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                     @include('icons.help-circle')
                 </span>
                 <div>
-                    <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'faqs_box_title') }}</h2>
+                    <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'faqs_box_title') }}</h2>
                 </div>
             </div>
 
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div
+                class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                 @foreach(get_setting('aboutUs', 'faqs_items') as $item)
                     <button @click="open = open === {{ $item['sort_order'] }} ? 0 : {{ $item['sort_order'] }}"
-                            class="w-full text-right p-5 sm:p-6 flex items-center justify-between gap-3 hover:bg-slate-50 transition">
-                        <div class="font-extrabold">{{ $item['title'] }}</div>
-                        <span class="h-10 w-10 rounded-2xl border border-slate-200 bg-white grid place-items-center">
+                            class="w-full text-right p-5 sm:p-6 flex items-center justify-between gap-3 hover:bg-slate-50 transition dark:hover:bg-slate-800">
+                        <div class="font-extrabold dark:text-slate-100">{{ $item['title'] }}</div>
+                        <span
+                            class="h-10 w-10 rounded-2xl border border-slate-200 bg-white grid place-items-center dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
                           <span x-text="open==={{ $item['sort_order'] }} ? '−' : '+'"></span>
                         </span>
                     </button>
                     <div x-show="open==={{ $item['sort_order'] }}" x-transition
-                         class="px-5 sm:px-6 pb-5 sm:pb-6 text-sm text-slate-700 leading-7">
+                         class="px-5 sm:px-6 pb-5 sm:pb-6 text-sm text-slate-700 leading-7 dark:text-slate-300">
                         {{ $item['answer'] }}
                     </div>
 
                     @if(!$loop->last)
-                        <div class="border-t border-slate-200"></div>
+                        <div class="border-t border-slate-200 dark:border-slate-800"></div>
                     @endif
                 @endforeach
             </div>
@@ -269,72 +280,78 @@ Template Name: صفحه درباره ما
 
         <section id="contact" class="mt-10">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <div class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
+                <div
+                    class="lg:col-span-7 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                     <div class="flex items-center gap-3">
                         <span
-                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">
+                            class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                             @include('icons.telephone')
                         </span>
                         <div>
-                            <h2 class="text-base font-extrabold">{{ get_setting('aboutUs', 'contact_us_box_title') }}</h2>
+                            <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'contact_us_box_title') }}</h2>
                         </div>
                     </div>
 
                     <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <input class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none
-                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
+                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-950 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10"
                                placeholder="نام شما"/>
                         <input type="email" class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none
-                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
+                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-950 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10"
                                placeholder="ایمیل"/>
                     </div>
                     <textarea rows="4" class="mt-3 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none
-                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition"
+                         focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300 transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:bg-slate-950 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10"
                               placeholder="پیام شما…"></textarea>
                     <div class="mt-3 flex items-center justify-end">
                         <button
-                            class="rounded-2xl bg-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition">
+                            class="rounded-2xl bg-brand-500 px-6 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
                             ارسال پیام
                         </button>
                     </div>
                 </div>
 
                 <div class="lg:col-span-5 space-y-6">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
-                        <div class="text-sm font-extrabold">{{ get_setting('aboutUs', 'contact_box_title') }}</div>
-                        <div class="mt-4 space-y-3 text-sm text-slate-700">
+                    <div
+                        class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                        <div
+                            class="text-sm font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'contact_box_title') }}</div>
+                        <div class="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
                             <div class="flex items-start gap-3">
                                 <span class="mt-2 h-2 w-2 rounded bg-brand-600"></span>
                                 <span>تلگرام: <span
-                                        class="font-extrabold text-brand-700">{{ get_setting('aboutUs', 'contact_telegram') }}</span></span>
+                                        class="font-extrabold text-brand-700 dark:text-brand-300">{{ get_setting('aboutUs', 'contact_telegram') }}</span></span>
                             </div>
                             <div class="flex items-start gap-3">
                                 <span class="mt-2 h-2 w-2 rounded bg-brand-600"></span>
                                 <span>اینستاگرام: <span
-                                        class="font-extrabold text-brand-700">{{ get_setting('aboutUs', 'contact_instagram') }}</span></span>
+                                        class="font-extrabold text-brand-700 dark:text-brand-300">{{ get_setting('aboutUs', 'contact_instagram') }}</span></span>
                             </div>
                             <div class="flex items-start gap-3">
                                 <span class="mt-2 h-2 w-2 rounded bg-brand-600"></span>
                                 <span>ایمیل: <span
-                                        class="font-extrabold text-brand-700">{{ get_setting('aboutUs', 'contact_email') }}</span></span>
+                                        class="font-extrabold text-brand-700 dark:text-brand-300">{{ get_setting('aboutUs', 'contact_email') }}</span></span>
                             </div>
                             <div class="flex items-start gap-3">
                                 <span class="mt-2 h-2 w-2 rounded bg-brand-600"></span>
                                 <span>شماره تماس: <span
-                                        class="font-extrabold text-brand-700">{{ get_setting('aboutUs', 'contact_phone') }}</span></span>
+                                        class="font-extrabold text-brand-700 dark:text-brand-300">{{ get_setting('aboutUs', 'contact_phone') }}</span></span>
                             </div>
                             <div class="flex items-start gap-3">
                                 <span class="mt-2 h-2 w-2 rounded bg-brand-600"></span>
                                 <span>ساعات پاسخ‌گویی: <span
-                                        class="font-extrabold text-brand-700">{{ get_setting('aboutUs', 'contact_hour') }}</span></span>
+                                        class="font-extrabold text-brand-700 dark:text-brand-300">{{ get_setting('aboutUs', 'contact_hour') }}</span></span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm">
-                        <div class="font-extrabold text-slate-700">تبلیغات / بنر</div>
-                        <div class="mt-2 text-sm text-slate-500">جایگاه پیشنهادی برای بنر یا اطلاعیه</div>
-                        <div class="mt-3 text-xs text-slate-500">size: 320×250</div>
+                    <div
+                        class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20">
+                        <div class="font-extrabold text-slate-700 dark:text-slate-200">تبلیغات / بنر</div>
+                        <div class="mt-2 text-sm text-slate-500 dark:text-slate-400">جایگاه پیشنهادی برای بنر یا
+                            اطلاعیه
+                        </div>
+                        <div class="mt-3 text-xs text-slate-500 dark:text-slate-500">size: 320×250</div>
                     </div>
                 </div>
             </div>

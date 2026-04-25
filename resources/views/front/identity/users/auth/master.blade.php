@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="fa" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -11,9 +11,10 @@
     @yield('head')
     @livewireStyles
 </head>
-<body dir="rtl" class="pb-10 md:py-0">
+<body dir="rtl" class="pb-10 md:py-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 @yield('content')
 @yield('scripts')
+@vite(['resources/js/front/main.js'])
 @livewireScripts
 </body>
 </html>

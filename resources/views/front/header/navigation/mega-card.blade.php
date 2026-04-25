@@ -1,9 +1,9 @@
 <div
-    class="group/card rounded-3xl border border-slate-100 bg-slate-50 p-4 hover:bg-white hover:shadow-md hover:border-slate-200 transition {{ $item['css_class'] }}">
+    class="group/card rounded-3xl border border-slate-100 bg-slate-50 p-4 hover:bg-white hover:shadow-md hover:border-slate-200 transition dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:hover:shadow-black/20 {{ $item['css_class'] }}">
     <div class="flex items-start gap-3">
         @if($item['icon'])
             <span
-                class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-lg ring-1 ring-slate-200 group-hover/card:ring-brand-100 transition">
+                class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-lg ring-1 ring-slate-200 group-hover/card:ring-brand-100 transition dark:bg-slate-900 dark:ring-slate-700 dark:group-hover/card:ring-brand-500/30">
                 {{ $item['icon'] }}
             </span>
         @endif
@@ -14,13 +14,13 @@
                @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
                class="flex items-center gap-2">
                 <span
-                    class="line-clamp-1 text-sm font-extrabold text-slate-900 hover:text-brand-700 transition inline-block w-full">
+                    class="line-clamp-1 text-sm font-extrabold text-slate-900 hover:text-brand-700 transition inline-block w-full dark:text-slate-100 dark:hover:text-brand-300">
                     {{ $item['title'] }}
                 </span>
 
                 @if($item['badge'])
                     <span
-                        class="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 ring-1 ring-brand-100">
+                        class="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 ring-1 ring-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20">
                         {{ $item['badge'] }}
                     </span>
                 @endif

@@ -28,7 +28,7 @@ class CommentsList extends Component
 
     public ?int $pendingScrollToCommentId = null;
 
-    protected string $paginationTheme = 'custom-pagination';
+    protected string $paginationTheme = 'front';
 
     public function mount(Model $commentable): void
     {

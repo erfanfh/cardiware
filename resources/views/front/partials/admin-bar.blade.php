@@ -114,20 +114,21 @@
                             <div
                                 x-show="quickOpen"
                                 x-transition.origin.top.right
-                                class="absolute left-0 top-[calc(100%+8px)] w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-slate-800 shadow-lg"
+                                class="absolute left-0 top-[calc(100%+8px)] w-56 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 text-slate-800 shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/30"
                                 style="display: none;"
                             >
-                                <div class="mb-1 px-2 py-1 text-xs font-bold text-slate-400">
+                                <div class="mb-1 px-2 py-1 text-xs font-bold text-slate-400 dark:text-slate-500">
                                     میانبرها
                                 </div>
 
                                 @foreach($quickActions as $action)
                                     <a
                                         href="{{ $action['href'] }}"
-                                        class="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-slate-100"
+                                        class="flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800"
                                     >
                                         <span>{{ $action['title'] }}</span>
-                                        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none text-slate-400"
+                                        <svg viewBox="0 0 24 24"
+                                             class="h-4 w-4 fill-none text-slate-400 dark:text-slate-500"
                                              stroke="currentColor" stroke-width="1.8">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
                                         </svg>

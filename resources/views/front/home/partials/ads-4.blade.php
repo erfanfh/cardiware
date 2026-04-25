@@ -3,7 +3,7 @@
         {!! get_setting('home', 'ads_4_body') !!}
     </x-front.cart>
 @else
-    <div class="tinymce-content">
+    <div class="tinymce-content dark:text-slate-200">
         {!! get_setting('home', 'ads_4_body') !!}
     </div>
 @endif

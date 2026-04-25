@@ -1,8 +1,10 @@
-<article class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+<article
+    class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
 
     <div class="p-5 pb-0 sm:p-6 sm:pb-0">
         <div class="text-center">
-            <div class="relative inline-block overflow-hidden rounded-2xl border border-slate-200">
+            <div
+                class="relative inline-block overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
                 <img
                     src="{{ $page->picture?->url }}"
                     alt="{{ $page->title }}"
@@ -17,7 +19,7 @@
     </div>
 
     <div class="p-5 sm:p-6">
-        <div class="tinymce-content">
+        <div class="tinymce-content dark:prose-invert dark:text-slate-200">
             {!! $page->body !!}
         </div>
     </div>

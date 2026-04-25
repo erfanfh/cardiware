@@ -5,16 +5,16 @@
 
 <div
     x-data="{ expanded: false }"
-    class="{{ $level > 0 ? 'mr-3 border-r border-slate-100 pr-3' : '' }}"
+    class="{{ $level > 0 ? 'mr-3 border-r border-slate-100 pr-3 dark:border-slate-800' : '' }}"
 >
     <div class="flex items-center gap-2">
         <a href="{{ $item['url'] }}"
            target="{{ $item['target'] }}"
            @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
-           class="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition {{ $item['css_class'] }}">
+           class="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100 {{ $item['css_class'] }}">
             @if($item['icon'])
                 <span
-                    class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base ring-1 ring-slate-100">
+                    class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
                     {{ $item['icon'] }}
                 </span>
             @endif
@@ -25,7 +25,7 @@
 
             @if($item['badge'])
                 <span
-                    class="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 ring-1 ring-brand-100">
+                    class="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold text-brand-700 ring-1 ring-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20">
                     {{ $item['badge'] }}
                 </span>
             @endif
@@ -35,7 +35,7 @@
             <button
                 type="button"
                 x-on:click="expanded = !expanded"
-                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-50 text-slate-500 ring-1 ring-slate-100 hover:bg-slate-100 transition"
+                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-50 text-slate-500 ring-1 ring-slate-100 hover:bg-slate-100 transition dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700 dark:hover:bg-slate-700"
                 :aria-expanded="expanded.toString()"
                 aria-label="باز و بسته کردن زیرمنو"
             >

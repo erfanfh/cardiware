@@ -19,5 +19,5 @@
         @if($fetchpriority) fetchpriority="{{ $fetchpriority }}" @endif
     >
 @elseif($showPlaceholder)
-    <div class="bg-slate-100 border border-slate-200 {{ $class }}"></div>
+    <div class="bg-slate-100 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 {{ $class }}"></div>
 @endif
