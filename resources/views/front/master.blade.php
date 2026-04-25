@@ -9,6 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! seo_head() !!}
     <x-favicons/>
+    @include('front.scripts.dark-light')
     @vite(['resources/css/app.css', 'resources/css/front/main.css'])
     @stack('styles')
     @yield('head')

@@ -112,7 +112,6 @@
                 <button
                     x-data="themeSwitcher()"
                     x-on:click="toggle()"
-                    x-init="init()"
                     :aria-label="dark ? 'حالت روشن' : 'حالت شب'"
                     class="cursor-pointer h-10 w-10 [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 transition grid place-items-center text-slate-700 dark:text-slate-100"
                 >

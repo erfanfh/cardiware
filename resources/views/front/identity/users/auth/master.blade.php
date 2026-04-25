@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {!! seo_head() !!}
     <x-favicons/>
+    @include('front.scripts.dark-light')
     @vite('resources/css/app.css')
     @yield('head')
     @livewireStyles

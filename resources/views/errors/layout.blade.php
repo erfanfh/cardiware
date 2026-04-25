@@ -10,6 +10,7 @@
     <meta name="description" content="صفحه‌ای که دنبال آن هستید پیدا نشد.">
 
     <x-favicons/>
+    @include('front.scripts.dark-light')
     @vite(['resources/css/app.css', 'resources/css/front/main.css'])
 
     <style>
