@@ -59,7 +59,9 @@ class PermissionSeeder extends Seeder
                 'auto_approve' => 'تایید اتوماتیک دیدگاه',
             ],
             'page-layout' => [
-                'home' => 'مدیریت چیدمان - صفحه اصلی',
+                'home' => 'مدیریت چیدمان صفحه اصلی',
+                'post-content' => 'مدیریت چیدمان صفحه نوشته',
+                'sidebar' => 'مدیریت چیدمان سایدبار',
             ],
             'navigation-menu' => [
                 'manage' => 'مدیریت فهرست ها',
