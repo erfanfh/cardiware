@@ -31,7 +31,7 @@ class ProjectController extends Controller
         Gate::authorize('project.list');
 
         $projects = $projectListing
-            ->handle(Project::query(), $request->validated())
+            ->handle(Project::with(['seoAnalysis']), $request->validated())
             ->paginate($projectListing->perPage())
             ->withQueryString();
 

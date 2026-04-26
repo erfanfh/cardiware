@@ -62,6 +62,8 @@
 
                 <x-admin.list.th>برچسب‌ها</x-admin.list.th>
 
+                <x-admin.list.th>امتیاز سئو</x-admin.list.th>
+
                 <x-admin.list.th
                     width="130px"
                     label="زمان ایجاد"
@@ -226,6 +228,10 @@
                                     <span class="text-xs text-slate-400">---</span>
                                 </template>
                             </div>
+                        </x-admin.list.td>
+
+                        <x-admin.list.td>
+                            <x-admin.seo.score-indicator :score="$project->seoAnalysis?->score"/>
                         </x-admin.list.td>
 
                         <x-admin.list.td muted>
