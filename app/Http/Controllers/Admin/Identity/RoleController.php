@@ -6,13 +6,11 @@ use App\Application\Identity\Listings\RoleListing;
 use App\Domain\Identity\Models\Permission;
 use App\Domain\Identity\Models\Role;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Identity\AssignNewRoleRequest;
 use App\Http\Requests\Admin\Identity\IndexRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
 use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
 
@@ -159,7 +157,6 @@ class RoleController extends Controller
     {
         Gate::authorize('role.delete');
 
-        // Prevent deleting default or super admin roles
         if ($role->is_default) {
             return back()->with('error', 'نقش پیش‌فرض قابل حذف نیست.')
                 ->with('error_title', 'خطا');
@@ -170,84 +167,16 @@ class RoleController extends Controller
                 ->with('error_title', 'خطا');
         }
 
-        // Check if role has users
-        $userCount = $role->users()->count();
-
-        if ($userCount > 0) {
-            // Redirect to assign new role page
-            return redirect()->route('admin.roles.assign-new-role.form', $role)
-                ->with('warning', "این نقش {$userCount} کاربر دارد. لطفاً یک نقش جدید برای آن‌ها انتخاب کنید.")
-                ->with('warning_title', 'هشدار');
+        if ($role->users()->count() > 0) {
+            return back()
+                ->with('error', "نقش '{$role->title}' دارای کاربر می باشد و امکان حذف آن وجود ندارد.")
+                ->with('error_title', 'خطا');
         }
 
-        // Delete role directly if no users
         $role->delete();
 
         return redirect()->route('admin.roles.index')
             ->with('success', "نقش '{$role->title}' با موفقیت حذف شد.")
             ->with('success_title', 'حذف موفق');
-    }
-
-    /**
-     * Show form to assign new role to users before deleting
-     *
-     * @param Role $role The role to be deleted
-     * @return View
-     */
-    public function showAssignNewRoleForm(Role $role): View
-    {
-        Gate::authorize('role.index');
-
-        // Get all roles except the one being deleted
-        $availableRoles = Role::query()
-            ->where('id', '!=', $role->id)
-            ->where('is_super_admin', false) // Optional: exclude super admin
-            ->get();
-
-        $userCount = $role->users()->count();
-
-        return view('admin.identity.roles.assign-new-role', [
-            'role' => $role,
-            'availableRoles' => $availableRoles,
-            'userCount' => $userCount,
-        ]);
-    }
-
-    /**
-     * Assign new role to users and delete the old role
-     *
-     * @param AssignNewRoleRequest $request The validation request
-     * @param Role $role The role to be deleted
-     * @return RedirectResponse
-     * @throws \Throwable
-     */
-    public function assignNewRole(AssignNewRoleRequest $request, Role $role): RedirectResponse
-    {
-        Gate::authorize('role.create');
-
-        $newRoleId = $request->validated()['new_role_id'];
-        $userCount = $role->users()->count();
-
-        DB::beginTransaction();
-
-        try {
-            // Update all users with this role to new role
-            $role->users()->update(['role_id' => $newRoleId]);
-
-            // Delete the old role
-            $role->delete();
-
-            DB::commit();
-
-            return redirect()->route('admin.roles.index')
-                ->with('success', "نقش '{$role->title}' حذف شد و {$userCount} کاربر به نقش جدید منتقل شدند.")
-                ->with('success_title', 'حذف موفق');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return back()->withInput()
-                ->with('error', 'خطا در حذف نقش. لطفاً دوباره تلاش کنید.')
-                ->with('error_title', 'خطا');
-        }
     }
 }
