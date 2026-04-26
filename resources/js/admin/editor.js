@@ -32,6 +32,24 @@ import 'tinymce/skins/ui/oxide/content';
 import 'tinymce/skins/content/default/content';
 
 const EDITOR_SELECTOR = 'textarea[data-editor]';
+
+const IMAGE_SIZES = ['sm', 'md', 'lg', 'full'];
+
+const IMAGE_SIZE_TO_VARIANT = {
+    sm: 'thumbnail',
+    md: 'medium',
+    lg: 'medium_large',
+    full: 'original',
+};
+
+const MEDIA_VARIANTS = [
+    'original',
+    'thumbnail',
+    'medium',
+    'medium_large',
+    'large',
+];
+
 let pendingImageReplace = null;
 
 function getPresetConfig(preset = 'default') {
@@ -97,44 +115,76 @@ function escapeHtml(value = '') {
         .replaceAll("'", '&#039;');
 }
 
-function buildImageHtml({url = '', alt = '', title = '', caption = '', mediaId = null, size = 'md'} = {}) {
-    const safeUrl = escapeHtml(url);
+function normalizeSize(size = 'md') {
+    return IMAGE_SIZES.includes(size) ? size : 'md';
+}
+
+function getVariantBySize(size = 'md') {
+    return IMAGE_SIZE_TO_VARIANT[normalizeSize(size)] || 'medium';
+}
+
+function getVariantUrl(variants = {}, variant = 'medium', fallback = '') {
+    return variants?.[variant] || fallback || '';
+}
+
+function buildVariantAttributes(variants = {}) {
+    return MEDIA_VARIANTS
+        .filter((variant) => !!variants?.[variant])
+        .map((variant) => {
+            return `data-media-variant-${escapeHtml(variant)}="${escapeHtml(variants[variant])}"`;
+        })
+        .join(' ');
+}
+
+function buildImageHtml({
+                            url = '',
+                            alt = '',
+                            title = '',
+                            caption = '',
+                            mediaId = null,
+                            size = 'md',
+                            variants = {},
+                        } = {}) {
+    const normalizedSize = normalizeSize(size);
+    const selectedVariant = getVariantBySize(normalizedSize);
+    const selectedUrl = getVariantUrl(variants, selectedVariant, url);
+
+    const safeUrl = escapeHtml(selectedUrl);
     const safeAlt = escapeHtml(alt);
     const safeTitle = escapeHtml(title);
     const safeCaption = escapeHtml(caption);
     const safeMediaId = mediaId ? escapeHtml(String(mediaId)) : '';
-    const normalizedSize = ['sm', 'md', 'lg', 'full'].includes(size) ? size : 'md';
+    const safeSelectedVariant = escapeHtml(selectedVariant);
+    const variantAttributes = buildVariantAttributes(variants);
 
     if (!safeUrl) {
         return '';
     }
 
+    const imageHtml = `
+        <img
+            src="${safeUrl}"
+            alt="${safeAlt}"
+            title="${safeTitle}"
+            class="editor-media-image ${safeCaption ? '' : `image-size-${normalizedSize}`}"
+            data-media-type="image"
+            data-media-selected-size="${normalizedSize}"
+            data-media-selected-variant="${safeSelectedVariant}"
+            ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
+            ${variantAttributes}
+        >
+    `;
+
     if (safeCaption) {
         return `
             <figure class="content-media image-size-${normalizedSize}">
-                <img
-                    src="${safeUrl}"
-                    alt="${safeAlt}"
-                    title="${safeTitle}"
-                    class="editor-media-image"
-                    data-media-type="image"
-                    ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
-                >
+                ${imageHtml}
                 <figcaption>${safeCaption}</figcaption>
             </figure>
         `;
     }
 
-    return `
-        <img
-            src="${safeUrl}"
-            alt="${safeAlt}"
-            title="${safeTitle}"
-            class="editor-media-image image-size-${normalizedSize}"
-            data-media-type="image"
-            ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
-        >
-    `;
+    return imageHtml;
 }
 
 function registerCustomButtons(editor, element) {
@@ -185,10 +235,10 @@ function registerCustomButtons(editor, element) {
             }
 
             editor.insertContent(`
-            <div class="editor-more-marker" data-more-marker="true" contenteditable="false">
-                ادامه مطلب
-            </div>
-        `);
+                <div class="editor-more-marker" data-more-marker="true" contenteditable="false">
+                    ادامه مطلب
+                </div>
+            `);
         },
     });
 
@@ -204,9 +254,9 @@ function registerCustomButtons(editor, element) {
         icon: 'remove',
         tooltip: 'حذف تصویر',
         onAction: () => {
-            const node = editor.selection.getNode();
+            const node = getSelectedImageNode(editor);
 
-            if (node?.nodeName === 'IMG') {
+            if (node) {
                 const figure = editor.dom.getParent(node, 'figure');
 
                 if (figure) {
@@ -228,7 +278,7 @@ function registerCustomButtons(editor, element) {
 
     editor.ui.registry.addButton('mediaImageSizeSm', {
         text: 'S',
-        tooltip: 'اندازه کوچک',
+        tooltip: 'کوچک - Thumbnail',
         onAction: () => {
             setImageSize(editor, 'sm');
         },
@@ -236,7 +286,7 @@ function registerCustomButtons(editor, element) {
 
     editor.ui.registry.addButton('mediaImageSizeMd', {
         text: 'M',
-        tooltip: 'اندازه متوسط',
+        tooltip: 'متوسط - Medium',
         onAction: () => {
             setImageSize(editor, 'md');
         },
@@ -244,7 +294,7 @@ function registerCustomButtons(editor, element) {
 
     editor.ui.registry.addButton('mediaImageSizeLg', {
         text: 'L',
-        tooltip: 'اندازه بزرگ',
+        tooltip: 'بزرگ - Medium Large',
         onAction: () => {
             setImageSize(editor, 'lg');
         },
@@ -252,7 +302,7 @@ function registerCustomButtons(editor, element) {
 
     editor.ui.registry.addButton('mediaImageSizeFull', {
         text: '100%',
-        tooltip: 'تمام عرض',
+        tooltip: 'اصلی - Original',
         onAction: () => {
             setImageSize(editor, 'full');
         },
@@ -260,9 +310,9 @@ function registerCustomButtons(editor, element) {
 }
 
 function openImageEditDialog(editor) {
-    const node = editor.selection.getNode();
+    const node = getSelectedImageNode(editor);
 
-    if (!node || node.nodeName !== 'IMG') {
+    if (!node) {
         return;
     }
 
@@ -301,7 +351,7 @@ function openImageEditDialog(editor) {
                         {value: 'sm', text: 'کوچک'},
                         {value: 'md', text: 'متوسط'},
                         {value: 'lg', text: 'بزرگ'},
-                        {value: 'full', text: 'تمام عرض'},
+                        {value: 'full', text: 'تمام عرض / اصلی'},
                     ],
                 },
             ],
@@ -328,6 +378,7 @@ function openImageEditDialog(editor) {
 
             node.setAttribute('alt', data.alt || '');
             node.setAttribute('title', data.title || '');
+
             setImageSize(editor, data.size || 'md');
 
             if (figure) {
@@ -344,16 +395,22 @@ function openImageEditDialog(editor) {
                     editor.dom.remove(captionNode);
                 }
             } else if (data.caption?.trim()) {
-                const wrapper = editor.dom.create('figure', {class: 'content-media'});
+                const wrapper = editor.dom.create('figure', {
+                    class: `content-media image-size-${normalizeSize(data.size || 'md')}`,
+                });
+
                 const clonedImg = node.cloneNode(true);
                 const captionNode = editor.dom.create('figcaption');
 
                 captionNode.textContent = data.caption.trim();
 
+                clearImageSizeClasses(editor, clonedImg);
+
                 wrapper.appendChild(clonedImg);
                 wrapper.appendChild(captionNode);
 
                 editor.dom.replace(wrapper, node);
+                editor.selection.select(clonedImg);
             }
 
             api.close();
@@ -392,6 +449,47 @@ function clearImageSizeClasses(editor, target) {
     editor.dom.removeClass(target, 'image-size-full');
 }
 
+function clearImageVariantAttributes(imageNode) {
+    if (!imageNode) {
+        return;
+    }
+
+    MEDIA_VARIANTS.forEach((variant) => {
+        imageNode.removeAttribute(`data-media-variant-${variant}`);
+    });
+}
+
+function setImageVariantAttributes(imageNode, variants = {}) {
+    if (!imageNode) {
+        return;
+    }
+
+    MEDIA_VARIANTS.forEach((variant) => {
+        const path = variants?.[variant];
+
+        if (path) {
+            imageNode.setAttribute(`data-media-variant-${variant}`, path);
+        }
+    });
+}
+
+function updateImageVariantBySize(imageNode, size = 'md') {
+    if (!imageNode) {
+        return;
+    }
+
+    const safeSize = normalizeSize(size);
+    const variant = getVariantBySize(safeSize);
+    const variantUrl = imageNode.getAttribute(`data-media-variant-${variant}`);
+
+    if (variantUrl) {
+        imageNode.setAttribute('src', variantUrl);
+    }
+
+    imageNode.setAttribute('data-media-selected-size', safeSize);
+    imageNode.setAttribute('data-media-selected-variant', variant);
+}
+
 function setImageSize(editor, size = 'md') {
     const imageNode = getSelectedImageNode(editor);
 
@@ -400,20 +498,20 @@ function setImageSize(editor, size = 'md') {
     }
 
     const target = getImageWrapper(editor, imageNode);
+    const safeSize = normalizeSize(size);
 
     clearImageSizeClasses(editor, target);
 
-    const allowedSizes = ['sm', 'md', 'lg', 'full'];
-    const safeSize = allowedSizes.includes(size) ? size : 'md';
-
     editor.dom.addClass(target, `image-size-${safeSize}`);
+
+    updateImageVariantBySize(imageNode, safeSize);
 }
 
 function getCurrentImageSize(editor, imageNode) {
     const target = getImageWrapper(editor, imageNode);
 
     if (!target) {
-        return 'md';
+        return imageNode?.getAttribute('data-media-selected-size') || 'md';
     }
 
     if (editor.dom.hasClass(target, 'image-size-sm')) return 'sm';
@@ -421,7 +519,7 @@ function getCurrentImageSize(editor, imageNode) {
     if (editor.dom.hasClass(target, 'image-size-lg')) return 'lg';
     if (editor.dom.hasClass(target, 'image-size-full')) return 'full';
 
-    return 'md';
+    return imageNode?.getAttribute('data-media-selected-size') || 'md';
 }
 
 function startImageReplace(editor, element) {
@@ -446,14 +544,23 @@ function startImageReplace(editor, element) {
     }));
 }
 
-function replaceSelectedImage(editor, {mediaId = null, mediaPath = null, mediaTitle = ''} = {}) {
+function replaceSelectedImage(editor, {
+    mediaId = null,
+    mediaPath = null,
+    mediaTitle = '',
+    variants = {},
+} = {}) {
     const imageNode = getSelectedImageNode(editor);
 
     if (!imageNode || !mediaPath) {
         return;
     }
 
-    imageNode.setAttribute('src', mediaPath);
+    const currentSize = getCurrentImageSize(editor, imageNode);
+    const currentVariant = getVariantBySize(currentSize);
+    const nextSrc = getVariantUrl(variants, currentVariant, mediaPath);
+
+    imageNode.setAttribute('src', nextSrc);
     imageNode.setAttribute('alt', mediaTitle || '');
     imageNode.setAttribute('title', mediaTitle || '');
 
@@ -462,6 +569,11 @@ function replaceSelectedImage(editor, {mediaId = null, mediaPath = null, mediaTi
     } else {
         imageNode.removeAttribute('data-media-id');
     }
+
+    clearImageVariantAttributes(imageNode);
+    setImageVariantAttributes(imageNode, variants);
+
+    updateImageVariantBySize(imageNode, currentSize);
 }
 
 function buildEditorConfig(element) {
@@ -557,7 +669,7 @@ function buildEditorConfig(element) {
                 predicate: (node) => {
                     return node?.nodeName === 'IMG' && editor.dom.hasClass(node, 'editor-media-image');
                 },
-                items: 'mediaImageRemove mediaImageReplace mediaImageEdit',
+                items: 'mediaImageSizeSm mediaImageSizeMd mediaImageSizeLg mediaImageSizeFull | mediaImageRemove mediaImageReplace mediaImageEdit',
                 position: 'node',
                 scope: 'node',
             });
@@ -575,10 +687,12 @@ function isInitialized(element) {
 
 function handleMfipSelected(event) {
     const detail = event.detail || {};
+
     const itemKey = detail.itemKey;
     const mediaPath = detail.mediaPath;
     const mediaId = detail.mediaId;
     const mediaTitle = detail.mediaTitle || '';
+    const variants = detail.variants || detail.mediaVariants || {};
 
     if (!itemKey || !mediaPath) {
         return;
@@ -605,6 +719,7 @@ function handleMfipSelected(event) {
             mediaId,
             mediaPath,
             mediaTitle,
+            variants,
         });
 
         pendingImageReplace = null;
@@ -618,6 +733,7 @@ function handleMfipSelected(event) {
         caption: '',
         mediaId,
         size: 'md',
+        variants,
     });
 
     if (!html) {

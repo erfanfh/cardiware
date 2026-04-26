@@ -7,6 +7,7 @@ use App\Application\Media\Actions\GetMediaFileUrlAction;
 use App\Application\Media\Actions\ListImageLibraryAction;
 use App\Application\Media\Actions\UploadImageToLibraryAction;
 use App\Domain\Media\Enums\MediaFileDiskEnum;
+use App\Domain\Media\Enums\MediaFileVariantEnum;
 use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Support\Facades\Storage;
@@ -94,6 +95,7 @@ class MediaPicker extends Component
             'title' => null,
             'url' => null,
             'path' => null,
+            'variants' => [],
             'size_bytes' => null,
             'size_human' => null,
             'uploaded_at' => null,
@@ -112,7 +114,7 @@ class MediaPicker extends Component
         }
 
         $mediaFile = MediaFile::query()
-            ->with(['primaryVariant', 'creator'])
+            ->with(['variants', 'primaryVariant', 'creator'])
             ->find($this->selectedMediaFileId);
 
         if (!$mediaFile) {
@@ -137,11 +139,14 @@ class MediaPicker extends Component
             $sizeBytes = null;
         }
 
+        $variants = $this->buildVariantUrls($mediaFile);
+
         $this->selectedInfo = [
             'id' => $mediaFile->id,
             'title' => $mediaFile->title ?? null,
             'url' => $url,
             'path' => $path,
+            'variants' => $variants,
             'size_bytes' => $sizeBytes,
             'size_human' => $sizeBytes ? $this->humanBytes($sizeBytes) : null,
             'uploaded_at' => jalali_date($mediaFile->processed_at),
@@ -149,6 +154,47 @@ class MediaPicker extends Component
             'width' => $mediaFile->primaryVariant?->width,
             'height' => $mediaFile->primaryVariant?->height,
         ];
+    }
+
+    private function buildVariantUrls(MediaFile $mediaFile): array
+    {
+        $variants = [
+            MediaFileVariantEnum::ORIGINAL->value => null,
+            MediaFileVariantEnum::THUMBNAIL->value => null,
+            MediaFileVariantEnum::MEDIUM->value => null,
+            MediaFileVariantEnum::MEDIUM_LARGE->value => null,
+            MediaFileVariantEnum::LARGE->value => null,
+        ];
+
+        foreach ($mediaFile->variants as $variant) {
+            $variantName = $variant->variant instanceof MediaFileVariantEnum
+                ? $variant->variant->value
+                : (string)$variant->variant;
+
+            if (!array_key_exists($variantName, $variants)) {
+                continue;
+            }
+
+            $disk = $variant->disk instanceof MediaFileDiskEnum
+                ? $variant->disk->value
+                : (string)$variant->disk;
+
+            if (!$disk || !$variant->path) {
+                continue;
+            }
+
+            $variants[$variantName] = Storage::disk($disk)->url($variant->path);
+        }
+
+        $fallbackUrl = app(GetMediaFileUrlAction::class)->execute($mediaFile);
+
+        $variants[MediaFileVariantEnum::ORIGINAL->value] ??= $fallbackUrl;
+        $variants[MediaFileVariantEnum::MEDIUM->value] ??= $fallbackUrl;
+        $variants[MediaFileVariantEnum::MEDIUM_LARGE->value] ??= $variants[MediaFileVariantEnum::LARGE->value] ?? $fallbackUrl;
+        $variants[MediaFileVariantEnum::THUMBNAIL->value] ??= $variants[MediaFileVariantEnum::MEDIUM->value] ?? $fallbackUrl;
+        $variants[MediaFileVariantEnum::LARGE->value] ??= $variants[MediaFileVariantEnum::MEDIUM_LARGE->value] ?? $fallbackUrl;
+
+        return array_filter($variants);
     }
 
     private function humanBytes(int $bytes): string
@@ -319,8 +365,9 @@ class MediaPicker extends Component
             'mfip-selected',
             itemKey: $this->itemKey,
             mediaId: $this->selectedInfo['id'],
-            mediaPath: $this->selectedInfo['url'], // path key, full URL value
+            mediaPath: $this->selectedInfo['variants'][MediaFileVariantEnum::ORIGINAL->value] ?? $this->selectedInfo['url'],
             mediaTitle: $this->selectedInfo['title'],
+            mediaVariants: $this->selectedInfo['variants'] ?? [],
         );
     }
 
