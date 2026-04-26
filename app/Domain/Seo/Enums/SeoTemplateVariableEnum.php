@@ -73,6 +73,12 @@ enum SeoTemplateVariableEnum: string
                 self::TAXONOMY_TITLE,
             ], true),
 
+            'search' => in_array($this, [
+                self::SITE_TITLE,
+                self::SEPARATOR,
+                self::SEARCH_TERM,
+            ], true),
+
             default => in_array($this, [
                 self::SITE_TITLE,
                 self::SEPARATOR,

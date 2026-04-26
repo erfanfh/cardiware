@@ -15,6 +15,9 @@
                     'project' => 'صفحه پروژه',
                     'post-category' => 'صفحه دسته‌بندی نوشته',
                     'post-tag' => 'صفحه برچسب نوشته',
+                    'post-list' => 'صفحه لیست نوشته‌ها',
+                    'project-list' => 'صفحه لیست پروژه‌ها',
+                    'search' => 'صفحه جستجو',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
@@ -48,6 +51,18 @@
 
                 <x-admin.tabs.panel name="post-tag">
                     @include('admin.system.settings.partials.seo.post-tag')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="post-list">
+                    @include('admin.system.settings.partials.seo.post-list')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="project-list">
+                    @include('admin.system.settings.partials.seo.project-list')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="search">
+                    @include('admin.system.settings.partials.seo.search')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
