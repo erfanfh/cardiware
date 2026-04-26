@@ -114,7 +114,11 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug((string)env('APP_NAME', 'laravel')) . '-cache-'),
     'user_access_lifetime' => env('CACHE_USER_ACCESS_LIFETIME', 24), // hours
+
     'page_views_lifetime' => env('CACHE_PAGE_VIEWS_LIFETIME', 5), // minutes
     'page_views_schedule' => env('CACHE_PAGE_VIEWS_SCHEDULE', 1), // minutes
-    'page_views_batch_size' => env('PAGE_VIEWS_BATCH_SIZE', 100),
+    'page_views_flush_limit' => env('CACHE_PAGE_VIEWS_FLUSH_LIMIT', 10000),
+
+    'download_clicks_schedule' => env('CACHE_DOWNLOAD_CLICKS_SCHEDULE', 1), // minutes
+    'download_clicks_flush_limit' => env('CACHE_DOWNLOAD_CLICKS_FLUSH_LIMIT', 10000),
 ];

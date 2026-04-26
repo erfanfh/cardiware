@@ -4,6 +4,7 @@ use App\Application\Seo\Support\SeoManager;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\System\Models\PageView;
 use App\Infrastructure\Services\Date\DateConverterService;
+use App\Infrastructure\Support\Counters\BufferedCounter;
 use Carbon\Carbon;
 
 if (!function_exists('jalali_date')) {
@@ -206,14 +207,24 @@ if (!function_exists('page_views')) {
     {
         $modelClass = class_basename($model);
 
-        return Cache::remember("views:$modelClass:$model->id", config('cache.page_views_lifetime') * 60, function () use ($model, $modelClass) {
-            $pageView = PageView::where('pageable_type', $model::class)->where('pageable_id', $model->id)->first();
+        $storedViews = Cache::remember(
+            "views:stored:{$modelClass}:{$model->id}",
+            now()->addMinutes(config('cache.page_views_lifetime')),
+            function () use ($model) {
+                return (int)PageView::query()
+                    ->where('pageable_type', $model::class)
+                    ->where('pageable_id', $model->id)
+                    ->value('count');
+            }
+        );
 
-            if ($pageView)
-                return $pageView->count;
-            else
-                return Cache::get("temp_views:$modelClass:$model->id") ?? 0;
-        });
+        $bufferedViews = BufferedCounter::get(
+            namespace: 'page_views',
+            type: $modelClass,
+            id: $model->id,
+        );
+
+        return number_format($storedViews + $bufferedViews);
     }
 }
 

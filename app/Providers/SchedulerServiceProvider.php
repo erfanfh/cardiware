@@ -12,10 +12,18 @@ class SchedulerServiceProvider extends ServiceProvider
      */
     public function boot(Schedule $schedule): void
     {
-        $time = (int)config('cache.page_views_schedule');
+        $viewsSchedule = max((int)config('cache.page_views_schedule', 1), 1);
+        $viewsLimit = (int)config('cache.page_views_flush_limit', 10000);
 
-        $schedule->command('app:transfer-views-to-database')
-            ->cron("*/$time * * * *")
+        $downloadClicksSchedule = max((int)config('cache.download_clicks_schedule', 1), 1);
+        $downloadClicksLimit = (int)config('cache.download_clicks_flush_limit', 10000);
+
+        $schedule->command("app:transfer-views-to-database --limit={$viewsLimit}")
+            ->cron("*/{$viewsSchedule} * * * *")
+            ->withoutOverlapping();
+
+        $schedule->command("app:transfer-download-clicks-to-database --limit={$downloadClicksLimit}")
+            ->cron("*/{$downloadClicksSchedule} * * * *")
             ->withoutOverlapping();
     }
 }

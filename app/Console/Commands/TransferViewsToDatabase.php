@@ -4,59 +4,72 @@ namespace App\Console\Commands;
 
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
+use App\Domain\Project\Models\Project;
 use App\Domain\System\Models\PageView;
 use App\Domain\System\Models\PageViewDetail;
+use App\Infrastructure\Support\Counters\BufferedCounter;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class TransferViewsToDatabase extends Command
 {
-    protected $signature = 'app:transfer-views-to-database';
-    protected $description = 'Transfer page views from cache to database in batches';
+    protected $signature = 'app:transfer-views-to-database {--limit=5000}';
 
-    public function handle(): void
+    protected $description = 'Transfer buffered page views from Redis to database';
+
+    public function handle(): int
     {
-        $this->info('Starting transfer of page views...');
-
-        $models = [
-            Post::class,
-            Page::class,
+        $map = [
+            'Post' => Post::class,
+            'Page' => Page::class,
+            'Project' => Project::class,
         ];
 
-        $batchSize = config('cache.page_views_batch_size');
+        $limit = (int)$this->option('limit');
 
-        foreach ($models as $model) {
-            $className = class_basename($model);
-            $this->info("Processing $className views...");
+        for ($i = 0; $i < $limit; $i++) {
+            $dirty = BufferedCounter::popDirty('page_views');
 
-            $model::chunk($batchSize, function ($items) use ($className, $model) {
-                foreach ($items as $item) {
-                    $cacheKey = "temp_views:$className:$item->id";
-                    $cache = Cache::pull($cacheKey);
-                    if (!$cache) {
-                        continue;
-                    }
+            if (!$dirty) {
+                break;
+            }
 
-                    $pageView = PageView::firstOrNew([
-                        'pageable_type' => $model,
-                        'pageable_id' => $item->id,
-                    ]);
-                    $pageView->count = ($pageView->count ?? 0) + $cache;
-                    $pageView->save();
+            [$type, $id] = BufferedCounter::parseDirtyValue($dirty);
 
-                    $pageViewDetail = PageViewDetail::firstOrNew([
-                        'pageable_type' => $model,
-                        'pageable_id' => $item->id,
-                        'date' => today(),
-                    ]);
-                    $pageViewDetail->count = ($pageViewDetail->count ?? 0) + $cache;
-                    $pageViewDetail->save();
-                }
+            $modelClass = $map[$type] ?? null;
+
+            if (!$modelClass) {
+                continue;
+            }
+
+            $count = BufferedCounter::pull(
+                namespace: 'page_views',
+                type: $type,
+                id: $id,
+            );
+
+            if ($count <= 0) {
+                continue;
+            }
+
+            DB::transaction(function () use ($modelClass, $id, $count) {
+                $pageView = PageView::query()->firstOrCreate([
+                    'pageable_type' => $modelClass,
+                    'pageable_id' => $id,
+                ]);
+
+                $pageView->increment('count', $count);
+
+                $pageViewDetail = PageViewDetail::query()->firstOrCreate([
+                    'pageable_type' => $modelClass,
+                    'pageable_id' => $id,
+                    'date' => today(),
+                ]);
+
+                $pageViewDetail->increment('count', $count);
             });
-
-            $this->info("Finished processing ✅");
         }
 
-        $this->info('All views transferred successfully!');
+        return self::SUCCESS;
     }
 }

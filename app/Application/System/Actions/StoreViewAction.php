@@ -3,7 +3,7 @@
 namespace App\Application\System\Actions;
 
 use App\Domain\System\Interfaces\PageViewableInterface;
-use Illuminate\Support\Facades\Cache;
+use App\Infrastructure\Support\Counters\BufferedCounter;
 
 class StoreViewAction
 {
@@ -13,11 +13,10 @@ class StoreViewAction
      */
     public function execute(PageViewableInterface $model): void
     {
-        $modelClass = class_basename($model);
-
-        if (Cache::has("temp_views:$modelClass:$model->id"))
-            Cache::increment("temp_views:$modelClass:$model->id");
-        else
-            Cache::add("temp_views:$modelClass:$model->id", 1);
+        BufferedCounter::increment(
+            namespace: 'page_views',
+            type: class_basename($model),
+            id: $model->id,
+        );
     }
 }
