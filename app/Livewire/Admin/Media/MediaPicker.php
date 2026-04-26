@@ -254,8 +254,6 @@ class MediaPicker extends Component
 
             $this->activeTab = 'library';
 
-            $this->dispatchSelectionChanged();
-
             $this->dispatch('mfip-switch-tab', tab: 'library');
             $this->dispatch('mfip-upload-saved');
         } catch (Throwable $e) {
