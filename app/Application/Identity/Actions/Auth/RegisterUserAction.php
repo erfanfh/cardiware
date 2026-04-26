@@ -5,13 +5,15 @@ namespace App\Application\Identity\Actions\Auth;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Hash;
 use InvalidArgumentException;
+use RuntimeException;
 
 class RegisterUserAction
 {
     /**
-     * Registers a new user
+     * Register a new user.
      *
      * @param string $firstName
      * @param string $lastName
@@ -21,6 +23,7 @@ class RegisterUserAction
      * @param string $password
      * @param int|null $roleId
      * @param string|null $status
+     * @param string|null $username
      * @return User
      */
     public function execute(
@@ -32,21 +35,63 @@ class RegisterUserAction
         string  $password,
         ?int    $roleId = null,
         ?string $status = null,
+        ?string $username = null,
     ): User
     {
-        $roleId = Role::find($roleId)?->id ?? Role::defaultRole()->id;
+        $role = $roleId
+            ? Role::query()->find($roleId)
+            : Role::defaultRole();
 
-        $data = [
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'display_name' => $displayName ?? $firstName . ' ' . $lastName,
-            'mobile' => $mobile,
-            'email' => $email,
-            'password' => Hash::make($password),
-            'status' => $status ?? UserStatusEnum::ACTIVE,
-            'role_id' => $roleId,
-        ];
+        if (!$role) {
+            throw new InvalidArgumentException('Default role not found.');
+        }
 
-        return User::create($data);
+        $isManualUsername = filled($username);
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            try {
+                $finalUsername = $isManualUsername
+                    ? $username
+                    : app(GenerateUniqueUsernameAction::class)->execute(
+                        firstName: $firstName,
+                        lastName: $lastName,
+                        email: $email,
+                        mobile: $mobile,
+                    );
+
+                return User::query()->create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'display_name' => $displayName ?: $firstName . ' ' . $lastName,
+                    'mobile' => $mobile,
+                    'email' => $email,
+                    'username' => $finalUsername,
+                    'password' => Hash::make($password),
+                    'status' => $status ?? UserStatusEnum::ACTIVE,
+                    'role_id' => $role->id,
+                ]);
+            } catch (QueryException $exception) {
+                if ($isManualUsername || !$this->isDuplicateUsernameException($exception)) {
+                    throw $exception;
+                }
+            }
+        }
+
+        throw new RuntimeException('Could not generate a unique username.');
+    }
+
+    /**
+     * Determine if exception is caused by duplicate username.
+     *
+     * @param QueryException $exception
+     * @return bool
+     */
+    private function isDuplicateUsernameException(QueryException $exception): bool
+    {
+        $message = strtolower($exception->getMessage());
+
+        return str_contains($message, 'users_username_unique')
+            || str_contains($message, 'username')
+            || $exception->getCode() === '23000';
     }
 }

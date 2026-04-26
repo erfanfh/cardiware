@@ -12,6 +12,13 @@
     <x-admin.metabox title="اطلاعات شخصی">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="flex flex-col gap-4">
+                <x-admin.field required label="نام کاربری">
+                    <x-admin.form.input
+                        name="username"
+                        :value="old('username', $user?->username)"
+                    />
+                </x-admin.field>
+
                 <x-admin.field required label="نام">
                     <x-admin.form.input
                         name="first_name"

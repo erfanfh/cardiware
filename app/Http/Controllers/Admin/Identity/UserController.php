@@ -76,11 +76,11 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage
      *
-     * @param StoreUserRequest $request The validation request
+     * @param UpdateUserRequest $request
      * @param RegisterUserAction $registerUserAction
      * @return RedirectResponse
      */
-    public function store(StoreUserRequest $request, RegisterUserAction $registerUserAction): RedirectResponse
+    public function store(UpdateUserRequest $request, RegisterUserAction $registerUserAction): RedirectResponse
     {
         Gate::authorize('user.create');
 
@@ -95,6 +95,7 @@ class UserController extends Controller
             password: $data['password'],
             roleId: $data['role'],
             status: $data['status'],
+            username: $data['username'],
         );
 
         return redirect()->route('admin.users.index')
