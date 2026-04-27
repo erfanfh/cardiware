@@ -45,6 +45,15 @@ class SitemapController extends Controller
         return $this->show('page', 1, $registry, $renderer);
     }
 
+    public function paginatedPages(
+        int                     $page,
+        SitemapProviderRegistry $registry,
+        SitemapXmlRenderer      $renderer,
+    ): Response
+    {
+        return $this->show('page', $page, $registry, $renderer);
+    }
+
     public function categories(
         SitemapProviderRegistry $registry,
         SitemapXmlRenderer      $renderer,

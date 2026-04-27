@@ -16,6 +16,10 @@ Route::get('/post-sitemap{page}.xml', [SitemapController::class, 'paginatedPosts
 Route::get('/page-sitemap.xml', [SitemapController::class, 'pages'])
     ->name('sitemap.pages');
 
+Route::get('/page-sitemap{page}.xml', [SitemapController::class, 'paginatedPages'])
+    ->whereNumber('page')
+    ->name('sitemap.pages.paginated');
+
 Route::get('/category-sitemap.xml', [SitemapController::class, 'categories'])
     ->name('sitemap.categories');
 

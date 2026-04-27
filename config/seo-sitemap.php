@@ -25,8 +25,8 @@ return [
 
         'page' => [
             'enabled' => true,
-            'route_pattern' => 'page-sitemap.xml',
-            'include_images' => false,
+            'route_pattern' => 'page-sitemap{page}.xml',
+            'include_images' => true,
         ],
 
         'category' => [
