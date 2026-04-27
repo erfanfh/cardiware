@@ -106,6 +106,7 @@ class CategorySitemapProvider implements SitemapProviderInterface
                 'taxonomy',
                 'title',
                 'slug',
+                'path',
                 'updated_at',
             ])
             ->with([
@@ -201,7 +202,7 @@ class CategorySitemapProvider implements SitemapProviderInterface
 
     private function categoryUrl(TaxonomyTerm $term): string
     {
-        return url('/category/' . $this->termPath($term) . '/');
+        return front_route('posts.categories', $term);
     }
 
     private function termPath(TaxonomyTerm $term): string

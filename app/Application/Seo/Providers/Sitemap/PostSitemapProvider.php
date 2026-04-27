@@ -204,7 +204,7 @@ class PostSitemapProvider implements SitemapProviderInterface
 
     private function postUrl(Post $post): string
     {
-        return url('/' . trim($post->slug, '/') . '/');
+        return $post->url;
     }
 
     private function postLastmod(Post $post): ?CarbonInterface

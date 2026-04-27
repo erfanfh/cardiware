@@ -103,6 +103,7 @@ class TagSitemapProvider implements SitemapProviderInterface
             ->select([
                 'id',
                 'slug',
+                'path',
                 'updated_at',
             ]);
     }
@@ -192,6 +193,6 @@ class TagSitemapProvider implements SitemapProviderInterface
 
     private function tagUrl(TaxonomyTerm $term): string
     {
-        return url('/tag/' . trim($term->slug, '/') . '/');
+        return front_route('posts.tags', $term);
     }
 }

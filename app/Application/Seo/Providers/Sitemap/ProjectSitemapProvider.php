@@ -164,7 +164,7 @@ class ProjectSitemapProvider implements SitemapProviderInterface
 
     private function projectUrl(Project $project): string
     {
-        return url('/projects/' . trim($project->slug, '/') . '/');
+        return front_route('projects.detail', $project);
     }
 
     private function projectLastmod(Project $project): ?CarbonInterface

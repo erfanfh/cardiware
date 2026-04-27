@@ -163,7 +163,7 @@ class PageSitemapProvider implements SitemapProviderInterface
 
     private function pageUrl(Page $page): string
     {
-        return url('/' . trim($page->slug, '/') . '/');
+        return $page->url;
     }
 
     private function pageLastmod(Page $page): ?CarbonInterface
