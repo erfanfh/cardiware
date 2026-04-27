@@ -6,6 +6,7 @@ use App\Application\Seo\Contracts\SitemapProviderInterface;
 use App\Application\Seo\DTOs\Sitemap\SitemapImageDTO;
 use App\Application\Seo\DTOs\Sitemap\SitemapIndexItemDTO;
 use App\Application\Seo\DTOs\Sitemap\SitemapUrlDTO;
+use App\Application\Seo\Support\Sitemap\StableSitemapPaginator;
 use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Models\Page;
 use Carbon\Carbon;
@@ -15,6 +16,12 @@ use Illuminate\Support\Str;
 
 class PageSitemapProvider implements SitemapProviderInterface
 {
+    public function __construct(
+        private readonly StableSitemapPaginator $paginator,
+    )
+    {
+    }
+
     public function key(): string
     {
         return 'page';
@@ -65,7 +72,7 @@ class PageSitemapProvider implements SitemapProviderInterface
     public function urls(int $page = 1): array
     {
         return $this->sitemapContentQuery()
-            ->whereBetween('id', $this->idRangeForPage($page))
+            ->whereIn('id', $this->idsForPage($page))
             ->orderBy('id')
             ->get()
             ->map(fn(Page $pageModel) => new SitemapUrlDTO(
@@ -75,6 +82,11 @@ class PageSitemapProvider implements SitemapProviderInterface
             ))
             ->values()
             ->all();
+    }
+
+    private function allChunkableQuery(): Builder
+    {
+        return Page::query()->withTrashed();
     }
 
     private function baseIndexableQuery(): Builder
@@ -89,8 +101,6 @@ class PageSitemapProvider implements SitemapProviderInterface
             ->select([
                 'id',
                 'slug',
-                'title',
-                'status',
                 'updated_at',
                 'picture_id',
             ])
@@ -100,37 +110,40 @@ class PageSitemapProvider implements SitemapProviderInterface
     }
 
     /**
-     * @return array<int, int>
+     * @return array<int,int>
      */
     private function availablePages(): array
     {
-        $chunkSize = $this->chunkSize();
-
-        return $this->baseIndexableQuery()
-            ->selectRaw("FLOOR((id - 1) / {$chunkSize}) + 1 as sitemap_page")
-            ->groupByRaw("FLOOR((id - 1) / {$chunkSize}) + 1")
-            ->orderBy('sitemap_page')
-            ->pluck('sitemap_page')
-            ->map(fn($page) => (int)$page)
-            ->values()
-            ->all();
+        return $this->paginator->publicPages(
+            allItemsQuery: $this->allChunkableQuery(),
+            indexableQuery: $this->baseIndexableQuery(),
+            chunkSize: $this->chunkSize(),
+        );
     }
 
     /**
-     * @return array{0: int, 1: int}
+     * @return array<int,int>
      */
-    private function idRangeForPage(int $page): array
+    private function idsForPage(int $page): array
     {
-        return [
-            (($page - 1) * $this->chunkSize()) + 1,
-            $page * $this->chunkSize(),
-        ];
+        return $this->paginator->idsForPublicPage(
+            allItemsQuery: $this->allChunkableQuery(),
+            indexableQuery: $this->baseIndexableQuery(),
+            publicPage: $page,
+            chunkSize: $this->chunkSize(),
+        );
     }
 
     private function lastmodForPage(int $page): ?CarbonInterface
     {
+        $ids = $this->idsForPage($page);
+
+        if (empty($ids)) {
+            return null;
+        }
+
         $lastmod = $this->baseIndexableQuery()
-            ->whereBetween('id', $this->idRangeForPage($page))
+            ->whereIn('id', $ids)
             ->max('updated_at');
 
         return $lastmod ? Carbon::parse($lastmod) : null;
@@ -159,7 +172,7 @@ class PageSitemapProvider implements SitemapProviderInterface
     }
 
     /**
-     * @return array<int, SitemapImageDTO>
+     * @return array<int,SitemapImageDTO>
      */
     private function pageImages(Page $page): array
     {

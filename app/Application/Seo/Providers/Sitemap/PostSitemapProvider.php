@@ -6,6 +6,7 @@ use App\Application\Seo\Contracts\SitemapProviderInterface;
 use App\Application\Seo\DTOs\Sitemap\SitemapImageDTO;
 use App\Application\Seo\DTOs\Sitemap\SitemapIndexItemDTO;
 use App\Application\Seo\DTOs\Sitemap\SitemapUrlDTO;
+use App\Application\Seo\Support\Sitemap\StableSitemapPaginator;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
 use Carbon\Carbon;
@@ -15,6 +16,12 @@ use Illuminate\Support\Str;
 
 class PostSitemapProvider implements SitemapProviderInterface
 {
+    public function __construct(
+        private readonly StableSitemapPaginator $paginator,
+    )
+    {
+    }
+
     public function key(): string
     {
         return 'post';
@@ -75,7 +82,7 @@ class PostSitemapProvider implements SitemapProviderInterface
         }
 
         $posts = $this->sitemapContentQuery()
-            ->whereBetween('id', $this->idRangeForPage($page))
+            ->whereIn('id', $this->idsForPage($page))
             ->orderBy('id')
             ->get();
 
@@ -90,18 +97,18 @@ class PostSitemapProvider implements SitemapProviderInterface
         return $urls;
     }
 
-    /**
-     * Base query for posts that are allowed to appear in the sitemap.
-     */
+    private function allChunkableQuery(): Builder
+    {
+        return Post::query()
+            ->withTrashed();
+    }
+
     private function baseIndexableQuery(): Builder
     {
         return Post::query()
             ->where('status', PostStatusEnum::ACTIVE);
     }
 
-    /**
-     * Query used only when rendering URL entries.
-     */
     private function sitemapContentQuery(): Builder
     {
         return $this->baseIndexableQuery()
@@ -126,16 +133,11 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     private function availablePages(): array
     {
-        $chunkSize = $this->chunkSize();
-
-        $pages = $this->baseIndexableQuery()
-            ->selectRaw("FLOOR((id - 1) / {$chunkSize}) + 1 as sitemap_page")
-            ->groupByRaw("FLOOR((id - 1) / {$chunkSize}) + 1")
-            ->orderBy('sitemap_page')
-            ->pluck('sitemap_page')
-            ->map(fn($page) => (int)$page)
-            ->values()
-            ->all();
+        $pages = $this->paginator->publicPages(
+            allItemsQuery: $this->allChunkableQuery(),
+            indexableQuery: $this->baseIndexableQuery(),
+            chunkSize: $this->chunkSize(),
+        );
 
         if ($this->shouldIncludeHomeInFirstPage() && !in_array(1, $pages, true)) {
             array_unshift($pages, 1);
@@ -147,20 +149,28 @@ class PostSitemapProvider implements SitemapProviderInterface
     }
 
     /**
-     * @return array{0: int, 1: int}
+     * @return array<int, int>
      */
-    private function idRangeForPage(int $page): array
+    private function idsForPage(int $page): array
     {
-        $start = (($page - 1) * $this->chunkSize()) + 1;
-        $end = $page * $this->chunkSize();
-
-        return [$start, $end];
+        return $this->paginator->idsForPublicPage(
+            allItemsQuery: $this->allChunkableQuery(),
+            indexableQuery: $this->baseIndexableQuery(),
+            publicPage: $page,
+            chunkSize: $this->chunkSize(),
+        );
     }
 
     private function lastmodForPage(int $page): ?CarbonInterface
     {
+        $ids = $this->idsForPage($page);
+
+        if (empty($ids)) {
+            return $page === 1 ? $this->homeLastmod() : null;
+        }
+
         $lastmod = $this->baseIndexableQuery()
-            ->whereBetween('id', $this->idRangeForPage($page))
+            ->whereIn('id', $ids)
             ->max('updated_at');
 
         if (!$lastmod && $page === 1) {
