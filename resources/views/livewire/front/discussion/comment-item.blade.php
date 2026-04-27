@@ -142,7 +142,7 @@
     <div class="mt-4 sm:mt-0 sm:pr-[3.75rem]">
         @if($this->isPendingVisibleToCurrentViewer())
             <div
-                class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                class="rounded-2xl mt-3 border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
                 <div class="font-extrabold">دیدگاه شما در انتظار تأیید است.</div>
                 <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300/80">
                     این دیدگاه فقط برای شما نمایش داده می‌شود و پس از بررسی منتشر خواهد شد.
