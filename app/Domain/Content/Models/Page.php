@@ -83,7 +83,7 @@ class Page extends Model implements PageViewableInterface
      */
     public function getUrlAttribute(): string
     {
-        return url($this->slug ?? '/');
+        return front_route('contents.detail', $this->slug);
     }
 
     /**
