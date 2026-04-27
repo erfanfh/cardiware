@@ -149,7 +149,7 @@
         basePath="{{ route('home') }}/projects/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::PROJECT"
         :currentId="$project->id ?? null"
-        :itemUrl="$project ? route('projects.detail', $project) : null"
+        :itemUrl="$project ? front_route('projects.detail', $project) : null"
     />
 
     <x-admin.metabox title="توضیحات">

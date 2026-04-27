@@ -6,7 +6,7 @@
 
     <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
         @if(isset($relatedPosts[0]))
-            <a href="{{ route('contents.detail', $relatedPosts[0]) }}"
+            <a href="{{ front_route('contents.detail', $relatedPosts[0]) }}"
                class="h-56 rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition group dark:border-slate-700 dark:shadow-black/20 dark:hover:shadow-black/30">
                 <div class="relative h-full">
                     <img src="{{ $relatedPosts[0]->picture?->url }}" alt=""
@@ -38,7 +38,7 @@
 
         <div class="flex flex-col justify-between gap-3">
             @foreach($relatedPosts->skip(1)->all() as $post)
-                <a href="{{ route('contents.detail', $post) }}"
+                <a href="{{ front_route('contents.detail', $post) }}"
                    class="flex gap-3 rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
                     <img src="{{ $post->picture?->url }}" alt=""
                          class="h-16 w-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700">

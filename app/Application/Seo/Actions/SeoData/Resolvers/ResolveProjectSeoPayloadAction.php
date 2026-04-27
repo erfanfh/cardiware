@@ -63,7 +63,7 @@ final class ResolveProjectSeoPayloadAction
 
         $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
             customCanonicalUrl: $project->seoMeta?->canonical_url,
-            fallbackUrl: route('projects.detail', $project),
+            fallbackUrl: front_route('projects.detail', $project),
         );
 
         $publishedTime = $project->created_at?->utc()->toIso8601String();

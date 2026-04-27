@@ -35,7 +35,7 @@
             <x-admin.list.row-actions class="mt-3">
                 <x-admin.list.action
                     tag="a"
-                    :href="route('posts.tags', $item)"
+                    :href="front_route('posts.tags', $item)"
                     target="_blank"
                 >
                     مشاهده

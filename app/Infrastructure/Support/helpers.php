@@ -263,3 +263,9 @@ if (!function_exists('seo_head')) {
         return app(SeoManager::class)->render();
     }
 }
+
+function front_route(string $name, mixed $parameters = [], bool $absolute = true): string
+{
+    return app(\App\Application\Seo\Support\CanonicalUrlGenerator::class)
+        ->generate(route($name, $parameters, $absolute));
+}

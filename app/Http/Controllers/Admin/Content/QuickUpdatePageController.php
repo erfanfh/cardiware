@@ -59,7 +59,7 @@ class QuickUpdatePageController extends Controller
                     'title' => $page->title,
                     'slug' => $page->slug,
                     'urls' => [
-                        'detail' => route('contents.detail', $page->slug),
+                        'detail' => front_route('contents.detail', $page->slug),
                         'edit' => route('admin.pages.edit', $page),
                         'destroy' => route('admin.pages.destroy', $page),
                     ],

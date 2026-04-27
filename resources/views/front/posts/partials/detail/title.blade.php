@@ -8,7 +8,7 @@
         <nav class="text-xs text-slate-500 flex flex-wrap gap-2 dark:text-slate-400">
             <a href="{{ route('home') }}" class="hover:text-brand-700 font-bold transition dark:hover:text-brand-300">خانه</a>
             <span>—</span>
-            <a href="{{ route('posts.list') }}"
+            <a href="{{ front_route('posts.list') }}"
                class="hover:text-brand-700 font-bold transition dark:hover:text-brand-300">نوشته‌ها</a>
             <span>—</span>
             <span class="text-slate-600 font-semibold dark:text-slate-300">{{ $post->title }}</span>

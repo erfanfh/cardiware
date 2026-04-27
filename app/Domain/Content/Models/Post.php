@@ -102,7 +102,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
      */
     public function getUrlAttribute(): string
     {
-        return route('contents.detail', $this->slug);
+        return front_route('contents.detail', $this->slug);
     }
 
     /**

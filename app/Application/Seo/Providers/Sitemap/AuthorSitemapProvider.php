@@ -174,6 +174,6 @@ class AuthorSitemapProvider implements SitemapProviderInterface
 
     private function authorUrl(User $user): string
     {
-        return route('author', $user);
+        return front_route('author', $user);
     }
 }

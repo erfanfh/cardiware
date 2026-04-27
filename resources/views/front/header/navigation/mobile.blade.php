@@ -72,7 +72,7 @@
                     حساب کاربری
                 </a>
             @else
-                <a href="{{ route('auth.index') }}"
+                <a href="{{ front_route('auth.index') }}"
                    class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
                     @include('icons.login-square-01')
                     ورود / عضویت

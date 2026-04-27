@@ -70,7 +70,7 @@ final class ResolvePostListSeoPayloadAction
 
     protected function resolveCurrentPageUrl(): string
     {
-        $baseUrl = route('posts.list');
+        $baseUrl = front_route('posts.list');
         $page = max(1, (int)request()->integer('page', 1));
 
         if ($page <= 1) {

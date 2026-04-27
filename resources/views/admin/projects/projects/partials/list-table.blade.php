@@ -7,7 +7,7 @@
                     'title' => $project->title,
                     'slug' => $project->slug,
                     'urls' => [
-                        'detail' => route('projects.detail', $project),
+                        'detail' => front_route('projects.detail', $project),
                         'edit' => route('admin.projects.edit', $project),
                         'destroy' => route('admin.projects.destroy', $project),
                     ],

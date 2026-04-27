@@ -97,7 +97,7 @@ final class ResolvePostTagSeoPayloadAction
 
     protected function resolveCurrentPageUrl(TaxonomyTerm $tag): string
     {
-        $baseUrl = route('posts.tags', ['path' => $tag->path]);
+        $baseUrl = front_route('posts.tags', ['path' => $tag->path]);
         $page = max(1, (int)request()->integer('page', 1));
 
         if ($page <= 1) {

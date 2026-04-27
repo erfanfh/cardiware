@@ -73,7 +73,7 @@
                     }"
             >
                 <label class="relative block" @keydown.escape.window="open=false">
-                    <form action="{{ route('search') }}" method="get">
+                    <form action="{{ front_route('search') }}" method="get">
                         <span class="sr-only">جستجو</span>
 
                         <span
@@ -138,14 +138,14 @@
                         @include('icons.user')
                     </a>
                 @else
-                    <a href="{{ route('auth.index') }}"
+                    <a href="{{ front_route('auth.index') }}"
                        class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
                     hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
                         @include('icons.login-square-01')
                         ورود / عضویت
                     </a>
 
-                    <a href="{{ route('auth.index') }}"
+                    <a href="{{ front_route('auth.index') }}"
                        class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="ورود / عضویت">
                         @include('icons.login-square-01')

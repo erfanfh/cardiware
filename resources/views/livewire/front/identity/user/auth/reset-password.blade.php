@@ -56,7 +56,7 @@
     @endif
 
     @if($step === 'enter-username')
-        <a href="{{ route('auth.index') }}"
+        <a href="{{ front_route('auth.index') }}"
            class="mb-6 inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-orange-600 transition-colors cursor-pointer group">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
                 <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"

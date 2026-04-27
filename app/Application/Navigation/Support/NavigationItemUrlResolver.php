@@ -70,21 +70,21 @@ class NavigationItemUrlResolver
     {
         $this->ensureTaxonomyTerm($model, 'مرجع دسته‌بندی معتبر نیست.');
 
-        return route('posts.categories', $model);
+        return front_route('posts.categories', $model);
     }
 
     protected function resolveTagUrl(Model $model): string
     {
         $this->ensureTaxonomyTerm($model, 'مرجع برچسب معتبر نیست.');
 
-        return route('posts.tags', $model);
+        return front_route('posts.tags', $model);
     }
 
     protected function resolvePostUrl(Model $model): string
     {
         $this->ensurePost($model);
 
-        return route('contents.detail', [
+        return front_route('contents.detail', [
             'slug' => $model->slug,
         ]);
     }
@@ -93,7 +93,7 @@ class NavigationItemUrlResolver
     {
         $this->ensurePage($model);
 
-        return route('contents.detail', [
+        return front_route('contents.detail', [
             'slug' => $model->slug,
         ]);
     }
@@ -102,7 +102,7 @@ class NavigationItemUrlResolver
     {
         $this->ensureProject($model);
 
-        return route('projects.detail', $model);
+        return front_route('projects.detail', $model);
     }
 
     protected function ensureTaxonomyTerm(Model $model, string $message): void

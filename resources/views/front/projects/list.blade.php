@@ -97,7 +97,7 @@
                                     </div>
 
                                     <div class="mt-4 flex items-center justify-between gap-3">
-                                        <a href="{{ route('projects.detail', $project) }}"
+                                        <a href="{{ front_route('projects.detail', $project) }}"
                                            class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-[0.8rem] font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
                                             اطلاعات پروژه
                                             <span class="[&_svg]:w-4 [&_svg]:h-4">

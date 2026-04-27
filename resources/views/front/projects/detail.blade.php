@@ -19,7 +19,7 @@
                         خانه
                     </a>
                     <span>—</span>
-                    <a href="{{ route('projects.list') }}" class="hover:text-brand-300 font-bold transition">
+                    <a href="{{ front_route('projects.list') }}" class="hover:text-brand-300 font-bold transition">
                         پروژه‌ها
                     </a>
                     <span>—</span>

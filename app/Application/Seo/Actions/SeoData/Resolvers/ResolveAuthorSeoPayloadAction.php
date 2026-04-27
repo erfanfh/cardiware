@@ -122,7 +122,7 @@ final class ResolveAuthorSeoPayloadAction
 
     protected function resolveCurrentPageUrl(User $author): string
     {
-        $baseUrl = route('author', $author);
+        $baseUrl = front_route('author', $author);
         $page = max(1, (int)request()->integer('page', 1));
 
         if ($page <= 1) {

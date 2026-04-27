@@ -52,7 +52,7 @@
                         @php $views = approximate_view(page_views($post)); @endphp
                         <article
                             class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
-                            <a class="flex flex-col h-full" href="{{ route('contents.detail', $post) }}">
+                            <a class="flex flex-col h-full" href="{{ front_route('contents.detail', $post) }}">
                                 <div class="relative">
                                     <div
                                         class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>

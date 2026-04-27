@@ -20,7 +20,7 @@
                 @endphp
 
                 @foreach($posts as $post)
-                    <a href="{{ route('contents.detail', $post) }}"
+                    <a href="{{ front_route('contents.detail', $post) }}"
                        class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-xl hover:scale-[102%] transition duration-300 dark:border-slate-700 dark:shadow-black/20 dark:hover:shadow-black/30">
                         <div class="relative h-40">
                             <img class="absolute inset-0 h-full w-full object-cover opacity-90"

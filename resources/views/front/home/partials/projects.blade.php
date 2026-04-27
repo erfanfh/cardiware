@@ -5,7 +5,7 @@
                 class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">⬤</span>
             <h3 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('home', 'projects_title') }}</h3>
         </div>
-        <a href="{{ route('projects.list') }}"
+        <a href="{{ front_route('projects.list') }}"
            class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
             مشاهده همه
             <span class="[&_svg]:w-4 [&_svg]:h-4">
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="mt-4 flex items-center justify-between gap-3">
-                            <a href="{{ route('projects.detail', $project) }}"
+                            <a href="{{ front_route('projects.detail', $project) }}"
                                class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-[0.8rem] font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
                                 اطلاعات پروژه
                                 <span class="[&_svg]:w-4 [&_svg]:h-4">

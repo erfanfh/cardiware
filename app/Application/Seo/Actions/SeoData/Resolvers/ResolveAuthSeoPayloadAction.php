@@ -36,7 +36,7 @@ final class ResolveAuthSeoPayloadAction
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
 
         $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            fallbackUrl: route('auth.index')
+            fallbackUrl: front_route('auth.index')
         );
 
         return new ResolvedSeoPayloadDTO(

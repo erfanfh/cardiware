@@ -20,7 +20,7 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-sm font-extrabold truncate dark:text-slate-100">
-                            <a href="{{ route('projects.detail', $project) }}">
+                            <a href="{{ front_route('projects.detail', $project) }}">
                                 {{ $project->title }}
                             </a>
                         </div>

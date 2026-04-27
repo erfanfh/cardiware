@@ -97,7 +97,7 @@ final class ResolvePostCategorySeoPayloadAction
 
     protected function resolveCurrentPageUrl(TaxonomyTerm $category): string
     {
-        $baseUrl = route('posts.categories', ['path' => $category->path]);
+        $baseUrl = front_route('posts.categories', ['path' => $category->path]);
         $page = max(1, (int)request()->integer('page', 1));
 
         if ($page <= 1) {

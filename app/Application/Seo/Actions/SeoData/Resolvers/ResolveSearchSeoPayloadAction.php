@@ -93,7 +93,7 @@ final class ResolveSearchSeoPayloadAction
             $query['page'] = $page;
         }
 
-        return route('search', $query);
+        return front_route('search', $query);
     }
 
     protected function resolvePrimaryImage(): ?MediaFile

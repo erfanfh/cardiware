@@ -157,7 +157,7 @@
                     <span>←</span>
                 </a>
 
-                <a href="{{ route('posts.list') }}"
+                <a href="{{ front_route('posts.list') }}"
                    class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">
                     مشاهده نوشته‌ها
                 </a>

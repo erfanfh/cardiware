@@ -16,7 +16,7 @@
 
     <div class="mt-4 space-y-3">
         @foreach(\App\Domain\Content\Models\Post::take(get_setting('sidebarWidgets', 'populars_posts_count'))->get() as $post)
-            <a href="{{ route('contents.detail', $post) }}"
+            <a href="{{ front_route('contents.detail', $post) }}"
                class="flex gap-3 rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
                 <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
                      class="h-14 w-14 rounded-2xl object-cover"/>

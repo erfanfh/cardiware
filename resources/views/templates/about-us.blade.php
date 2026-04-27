@@ -133,7 +133,7 @@ Template Name: صفحه درباره ما
                         <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('aboutUs', 'projects_box_title') }}</h2>
                     </div>
                 </div>
-                <a href="{{ route('projects.list') }}"
+                <a href="{{ front_route('projects.list') }}"
                    class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
                     مشاهده همه <span class="font-black">←</span>
                 </a>
@@ -160,7 +160,7 @@ Template Name: صفحه درباره ما
                         <div class="mt-4 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                             <span>{{ 'آخرین آپدیت: ' . jalali_date($project->last_updated_at, 'Y/m/d') }}</span>
                             <a class="font-extrabold text-brand-700 hover:text-brand-800 transition dark:text-brand-300 dark:hover:text-brand-200"
-                               href="{{ route('projects.detail', $project) }}">جزئیات</a>
+                               href="{{ front_route('projects.detail', $project) }}">جزئیات</a>
                         </div>
                     </div>
                 @endforeach

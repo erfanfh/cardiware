@@ -32,7 +32,7 @@
                     class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/50 blur-xl dark:bg-brand-500/10"></div>
 
                 {{-- Posts --}}
-                <a href="{{ route('search', ['q' => request()->q, 'type' => 'posts']) }}"
+                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'posts']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'posts' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 
@@ -52,7 +52,7 @@
                 </a>
 
                 {{-- Projects --}}
-                <a href="{{ route('search', ['q' => request()->q, 'type' => 'projects']) }}"
+                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'projects']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'projects' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 
@@ -80,7 +80,7 @@
                                 @php $views = approximate_view(page_views($post)); @endphp
                                 <article
                                     class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
-                                    <a class="flex flex-col h-full" href="{{ route('contents.detail', $post) }}">
+                                    <a class="flex flex-col h-full" href="{{ front_route('contents.detail', $post) }}">
                                         <div class="relative">
                                             <div
                                                 class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
@@ -197,7 +197,7 @@
                                         </div>
 
                                         <div class="mt-4 flex items-center justify-between gap-3">
-                                            <a href="{{ route('projects.detail', $project) }}"
+                                            <a href="{{ front_route('projects.detail', $project) }}"
                                                class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-[0.8rem] font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
                                                 اطلاعات پروژه
                                                 <span class="[&_svg]:w-4 [&_svg]:h-4">

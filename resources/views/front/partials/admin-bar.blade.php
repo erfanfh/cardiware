@@ -151,7 +151,7 @@
                             </a>
                         </div>
 
-                        <form method="POST" action="{{ route('auth.logout') }}">
+                        <form method="POST" action="{{ front_route('auth.logout') }}">
                             @csrf
 
                             <button
@@ -253,7 +253,7 @@
                         </svg>
                     </a>
 
-                    <form method="POST" action="{{ route('auth.logout') }}">
+                    <form method="POST" action="{{ front_route('auth.logout') }}">
                         @csrf
 
                         <button

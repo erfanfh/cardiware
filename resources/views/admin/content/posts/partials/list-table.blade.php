@@ -7,7 +7,7 @@
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'urls' => [
-                        'detail' => route('contents.detail', $post->slug),
+                        'detail' => front_route('contents.detail', $post->slug),
                         'edit' => route('admin.posts.edit', $post),
                         'destroy' => route('admin.posts.destroy', $post),
                     ],
