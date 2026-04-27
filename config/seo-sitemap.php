@@ -23,6 +23,12 @@ return [
             'include_images' => true,
         ],
 
+        'project' => [
+            'enabled' => true,
+            'route_pattern' => 'project-sitemap{page}.xml',
+            'include_images' => true,
+        ],
+
         'page' => [
             'enabled' => true,
             'route_pattern' => 'page-sitemap{page}.xml',

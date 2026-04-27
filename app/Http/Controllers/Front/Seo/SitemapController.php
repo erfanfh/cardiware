@@ -37,6 +37,23 @@ class SitemapController extends Controller
         return $this->show('post', $page, $registry, $renderer);
     }
 
+    public function projects(
+        SitemapProviderRegistry $registry,
+        SitemapXmlRenderer      $renderer,
+    ): Response
+    {
+        return $this->show('project', 1, $registry, $renderer);
+    }
+
+    public function paginatedProjects(
+        int                     $page,
+        SitemapProviderRegistry $registry,
+        SitemapXmlRenderer      $renderer,
+    ): Response
+    {
+        return $this->show('project', $page, $registry, $renderer);
+    }
+
     public function pages(
         SitemapProviderRegistry $registry,
         SitemapXmlRenderer      $renderer,

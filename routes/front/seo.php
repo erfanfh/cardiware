@@ -13,6 +13,13 @@ Route::get('/post-sitemap{page}.xml', [SitemapController::class, 'paginatedPosts
     ->whereNumber('page')
     ->name('sitemap.posts.paginated');
 
+Route::get('/project-sitemap.xml', [SitemapController::class, 'projects'])
+    ->name('sitemap.projects');
+
+Route::get('/project-sitemap{page}.xml', [SitemapController::class, 'paginatedProjects'])
+    ->whereNumber('page')
+    ->name('sitemap.projects.paginated');
+
 Route::get('/page-sitemap.xml', [SitemapController::class, 'pages'])
     ->name('sitemap.pages');
 

@@ -6,6 +6,7 @@ use App\Application\Seo\Providers\Sitemap\AuthorSitemapProvider;
 use App\Application\Seo\Providers\Sitemap\CategorySitemapProvider;
 use App\Application\Seo\Providers\Sitemap\PageSitemapProvider;
 use App\Application\Seo\Providers\Sitemap\PostSitemapProvider;
+use App\Application\Seo\Providers\Sitemap\ProjectSitemapProvider;
 use App\Application\Seo\Providers\Sitemap\TagSitemapProvider;
 use App\Application\Seo\Support\Sitemap\SitemapProviderRegistry;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +20,7 @@ class SitemapServiceProvider extends ServiceProvider
     {
         $this->app->tag([
             PostSitemapProvider::class,
+            ProjectSitemapProvider::class,
             PageSitemapProvider::class,
             CategorySitemapProvider::class,
             TagSitemapProvider::class,
