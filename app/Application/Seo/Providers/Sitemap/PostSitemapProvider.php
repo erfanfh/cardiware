@@ -32,12 +32,17 @@ class PostSitemapProvider implements SitemapProviderInterface
 
     public function totalUrls(): int
     {
-        return $this->baseQuery()->count() + $this->homeUrlCount();
+        return $this->baseIndexableQuery()->count() + $this->homeUrlCount();
     }
 
     public function totalPages(): int
     {
-        return max(1, (int)ceil($this->totalUrls() / $this->chunkSize()));
+        return count($this->availablePages());
+    }
+
+    public function hasPage(int $page): bool
+    {
+        return in_array($page, $this->availablePages(), true);
     }
 
     /**
@@ -45,16 +50,13 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     public function indexItems(): array
     {
-        $items = [];
-
-        for ($page = 1; $page <= $this->totalPages(); $page++) {
-            $items[] = new SitemapIndexItemDTO(
+        return collect($this->availablePages())
+            ->map(fn(int $page) => new SitemapIndexItemDTO(
                 url: $this->sitemapUrl($page),
                 lastmod: $this->lastmodForPage($page),
-            );
-        }
-
-        return $items;
+            ))
+            ->values()
+            ->all();
     }
 
     /**
@@ -62,9 +64,6 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     public function urls(int $page = 1): array
     {
-        $limit = $this->chunkSize();
-        $offset = ($page - 1) * $limit;
-
         $urls = [];
 
         if ($page === 1 && $this->shouldIncludeHomeInFirstPage()) {
@@ -73,16 +72,11 @@ class PostSitemapProvider implements SitemapProviderInterface
                 lastmod: $this->homeLastmod(),
                 images: [],
             );
-
-            $limit--;
-        } else {
-            $offset -= $this->homeUrlCount();
         }
 
-        $posts = $this->baseQuery()
+        $posts = $this->sitemapContentQuery()
+            ->whereBetween('id', $this->idRangeForPage($page))
             ->orderBy('id')
-            ->offset(max(0, $offset))
-            ->limit($limit)
             ->get();
 
         foreach ($posts as $post) {
@@ -96,9 +90,21 @@ class PostSitemapProvider implements SitemapProviderInterface
         return $urls;
     }
 
-    private function baseQuery(): Builder
+    /**
+     * Base query for posts that are allowed to appear in the sitemap.
+     */
+    private function baseIndexableQuery(): Builder
     {
         return Post::query()
+            ->where('status', PostStatusEnum::ACTIVE);
+    }
+
+    /**
+     * Query used only when rendering URL entries.
+     */
+    private function sitemapContentQuery(): Builder
+    {
+        return $this->baseIndexableQuery()
             ->select([
                 'id',
                 'slug',
@@ -112,13 +118,61 @@ class PostSitemapProvider implements SitemapProviderInterface
             ->with([
                 'picture',
                 'imageGallery.mediaFile.primaryVariant',
-            ])
-            ->where('status', PostStatusEnum::ACTIVE);
+            ]);
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function availablePages(): array
+    {
+        $chunkSize = $this->chunkSize();
+
+        $pages = $this->baseIndexableQuery()
+            ->selectRaw("FLOOR((id - 1) / {$chunkSize}) + 1 as sitemap_page")
+            ->groupByRaw("FLOOR((id - 1) / {$chunkSize}) + 1")
+            ->orderBy('sitemap_page')
+            ->pluck('sitemap_page')
+            ->map(fn($page) => (int)$page)
+            ->values()
+            ->all();
+
+        if ($this->shouldIncludeHomeInFirstPage() && !in_array(1, $pages, true)) {
+            array_unshift($pages, 1);
+        }
+
+        sort($pages);
+
+        return array_values(array_unique($pages));
+    }
+
+    /**
+     * @return array{0: int, 1: int}
+     */
+    private function idRangeForPage(int $page): array
+    {
+        $start = (($page - 1) * $this->chunkSize()) + 1;
+        $end = $page * $this->chunkSize();
+
+        return [$start, $end];
+    }
+
+    private function lastmodForPage(int $page): ?CarbonInterface
+    {
+        $lastmod = $this->baseIndexableQuery()
+            ->whereBetween('id', $this->idRangeForPage($page))
+            ->max('updated_at');
+
+        if (!$lastmod && $page === 1) {
+            return $this->homeLastmod();
+        }
+
+        return $lastmod ? Carbon::parse($lastmod) : null;
     }
 
     private function chunkSize(): int
     {
-        return (int)config('seo-sitemap.chunk_size', 1000);
+        return max(1, (int)config('seo-sitemap.chunk_size', 1000));
     }
 
     private function homeUrlCount(): int
@@ -150,34 +204,7 @@ class PostSitemapProvider implements SitemapProviderInterface
 
     private function homeLastmod(): ?CarbonInterface
     {
-        $lastmod = $this->baseQuery()->max('updated_at');
-
-        return $lastmod ? Carbon::parse($lastmod) : null;
-    }
-
-    private function lastmodForPage(int $page): ?CarbonInterface
-    {
-        $limit = $this->chunkSize();
-        $offset = ($page - 1) * $limit;
-
-        if ($page === 1 && $this->shouldIncludeHomeInFirstPage()) {
-            $limit--;
-        } else {
-            $offset -= $this->homeUrlCount();
-        }
-
-        $lastmod = $this->baseQuery()
-            ->orderBy('published_at')
-            ->orderBy('id')
-            ->offset(max(0, $offset))
-            ->limit($limit)
-            ->pluck('updated_at')
-            ->filter()
-            ->max();
-
-        if (!$lastmod && $page === 1) {
-            return $this->homeLastmod();
-        }
+        $lastmod = $this->baseIndexableQuery()->max('updated_at');
 
         return $lastmod ? Carbon::parse($lastmod) : null;
     }
@@ -207,10 +234,6 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     private function mainImage(Post $post): array
     {
-        if (!$post->relationLoaded('picture')) {
-            $post->loadMissing('picture');
-        }
-
         if (!$post->picture?->url) {
             return [];
         }
@@ -227,12 +250,8 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     private function galleryImages(Post $post): array
     {
-        if (!$post->relationLoaded('imageGallery')) {
-            $post->loadMissing('imageGallery');
-        }
-
         return $post->imageGallery
-            ->filter(fn($imageGallery) => filled($imageGallery->mediaFile->url ?? null))
+            ->filter(fn($imageGallery) => filled($imageGallery->mediaFile?->url))
             ->map(fn($imageGallery) => new SitemapImageDTO(
                 url: $this->absoluteUrl($imageGallery->mediaFile->url),
             ))
@@ -245,7 +264,7 @@ class PostSitemapProvider implements SitemapProviderInterface
      */
     private function contentImages(Post $post): array
     {
-        $content = $post->body ?? $post->content ?? null;
+        $content = $post->body ?? null;
 
         if (blank($content)) {
             return [];

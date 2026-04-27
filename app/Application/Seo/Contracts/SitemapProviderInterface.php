@@ -17,6 +17,8 @@ interface SitemapProviderInterface
 
     public function totalPages(): int;
 
+    public function hasPage(int $page): bool;
+
     /**
      * @return array<int, SitemapIndexItemDTO>
      */

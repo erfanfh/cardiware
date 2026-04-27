@@ -91,7 +91,7 @@ class SitemapController extends Controller
             throw new NotFoundHttpException();
         }
 
-        if ($page < 1 || $page > $provider->totalPages()) {
+        if ($page < 1 || !$provider->hasPage($page)) {
             throw new NotFoundHttpException();
         }
 
