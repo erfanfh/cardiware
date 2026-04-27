@@ -14,6 +14,8 @@ class ActivePageScope implements Scope
         if (request()->routeIs(['admin.*', 'livewire.*']))
             return;
         else
-            $builder->where('status', PageStatusEnum::ACTIVE);
+            $builder
+                ->where('status', PageStatusEnum::ACTIVE)
+                ->where('published_at', '<=', now());
     }
 }
