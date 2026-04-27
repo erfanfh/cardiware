@@ -31,7 +31,7 @@ return [
 
         'category' => [
             'enabled' => true,
-            'route_pattern' => 'category-sitemap.xml',
+            'route_pattern' => 'category-sitemap{page}.xml',
             'include_images' => false,
         ],
 

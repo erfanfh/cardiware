@@ -23,6 +23,10 @@ Route::get('/page-sitemap{page}.xml', [SitemapController::class, 'paginatedPages
 Route::get('/category-sitemap.xml', [SitemapController::class, 'categories'])
     ->name('sitemap.categories');
 
+Route::get('/category-sitemap{page}.xml', [SitemapController::class, 'paginatedCategories'])
+    ->whereNumber('page')
+    ->name('sitemap.categories.paginated');
+
 Route::get('/post_tag-sitemap.xml', [SitemapController::class, 'tags'])
     ->name('sitemap.tags');
 
