@@ -8,6 +8,7 @@ return [
     App\Providers\PageLayoutServiceProvider::class,
     App\Providers\SchedulerServiceProvider::class,
     App\Providers\SeoServiceProvider::class,
+    App\Providers\SitemapServiceProvider::class,
     App\Providers\SlugServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
 ];
