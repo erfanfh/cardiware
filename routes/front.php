@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['web'])
+Route::middleware(['web', RedirectToCanonicalUrl::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
         require __DIR__ . '/front/identity.php';
