@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\Seo\Providers\Sitemap\CategorySitemapProvider;
 use App\Application\Seo\Providers\Sitemap\PageSitemapProvider;
 use App\Application\Seo\Providers\Sitemap\PostSitemapProvider;
+use App\Application\Seo\Providers\Sitemap\TagSitemapProvider;
 use App\Application\Seo\Support\Sitemap\SitemapProviderRegistry;
 use Illuminate\Support\ServiceProvider;
 
@@ -19,6 +20,7 @@ class SitemapServiceProvider extends ServiceProvider
             PostSitemapProvider::class,
             PageSitemapProvider::class,
             CategorySitemapProvider::class,
+            TagSitemapProvider::class,
         ], 'seo.sitemap.providers');
 
         $this->app->singleton(SitemapProviderRegistry::class, function ($app) {

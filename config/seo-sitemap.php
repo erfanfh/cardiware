@@ -39,7 +39,6 @@ return [
             'enabled' => true,
             'route_pattern' => 'post_tag-sitemap{page}.xml',
             'include_images' => false,
-            'minimum_posts_count' => 1,
         ],
 
         'author' => [
