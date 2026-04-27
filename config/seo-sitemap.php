@@ -43,7 +43,7 @@ return [
 
         'author' => [
             'enabled' => true,
-            'route_pattern' => 'author-sitemap.xml',
+            'route_pattern' => 'author-sitemap{page}.xml',
             'include_images' => false,
         ],
     ],

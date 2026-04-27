@@ -96,6 +96,15 @@ class SitemapController extends Controller
         return $this->show('author', 1, $registry, $renderer);
     }
 
+    public function paginatedAuthors(
+        int                     $page,
+        SitemapProviderRegistry $registry,
+        SitemapXmlRenderer      $renderer,
+    ): Response
+    {
+        return $this->show('author', $page, $registry, $renderer);
+    }
+
     private function show(
         string                  $type,
         int                     $page,

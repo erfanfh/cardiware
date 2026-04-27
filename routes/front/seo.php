@@ -36,3 +36,7 @@ Route::get('/post_tag-sitemap{page}.xml', [SitemapController::class, 'paginatedT
 
 Route::get('/author-sitemap.xml', [SitemapController::class, 'authors'])
     ->name('sitemap.authors');
+
+Route::get('/author-sitemap{page}.xml', [SitemapController::class, 'paginatedAuthors'])
+    ->whereNumber('page')
+    ->name('sitemap.authors.paginated');
