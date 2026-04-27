@@ -1,17 +1,17 @@
 <section id="free-mods">
-    <div class="grid grid-cols-2 lg:grid-cols-7 gap-2 mb-4">
+    <div class="flex flex-wrap gap-2 mb-4">
         @foreach($this->postTabs as $postTab)
             <button
                 wire:key="post-tab-{{ $postTab['key'] }}"
                 wire:click="changeTab('{{ $postTab['key'] }}')"
                 wire:loading.attr="disabled"
                 wire:target="changeTab"
-                class="inline-flex cursor-pointer items-center gap-2 h-10 px-4 rounded-2xl font-extrabold text-sm transition border disabled:opacity-70 disabled:cursor-wait
+                class="inline-flex cursor-pointer items-center gap-2 h-10 px-4 rounded-2xl font-extrabold text-sm transition border disabled:opacity-70
                 {{ $postTab['key'] === $activeTabKey ? 'border-brand-100 bg-brand-50 text-slate-900 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800' }}"
             >
                 <span class="inline-flex h-5 w-5 items-center justify-center rounded-xl text-xs font-black
                     {{ $postTab['key'] === $activeTabKey ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-900 dark:bg-brand-500/20 dark:text-brand-200' }}"></span>
-                <h2 class="whitespace-nowrap">{{ $postTab['main_title'] }}</h2>
+                <h2>{{ $postTab['main_title'] }}</h2>
             </button>
         @endforeach
     </div>
