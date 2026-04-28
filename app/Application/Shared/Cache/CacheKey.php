@@ -28,4 +28,9 @@ final class CacheKey
     {
         return 'home:videos:block';
     }
+
+    public static function homeProjectsBlock(): string
+    {
+        return 'home:projects:block';
+    }
 }
