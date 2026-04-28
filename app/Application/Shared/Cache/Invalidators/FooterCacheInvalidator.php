@@ -13,4 +13,11 @@ class FooterCacheInvalidator
             CacheTag::FOOTER_STATS,
         ])->flush();
     }
+
+    public function flushStats(): void
+    {
+        Cache::tags([
+            CacheTag::FOOTER_STATS,
+        ])->flush();
+    }
 }

@@ -3,11 +3,11 @@
 namespace App\Application\Content\Actions;
 
 use App\Application\Content\Services\ContentSlugCacheService;
-use App\Application\Content\Services\PostCacheInvalidationService;
 use App\Application\Download\Actions\SyncDownloadSectionsAction;
 use App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
+use App\Application\Shared\Cache\Invalidators\PostCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelPostCategoriesAction;
@@ -29,7 +29,7 @@ class UpdatePostAction
         protected SyncPostImageGalleryAction    $syncPostImageGalleryAction,
         protected SyncSeoMetaAction             $syncSeoMetaAction,
         protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
-        protected PostCacheInvalidationService  $postCacheInvalidationService,
+        protected PostCacheInvalidator          $postCacheInvalidator,
     )
     {
     }
@@ -83,7 +83,7 @@ class UpdatePostAction
         });
 
         $this->contentSlugCacheService->forgetForModel($post);
-        $this->postCacheInvalidationService->forgetAfterPostUpdated($post);
+        $this->postCacheInvalidator->afterUpdated($post);
 
         return $post;
     }
