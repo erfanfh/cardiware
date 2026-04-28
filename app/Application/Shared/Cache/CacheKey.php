@@ -81,4 +81,14 @@ final class CacheKey
     {
         return "seo-data:post:{$postId}:{$postUpdatedAt}:{$seoMetaUpdatedAt}";
     }
+
+    public static function postDetailData(int|string $postId, int $postUpdatedAt): string
+    {
+        return "content:post:{$postId}:detail-data:{$postUpdatedAt}";
+    }
+
+    public static function postRelated(int|string $postId, int $postUpdatedAt): string
+    {
+        return "content:post:{$postId}:related:{$postUpdatedAt}";
+    }
 }

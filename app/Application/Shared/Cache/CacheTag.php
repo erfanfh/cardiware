@@ -36,6 +36,9 @@ final class CacheTag
 
     public const PAGE_VIEWS = 'page-views';
 
+    public const POST_DETAIL = 'post-detail';
+    public const RELATED_POSTS = 'related-posts';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";

@@ -40,9 +40,12 @@ class PostCacheInvalidator
         Cache::tags([
             CacheTag::POSTS,
             CacheTag::POST_LISTS,
+            CacheTag::POST_DETAIL,
+            CacheTag::RELATED_POSTS,
             CacheTag::CATEGORIES,
             CacheTag::TAGS,
             CacheTag::SITEMAP,
+            CacheTag::post($post->id),
         ])->flush();
     }
 }
