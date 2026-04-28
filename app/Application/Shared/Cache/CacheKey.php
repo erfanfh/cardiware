@@ -67,4 +67,9 @@ final class CacheKey
     {
         return 'content:slug:' . trim($slug);
     }
+
+    public static function storedPageViews(string $modelClass, int|string $id): string
+    {
+        return "views:stored:{$modelClass}:{$id}";
+    }
 }

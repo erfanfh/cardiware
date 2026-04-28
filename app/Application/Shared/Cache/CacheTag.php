@@ -34,6 +34,8 @@ final class CacheTag
 
     public const NAVIGATION = 'navigation';
 
+    public const PAGE_VIEWS = 'page-views';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";
@@ -67,5 +69,10 @@ final class CacheTag
     public static function navigationMenu(string $slug): string
     {
         return "navigation:menu:{$slug}";
+    }
+
+    public static function pageViews(string $modelClass, int|string $id): string
+    {
+        return "page-views:{$modelClass}:{$id}";
     }
 }

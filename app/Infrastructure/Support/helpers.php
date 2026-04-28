@@ -2,6 +2,8 @@
 
 use App\Application\Seo\Support\CanonicalUrlGenerator;
 use App\Application\Seo\Support\SeoManager;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\System\Models\PageView;
 use App\Infrastructure\Services\Date\DateConverterService;
@@ -208,8 +210,11 @@ if (!function_exists('page_views')) {
     {
         $modelClass = class_basename($model);
 
-        $storedViews = Cache::remember(
-            "views:stored:{$modelClass}:{$model->id}",
+        $storedViews = Cache::tags([
+            CacheTag::PAGE_VIEWS,
+            CacheTag::pageViews($modelClass, $model->id),
+        ])->remember(
+            CacheKey::storedPageViews($modelClass, $model->id),
             now()->addMinutes(config('cache.page_views_lifetime')),
             function () use ($model) {
                 return (int)PageView::query()
