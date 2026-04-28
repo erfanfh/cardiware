@@ -4,8 +4,6 @@ namespace App\Application\Shared\Cache;
 
 final class CacheTag
 {
-    public const SETTINGS = 'settings';
-
     public const HOME = 'home';
     public const HOME_FREE_POSTS = 'home:free-posts';
     public const HOME_VIDEOS = 'home:videos';
@@ -16,14 +14,11 @@ final class CacheTag
 
     public const PROJECTS = 'projects';
 
-    public const COMMENTS = 'comments';
     public const FOOTER_STATS = 'footer-stats';
 
     public const SEO = 'seo';
     public const SCHEMA = 'schema';
     public const MEDIA = 'media';
-
-    public const NAVIGATION = 'navigation';
 
     public const CATEGORIES = 'categories';
     public const TAGS = 'tags';
@@ -36,6 +31,8 @@ final class CacheTag
     public const PAGE_LAYOUTS = 'page-layouts';
     public const PAGE_LAYOUT_BUILDER = 'page-layout-builder';
     public const PAGE_LAYOUT_RENDER = 'page-layout-render';
+
+    public const NAVIGATION = 'navigation';
 
     public static function post(int|string $postId): string
     {
@@ -65,5 +62,10 @@ final class CacheTag
     public static function pageLayout(string $key): string
     {
         return "page-layout:{$key}";
+    }
+
+    public static function navigationMenu(string $slug): string
+    {
+        return "navigation:menu:{$slug}";
     }
 }

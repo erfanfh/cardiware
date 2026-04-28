@@ -3,6 +3,8 @@
 namespace App\Application\Navigation\Actions;
 
 use App\Application\Navigation\Support\NavigationItemUrlResolver;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Navigation\Models\NavigationItem;
 use App\Domain\Navigation\Models\NavigationMenu;
 use Illuminate\Support\Collection;
@@ -18,8 +20,11 @@ class ResolveFrontendNavigationMenuAction
 
     public function execute(string $slug): Collection
     {
-        return Cache::rememberForever(
-            "navigation.frontend.{$slug}",
+        return Cache::tags([
+            CacheTag::NAVIGATION,
+            CacheTag::navigationMenu($slug),
+        ])->rememberForever(
+            CacheKey::frontendNavigation($slug),
             fn() => $this->resolve($slug)
         );
     }
@@ -77,10 +82,5 @@ class ResolveFrontendNavigationMenuAction
             'mega_menu_columns' => $item->mega_menu_columns,
             'children' => $this->buildTree($allItems, $item->id),
         ];
-    }
-
-    public function forget(string $slug): void
-    {
-        Cache::forget("navigation.frontend.{$slug}");
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Application\Navigation\Actions;
 
 use App\Application\Navigation\Support\NavigationItemUrlResolver;
+use App\Application\Shared\Cache\Invalidators\NavigationCacheInvalidator;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Navigation\Enums\NavigationItemTargetEnum;
@@ -11,14 +12,14 @@ use App\Domain\Navigation\Models\NavigationItem;
 use App\Domain\Navigation\Models\NavigationMenu;
 use App\Domain\Project\Models\Project;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class SyncNavigationMenuItemsAction
 {
     public function __construct(
-        protected NavigationItemUrlResolver $urlResolver,
+        protected NavigationItemUrlResolver  $urlResolver,
+        protected NavigationCacheInvalidator $navigationCacheInvalidator,
     )
     {
     }
@@ -37,9 +38,9 @@ class SyncNavigationMenuItemsAction
                 parentId: null,
                 depth: 0,
             );
-
-            Cache::forget("navigation.frontend.{$menu->slug}");
         });
+
+        $this->navigationCacheInvalidator->flushForMenu($menu);
     }
 
     /**
