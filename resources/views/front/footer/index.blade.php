@@ -1,3 +1,7 @@
+@php
+    $footerStats = app(\App\Application\System\Actions\Footer\GetFooterStatsAction::class)->execute();
+@endphp
+
 <footer dir="rtl" class="bg-white dark:bg-slate-950">
     <div class="h-px w-full bg-gray-200 dark:bg-slate-800"></div>
 
@@ -7,7 +11,7 @@
                 <div class="flex flex-col items-center">
                     @include('icons.cart-check-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format(12000) }}
+                        +{{ number_format($footerStats['orders']) }}
                         سفارش
                     </div>
                 </div>
@@ -15,7 +19,7 @@
                 <div class="flex flex-col items-center">
                     @include('icons.chat-unread-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format(floor(\App\Domain\Discussion\Models\Comment::approved()->count() / 10) * 10) }}
+                        +{{ number_format($footerStats['comments']) }}
                         دیدگاه
                     </div>
                 </div>
@@ -23,7 +27,7 @@
                 <div class="flex flex-col items-center">
                     @include('icons.clipboard-list-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format(floor(\App\Domain\Content\Models\Post::where('status', \App\Domain\Content\Enums\PostStatusEnum::ACTIVE)->count() / 10) * 10) }}
+                        +{{ number_format($footerStats['posts']) }}
                         نوشته
                     </div>
                 </div>
@@ -31,7 +35,7 @@
                 <div class="flex flex-col items-center">
                     @include('icons.shop-line-duotone')
                     <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format(30) }}
+                        +{{ number_format($footerStats['products']) }}
                         محصول
                     </div>
                 </div>
