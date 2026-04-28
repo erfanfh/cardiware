@@ -110,4 +110,20 @@ final class CacheKey
     {
         return "content:posts:list:page:{$page}:per-page:{$perPage}";
     }
+
+    public static function projectSeoData(
+        int|string $projectId,
+        int        $projectUpdatedAt
+    ): string
+    {
+        return "seo-data:project:{$projectId}:{$projectUpdatedAt}";
+    }
+
+    public static function projectDetail(
+        int|string $projectId,
+        int        $updatedAt
+    ): string
+    {
+        return "project:detail:{$projectId}:{$updatedAt}";
+    }
 }

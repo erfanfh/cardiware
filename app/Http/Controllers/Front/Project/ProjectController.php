@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front\Project;
 
-use App\Domain\Project\Enums\ProjectStatusEnum;
+use App\Application\Project\Actions\GetProjectDetailAction;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
@@ -17,7 +17,7 @@ class ProjectController extends Controller
      */
     public function detail(Project $project): View
     {
-        $project = $project->load(['cover.primaryVariant', 'roadmapItems', 'changelogs', 'features']);
+        $project = app(GetProjectDetailAction::class)->execute($project);
 
         return view('front.projects.detail', compact('project'));
     }
@@ -29,7 +29,7 @@ class ProjectController extends Controller
      */
     public function list(): View
     {
-        $stats =  Project::query()
+        $stats = Project::query()
             ->selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN progress_percent = 0 THEN 1 ELSE 0 END) as not_started,

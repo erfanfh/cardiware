@@ -5,6 +5,7 @@ namespace App\Application\Project\Actions;
 use App\Application\Seo\Actions\Analysis\BuildProjectSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
+use App\Application\Shared\Cache\Invalidators\ProjectCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelProjectTagsAction;
@@ -23,6 +24,7 @@ class CreateProjectAction
         protected AssignSlugAction              $assignSlugAction,
         protected SyncSeoMetaAction             $syncSeoMetaAction,
         protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
+        protected ProjectCacheInvalidator       $projectCacheInvalidator,
     )
     {
     }
@@ -70,6 +72,8 @@ class CreateProjectAction
 
             $this->syncSeoMetaAction->execute($project, $data['seo'] ?? []);
             $this->storeSeoAnalysisAction->execute($project, app(BuildProjectSeoAnalysisInputAction::class));
+
+            $this->projectCacheInvalidator->afterCreated($project);
 
             return $project;
         });
