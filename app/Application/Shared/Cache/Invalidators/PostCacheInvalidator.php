@@ -49,4 +49,11 @@ class PostCacheInvalidator
             CacheTag::post($post->id),
         ])->flush();
     }
+
+    public function flushPostsList(): void
+    {
+        Cache::tags([
+            CacheTag::POST_LISTS,
+        ])->flush();
+    }
 }

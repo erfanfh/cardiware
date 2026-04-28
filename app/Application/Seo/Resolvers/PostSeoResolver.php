@@ -58,7 +58,6 @@ class PostSeoResolver implements SeoResolverInterface
             CacheKey::postSeoData(
                 postId: $post->id,
                 postUpdatedAt: $post->updated_at?->timestamp ?? 0,
-                seoMetaUpdatedAt: $post->seoMeta?->updated_at?->timestamp ?? 0,
             ),
             CacheTtl::long(),
             fn() => $this->resolvePostSeoDataAction->execute($post)

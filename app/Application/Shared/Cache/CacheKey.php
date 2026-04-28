@@ -76,10 +76,9 @@ final class CacheKey
     public static function postSeoData(
         int|string $postId,
         int        $postUpdatedAt,
-        int        $seoMetaUpdatedAt = 0
     ): string
     {
-        return "seo-data:post:{$postId}:{$postUpdatedAt}:{$seoMetaUpdatedAt}";
+        return "seo-data:post:{$postId}:{$postUpdatedAt}";
     }
 
     public static function postDetailData(int|string $postId, int $postUpdatedAt): string
@@ -101,9 +100,14 @@ final class CacheKey
     {
         return 'sidebar:categories';
     }
-    
+
     public static function sidebarProjects(): string
     {
         return 'sidebar:projects';
+    }
+
+    public static function postList(int $page, int $perPage): string
+    {
+        return "content:posts:list:page:{$page}:per-page:{$perPage}";
     }
 }

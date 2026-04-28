@@ -10,6 +10,7 @@ class SettingCacheInvalidator
         protected FooterCacheInvalidator         $footerCacheInvalidator,
         protected GeneralCacheInvalidator        $generalCacheInvalidator,
         protected SidebarWidgetsCacheInvalidator $sidebarWidgetsCacheInvalidator,
+        protected PostCacheInvalidator           $postCacheInvalidator,
     )
     {
     }
@@ -22,6 +23,7 @@ class SettingCacheInvalidator
             'footer' => $this->footerCacheInvalidator->flushAll(),
             'general' => $this->generalCacheInvalidator->flushAll(),
             'sidebarWidgets' => $this->sidebarWidgetsCacheInvalidator->flushAll(),
+            'posts' => $this->postCacheInvalidator->flushPostsList(),
             default => null,
         };
     }
