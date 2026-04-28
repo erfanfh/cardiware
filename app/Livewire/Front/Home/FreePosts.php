@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Front\Home;
 
-use App\Application\Content\Actions\GetPostFeaturesAction;
-use App\Application\Home\Actions\GetHomePostTabsAction;
-use App\Domain\Content\Models\Post;
+use App\Application\System\Actions\Home\GetHomeFreePostsTabDataAction;
+use App\Application\System\Actions\Home\GetHomePostTabsAction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -24,49 +23,35 @@ class FreePosts extends Component
     {
         $this->postTabs = app(GetHomePostTabsAction::class)->execute();
         $this->activeTabKey = $this->postTabs[0]['key'] ?? null;
+
         $this->mainPosts = collect();
         $this->list1Posts = collect();
         $this->list2Posts = collect();
+
         $this->changeTab($this->activeTabKey);
     }
 
     public function changeTab(?string $key): void
     {
         $this->activeTabKey = $key;
-        $activeItem = collect($this->postTabs)->where('key', $key)->first() ?? null;
 
-        if (null === $activeItem)
+        $activeItem = collect($this->postTabs)
+            ->where('key', $key)
+            ->first();
+
+        if ($activeItem === null) {
             return;
+        }
 
         $this->mainTitle = $activeItem['main_title'] ?? '';
         $this->list1Title = $activeItem['list_box_1_title'] ?? '';
         $this->list2Title = $activeItem['list_box_2_title'] ?? '';
 
-        $this->mainPosts = Post::with(['picture.primaryVariant', 'featureAssignments.featureDefinition', 'categories'])
-            ->whereHas('categories', function ($query) use ($activeItem) {
-                $query->whereIn('taxonomy_terms.id', $activeItem['main_category_ids']);
-            })
-            ->latest('published_at')
-            ->limit($activeItem['main_count'])
-            ->get()
-            ->map(function ($post) {
-                $post->features = app(GetPostFeaturesAction::class)->execute($post);
-                return $post;
-            });
+        $data = app(GetHomeFreePostsTabDataAction::class)->execute($activeItem);
 
-        $this->list1Posts = Post::whereHas('categories', function ($query) use ($activeItem) {
-            $query->whereIn('taxonomy_terms.id', $activeItem['list_box_1_category_ids']);
-        })
-            ->latest('published_at')
-            ->limit($activeItem['list_box_1_count'])
-            ->get();
-
-        $this->list2Posts = Post::whereHas('categories', function ($query) use ($activeItem) {
-            $query->whereIn('taxonomy_terms.id', $activeItem['list_box_2_category_ids']);
-        })
-            ->latest('published_at')
-            ->limit($activeItem['list_box_2_count'])
-            ->get();
+        $this->mainPosts = $data['mainPosts'];
+        $this->list1Posts = $data['list1Posts'];
+        $this->list2Posts = $data['list2Posts'];
     }
 
     public function render(): View

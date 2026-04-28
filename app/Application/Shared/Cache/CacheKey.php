@@ -18,4 +18,14 @@ final class CacheKey
     {
         return 'footer:stats';
     }
+
+    public static function homeFreePostsTab(array $payload): string
+    {
+        return 'home:free-posts:tab:' . md5(json_encode($payload));
+    }
+
+    public static function homeVideosBlock(): string
+    {
+        return 'home:videos:block';
+    }
 }
