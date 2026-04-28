@@ -2,11 +2,11 @@
 
 namespace App\Application\Content\Actions;
 
-use App\Application\Content\Services\ContentSlugCacheService;
 use App\Application\Download\Actions\SyncDownloadSectionsAction;
 use App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
+use App\Application\Shared\Cache\Invalidators\ContentSlugCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\PostCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
@@ -24,7 +24,7 @@ class CreatePostAction
         protected SyncModelPostCategoriesAction $syncModelPostCategoriesAction,
         protected SyncPostFeaturesAction        $syncPostFeaturesAction,
         protected AssignSlugAction              $assignSlugAction,
-        protected ContentSlugCacheService       $contentSlugCacheService,
+        protected ContentSlugCacheInvalidator   $contentSlugCacheInvalidator,
         protected SyncDownloadSectionsAction    $syncDownloadSectionsAction,
         protected SyncPostImageGalleryAction    $syncPostImageGalleryAction,
         protected SyncSeoMetaAction             $syncSeoMetaAction,
@@ -83,7 +83,7 @@ class CreatePostAction
             return $post;
         });
 
-        $this->contentSlugCacheService->forgetForModel($post);
+        $this->contentSlugCacheInvalidator->forgetForModel($post);
         $this->postCacheInvalidator->afterCreated($post);
 
         return $post;

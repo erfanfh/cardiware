@@ -3,8 +3,8 @@
 namespace App\Application\Content\Actions;
 
 use App\Application\Content\DTOs\ResolvedContentDTO;
-use App\Application\Content\Services\ContentSlugCacheService;
 use App\Application\Content\Services\ReservedSlugService;
+use App\Application\Shared\Cache\CacheKey;
 use App\Domain\Content\Enums\ResolvedContentTypeEnum;
 use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Page;
@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\Cache;
 final class ResolveContentBySlugAction
 {
     public function __construct(
-        private readonly ReservedSlugService     $reservedSlugService,
-        private readonly ContentSlugCacheService $contentSlugCacheService,
+        private readonly ReservedSlugService $reservedSlugService,
     )
     {
     }
@@ -28,12 +27,10 @@ final class ResolveContentBySlugAction
             return ResolvedContentDTO::notFound();
         }
 
-        $cacheKey = $this->contentSlugCacheService->getCacheKey($slug);
-
-        /** @var array<string, mixed> $cached */
-        $cached = Cache::rememberForever($cacheKey, function () use ($slug): array {
-            return $this->resolveFromDatabase($slug);
-        });
+        $cached = Cache::rememberForever(
+            CacheKey::contentSlug($slug),
+            fn() => $this->resolveFromDatabase($slug)
+        );
 
         return $this->mapCachedResultToDTO($cached);
     }

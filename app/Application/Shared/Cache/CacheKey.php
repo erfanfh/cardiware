@@ -62,4 +62,9 @@ final class CacheKey
     {
         return "navigation:frontend:{$slug}";
     }
+
+    public static function contentSlug(string $slug): string
+    {
+        return 'content:slug:' . trim($slug);
+    }
 }

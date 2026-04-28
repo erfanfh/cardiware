@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Application\Content\Services;
+namespace App\Application\Shared\Cache\Invalidators;
 
+use App\Application\Shared\Cache\CacheKey;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use Illuminate\Support\Facades\Cache;
 
-final class ContentSlugCacheService
+class ContentSlugCacheInvalidator
 {
     public function forgetBySlug(string $slug): void
     {
@@ -16,7 +17,7 @@ final class ContentSlugCacheService
             return;
         }
 
-        Cache::forget($this->getCacheKey($slug));
+        Cache::forget(CacheKey::contentSlug($slug));
     }
 
     /**
@@ -39,10 +40,5 @@ final class ContentSlugCacheService
             ->all();
 
         $this->forgetMany($slugs);
-    }
-
-    public function getCacheKey(string $slug): string
-    {
-        return 'content_slug:' . trim($slug);
     }
 }
