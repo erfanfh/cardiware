@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Content;
 
 use App\Application\Content\Actions\CreatePageAction;
+use App\Application\Content\Actions\DeletePageAction;
 use App\Application\Content\Actions\UpdatePageAction;
 use App\Application\Content\Listings\PageListing;
 use App\Domain\Content\Enums\PageStatusEnum;
@@ -140,7 +141,7 @@ class PageController extends Controller
     {
         Gate::authorize('page.delete');
 
-        $page->delete();
+        app(DeletePageAction::class)->execute($page);
 
         return redirect()->route('admin.pages.index')->with('success', 'برگه موردنظر با موفقیت حذف شد');
     }

@@ -50,6 +50,9 @@ final class CacheTag
     public const PROJECT_LISTS = 'project-lists';
     public const PROJECT_STATS = 'project-stats';
 
+    public const PAGES = 'pages';
+    public const PAGE_DETAIL = 'page-detail';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";
@@ -58,6 +61,11 @@ final class CacheTag
     public static function project(int|string $projectId): string
     {
         return "project:{$projectId}";
+    }
+
+    public static function page(int|string $pageId): string
+    {
+        return "page:{$pageId}";
     }
 
     public static function category(int|string $categoryId): string

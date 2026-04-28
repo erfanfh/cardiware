@@ -136,4 +136,14 @@ final class CacheKey
     {
         return 'project:stats';
     }
+
+    public static function pageSeoData(int|string $pageId, int $pageUpdatedAt): string
+    {
+        return "seo-data:page:{$pageId}:{$pageUpdatedAt}";
+    }
+
+    public static function pageDetailData(int|string $pageId, int $pageUpdatedAt): string
+    {
+        return "content:page:{$pageId}:detail-data:{$pageUpdatedAt}";
+    }
 }

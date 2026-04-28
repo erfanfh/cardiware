@@ -3,6 +3,7 @@
 namespace App\Application\Content\Actions;
 
 use App\Application\Shared\Cache\Invalidators\ContentSlugCacheInvalidator;
+use App\Application\Shared\Cache\Invalidators\PageCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Content\Models\Page;
@@ -15,6 +16,7 @@ class CreatePageAction
     public function __construct(
         protected AssignSlugAction            $assignSlugAction,
         protected ContentSlugCacheInvalidator $contentSlugCacheInvalidator,
+        protected PageCacheInvalidator        $pageCacheInvalidator,
     )
     {
     }
@@ -55,6 +57,7 @@ class CreatePageAction
         });
 
         $this->contentSlugCacheInvalidator->forgetForModel($page);
+        $this->pageCacheInvalidator->afterCreated($page);
 
         return $page;
     }

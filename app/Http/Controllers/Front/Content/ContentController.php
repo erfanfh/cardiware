@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Content;
 
+use App\Application\Content\Actions\GetPageDetailDataAction;
 use App\Application\Content\Actions\GetPostDetailDataAction;
 use App\Application\Content\DTOs\ResolvedContentDTO;
 use App\Application\Content\Services\PageTemplateService;
@@ -19,6 +20,7 @@ final class ContentController
         private readonly StoreViewAction         $storeViewAction,
         private readonly PageTemplateService     $pageTemplateService,
         private readonly GetPostDetailDataAction $getPostDetailDataAction,
+        private readonly GetPageDetailDataAction $getPageDetailDataAction,
     )
     {
     }
@@ -68,6 +70,8 @@ final class ContentController
 
     private function renderPage(Page $page): View
     {
+        $page = $this->getPageDetailDataAction->execute($page);
+
         $viewName = 'front.pages.detail';
 
         if ($page->template && $this->pageTemplateService->exists($page->template)) {
