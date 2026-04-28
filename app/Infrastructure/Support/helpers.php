@@ -1,5 +1,6 @@
 <?php
 
+use App\Application\Seo\Support\CanonicalUrlGenerator;
 use App\Application\Seo\Support\SeoManager;
 use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\System\Models\PageView;
@@ -264,8 +265,18 @@ if (!function_exists('seo_head')) {
     }
 }
 
-function front_route(string $name, mixed $parameters = [], bool $absolute = true): string
-{
-    return app(\App\Application\Seo\Support\CanonicalUrlGenerator::class)
-        ->generate(route($name, $parameters, $absolute));
+
+if (!function_exists('front_route')) {
+    function front_route(
+        string $name,
+        mixed  $parameters = [],
+        bool   $absolute = true,
+        bool   $forceTrailingSlash = true,
+    ): string
+    {
+        return app(CanonicalUrlGenerator::class)->generate(
+            route($name, $parameters, $absolute),
+            $forceTrailingSlash
+        );
+    }
 }

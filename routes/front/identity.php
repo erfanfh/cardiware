@@ -2,9 +2,10 @@
 
 use App\Http\Controllers\Front\Identity\AccountController;
 use App\Http\Controllers\Front\Identity\AuthController;
+use App\Http\Middleware\ForceTrailingSlash;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('auth')->middleware('guest')->group(function () {
+Route::prefix('auth')->middleware(['guest', ForceTrailingSlash::class])->group(function () {
     Route::get('/', [AuthController::class, 'auth'])->name('auth.index');
 });
 Route::redirect('login', '/auth')->name('login');

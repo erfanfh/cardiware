@@ -6,12 +6,12 @@ use Illuminate\Support\Str;
 
 class CanonicalUrlGenerator
 {
-    public function generate(string $url): string
+    public function generate(string $url, bool $forceTrailingSlash = true): string
     {
         $parts = parse_url($url);
 
         $scheme = $parts['scheme'] ?? request()->getScheme();
-        $host = $parts['host'] ?? request()->getHttpHost();
+        $host = $parts['host'] ?? request()->getHost();
         $port = isset($parts['port']) ? ':' . $parts['port'] : '';
         $path = $parts['path'] ?? '/';
         $query = isset($parts['query']) ? '?' . $parts['query'] : '';
@@ -20,13 +20,11 @@ class CanonicalUrlGenerator
             $host = Str::after($host, 'www.');
         }
 
-        if (!app()->environment(['local', 'testing'])) {
+        if (!app()->environment(['local', 'staging'])) {
             $scheme = 'https';
         }
 
-        $path = preg_replace('#/+#', '/', $path) ?: '/';
-
-        if ($path !== '/' && !str_ends_with($path, '/')) {
+        if ($forceTrailingSlash && $path !== '/' && !str_ends_with($path, '/')) {
             $path .= '/';
         }
 

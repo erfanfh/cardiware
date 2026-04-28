@@ -15,10 +15,6 @@ class RedirectToCanonicalUrl
             return $next($request);
         }
 
-        if ($this->isExceptedPath($request)) {
-            return $next($request);
-        }
-
         $scheme = $request->getScheme();
         $host = $request->getHttpHost();
         $path = $request->getPathInfo();
@@ -29,12 +25,6 @@ class RedirectToCanonicalUrl
 
         if ($this->shouldForceHttps()) {
             $scheme = 'https';
-        }
-
-        $path = preg_replace('#/+#', '/', $path) ?: '/';
-
-        if ($path !== '/' && !str_ends_with($path, '/')) {
-            $path .= '/';
         }
 
         $queryString = $this->normalizedQueryString($request);
@@ -75,33 +65,5 @@ class RedirectToCanonicalUrl
         ksort($query);
 
         return http_build_query($query);
-    }
-
-    private function isExceptedPath(Request $request): bool
-    {
-        $path = ltrim($request->path(), '/');
-
-        $patterns = [
-            'admin',
-            'admin/*',
-            'api',
-            'api/*',
-            'livewire',
-            'livewire/*',
-            'storage',
-            'storage/*',
-            'build',
-            'build/*',
-            '_debugbar',
-            '_debugbar/*',
-        ];
-
-        foreach ($patterns as $pattern) {
-            if (Str::is($pattern, $path)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
