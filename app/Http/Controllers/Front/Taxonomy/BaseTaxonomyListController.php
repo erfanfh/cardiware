@@ -35,7 +35,13 @@ abstract class BaseTaxonomyListController extends Controller
         /** @var TaxonomyTerm $term */
         $term = $resolvedSlug->model;
 
-        $posts = $term->posts()->paginate(9);
+        $posts = $term
+            ->posts()
+            ->with([
+                'picture.primaryVariant',
+                'categories'
+            ])
+            ->paginate(9);
 
         return view($this->viewName(), [
             'posts' => $posts,

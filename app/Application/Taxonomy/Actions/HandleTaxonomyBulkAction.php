@@ -70,7 +70,7 @@ class HandleTaxonomyBulkAction
         $count = $terms->count();
 
         foreach ($terms as $term) {
-            $term->delete();
+            app(DeleteTaxonomyTermAction::class)->execute($term);
         }
 
         return $count;

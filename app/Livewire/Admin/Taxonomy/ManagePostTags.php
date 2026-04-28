@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin\Taxonomy;
 
 use App\Application\Taxonomy\Actions\CreateTaxonomyTermAction;
+use App\Application\Taxonomy\Actions\DeleteTaxonomyTermAction;
 use App\Application\Taxonomy\Actions\HandleTaxonomyBulkAction;
 use App\Application\Taxonomy\Actions\UpdateTaxonomyTermAction;
 use App\Application\Taxonomy\Support\TagBulkActions;
@@ -88,7 +89,7 @@ class ManagePostTags extends ManageTaxonomyTerms
         $term = $this->taxonomyTermsBaseQuery()->findOrFail($this->deletingId);
         $termId = $term->id;
 
-        $term->delete();
+        app(DeleteTaxonomyTermAction::class)->execute($term);
 
         if ($this->editingId === $termId) {
             $this->resetForm();

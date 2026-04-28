@@ -2,6 +2,7 @@
 
 namespace App\Application\Taxonomy\Actions;
 
+use App\Application\Shared\Cache\Invalidators\TaxonomySlugCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
@@ -13,7 +14,8 @@ use Throwable;
 class CreateTaxonomyTermAction
 {
     public function __construct(
-        protected AssignSlugAction $assignSlugAction,
+        protected AssignSlugAction             $assignSlugAction,
+        protected TaxonomySlugCacheInvalidator $taxonomySlugCacheInvalidator,
     )
     {
     }
@@ -41,6 +43,8 @@ class CreateTaxonomyTermAction
                     desiredSlug: $desiredSlug,
                 )
             );
+
+            $this->taxonomySlugCacheInvalidator->forgetForTerm($term);
 
             return $term;
         });
