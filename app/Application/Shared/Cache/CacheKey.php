@@ -13,4 +13,9 @@ final class CacheKey
     {
         return "seo:organization-logo:{$mediaId}";
     }
+
+    public static function footerStats(): string
+    {
+        return 'footer:stats';
+    }
 }
