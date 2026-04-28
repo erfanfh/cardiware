@@ -6,7 +6,6 @@ use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
-use App\Domain\Media\Models\MediaFile;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 
 final class BuildPostCategorySchemaContextAction
@@ -21,15 +20,10 @@ final class BuildPostCategorySchemaContextAction
     public function execute(TaxonomyTerm $category, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
+
         $siteName = $defaults['site_name'] ?? null;
         $siteUrl = $defaults['site_url'] ?? null;
-
-        $logoSetting = get_setting('seo', 'organization_logo');
-        $logo = null;
-
-        if ($logoSetting?->id) {
-            $logo = MediaFile::with('primaryVariant')->find($logoSetting->id);
-        }
+        $logo = $defaults['organization_logo'];
 
         return new SchemaContextDTO(
             pageUrl: $payload->canonicalUrl,

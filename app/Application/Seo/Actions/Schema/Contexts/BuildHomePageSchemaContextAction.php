@@ -5,7 +5,6 @@ namespace App\Application\Seo\Actions\Schema\Contexts;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
-use App\Domain\Media\Models\MediaFile;
 
 final class BuildHomePageSchemaContextAction
 {
@@ -17,15 +16,11 @@ final class BuildHomePageSchemaContextAction
 
     public function execute(ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
-        $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
-        $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;
+        $defaults = $this->getSeoDefaultsAction->execute();
 
-        $logoSetting = get_setting('seo', 'organization_logo');
-        $logo = null;
-
-        if ($logoSetting?->id) {
-            $logo = MediaFile::with('primaryVariant')->find($logoSetting->id);
-        }
+        $siteName = $defaults['site_name'] ?? null;
+        $siteUrl = $defaults['site_url'] ?? null;
+        $logo = $defaults['organization_logo'];
 
         return new SchemaContextDTO(
             pageUrl: $payload->canonicalUrl,

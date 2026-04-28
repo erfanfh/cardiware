@@ -5,7 +5,6 @@ namespace App\Application\Seo\Actions\Schema\Contexts;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
-use App\Domain\Media\Models\MediaFile;
 
 final class BuildAuthSchemaContextAction
 {
@@ -19,12 +18,7 @@ final class BuildAuthSchemaContextAction
     {
         $defaults = $this->getSeoDefaultsAction->execute();
 
-        $logoSetting = get_setting('seo', 'organization_logo');
-        $logo = null;
-
-        if ($logoSetting?->id) {
-            $logo = MediaFile::with('primaryVariant')->find($logoSetting->id);
-        }
+        $logo = $defaults['organization_logo'];
 
         return new SchemaContextDTO(
             pageUrl: $payload->canonicalUrl,
