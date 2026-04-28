@@ -12,7 +12,14 @@ class AuthorController
     {
         $author = $user;
         $postsPerPage = get_setting('posts', 'posts_per_page') ?: 12;
-        $posts = Post::where('author_id', $author->id)->latest()->paginate($postsPerPage);
+        $posts = Post::query()
+            ->with([
+                'picture.primaryVariant',
+                'categories'
+            ])
+            ->where('author_id', $author->id)
+            ->latest()
+            ->paginate($postsPerPage);
 
         return view('front.posts.list', compact('posts', 'author'));
     }
