@@ -39,6 +39,15 @@ final class CacheKey
         return 'identity:roles:default';
     }
 
+    public static function userAccessAbility(
+        int|string $userId,
+        string     $group,
+        string     $action
+    ): string
+    {
+        return "identity:user-access:{$userId}:{$group}:{$action}";
+    }
+
     public static function pageLayoutBuilder(string $key): string
     {
         return "layout:page:{$key}:builder";

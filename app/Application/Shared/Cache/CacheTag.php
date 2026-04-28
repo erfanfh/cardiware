@@ -57,6 +57,11 @@ final class CacheTag
         return "tag:{$tagId}";
     }
 
+    public static function userAccess(int|string $userId): string
+    {
+        return "user-access:{$userId}";
+    }
+
     public static function pageLayout(string $key): string
     {
         return "page-layout:{$key}";

@@ -3,6 +3,7 @@
 namespace App\Application\Shared\Cache\Invalidators;
 
 use App\Application\Shared\Cache\CacheTag;
+use App\Domain\Identity\Models\User;
 use Illuminate\Support\Facades\Cache;
 
 class UserAccessCacheInvalidator
@@ -11,14 +12,23 @@ class UserAccessCacheInvalidator
     {
         Cache::tags([
             CacheTag::USER_ACCESS,
-            CacheTag::ROLES,
         ])->flush();
     }
 
     public function flushRoles(): void
     {
         Cache::tags([
+            CacheTag::USER_ACCESS,
             CacheTag::ROLES,
+        ])->flush();
+    }
+
+    public function flushForUser(User|int|string $user): void
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        Cache::tags([
+            CacheTag::userAccess($userId),
         ])->flush();
     }
 }

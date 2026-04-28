@@ -9,7 +9,6 @@ use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\IndexUserRequest;
-use App\Http\Requests\Admin\Identity\StoreUserRequest;
 use App\Http\Requests\Admin\Identity\UpdateUserRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Contracts\View\View;
