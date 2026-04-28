@@ -38,4 +38,14 @@ final class CacheKey
     {
         return 'identity:roles:default';
     }
+
+    public static function pageLayoutBuilder(string $key): string
+    {
+        return "layout:page:{$key}:builder";
+    }
+
+    public static function pageLayoutRender(string $key): string
+    {
+        return "layout:page:{$key}:render";
+    }
 }

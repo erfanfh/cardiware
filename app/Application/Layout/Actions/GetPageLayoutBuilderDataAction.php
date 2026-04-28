@@ -2,8 +2,10 @@
 
 namespace App\Application\Layout\Actions;
 
-use App\Application\Layout\Support\PageLayoutCacheKeys;
 use App\Application\Layout\Support\PageLayoutElementRegistry;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
+use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Layout\Models\PageLayout;
 use Illuminate\Support\Facades\Cache;
 
@@ -22,9 +24,13 @@ class GetPageLayoutBuilderDataAction
      */
     public function execute(PageLayout $pageLayout): array
     {
-        return Cache::remember(
-            PageLayoutCacheKeys::builder($pageLayout->key),
-            now()->addHours(6),
+        return Cache::tags([
+            CacheTag::PAGE_LAYOUTS,
+            CacheTag::PAGE_LAYOUT_BUILDER,
+            CacheTag::pageLayout($pageLayout->key),
+        ])->remember(
+            CacheKey::pageLayoutBuilder($pageLayout->key),
+            CacheTtl::long(),
             function () use ($pageLayout): array {
                 $pageLayout->load([
                     'rows.areas.elements',

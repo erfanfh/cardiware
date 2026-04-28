@@ -33,6 +33,10 @@ final class CacheTag
     public const USER_ACCESS = 'user-access';
     public const ROLES = 'roles';
 
+    public const PAGE_LAYOUTS = 'page-layouts';
+    public const PAGE_LAYOUT_BUILDER = 'page-layout-builder';
+    public const PAGE_LAYOUT_RENDER = 'page-layout-render';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";
@@ -51,5 +55,10 @@ final class CacheTag
     public static function tag(int|string $tagId): string
     {
         return "tag:{$tagId}";
+    }
+
+    public static function pageLayout(string $key): string
+    {
+        return "page-layout:{$key}";
     }
 }

@@ -2,8 +2,10 @@
 
 namespace App\Application\Layout\Actions;
 
-use App\Application\Layout\Support\PageLayoutCacheKeys;
 use App\Application\Layout\Support\PageLayoutFrontRegistry;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
+use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Layout\Models\PageLayout;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,15 +22,22 @@ class GetPageLayoutRenderDataAction
      */
     public function execute(string $pageLayoutKey): array
     {
-        return Cache::remember(
-            PageLayoutCacheKeys::render($pageLayoutKey),
-            now()->addHours(6),
+        return Cache::tags([
+            CacheTag::PAGE_LAYOUTS,
+            CacheTag::PAGE_LAYOUT_RENDER,
+            CacheTag::pageLayout($pageLayoutKey),
+        ])->remember(
+            CacheKey::pageLayoutRender($pageLayoutKey),
+            CacheTtl::long(),
             function () use ($pageLayoutKey): array {
-                $pageLayout = PageLayout::where('key', $pageLayoutKey)->with([
-                    'rows.areas.elements' => fn($query) => $query
-                        ->where('is_active', true)
-                        ->orderBy('sort_order'),
-                ])->first();
+                $pageLayout = PageLayout::query()
+                    ->where('key', $pageLayoutKey)
+                    ->with([
+                        'rows.areas.elements' => fn($query) => $query
+                            ->where('is_active', true)
+                            ->orderBy('sort_order'),
+                    ])
+                    ->first();
 
                 $rows = [];
 

@@ -3,6 +3,7 @@
 namespace App\Application\Layout\Actions;
 
 use App\Application\Layout\Support\PageLayoutElementRegistry;
+use App\Application\Shared\Cache\Invalidators\PageLayoutCacheInvalidator;
 use App\Domain\Layout\Models\PageLayout;
 use App\Domain\Layout\Models\PageLayoutArea;
 use App\Domain\Layout\Models\PageLayoutElement;
@@ -13,8 +14,8 @@ use Throwable;
 class UpdatePageLayoutAction
 {
     public function __construct(
-        private readonly PageLayoutElementRegistry   $registry,
-        private readonly ForgetPageLayoutCacheAction $forgetPageLayoutCacheAction,
+        private readonly PageLayoutElementRegistry  $registry,
+        private readonly PageLayoutCacheInvalidator $pageLayoutCacheInvalidator,
     )
     {
     }
@@ -68,7 +69,7 @@ class UpdatePageLayoutAction
             );
         });
 
-        $this->forgetPageLayoutCacheAction->execute($pageLayout);
+        $this->pageLayoutCacheInvalidator->flushForLayout($pageLayout);
     }
 
     /**
