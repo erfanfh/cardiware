@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting;
 
+use App\Application\Shared\Cache\CacheKey;
 use App\Domain\System\Models\Setting;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Support\Facades\Cache;
@@ -17,21 +18,22 @@ abstract class BaseSettings
     /**
      * Map key name to its Cast class
      *
-     * @var array
+     * @var array<string, class-string<CastsAttributes>>
      */
     protected array $casts = [];
 
     /**
      * Per-request in-memory cache
      *
-     * @var array
+     * @var array<string, array<string, mixed>>
      */
     protected static array $resolvedGroups = [];
 
     public function __construct()
     {
-        if (empty($this->group) || empty($this->allowedKeys))
-            throw new LogicException("Subclass must define \$group and \$allowedKeys.");
+        if (empty($this->group) || empty($this->allowedKeys)) {
+            throw new LogicException('Subclass must define $group and $allowedKeys.');
+        }
     }
 
     /**
@@ -95,6 +97,7 @@ abstract class BaseSettings
     public function forgetCache(): void
     {
         Cache::forget($this->getCacheKey());
+
         unset(self::$resolvedGroups[$this->group]);
     }
 
@@ -113,7 +116,7 @@ abstract class BaseSettings
     protected function ensureAllowedKey(string $key): void
     {
         if (!in_array($key, $this->allowedKeys, true)) {
-            throw new InvalidArgumentException("Key '$key' is not allowed for group '$this->group'.");
+            throw new InvalidArgumentException("Key '{$key}' is not allowed for group '{$this->group}'.");
         }
     }
 
@@ -122,7 +125,7 @@ abstract class BaseSettings
      */
     protected function getCacheKey(): string
     {
-        return "settings_$this->group";
+        return CacheKey::settingsGroup($this->group);
     }
 
     /**
@@ -139,7 +142,7 @@ abstract class BaseSettings
         }
 
         if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class)) {
-            throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
+            throw new LogicException("Cast class '{$castClass}' not found or invalid for key '{$key}'.");
         }
 
         $castInstance = new $castClass();
@@ -161,7 +164,7 @@ abstract class BaseSettings
         }
 
         if (!class_exists($castClass) || !is_subclass_of($castClass, CastsAttributes::class)) {
-            throw new LogicException("Cast class '$castClass' not found or invalid for key '$key'.");
+            throw new LogicException("Cast class '{$castClass}' not found or invalid for key '{$key}'.");
         }
 
         $castInstance = new $castClass();
