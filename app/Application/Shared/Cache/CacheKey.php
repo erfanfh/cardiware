@@ -8,4 +8,9 @@ final class CacheKey
     {
         return "settings:group:{$group}";
     }
+
+    public static function organizationLogo(int|string $mediaId): string
+    {
+        return "seo:organization-logo:{$mediaId}";
+    }
 }
