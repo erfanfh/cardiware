@@ -20,8 +20,10 @@ final class BuildPostSchemaContextAction
 
     public function execute(Post $post, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
-        $siteName = $this->getSeoDefaultsAction->execute()['site_name'] ?? null;
-        $siteUrl = $this->getSeoDefaultsAction->execute()['site_url'] ?? null;
+        $defaults = $this->getSeoDefaultsAction->execute();
+
+        $siteName = $defaults['site_name'] ?? null;
+        $siteUrl = $defaults['site_url'] ?? null;
 
         $logoSetting = get_setting('seo', 'organization_logo');
         $logo = null;

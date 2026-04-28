@@ -3,6 +3,7 @@
 namespace App\Application\Content\Actions;
 
 use App\Application\Content\Services\ContentSlugCacheService;
+use App\Application\Content\Services\PostCacheInvalidationService;
 use App\Application\Download\Actions\SyncDownloadSectionsAction;
 use App\Application\Seo\Actions\Analysis\BuildPostSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
@@ -28,6 +29,7 @@ class UpdatePostAction
         protected SyncPostImageGalleryAction    $syncPostImageGalleryAction,
         protected SyncSeoMetaAction             $syncSeoMetaAction,
         protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
+        protected PostCacheInvalidationService  $postCacheInvalidationService,
     )
     {
     }
@@ -81,6 +83,7 @@ class UpdatePostAction
         });
 
         $this->contentSlugCacheService->forgetForModel($post);
+        $this->postCacheInvalidationService->forgetAfterPostUpdated($post);
 
         return $post;
     }
