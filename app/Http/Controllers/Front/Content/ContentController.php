@@ -9,7 +9,6 @@ use App\Application\Layout\Actions\GetPageLayoutRenderDataAction;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
-use App\Domain\Layout\Models\PageLayout;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -83,8 +82,7 @@ final class ContentController
 
     private function renderPost(Post $resolvedPost): View
     {
-        $layout = PageLayout::where('key', 'post-content')->first();
-        $layoutData = $this->getLayoutRenderDataAction->execute($layout);
+        $layoutData = $this->getLayoutRenderDataAction->execute('post-content');
         $post = $this->loadPostForDetail($resolvedPost);
 
         $features = $this->getPostFeaturesAction->execute($post);

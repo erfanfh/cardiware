@@ -18,21 +18,21 @@ class GetPageLayoutRenderDataAction
     /**
      * @return array<string, mixed>
      */
-    public function execute(PageLayout $pageLayout): array
+    public function execute(string $pageLayoutKey): array
     {
         return Cache::remember(
-            PageLayoutCacheKeys::render($pageLayout->key),
+            PageLayoutCacheKeys::render($pageLayoutKey),
             now()->addHours(6),
-            function () use ($pageLayout): array {
-                $pageLayout->load([
+            function () use ($pageLayoutKey): array {
+                $pageLayout = PageLayout::where('key', $pageLayoutKey)->with([
                     'rows.areas.elements' => fn($query) => $query
                         ->where('is_active', true)
                         ->orderBy('sort_order'),
-                ]);
+                ])->first();
 
                 $rows = [];
 
-                foreach ($pageLayout->rows as $row) {
+                foreach ($pageLayout->rows ?? [] as $row) {
                     $renderedAreas = [];
 
                     foreach ($row->areas as $area) {
