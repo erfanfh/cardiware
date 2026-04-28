@@ -72,4 +72,13 @@ final class CacheKey
     {
         return "views:stored:{$modelClass}:{$id}";
     }
+
+    public static function postSeoData(
+        int|string $postId,
+        int        $postUpdatedAt,
+        int        $seoMetaUpdatedAt = 0
+    ): string
+    {
+        return "seo-data:post:{$postId}:{$postUpdatedAt}:{$seoMetaUpdatedAt}";
+    }
 }

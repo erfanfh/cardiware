@@ -7,6 +7,9 @@ use App\Application\Seo\Actions\SeoData\ResolvePostSeoDataAction;
 use App\Application\Seo\Contracts\SeoResolverInterface;
 use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\Support\SeoContext;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
+use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Content\Models\Post;
 use Illuminate\Support\Facades\Cache;
 use RuntimeException;
@@ -47,22 +50,18 @@ class PostSeoResolver implements SeoResolverInterface
         }
 
         return Cache::tags([
-            'seo',
-            'schema',
-            'posts',
-            "post:{$post->id}",
+            CacheTag::SEO,
+            CacheTag::SCHEMA,
+            CacheTag::POSTS,
+            CacheTag::post($post->id),
         ])->remember(
-            $this->cacheKey($post),
-            now()->addHours(12),
+            CacheKey::postSeoData(
+                postId: $post->id,
+                postUpdatedAt: $post->updated_at?->timestamp ?? 0,
+                seoMetaUpdatedAt: $post->seoMeta?->updated_at?->timestamp ?? 0,
+            ),
+            CacheTtl::long(),
             fn() => $this->resolvePostSeoDataAction->execute($post)
         );
-    }
-
-    private function cacheKey(Post $post): string
-    {
-        $postUpdatedAt = $post->updated_at?->timestamp ?? 0;
-        $seoMetaUpdatedAt = $post->seoMeta?->updated_at?->timestamp ?? 0;
-
-        return "seo-data:post:{$post->id}:{$postUpdatedAt}:{$seoMetaUpdatedAt}";
     }
 }
