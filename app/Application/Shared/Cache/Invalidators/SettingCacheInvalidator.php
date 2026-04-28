@@ -11,6 +11,7 @@ class SettingCacheInvalidator
         protected GeneralCacheInvalidator        $generalCacheInvalidator,
         protected SidebarWidgetsCacheInvalidator $sidebarWidgetsCacheInvalidator,
         protected PostCacheInvalidator           $postCacheInvalidator,
+        protected ProjectCacheInvalidator        $projectCacheInvalidator,
     )
     {
     }
@@ -24,6 +25,7 @@ class SettingCacheInvalidator
             'general' => $this->generalCacheInvalidator->flushAll(),
             'sidebarWidgets' => $this->sidebarWidgetsCacheInvalidator->flushAll(),
             'posts' => $this->postCacheInvalidator->flushPostsList(),
+            'projects' => $this->projectCacheInvalidator->flushProjectListCaches(),
             default => null,
         };
     }

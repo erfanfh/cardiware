@@ -126,4 +126,14 @@ final class CacheKey
     {
         return "project:detail:{$projectId}:{$updatedAt}";
     }
+
+    public static function projectList(int $page, int $perPage): string
+    {
+        return "project:list:page:{$page}:per-page:{$perPage}";
+    }
+
+    public static function projectStats(): string
+    {
+        return 'project:stats';
+    }
 }

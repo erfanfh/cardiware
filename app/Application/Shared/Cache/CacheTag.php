@@ -47,6 +47,8 @@ final class CacheTag
     public const SIDEBAR_PROJECTS = 'sidebar:projects';
 
     public const PROJECT_DETAIL = 'project-detail';
+    public const PROJECT_LISTS = 'project-lists';
+    public const PROJECT_STATS = 'project-stats';
 
     public static function post(int|string $postId): string
     {

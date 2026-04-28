@@ -34,7 +34,7 @@ class ProjectCacheInvalidator
     {
         $this->flushProjectSeoCaches($project);
         $this->flushProjectDetailCaches($project);
-        $this->flushProjectListCaches($project);
+        $this->flushProjectListCaches();
         $this->flushProjectSidebarCaches();
         $this->flushProjectHomeCaches();
     }
@@ -57,11 +57,12 @@ class ProjectCacheInvalidator
         ])->flush();
     }
 
-    protected function flushProjectListCaches(Project $project): void
+    public function flushProjectListCaches(): void
     {
         Cache::tags([
             CacheTag::PROJECTS,
-            CacheTag::project($project->id),
+            CacheTag::PROJECT_LISTS,
+            CacheTag::PROJECT_STATS,
         ])->flush();
     }
 
