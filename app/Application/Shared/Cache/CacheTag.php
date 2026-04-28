@@ -39,6 +39,13 @@ final class CacheTag
     public const POST_DETAIL = 'post-detail';
     public const RELATED_POSTS = 'related-posts';
 
+    public const COMMENTS = 'comments';
+
+    public const SIDEBAR = 'sidebar';
+    public const SIDEBAR_COMMENTS = 'sidebar:comments';
+    public const SIDEBAR_CATEGORIES = 'sidebar:categories';
+    public const SIDEBAR_PROJECTS = 'sidebar:projects';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";

@@ -45,6 +45,7 @@ class PostCacheInvalidator
             CacheTag::CATEGORIES,
             CacheTag::TAGS,
             CacheTag::SITEMAP,
+            CacheTag::SIDEBAR_CATEGORIES,
             CacheTag::post($post->id),
         ])->flush();
     }

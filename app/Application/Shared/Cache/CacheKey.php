@@ -91,4 +91,19 @@ final class CacheKey
     {
         return "content:post:{$postId}:related:{$postUpdatedAt}";
     }
+
+    public static function sidebarLatestComments(): string
+    {
+        return 'sidebar:latest-comments';
+    }
+
+    public static function sidebarCategories(): string
+    {
+        return 'sidebar:categories';
+    }
+    
+    public static function sidebarProjects(): string
+    {
+        return 'sidebar:projects';
+    }
 }
