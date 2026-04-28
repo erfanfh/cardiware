@@ -82,7 +82,7 @@
                     name="role"
                     placeholder="انتخاب نقش"
                     :options="\App\Domain\Identity\Models\Role::pluck('title', 'id')->all()"
-                    :value="old('role', $user->role_id ?? \App\Domain\Identity\Models\Role::defaultRole()->id)"
+                    :value="old('role', $user->role_id ?? app(\App\Application\Identity\Actions\GetDefaultRoleAction::class)->execute()->id)"
                 />
             </x-admin.field>
             <x-admin.field required label="وضعیت">

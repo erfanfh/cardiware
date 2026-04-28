@@ -2,6 +2,7 @@
 
 namespace App\Application\Identity\Actions\Auth;
 
+use App\Application\Identity\Actions\GetDefaultRoleAction;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
@@ -40,7 +41,7 @@ class RegisterUserAction
     {
         $role = $roleId
             ? Role::query()->find($roleId)
-            : Role::defaultRole();
+            : app(GetDefaultRoleAction::class)->execute();
 
         if (!$role) {
             throw new InvalidArgumentException('Default role not found.');

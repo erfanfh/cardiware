@@ -29,7 +29,9 @@ final class CacheTag
     public const TAGS = 'tags';
 
     public const SITEMAP = 'sitemap';
-    public const FEED = 'feed';
+
+    public const USER_ACCESS = 'user-access';
+    public const ROLES = 'roles';
 
     public static function post(int|string $postId): string
     {

@@ -33,4 +33,9 @@ final class CacheKey
     {
         return 'home:projects:block';
     }
+
+    public static function defaultRole(): string
+    {
+        return 'identity:roles:default';
+    }
 }
