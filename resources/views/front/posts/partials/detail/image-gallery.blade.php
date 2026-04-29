@@ -20,12 +20,18 @@
                                 data-src="{{ $item->mediaFile->url }}"
                                 data-title="{{ $item->title }}"
                             >
-                                <img
-                                    class="h-56 sm:h-64 w-full object-cover transition duration-500 group-hover:scale-[1.05]"
-                                    src="{{ $item->mediaFile->url }}"
-                                    alt="{{ $item->title }}"
-                                    loading="lazy"
-                                >
+                                <x-front.responsive-image
+                                    :media="$item->mediaFile"
+                                    :fallback="$item->mediaFile->url"
+                                    :alt="$item->title"
+                                    :title="$item->title"
+                                    variant="medium_large"
+                                    class="h-56 sm:h-64 w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                                    wrapper-class="w-full"
+                                    :lazy="true"
+                                    :async="true"
+                                    sizes="(max-width: 640px) 100vw, 420px"
+                                />
 
                                 <div
                                     class="pointer-events-none absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition duration-300"></div>

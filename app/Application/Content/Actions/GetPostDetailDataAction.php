@@ -52,9 +52,11 @@ class GetPostDetailDataAction
         $post->load([
             'author:id,username,display_name',
             'picture.primaryVariant',
+            'picture.variants',
             'categories:id,title,path',
             'tags:id,title,path',
             'imageGallery.mediaFile.primaryVariant',
+            'imageGallery.mediaFile.variants',
             'downloadSections.entries'
         ]);
 
@@ -99,6 +101,7 @@ class GetPostDetailDataAction
                 return $query
                     ->with([
                         'picture.primaryVariant',
+                        'picture.variants',
                         'categories:id,title,path',
                         'tags:id,title,path'
                     ])

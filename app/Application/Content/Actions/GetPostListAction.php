@@ -22,6 +22,7 @@ class GetPostListAction
             fn() => Post::query()
                 ->with([
                     'picture.primaryVariant',
+                    'picture.variants',
                     'categories',
                 ])
                 ->latest()

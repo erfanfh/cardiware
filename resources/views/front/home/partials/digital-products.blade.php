@@ -29,11 +29,15 @@
                             <a href="{{ $item['link'] }}"
                                class="block h-full rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition dark:border-slate-700 dark:bg-slate-950 dark:hover:shadow-black/20">
                                 <div class="relative aspect-[16/9] bg-slate-100 dark:bg-slate-800">
-                                    <img
-                                        class="absolute inset-0 h-full w-full object-cover"
-                                        src="{{ $item['image']['path'] }}"
-                                        alt="{{ $item['title'] }}"
-                                        title="{{ $item['title'] }}"
+                                    <x-front.responsive-image
+                                        :fallback="$item['image']['path'] ?? null"
+                                        :alt="$item['title'] ?? ''"
+                                        variant="medium_large"
+                                        class="h-full w-full object-cover"
+                                        wrapper-class="absolute inset-0"
+                                        :lazy="true"
+                                        :async="true"
+                                        sizes="(max-width: 768px) 85vw, 360px"
                                     />
 
                                     <div

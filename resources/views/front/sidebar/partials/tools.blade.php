@@ -10,9 +10,17 @@
                 <div class="flex items-center gap-3">
                     <div
                         class="h-11 w-11 rounded-2xl bg-slate-50 border border-slate-200 grid place-items-center overflow-hidden dark:border-slate-700 dark:bg-slate-900">
-                        <img class="w-full h-full object-cover" src="{{ $item['image']['path'] }}"
-                             title="{{ $item['title'] }}"
-                             alt="{{ $item['title'] }}">
+                        <x-front.responsive-image
+                            :fallback="$item['image']['path'] ?? null"
+                            :alt="$item['title'] ?? ''"
+                            :title="$item['title'] ?? null"
+                            variant="thumbnail"
+                            class="w-full h-full object-cover"
+                            wrapper-class="h-11 w-11 rounded-2xl"
+                            :lazy="true"
+                            :async="true"
+                            sizes="44px"
+                        />
                     </div>
                     <div class="min-w-0">
                         <div class="text-sm font-extrabold truncate dark:text-slate-100">{{ $item['title'] }}</div>

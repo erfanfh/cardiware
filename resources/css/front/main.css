@@ -41,3 +41,9 @@
 .js-copy-button.is-copied .js-copy-icon-success {
     display: inline-flex;
 }
+
+@keyframes image-skeleton-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}

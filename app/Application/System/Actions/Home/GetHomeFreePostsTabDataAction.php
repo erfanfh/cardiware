@@ -40,6 +40,7 @@ class GetHomeFreePostsTabDataAction
         return Post::query()
             ->with([
                 'picture.primaryVariant',
+                'picture.variants',
                 'featureAssignments.featureDefinition',
                 'categories',
             ])

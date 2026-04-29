@@ -13,8 +13,17 @@
                class="w-full flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                 <div
                     class="h-12 w-12 rounded-2xl bg-brand-50 grid place-items-center border border-brand-100 dark:border-brand-500/20 dark:bg-brand-500/10">
-                    <img class="h-10 w-10 rounded-xl object-cover" src="{{ $item['image']['path'] }}"
-                         alt="{{ $item['title'] }}">
+                    <x-front.responsive-image
+                        :fallback="$item['image']['path'] ?? null"
+                        :alt="$item['title'] ?? ''"
+                        :title="$item['title'] ?? null"
+                        variant="thumbnail"
+                        class="h-10 w-10 rounded-xl object-cover"
+                        wrapper-class="h-10 w-10 shrink-0 rounded-xl"
+                        :lazy="true"
+                        :async="true"
+                        sizes="40px"
+                    />
                 </div>
                 <div class="min-w-0 flex-1">
                     <div class="text-sm font-extrabold truncate dark:text-slate-100">{{ $item['title'] }}</div>

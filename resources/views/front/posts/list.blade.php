@@ -53,18 +53,30 @@
                         <article
                             class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                             <a class="flex flex-col h-full" href="{{ front_route('contents.detail', $post) }}">
-                                <div class="relative">
+                                <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                    <x-front.responsive-image
+                                        :media="$post->picture"
+                                        :fallback="$post->picture?->url"
+                                        :alt="$post->title"
+                                        :title="$post->title"
+                                        variant="medium_large"
+                                        class="h-40 w-full object-cover"
+                                        wrapper-class="w-full transition-transform duration-300 group-hover:scale-[1.02]"
+                                        :lazy="$loop->index >= 3"
+                                        :async="$loop->index >= 3"
+                                        :fetchpriority="$loop->index < 3 ? 'high' : null"
+                                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    />
+
                                     <div
                                         class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-transparent pointer-events-none"></div>
-                                    <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
-                                         title="{{ $post->title }}"
-                                         class="h-40 w-full object-cover group-hover:scale-[1.02] transition duration-500"/>
+
                                     <div class="absolute top-3 right-3 inline-flex flex-wrap items-center gap-2">
                                         @foreach($post->categories as $category)
                                             <span
                                                 class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
-                                            {{ $category->title }}
-                                        </span>
+                                                {{ $category->title }}
+                                            </span>
                                         @endforeach
                                     </div>
                                 </div>

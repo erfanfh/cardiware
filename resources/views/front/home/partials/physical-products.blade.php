@@ -22,10 +22,17 @@
                         class="rounded-3xl overflow-hidden bg-slate-900 shadow-xl group transition dark:shadow-black/30">
                         <a href="{{ $item['url'] }}" class="block relative">
                             <div class="relative aspect-[3/4]">
-                                <img class="absolute inset-0 h-full w-full object-cover"
-                                     src="{{ $item['image']['path'] }}"
-                                     alt="{{ $item['title'] }}"
-                                     title="{{ $item['title'] }}"
+                                <x-front.responsive-image
+                                    :fallback="$item['image']['path'] ?? null"
+                                    :alt="$item['title'] ?? ''"
+                                    :title="$item['title'] ?? null"
+                                    variant="medium_large"
+                                    class="h-full w-full object-cover"
+                                    wrapper-class="absolute inset-0"
+                                    :lazy="true"
+                                    :async="true"
+                                    :fetchpriority="null"
+                                    sizes="260px"
                                 />
 
                                 <div

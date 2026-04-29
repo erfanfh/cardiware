@@ -60,6 +60,7 @@ class GetHomeVideosBlockAction
         return Post::query()
             ->with([
                 'picture.primaryVariant',
+                'picture.variants',
                 'categories',
             ])
             ->whereHas('categories', function ($query) use ($categoryIds) {

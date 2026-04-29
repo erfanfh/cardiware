@@ -25,6 +25,7 @@ class GetPageDetailDataAction
             fn() => Page::query()
                 ->with([
                     'picture.primaryVariant',
+                    'picture.variants',
                     'author'
                 ])
                 ->findOrFail($page->id)

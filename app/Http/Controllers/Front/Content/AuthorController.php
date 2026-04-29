@@ -15,6 +15,7 @@ class AuthorController
         $posts = Post::query()
             ->with([
                 'picture.primaryVariant',
+                'picture.variants',
                 'categories'
             ])
             ->where('author_id', $author->id)

@@ -47,10 +47,15 @@
             <div class="flex flex-col md:flex-row items-center md:items-end justify-between gap-6">
                 @if(get_setting('footer', 'logo')->path)
                     <div class="shrink-0">
-                        <img
-                            src="{{ get_setting('footer', 'logo')->path }}"
-                            alt="{{ get_setting('general', 'title') }}"
-                            class="h-16 md:h-20 w-auto"
+                        <x-front.responsive-image
+                            :fallback="get_setting('footer', 'logo')->path"
+                            :alt="get_setting('general', 'title')"
+                            variant="medium"
+                            class="h-16 md:h-20 w-auto object-contain"
+                            wrapper-class="inline-block"
+                            :lazy="true"
+                            :async="true"
+                            sizes="(max-width: 768px) 160px, 200px"
                         />
                     </div>
                 @endif
@@ -258,9 +263,15 @@
 
                 @if(get_setting('footer', 'column4_image')->path)
                     <div>
-                        <img
-                            src="{{ get_setting('footer', 'column4_image')->path }}"
-                            alt="{{ get_setting('footer', 'column4_title') }}"
+                        <x-front.responsive-image
+                            :fallback="get_setting('footer', 'column4_image')->path"
+                            :alt="get_setting('footer', 'column4_title')"
+                            variant="medium"
+                            class="h-auto w-full max-w-[180px] object-contain"
+                            wrapper-class="inline-block max-w-[180px]"
+                            :lazy="true"
+                            :async="true"
+                            sizes="180px"
                         />
                     </div>
                 @endif

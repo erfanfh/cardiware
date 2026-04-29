@@ -120,13 +120,26 @@
                         <div class="swiper mwFreeModsMainPosts">
                             <div class="swiper-wrapper">
                                 @foreach($this->mainPosts as $post)
-                                    <div class="swiper-slide !h-auto">
+                                    <div wire:key="free-mod-main-post-{{ $activeTabKey }}-{{ $post->id }}"
+                                         class="swiper-slide !h-auto">
                                         <a href="{{ $post->url }}"
                                            class="group w-full block rounded-2xl border border-slate-200 bg-white overflow-hidden hover:scale-[97%] transition duration-300 h-full dark:border-slate-700 dark:bg-slate-950">
                                             <div class="p-4 h-full flex flex-col">
-                                                <div class="relative rounded-2xl overflow-hidden bg-slate-900">
-                                                    <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
-                                                         title="{{ $post->title }}">
+                                                <div
+                                                    class="relative aspect-[16/9] rounded-2xl overflow-hidden bg-slate-900">
+                                                    <x-front.responsive-image
+                                                        :media="$post->picture"
+                                                        :fallback="$post->picture?->url"
+                                                        :alt="$post->title"
+                                                        :title="$post->title"
+                                                        variant="medium_large"
+                                                        class="h-full w-full object-cover"
+                                                        wrapper-class="absolute inset-0 rounded-2xl"
+                                                        :lazy="true"
+                                                        :async="true"
+                                                        :fetchpriority="null"
+                                                        sizes="(max-width: 768px) 85vw, 360px"
+                                                    />
 
                                                     @if($post->features?->frontBadge)
                                                         <div

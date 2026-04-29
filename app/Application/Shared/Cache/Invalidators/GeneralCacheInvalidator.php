@@ -12,6 +12,8 @@ class GeneralCacheInvalidator
         Cache::tags([
             CacheTag::SEO,
             CacheTag::SCHEMA,
+            CacheTag::POST_DETAIL,
+            CacheTag::RELATED_POSTS,
         ])->flush();
     }
 }

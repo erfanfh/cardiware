@@ -18,6 +18,7 @@ class SearchController extends Controller
         $posts = Post::query()
             ->with([
                 'picture.primaryVariant',
+                'picture.variants',
                 'categories'
             ])
             ->where('title', 'LIKE', '%' . $request->q . '%');

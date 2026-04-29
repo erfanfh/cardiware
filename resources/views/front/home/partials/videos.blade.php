@@ -24,10 +24,18 @@
                     <a href="{{ front_route('contents.detail', $post) }}"
                        class="group rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-xl hover:scale-[102%] transition duration-300 dark:border-slate-700 dark:shadow-black/20 dark:hover:shadow-black/30">
                         <div class="relative h-40">
-                            <img class="absolute inset-0 h-full w-full object-cover opacity-90"
-                                 src="{{ $post->picture?->url }}"
-                                 alt="{{ $post->title }}"
-                                 title="{{ $post->title }}"
+                            <x-front.responsive-image
+                                :media="$post->picture"
+                                :fallback="$post->picture?->url"
+                                :alt="$post->title"
+                                :title="$post->title"
+                                variant="medium_large"
+                                class="h-full w-full object-cover opacity-90"
+                                wrapper-class="h-full w-full absolute inset-0"
+                                :lazy="true"
+                                :async="true"
+                                :fetchpriority="null"
+                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                             />
 
                             <div

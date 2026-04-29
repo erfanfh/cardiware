@@ -39,6 +39,7 @@ abstract class BaseTaxonomyListController extends Controller
             ->posts()
             ->with([
                 'picture.primaryVariant',
+                'picture.variants',
                 'categories'
             ])
             ->paginate(9);
