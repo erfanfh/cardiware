@@ -4,6 +4,7 @@ return [
     App\Providers\AppServiceProvider::class,
     App\Providers\AuthServiceProvider::class,
     App\Providers\ContentServiceProvider::class,
+    App\Providers\HorizonServiceProvider::class,
     App\Providers\NavigationServiceProvider::class,
     App\Providers\PageLayoutServiceProvider::class,
     App\Providers\SchedulerServiceProvider::class,
