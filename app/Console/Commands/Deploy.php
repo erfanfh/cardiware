@@ -34,8 +34,7 @@ class Deploy extends Command
             '--class' => DatabaseSeeder::class,
             '--force' => true,
         ]);
-        $this->call('queue:restart');
-
+        $this->call('horizon:terminate');
         $this->info('✅ Deploy finalized.');
     }
 }
