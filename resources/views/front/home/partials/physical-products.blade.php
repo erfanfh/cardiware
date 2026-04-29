@@ -28,7 +28,7 @@
                                     :title="$item['title'] ?? null"
                                     variant="medium_large"
                                     class="h-full w-full object-cover"
-                                    wrapper-class="absolute inset-0"
+                                    wrapper-class="absolute inset-0 w-full h-full"
                                     :lazy="true"
                                     :async="true"
                                     :fetchpriority="null"
