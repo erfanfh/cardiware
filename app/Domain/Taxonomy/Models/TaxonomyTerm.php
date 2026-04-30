@@ -3,7 +3,6 @@
 namespace App\Domain\Taxonomy\Models;
 
 use App\Domain\Content\Models\Post;
-use App\Domain\Portfolio\Models\Project;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
