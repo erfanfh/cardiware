@@ -67,7 +67,7 @@ class AttachmentsImporter
         );
 
         $existingVariant = MediaFileVariant::query()
-            ->where('disk', MediaFileDiskEnum::PUBLIC)
+            ->where('disk', MediaFileDiskEnum::WORDPRESS_UPLOADS)
             ->where('path', $normalizedPath)
             ->first();
 
@@ -108,7 +108,7 @@ class AttachmentsImporter
 
         $variant = MediaFileVariant::query()->create([
             'media_file_id' => $mediaFile->id,
-            'disk' => MediaFileDiskEnum::PUBLIC,
+            'disk' => MediaFileDiskEnum::WORDPRESS_UPLOADS,
             'mime_type' => $wpAttachment->post_mime_type ?: $format?->mimeType(),
             'variant' => MediaFileVariantEnum::ORIGINAL,
             'format' => $format,

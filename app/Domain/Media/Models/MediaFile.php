@@ -76,8 +76,13 @@ class MediaFile extends Model
      */
     public function getUrlAttribute(): ?string
     {
-        if ($this->visibility !== MediaFileVisibilityEnum::PUBLIC)
+        if ($this->visibility !== MediaFileVisibilityEnum::PUBLIC) {
             return null;
+        }
+
+        if (!$this->primaryVariant) {
+            return null;
+        }
 
         return Storage::disk($this->primaryVariant->disk->value)->url($this->primaryVariant->path);
     }
