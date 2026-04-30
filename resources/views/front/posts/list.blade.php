@@ -91,7 +91,7 @@
                                         <div
                                             class="flex items-center gap-2 text-[0.7rem] text-slate-500 dark:text-slate-400">
                                             <span class="inline-flex items-center gap-2">
-                                                {{ jalali_date($post->created_at, 'd F Y') }}
+                                                {{ jalali_date($post->published_at, 'd F Y') }}
                                             </span>
                                             @if($views)
                                                 <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
