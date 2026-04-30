@@ -51,8 +51,8 @@ class UsersImporter
                 'role_id' => app(GetDefaultRoleAction::class)->execute()->id, // فعلاً default (بعداً میشه mapping کرد)
                 'status' => UserStatusEnum::ACTIVE,
 
-                'mobile' => '',
-                'mobile_verified_at' => null,
+                'mobile' => $this->generateFakeMobile($wpUser->ID),
+                'mobile_verified_at' => now(),
 
                 'email_verified_at' => $wpUser->user_email ? now() : null,
 
@@ -93,5 +93,10 @@ class UsersImporter
         }
 
         return $username;
+    }
+
+    private function generateFakeMobile(int $wpUserId): string
+    {
+        return '09' . str_pad((string)$wpUserId, 9, '0', STR_PAD_LEFT);
     }
 }
