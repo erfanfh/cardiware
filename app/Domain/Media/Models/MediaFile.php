@@ -23,6 +23,8 @@ class MediaFile extends Model
         'primary_variant_id',
         'status',
         'processed_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [

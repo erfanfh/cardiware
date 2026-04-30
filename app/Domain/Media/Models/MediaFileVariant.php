@@ -22,6 +22,8 @@ class MediaFileVariant extends Model
         'height',
         'checksum',
         'generated_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
