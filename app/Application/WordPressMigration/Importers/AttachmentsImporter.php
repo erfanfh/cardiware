@@ -86,7 +86,7 @@ class AttachmentsImporter
             'variant' => MediaFileVariantEnum::ORIGINAL,
             'format' => $format,
             'path' => $this->normalizePath($attachedFile),
-            'byte_size' => null,
+            'byte_size' => $metadata['filesize'] ?? 0,
             'width' => $metadata['width'] ?? null,
             'height' => $metadata['height'] ?? null,
             'checksum' => null,
