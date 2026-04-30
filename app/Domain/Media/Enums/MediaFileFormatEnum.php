@@ -9,6 +9,7 @@ enum MediaFileFormatEnum: string
     case PNG = 'png';
     case WEBP = 'webp';
     case GIF = 'gif';
+    case ICO = 'ico';
 
     case PDF = 'pdf';
 
@@ -24,6 +25,8 @@ enum MediaFileFormatEnum: string
     case TTF = 'ttf';
     case SVG = 'svg';
     case RAR = 'rar';
+    case JSON = 'json';
+    case DOCX = 'docx';
 
     /**
      * Return allowed formats per media type.
@@ -77,6 +80,9 @@ enum MediaFileFormatEnum: string
             self::TTF => 'font/ttf',
             self::SVG => 'image/svg+xml',
             self::RAR => 'application/vnd.rar',
+            self::ICO => 'image/x-icon',
+            self::JSON => 'application/json',
+            self::DOCX => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         };
     }
 }

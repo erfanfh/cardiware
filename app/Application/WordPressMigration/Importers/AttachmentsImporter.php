@@ -184,6 +184,9 @@ class AttachmentsImporter
             'woff' => MediaFileFormatEnum::WOFF,
             'woff2' => MediaFileFormatEnum::WOFF2,
             'ttf' => MediaFileFormatEnum::TTF,
+            'ico' => MediaFileFormatEnum::ICO,
+            'json' => MediaFileFormatEnum::JSON,
+            'docx' => MediaFileFormatEnum::DOCX,
             default => null,
         };
     }
