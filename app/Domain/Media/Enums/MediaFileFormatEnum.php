@@ -8,6 +8,7 @@ enum MediaFileFormatEnum: string
     case JPEG = 'jpeg';
     case PNG = 'png';
     case WEBP = 'webp';
+    case GIF = 'gif';
 
     case PDF = 'pdf';
 
@@ -31,6 +32,7 @@ enum MediaFileFormatEnum: string
                 self::JPEG,
                 self::PNG,
                 self::WEBP,
+                self::GIF,
             ],
             'document' => [
                 self::PDF,
@@ -58,6 +60,7 @@ enum MediaFileFormatEnum: string
             self::JPG, self::JPEG => 'image/jpeg',
             self::PNG => 'image/png',
             self::WEBP => 'image/webp',
+            self::GIF => 'image/gif',
             self::PDF => 'application/pdf',
             self::ZIP => 'application/zip',
             self::MP3 => 'audio/mpeg',

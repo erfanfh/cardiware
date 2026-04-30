@@ -146,6 +146,7 @@ class AttachmentsImporter
             'jpeg' => MediaFileFormatEnum::JPEG,
             'png' => MediaFileFormatEnum::PNG,
             'webp' => MediaFileFormatEnum::WEBP,
+            'gif' => MediaFileFormatEnum::GIF,
             'pdf' => MediaFileFormatEnum::PDF,
             'zip' => MediaFileFormatEnum::ZIP,
             'mp3' => MediaFileFormatEnum::MP3,
