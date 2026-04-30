@@ -174,11 +174,16 @@ class AttachmentsImporter
             'png' => MediaFileFormatEnum::PNG,
             'webp' => MediaFileFormatEnum::WEBP,
             'gif' => MediaFileFormatEnum::GIF,
+            'svg' => MediaFileFormatEnum::SVG,
             'pdf' => MediaFileFormatEnum::PDF,
             'zip' => MediaFileFormatEnum::ZIP,
+            'rar' => MediaFileFormatEnum::RAR,
             'mp3' => MediaFileFormatEnum::MP3,
             'wav' => MediaFileFormatEnum::WAV,
             'mp4' => MediaFileFormatEnum::MP4,
+            'woff' => MediaFileFormatEnum::WOFF,
+            'woff2' => MediaFileFormatEnum::WOFF2,
+            'ttf' => MediaFileFormatEnum::TTF,
             default => null,
         };
     }

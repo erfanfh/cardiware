@@ -19,6 +19,12 @@ enum MediaFileFormatEnum: string
 
     case MP4 = 'mp4';
 
+    case WOFF = 'woff';
+    case WOFF2 = 'woff2';
+    case TTF = 'ttf';
+    case SVG = 'svg';
+    case RAR = 'rar';
+
     /**
      * Return allowed formats per media type.
      *
@@ -66,6 +72,11 @@ enum MediaFileFormatEnum: string
             self::MP3 => 'audio/mpeg',
             self::WAV => 'audio/wav',
             self::MP4 => 'video/mp4',
+            self::WOFF => 'font/woff',
+            self::WOFF2 => 'font/woff2',
+            self::TTF => 'font/ttf',
+            self::SVG => 'image/svg+xml',
+            self::RAR => 'application/vnd.rar',
         };
     }
 }
