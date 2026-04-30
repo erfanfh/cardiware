@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('wp_migration_maps', function (Blueprint $table) {
+            $table->id();
+
+            $table->string('source_type', 100);
+            $table->unsignedBigInteger('source_id');
+
+            $table->string('target_type', 100);
+            $table->unsignedBigInteger('target_id');
+
+            $table->json('meta')->nullable();
+
+            $table->timestamps();
+
+            $table->unique(
+                ['source_type', 'source_id', 'target_type'],
+                'wp_migration_maps_unique'
+            );
+
+            $table->index(['source_type', 'source_id']);
+            $table->index(['target_type', 'target_id']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('wp_migration_maps');
+    }
+};
