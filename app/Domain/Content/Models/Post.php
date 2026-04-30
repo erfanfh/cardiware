@@ -38,6 +38,8 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'is_pinned',
         'picture_id',
         'published_at',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [
