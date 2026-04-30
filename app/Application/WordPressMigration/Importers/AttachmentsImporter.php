@@ -60,9 +60,36 @@ class AttachmentsImporter
             return;
         }
 
+        $normalizedPath = $this->normalizePath($attachedFile);
+
         $metadata = $this->parseAttachmentMetadata(
             $this->getMeta($wpAttachment->ID, '_wp_attachment_metadata')
         );
+
+        $existingVariant = MediaFileVariant::query()
+            ->where('disk', MediaFileDiskEnum::PUBLIC)
+            ->where('path', $normalizedPath)
+            ->first();
+
+        if ($existingVariant) {
+            WpMigrationMap::query()->create([
+                'source_type' => 'wordpress_attachment',
+                'source_id' => $wpAttachment->ID,
+                'target_type' => MediaFile::class,
+                'target_id' => $existingVariant->media_file_id,
+                'meta' => [
+                    'attached_file' => $attachedFile,
+                    'alt' => $this->getMeta($wpAttachment->ID, '_wp_attachment_image_alt'),
+                    'mime_type' => $wpAttachment->post_mime_type,
+                    'guid' => $wpAttachment->guid,
+                    'width' => $metadata['width'] ?? null,
+                    'height' => $metadata['height'] ?? null,
+                    'reused_existing_media_file' => true,
+                ],
+            ]);
+
+            return;
+        }
 
         $format = $this->detectFormat($attachedFile);
         $type = $this->detectType($wpAttachment->post_mime_type, $format);
@@ -85,7 +112,7 @@ class AttachmentsImporter
             'mime_type' => $wpAttachment->post_mime_type ?: $format?->mimeType(),
             'variant' => MediaFileVariantEnum::ORIGINAL,
             'format' => $format,
-            'path' => $this->normalizePath($attachedFile),
+            'path' => $normalizedPath,
             'byte_size' => $metadata['filesize'] ?? 0,
             'width' => $metadata['width'] ?? null,
             'height' => $metadata['height'] ?? null,
