@@ -36,8 +36,6 @@ class User extends Authenticatable
         'password',
         'mobile_verified_at',
         'email_verified_at',
-        'role_id',
-        'active',
         'avatar_id',
     ];
 
