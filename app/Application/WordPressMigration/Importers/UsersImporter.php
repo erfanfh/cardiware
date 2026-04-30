@@ -51,7 +51,7 @@ class UsersImporter
                 'role_id' => app(GetDefaultRoleAction::class)->execute()->id, // فعلاً default (بعداً میشه mapping کرد)
                 'status' => UserStatusEnum::ACTIVE,
 
-                'mobile' => null,
+                'mobile' => '',
                 'mobile_verified_at' => null,
 
                 'email_verified_at' => $wpUser->user_email ? now() : null,
