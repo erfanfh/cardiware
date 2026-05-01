@@ -4,43 +4,68 @@ namespace App\Console\Commands;
 
 use App\Application\WordPressMigration\Importers\FeaturedImagesImporter;
 use Illuminate\Console\Command;
+use Throwable;
 
 class ImportWordPressFeaturedImagesCommand extends Command
 {
     protected $signature = 'wp:import-featured-images';
 
-    protected $description = 'Import WordPress featured images into Laravel posts';
+    protected $description = 'Import WordPress featured images into Laravel posts and pages';
 
     public function handle(FeaturedImagesImporter $importer): int
     {
         $this->info('Importing WordPress featured images...');
 
-        $bar = $this->output->createProgressBar($importer->total());
+        $total = $importer->total();
+
+        if ($total === 0) {
+            $this->warn('No WordPress featured images found.');
+
+            return self::SUCCESS;
+        }
+
+        $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $importer->import(function () use ($bar) {
-            $bar->advance();
-        });
+        $commandFailed = false;
 
-        $bar->finish();
+        try {
+            $importer->import(function () use ($bar) {
+                $bar->advance();
+            });
+        } catch (Throwable $exception) {
+            $commandFailed = true;
 
-        $stats = $importer->stats();
+            logger()->error('WordPress featured images import command failed', [
+                'message' => $exception->getMessage(),
+            ]);
 
-        $this->newLine(2);
+            $this->newLine(2);
+            $this->error('WordPress featured images import stopped because of an unexpected error.');
+            $this->error($exception->getMessage());
+        } finally {
+            $bar->finish();
 
-        $this->table(
-            ['Processed', 'Updated', 'Skipped', 'Failed'],
-            [[
-                $stats['processed'],
-                $stats['updated'],
-                $stats['skipped'],
-                $stats['failed'],
-            ]]
-        );
+            $stats = $importer->stats();
+
+            $this->newLine(2);
+
+            $this->table(
+                ['Processed', 'Updated', 'Skipped', 'Failed'],
+                [[
+                    $stats['processed'],
+                    $stats['updated'],
+                    $stats['skipped'],
+                    $stats['failed'],
+                ]]
+            );
+        }
 
         $this->info('WordPress featured images import finished.');
 
-        return $stats['failed'] > 0
+        $stats = $importer->stats();
+
+        return $commandFailed || $stats['failed'] > 0
             ? self::FAILURE
             : self::SUCCESS;
     }

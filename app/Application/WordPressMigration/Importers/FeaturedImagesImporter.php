@@ -2,9 +2,11 @@
 
 namespace App\Application\WordPressMigration\Importers;
 
+use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -15,12 +17,21 @@ class FeaturedImagesImporter
     private int $skipped = 0;
     private int $failed = 0;
 
+    private const SUPPORTED_TYPES = [
+        'post' => [
+            'source_type' => 'wordpress_post',
+            'target_type' => Post::class,
+        ],
+        'page' => [
+            'source_type' => 'wordpress_page',
+            'target_type' => Page::class,
+        ],
+    ];
+
     public function import(?callable $onProgress = null): void
     {
-        DB::connection('wordpress')
-            ->table('postmeta')
-            ->where('meta_key', '_thumbnail_id')
-            ->orderBy('post_id')
+        $this->query()
+            ->orderBy('postmeta.post_id')
             ->chunk(500, function ($rows) use ($onProgress) {
                 foreach ($rows as $row) {
                     $this->processed++;
@@ -30,9 +41,10 @@ class FeaturedImagesImporter
                     } catch (Throwable $exception) {
                         $this->failed++;
 
-                        logger()->error('Featured image import failed', [
-                            'post_id' => $row->post_id,
-                            'meta_value' => $row->meta_value,
+                        logger()->error('WordPress featured image import failed', [
+                            'wordpress_post_id' => $row->post_id,
+                            'wordpress_post_type' => $row->post_type,
+                            'thumbnail_id' => $row->meta_value,
                             'message' => $exception->getMessage(),
                         ]);
                     }
@@ -46,10 +58,7 @@ class FeaturedImagesImporter
 
     public function total(): int
     {
-        return DB::connection('wordpress')
-            ->table('postmeta')
-            ->where('meta_key', '_thumbnail_id')
-            ->count();
+        return $this->query()->count();
     }
 
     public function stats(): array
@@ -62,15 +71,36 @@ class FeaturedImagesImporter
         ];
     }
 
+    private function query()
+    {
+        return DB::connection('wordpress')
+            ->table('postmeta')
+            ->join('posts', 'posts.ID', '=', 'postmeta.post_id')
+            ->where('postmeta.meta_key', '_thumbnail_id')
+            ->whereIn('posts.post_type', array_keys(self::SUPPORTED_TYPES))
+            ->select([
+                'postmeta.post_id',
+                'postmeta.meta_value',
+                'posts.post_type',
+            ]);
+    }
+
     private function importFeaturedImage(object $row): void
     {
-        $postMap = $this->findMap(
-            sourceType: 'wordpress_post',
+        $config = self::SUPPORTED_TYPES[$row->post_type] ?? null;
+
+        if (!$config) {
+            $this->skipped++;
+            return;
+        }
+
+        $contentMap = $this->findMap(
+            sourceType: $config['source_type'],
             sourceId: (int)$row->post_id,
-            targetType: Post::class
+            targetType: $config['target_type']
         );
 
-        if (!$postMap) {
+        if (!$contentMap) {
             $this->skipped++;
             return;
         }
@@ -93,8 +123,11 @@ class FeaturedImagesImporter
             return;
         }
 
-        Post::withoutGlobalScopes()
-            ->whereKey($postMap->target_id)
+        /** @var class-string<Model> $targetType */
+        $targetType = $config['target_type'];
+
+        $targetType::withoutGlobalScopes()
+            ->whereKey($contentMap->target_id)
             ->update([
                 'picture_id' => $attachmentMap->target_id,
             ]);
