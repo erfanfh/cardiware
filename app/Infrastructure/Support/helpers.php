@@ -206,7 +206,7 @@ if (!function_exists('get_setting')) {
 }
 
 if (!function_exists('page_views')) {
-    function page_views(PageViewableInterface $model): string
+    function page_views(PageViewableInterface $model): int
     {
         $modelClass = class_basename($model);
 
@@ -230,7 +230,7 @@ if (!function_exists('page_views')) {
             id: $model->id,
         );
 
-        return number_format($storedViews + $bufferedViews);
+        return $storedViews + $bufferedViews;
     }
 }
 
