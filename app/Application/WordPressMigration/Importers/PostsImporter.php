@@ -85,7 +85,7 @@ class PostsImporter
             $post = Post::withoutGlobalScopes()->find($existingMap->target_id);
 
             if ($post) {
-                $this->ensureCurrentSlug($post);
+                $this->syncSlugs($post, $wpPost);
             }
 
             return 'skipped';
@@ -111,7 +111,7 @@ class PostsImporter
             'updated_at' => $this->normalizeDate($wpPost->post_modified) ?? now(),
         ]);
 
-        $this->ensureCurrentSlug($post);
+        $this->syncSlugs($post, $wpPost);
 
         WpMigrationMap::query()->create([
             'source_type' => 'wordpress_post',
@@ -130,18 +130,54 @@ class PostsImporter
         return 'created';
     }
 
-    private function ensureCurrentSlug(Post $post): void
+    private function syncSlugs(Post $post, object $wpPost): void
     {
+        $this->ensureSlug($post, $post->slug, true);
+
+        $oldSlugs = $this->getOldSlugs((int)$wpPost->ID);
+
+        foreach ($oldSlugs as $oldSlug) {
+            if ($oldSlug === $post->slug) {
+                continue;
+            }
+
+            $this->ensureSlug($post, $oldSlug, false);
+        }
+    }
+
+    private function ensureSlug(Post $post, string $slug, bool $isCurrent): void
+    {
+        $slug = trim($slug);
+
+        if ($slug === '') {
+            return;
+        }
+
         ContentSlug::query()->updateOrCreate(
             [
-                'slug' => $post->slug,
+                'slug' => $slug,
                 'sluggable_type' => Post::class,
                 'sluggable_id' => $post->id,
             ],
             [
-                'is_current' => true,
+                'is_current' => $isCurrent,
             ]
         );
+    }
+
+    private function getOldSlugs(int $wpPostId): array
+    {
+        return DB::connection('wordpress')
+            ->table('postmeta')
+            ->where('post_id', $wpPostId)
+            ->where('meta_key', '_wp_old_slug')
+            ->pluck('meta_value')
+            ->filter()
+            ->map(fn($slug) => trim((string)$slug))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function resolveAuthorId(int $wpAuthorId): int
