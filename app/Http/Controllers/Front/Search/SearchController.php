@@ -27,11 +27,11 @@ class SearchController extends Controller
             ->where('title', 'LIKE', '%' . $request->q . '%');
 
         if ($type === 'posts') {
-            $posts = $posts->paginate(9)->withQueryString();
+            $posts = $posts->latest()->paginate(12)->withQueryString();
             $postsCount = $posts->total();
             $projectsCount = $projects->count();
         } elseif ($type === 'projects') {
-            $projects = $projects->paginate(9)->withQueryString();
+            $projects = $projects->latest()->paginate(9)->withQueryString();
             $projectsCount = $projects->total();
             $postsCount = $posts->count();
         } else {
