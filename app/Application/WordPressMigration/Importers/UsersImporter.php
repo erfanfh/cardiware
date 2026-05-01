@@ -98,7 +98,7 @@ class UsersImporter
                 'status' => UserStatusEnum::ACTIVE,
 
                 'mobile' => $this->generateFakeMobile($wpUser->ID),
-                'mobile_verified_at' => now(),
+                'mobile_verified_at' => null,
 
                 'email_verified_at' => $wpUser->user_email ? now() : null,
 
