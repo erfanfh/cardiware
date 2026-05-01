@@ -155,7 +155,7 @@
                             </x-front.cart>
                         @endif
 
-                        @if($posts->hasMorePages())
+                        @if($posts->hasPages())
                             <div
                                 class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                                 <x-front.list.pagination :model="$posts"/>
@@ -247,7 +247,7 @@
                         </div>
                     @endif
 
-                    @if($projects->hasMorePages())
+                    @if($projects->hasPages())
                         <div
                             class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                             <x-front.list.pagination :model="$projects"/>
