@@ -19,6 +19,8 @@ class PostsImporter
     private int $skipped = 0;
     private int $failed = 0;
 
+    private const JWPPP_VIDEO_URL_META_KEY = '_jwppp-video-url-1';
+
     public function import(?callable $onProgress = null): void
     {
         DB::connection('wordpress')
@@ -87,6 +89,10 @@ class PostsImporter
             if ($post) {
                 $post->forceFill([
                     'slug' => $this->normalizeSlug($post->slug),
+                    'body' => $this->appendJwPlayerVideoToContent(
+                        (int)$wpPost->ID,
+                        (string)$post->body
+                    ),
                 ])->save();
 
                 $this->syncSlugs($post, $wpPost);
@@ -103,12 +109,17 @@ class PostsImporter
                 ?: 'post-' . $wpPost->ID
         );
 
+        $body = $this->appendJwPlayerVideoToContent(
+            (int)$wpPost->ID,
+            (string)($wpPost->post_content ?: '')
+        );
+
         $post = Post::withoutGlobalScopes()->create([
             'author_id' => $authorId,
             'title' => $this->cleanText($wpPost->post_title) ?: 'Untitled Post ' . $wpPost->ID,
             'slug' => $slug,
             'excerpt' => $wpPost->post_excerpt ?: null,
-            'body' => $wpPost->post_content ?: '',
+            'body' => $body,
             'status' => $this->mapStatus($wpPost->post_status),
             'is_pinned' => false,
             'picture_id' => null,
@@ -135,6 +146,68 @@ class PostsImporter
         ]);
 
         return 'created';
+    }
+
+    private function appendJwPlayerVideoToContent(int $wpPostId, string $content): string
+    {
+        $videoUrl = $this->getJwPlayerVideoUrl($wpPostId);
+
+        if (!$videoUrl) {
+            return $content;
+        }
+
+        if (str_contains($content, $videoUrl)) {
+            return $content;
+        }
+
+        $videoHtml = $this->makeVideoHtml($videoUrl);
+
+        return trim($videoHtml . PHP_EOL . PHP_EOL . $content);
+    }
+
+    private function getJwPlayerVideoUrl(int $wpPostId): ?string
+    {
+        $videoUrl = DB::connection('wordpress')
+            ->table('postmeta')
+            ->where('post_id', $wpPostId)
+            ->where('meta_key', self::JWPPP_VIDEO_URL_META_KEY)
+            ->value('meta_value');
+
+        $videoUrl = trim((string)$videoUrl);
+
+        if ($videoUrl === '') {
+            return null;
+        }
+
+        return $this->normalizeVideoUrl($videoUrl);
+    }
+
+    private function normalizeVideoUrl(string $url): string
+    {
+        $url = trim($url);
+
+        if (str_starts_with($url, 'dl.moddingway.ir/')) {
+            $url = 'https://' . $url;
+        }
+
+        if (str_starts_with($url, 'http://dl.moddingway.ir/')) {
+            $url = 'https://' . substr($url, strlen('http://'));
+        }
+
+        return $url;
+    }
+
+    private function makeVideoHtml(string $videoUrl): string
+    {
+        $escapedUrl = e($videoUrl);
+
+        return <<<HTML
+<div class="wp-migrated-video">
+    <video controls preload="metadata" style="width: 100%; max-width: 100%;">
+        <source src="{$escapedUrl}" type="video/mp4">
+    </video>
+</div>
+HTML;
     }
 
     private function syncSlugs(Post $post, object $wpPost): void
