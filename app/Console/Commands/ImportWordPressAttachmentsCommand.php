@@ -24,9 +24,26 @@ class ImportWordPressAttachmentsCommand extends Command
 
         $bar->finish();
 
-        $this->newLine(2);
-        $this->info('WordPress attachments imported successfully.');
+        $stats = $importer->stats();
 
-        return self::SUCCESS;
+        $this->newLine(2);
+
+        $this->table(
+            ['Processed', 'Created', 'Reused', 'Skipped', 'Unsupported', 'Failed'],
+            [[
+                $stats['processed'],
+                $stats['created'],
+                $stats['reused'],
+                $stats['skipped'],
+                $stats['unsupported'],
+                $stats['failed'],
+            ]]
+        );
+
+        $this->info('WordPress attachments import finished.');
+
+        return $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

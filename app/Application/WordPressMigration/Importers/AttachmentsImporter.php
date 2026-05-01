@@ -14,24 +14,43 @@ use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class AttachmentsImporter
 {
+    private int $processed = 0;
+    private int $created = 0;
+    private int $reused = 0;
+    private int $skipped = 0;
+    private int $unsupported = 0;
+    private int $failed = 0;
+
     public function import(?callable $onProgress = null): void
     {
         DB::connection('wordpress')
             ->table('posts')
             ->where('post_type', 'attachment')
             ->orderBy('ID')
-            ->chunk(300, function ($attachments) use ($onProgress) {
+            ->chunkById(300, function ($attachments) use ($onProgress) {
                 foreach ($attachments as $wpAttachment) {
-                    $this->importAttachment($wpAttachment);
+                    $this->processed++;
+
+                    try {
+                        $this->importAttachment($wpAttachment);
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('WordPress attachment import failed', [
+                            'wordpress_attachment_id' => $wpAttachment->ID,
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
 
                     if ($onProgress) {
-                        $onProgress();
+                        $onProgress($this->stats());
                     }
                 }
-            });
+            }, 'ID');
     }
 
     public function total(): int
@@ -40,6 +59,18 @@ class AttachmentsImporter
             ->table('posts')
             ->where('post_type', 'attachment')
             ->count();
+    }
+
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'created' => $this->created,
+            'reused' => $this->reused,
+            'skipped' => $this->skipped,
+            'unsupported' => $this->unsupported,
+            'failed' => $this->failed,
+        ];
     }
 
     private function importAttachment(object $wpAttachment): void
@@ -51,19 +82,33 @@ class AttachmentsImporter
             ->exists();
 
         if ($exists) {
+            $this->skipped++;
             return;
         }
 
-        $attachedFile = $this->getMeta($wpAttachment->ID, '_wp_attached_file');
+        $attachedFile = $this->getMeta((int)$wpAttachment->ID, '_wp_attached_file');
 
         if (!$attachedFile) {
+            $this->skipped++;
             return;
         }
 
         $normalizedPath = $this->normalizePath($attachedFile);
+        $format = $this->detectFormat($normalizedPath);
+
+        if (!$format) {
+            $this->unsupported++;
+            logger()->warning('Unsupported WordPress attachment format', [
+                'wordpress_attachment_id' => $wpAttachment->ID,
+                'path' => $attachedFile,
+                'mime_type' => $wpAttachment->post_mime_type,
+            ]);
+
+            return;
+        }
 
         $metadata = $this->parseAttachmentMetadata(
-            $this->getMeta($wpAttachment->ID, '_wp_attachment_metadata')
+            $this->getMeta((int)$wpAttachment->ID, '_wp_attachment_metadata')
         );
 
         $existingVariant = MediaFileVariant::query()
@@ -79,7 +124,7 @@ class AttachmentsImporter
                 'target_id' => $existingVariant->media_file_id,
                 'meta' => [
                     'attached_file' => $attachedFile,
-                    'alt' => $this->getMeta($wpAttachment->ID, '_wp_attachment_image_alt'),
+                    'alt' => $this->getMeta((int)$wpAttachment->ID, '_wp_attachment_image_alt'),
                     'mime_type' => $wpAttachment->post_mime_type,
                     'guid' => $wpAttachment->guid,
                     'width' => $metadata['width'] ?? null,
@@ -88,16 +133,14 @@ class AttachmentsImporter
                 ],
             ]);
 
+            $this->reused++;
             return;
         }
 
-        $format = $this->detectFormat($attachedFile);
-        $type = $this->detectType($wpAttachment->post_mime_type, $format);
-
         $mediaFile = MediaFile::query()->create([
-            'type' => $type,
+            'type' => $this->detectType($wpAttachment->post_mime_type, $format),
             'visibility' => MediaFileVisibilityEnum::PUBLIC,
-            'title' => $wpAttachment->post_title ?: pathinfo($attachedFile, PATHINFO_FILENAME),
+            'title' => $wpAttachment->post_title ?: pathinfo($normalizedPath, PATHINFO_FILENAME),
             'created_by' => null,
             'primary_variant_id' => null,
             'status' => MediaFileStatusEnum::READY,
@@ -109,7 +152,7 @@ class AttachmentsImporter
         $variant = MediaFileVariant::query()->create([
             'media_file_id' => $mediaFile->id,
             'disk' => MediaFileDiskEnum::WORDPRESS_UPLOADS,
-            'mime_type' => $wpAttachment->post_mime_type ?: $format?->mimeType(),
+            'mime_type' => $wpAttachment->post_mime_type ?: $format->mimeType(),
             'variant' => MediaFileVariantEnum::ORIGINAL,
             'format' => $format,
             'path' => $normalizedPath,
@@ -133,13 +176,15 @@ class AttachmentsImporter
             'target_id' => $mediaFile->id,
             'meta' => [
                 'attached_file' => $attachedFile,
-                'alt' => $this->getMeta($wpAttachment->ID, '_wp_attachment_image_alt'),
+                'alt' => $this->getMeta((int)$wpAttachment->ID, '_wp_attachment_image_alt'),
                 'mime_type' => $wpAttachment->post_mime_type,
                 'guid' => $wpAttachment->guid,
                 'width' => $metadata['width'] ?? null,
                 'height' => $metadata['height'] ?? null,
             ],
         ]);
+
+        $this->created++;
     }
 
     private function getMeta(int $postId, string $key): ?string
@@ -159,14 +204,14 @@ class AttachmentsImporter
             return [];
         }
 
-        $data = @unserialize($value);
+        $data = @unserialize($value, ['allowed_classes' => false]);
 
         return is_array($data) ? $data : [];
     }
 
     private function detectFormat(string $path): ?MediaFileFormatEnum
     {
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo(parse_url($path, PHP_URL_PATH) ?: $path, PATHINFO_EXTENSION));
 
         return match ($extension) {
             'jpg' => MediaFileFormatEnum::JPG,
@@ -175,23 +220,23 @@ class AttachmentsImporter
             'webp' => MediaFileFormatEnum::WEBP,
             'gif' => MediaFileFormatEnum::GIF,
             'svg' => MediaFileFormatEnum::SVG,
+            'ico' => MediaFileFormatEnum::ICO,
             'pdf' => MediaFileFormatEnum::PDF,
             'zip' => MediaFileFormatEnum::ZIP,
             'rar' => MediaFileFormatEnum::RAR,
+            'json' => MediaFileFormatEnum::JSON,
+            'docx' => MediaFileFormatEnum::DOCX,
             'mp3' => MediaFileFormatEnum::MP3,
             'wav' => MediaFileFormatEnum::WAV,
             'mp4' => MediaFileFormatEnum::MP4,
             'woff' => MediaFileFormatEnum::WOFF,
             'woff2' => MediaFileFormatEnum::WOFF2,
             'ttf' => MediaFileFormatEnum::TTF,
-            'ico' => MediaFileFormatEnum::ICO,
-            'json' => MediaFileFormatEnum::JSON,
-            'docx' => MediaFileFormatEnum::DOCX,
             default => null,
         };
     }
 
-    private function detectType(?string $mimeType, ?MediaFileFormatEnum $format): MediaFileTypeEnum
+    private function detectType(?string $mimeType, MediaFileFormatEnum $format): MediaFileTypeEnum
     {
         if ($mimeType && Str::startsWith($mimeType, 'image/')) {
             return MediaFileTypeEnum::IMAGE;
@@ -214,6 +259,12 @@ class AttachmentsImporter
 
     private function normalizePath(string $path): string
     {
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            $parsedPath = parse_url($path, PHP_URL_PATH);
+
+            return ltrim(urldecode((string)$parsedPath), '/');
+        }
+
         return ltrim($path, '/');
     }
 
