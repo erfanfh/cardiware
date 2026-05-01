@@ -6,26 +6,37 @@ use App\Application\Identity\Actions\GetDefaultRoleAction;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
+use Closure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class UsersImporter
 {
-    public function import(): void
+    public function count(): int
+    {
+        return DB::connection('wordpress')
+            ->table('users')
+            ->count();
+    }
+
+    public function import(?Closure $progressCallback = null): void
     {
         DB::connection('wordpress')
             ->table('users')
             ->orderBy('ID')
-            ->chunk(100, function ($users) {
+            ->chunk(100, function ($users) use ($progressCallback) {
                 foreach ($users as $wpUser) {
                     $this->importUser($wpUser);
+
+                    if ($progressCallback) {
+                        $progressCallback();
+                    }
                 }
             });
     }
 
     private function importUser(object $wpUser): void
     {
-        // ⛔ اگر قبلاً migrate شده، رد کن
         $exists = WpMigrationMap::query()
             ->where('source_type', 'wordpress_user')
             ->where('source_id', $wpUser->ID)
@@ -36,7 +47,6 @@ class UsersImporter
             return;
         }
 
-        // ایمیل fallback
         $email = $wpUser->user_email ?: "wp-user-{$wpUser->ID}@example.local";
 
         $user = User::query()->firstOrCreate(
@@ -47,8 +57,7 @@ class UsersImporter
                 'last_name' => '',
                 'display_name' => $wpUser->display_name ?: $wpUser->user_login,
 
-                // 👇 اینا مهمه
-                'role_id' => app(GetDefaultRoleAction::class)->execute()->id, // فعلاً default (بعداً میشه mapping کرد)
+                'role_id' => app(GetDefaultRoleAction::class)->execute()->id,
                 'status' => UserStatusEnum::ACTIVE,
 
                 'mobile' => $this->generateFakeMobile($wpUser->ID),
@@ -65,7 +74,6 @@ class UsersImporter
             ]
         );
 
-        // ثبت mapping
         WpMigrationMap::query()->create([
             'source_type' => 'wordpress_user',
             'source_id' => $wpUser->ID,
@@ -83,7 +91,6 @@ class UsersImporter
     {
         $base = $wpUser->user_login ?: 'user_' . $wpUser->ID;
 
-        // جلوگیری از تکراری شدن
         $username = $base;
         $counter = 1;
 
