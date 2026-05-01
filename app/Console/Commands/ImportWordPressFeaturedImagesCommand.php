@@ -24,9 +24,24 @@ class ImportWordPressFeaturedImagesCommand extends Command
 
         $bar->finish();
 
-        $this->newLine(2);
-        $this->info('WordPress featured images imported successfully.');
+        $stats = $importer->stats();
 
-        return self::SUCCESS;
+        $this->newLine(2);
+
+        $this->table(
+            ['Processed', 'Updated', 'Skipped', 'Failed'],
+            [[
+                $stats['processed'],
+                $stats['updated'],
+                $stats['skipped'],
+                $stats['failed'],
+            ]]
+        );
+
+        $this->info('WordPress featured images import finished.');
+
+        return $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

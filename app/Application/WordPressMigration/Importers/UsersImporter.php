@@ -9,9 +9,15 @@ use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Closure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class UsersImporter
 {
+    private int $processed = 0;
+    private int $created = 0;
+    private int $skipped = 0;
+    private int $failed = 0;
+
     public function count(): int
     {
         return DB::connection('wordpress')
@@ -26,16 +32,47 @@ class UsersImporter
             ->orderBy('ID')
             ->chunk(100, function ($users) use ($progressCallback) {
                 foreach ($users as $wpUser) {
-                    $this->importUser($wpUser);
+                    $this->processed++;
+
+                    try {
+                        $result = $this->importUser($wpUser);
+
+                        if ($result === 'created') {
+                            $this->created++;
+                        }
+
+                        if ($result === 'skipped') {
+                            $this->skipped++;
+                        }
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('WordPress user import failed', [
+                            'wordpress_user_id' => $wpUser->ID,
+                            'user_login' => $wpUser->user_login,
+                            'user_email' => $wpUser->user_email,
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
 
                     if ($progressCallback) {
-                        $progressCallback();
+                        $progressCallback($this->stats());
                     }
                 }
             });
     }
 
-    private function importUser(object $wpUser): void
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'created' => $this->created,
+            'skipped' => $this->skipped,
+            'failed' => $this->failed,
+        ];
+    }
+
+    private function importUser(object $wpUser): string
     {
         $exists = WpMigrationMap::query()
             ->where('source_type', 'wordpress_user')
@@ -44,7 +81,7 @@ class UsersImporter
             ->exists();
 
         if ($exists) {
-            return;
+            return 'skipped';
         }
 
         $email = $wpUser->user_email ?: "wp-user-{$wpUser->ID}@example.local";
@@ -85,6 +122,8 @@ class UsersImporter
                 'user_url' => $wpUser->user_url,
             ],
         ]);
+
+        return 'created';
     }
 
     private function makeUsername(object $wpUser): string

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Application\WordPressMigration\Importers\UsersImporter;
 use Illuminate\Console\Command;
+use Throwable;
 
 class ImportWordPressUsersCommand extends Command
 {
@@ -26,15 +27,46 @@ class ImportWordPressUsersCommand extends Command
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $importer->import(function () use ($bar) {
-            $bar->advance();
-        });
+        $commandFailed = false;
 
-        $bar->finish();
+        try {
+            $importer->import(function () use ($bar) {
+                $bar->advance();
+            });
+        } catch (Throwable $exception) {
+            $commandFailed = true;
 
-        $this->newLine(2);
-        $this->info('WordPress users imported successfully.');
+            logger()->error('WordPress users import command failed', [
+                'message' => $exception->getMessage(),
+            ]);
 
-        return self::SUCCESS;
+            $this->newLine(2);
+            $this->error('WordPress users import stopped because of an unexpected error.');
+            $this->error($exception->getMessage());
+        } finally {
+            $bar->finish();
+
+            $stats = $importer->stats();
+
+            $this->newLine(2);
+
+            $this->table(
+                ['Processed', 'Created', 'Skipped', 'Failed'],
+                [[
+                    $stats['processed'],
+                    $stats['created'],
+                    $stats['skipped'],
+                    $stats['failed'],
+                ]]
+            );
+        }
+
+        $this->info('WordPress users import finished.');
+
+        $stats = $importer->stats();
+
+        return $commandFailed || $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

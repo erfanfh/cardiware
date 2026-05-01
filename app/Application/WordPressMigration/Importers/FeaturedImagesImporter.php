@@ -6,9 +6,15 @@ use App\Domain\Content\Models\Post;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class FeaturedImagesImporter
 {
+    private int $processed = 0;
+    private int $updated = 0;
+    private int $skipped = 0;
+    private int $failed = 0;
+
     public function import(?callable $onProgress = null): void
     {
         DB::connection('wordpress')
@@ -17,10 +23,22 @@ class FeaturedImagesImporter
             ->orderBy('post_id')
             ->chunk(500, function ($rows) use ($onProgress) {
                 foreach ($rows as $row) {
-                    $this->importFeaturedImage($row);
+                    $this->processed++;
+
+                    try {
+                        $this->importFeaturedImage($row);
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('Featured image import failed', [
+                            'post_id' => $row->post_id,
+                            'meta_value' => $row->meta_value,
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
 
                     if ($onProgress) {
-                        $onProgress();
+                        $onProgress($this->stats());
                     }
                 }
             });
@@ -34,6 +52,16 @@ class FeaturedImagesImporter
             ->count();
     }
 
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'updated' => $this->updated,
+            'skipped' => $this->skipped,
+            'failed' => $this->failed,
+        ];
+    }
+
     private function importFeaturedImage(object $row): void
     {
         $postMap = $this->findMap(
@@ -43,12 +71,14 @@ class FeaturedImagesImporter
         );
 
         if (!$postMap) {
+            $this->skipped++;
             return;
         }
 
         $attachmentId = (int)$row->meta_value;
 
         if ($attachmentId <= 0) {
+            $this->skipped++;
             return;
         }
 
@@ -59,6 +89,7 @@ class FeaturedImagesImporter
         );
 
         if (!$attachmentMap) {
+            $this->skipped++;
             return;
         }
 
@@ -67,6 +98,8 @@ class FeaturedImagesImporter
             ->update([
                 'picture_id' => $attachmentMap->target_id,
             ]);
+
+        $this->updated++;
     }
 
     private function findMap(string $sourceType, int $sourceId, string $targetType): ?WpMigrationMap

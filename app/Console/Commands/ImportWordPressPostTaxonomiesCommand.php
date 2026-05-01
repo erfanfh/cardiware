@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Application\WordPressMigration\Importers\PostTaxonomiesImporter;
 use Illuminate\Console\Command;
+use Throwable;
 
 class ImportWordPressPostTaxonomiesCommand extends Command
 {
@@ -17,18 +18,55 @@ class ImportWordPressPostTaxonomiesCommand extends Command
 
         $total = $importer->total();
 
+        if ($total === 0) {
+            $this->warn('No WordPress post taxonomy relations found.');
+
+            return self::SUCCESS;
+        }
+
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $importer->import(function () use ($bar) {
-            $bar->advance();
-        });
+        $commandFailed = false;
 
-        $bar->finish();
+        try {
+            $importer->import(function () use ($bar) {
+                $bar->advance();
+            });
+        } catch (Throwable $exception) {
+            $commandFailed = true;
 
-        $this->newLine(2);
-        $this->info('WordPress post taxonomy relations imported successfully.');
+            logger()->error('WordPress post taxonomy relations import command failed', [
+                'message' => $exception->getMessage(),
+            ]);
 
-        return self::SUCCESS;
+            $this->newLine(2);
+            $this->error('WordPress post taxonomy relations import stopped because of an unexpected error.');
+            $this->error($exception->getMessage());
+        } finally {
+            $bar->finish();
+
+            $stats = $importer->stats();
+
+            $this->newLine(2);
+
+            $this->table(
+                ['Processed', 'Attached', 'Skipped', 'Failed'],
+                [[
+                    $stats['processed'],
+                    $stats['attached'],
+                    $stats['skipped'],
+                    $stats['failed'],
+                ]]
+            );
+        }
+
+        $this->info('WordPress post taxonomy relations import finished.');
+
+        $stats = $importer->stats();
+
+        return $commandFailed || $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

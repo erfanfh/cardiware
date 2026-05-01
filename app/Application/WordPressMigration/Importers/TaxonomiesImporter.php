@@ -9,9 +9,16 @@ use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Closure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class TaxonomiesImporter
 {
+    private int $processed = 0;
+    private int $created = 0;
+    private int $synced = 0;
+    private int $skipped = 0;
+    private int $failed = 0;
+
     public function count(): int
     {
         return $this->countTaxonomy('category')
@@ -24,6 +31,17 @@ class TaxonomiesImporter
         $this->importCategories($progressCallback);
         $this->syncCategoryParentsAndPaths($progressCallback);
         $this->importTags($progressCallback);
+    }
+
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'created' => $this->created,
+            'synced' => $this->synced,
+            'skipped' => $this->skipped,
+            'failed' => $this->failed,
+        ];
     }
 
     private function countTaxonomy(string $wpTaxonomy): int
@@ -78,16 +96,35 @@ class TaxonomiesImporter
             ->orderBy('terms.term_id')
             ->chunk(500, function ($terms) use ($sourceType, $taxonomy, $progressCallback) {
                 foreach ($terms as $wpTerm) {
-                    $this->importTerm($wpTerm, $sourceType, $taxonomy);
+                    $this->processed++;
 
-                    if ($progressCallback) {
-                        $progressCallback();
+                    try {
+                        $result = $this->importTerm($wpTerm, $sourceType, $taxonomy);
+
+                        if ($result === 'created') {
+                            $this->created++;
+                        }
+
+                        if ($result === 'skipped') {
+                            $this->skipped++;
+                        }
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('WordPress taxonomy term import failed', [
+                            'source_type' => $sourceType,
+                            'wordpress_term_id' => $wpTerm->term_id,
+                            'wordpress_term_taxonomy_id' => $wpTerm->term_taxonomy_id,
+                            'message' => $exception->getMessage(),
+                        ]);
                     }
+
+                    $this->advanceProgress($progressCallback);
                 }
             });
     }
 
-    private function importTerm(object $wpTerm, string $sourceType, TaxonomyKeyEnum $taxonomy): void
+    private function importTerm(object $wpTerm, string $sourceType, TaxonomyKeyEnum $taxonomy): string
     {
         $exists = WpMigrationMap::query()
             ->where('source_type', $sourceType)
@@ -96,7 +133,7 @@ class TaxonomiesImporter
             ->exists();
 
         if ($exists) {
-            return;
+            return 'skipped';
         }
 
         $slug = $this->makeUniqueSlug(
@@ -128,6 +165,8 @@ class TaxonomiesImporter
                 'original_slug' => $wpTerm->slug,
             ],
         ]);
+
+        return 'created';
     }
 
     private function syncCategoryParentsAndPaths(?Closure $progressCallback = null): void
@@ -146,49 +185,74 @@ class TaxonomiesImporter
             ->get();
 
         foreach ($categories as $wpCategory) {
-            $childMap = $this->findMap('wordpress_category', $wpCategory->term_taxonomy_id);
+            $this->processed++;
 
-            if (!$childMap) {
-                $this->advanceProgress($progressCallback);
-                continue;
-            }
+            try {
+                $result = $this->syncCategoryParentAndPath($wpCategory);
 
-            $term = TaxonomyTerm::query()->find($childMap->target_id);
-
-            if (!$term) {
-                $this->advanceProgress($progressCallback);
-                continue;
-            }
-
-            $parentId = null;
-
-            if ((int)$wpCategory->parent > 0) {
-                $parentWpTaxonomy = DB::connection('wordpress')
-                    ->table('term_taxonomy')
-                    ->where('taxonomy', 'category')
-                    ->where('term_id', $wpCategory->parent)
-                    ->first();
-
-                if ($parentWpTaxonomy) {
-                    $parentMap = $this->findMap('wordpress_category', $parentWpTaxonomy->term_taxonomy_id);
-
-                    if ($parentMap) {
-                        $parentId = $parentMap->target_id;
-                    }
+                if ($result === 'synced') {
+                    $this->synced++;
                 }
+
+                if ($result === 'skipped') {
+                    $this->skipped++;
+                }
+            } catch (Throwable $exception) {
+                $this->failed++;
+
+                logger()->error('WordPress category parent/path sync failed', [
+                    'wordpress_term_id' => $wpCategory->term_id,
+                    'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                    'message' => $exception->getMessage(),
+                ]);
             }
-
-            $term->update([
-                'parent_id' => $parentId,
-                'path' => $this->buildCategoryPath($term, $parentId),
-            ]);
-
-            $term->refresh();
-
-            $this->createOrUpdateCurrentSlug($term);
 
             $this->advanceProgress($progressCallback);
         }
+    }
+
+    private function syncCategoryParentAndPath(object $wpCategory): string
+    {
+        $childMap = $this->findMap('wordpress_category', $wpCategory->term_taxonomy_id);
+
+        if (!$childMap) {
+            return 'skipped';
+        }
+
+        $term = TaxonomyTerm::query()->find($childMap->target_id);
+
+        if (!$term) {
+            return 'skipped';
+        }
+
+        $parentId = null;
+
+        if ((int)$wpCategory->parent > 0) {
+            $parentWpTaxonomy = DB::connection('wordpress')
+                ->table('term_taxonomy')
+                ->where('taxonomy', 'category')
+                ->where('term_id', $wpCategory->parent)
+                ->first();
+
+            if ($parentWpTaxonomy) {
+                $parentMap = $this->findMap('wordpress_category', $parentWpTaxonomy->term_taxonomy_id);
+
+                if ($parentMap) {
+                    $parentId = $parentMap->target_id;
+                }
+            }
+        }
+
+        $term->update([
+            'parent_id' => $parentId,
+            'path' => $this->buildCategoryPath($term, $parentId),
+        ]);
+
+        $term->refresh();
+
+        $this->createOrUpdateCurrentSlug($term);
+
+        return 'synced';
     }
 
     private function createOrUpdateCurrentSlug(TaxonomyTerm $term): void
@@ -258,7 +322,7 @@ class TaxonomiesImporter
     private function advanceProgress(?Closure $progressCallback): void
     {
         if ($progressCallback) {
-            $progressCallback();
+            $progressCallback($this->stats());
         }
     }
 }

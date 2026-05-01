@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Application\WordPressMigration\Importers\TaxonomiesImporter;
 use Illuminate\Console\Command;
+use Throwable;
 
 class ImportWordPressTaxonomiesCommand extends Command
 {
@@ -26,15 +27,47 @@ class ImportWordPressTaxonomiesCommand extends Command
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
-        $importer->import(function () use ($bar) {
-            $bar->advance();
-        });
+        $commandFailed = false;
 
-        $bar->finish();
+        try {
+            $importer->import(function () use ($bar) {
+                $bar->advance();
+            });
+        } catch (Throwable $exception) {
+            $commandFailed = true;
 
-        $this->newLine(2);
-        $this->info('WordPress taxonomies imported successfully.');
+            logger()->error('WordPress taxonomies import command failed', [
+                'message' => $exception->getMessage(),
+            ]);
 
-        return self::SUCCESS;
+            $this->newLine(2);
+            $this->error('WordPress taxonomies import stopped because of an unexpected error.');
+            $this->error($exception->getMessage());
+        } finally {
+            $bar->finish();
+
+            $stats = $importer->stats();
+
+            $this->newLine(2);
+
+            $this->table(
+                ['Processed', 'Created', 'Synced', 'Skipped', 'Failed'],
+                [[
+                    $stats['processed'],
+                    $stats['created'],
+                    $stats['synced'],
+                    $stats['skipped'],
+                    $stats['failed'],
+                ]]
+            );
+        }
+
+        $this->info('WordPress taxonomies import finished.');
+
+        $stats = $importer->stats();
+
+        return $commandFailed || $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

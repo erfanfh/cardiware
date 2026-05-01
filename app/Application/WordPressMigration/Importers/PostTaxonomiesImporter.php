@@ -6,9 +6,15 @@ use App\Domain\Content\Models\Post;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class PostTaxonomiesImporter
 {
+    private int $processed = 0;
+    private int $attached = 0;
+    private int $skipped = 0;
+    private int $failed = 0;
+
     public function import(?callable $onProgress = null): void
     {
         DB::connection('wordpress')
@@ -23,16 +29,56 @@ class PostTaxonomiesImporter
             ])
             ->chunk(1000, function ($relations) use ($onProgress) {
                 foreach ($relations as $relation) {
-                    $this->importRelation($relation);
+                    $this->processed++;
+
+                    try {
+                        $result = $this->importRelation($relation);
+
+                        if ($result === 'attached') {
+                            $this->attached++;
+                        }
+
+                        if ($result === 'skipped') {
+                            $this->skipped++;
+                        }
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('WordPress post taxonomy relation import failed', [
+                            'wordpress_object_id' => $relation->object_id,
+                            'wordpress_term_taxonomy_id' => $relation->term_taxonomy_id,
+                            'taxonomy' => $relation->taxonomy,
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
 
                     if ($onProgress) {
-                        $onProgress();
+                        $onProgress($this->stats());
                     }
                 }
             });
     }
 
-    private function importRelation(object $relation): void
+    public function total(): int
+    {
+        return DB::connection('wordpress')
+            ->table('term_relationships')
+            ->join('term_taxonomy', 'term_relationships.term_taxonomy_id', '=', 'term_taxonomy.term_taxonomy_id')
+            ->whereIn('term_taxonomy.taxonomy', ['category', 'post_tag'])
+            ->count();
+    }
+
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'attached' => $this->attached,
+            'skipped' => $this->skipped,
+            'failed' => $this->failed,
+        ];
+    }
+
+    private function importRelation(object $relation): string
     {
         $postMap = WpMigrationMap::query()
             ->where('source_type', 'wordpress_post')
@@ -41,7 +87,7 @@ class PostTaxonomiesImporter
             ->first();
 
         if (!$postMap) {
-            return;
+            return 'skipped';
         }
 
         $sourceType = $relation->taxonomy === 'category'
@@ -55,7 +101,7 @@ class PostTaxonomiesImporter
             ->first();
 
         if (!$termMap) {
-            return;
+            return 'skipped';
         }
 
         DB::table('taxonomables')->updateOrInsert(
@@ -69,14 +115,7 @@ class PostTaxonomiesImporter
                 'updated_at' => now(),
             ]
         );
-    }
 
-    public function total(): int
-    {
-        return DB::connection('wordpress')
-            ->table('term_relationships')
-            ->join('term_taxonomy', 'term_relationships.term_taxonomy_id', '=', 'term_taxonomy.term_taxonomy_id')
-            ->whereIn('term_taxonomy.taxonomy', ['category', 'post_tag'])
-            ->count();
+        return 'attached';
     }
 }
