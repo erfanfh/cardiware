@@ -82,18 +82,6 @@ final class ResolvePostListSeoPayloadAction
 
     protected function resolvePrimaryImage(): ?MediaFile
     {
-        $imageSetting = get_setting('seo', 'post_list_og_image');
-
-        if ($imageSetting?->id) {
-            return MediaFile::with('primaryVariant')->find($imageSetting->id);
-        }
-
-        $fallbackImage = get_setting('seo', 'default_og_image');
-
-        if ($fallbackImage?->id) {
-            return MediaFile::with('primaryVariant')->find($fallbackImage->id);
-        }
-
         return null;
     }
 }
