@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Application\WordPressMigration\Importers\PostsImporter;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class ImportWordPressPostsCommand extends Command
 {
@@ -16,10 +15,7 @@ class ImportWordPressPostsCommand extends Command
     {
         $this->info('Importing WordPress posts...');
 
-        $total = DB::connection('wordpress')
-            ->table('posts')
-            ->where('post_type', 'post')
-            ->count();
+        $total = $importer->total();
 
         $bar = $this->output->createProgressBar($total);
         $bar->start();
@@ -30,9 +26,24 @@ class ImportWordPressPostsCommand extends Command
 
         $bar->finish();
 
-        $this->newLine(2);
-        $this->info('WordPress posts imported successfully.');
+        $stats = $importer->stats();
 
-        return self::SUCCESS;
+        $this->newLine(2);
+
+        $this->table(
+            ['Processed', 'Created', 'Skipped', 'Failed'],
+            [[
+                $stats['processed'],
+                $stats['created'],
+                $stats['skipped'],
+                $stats['failed'],
+            ]]
+        );
+
+        $this->info('WordPress posts import finished.');
+
+        return $stats['failed'] > 0
+            ? self::FAILURE
+            : self::SUCCESS;
     }
 }

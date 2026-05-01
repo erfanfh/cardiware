@@ -3,42 +3,92 @@
 namespace App\Application\WordPressMigration\Importers;
 
 use App\Domain\Content\Enums\PostStatusEnum;
+use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Models\User;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Throwable;
 
 class PostsImporter
 {
+    private int $processed = 0;
+    private int $created = 0;
+    private int $skipped = 0;
+    private int $failed = 0;
+
     public function import(?callable $onProgress = null): void
     {
         DB::connection('wordpress')
             ->table('posts')
             ->where('post_type', 'post')
             ->orderBy('ID')
-            ->chunk(200, function ($posts) use ($onProgress) {
+            ->chunkById(200, function ($posts) use ($onProgress) {
                 foreach ($posts as $wpPost) {
-                    $this->importPost($wpPost);
+                    $this->processed++;
+
+                    try {
+                        $result = $this->importPost($wpPost);
+
+                        if ($result === 'created') {
+                            $this->created++;
+                        }
+
+                        if ($result === 'skipped') {
+                            $this->skipped++;
+                        }
+                    } catch (Throwable $exception) {
+                        $this->failed++;
+
+                        logger()->error('WordPress post import failed', [
+                            'wordpress_post_id' => $wpPost->ID,
+                            'message' => $exception->getMessage(),
+                        ]);
+                    }
 
                     if ($onProgress) {
-                        $onProgress();
+                        $onProgress($this->stats());
                     }
                 }
-            });
+            }, 'ID');
     }
 
-    private function importPost(object $wpPost): void
+    public function total(): int
     {
-        $exists = WpMigrationMap::query()
+        return DB::connection('wordpress')
+            ->table('posts')
+            ->where('post_type', 'post')
+            ->count();
+    }
+
+    public function stats(): array
+    {
+        return [
+            'processed' => $this->processed,
+            'created' => $this->created,
+            'skipped' => $this->skipped,
+            'failed' => $this->failed,
+        ];
+    }
+
+    private function importPost(object $wpPost): string
+    {
+        $existingMap = WpMigrationMap::query()
             ->where('source_type', 'wordpress_post')
             ->where('source_id', $wpPost->ID)
             ->where('target_type', Post::class)
-            ->exists();
+            ->first();
 
-        if ($exists) {
-            return;
+        if ($existingMap) {
+            $post = Post::withoutGlobalScopes()->find($existingMap->target_id);
+
+            if ($post) {
+                $this->ensureCurrentSlug($post);
+            }
+
+            return 'skipped';
         }
 
         $authorId = $this->resolveAuthorId((int)$wpPost->post_author);
@@ -61,6 +111,8 @@ class PostsImporter
             'updated_at' => $this->normalizeDate($wpPost->post_modified) ?? now(),
         ]);
 
+        $this->ensureCurrentSlug($post);
+
         WpMigrationMap::query()->create([
             'source_type' => 'wordpress_post',
             'source_id' => $wpPost->ID,
@@ -74,6 +126,22 @@ class PostsImporter
                 'guid' => $wpPost->guid,
             ],
         ]);
+
+        return 'created';
+    }
+
+    private function ensureCurrentSlug(Post $post): void
+    {
+        ContentSlug::query()->updateOrCreate(
+            [
+                'slug' => $post->slug,
+                'sluggable_type' => Post::class,
+                'sluggable_id' => $post->id,
+            ],
+            [
+                'is_current' => true,
+            ]
+        );
     }
 
     private function resolveAuthorId(int $wpAuthorId): int
