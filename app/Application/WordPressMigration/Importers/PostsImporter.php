@@ -102,7 +102,7 @@ class PostsImporter
             'title' => $this->cleanText($wpPost->post_title) ?: 'Untitled Post ' . $wpPost->ID,
             'slug' => $slug,
             'excerpt' => $wpPost->post_excerpt ?: null,
-            'body' => $wpPost->post_content ?: null,
+            'body' => $wpPost->post_content ?: '',
             'status' => $this->mapStatus($wpPost->post_status),
             'is_pinned' => false,
             'picture_id' => null,
@@ -229,12 +229,16 @@ class PostsImporter
         return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-    private function normalizeDate(?string $date): ?Carbon
+    private function normalizeDate(?string $date): Carbon
     {
-        if (!$date || str_starts_with($date, '0000-00-00')) {
-            return null;
-        }
+        try {
+            if (!$date || str_starts_with($date, '0000-00-00')) {
+                return Carbon::create(2000, 1, 1);
+            }
 
-        return Carbon::parse($date);
+            return Carbon::parse($date);
+        } catch (\Throwable $e) {
+            return Carbon::create(2000, 1, 1);
+        }
     }
 }
