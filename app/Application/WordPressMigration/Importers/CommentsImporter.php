@@ -26,8 +26,11 @@ class CommentsImporter
     {
         DB::connection('wordpress')
             ->table('comments')
-            ->where('comment_type', '')
-            ->orWhere('comment_type', 'comment')
+            ->where(function ($query) {
+                $query
+                    ->where('comment_type', '')
+                    ->orWhere('comment_type', 'comment');
+            })
             ->orderBy('comment_ID')
             ->chunkById(500, function ($wpComments) use ($onProgress) {
                 foreach ($wpComments as $wpComment) {
@@ -109,12 +112,12 @@ class CommentsImporter
                 return 'skipped';
             }
 
-            $comment->forceFill($payload)->save();
+            $this->saveCommentWithoutTimestamps($comment, $payload);
 
             return 'updated';
         }
 
-        $comment = Comment::query()->create($payload);
+        $comment = $this->saveCommentWithoutTimestamps(new Comment(), $payload);
 
         WpMigrationMap::query()->create([
             'source_type' => 'wordpress_comment',
@@ -137,12 +140,13 @@ class CommentsImporter
     {
         $status = $this->mapStatus((string)$wpComment->comment_approved);
         $createdAt = $this->normalizeDate($wpComment->comment_date);
+        $updatedAt = $this->normalizeDate($wpComment->comment_date);
 
         return [
             'commentable_type' => $commentable->getMorphClass(),
             'commentable_id' => $commentable->getKey(),
 
-            // مرحله دوم ست می‌شوند
+            // These are synced in the second pass.
             'root_id' => null,
             'parent_id' => null,
 
@@ -159,7 +163,7 @@ class CommentsImporter
             'dislikes_count' => 0,
             'score' => 0,
             'created_at' => $createdAt,
-            'updated_at' => $this->normalizeDate($wpComment->comment_date),
+            'updated_at' => $updatedAt,
         ];
     }
 
@@ -184,10 +188,10 @@ class CommentsImporter
                             continue;
                         }
 
-                        $comment->forceFill([
+                        $this->saveCommentWithoutTimestamps($comment, [
                             'parent_id' => $parent->id,
                             'root_id' => $this->resolveRootId($parent),
-                        ])->save();
+                        ]);
 
                         $this->relationsUpdated++;
                     } catch (Throwable $exception) {
@@ -199,6 +203,18 @@ class CommentsImporter
                     }
                 }
             }, 'comment_ID');
+    }
+
+    private function saveCommentWithoutTimestamps(Comment $comment, array $payload): Comment
+    {
+        $comment->timestamps = false;
+
+        $comment->forceFill($payload);
+        $comment->save();
+
+        $comment->timestamps = true;
+
+        return $comment;
     }
 
     private function resolveRootId(Comment $parent): int
