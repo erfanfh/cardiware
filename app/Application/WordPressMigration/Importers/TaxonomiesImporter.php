@@ -126,24 +126,37 @@ class TaxonomiesImporter
 
     private function importTerm(object $wpTerm, string $sourceType, TaxonomyKeyEnum $taxonomy): string
     {
-        $exists = WpMigrationMap::query()
+        $existingMap = WpMigrationMap::query()
             ->where('source_type', $sourceType)
             ->where('source_id', $wpTerm->term_taxonomy_id)
             ->where('target_type', TaxonomyTerm::class)
-            ->exists();
+            ->first();
 
-        if ($exists) {
+        if ($existingMap) {
+            $term = TaxonomyTerm::query()->find($existingMap->target_id);
+
+            if ($term) {
+                $term->update([
+                    'slug' => $this->normalizeSlug($term->slug),
+                    'path' => $this->normalizePath($term->path),
+                ]);
+
+                $this->createOrUpdateCurrentSlug($term->refresh());
+            }
+
             return 'skipped';
         }
 
         $slug = $this->makeUniqueSlug(
             taxonomy: $taxonomy,
-            slug: $wpTerm->slug ?: Str::slug($wpTerm->name)
+            slug: $this->normalizeSlug($wpTerm->slug)
+                ?: Str::slug($wpTerm->name)
+                    ?: 'term-' . $wpTerm->term_taxonomy_id
         );
 
         $term = TaxonomyTerm::query()->create([
             'taxonomy' => $taxonomy,
-            'title' => $wpTerm->name,
+            'title' => $this->cleanText($wpTerm->name) ?: 'Untitled Term ' . $wpTerm->term_taxonomy_id,
             'slug' => $slug,
             'path' => $slug,
             'parent_id' => null,
@@ -163,6 +176,7 @@ class TaxonomiesImporter
                 'parent' => $wpTerm->parent,
                 'count' => $wpTerm->count,
                 'original_slug' => $wpTerm->slug,
+                'normalized_slug' => $slug,
             ],
         ]);
 
@@ -244,6 +258,7 @@ class TaxonomiesImporter
         }
 
         $term->update([
+            'slug' => $this->normalizeSlug($term->slug),
             'parent_id' => $parentId,
             'path' => $this->buildCategoryPath($term, $parentId),
         ]);
@@ -267,7 +282,7 @@ class TaxonomiesImporter
         TaxonomyTermSlug::query()->updateOrCreate(
             [
                 'taxonomy_term_id' => $term->id,
-                'route_key' => $term->path,
+                'route_key' => $this->normalizePath($term->path),
             ],
             [
                 'taxonomy' => $term->taxonomy,
@@ -278,17 +293,19 @@ class TaxonomiesImporter
 
     private function buildCategoryPath(TaxonomyTerm $term, ?int $parentId): string
     {
+        $slug = $this->normalizeSlug($term->slug);
+
         if (!$parentId) {
-            return $term->slug;
+            return $slug;
         }
 
         $parent = TaxonomyTerm::query()->find($parentId);
 
         if (!$parent) {
-            return $term->slug;
+            return $slug;
         }
 
-        return trim($parent->path . '/' . $term->slug, '/');
+        return $this->normalizePath($parent->path . '/' . $slug);
     }
 
     private function findMap(string $sourceType, int $sourceId): ?WpMigrationMap
@@ -302,7 +319,7 @@ class TaxonomiesImporter
 
     private function makeUniqueSlug(TaxonomyKeyEnum $taxonomy, string $slug): string
     {
-        $base = $slug ?: 'term';
+        $base = $this->normalizeSlug($slug) ?: 'term';
         $slug = $base;
         $counter = 1;
 
@@ -317,6 +334,40 @@ class TaxonomiesImporter
         }
 
         return $slug;
+    }
+
+    private function normalizeSlug(?string $slug): string
+    {
+        $slug = trim((string)$slug);
+
+        if ($slug === '') {
+            return '';
+        }
+
+        return trim(rawurldecode($slug));
+    }
+
+    private function normalizePath(?string $path): string
+    {
+        $path = trim((string)$path, '/');
+
+        if ($path === '') {
+            return '';
+        }
+
+        return collect(explode('/', $path))
+            ->map(fn(string $segment) => $this->normalizeSlug($segment))
+            ->filter()
+            ->implode('/');
+    }
+
+    private function cleanText(?string $text): ?string
+    {
+        if (!$text) {
+            return null;
+        }
+
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     private function advanceProgress(?Closure $progressCallback): void

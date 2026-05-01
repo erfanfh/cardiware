@@ -85,6 +85,10 @@ class PagesImporter
             $page = Page::withoutGlobalScopes()->find($existingMap->target_id);
 
             if ($page) {
+                $page->forceFill([
+                    'slug' => $this->normalizeSlug($page->slug),
+                ])->save();
+
                 $this->syncSlugs($page, $wpPage);
             }
 
@@ -94,7 +98,9 @@ class PagesImporter
         $authorId = $this->resolveAuthorId((int)$wpPage->post_author);
 
         $slug = $this->makeUniqueSlug(
-            $wpPage->post_name ?: Str::slug($wpPage->post_title) ?: 'page-' . $wpPage->ID
+            $this->normalizeSlug($wpPage->post_name)
+                ?: Str::slug($this->cleanText($wpPage->post_title) ?? '')
+                ?: 'page-' . $wpPage->ID
         );
 
         $page = Page::withoutGlobalScopes()->create([
@@ -123,6 +129,7 @@ class PagesImporter
             'target_id' => $page->id,
             'meta' => [
                 'post_name' => $wpPage->post_name,
+                'normalized_post_name' => $slug,
                 'post_status' => $wpPage->post_status,
                 'post_type' => $wpPage->post_type,
                 'post_author' => $wpPage->post_author,
@@ -135,11 +142,9 @@ class PagesImporter
 
     private function syncSlugs(Page $page, object $wpPage): void
     {
-        $this->ensureSlug($page, $page->slug, true);
+        $this->ensureSlug($page, $this->normalizeSlug($page->slug), true);
 
-        $oldSlugs = $this->getOldSlugs((int)$wpPage->ID);
-
-        foreach ($oldSlugs as $oldSlug) {
+        foreach ($this->getOldSlugs((int)$wpPage->ID) as $oldSlug) {
             if ($oldSlug === $page->slug) {
                 continue;
             }
@@ -150,7 +155,7 @@ class PagesImporter
 
     private function ensureSlug(Page $page, string $slug, bool $isCurrent): void
     {
-        $slug = trim($slug);
+        $slug = $this->normalizeSlug($slug);
 
         if ($slug === '') {
             return;
@@ -175,8 +180,7 @@ class PagesImporter
             ->where('post_id', $wpPageId)
             ->where('meta_key', '_wp_old_slug')
             ->pluck('meta_value')
-            ->filter()
-            ->map(fn($slug) => trim((string)$slug))
+            ->map(fn($slug) => $this->normalizeSlug((string)$slug))
             ->filter()
             ->unique()
             ->values()
@@ -207,7 +211,7 @@ class PagesImporter
 
     private function makeUniqueSlug(string $slug): string
     {
-        $base = trim($slug) ?: 'page';
+        $base = $this->normalizeSlug($slug) ?: 'page';
         $slug = $base;
         $counter = 1;
 
@@ -221,6 +225,17 @@ class PagesImporter
         }
 
         return $slug;
+    }
+
+    private function normalizeSlug(?string $slug): string
+    {
+        $slug = trim((string)$slug);
+
+        if ($slug === '') {
+            return '';
+        }
+
+        return trim(rawurldecode($slug));
     }
 
     private function cleanText(?string $text): ?string

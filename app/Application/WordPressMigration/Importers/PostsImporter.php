@@ -85,6 +85,10 @@ class PostsImporter
             $post = Post::withoutGlobalScopes()->find($existingMap->target_id);
 
             if ($post) {
+                $post->forceFill([
+                    'slug' => $this->normalizeSlug($post->slug),
+                ])->save();
+
                 $this->syncSlugs($post, $wpPost);
             }
 
@@ -94,7 +98,9 @@ class PostsImporter
         $authorId = $this->resolveAuthorId((int)$wpPost->post_author);
 
         $slug = $this->makeUniqueSlug(
-            $wpPost->post_name ?: Str::slug($wpPost->post_title) ?: 'post-' . $wpPost->ID
+            $this->normalizeSlug($wpPost->post_name)
+                ?: Str::slug($this->cleanText($wpPost->post_title) ?? '')
+                ?: 'post-' . $wpPost->ID
         );
 
         $post = Post::withoutGlobalScopes()->create([
@@ -107,8 +113,8 @@ class PostsImporter
             'is_pinned' => false,
             'picture_id' => null,
             'published_at' => $this->normalizeDate($wpPost->post_date),
-            'created_at' => $this->normalizeDate($wpPost->post_date) ?? now(),
-            'updated_at' => $this->normalizeDate($wpPost->post_modified) ?? now(),
+            'created_at' => $this->normalizeDate($wpPost->post_date),
+            'updated_at' => $this->normalizeDate($wpPost->post_modified),
         ]);
 
         $this->syncSlugs($post, $wpPost);
@@ -120,6 +126,7 @@ class PostsImporter
             'target_id' => $post->id,
             'meta' => [
                 'post_name' => $wpPost->post_name,
+                'normalized_post_name' => $slug,
                 'post_status' => $wpPost->post_status,
                 'post_type' => $wpPost->post_type,
                 'post_author' => $wpPost->post_author,
@@ -132,11 +139,9 @@ class PostsImporter
 
     private function syncSlugs(Post $post, object $wpPost): void
     {
-        $this->ensureSlug($post, $post->slug, true);
+        $this->ensureSlug($post, $this->normalizeSlug($post->slug), true);
 
-        $oldSlugs = $this->getOldSlugs((int)$wpPost->ID);
-
-        foreach ($oldSlugs as $oldSlug) {
+        foreach ($this->getOldSlugs((int)$wpPost->ID) as $oldSlug) {
             if ($oldSlug === $post->slug) {
                 continue;
             }
@@ -147,7 +152,7 @@ class PostsImporter
 
     private function ensureSlug(Post $post, string $slug, bool $isCurrent): void
     {
-        $slug = trim($slug);
+        $slug = $this->normalizeSlug($slug);
 
         if ($slug === '') {
             return;
@@ -172,8 +177,7 @@ class PostsImporter
             ->where('post_id', $wpPostId)
             ->where('meta_key', '_wp_old_slug')
             ->pluck('meta_value')
-            ->filter()
-            ->map(fn($slug) => trim((string)$slug))
+            ->map(fn($slug) => $this->normalizeSlug((string)$slug))
             ->filter()
             ->unique()
             ->values()
@@ -204,7 +208,7 @@ class PostsImporter
 
     private function makeUniqueSlug(string $slug): string
     {
-        $base = $slug ?: 'post';
+        $base = $this->normalizeSlug($slug) ?: 'post';
         $slug = $base;
         $counter = 1;
 
@@ -218,6 +222,17 @@ class PostsImporter
         }
 
         return $slug;
+    }
+
+    private function normalizeSlug(?string $slug): string
+    {
+        $slug = trim((string)$slug);
+
+        if ($slug === '') {
+            return '';
+        }
+
+        return trim(rawurldecode($slug));
     }
 
     private function cleanText(?string $text): ?string
@@ -237,7 +252,7 @@ class PostsImporter
             }
 
             return Carbon::parse($date);
-        } catch (\Throwable $e) {
+        } catch (Throwable) {
             return Carbon::create(2000, 1, 1);
         }
     }
