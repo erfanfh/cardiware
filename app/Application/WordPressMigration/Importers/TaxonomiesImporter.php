@@ -4,39 +4,63 @@ namespace App\Application\WordPressMigration\Importers;
 
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Taxonomy\Models\TaxonomyTermSlug;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
+use Closure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class TaxonomiesImporter
 {
-    public function import(): void
+    public function count(): int
     {
-        $this->importCategories();
-        $this->syncCategoryParentsAndPaths();
-
-        $this->importTags();
+        return $this->countTaxonomy('category')
+            + $this->countTaxonomy('category')
+            + $this->countTaxonomy('post_tag');
     }
 
-    private function importCategories(): void
+    public function import(?Closure $progressCallback = null): void
+    {
+        $this->importCategories($progressCallback);
+        $this->syncCategoryParentsAndPaths($progressCallback);
+        $this->importTags($progressCallback);
+    }
+
+    private function countTaxonomy(string $wpTaxonomy): int
+    {
+        return DB::connection('wordpress')
+            ->table('terms')
+            ->join('term_taxonomy', 'terms.term_id', '=', 'term_taxonomy.term_id')
+            ->where('term_taxonomy.taxonomy', $wpTaxonomy)
+            ->count();
+    }
+
+    private function importCategories(?Closure $progressCallback = null): void
     {
         $this->importTaxonomy(
             wpTaxonomy: 'category',
             sourceType: 'wordpress_category',
-            taxonomy: TaxonomyKeyEnum::POST_CATEGORY
+            taxonomy: TaxonomyKeyEnum::POST_CATEGORY,
+            progressCallback: $progressCallback
         );
     }
 
-    private function importTags(): void
+    private function importTags(?Closure $progressCallback = null): void
     {
         $this->importTaxonomy(
             wpTaxonomy: 'post_tag',
             sourceType: 'wordpress_tag',
-            taxonomy: TaxonomyKeyEnum::POST_TAG
+            taxonomy: TaxonomyKeyEnum::POST_TAG,
+            progressCallback: $progressCallback
         );
     }
 
-    private function importTaxonomy(string $wpTaxonomy, string $sourceType, TaxonomyKeyEnum $taxonomy): void
+    private function importTaxonomy(
+        string          $wpTaxonomy,
+        string          $sourceType,
+        TaxonomyKeyEnum $taxonomy,
+        ?Closure        $progressCallback = null
+    ): void
     {
         DB::connection('wordpress')
             ->table('terms')
@@ -52,9 +76,13 @@ class TaxonomiesImporter
                 'term_taxonomy.count',
             ])
             ->orderBy('terms.term_id')
-            ->chunk(500, function ($terms) use ($sourceType, $taxonomy) {
+            ->chunk(500, function ($terms) use ($sourceType, $taxonomy, $progressCallback) {
                 foreach ($terms as $wpTerm) {
                     $this->importTerm($wpTerm, $sourceType, $taxonomy);
+
+                    if ($progressCallback) {
+                        $progressCallback();
+                    }
                 }
             });
     }
@@ -80,14 +108,12 @@ class TaxonomiesImporter
             'taxonomy' => $taxonomy,
             'title' => $wpTerm->name,
             'slug' => $slug,
-
-            // برای tag همین slug کافیه.
-            // برای categoryهای parent دار بعداً sync میشه.
             'path' => $slug,
-
             'parent_id' => null,
             'description' => $wpTerm->description ?: null,
         ]);
+
+        $this->createOrUpdateCurrentSlug($term);
 
         WpMigrationMap::query()->create([
             'source_type' => $sourceType,
@@ -104,7 +130,7 @@ class TaxonomiesImporter
         ]);
     }
 
-    private function syncCategoryParentsAndPaths(): void
+    private function syncCategoryParentsAndPaths(?Closure $progressCallback = null): void
     {
         $categories = DB::connection('wordpress')
             ->table('terms')
@@ -123,12 +149,14 @@ class TaxonomiesImporter
             $childMap = $this->findMap('wordpress_category', $wpCategory->term_taxonomy_id);
 
             if (!$childMap) {
+                $this->advanceProgress($progressCallback);
                 continue;
             }
 
             $term = TaxonomyTerm::query()->find($childMap->target_id);
 
             if (!$term) {
+                $this->advanceProgress($progressCallback);
                 continue;
             }
 
@@ -154,7 +182,34 @@ class TaxonomiesImporter
                 'parent_id' => $parentId,
                 'path' => $this->buildCategoryPath($term, $parentId),
             ]);
+
+            $term->refresh();
+
+            $this->createOrUpdateCurrentSlug($term);
+
+            $this->advanceProgress($progressCallback);
         }
+    }
+
+    private function createOrUpdateCurrentSlug(TaxonomyTerm $term): void
+    {
+        TaxonomyTermSlug::query()
+            ->where('taxonomy_term_id', $term->id)
+            ->where('is_current', true)
+            ->update([
+                'is_current' => false,
+            ]);
+
+        TaxonomyTermSlug::query()->updateOrCreate(
+            [
+                'taxonomy_term_id' => $term->id,
+                'route_key' => $term->path,
+            ],
+            [
+                'taxonomy' => $term->taxonomy,
+                'is_current' => true,
+            ]
+        );
     }
 
     private function buildCategoryPath(TaxonomyTerm $term, ?int $parentId): string
@@ -198,5 +253,12 @@ class TaxonomiesImporter
         }
 
         return $slug;
+    }
+
+    private function advanceProgress(?Closure $progressCallback): void
+    {
+        if ($progressCallback) {
+            $progressCallback();
+        }
     }
 }
