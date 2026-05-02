@@ -91,7 +91,7 @@ class PostsImporter
                     'slug' => $this->normalizeSlug($post->slug),
                     'body' => $this->appendJwPlayerVideoToContent(
                         (int)$wpPost->ID,
-                        (string)$post->body
+                        $this->normalizeWordPressContent((string)($wpPost->post_content ?: ''))
                     ),
                 ])->save();
 
@@ -111,7 +111,7 @@ class PostsImporter
 
         $body = $this->appendJwPlayerVideoToContent(
             (int)$wpPost->ID,
-            (string)($wpPost->post_content ?: '')
+            $this->normalizeWordPressContent((string)($wpPost->post_content ?: ''))
         );
 
         $post = Post::withoutGlobalScopes()->create([
@@ -328,5 +328,49 @@ HTML;
         } catch (Throwable) {
             return Carbon::create(2000, 1, 1);
         }
+    }
+
+    private function normalizeWordPressContent(string $content): string
+    {
+        $content = trim($content);
+
+        if ($content === '') {
+            return '';
+        }
+
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+        // اگر محتوا از قبل تگ‌های ساختاری HTML دارد، زیاد دستکاری‌اش نکن
+        if ($this->containsBlockHtml($content)) {
+            return trim($content);
+        }
+
+        // تبدیل چند خط خالی به جداکننده پاراگراف
+        $paragraphs = preg_split("/\n\s*\n/", $content);
+
+        $paragraphs = array_map(function (string $paragraph): string {
+            $paragraph = trim($paragraph);
+
+            if ($paragraph === '') {
+                return '';
+            }
+
+            // خط‌های داخل یک پاراگراف تبدیل به br شوند
+            $paragraph = preg_replace("/\n+/", "<br>\n", $paragraph);
+
+            return '<p>' . $paragraph . '</p>';
+        }, $paragraphs);
+
+        return collect($paragraphs)
+            ->filter()
+            ->implode("\n\n");
+    }
+
+    private function containsBlockHtml(string $content): bool
+    {
+        return preg_match(
+                '/<(p|div|h[1-6]|ul|ol|li|table|blockquote|figure|img|video|iframe|pre|code|section|article|br)\b/i',
+                $content
+            ) === 1;
     }
 }
