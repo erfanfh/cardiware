@@ -34,3 +34,24 @@ document.addEventListener('alpine:init', () => {
         }
     }))
 })
+
+document.addEventListener('DOMContentLoaded', () => {
+    const toggleSiblings = (titleSelector, contentSelector) => {
+        document.querySelectorAll(titleSelector).forEach((title) => {
+            title.addEventListener('click', function () {
+                [...this.parentElement.children]
+                    .filter((element) => element.matches(contentSelector))
+                    .forEach((content) => {
+                        content.hidden = !content.hidden;
+                    });
+            });
+        });
+    };
+
+    document.querySelectorAll('.properties_dl_box_content').forEach((content) => {
+        content.hidden = true;
+    });
+
+    toggleSiblings('.sh313_toggle_box_title', '.sh313_toggle_box_content');
+    toggleSiblings('.properties_dl_box_title', '.properties_dl_box_content');
+});
