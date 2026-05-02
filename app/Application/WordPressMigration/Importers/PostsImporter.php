@@ -2,10 +2,13 @@
 
 namespace App\Application\WordPressMigration\Importers;
 
+use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\ContentSlug;
 use App\Domain\Content\Models\Post;
+use App\Domain\Content\Models\PostMedia;
 use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\WordPressMigration\Models\WpMigrationMap;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +23,11 @@ class PostsImporter
     private int $failed = 0;
 
     private const JWPPP_VIDEO_URL_META_KEY = '_jwppp-video-url-1';
+
+    /**
+     * Change this if your attachments migration map uses another source_type.
+     */
+    private const WP_ATTACHMENT_SOURCE_TYPE = 'wordpress_attachment';
 
     public function import(?callable $onProgress = null): void
     {
@@ -47,6 +55,7 @@ class PostsImporter
                         logger()->error('WordPress post import failed', [
                             'wordpress_post_id' => $wpPost->ID,
                             'message' => $exception->getMessage(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -87,14 +96,19 @@ class PostsImporter
             $post = Post::withoutGlobalScopes()->find($existingMap->target_id);
 
             if ($post) {
+                $galleryExtraction = $this->extractGalleryShortcodes(
+                    (string)($wpPost->post_content ?: '')
+                );
+
                 $post->forceFill([
                     'slug' => $this->normalizeSlug($post->slug),
                     'body' => $this->appendJwPlayerVideoToContent(
                         (int)$wpPost->ID,
-                        $this->normalizeWordPressContent((string)($wpPost->post_content ?: ''))
+                        $this->normalizeWordPressContent($galleryExtraction['content'])
                     ),
                 ])->save();
 
+                $this->syncImageGallery($post, $galleryExtraction['attachment_ids']);
                 $this->syncSlugs($post, $wpPost);
             }
 
@@ -109,9 +123,13 @@ class PostsImporter
                 ?: 'post-' . $wpPost->ID
         );
 
+        $galleryExtraction = $this->extractGalleryShortcodes(
+            (string)($wpPost->post_content ?: '')
+        );
+
         $body = $this->appendJwPlayerVideoToContent(
             (int)$wpPost->ID,
-            $this->normalizeWordPressContent((string)($wpPost->post_content ?: ''))
+            $this->normalizeWordPressContent($galleryExtraction['content'])
         );
 
         $post = Post::withoutGlobalScopes()->create([
@@ -128,6 +146,7 @@ class PostsImporter
             'updated_at' => $this->normalizeDate($wpPost->post_modified),
         ]);
 
+        $this->syncImageGallery($post, $galleryExtraction['attachment_ids']);
         $this->syncSlugs($post, $wpPost);
 
         WpMigrationMap::query()->create([
@@ -146,6 +165,121 @@ class PostsImporter
         ]);
 
         return 'created';
+    }
+
+    private function extractGalleryShortcodes(string $content): array
+    {
+        $attachmentIds = [];
+
+        $content = preg_replace_callback(
+            '/\[gallery\b([^\]]*)\]/i',
+            function (array $matches) use (&$attachmentIds) {
+                $attributes = $this->parseShortcodeAttributes($matches[1] ?? '');
+
+                if (!empty($attributes['ids'])) {
+                    $ids = collect(explode(',', $attributes['ids']))
+                        ->map(fn($id) => (int)trim($id))
+                        ->filter()
+                        ->values()
+                        ->all();
+
+                    $attachmentIds = array_merge($attachmentIds, $ids);
+                }
+
+                return '';
+            },
+            $content
+        );
+
+        return [
+            'content' => trim((string)$content),
+            'attachment_ids' => collect($attachmentIds)->unique()->values()->all(),
+        ];
+    }
+
+    private function parseShortcodeAttributes(string $text): array
+    {
+        $attributes = [];
+
+        preg_match_all('/(\w+)\s*=\s*"([^"]*)"/', $text, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            $attributes[$match[1]] = $match[2];
+        }
+
+        preg_match_all("/(\w+)\s*=\s*'([^']*)'/", $text, $singleQuoteMatches, PREG_SET_ORDER);
+
+        foreach ($singleQuoteMatches as $match) {
+            $attributes[$match[1]] = $match[2];
+        }
+
+        return $attributes;
+    }
+
+    private function syncImageGallery(Post $post, array $wpAttachmentIds): void
+    {
+        $galleryItems = $this->resolveGalleryItemsFromWpAttachments($wpAttachmentIds);
+
+        PostMedia::query()
+            ->where('post_id', $post->id)
+            ->where('collection', PostMediaCollectionEnum::IMAGE_GALLERY)
+            ->delete();
+
+        foreach ($galleryItems as $index => $galleryItem) {
+            PostMedia::query()->create([
+                'post_id' => $post->id,
+                'media_file_id' => $galleryItem['media_file_id'],
+                'collection' => PostMediaCollectionEnum::IMAGE_GALLERY,
+                'sort_order' => $index + 1,
+                'title' => $galleryItem['title'],
+                'meta' => [
+                    'source' => 'wordpress_gallery_shortcode',
+                    'wordpress_attachment_id' => $galleryItem['wordpress_attachment_id'],
+                ],
+            ]);
+        }
+    }
+
+    private function resolveGalleryItemsFromWpAttachments(array $wpAttachmentIds): array
+    {
+        if (empty($wpAttachmentIds)) {
+            return [];
+        }
+
+        $maps = WpMigrationMap::query()
+            ->where('source_type', self::WP_ATTACHMENT_SOURCE_TYPE)
+            ->where('target_type', MediaFile::class)
+            ->whereIn('source_id', $wpAttachmentIds)
+            ->get()
+            ->keyBy('source_id');
+
+        $attachmentTitles = DB::connection('wordpress')
+            ->table('posts')
+            ->where('post_type', 'attachment')
+            ->whereIn('ID', $wpAttachmentIds)
+            ->pluck('post_title', 'ID');
+
+        return collect($wpAttachmentIds)
+            ->map(function (int $wpAttachmentId) use ($maps, $attachmentTitles) {
+                $map = $maps->get($wpAttachmentId);
+
+                if (!$map) {
+                    logger()->warning('WordPress gallery attachment map not found', [
+                        'wordpress_attachment_id' => $wpAttachmentId,
+                    ]);
+
+                    return null;
+                }
+
+                return [
+                    'wordpress_attachment_id' => $wpAttachmentId,
+                    'media_file_id' => $map->target_id,
+                    'title' => $this->cleanText($attachmentTitles->get($wpAttachmentId)),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
     }
 
     private function appendJwPlayerVideoToContent(int $wpPostId, string $content): string
@@ -340,7 +474,6 @@ HTML;
 
         $content = str_replace(["\r\n", "\r"], "\n", $content);
 
-        // حذف read more وردپرس
         $content = str_replace('<!--more-->', '', $content);
 
         return $this->wpAutop($content);
@@ -352,14 +485,10 @@ HTML;
 
         $allBlocks = '(?:table|thead|tbody|tfoot|caption|col|colgroup|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|form|map|area|blockquote|address|style|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|summary)';
 
-        // فاصله دادن به تگ‌های block
         $content = preg_replace('!(<' . $allBlocks . '[\s/>])!i', "\n\n$1", $content);
         $content = preg_replace('!(</' . $allBlocks . '>)!i', "$1\n\n", $content);
-
-        // hr self closing
         $content = preg_replace('!(<hr\s*/?>)!i', "\n\n$1\n\n", $content);
 
-        // چند خط خالی را یکی کن
         $content = preg_replace("/\n\n+/", "\n\n", $content);
 
         $paragraphs = preg_split('/\n\s*\n/', trim($content));
