@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Identity;
 
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Application\Identity\Listings\UserListing;
+use App\Application\Shared\Cache\Invalidators\UserAccessCacheInvalidator;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
@@ -167,6 +168,8 @@ class UserController extends Controller
 
         $user->update($data);
 
+        app(UserAccessCacheInvalidator::class)->flushForUser($user);
+
         return redirect()->route('admin.users.index')
             ->with('success', "کاربر '{$user->display_name}' با موفقیت به‌روزرسانی شد.")
             ->with('success_title', 'به‌روزرسانی موفق');
@@ -194,6 +197,8 @@ class UserController extends Controller
     public function destroy(User $user): RedirectResponse
     {
         Gate::authorize('user.delete');
+
+        app(UserAccessCacheInvalidator::class)->flushForUser($user);
 
         $user->delete();
 
