@@ -21,8 +21,7 @@ class TaxonomiesImporter
 
     public function count(): int
     {
-        return $this->countTaxonomy('category')
-            + $this->countTaxonomy('category')
+        return ($this->countTaxonomy('category') * 2)
             + $this->countTaxonomy('post_tag');
     }
 
@@ -115,7 +114,12 @@ class TaxonomiesImporter
                             'source_type' => $sourceType,
                             'wordpress_term_id' => $wpTerm->term_id,
                             'wordpress_term_taxonomy_id' => $wpTerm->term_taxonomy_id,
+                            'name' => $wpTerm->name ?? null,
+                            'slug' => $wpTerm->slug ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -135,14 +139,27 @@ class TaxonomiesImporter
         if ($existingMap) {
             $term = TaxonomyTerm::query()->find($existingMap->target_id);
 
-            if ($term) {
-                $term->update([
-                    'slug' => $this->normalizeSlug($term->slug),
-                    'path' => $this->normalizePath($term->path),
+            if (!$term) {
+                logger()->warning('WordPress taxonomy term skipped because target taxonomy term was not found', [
+                    'source_type' => $sourceType,
+                    'wordpress_term_id' => $wpTerm->term_id,
+                    'wordpress_term_taxonomy_id' => $wpTerm->term_taxonomy_id,
+                    'target_taxonomy_term_id' => $existingMap->target_id,
+                    'name' => $wpTerm->name ?? null,
+                    'slug' => $wpTerm->slug ?? null,
                 ]);
 
-                $this->createOrUpdateCurrentSlug($term->refresh());
+                return 'skipped';
             }
+
+            $term->update([
+                'title' => $this->cleanText($wpTerm->name),
+                'description' => $wpTerm->description ?: null,
+                'slug' => $this->normalizeSlug($term->slug),
+                'path' => $this->normalizePath($term->path),
+            ]);
+
+            $this->createOrUpdateCurrentSlug($term->refresh());
 
             return 'skipped';
         }
@@ -217,7 +234,11 @@ class TaxonomiesImporter
                 logger()->error('WordPress category parent/path sync failed', [
                     'wordpress_term_id' => $wpCategory->term_id,
                     'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                    'parent' => $wpCategory->parent ?? null,
                     'message' => $exception->getMessage(),
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
                 ]);
             }
 
@@ -230,12 +251,24 @@ class TaxonomiesImporter
         $childMap = $this->findMap('wordpress_category', $wpCategory->term_taxonomy_id);
 
         if (!$childMap) {
+            logger()->warning('WordPress category parent/path sync skipped because category map was not found', [
+                'wordpress_term_id' => $wpCategory->term_id,
+                'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                'parent' => $wpCategory->parent,
+            ]);
+
             return 'skipped';
         }
 
         $term = TaxonomyTerm::query()->find($childMap->target_id);
 
         if (!$term) {
+            logger()->warning('WordPress category parent/path sync skipped because target taxonomy term was not found', [
+                'wordpress_term_id' => $wpCategory->term_id,
+                'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                'target_taxonomy_term_id' => $childMap->target_id,
+            ]);
+
             return 'skipped';
         }
 
@@ -248,11 +281,22 @@ class TaxonomiesImporter
                 ->where('term_id', $wpCategory->parent)
                 ->first();
 
-            if ($parentWpTaxonomy) {
+            if (!$parentWpTaxonomy) {
+                logger()->warning('WordPress category parent taxonomy was not found', [
+                    'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                    'wordpress_parent_term_id' => $wpCategory->parent,
+                ]);
+            } else {
                 $parentMap = $this->findMap('wordpress_category', $parentWpTaxonomy->term_taxonomy_id);
 
                 if ($parentMap) {
                     $parentId = $parentMap->target_id;
+                } else {
+                    logger()->warning('WordPress category parent map was not found', [
+                        'wordpress_term_taxonomy_id' => $wpCategory->term_taxonomy_id,
+                        'wordpress_parent_term_id' => $wpCategory->parent,
+                        'wordpress_parent_term_taxonomy_id' => $parentWpTaxonomy->term_taxonomy_id,
+                    ]);
                 }
             }
         }

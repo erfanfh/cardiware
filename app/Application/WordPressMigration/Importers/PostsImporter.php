@@ -54,7 +54,11 @@ class PostsImporter
 
                         logger()->error('WordPress post import failed', [
                             'wordpress_post_id' => $wpPost->ID,
+                            'post_title' => $wpPost->post_title ?? null,
+                            'post_name' => $wpPost->post_name ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
                             'trace' => $exception->getTraceAsString(),
                         ]);
                     }

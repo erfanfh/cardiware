@@ -59,7 +59,12 @@ class YoastSeoMetaImporter
                         logger()->error('Yoast SEO meta import failed', [
                             'wordpress_post_id' => $wpPost->ID,
                             'post_type' => $wpPost->post_type,
+                            'post_title' => $wpPost->post_title ?? null,
+                            'post_name' => $wpPost->post_name ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -94,6 +99,13 @@ class YoastSeoMetaImporter
         $seoable = $this->resolveSeoable($wpPost);
 
         if (!$seoable) {
+            logger()->warning('Yoast SEO meta skipped because target seoable map/model was not found', [
+                'wordpress_post_id' => $wpPost->ID,
+                'post_type' => $wpPost->post_type,
+                'post_title' => $wpPost->post_title ?? null,
+                'post_name' => $wpPost->post_name ?? null,
+            ]);
+
             return 'missing_map';
         }
 
@@ -101,12 +113,24 @@ class YoastSeoMetaImporter
         $indexable = $this->getYoastIndexable((int)$wpPost->ID, (string)$wpPost->post_type);
 
         if ($meta === [] && !$indexable) {
+            logger()->warning('Yoast SEO meta skipped because no Yoast meta or indexable data was found', [
+                'wordpress_post_id' => $wpPost->ID,
+                'post_type' => $wpPost->post_type,
+            ]);
+
             return 'skipped';
         }
 
         $payload = $this->buildSeoPayload($meta, $indexable);
 
         if ($this->isEmptyPayload($payload)) {
+            logger()->warning('Yoast SEO meta skipped because payload is empty', [
+                'wordpress_post_id' => $wpPost->ID,
+                'post_type' => $wpPost->post_type,
+                'has_meta' => $meta !== [],
+                'has_indexable' => $indexable !== null,
+            ]);
+
             return 'skipped';
         }
 

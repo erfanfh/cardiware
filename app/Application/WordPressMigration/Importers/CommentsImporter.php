@@ -51,7 +51,15 @@ class CommentsImporter
                         logger()->error('WordPress comment import failed', [
                             'wordpress_comment_id' => $wpComment->comment_ID,
                             'wordpress_post_id' => $wpComment->comment_post_ID,
+                            'wordpress_parent_comment_id' => $wpComment->comment_parent ?? null,
+                            'wordpress_user_id' => $wpComment->user_id ?? null,
+                            'comment_author' => $wpComment->comment_author ?? null,
+                            'comment_author_email' => $wpComment->comment_author_email ?? null,
+                            'comment_approved' => $wpComment->comment_approved ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -94,6 +102,14 @@ class CommentsImporter
         $commentable = $this->resolveCommentable((int)$wpComment->comment_post_ID);
 
         if (!$commentable) {
+            logger()->warning('WordPress comment skipped because post map was not found', [
+                'wordpress_comment_id' => $wpComment->comment_ID,
+                'wordpress_post_id' => $wpComment->comment_post_ID,
+                'wordpress_parent_comment_id' => $wpComment->comment_parent ?? null,
+                'comment_author' => $wpComment->comment_author ?? null,
+                'comment_approved' => $wpComment->comment_approved ?? null,
+            ]);
+
             return 'missing_post_map';
         }
 
@@ -109,6 +125,11 @@ class CommentsImporter
             $comment = Comment::query()->find($existingMap->target_id);
 
             if (!$comment) {
+                logger()->warning('WordPress comment skipped because target Laravel comment was not found', [
+                    'wordpress_comment_id' => $wpComment->comment_ID,
+                    'target_comment_id' => $existingMap->target_id,
+                ]);
+
                 return 'skipped';
             }
 
@@ -199,6 +220,9 @@ class CommentsImporter
                             'wordpress_comment_id' => $wpComment->comment_ID,
                             'wordpress_parent_comment_id' => $wpComment->comment_parent,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
                 }

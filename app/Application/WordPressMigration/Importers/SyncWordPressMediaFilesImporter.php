@@ -48,7 +48,13 @@ class SyncWordPressMediaFilesImporter
 
                         logger()->error('WordPress media sync failed', [
                             'wordpress_attachment_id' => $wpAttachment->ID,
+                            'post_title' => $wpAttachment->post_title ?? null,
+                            'post_mime_type' => $wpAttachment->post_mime_type ?? null,
+                            'guid' => $wpAttachment->guid ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -95,6 +101,13 @@ class SyncWordPressMediaFilesImporter
 
         if (!$map) {
             $this->missingMap++;
+
+            logger()->warning('WordPress media sync skipped because attachment map was not found', [
+                'wordpress_attachment_id' => $wpAttachment->ID,
+                'post_title' => $wpAttachment->post_title ?? null,
+                'guid' => $wpAttachment->guid ?? null,
+            ]);
+
             return;
         }
 
@@ -102,6 +115,12 @@ class SyncWordPressMediaFilesImporter
 
         if (!$mediaFile) {
             $this->missingMap++;
+
+            logger()->warning('WordPress media sync skipped because target media file was not found', [
+                'wordpress_attachment_id' => $wpAttachment->ID,
+                'target_media_file_id' => $map->target_id,
+            ]);
+
             return;
         }
 
@@ -109,6 +128,13 @@ class SyncWordPressMediaFilesImporter
 
         if (!$attachedFile) {
             $this->missingAttachedFile++;
+
+            logger()->warning('WordPress media sync skipped because attached file meta is missing', [
+                'wordpress_attachment_id' => $wpAttachment->ID,
+                'post_title' => $wpAttachment->post_title ?? null,
+                'guid' => $wpAttachment->guid ?? null,
+            ]);
+
             return;
         }
 
@@ -208,6 +234,13 @@ class SyncWordPressMediaFilesImporter
 
         if (!$format) {
             $this->unsupportedFormat++;
+
+            logger()->warning('WordPress media variant skipped because file format is unsupported', [
+                'media_file_id' => $mediaFile->id,
+                'variant' => $variant->value,
+                'path' => $path,
+            ]);
+
             return null;
         }
 
@@ -218,6 +251,14 @@ class SyncWordPressMediaFilesImporter
 
         if ($existingByPath && (int)$existingByPath->media_file_id !== (int)$mediaFile->id) {
             $this->skipped++;
+
+            logger()->warning('WordPress media variant skipped because path belongs to another media file', [
+                'media_file_id' => $mediaFile->id,
+                'existing_media_file_id' => $existingByPath->media_file_id,
+                'variant' => $variant->value,
+                'path' => $path,
+            ]);
+
             return null;
         }
 
@@ -289,6 +330,7 @@ class SyncWordPressMediaFilesImporter
             $this->downloadFailed++;
 
             logger()->warning('WordPress media file download failed', [
+                'path' => $path,
                 'url' => $url,
                 'status' => $response->status(),
             ]);

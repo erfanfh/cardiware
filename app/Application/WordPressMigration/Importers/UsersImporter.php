@@ -49,9 +49,12 @@ class UsersImporter
 
                         logger()->error('WordPress user import failed', [
                             'wordpress_user_id' => $wpUser->ID,
-                            'user_login' => $wpUser->user_login,
-                            'user_email' => $wpUser->user_email,
+                            'user_login' => $wpUser->user_login ?? null,
+                            'user_email' => $wpUser->user_email ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 

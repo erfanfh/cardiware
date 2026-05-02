@@ -46,6 +46,9 @@ class FeaturedImagesImporter
                             'wordpress_post_type' => $row->post_type,
                             'thumbnail_id' => $row->meta_value,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -102,6 +105,13 @@ class FeaturedImagesImporter
 
         if (!$contentMap) {
             $this->skipped++;
+
+            logger()->warning('WordPress featured image skipped because content map was not found', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'thumbnail_id' => $row->meta_value,
+            ]);
+
             return;
         }
 
@@ -109,6 +119,13 @@ class FeaturedImagesImporter
 
         if ($attachmentId <= 0) {
             $this->skipped++;
+
+            logger()->warning('WordPress featured image skipped because thumbnail id is invalid', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'thumbnail_id' => $row->meta_value,
+            ]);
+
             return;
         }
 
@@ -120,17 +137,38 @@ class FeaturedImagesImporter
 
         if (!$attachmentMap) {
             $this->skipped++;
+
+            logger()->warning('WordPress featured image skipped because attachment map was not found', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'thumbnail_id' => $attachmentId,
+            ]);
+
             return;
         }
 
         /** @var class-string<Model> $targetType */
         $targetType = $config['target_type'];
 
-        $targetType::withoutGlobalScopes()
+        $updated = $targetType::withoutGlobalScopes()
             ->whereKey($contentMap->target_id)
             ->update([
                 'picture_id' => $attachmentMap->target_id,
             ]);
+
+        if ($updated === 0) {
+            $this->skipped++;
+
+            logger()->warning('WordPress featured image skipped because target content was not found', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'target_id' => $contentMap->target_id,
+                'thumbnail_id' => $attachmentId,
+                'media_file_id' => $attachmentMap->target_id,
+            ]);
+
+            return;
+        }
 
         $this->updated++;
     }

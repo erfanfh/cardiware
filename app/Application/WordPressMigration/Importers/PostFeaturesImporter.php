@@ -53,6 +53,9 @@ class PostFeaturesImporter
                         logger()->error('WordPress post features import failed', [
                             'wordpress_post_id' => $row->post_id,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -103,12 +106,21 @@ class PostFeaturesImporter
             ->first();
 
         if (!$map) {
+            logger()->warning('WordPress post features skipped because post map was not found', [
+                'wordpress_post_id' => $row->post_id,
+            ]);
+
             return 'skipped';
         }
 
         $post = Post::withoutGlobalScopes()->find($map->target_id);
 
         if (!$post) {
+            logger()->warning('WordPress post features skipped because target Laravel post was not found', [
+                'wordpress_post_id' => $row->post_id,
+                'target_post_id' => $map->target_id,
+            ]);
+
             return 'skipped';
         }
 
@@ -163,6 +175,12 @@ class PostFeaturesImporter
         }
 
         $badge = FrontBadgeOptionEnum::tryFrom($value);
+
+        if (!$badge) {
+            logger()->warning('WordPress post feature front badge value is unsupported', [
+                'value' => $value,
+            ]);
+        }
 
         return $badge?->value;
     }

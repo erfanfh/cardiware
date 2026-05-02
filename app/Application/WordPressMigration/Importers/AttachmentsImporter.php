@@ -42,7 +42,13 @@ class AttachmentsImporter
 
                         logger()->error('WordPress attachment import failed', [
                             'wordpress_attachment_id' => $wpAttachment->ID,
+                            'post_title' => $wpAttachment->post_title ?? null,
+                            'post_mime_type' => $wpAttachment->post_mime_type ?? null,
+                            'guid' => $wpAttachment->guid ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -90,6 +96,14 @@ class AttachmentsImporter
 
         if (!$attachedFile) {
             $this->skipped++;
+
+            logger()->warning('WordPress attachment skipped because attached file meta is missing', [
+                'wordpress_attachment_id' => $wpAttachment->ID,
+                'post_title' => $wpAttachment->post_title ?? null,
+                'post_mime_type' => $wpAttachment->post_mime_type ?? null,
+                'guid' => $wpAttachment->guid ?? null,
+            ]);
+
             return;
         }
 

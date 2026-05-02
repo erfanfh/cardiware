@@ -44,7 +44,14 @@ class PagesImporter
 
                         logger()->error('WordPress page import failed', [
                             'wordpress_page_id' => $wpPage->ID,
+                            'post_title' => $wpPage->post_title ?? null,
+                            'post_name' => $wpPage->post_name ?? null,
+                            'post_status' => $wpPage->post_status ?? null,
+                            'post_author' => $wpPage->post_author ?? null,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -84,13 +91,23 @@ class PagesImporter
         if ($existingMap) {
             $page = Page::withoutGlobalScopes()->find($existingMap->target_id);
 
-            if ($page) {
-                $page->forceFill([
-                    'slug' => $this->normalizeSlug($page->slug),
-                ])->save();
+            if (!$page) {
+                logger()->warning('WordPress page skipped because target Laravel page was not found', [
+                    'wordpress_page_id' => $wpPage->ID,
+                    'target_page_id' => $existingMap->target_id,
+                    'post_title' => $wpPage->post_title ?? null,
+                    'post_name' => $wpPage->post_name ?? null,
+                ]);
 
-                $this->syncSlugs($page, $wpPage);
+                return 'skipped';
             }
+
+            $page->forceFill([
+                'slug' => $this->normalizeSlug($page->slug),
+                'body' => $this->normalizeWordPressContent((string)($wpPage->post_content ?: '')),
+            ])->save();
+
+            $this->syncSlugs($page, $wpPage);
 
             return 'skipped';
         }
@@ -108,7 +125,7 @@ class PagesImporter
             'title' => $this->cleanText($wpPage->post_title) ?: 'Untitled Page ' . $wpPage->ID,
             'slug' => $slug,
             'excerpt' => $wpPage->post_excerpt ?: null,
-            'body' => $wpPage->post_content ?: '',
+            'body' => $this->normalizeWordPressContent((string)($wpPage->post_content ?: '')),
             'status' => $this->mapStatus($wpPage->post_status),
             'picture_id' => null,
             'template' => null,
@@ -258,5 +275,65 @@ class PagesImporter
         } catch (Throwable) {
             return Carbon::create(2000, 1, 1);
         }
+    }
+
+    private function normalizeWordPressContent(string $content): string
+    {
+        $content = trim($content);
+
+        if ($content === '') {
+            return '';
+        }
+
+        $content = str_replace(["\r\n", "\r"], "\n", $content);
+
+        // حذف read more وردپرس
+        $content = str_replace('<!--more-->', '', $content);
+
+        return $this->wpAutop($content);
+    }
+
+    private function wpAutop(string $content): string
+    {
+        $content = $content . "\n";
+
+        $allBlocks = '(?:table|thead|tbody|tfoot|caption|col|colgroup|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|form|map|area|blockquote|address|style|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|summary)';
+
+        $content = preg_replace('!(<' . $allBlocks . '[\s/>])!i', "\n\n$1", $content);
+        $content = preg_replace('!(</' . $allBlocks . '>)!i', "$1\n\n", $content);
+
+        // hr self closing
+        $content = preg_replace('!(<hr\s*/?>)!i', "\n\n$1\n\n", $content);
+
+        // چند خط خالی را یکی کن
+        $content = preg_replace("/\n\n+/", "\n\n", $content);
+
+        $paragraphs = preg_split('/\n\s*\n/', trim($content));
+
+        $output = '';
+
+        foreach ($paragraphs as $paragraph) {
+            $paragraph = trim($paragraph);
+
+            if ($paragraph === '') {
+                continue;
+            }
+
+            if ($this->isBlockHtml($paragraph)) {
+                $output .= $paragraph . "\n\n";
+                continue;
+            }
+
+            $paragraph = preg_replace("/\n/", "<br>\n", $paragraph);
+
+            $output .= '<p>' . $paragraph . "</p>\n\n";
+        }
+
+        return trim($output);
+    }
+
+    private function isBlockHtml(string $content): bool
+    {
+        return preg_match('/^<(h[1-6]|hr|ul|ol|li|table|thead|tbody|tfoot|tr|td|th|div|blockquote|pre|figure|section|article|aside|header|footer|nav)\b[^>]*>/i', trim($content)) === 1;
     }
 }

@@ -49,6 +49,9 @@ class PostTaxonomiesImporter
                             'wordpress_term_taxonomy_id' => $relation->term_taxonomy_id,
                             'taxonomy' => $relation->taxonomy,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -87,6 +90,12 @@ class PostTaxonomiesImporter
             ->first();
 
         if (!$postMap) {
+            logger()->warning('WordPress post taxonomy relation skipped because post map was not found', [
+                'wordpress_object_id' => $relation->object_id,
+                'wordpress_term_taxonomy_id' => $relation->term_taxonomy_id,
+                'taxonomy' => $relation->taxonomy,
+            ]);
+
             return 'skipped';
         }
 
@@ -101,6 +110,13 @@ class PostTaxonomiesImporter
             ->first();
 
         if (!$termMap) {
+            logger()->warning('WordPress post taxonomy relation skipped because taxonomy term map was not found', [
+                'wordpress_object_id' => $relation->object_id,
+                'wordpress_term_taxonomy_id' => $relation->term_taxonomy_id,
+                'taxonomy' => $relation->taxonomy,
+                'expected_source_type' => $sourceType,
+            ]);
+
             return 'skipped';
         }
 

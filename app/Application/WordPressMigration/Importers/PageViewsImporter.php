@@ -48,6 +48,9 @@ class PageViewsImporter
                             'wordpress_post_type' => $row->post_type,
                             'meta_value' => $row->meta_value,
                             'message' => $exception->getMessage(),
+                            'file' => $exception->getFile(),
+                            'line' => $exception->getLine(),
+                            'trace' => $exception->getTraceAsString(),
                         ]);
                     }
 
@@ -101,6 +104,13 @@ class PageViewsImporter
 
         if ($count <= 0) {
             $this->skipped++;
+
+            logger()->warning('WordPress page view skipped because count is invalid or zero', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'meta_value' => $row->meta_value,
+            ]);
+
             return;
         }
 
@@ -112,6 +122,13 @@ class PageViewsImporter
 
         if (!$map) {
             $this->skipped++;
+
+            logger()->warning('WordPress page view skipped because content map was not found', [
+                'wordpress_post_id' => $row->post_id,
+                'wordpress_post_type' => $row->post_type,
+                'meta_value' => $row->meta_value,
+            ]);
+
             return;
         }
 
