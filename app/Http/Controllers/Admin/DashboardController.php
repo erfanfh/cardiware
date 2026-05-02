@@ -14,7 +14,6 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Morilog\Jalali\Jalalian;
 
 class DashboardController extends Controller
@@ -40,7 +39,7 @@ class DashboardController extends Controller
         ];
 
         $topYesterdayPosts = $this->getTopYesterdayPosts();
-        $recentComments = Comment::with(['user'])->limit(3)->get();
+        $recentComments = Comment::with(['user'])->latest()->limit(3)->get();
 
         return view('admin.dashboard', compact('stats', 'topYesterdayPosts', 'recentComments'));
     }
