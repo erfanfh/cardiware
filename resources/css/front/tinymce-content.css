@@ -22,9 +22,6 @@
 /* Links */
 .tinymce-content a {
     color: #f97316;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
 }
 
 .tinymce-content a:hover {
