@@ -369,6 +369,43 @@ HTML;
             return;
         }
 
+        if ($isCurrent) {
+            ContentSlug::query()
+                ->where('slug', $slug)
+                ->where(function ($query) use ($post) {
+                    $query
+                        ->where('sluggable_type', '!=', Post::class)
+                        ->orWhere('sluggable_id', '!=', $post->id);
+                })
+                ->delete();
+
+            ContentSlug::query()->updateOrCreate(
+                [
+                    'slug' => $slug,
+                    'sluggable_type' => Post::class,
+                    'sluggable_id' => $post->id,
+                ],
+                [
+                    'is_current' => true,
+                ]
+            );
+
+            return;
+        }
+
+        $slugAlreadyUsed = ContentSlug::query()
+            ->where('slug', $slug)
+            ->where(function ($query) use ($post) {
+                $query
+                    ->where('sluggable_type', '!=', Post::class)
+                    ->orWhere('sluggable_id', '!=', $post->id);
+            })
+            ->exists();
+
+        if ($slugAlreadyUsed) {
+            return;
+        }
+
         ContentSlug::query()->updateOrCreate(
             [
                 'slug' => $slug,
@@ -376,7 +413,7 @@ HTML;
                 'sluggable_id' => $post->id,
             ],
             [
-                'is_current' => $isCurrent,
+                'is_current' => false,
             ]
         );
     }
