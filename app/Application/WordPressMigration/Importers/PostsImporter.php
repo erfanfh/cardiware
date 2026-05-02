@@ -340,37 +340,54 @@ HTML;
 
         $content = str_replace(["\r\n", "\r"], "\n", $content);
 
-        // اگر محتوا از قبل تگ‌های ساختاری HTML دارد، زیاد دستکاری‌اش نکن
-        if ($this->containsBlockHtml($content)) {
-            return trim($content);
-        }
+        // حذف read more وردپرس
+        $content = str_replace('<!--more-->', '', $content);
 
-        // تبدیل چند خط خالی به جداکننده پاراگراف
-        $paragraphs = preg_split("/\n\s*\n/", $content);
+        return $this->wpAutop($content);
+    }
 
-        $paragraphs = array_map(function (string $paragraph): string {
+    private function wpAutop(string $content): string
+    {
+        $content = $content . "\n";
+
+        $allBlocks = '(?:table|thead|tbody|tfoot|caption|col|colgroup|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|form|map|area|blockquote|address|style|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|summary)';
+
+        // فاصله دادن به تگ‌های block
+        $content = preg_replace('!(<' . $allBlocks . '[\s/>])!i', "\n\n$1", $content);
+        $content = preg_replace('!(</' . $allBlocks . '>)!i', "$1\n\n", $content);
+
+        // hr self closing
+        $content = preg_replace('!(<hr\s*/?>)!i', "\n\n$1\n\n", $content);
+
+        // چند خط خالی را یکی کن
+        $content = preg_replace("/\n\n+/", "\n\n", $content);
+
+        $paragraphs = preg_split('/\n\s*\n/', trim($content));
+
+        $output = '';
+
+        foreach ($paragraphs as $paragraph) {
             $paragraph = trim($paragraph);
 
             if ($paragraph === '') {
-                return '';
+                continue;
             }
 
-            // خط‌های داخل یک پاراگراف تبدیل به br شوند
-            $paragraph = preg_replace("/\n+/", "<br>\n", $paragraph);
+            if ($this->isBlockHtml($paragraph)) {
+                $output .= $paragraph . "\n\n";
+                continue;
+            }
 
-            return '<p>' . $paragraph . '</p>';
-        }, $paragraphs);
+            $paragraph = preg_replace("/\n/", "<br>\n", $paragraph);
 
-        return collect($paragraphs)
-            ->filter()
-            ->implode("\n\n");
+            $output .= '<p>' . $paragraph . "</p>\n\n";
+        }
+
+        return trim($output);
     }
 
-    private function containsBlockHtml(string $content): bool
+    private function isBlockHtml(string $content): bool
     {
-        return preg_match(
-                '/<(p|div|h[1-6]|ul|ol|li|table|blockquote|figure|img|video|iframe|pre|code|section|article|br)\b/i',
-                $content
-            ) === 1;
+        return preg_match('/^<(h[1-6]|hr|ul|ol|li|table|thead|tbody|tfoot|tr|td|th|div|blockquote|pre|figure|section|article|aside|header|footer|nav)\b[^>]*>/i', trim($content)) === 1;
     }
 }
