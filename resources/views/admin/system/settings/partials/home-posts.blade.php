@@ -80,7 +80,7 @@
 @endphp
 
 <div class="space-y-6">
-    <x-admin.metabox title="پروژه ها" :collapsible="false" class="overflow-visible">
+    <x-admin.metabox title="نوشته های رایگان" :collapsible="false" class="overflow-visible">
         <div class="text-xs text-slate-500 mb-4">
             هر آیتم در باکس نوشته های رایگان یک تب می باشد.
         </div>
