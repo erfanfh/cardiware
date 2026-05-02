@@ -181,6 +181,6 @@
     text-align: left;
 }
 
-.tinymce-content *:nth-last-of-type(1) {
+.tinymce-content > *:last-child {
     margin-bottom: 0 !important;
 }
