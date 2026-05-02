@@ -20,16 +20,16 @@ class FindMatchingRedirectAction
 
         $version = Cache::rememberForever(
             CacheKey::seoRedirectsVersion(),
-            fn() => now()->timestamp
+            fn() => (string)now()->timestamp
         );
 
-        $cacheKey = CacheKey::seoRedirect($version . ':' . $normalizedPath);
+        $cacheKey = CacheKey::seoRedirect($version, $normalizedPath);
 
         $cached = Cache::rememberForever($cacheKey, function () use ($normalizedPath) {
             $redirect = Redirect::query()
                 ->where('is_active', true)
                 ->where('format', 'plain')
-                ->where('source_path', $normalizedPath)
+                ->where('source_path_hash', md5($normalizedPath))
                 ->first();
 
             return $redirect ?: false;

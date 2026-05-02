@@ -152,9 +152,9 @@ final class CacheKey
         return "taxonomy:slug:{$taxonomy}:{$routeKey}";
     }
 
-    public static function seoRedirect(string $path): string
+    public static function seoRedirect(string $version, string $path): string
     {
-        return 'seo:redirect:' . md5($path);
+        return 'seo:redirect:' . $version . ':' . md5($path);
     }
 
     public static function seoRedirectsVersion(): string

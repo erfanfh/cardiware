@@ -9,18 +9,22 @@ class Redirect extends Model
 {
     protected $fillable = [
         'source_path',
+        'source_path_hash',
         'target_url',
         'status_code',
         'format',
         'is_active',
-        'hits_count',
-        'last_used_at',
     ];
 
     protected $casts = [
         'status_code' => RedirectStatusCodeEnum::class,
         'is_active' => 'boolean',
-        'hits_count' => 'integer',
-        'last_used_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Redirect $redirect) {
+            $redirect->source_path_hash = md5($redirect->source_path);
+        });
+    }
 }
