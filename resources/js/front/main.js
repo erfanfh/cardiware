@@ -35,23 +35,53 @@ document.addEventListener('alpine:init', () => {
     }))
 })
 
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleSiblings = (titleSelector, contentSelector) => {
-        document.querySelectorAll(titleSelector).forEach((title) => {
-            title.addEventListener('click', function () {
-                [...this.parentElement.children]
-                    .filter((element) => element.matches(contentSelector))
-                    .forEach((content) => {
-                        content.hidden = !content.hidden;
-                    });
-            });
-        });
-    };
+document.addEventListener('DOMContentLoaded', function () {
+    function hideElement(element) {
+        element.style.display = 'none';
+    }
 
-    document.querySelectorAll('.properties_dl_box_content').forEach((content) => {
-        content.hidden = true;
+    function showElement(element) {
+        element.style.display = '';
+    }
+
+    function toggleElement(element) {
+        const currentDisplay = window.getComputedStyle(element).display;
+
+        if (currentDisplay === 'none') {
+            showElement(element);
+        } else {
+            hideElement(element);
+        }
+    }
+
+    function getSiblingsBySelector(element, selector) {
+        const parent = element.parentElement;
+
+        if (!parent) {
+            return [];
+        }
+
+        return Array.from(parent.children).filter(function (sibling) {
+            return sibling !== element && sibling.matches(selector);
+        });
+    }
+
+    document.querySelectorAll('.properties_dl_box_content').forEach(function (content) {
+        hideElement(content);
     });
 
-    toggleSiblings('.sh313_toggle_box_title', '.sh313_toggle_box_content');
-    toggleSiblings('.properties_dl_box_title', '.properties_dl_box_content');
+    document.addEventListener('click', function (event) {
+        const shTitle = event.target.closest('.sh313_toggle_box_title');
+
+        if (shTitle) {
+            getSiblingsBySelector(shTitle, '.sh313_toggle_box_content').forEach(toggleElement);
+            return;
+        }
+
+        const propertiesTitle = event.target.closest('.properties_dl_box_title');
+
+        if (propertiesTitle) {
+            getSiblingsBySelector(propertiesTitle, '.properties_dl_box_content').forEach(toggleElement);
+        }
+    });
 });
