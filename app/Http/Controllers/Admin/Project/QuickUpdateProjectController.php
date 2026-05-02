@@ -13,6 +13,7 @@ use App\Http\Requests\Admin\Project\QuickUpdateProjectRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class QuickUpdateProjectController extends Controller
@@ -32,6 +33,8 @@ class QuickUpdateProjectController extends Controller
      */
     public function __invoke(QuickUpdateProjectRequest $request, Project $project): JsonResponse|RedirectResponse
     {
+        Gate::authorize('project.edit');
+
         $data = $request->validated();
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['slug'] = $data['slug'] ?: 'untitled-page';

@@ -20,8 +20,9 @@ class PageLayoutController
      */
     public function show(PageLayout $pageLayout, GetPageLayoutBuilderDataAction $getPageLayoutBuilderDataAction): View
     {
+        Gate::authorize("page-layout.{$pageLayout->key}");
+
         $view = '';
-        $gate = "page-layout.{$pageLayout->key}";
         switch ($pageLayout->key) {
             case 'home':
                 $view = 'admin.layout.page-layouts.home';
@@ -32,7 +33,6 @@ class PageLayoutController
             case 'post-content':
                 $view = 'admin.layout.page-layouts.post-content';
         }
-        Gate::authorize($gate);
         $builderData = $getPageLayoutBuilderDataAction->execute($pageLayout);
 
         return view($view, [
@@ -53,8 +53,7 @@ class PageLayoutController
                            UpdatePageLayoutAction  $updatePageLayoutAction,
     ): RedirectResponse
     {
-        $gate = "page-layout.{$pageLayout->key}";
-        Gate::authorize($gate);
+        Gate::authorize("page-layout.{$pageLayout->key}");
 
         $updatePageLayoutAction->execute($pageLayout, $request->layoutState(), $request->elementStates());
 

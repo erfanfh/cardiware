@@ -5,13 +5,23 @@ namespace App\Http\Requests\Admin\Identity;
 use App\Domain\Identity\Models\Role;
 use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class BulkRoleActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $action = $this->input('bulk_action');
+
+        if (!$action) {
+            return false;
+        }
+
+        return match ($action) {
+            'delete' => Gate::allows('role.delete'),
+            default => false,
+        };
     }
 
     public function rules(): array

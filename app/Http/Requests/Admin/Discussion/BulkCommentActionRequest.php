@@ -4,13 +4,24 @@ namespace App\Http\Requests\Admin\Discussion;
 
 use App\Infrastructure\Support\BulkActions\CommentBulkActions;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class BulkCommentActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $action = $this->input('bulk_action');
+
+        if (!$action) {
+            return false;
+        }
+
+        return match ($action) {
+            'approve', 'pending', 'reject' => Gate::allows('comment.edit'),
+            'delete' => Gate::allows('comment.delete'),
+            default => false,
+        };
     }
 
     public function rules(): array

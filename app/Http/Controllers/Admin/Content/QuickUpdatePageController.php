@@ -12,6 +12,7 @@ use App\Http\Requests\Admin\Content\QuickUpdatePageRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Throwable;
 
 class QuickUpdatePageController extends Controller
@@ -30,6 +31,8 @@ class QuickUpdatePageController extends Controller
      */
     public function __invoke(QuickUpdatePageRequest $request, Page $page): JsonResponse|RedirectResponse
     {
+        Gate::authorize('page.edit');
+
         $data = $request->validated();
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['slug'] = $data['slug'] ?: 'untitled-page';

@@ -7,6 +7,7 @@ use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PostTagSearchController extends Controller
 {
@@ -16,6 +17,8 @@ class PostTagSearchController extends Controller
      */
     public function __invoke(Request $request): JsonResponse
     {
+        Gate::authorize('tag.manage');
+
         $query = trim((string)$request->string('q'));
 
         if (mb_strlen($query) < 2) {
@@ -25,13 +28,16 @@ class PostTagSearchController extends Controller
         $items = TaxonomyTerm::query()
             ->where('taxonomy', TaxonomyKeyEnum::POST_TAG)
             ->select(['id', 'title'])
-            ->where('title', 'like', '%' . $query . '%')
+            ->where(function ($builder) use ($query) {
+                $builder->where('title', 'like', '%' . $query . '%')
+                    ->orWhere('id', $query);
+            })
             ->orderBy('title')
-            ->limit(20)
+            ->limit(50)
             ->get()
             ->map(fn(TaxonomyTerm $taxonomyTerm) => [
                 'value' => (string)$taxonomyTerm->id,
-                'label' => $taxonomyTerm->title,
+                'label' => "$taxonomyTerm->title ($taxonomyTerm->id)",
             ])
             ->values();
 

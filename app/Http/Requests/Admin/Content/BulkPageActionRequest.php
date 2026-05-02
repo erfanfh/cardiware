@@ -4,13 +4,24 @@ namespace App\Http\Requests\Admin\Content;
 
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class BulkPageActionRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $action = $this->input('bulk_action');
+
+        if (!$action) {
+            return false;
+        }
+
+        return match ($action) {
+            'activate', 'deactivate' => Gate::allows('page.edit'),
+            'delete' => Gate::allows('page.delete'),
+            default => false,
+        };
     }
 
     public function rules(): array

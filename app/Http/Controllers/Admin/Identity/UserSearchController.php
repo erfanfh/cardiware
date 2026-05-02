@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Identity;
 use App\Domain\Identity\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserSearchController
 {
@@ -14,6 +15,8 @@ class UserSearchController
      */
     public function __invoke(Request $request): JsonResponse
     {
+        Gate::authorize('user.list');
+
         $query = trim((string)$request->string('q'));
 
         if (mb_strlen($query) < 2) {
@@ -31,7 +34,7 @@ class UserSearchController
                     ->orWhereRaw("CONCAT(first_name, last_name) LIKE ?", ["%{$query}%"]);
             })
             ->orderBy('mobile')
-            ->limit(20)
+            ->limit(50)
             ->get()
             ->map(fn(User $user) => [
                 'value' => (string)$user->id,
