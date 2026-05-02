@@ -36,16 +36,16 @@ class GetFooterStatsAction
 
                 return [
                     'orders' => 12000,
-                    'comments' => $this->roundDownToTen($approvedCommentsCount),
-                    'posts' => $this->roundDownToTen($activePostsCount),
+                    'comments' => $this->roundDownToHundred($approvedCommentsCount),
+                    'posts' => $this->roundDownToHundred($activePostsCount),
                     'products' => 30,
                 ];
             }
         );
     }
 
-    protected function roundDownToTen(int $value): int
+    protected function roundDownToHundred(int $value): int
     {
-        return (int)(floor($value / 10) * 10);
+        return (int)(floor($value / 100) * 100);
     }
 }
