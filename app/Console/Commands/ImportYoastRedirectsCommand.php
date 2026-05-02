@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Seo;
+namespace App\Console\Commands;
 
 use App\Application\Seo\Actions\Redirect\ImportYoastRedirectsAction;
 use Illuminate\Console\Command;
