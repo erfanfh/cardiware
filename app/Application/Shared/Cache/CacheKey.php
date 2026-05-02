@@ -151,4 +151,14 @@ final class CacheKey
     {
         return "taxonomy:slug:{$taxonomy}:{$routeKey}";
     }
+
+    public static function seoRedirect(string $path): string
+    {
+        return 'seo:redirect:' . md5($path);
+    }
+
+    public static function seoRedirectsVersion(): string
+    {
+        return 'seo:redirects:version';
+    }
 }
