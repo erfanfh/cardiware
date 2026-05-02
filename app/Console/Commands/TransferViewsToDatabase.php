@@ -38,7 +38,7 @@ class TransferViewsToDatabase extends Command
 
             $modelClass = $map[$type] ?? null;
 
-            if (!$modelClass) {
+            if (!$modelClass || !$id) {
                 continue;
             }
 
@@ -53,18 +53,28 @@ class TransferViewsToDatabase extends Command
             }
 
             DB::transaction(function () use ($modelClass, $id, $count) {
-                $pageView = PageView::query()->firstOrCreate([
-                    'pageable_type' => $modelClass,
-                    'pageable_id' => $id,
-                ]);
+                $pageView = PageView::query()->firstOrCreate(
+                    [
+                        'pageable_type' => $modelClass,
+                        'pageable_id' => $id,
+                    ],
+                    [
+                        'count' => 0,
+                    ]
+                );
 
                 $pageView->increment('count', $count);
 
-                $pageViewDetail = PageViewDetail::query()->firstOrCreate([
-                    'pageable_type' => $modelClass,
-                    'pageable_id' => $id,
-                    'date' => today(),
-                ]);
+                $pageViewDetail = PageViewDetail::query()->firstOrCreate(
+                    [
+                        'pageable_type' => $modelClass,
+                        'pageable_id' => $id,
+                        'date' => today()->toDateString(),
+                    ],
+                    [
+                        'count' => 0,
+                    ]
+                );
 
                 $pageViewDetail->increment('count', $count);
             });
