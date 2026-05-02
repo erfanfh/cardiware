@@ -496,12 +496,28 @@ HTML;
     {
         try {
             if (!$date || str_starts_with($date, '0000-00-00')) {
-                return Carbon::create(2000, 1, 1);
+                return Carbon::create(2000, 1, 1, 0, 0, 0);
             }
 
-            return Carbon::parse($date);
+            $parsed = Carbon::parse($date);
+
+            if ($parsed->year < 1000 || $parsed->year > 9999) {
+                logger()->warning('Invalid WordPress post date normalized to fallback date', [
+                    'original_date' => $date,
+                    'parsed_date' => $parsed->toDateTimeString(),
+                    'parsed_year' => $parsed->year,
+                ]);
+
+                return Carbon::create(2000, 1, 1, 0, 0, 0);
+            }
+
+            return $parsed;
         } catch (Throwable) {
-            return Carbon::create(2000, 1, 1);
+            logger()->warning('WordPress post date parse failed and normalized to fallback date', [
+                'original_date' => $date,
+            ]);
+
+            return Carbon::create(2000, 1, 1, 0, 0, 0);
         }
     }
 
