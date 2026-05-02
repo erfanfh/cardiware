@@ -36,52 +36,41 @@ document.addEventListener('alpine:init', () => {
 })
 
 document.addEventListener('DOMContentLoaded', function () {
-    function hideElement(element) {
-        element.style.display = 'none';
-    }
-
-    function showElement(element) {
-        element.style.display = '';
-    }
-
-    function toggleElement(element) {
-        const currentDisplay = window.getComputedStyle(element).display;
-
-        if (currentDisplay === 'none') {
-            showElement(element);
-        } else {
-            hideElement(element);
-        }
-    }
-
-    function getSiblingsBySelector(element, selector) {
-        const parent = element.parentElement;
-
-        if (!parent) {
-            return [];
-        }
-
-        return Array.from(parent.children).filter(function (sibling) {
-            return sibling !== element && sibling.matches(selector);
+    function hideAll(selector) {
+        document.querySelectorAll(selector).forEach(function (content) {
+            content.style.display = 'none';
         });
     }
 
-    document.querySelectorAll('.properties_dl_box_content').forEach(function (content) {
-        hideElement(content);
-    });
+    function toggleBox(titleSelector, boxSelector, contentSelector) {
+        document.addEventListener('click', function (event) {
+            const title = event.target.closest(titleSelector);
 
-    document.addEventListener('click', function (event) {
-        const shTitle = event.target.closest('.sh313_toggle_box_title');
+            if (!title) {
+                return;
+            }
 
-        if (shTitle) {
-            getSiblingsBySelector(shTitle, '.sh313_toggle_box_content').forEach(toggleElement);
-            return;
-        }
+            const box = title.closest(boxSelector);
 
-        const propertiesTitle = event.target.closest('.properties_dl_box_title');
+            if (!box) {
+                return;
+            }
 
-        if (propertiesTitle) {
-            getSiblingsBySelector(propertiesTitle, '.properties_dl_box_content').forEach(toggleElement);
-        }
-    });
+            const content = box.querySelector(contentSelector);
+
+            if (!content) {
+                return;
+            }
+
+            const isHidden = window.getComputedStyle(content).display === 'none';
+
+            content.style.display = isHidden ? 'block' : 'none';
+        });
+    }
+
+    hideAll('.sh313_toggle_box_content');
+    hideAll('.properties_dl_box_content');
+
+    toggleBox('.sh313_toggle_box_title', '.sh313_toggle_box', '.sh313_toggle_box_content');
+    toggleBox('.properties_dl_box_title', '.properties_dl_box', '.properties_dl_box_content');
 });
