@@ -37,9 +37,9 @@
                     </h1>
 
                     @if($boxSubtitle)
-                        <p class="mt-2 text-xs leading-6 text-slate-600 dark:text-slate-400">
+                        <h2 class="mt-2 text-xs leading-6 text-slate-600 dark:text-slate-400">
                             {{ $boxSubtitle }}
-                        </p>
+                        </h2>
                     @endif
                 </div>
             </div>
