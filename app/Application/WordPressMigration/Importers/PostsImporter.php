@@ -104,13 +104,12 @@ class PostsImporter
                     (string)($wpPost->post_content ?: '')
                 );
 
-                $post->forceFill([
-                    'slug' => $this->normalizeSlug($post->slug),
-                    'body' => $this->appendJwPlayerVideoToContent(
-                        (int)$wpPost->ID,
-                        $this->normalizeWordPressContent($galleryExtraction['content'])
-                    ),
-                ])->save();
+                $body = $this->appendJwPlayerVideoToContent(
+                    (int)$wpPost->ID,
+                    $this->normalizeWordPressContent($galleryExtraction['content'])
+                );
+
+                $this->updateExistingPostFromWordPress($post, $wpPost, $body);
 
                 $this->syncImageGallery($post, $galleryExtraction['attachment_ids']);
                 $this->syncSlugs($post, $wpPost);
@@ -169,6 +168,21 @@ class PostsImporter
         ]);
 
         return 'created';
+    }
+
+    private function updateExistingPostFromWordPress(Post $post, object $wpPost, string $body): void
+    {
+        $post->timestamps = false;
+
+        $post->forceFill([
+            'slug' => $this->normalizeSlug($post->slug),
+            'body' => $body,
+            'published_at' => $this->normalizeDate($wpPost->post_date),
+            'created_at' => $this->normalizeDate($wpPost->post_date),
+            'updated_at' => $this->normalizeDate($wpPost->post_modified),
+        ])->save();
+
+        $post->timestamps = true;
     }
 
     private function extractGalleryShortcodes(string $content): array
