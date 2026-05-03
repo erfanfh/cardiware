@@ -5,6 +5,7 @@ namespace App\Application\Seo\Actions\SeoData\Resolvers;
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
+use App\Application\Seo\Services\PersianTextNormalizer;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
@@ -18,6 +19,7 @@ final class ResolvePostSeoPayloadAction
         protected SeoTemplateParser          $seoTemplateParser,
         protected PostSeoVariableDataBuilder $postSeoVariableDataBuilder,
         protected ReadingTimeEstimator       $readingTimeEstimator,
+        protected PersianTextNormalizer      $textNormalizer,
     )
     {
     }
@@ -115,7 +117,7 @@ final class ResolvePostSeoPayloadAction
             keywords: $this->resolveKeywords($post),
             articleSections: $this->resolveArticleSections($post),
 
-            readingTimeLabel: $this->readingTimeEstimator->estimate($this->resolveMainContent($post)) . ' دقیقه',
+            readingTimeLabel: $this->readingTimeEstimator->estimate($this->resolveArticleContentForAnalysis($post)) . ' دقیقه',
         );
     }
 
@@ -158,14 +160,18 @@ final class ResolvePostSeoPayloadAction
 
     protected function estimateWordCount(Post $post): int
     {
-        $text = strip_tags($this->resolveMainContent($post));
-        $text = preg_replace('/\s+/u', ' ', trim($text));
+        return $this->textNormalizer->wordCount(
+            $this->resolveArticleContentForAnalysis($post)
+        );
+    }
 
-        if (blank($text)) {
-            return 0;
-        }
+    protected function resolveArticleContentForAnalysis(Post $post): string
+    {
+        $content = $this->resolveMainContent($post);
 
-        return count(preg_split('/\s+/u', $text) ?: []);
+        $content = preg_replace('/<div\b[^>]*class="[^"]*\bwp-migrated-video\b[^"]*"[^>]*>.*?<\/div>/is', ' ', $content) ?? $content;
+
+        return $content;
     }
 
     protected function resolveExcerpt(Post $post): string
