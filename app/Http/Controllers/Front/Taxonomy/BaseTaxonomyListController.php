@@ -36,12 +36,13 @@ abstract class BaseTaxonomyListController extends Controller
         $term = $resolvedSlug->model;
 
         $posts = $term
-            ->posts()
+            ->postsIncludingDescendants()
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',
-                'categories'
+                'categories',
             ])
+            ->latest()
             ->paginate(9);
 
         return view($this->viewName(), [
