@@ -27,20 +27,27 @@ final class ResolvePostCategorySeoPayloadAction
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->taxonomySeoVariableDataBuilder->build($category);
 
-        $titleTemplate = get_setting('seo', 'post_category_seo_title') ?: $category->title;
+        $titleTemplate = $category->seoMeta?->title
+            ?: get_setting('seo', 'post_category_seo_title')
+                ?: $category->title;
 
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
 
-        $descriptionTemplate = get_setting('seo', 'post_category_seo_description')
-            ?: $this->resolveFallbackDescription($category);
+        $descriptionTemplate = $category->seoMeta?->description
+            ?: get_setting('seo', 'post_category_seo_description')
+                ?: $this->resolveFallbackDescription($category);
 
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
 
-        $ogTitleTemplate = get_setting('seo', 'post_category_social_seo_title') ?: $title;
+        $ogTitleTemplate = $category->seoMeta?->og_title
+            ?: get_setting('seo', 'post_category_social_seo_title')
+                ?: $title;
 
         $ogTitle = $this->seoTemplateParser->parse($ogTitleTemplate, $variables);
 
-        $ogDescriptionTemplate = get_setting('seo', 'post_category_social_seo_description') ?: $description;
+        $ogDescriptionTemplate = $category->seoMeta?->og_description
+            ?: get_setting('seo', 'post_category_social_seo_description')
+                ?: $description;
 
         $ogDescription = $this->seoTemplateParser->parse($ogDescriptionTemplate, $variables);
 
