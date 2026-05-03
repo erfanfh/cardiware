@@ -9,6 +9,7 @@ return [
         'robots.txt',
         'admin',
         'posts',
+        'dl',
         'download',
         'auth',
         'login',
