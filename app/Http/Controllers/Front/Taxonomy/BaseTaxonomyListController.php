@@ -35,8 +35,11 @@ abstract class BaseTaxonomyListController extends Controller
         /** @var TaxonomyTerm $term */
         $term = $resolvedSlug->model;
 
-        $posts = $term
-            ->postsIncludingDescendants()
+        $postsQuery = $term->isHierarchical()
+            ? $term->postsIncludingDescendants()
+            : $term->posts();
+
+        $posts = $postsQuery
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',

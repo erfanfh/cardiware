@@ -191,7 +191,7 @@ class TaxonomyTerm extends Model
             : [$this->id];
 
         return Post::query()
-            ->whereHas('categories', function (Builder $query) use ($termIds): void {
+            ->whereHas('taxonomyTerms', function (Builder $query) use ($termIds): void {
                 $query->whereIn('taxonomy_terms.id', $termIds);
             });
     }
