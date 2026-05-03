@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\ResolveSeoPaginationLinksAction;
 use App\Application\Seo\Actions\Schema\Graphs\BuildPostCategorySchemaGraphAction;
 use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\Actions\SeoData\Resolvers\ResolvePostCategorySeoPayloadAction;
@@ -11,6 +12,7 @@ use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
 use App\Domain\Seo\Enums\OgTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ResolvePostCategorySeoDataAction
 {
@@ -19,11 +21,16 @@ final class ResolvePostCategorySeoDataAction
         protected ResolvePostCategorySeoPayloadAction $resolvePostCategorySeoPayloadAction,
         protected BuildPostCategorySchemaGraphAction  $buildPostCategorySchemaGraphAction,
         protected RenderSchemaGraphAction             $renderSchemaGraphAction,
+        protected ResolveSeoPaginationLinksAction     $resolveSeoPaginationLinksAction,
     )
     {
     }
 
-    public function execute(TaxonomyTerm $category): SeoDataDTO
+    public function execute(
+        TaxonomyTerm          $category,
+        ?LengthAwarePaginator $paginator = null,
+        ?string               $paginationBaseUrl = null,
+    ): SeoDataDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $payload = $this->resolvePostCategorySeoPayloadAction->execute($category);
@@ -55,6 +62,9 @@ final class ResolvePostCategorySeoDataAction
                 image: $payload->xImageUrl,
             ),
             schemaJson: $schemaJson,
+            pagination: $paginator && $paginationBaseUrl
+                ? $this->resolveSeoPaginationLinksAction->execute($paginator, $paginationBaseUrl)
+                : null,
         );
     }
 }

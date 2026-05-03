@@ -22,7 +22,8 @@ class PostCategorySeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('posts.categories');
+        return $context->routeIs('posts.categories')
+            || $context->routeIs('posts.categories.page');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
@@ -43,6 +44,13 @@ class PostCategorySeoResolver implements SeoResolverInterface
         /** @var TaxonomyTerm $category */
         $category = $resolvedSlug->model;
 
-        return $this->resolvePostCategorySeoDataAction->execute($category);
+        $paginator = $context->request->attributes->get('seo_paginator');
+        $paginationBaseUrl = $context->request->attributes->get('seo_pagination_base_url');
+
+        return $this->resolvePostCategorySeoDataAction->execute(
+            category: $category,
+            paginator: $paginator,
+            paginationBaseUrl: $paginationBaseUrl,
+        );
     }
 }

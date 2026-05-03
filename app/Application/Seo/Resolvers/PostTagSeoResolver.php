@@ -22,7 +22,8 @@ class PostTagSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('posts.tags');
+        return $context->routeIs('posts.tags')
+            || $context->routeIs('posts.tags.page');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
@@ -43,6 +44,13 @@ class PostTagSeoResolver implements SeoResolverInterface
         /** @var TaxonomyTerm $tag */
         $tag = $resolvedSlug->model;
 
-        return $this->resolvePostTagSeoDataAction->execute($tag);
+        $paginator = $context->request->attributes->get('seo_paginator');
+        $paginationBaseUrl = $context->request->attributes->get('seo_pagination_base_url');
+
+        return $this->resolvePostTagSeoDataAction->execute(
+            tag: $tag,
+            paginator: $paginator,
+            paginationBaseUrl: $paginationBaseUrl,
+        );
     }
 }

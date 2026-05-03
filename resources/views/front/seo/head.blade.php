@@ -19,6 +19,14 @@
         $tags[] = '<link rel="canonical" href="' . e($seoData->canonicalUrl) . '">';
     }
 
+    if ($seoData->pagination?->prev) {
+        $tags[] = '<link rel="prev" href="' . e($seoData->pagination->prev) . '">';
+    }
+
+    if ($seoData->pagination?->next) {
+        $tags[] = '<link rel="next" href="' . e($seoData->pagination->next) . '">';
+    }
+
     if (filled($seoData->author)) {
         $tags[] = '<meta name="author" content="' . e($seoData->author) . '">';
     }

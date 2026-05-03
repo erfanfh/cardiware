@@ -14,6 +14,7 @@ readonly class SeoDataDTO
         public ?TwitterCardDataDTO      $twitter = null,
         public ?VerificationMetaDataDTO $verification = null,
         public ?string                  $schemaJson = null,
+        public ?SeoPaginationLinksDTO   $pagination = null,
     )
     {
     }

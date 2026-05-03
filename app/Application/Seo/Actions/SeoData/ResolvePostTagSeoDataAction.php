@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\ResolveSeoPaginationLinksAction;
 use App\Application\Seo\Actions\Schema\Graphs\BuildPostTagSchemaGraphAction;
 use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\Actions\SeoData\Resolvers\ResolvePostTagSeoPayloadAction;
@@ -11,19 +12,25 @@ use App\Application\Seo\DTOs\SeoDataDTO;
 use App\Application\Seo\DTOs\TwitterCardDataDTO;
 use App\Domain\Seo\Enums\OgTypeEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 final class ResolvePostTagSeoDataAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction           $getSeoDefaultsAction,
-        protected ResolvePostTagSeoPayloadAction $resolvePostTagSeoPayloadAction,
-        protected BuildPostTagSchemaGraphAction  $buildPostTagSchemaGraphAction,
-        protected RenderSchemaGraphAction        $renderSchemaGraphAction,
+        protected GetSeoDefaultsAction            $getSeoDefaultsAction,
+        protected ResolvePostTagSeoPayloadAction  $resolvePostTagSeoPayloadAction,
+        protected BuildPostTagSchemaGraphAction   $buildPostTagSchemaGraphAction,
+        protected RenderSchemaGraphAction         $renderSchemaGraphAction,
+        protected ResolveSeoPaginationLinksAction $resolveSeoPaginationLinksAction,
     )
     {
     }
 
-    public function execute(TaxonomyTerm $tag): SeoDataDTO
+    public function execute(
+        TaxonomyTerm          $tag,
+        ?LengthAwarePaginator $paginator = null,
+        ?string               $paginationBaseUrl = null,
+    ): SeoDataDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
         $payload = $this->resolvePostTagSeoPayloadAction->execute($tag);
@@ -55,6 +62,9 @@ final class ResolvePostTagSeoDataAction
                 image: $payload->xImageUrl,
             ),
             schemaJson: $schemaJson,
+            pagination: $paginator && $paginationBaseUrl
+                ? $this->resolveSeoPaginationLinksAction->execute($paginator, $paginationBaseUrl)
+                : null,
         );
     }
 }

@@ -15,8 +15,11 @@ abstract class BaseTaxonomyListController extends Controller
     public function __invoke(
         string            $path,
         ResolveSlugAction $resolveSlugAction,
+        ?int              $page = null,
     ): View|RedirectResponse
     {
+        $page = max(1, (int)($page ?? request()->route('page', 1)));
+
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
                 scope: $this->slugScope(),
@@ -35,6 +38,10 @@ abstract class BaseTaxonomyListController extends Controller
         /** @var TaxonomyTerm $term */
         $term = $resolvedSlug->model;
 
+        if ($page === 1 && request()->routeIs($this->paginatedRouteName())) {
+            return redirect()->to($this->baseUrl($term), 301);
+        }
+
         $postsQuery = $term->isHierarchical()
             ? $term->postsIncludingDescendants()
             : $term->posts();
@@ -45,8 +52,19 @@ abstract class BaseTaxonomyListController extends Controller
                 'picture.variants',
                 'categories',
             ])
-            ->latest()
-            ->paginate(9);
+            ->latest('published_at')
+            ->paginate(
+                perPage: 9,
+                pageName: 'page',
+                page: $page,
+            );
+
+        if ($page > 1 && $posts->lastPage() > 0 && $page > $posts->lastPage()) {
+            abort(404);
+        }
+
+        request()->attributes->set('seo_paginator', $posts);
+        request()->attributes->set('seo_pagination_base_url', $this->baseUrl($term));
 
         return view($this->viewName(), [
             'posts' => $posts,
@@ -57,10 +75,21 @@ abstract class BaseTaxonomyListController extends Controller
 
     abstract protected function slugScope(): SlugScopeEnum;
 
+    abstract protected function routeName(): string;
+
+    abstract protected function paginatedRouteName(): string;
+
+    abstract protected function termViewVariableName(): string;
+
     protected function viewName(): string
     {
         return 'front.posts.list';
     }
 
-    abstract protected function termViewVariableName(): string;
+    protected function baseUrl(TaxonomyTerm $term): string
+    {
+        return front_route($this->routeName(), [
+            'path' => $term->path,
+        ]);
+    }
 }

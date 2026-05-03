@@ -6,17 +6,21 @@ use App\Domain\Slug\Enums\SlugScopeEnum;
 
 class PostCategoryListController extends BaseTaxonomyListController
 {
-    /**
-     * @return SlugScopeEnum
-     */
     protected function slugScope(): SlugScopeEnum
     {
         return SlugScopeEnum::TAXONOMY__POST_CATEGORY;
     }
 
-    /**
-     * @return string
-     */
+    protected function routeName(): string
+    {
+        return 'posts.categories';
+    }
+
+    protected function paginatedRouteName(): string
+    {
+        return 'posts.categories.page';
+    }
+
     protected function termViewVariableName(): string
     {
         return 'category';
