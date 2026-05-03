@@ -7,6 +7,8 @@ use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Content\Models\Post;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -37,6 +39,10 @@ class GetHomeFreePostsTabDataAction
 
     protected function getMainPosts(array $activeItem): Collection
     {
+        $categoryIds = $this->resolveCategoryIdsWithDescendants(
+            $activeItem['main_category_ids'] ?? []
+        );
+
         return Post::query()
             ->with([
                 'picture.primaryVariant',
@@ -44,8 +50,8 @@ class GetHomeFreePostsTabDataAction
                 'featureAssignments.featureDefinition',
                 'categories',
             ])
-            ->whereHas('categories', function ($query) use ($activeItem) {
-                $query->whereIn('taxonomy_terms.id', $activeItem['main_category_ids'] ?? []);
+            ->whereHas('categories', function ($query) use ($categoryIds): void {
+                $query->whereIn('taxonomy_terms.id', $categoryIds);
             })
             ->latest('published_at')
             ->limit((int)($activeItem['main_count'] ?? 6))
@@ -59,9 +65,13 @@ class GetHomeFreePostsTabDataAction
 
     protected function getList1Posts(array $activeItem): Collection
     {
+        $categoryIds = $this->resolveCategoryIdsWithDescendants(
+            $activeItem['list_box_1_category_ids'] ?? []
+        );
+
         return Post::query()
-            ->whereHas('categories', function ($query) use ($activeItem) {
-                $query->whereIn('taxonomy_terms.id', $activeItem['list_box_1_category_ids'] ?? []);
+            ->whereHas('categories', function ($query) use ($categoryIds): void {
+                $query->whereIn('taxonomy_terms.id', $categoryIds);
             })
             ->latest('published_at')
             ->limit((int)($activeItem['list_box_1_count'] ?? 5))
@@ -70,13 +80,45 @@ class GetHomeFreePostsTabDataAction
 
     protected function getList2Posts(array $activeItem): Collection
     {
+        $categoryIds = $this->resolveCategoryIdsWithDescendants(
+            $activeItem['list_box_2_category_ids'] ?? []
+        );
+
         return Post::query()
-            ->whereHas('categories', function ($query) use ($activeItem) {
-                $query->whereIn('taxonomy_terms.id', $activeItem['list_box_2_category_ids'] ?? []);
+            ->whereHas('categories', function ($query) use ($categoryIds): void {
+                $query->whereIn('taxonomy_terms.id', $categoryIds);
             })
             ->latest('published_at')
             ->limit((int)($activeItem['list_box_2_count'] ?? 5))
             ->get();
+    }
+
+    /**
+     * @param array<int|string> $categoryIds
+     * @return array<int>
+     */
+    protected function resolveCategoryIdsWithDescendants(array $categoryIds): array
+    {
+        $categoryIds = collect($categoryIds)
+            ->filter()
+            ->map(fn($id) => (int)$id)
+            ->unique()
+            ->values();
+
+        if ($categoryIds->isEmpty()) {
+            return [];
+        }
+
+        return TaxonomyTerm::query()
+            ->forTaxonomy(TaxonomyKeyEnum::POST_CATEGORY)
+            ->whereIn('id', $categoryIds)
+            ->select(['id', 'parent_id', 'taxonomy'])
+            ->with('childrenRecursive')
+            ->get()
+            ->flatMap(fn(TaxonomyTerm $term) => $term->selfAndDescendantIds())
+            ->unique()
+            ->values()
+            ->all();
     }
 
     protected function cachePayload(array $activeItem): array
