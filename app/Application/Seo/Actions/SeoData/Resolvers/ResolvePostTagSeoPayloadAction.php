@@ -27,20 +27,27 @@ final class ResolvePostTagSeoPayloadAction
         $defaults = $this->getSeoDefaultsAction->execute();
         $variables = $this->taxonomySeoVariableDataBuilder->build($tag);
 
-        $titleTemplate = get_setting('seo', 'post_tag_seo_title') ?: $tag->title;
+        $titleTemplate = $tag->seoMeta?->title
+            ?: get_setting('seo', 'post_tag_seo_title')
+                ?: $tag->title;
 
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
 
-        $descriptionTemplate = get_setting('seo', 'post_tag_seo_description')
-            ?: $this->resolveFallbackDescription($tag);
+        $descriptionTemplate = $tag->seoMeta?->description
+            ?: get_setting('seo', 'post_tag_seo_description')
+                ?: $this->resolveFallbackDescription($tag);
 
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
 
-        $ogTitleTemplate = get_setting('seo', 'post_tag_social_seo_title') ?: $title;
+        $ogTitleTemplate = $tag->seoMeta?->og_title
+            ?: get_setting('seo', 'post_tag_social_seo_title')
+                ?: $title;
 
         $ogTitle = $this->seoTemplateParser->parse($ogTitleTemplate, $variables);
 
-        $ogDescriptionTemplate = get_setting('seo', 'post_tag_social_seo_description') ?: $description;
+        $ogDescriptionTemplate = $tag->seoMeta?->og_description
+            ?: get_setting('seo', 'post_tag_social_seo_description')
+                ?: $description;
 
         $ogDescription = $this->seoTemplateParser->parse($ogDescriptionTemplate, $variables);
 
