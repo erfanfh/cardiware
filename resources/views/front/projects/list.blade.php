@@ -28,9 +28,9 @@
                             {{ get_setting('projects', 'first_box_title') }}
                         </h1>
 
-                        <p class="mt-4 text-white/80 text-sm sm:text-base leading-7">
+                        <h2 class="mt-4 text-white/80 text-sm sm:text-base leading-7">
                             {!! get_setting('projects', 'first_box_subtitle') !!}
-                        </p>
+                        </h2>
                     </div>
 
                     <div class="grid grid-cols-3 gap-3 w-full lg:w-[420px]">
