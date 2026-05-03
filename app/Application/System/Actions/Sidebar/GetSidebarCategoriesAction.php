@@ -40,10 +40,18 @@ class GetSidebarCategoriesAction
                 $categories = TaxonomyTerm::query()
                     ->forTaxonomy(TaxonomyKeyEnum::POST_CATEGORY)
                     ->whereIn('id', $categoryIds)
-                    ->select(['id', 'title', 'path'])
-                    ->withCount('posts')
-                    ->get()
-                    ->keyBy('id');
+                    ->select(['id', 'title', 'path', 'parent_id', 'taxonomy'])
+                    ->with('childrenRecursive')
+                    ->get();
+
+                $categories->each(function (TaxonomyTerm $category): void {
+                    $category->setAttribute(
+                        'posts_count',
+                        $category->postsIncludingDescendants()->count()
+                    );
+                });
+
+                $categories = $categories->keyBy('id');
 
                 $orderedCategories = $items
                     ->map(fn($item) => $categories->get($item['category_id'] ?? null))
