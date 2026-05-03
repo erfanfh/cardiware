@@ -67,6 +67,12 @@ final class ResolvePostTagSeoPayloadAction
 
             ogTitle: $ogTitle,
             ogDescription: $ogDescription,
+            ogImage: [
+                'url' => $image?->url,
+                'width' => $image?->primaryVariant?->width,
+                'height' => $image?->primaryVariant?->height,
+                'type' => $image?->primaryVariant?->mime_type,
+            ],
 
             pageImageUrl: $image?->url,
             pageImageWidth: $image?->primaryVariant?->width,
