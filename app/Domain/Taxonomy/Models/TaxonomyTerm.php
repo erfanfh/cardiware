@@ -4,6 +4,7 @@ namespace App\Domain\Taxonomy\Models;
 
 use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
+use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaxonomyTerm extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasSeoMeta;
 
     protected $fillable = [
         'taxonomy',
