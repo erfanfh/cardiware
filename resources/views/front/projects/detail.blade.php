@@ -115,7 +115,7 @@
                         </span>
 
                         <div>
-                            <div class="text-base font-extrabold dark:text-slate-100">معرفی پروژه</div>
+                            <h2 class="text-base font-extrabold dark:text-slate-100">معرفی پروژه</h2>
                             <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">چه چیزی در این پروژه ساخته
                                 می‌شود؟
                             </div>
@@ -131,7 +131,7 @@
                             @foreach($project->features as $feature)
                                 <div
                                     class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-950">
-                                    <div class="text-sm font-extrabold dark:text-slate-100">{{ $feature->title }}</div>
+                                    <h3 class="text-sm font-extrabold dark:text-slate-100">{{ $feature->title }}</h3>
                                     <div
                                         class="mt-1 text-xs text-slate-500 leading-6 dark:text-slate-400">{{ $feature->subtitle }}</div>
                                 </div>
@@ -155,7 +155,7 @@
                                 </span>
 
                                 <div>
-                                    <div class="text-base font-extrabold dark:text-slate-100">نقشه راه</div>
+                                    <h2 class="text-base font-extrabold dark:text-slate-100">نقشه راه</h2>
                                     <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">مرحله‌ها و وضعیت هر
                                         مرحله
                                     </div>
@@ -183,8 +183,8 @@
                                                 class="h-9 w-9 rounded-2xl border border-slate-200 bg-slate-50 grid place-items-center font-black text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                                                 {{ $counter }}
                                             </span>
-                                                <div
-                                                    class="text-sm font-extrabold truncate dark:text-slate-100">{{ $item->title }}</div>
+                                                <h3
+                                                    class="text-sm font-extrabold truncate dark:text-slate-100">{{ $item->title }}</h3>
                                             </div>
                                             <div class="mt-2 text-xs text-slate-500 leading-6 dark:text-slate-400">
                                                 {!! nl2br(htmlspecialchars(e($item->excerpt))) !!}
@@ -233,7 +233,7 @@
                             </span>
 
                             <div>
-                                <div class="text-base font-extrabold dark:text-slate-100">آپدیت‌ها و تغییرات</div>
+                                <h2 class="text-base font-extrabold dark:text-slate-100">آپدیت‌ها و تغییرات</h2>
                                 <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">تازه‌ترین اتفاقات پروژه
                                 </div>
                             </div>
@@ -245,8 +245,8 @@
                                     class="rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 hover:bg-slate-50 transition dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="min-w-0">
-                                            <div
-                                                class="text-sm font-extrabold dark:text-slate-100">{{ $item->title }}</div>
+                                            <h3
+                                                class="text-sm font-extrabold dark:text-slate-100">{{ $item->title }}</h3>
                                             <div class="mt-2 text-sm text-slate-700 leading-7 dark:text-slate-300">
                                                 {!! nl2br(htmlspecialchars(e($item->body))) !!}
                                             </div>
@@ -291,7 +291,7 @@
             </svg>
           </span>
                         <div>
-                            <div class="text-base font-extrabold dark:text-slate-100">جزئیات سریع</div>
+                            <h2 class="text-base font-extrabold dark:text-slate-100">جزئیات پروژه</h2>
                             <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">اطلاعات مهم پروژه</div>
                         </div>
                     </div>
