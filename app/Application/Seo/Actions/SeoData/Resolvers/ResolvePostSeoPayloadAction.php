@@ -75,6 +75,8 @@ final class ResolvePostSeoPayloadAction
 
         $author = $post->author;
 
+        $articleContentForAnalysis = $this->resolveArticleContentForAnalysis($post);
+
         return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $post->seoMeta?->robots ?: $defaults['robots'],
@@ -100,6 +102,7 @@ final class ResolvePostSeoPayloadAction
             pageImageWidth: $post->picture?->primaryVariant?->width,
             pageImageHeight: $post->picture?->primaryVariant?->height,
             pageImageCaption: $post->title,
+
             publishedTime: $publishedTime,
             modifiedTime: $modifiedTime,
 
@@ -112,12 +115,12 @@ final class ResolvePostSeoPayloadAction
                 : $author?->display_name,
             authorSameAs: [url('/')],
 
-            wordCount: $this->estimateWordCount($post),
+            wordCount: $this->estimateWordCount($articleContentForAnalysis),
             commentCount: $post->approved_comments_count ?? 0,
             keywords: $this->resolveKeywords($post),
             articleSections: $this->resolveArticleSections($post),
 
-            readingTimeLabel: $this->readingTimeEstimator->estimate($this->resolveArticleContentForAnalysis($post)) . ' دقیقه',
+            readingTimeLabel: $this->readingTimeEstimator->estimate($articleContentForAnalysis) . ' دقیقه',
         );
     }
 
@@ -158,20 +161,9 @@ final class ResolvePostSeoPayloadAction
             ->all();
     }
 
-    protected function estimateWordCount(Post $post): int
+    protected function estimateWordCount(string $content): int
     {
-        return $this->textNormalizer->wordCount(
-            $this->resolveArticleContentForAnalysis($post)
-        );
-    }
-
-    protected function resolveArticleContentForAnalysis(Post $post): string
-    {
-        $content = $this->resolveMainContent($post);
-
-        $content = preg_replace('/<div\b[^>]*class="[^"]*\bwp-migrated-video\b[^"]*"[^>]*>.*?<\/div>/is', ' ', $content) ?? $content;
-
-        return $content;
+        return $this->textNormalizer->wordCount($content);
     }
 
     protected function resolveExcerpt(Post $post): string
@@ -190,5 +182,28 @@ final class ResolvePostSeoPayloadAction
         }
 
         return (string)($post->content ?? '');
+    }
+
+    protected function resolveArticleContentForAnalysis(Post $post): string
+    {
+        $content = $this->resolveMainContent($post);
+
+        if (blank($content)) {
+            return '';
+        }
+
+        $content = preg_replace(
+            '/<div\b[^>]*class="[^"]*\bwp-migrated-video\b[^"]*"[^>]*>.*?<\/div>/is',
+            ' ',
+            $content
+        ) ?? $content;
+
+        $content = preg_replace(
+            '/<div\b[^>]*class="[^"]*\bdownload-box\b[^"]*"[^>]*>.*?<\/div>/is',
+            ' ',
+            $content
+        ) ?? $content;
+
+        return $content;
     }
 }
