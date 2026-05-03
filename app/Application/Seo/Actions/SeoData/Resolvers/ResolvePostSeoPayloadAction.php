@@ -108,12 +108,14 @@ final class ResolvePostSeoPayloadAction
 
             authorName: $author?->display_name,
             authorUrl: $author
-                ? rtrim(route('author', $author), '/') . '/'
+                ? front_route('author', $author)
                 : null,
             authorIdentifier: $author?->id
                 ? (string)$author->id
                 : $author?->display_name,
-            authorSameAs: [url('/')],
+            authorSameAs: [$author
+                ? front_route('author', $author)
+                : url('/')],
 
             wordCount: $this->estimateWordCount($articleContentForAnalysis),
             commentCount: $post->approved_comments_count ?? 0,
