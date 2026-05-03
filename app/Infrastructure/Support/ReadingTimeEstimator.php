@@ -2,15 +2,20 @@
 
 namespace App\Infrastructure\Support;
 
+use App\Application\Seo\Services\PersianTextNormalizer;
+
 class ReadingTimeEstimator
 {
-    public static function estimate(?string $content): int
+    public function __construct(
+        private readonly PersianTextNormalizer $normalizer,
+    )
     {
-        $text = strip_tags((string)$content);
-        $text = preg_replace('/\s+/u', ' ', trim($text));
+    }
 
-        $wordCount = str_word_count($text);
+    public function estimate(?string $content, int $wordsPerMinute = 180): int
+    {
+        $wordCount = $this->normalizer->wordCount((string)$content);
 
-        return max(1, (int)ceil($wordCount / 200));
+        return max(1, (int)ceil($wordCount / $wordsPerMinute));
     }
 }
