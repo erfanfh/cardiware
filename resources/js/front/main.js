@@ -1,27 +1,10 @@
 import './lightbox-gallery.js';
-
-(function () {
-    const items = [
-        "• نسخه جدید پچ لیگ ایران منتشر شد (FC26)",
-        "• آموزش رفع ارورهای رایج نصب به‌روزرسانی شد",
-        "• پک گرافیک PES 2026 با لینک‌های جدید قرار گرفت",
-        "• بخش دانلودهای چندسروره فعال شد (آزمایشی)"
-    ];
-    const el = document.getElementById("newsTicker");
-    if (!el) return;
-
-    let i = 0;
-    setInterval(() => {
-        el.classList.remove("show");
-        setTimeout(() => {
-            i = (i + 1) % items.length;
-            el.textContent = items[i];
-            el.classList.add("show");
-        }, 380);
-    }, 2600);
-})();
+import typingPlaceholder from './typing-placeholder.js';
+import './old-toggle-box.js';
 
 document.addEventListener('alpine:init', () => {
+    Alpine.data('typingPlaceholder', typingPlaceholder);
+
     Alpine.data('themeSwitcher', () => ({
         dark: document.documentElement.classList.contains('dark'),
 
@@ -32,103 +15,5 @@ document.addEventListener('alpine:init', () => {
 
             document.documentElement.classList.toggle('dark', this.dark);
         }
-    }))
-})
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    function slideUp(element, duration = 300) {
-        element.style.height = element.offsetHeight + 'px';
-        element.offsetHeight; // force repaint
-
-        element.style.transitionProperty = 'height, margin, padding';
-        element.style.transitionDuration = duration + 'ms';
-        element.style.overflow = 'hidden';
-
-        element.style.height = 0;
-        element.style.paddingTop = 0;
-        element.style.paddingBottom = 0;
-        element.style.marginTop = 0;
-        element.style.marginBottom = 0;
-
-        setTimeout(() => {
-            element.style.display = 'none';
-            element.style.removeProperty('height');
-            element.style.removeProperty('padding-top');
-            element.style.removeProperty('padding-bottom');
-            element.style.removeProperty('margin-top');
-            element.style.removeProperty('margin-bottom');
-            element.style.removeProperty('overflow');
-            element.style.removeProperty('transition-duration');
-            element.style.removeProperty('transition-property');
-        }, duration);
-    }
-
-    function slideDown(element, duration = 300) {
-        element.style.removeProperty('display');
-
-        let display = window.getComputedStyle(element).display;
-        if (display === 'none') display = 'block';
-
-        element.style.display = display;
-
-        let height = element.scrollHeight;
-
-        element.style.overflow = 'hidden';
-        element.style.height = 0;
-        element.style.paddingTop = 0;
-        element.style.paddingBottom = 0;
-        element.style.marginTop = 0;
-        element.style.marginBottom = 0;
-
-        element.offsetHeight;
-
-        element.style.transitionProperty = "height, margin, padding";
-        element.style.transitionDuration = duration + "ms";
-
-        element.style.height = height + 'px';
-
-        element.style.removeProperty('padding-top');
-        element.style.removeProperty('padding-bottom');
-        element.style.removeProperty('margin-top');
-        element.style.removeProperty('margin-bottom');
-
-        setTimeout(() => {
-            element.style.removeProperty('height');
-            element.style.removeProperty('overflow');
-            element.style.removeProperty('transition-duration');
-            element.style.removeProperty('transition-property');
-        }, duration);
-    }
-
-    function slideToggle(element, duration = 300) {
-        if (window.getComputedStyle(element).display === 'none') {
-            slideDown(element, duration);
-        } else {
-            slideUp(element, duration);
-        }
-    }
-
-    function initToggle(titleSelector, boxSelector, contentSelector) {
-        document.addEventListener('click', function (event) {
-            const title = event.target.closest(titleSelector);
-            if (!title) return;
-
-            const box = title.closest(boxSelector);
-            if (!box) return;
-
-            const content = box.querySelector(contentSelector);
-            if (!content) return;
-
-            slideToggle(content, 300);
-        });
-    }
-
-    // پیش‌فرض بسته
-    document.querySelectorAll('.sh313_toggle_box_content, .properties_dl_box_content')
-        .forEach(el => el.style.display = 'none');
-
-    initToggle('.sh313_toggle_box_title', '.sh313_toggle_box', '.sh313_toggle_box_content');
-    initToggle('.properties_dl_box_title', '.properties_dl_box', '.properties_dl_box_content');
-
+    }));
 });

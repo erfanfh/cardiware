@@ -80,7 +80,7 @@
                             class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 dark:text-slate-500">
                             @include('icons.search-01')
                         </span>
-                        <div x-data="typingPlaceholder()">
+                        <div x-data="typingPlaceholder">
                             <input
                                 type="search"
                                 name="q"
@@ -163,50 +163,3 @@
 @include('front.header.navigation.mobile', [
     'items' => $headerNavigationItems ?? collect(),
 ])
-
-@push('scripts')
-    <script>
-        function typingPlaceholder() {
-            return {
-                texts: [
-                    "دنبال چی می‌گردی؟",
-                    "دنبال پچ های لیگ ایران هستی؟",
-                    "فیس پک تیم های فوتبال رو میخوای؟",
-                    "میخوای بازی هاتو آپدیت کنی؟",
-                    "دنبال آموزش های فنی هستی؟",
-                    "کرک بازی های جدید رو میخوای؟",
-                    "تو مودینگ وی همه چیز پیدا میشه!",
-                ],
-                currentText: "",
-                textIndex: 0,
-                charIndex: 0,
-                typing: true,
-
-                init() {
-                    this.loop();
-                },
-
-                loop() {
-                    let current = this.texts[this.textIndex];
-
-                    if (this.typing) {
-                        this.currentText = current.substring(0, this.charIndex++);
-                        if (this.charIndex > current.length) {
-                            this.typing = false;
-                            setTimeout(() => this.loop(), 1200);
-                            return;
-                        }
-                    } else {
-                        this.currentText = current.substring(0, this.charIndex--);
-                        if (this.charIndex <= 0) {
-                            this.typing = true;
-                            this.textIndex = (this.textIndex + 1) % this.texts.length;
-                        }
-                    }
-
-                    setTimeout(() => this.loop(), this.typing ? 70 : 40);
-                }
-            }
-        }
-    </script>
-@endpush
