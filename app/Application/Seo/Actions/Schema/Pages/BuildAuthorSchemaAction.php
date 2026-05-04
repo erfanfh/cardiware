@@ -29,7 +29,9 @@ final class BuildAuthorSchemaAction
         $websiteId = $websiteNode['@id'] ?? null;
         $breadcrumbId = $breadcrumbNode['@id'] ?? null;
         $primaryImageId = $context->pageImageSchemaId;
-        $personId = $this->schemaIdGenerator->custom($context->pageUrl, '#person');
+
+        $authorUrl = rtrim((string)$context->authorUrl, '/') . '/';
+        $personId = $this->schemaIdGenerator->custom($authorUrl, '#person');
 
         return [
             '@type' => 'ProfilePage',
