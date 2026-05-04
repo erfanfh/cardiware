@@ -4,13 +4,15 @@
     <main class="mx-auto max-w-7xl px-4 py-8">
         @include('front.pages.partials.detail.title')
 
-        <section class="grid grid-cols-1 lg:grid-cols-10 gap-6">
-            <div class="lg:col-span-7 space-y-6">
+        <section data-smart-sidebar-layout class="grid grid-cols-1 gap-6 lg:grid-cols-10 lg:items-start">
+            <div data-smart-sidebar-content class="lg:col-span-7 space-y-6">
                 @include('front.pages.partials.detail.content')
             </div>
 
-            <div class="lg:col-span-3">
-                @include('front.sidebar.index')
+            <div data-smart-sidebar-column class="lg:col-span-3">
+                <div data-smart-sidebar-box>
+                    @include('front.sidebar.index')
+                </div>
             </div>
         </section>
     </main>
