@@ -152,7 +152,7 @@
 
                                     <div class="min-w-0 text-sm leading-7">
                                         <span
-                                            class="font-extrabold text-brand-600 dark:text-brand-300">رمز فایل ها:</span>
+                                            class="font-extrabold text-brand-600 dark:text-brand-300">رمز فایل ها در صورت نیاز:</span>
                                         <span class="mr-2 break-all font-extrabold text-slate-800 dark:text-slate-100"
                                               dir="ltr">
                                             {{ $section->password }}
