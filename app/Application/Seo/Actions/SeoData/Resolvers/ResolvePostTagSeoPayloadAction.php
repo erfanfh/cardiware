@@ -32,6 +32,7 @@ final class ResolvePostTagSeoPayloadAction
                 ?: $tag->title;
 
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
+        $title = $this->appendPaginationToTitle($title);
 
         $descriptionTemplate = $tag->seoMeta?->description
             ?: get_setting('seo', 'post_tag_seo_description')
@@ -53,9 +54,7 @@ final class ResolvePostTagSeoPayloadAction
 
         $image = $this->resolveFallbackImage($tag);
 
-        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            fallbackUrl: $this->resolveCurrentPageUrl($tag),
-        );
+        $canonicalUrl = $this->resolveCanonicalUrl($tag);
 
         return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
@@ -108,15 +107,75 @@ final class ResolvePostTagSeoPayloadAction
         return $post?->picture;
     }
 
+    protected function resolveCanonicalUrl(TaxonomyTerm $tag): string
+    {
+        $currentPageUrl = $this->resolveCurrentPageUrl($tag);
+
+        if ($this->currentPage() > 1) {
+            return $currentPageUrl;
+        }
+
+        return $this->resolveCanonicalUrlAction->execute(
+            fallbackUrl: $currentPageUrl,
+        );
+    }
+
     protected function resolveCurrentPageUrl(TaxonomyTerm $tag): string
     {
-        $baseUrl = front_route('posts.tags', ['path' => $tag->path]);
-        $page = max(1, (int)request()->integer('page', 1));
+        return $this->buildPaginatedUrl(
+            baseUrl: front_route('posts.tags', ['path' => $tag->path]),
+            page: $this->currentPage(),
+        );
+    }
+
+    protected function buildPaginatedUrl(string $baseUrl, int $page): string
+    {
+        $baseUrl = rtrim($baseUrl, '/') . '/';
 
         if ($page <= 1) {
             return $baseUrl;
         }
 
-        return $baseUrl . '?page=' . $page;
+        return $baseUrl . 'page/' . $page . '/';
+    }
+
+    protected function currentPage(): int
+    {
+        return max(1, (int)request()->route('page', 1));
+    }
+
+    protected function appendPaginationToTitle(string $title): string
+    {
+        $page = $this->currentPage();
+
+        if ($page <= 1) {
+            return $title;
+        }
+
+        $lastPage = request()->attributes->get('seo_paginator')?->lastPage();
+
+        if ($lastPage) {
+            return $this->appendBeforeSiteName($title, "صفحه {$page} از {$lastPage}");
+        }
+
+        return $this->appendBeforeSiteName($title, "صفحه {$page}");
+    }
+
+    protected function appendBeforeSiteName(string $title, string $paginationText): string
+    {
+        $separator = ' | ';
+        $parts = explode($separator, $title);
+
+        if (count($parts) >= 2) {
+            $siteName = array_pop($parts);
+
+            return implode($separator, $parts)
+                . $separator
+                . $paginationText
+                . $separator
+                . $siteName;
+        }
+
+        return $title . $separator . $paginationText;
     }
 }
