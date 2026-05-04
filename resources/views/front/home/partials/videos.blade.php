@@ -40,15 +40,6 @@
 
                             <div
                                 class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent"></div>
-
-                            <div class="absolute top-3 right-3 flex items-center gap-2">
-                                @foreach($post->categories as $category)
-                                    <span
-                                        class="inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1 text-xs font-extrabold text-slate-900 dark:bg-slate-950/90 dark:text-slate-100">
-                                        {{ $category->title }}
-                                    </span>
-                                @endforeach
-                            </div>
                         </div>
 
                         <div class="p-4">
@@ -56,10 +47,6 @@
                                 <div class="min-w-0">
                                     <div class="text-sm font-extrabold text-white truncate">
                                         {{ $post->title }}
-                                    </div>
-
-                                    <div class="mt-2 text-xs text-white/70 line-clamp-2 leading-6">
-                                        {{ $post->excerpt() }}
                                     </div>
                                 </div>
                             </div>

@@ -66,7 +66,6 @@ class GetHomeVideosBlockAction
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',
-                'categories',
             ])
             ->whereHas('categories', function ($query) use ($categoryIds): void {
                 $query->whereIn('taxonomy_terms.id', $categoryIds);
