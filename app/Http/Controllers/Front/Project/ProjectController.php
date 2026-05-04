@@ -30,7 +30,8 @@ class ProjectController extends Controller
      *
      * @param Request $request
      * @param GetProjectListPageDataAction $action
-     * @return View
+     * @param int|null $page
+     * @return View|RedirectResponse
      */
     public function list(
         Request                      $request,
