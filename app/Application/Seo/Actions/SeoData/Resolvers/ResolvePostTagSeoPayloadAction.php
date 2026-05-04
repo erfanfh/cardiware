@@ -93,18 +93,45 @@ final class ResolvePostTagSeoPayloadAction
         return '';
     }
 
-    protected function resolveFallbackImage(TaxonomyTerm $tag): ?MediaFile
+    protected function resolveFallbackImage(TaxonomyTerm $term): ?MediaFile
     {
-        if (!method_exists($tag, 'posts')) {
+        $imageFromCurrentPage = $this->resolveImageFromCurrentPagePosts();
+
+        if ($imageFromCurrentPage) {
+            return $imageFromCurrentPage;
+        }
+
+        if (!method_exists($term, 'posts')) {
             return null;
         }
 
-        $post = $tag->posts()
+        $post = $term->posts()
             ->with(['picture.primaryVariant'])
             ->latest('published_at')
             ->first();
 
         return $post?->picture;
+    }
+
+    protected function resolveImageFromCurrentPagePosts(): ?MediaFile
+    {
+        $paginator = request()->attributes->get('seo_paginator');
+
+        if (!$paginator) {
+            return null;
+        }
+
+        foreach ($paginator->items() as $post) {
+            if ($post->relationLoaded('picture') && $post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+
+            if ($post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+        }
+
+        return null;
     }
 
     protected function resolveCanonicalUrl(TaxonomyTerm $tag): string
