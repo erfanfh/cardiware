@@ -3,7 +3,6 @@
 namespace App\Application\Seo\Actions\SeoData\Resolvers;
 
 use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
-use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\SearchSeoVariableDataBuilder;
@@ -12,7 +11,6 @@ use App\Domain\Media\Models\MediaFile;
 final class ResolveSearchSeoPayloadAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction         $getSeoDefaultsAction,
         protected ResolveCanonicalUrlAction    $resolveCanonicalUrlAction,
         protected SeoTemplateParser            $seoTemplateParser,
         protected SearchSeoVariableDataBuilder $searchSeoVariableDataBuilder,
@@ -31,8 +29,9 @@ final class ResolveSearchSeoPayloadAction
         $descriptionTemplate = get_setting('seo', 'search_seo_description')
             ?: 'نتایج جستجو برای {search_term} در {site_title} را مشاهده کنید.';
 
-        $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
-        $title = $this->appendPaginationToTitle($title);
+        $title = $this->appendPaginationToTitle(
+            $this->seoTemplateParser->parse($titleTemplate, $variables)
+        );
 
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
 
@@ -80,7 +79,7 @@ final class ResolveSearchSeoPayloadAction
     {
         $currentPageUrl = $this->resolveCurrentPageUrl($searchTerm);
 
-        if ($this->currentPage() > 1) {
+        if (filled($searchTerm) || $this->currentPage() > 1) {
             return $currentPageUrl;
         }
 
@@ -97,10 +96,8 @@ final class ResolveSearchSeoPayloadAction
             $query['q'] = $searchTerm;
         }
 
-        $page = $this->currentPage();
-
-        if ($page > 1) {
-            $query['page'] = $page;
+        if ($this->currentPage() > 1) {
+            $query['page'] = $this->currentPage();
         }
 
         return front_route('search', $query);
@@ -121,11 +118,10 @@ final class ResolveSearchSeoPayloadAction
 
         $lastPage = request()->attributes->get('seo_paginator')?->lastPage();
 
-        if ($lastPage) {
-            return $this->appendBeforeSiteName($title, "صفحه {$page} از {$lastPage}");
-        }
-
-        return $this->appendBeforeSiteName($title, "صفحه {$page}");
+        return $this->appendBeforeSiteName(
+            $title,
+            $lastPage ? "صفحه {$page} از {$lastPage}" : "صفحه {$page}"
+        );
     }
 
     protected function appendBeforeSiteName(string $title, string $paginationText): string
@@ -150,7 +146,7 @@ final class ResolveSearchSeoPayloadAction
     {
         $paginator = request()->attributes->get('seo_paginator');
 
-        if (!$paginator) {
+        if (!$paginator || !method_exists($paginator, 'items')) {
             return null;
         }
 
