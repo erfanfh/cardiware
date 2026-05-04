@@ -16,7 +16,7 @@ class SearchController extends Controller
         $type = $request->type ?? 'posts';
         $searchTerm = trim((string)$request->q);
 
-        $postsQuery = Post::query()
+        $posts = Post::query()
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',
@@ -24,23 +24,23 @@ class SearchController extends Controller
             ])
             ->where('title', 'LIKE', '%' . $searchTerm . '%');
 
-        $projectsQuery = Project::query()
+        $projects = Project::query()
             ->where('title', 'LIKE', '%' . $searchTerm . '%');
 
         if ($type === 'posts') {
-            $posts = $postsQuery->latest()->paginate(12)->withQueryString();
+            $posts = $posts->latest()->paginate(12)->withQueryString();
 
             request()->attributes->set('seo_paginator', $posts);
 
             $postsCount = $posts->total();
-            $projectsCount = $projectsQuery->count();
+            $projectsCount = $projects->count();
         } elseif ($type === 'projects') {
-            $projects = $projectsQuery->latest()->paginate(9)->withQueryString();
+            $projects = $projects->latest()->paginate(9)->withQueryString();
 
             request()->attributes->set('seo_paginator', $projects);
 
             $projectsCount = $projects->total();
-            $postsCount = $postsQuery->count();
+            $postsCount = $posts->count();
         } else {
             return redirect()->route('search', ['q' => $searchTerm]);
         }
