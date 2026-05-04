@@ -87,7 +87,7 @@
                             <div class="text-slate-300 text-4xl font-black leading-none dark:text-slate-700">“</div>
                         </div>
 
-                        <p class="mt-4 text-sm text-slate-700 leading-7 line-clamp-4 dark:text-slate-300">
+                        <p class="mt-4 text-sm text-slate-700 leading-7 dark:text-slate-300">
                             {!! nl2br(htmlspecialchars(e($item['text']))) !!}
                         </p>
 
