@@ -22,8 +22,6 @@ final class ResolveSearchSeoPayloadAction
 
     public function execute(): ResolvedSeoPayloadDTO
     {
-        $defaults = $this->getSeoDefaultsAction->execute();
-
         $searchTerm = $this->resolveSearchTerm();
         $variables = $this->searchSeoVariableDataBuilder->build($searchTerm);
 
@@ -34,17 +32,16 @@ final class ResolveSearchSeoPayloadAction
             ?: 'نتایج جستجو برای {search_term} در {site_title} را مشاهده کنید.';
 
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
+        $title = $this->appendPaginationToTitle($title);
+
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
 
         $image = $this->resolvePrimaryImage();
-
-        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            fallbackUrl: $this->resolveCurrentPageUrl($searchTerm),
-        );
+        $canonicalUrl = $this->resolveCanonicalUrl($searchTerm);
 
         return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
-            robots: $defaults['robots'],
+            robots: 'noindex, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
 
             title: $title,
             description: $description,
@@ -79,6 +76,19 @@ final class ResolveSearchSeoPayloadAction
         return trim((string)request()->query('q', request()->query('s', '')));
     }
 
+    protected function resolveCanonicalUrl(string $searchTerm): string
+    {
+        $currentPageUrl = $this->resolveCurrentPageUrl($searchTerm);
+
+        if ($this->currentPage() > 1) {
+            return $currentPageUrl;
+        }
+
+        return $this->resolveCanonicalUrlAction->execute(
+            fallbackUrl: $currentPageUrl,
+        );
+    }
+
     protected function resolveCurrentPageUrl(string $searchTerm): string
     {
         $query = [];
@@ -87,7 +97,7 @@ final class ResolveSearchSeoPayloadAction
             $query['q'] = $searchTerm;
         }
 
-        $page = max(1, (int)request()->integer('page', 1));
+        $page = $this->currentPage();
 
         if ($page > 1) {
             $query['page'] = $page;
@@ -96,8 +106,64 @@ final class ResolveSearchSeoPayloadAction
         return front_route('search', $query);
     }
 
+    protected function currentPage(): int
+    {
+        return max(1, (int)request()->integer('page', 1));
+    }
+
+    protected function appendPaginationToTitle(string $title): string
+    {
+        $page = $this->currentPage();
+
+        if ($page <= 1) {
+            return $title;
+        }
+
+        $lastPage = request()->attributes->get('seo_paginator')?->lastPage();
+
+        if ($lastPage) {
+            return $this->appendBeforeSiteName($title, "صفحه {$page} از {$lastPage}");
+        }
+
+        return $this->appendBeforeSiteName($title, "صفحه {$page}");
+    }
+
+    protected function appendBeforeSiteName(string $title, string $paginationText): string
+    {
+        $separator = ' | ';
+        $parts = explode($separator, $title);
+
+        if (count($parts) >= 2) {
+            $siteName = array_pop($parts);
+
+            return implode($separator, $parts)
+                . $separator
+                . $paginationText
+                . $separator
+                . $siteName;
+        }
+
+        return $title . $separator . $paginationText;
+    }
+
     protected function resolvePrimaryImage(): ?MediaFile
     {
+        $paginator = request()->attributes->get('seo_paginator');
+
+        if (!$paginator) {
+            return null;
+        }
+
+        foreach ($paginator->items() as $post) {
+            if ($post->relationLoaded('picture') && $post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+
+            if ($post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+        }
+
         return null;
     }
 }
