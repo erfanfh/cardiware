@@ -154,7 +154,7 @@ class UpdatePostRequest extends FormRequest
                 'existing' => $existing,
                 'new' => $new,
             ],
-            'author_id' => auth()->user()->id,
+            'author_id' => $this->route('post')?->author_id ?? auth()->id(),
             'published_at' => $this->input('published_at') ? gregorian_date($this->input('published_at')) : date('Y-m-d H:i:s'),
         ]);
     }
