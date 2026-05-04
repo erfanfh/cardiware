@@ -53,6 +53,7 @@ final class ResolvePostCategorySeoPayloadAction
         $ogDescription = $this->seoTemplateParser->parse($ogDescriptionTemplate, $variables);
 
         $image = $this->resolveFallbackImage($category);
+        $imageCaption = $this->resolveImageCaption($category, $image);
 
         $canonicalUrl = $this->resolveCanonicalUrl($category);
 
@@ -76,7 +77,7 @@ final class ResolvePostCategorySeoPayloadAction
             pageImageUrl: $image?->url,
             pageImageWidth: $image?->primaryVariant?->width,
             pageImageHeight: $image?->primaryVariant?->height,
-            pageImageCaption: $category->title,
+            pageImageCaption: $imageCaption,
 
             keywords: [$category->title],
         );
@@ -132,6 +133,21 @@ final class ResolvePostCategorySeoPayloadAction
         }
 
         return null;
+    }
+
+    protected function resolveImageCaption(TaxonomyTerm $term, ?MediaFile $image): string
+    {
+        $paginator = request()->attributes->get('seo_paginator');
+
+        if ($paginator) {
+            foreach ($paginator->items() as $post) {
+                if ($post->picture instanceof MediaFile && $post->picture->is($image)) {
+                    return $post->title;
+                }
+            }
+        }
+
+        return $term->title;
     }
 
     protected function resolveCurrentPageUrl(TaxonomyTerm $category): string

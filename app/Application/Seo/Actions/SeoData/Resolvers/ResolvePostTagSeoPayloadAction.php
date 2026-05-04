@@ -53,6 +53,7 @@ final class ResolvePostTagSeoPayloadAction
         $ogDescription = $this->seoTemplateParser->parse($ogDescriptionTemplate, $variables);
 
         $image = $this->resolveFallbackImage($tag);
+        $imageCaption = $this->resolveImageCaption($tag, $image);
 
         $canonicalUrl = $this->resolveCanonicalUrl($tag);
 
@@ -76,7 +77,7 @@ final class ResolvePostTagSeoPayloadAction
             pageImageUrl: $image?->url,
             pageImageWidth: $image?->primaryVariant?->width,
             pageImageHeight: $image?->primaryVariant?->height,
-            pageImageCaption: $tag->title,
+            pageImageCaption: $imageCaption,
 
             keywords: [$tag->title],
         );
@@ -132,6 +133,21 @@ final class ResolvePostTagSeoPayloadAction
         }
 
         return null;
+    }
+
+    protected function resolveImageCaption(TaxonomyTerm $term, ?MediaFile $image): string
+    {
+        $paginator = request()->attributes->get('seo_paginator');
+
+        if ($paginator) {
+            foreach ($paginator->items() as $post) {
+                if ($post->picture instanceof MediaFile && $post->picture->is($image)) {
+                    return $post->title;
+                }
+            }
+        }
+
+        return $term->title;
     }
 
     protected function resolveCanonicalUrl(TaxonomyTerm $tag): string
