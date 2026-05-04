@@ -17,7 +17,8 @@ final class PostListSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('posts.list');
+        return $context->routeIs('posts.list')
+            || $context->routeIs('posts.list.page');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO

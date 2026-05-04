@@ -6,7 +6,13 @@ use App\Http\Controllers\Front\Content\PostListController;
 use App\Http\Middleware\ForceTrailingSlash;
 
 Route::middleware(ForceTrailingSlash::class)->group(function () {
-    Route::get('posts', PostListController::class)->name('posts.list');
+    Route::get('posts/page/{page}', PostListController::class)
+        ->whereNumber('page')
+        ->name('posts.list.page');
+
+    Route::get('posts', PostListController::class)
+        ->name('posts.list');
+
     Route::get('author/{user:username}/page/{page}', AuthorController::class)
         ->whereNumber('page')
         ->name('author.page');
