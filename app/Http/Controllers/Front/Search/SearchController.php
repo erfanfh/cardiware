@@ -14,30 +14,43 @@ class SearchController extends Controller
     public function index(Request $request): RedirectResponse|View
     {
         $type = $request->type ?? 'posts';
+        $searchTerm = trim((string)$request->q);
 
-        $posts = Post::query()
+        $postsQuery = Post::query()
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',
-                'categories'
+                'categories',
             ])
-            ->where('title', 'LIKE', '%' . $request->q . '%');
+            ->where('title', 'LIKE', '%' . $searchTerm . '%');
 
-        $projects = Project::query()
-            ->where('title', 'LIKE', '%' . $request->q . '%');
+        $projectsQuery = Project::query()
+            ->where('title', 'LIKE', '%' . $searchTerm . '%');
 
         if ($type === 'posts') {
-            $posts = $posts->latest()->paginate(12)->withQueryString();
+            $posts = $postsQuery->latest()->paginate(12)->withQueryString();
+
+            request()->attributes->set('seo_paginator', $posts);
+
             $postsCount = $posts->total();
-            $projectsCount = $projects->count();
+            $projectsCount = $projectsQuery->count();
         } elseif ($type === 'projects') {
-            $projects = $projects->latest()->paginate(9)->withQueryString();
+            $projects = $projectsQuery->latest()->paginate(9)->withQueryString();
+
+            request()->attributes->set('seo_paginator', $projects);
+
             $projectsCount = $projects->total();
-            $postsCount = $posts->count();
+            $postsCount = $postsQuery->count();
         } else {
-            return redirect()->route('search', ['q' => $request->q]);
+            return redirect()->route('search', ['q' => $searchTerm]);
         }
 
-        return view('front.search', compact('posts', 'projects', 'type', 'postsCount', 'projectsCount'));
+        return view('front.search', compact(
+            'posts',
+            'projects',
+            'type',
+            'postsCount',
+            'projectsCount'
+        ));
     }
 }
