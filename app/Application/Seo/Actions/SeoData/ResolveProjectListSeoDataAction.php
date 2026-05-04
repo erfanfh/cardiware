@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Actions\SeoData;
 
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\ResolveSeoPaginationLinksAction;
 use App\Application\Seo\Actions\Schema\Graphs\BuildProjectListSchemaGraphAction;
 use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
 use App\Application\Seo\Actions\SeoData\Resolvers\ResolveProjectListSeoPayloadAction;
@@ -18,6 +19,7 @@ final class ResolveProjectListSeoDataAction
         protected ResolveProjectListSeoPayloadAction $resolveProjectListSeoPayloadAction,
         protected BuildProjectListSchemaGraphAction  $buildProjectListSchemaGraphAction,
         protected RenderSchemaGraphAction            $renderSchemaGraphAction,
+        protected ResolveSeoPaginationLinksAction    $resolveSeoPaginationLinksAction,
     )
     {
     }
@@ -29,6 +31,9 @@ final class ResolveProjectListSeoDataAction
 
         $schemaGraph = $this->buildProjectListSchemaGraphAction->execute($payload);
         $schemaJson = $this->renderSchemaGraphAction->execute($schemaGraph);
+
+        $paginator = request()->attributes->get('seo_paginator');
+        $paginationBaseUrl = request()->attributes->get('seo_pagination_base_url');
 
         return new SeoDataDTO(
             robots: $payload->robots ?: $defaults['robots'],
@@ -55,6 +60,9 @@ final class ResolveProjectListSeoDataAction
                 image: $payload->xImageUrl,
             ),
             schemaJson: $schemaJson,
+            pagination: $paginator && $paginationBaseUrl
+                ? $this->resolveSeoPaginationLinksAction->execute($paginator, $paginationBaseUrl)
+                : null,
         );
     }
 }

@@ -17,7 +17,8 @@ final class ProjectListSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('projects.list');
+        return $context->routeIs('projects.list')
+            || $context->routeIs('projects.list.page');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
