@@ -15,11 +15,22 @@
         @include('icons.notification-01')
 
         @if(count($notifications) > 0)
+            {{-- Outer pulse halo --}}
             <span
-                class="absolute -top-1 -left-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-brand-500 text-white text-[10px] font-bold leading-none grid place-items-center border-2 border-white dark:border-slate-900"
+                class="pointer-events-none absolute -top-1 -left-1 h-5 w-5 rounded-full bg-brand-500/35 animate-[notificationPing_1.8s_ease-out_infinite]"
+            ></span>
+
+            {{-- Soft glow --}}
+            <span
+                class="pointer-events-none absolute -top-1 -left-1 h-5 w-5 rounded-full bg-brand-500/30 blur-[6px] animate-pulse"
+            ></span>
+
+            {{-- Badge --}}
+            <span
+                class="absolute -top-1 -left-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-brand-500 text-white text-[10px] font-bold leading-none grid place-items-center border-2 border-white shadow-lg shadow-brand-500/30 dark:border-slate-900 animate-[badgePop_1.8s_ease-in-out_infinite]"
             >
-                {{ count($notifications) > 9 ? '9+' : count($notifications) }}
-            </span>
+            {{ count($notifications) > 9 ? '9+' : count($notifications) }}
+        </span>
         @endif
     </button>
 
