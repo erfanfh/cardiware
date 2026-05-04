@@ -18,7 +18,8 @@ class AuthorSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('author')
+        return ($context->routeIs('author')
+                || $context->routeIs('author.page'))
             && $context->request->route('user') instanceof User;
     }
 
@@ -30,6 +31,13 @@ class AuthorSeoResolver implements SeoResolverInterface
             throw new \RuntimeException('Resolved content is not an author.');
         }
 
-        return $this->resolveAuthorSeoDataAction->execute($author);
+        $paginator = $context->request->attributes->get('seo_paginator');
+        $paginationBaseUrl = $context->request->attributes->get('seo_pagination_base_url');
+
+        return $this->resolveAuthorSeoDataAction->execute(
+            author: $author,
+            paginator: $paginator,
+            paginationBaseUrl: $paginationBaseUrl,
+        );
     }
 }

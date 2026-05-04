@@ -32,6 +32,7 @@ final class ResolveAuthorSeoPayloadAction
 
         $titleTemplate = '{author_name}، نویسنده در {site_title}';
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
+        $title = $this->appendPaginationToTitle($title);
 
         $description = $this->resolveDescription($author, $siteName);
 
@@ -40,9 +41,7 @@ final class ResolveAuthorSeoPayloadAction
 
         $image = $this->resolvePrimaryImage($author);
 
-        $canonicalUrl = $this->resolveCanonicalUrlAction->execute(
-            fallbackUrl: $this->resolveCurrentPageUrl($author),
-        );
+        $canonicalUrl = $this->resolveCanonicalUrl($author);
 
         $sameAs = array_merge([$defaults['site_url']], $this->resolveSameAs($author));
 
@@ -108,6 +107,12 @@ final class ResolveAuthorSeoPayloadAction
             return $directImage;
         }
 
+        $imageFromCurrentPage = $this->resolveImageFromCurrentPagePosts();
+
+        if ($imageFromCurrentPage) {
+            return $imageFromCurrentPage;
+        }
+
         if (method_exists($author, 'posts')) {
             $post = $author->posts()
                 ->with(['picture.primaryVariant'])
@@ -120,16 +125,97 @@ final class ResolveAuthorSeoPayloadAction
         return null;
     }
 
+    protected function resolveImageFromCurrentPagePosts(): ?MediaFile
+    {
+        $paginator = request()->attributes->get('seo_paginator');
+
+        if (!$paginator) {
+            return null;
+        }
+
+        foreach ($paginator->items() as $post) {
+            if ($post->relationLoaded('picture') && $post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+
+            if ($post->picture instanceof MediaFile) {
+                return $post->picture;
+            }
+        }
+
+        return null;
+    }
+
+    protected function resolveCanonicalUrl(User $author): string
+    {
+        $currentPageUrl = $this->resolveCurrentPageUrl($author);
+
+        if ($this->currentPage() > 1) {
+            return $currentPageUrl;
+        }
+
+        return $this->resolveCanonicalUrlAction->execute(
+            fallbackUrl: $currentPageUrl,
+        );
+    }
+
     protected function resolveCurrentPageUrl(User $author): string
     {
-        $baseUrl = front_route('author', $author);
-        $page = max(1, (int)request()->integer('page', 1));
+        return $this->buildPaginatedUrl(
+            baseUrl: front_route('author', $author),
+            page: $this->currentPage(),
+        );
+    }
+
+    protected function buildPaginatedUrl(string $baseUrl, int $page): string
+    {
+        $baseUrl = rtrim($baseUrl, '/') . '/';
 
         if ($page <= 1) {
             return $baseUrl;
         }
 
-        return $baseUrl . '?page=' . $page;
+        return $baseUrl . 'page/' . $page . '/';
+    }
+
+    protected function currentPage(): int
+    {
+        return max(1, (int)request()->route('page', 1));
+    }
+
+    protected function appendPaginationToTitle(string $title): string
+    {
+        $page = $this->currentPage();
+
+        if ($page <= 1) {
+            return $title;
+        }
+
+        $lastPage = request()->attributes->get('seo_paginator')?->lastPage();
+
+        if ($lastPage) {
+            return $this->appendBeforeSiteName($title, "صفحه {$page} از {$lastPage}");
+        }
+
+        return $this->appendBeforeSiteName($title, "صفحه {$page}");
+    }
+
+    protected function appendBeforeSiteName(string $title, string $paginationText): string
+    {
+        $separator = ' | ';
+        $parts = explode($separator, $title);
+
+        if (count($parts) >= 2) {
+            $siteName = array_pop($parts);
+
+            return implode($separator, $parts)
+                . $separator
+                . $paginationText
+                . $separator
+                . $siteName;
+        }
+
+        return $title . $separator . $paginationText;
     }
 
     /**
