@@ -9,6 +9,8 @@ use App\Application\Seo\Services\PersianTextNormalizer;
 use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
+use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Infrastructure\Support\ReadingTimeEstimator;
 
 final class ResolvePostSeoPayloadAction
@@ -74,7 +76,6 @@ final class ResolvePostSeoPayloadAction
         $modifiedTime = $this->resolveModifiedTime($post, $publishedTime);
 
         $author = $post->author;
-
         $articleContentForAnalysis = $this->resolveArticleContentForAnalysis($post);
 
         return new ResolvedSeoPayloadDTO(
@@ -101,21 +102,15 @@ final class ResolvePostSeoPayloadAction
             pageImageUrl: $post->picture?->url,
             pageImageWidth: $post->picture?->primaryVariant?->width,
             pageImageHeight: $post->picture?->primaryVariant?->height,
-            pageImageCaption: $post->title,
+            pageImageCaption: $this->resolveImageCaption($post->picture, $post->title),
 
             publishedTime: $publishedTime,
             modifiedTime: $modifiedTime,
 
             authorName: $author?->display_name,
-            authorUrl: $author
-                ? front_route('author', $author)
-                : null,
-            authorIdentifier: $author?->id
-                ? (string)$author->id
-                : $author?->display_name,
-            authorSameAs: [$author
-                ? front_route('author', $author)
-                : url('/')],
+            authorUrl: $author ? front_route('author', $author) : null,
+            authorIdentifier: $author?->id ? (string)$author->id : $author?->display_name,
+            authorSameAs: $this->resolveAuthorSameAs($author),
 
             wordCount: $this->estimateWordCount($articleContentForAnalysis),
             commentCount: $post->approved_comments_count ?? 0,
@@ -124,6 +119,45 @@ final class ResolvePostSeoPayloadAction
 
             readingTimeLabel: $this->readingTimeEstimator->estimate($articleContentForAnalysis) . ' دقیقه',
         );
+    }
+
+    protected function resolveImageCaption(?MediaFile $image, string $fallback): string
+    {
+        if (!$image) {
+            return $fallback;
+        }
+
+        $caption = $image->caption
+            ?? $image->alt
+            ?? $image->title
+            ?? $image->name
+            ?? null;
+
+        return filled($caption) ? (string)$caption : $fallback;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function resolveAuthorSameAs(?User $author): array
+    {
+        if (!$author) {
+            return [];
+        }
+
+        $candidates = [
+            $author->website_url ?? null,
+            $author->linkedin_url ?? null,
+            $author->twitter_url ?? null,
+            $author->github_url ?? null,
+            $author->telegram_url ?? null,
+            $author->instagram_url ?? null,
+        ];
+
+        return array_values(array_filter(
+            $candidates,
+            static fn($value) => filled($value)
+        ));
     }
 
     protected function resolveModifiedTime(Post $post, ?string $publishedTime): ?string
@@ -139,9 +173,6 @@ final class ResolvePostSeoPayloadAction
         return $post->updated_at->utc()->toIso8601String();
     }
 
-    /**
-     * @return array<int, string>
-     */
     protected function resolveKeywords(Post $post): array
     {
         return $post->tags
@@ -151,9 +182,6 @@ final class ResolvePostSeoPayloadAction
             ->all();
     }
 
-    /**
-     * @return array<int, string>
-     */
     protected function resolveArticleSections(Post $post): array
     {
         return $post->categories
