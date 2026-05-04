@@ -18,7 +18,8 @@
                 }
             })
         "
-        class="relative overflow-hidden bg-slate-100 dark:bg-slate-800 {{ $wrapperClass }}"
+        class="relative overflow-hidden {{ $wrapperClass }}"
+        x-bind:class="loaded ? 'bg-transparent' : 'bg-slate-100 dark:bg-slate-800'"
     >
         @if($skeleton)
             <div
