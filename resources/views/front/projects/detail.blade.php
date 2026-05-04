@@ -190,7 +190,7 @@
                                                 {!! nl2br(htmlspecialchars(e($item->excerpt))) !!}
                                             </div>
                                         </div>
-                                        <span class="text-[11px] font-extrabold px-2 py-1 rounded-xl border
+                                        <span class="text-[11px] font-extrabold px-2 py-1 rounded-xl border whitespace-nowrap
                                         @if($item->status === RoadmapItemStatusEnum::DONE) text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20
                                         @elseif($item->status === RoadmapItemStatusEnum::INPROGRESS) text-brand-800 bg-brand-50 border-brand-100 dark:text-brand-300 dark:bg-brand-500/10 dark:border-brand-500/20
                                         @else text-slate-700 bg-slate-100 border-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:border-slate-700
