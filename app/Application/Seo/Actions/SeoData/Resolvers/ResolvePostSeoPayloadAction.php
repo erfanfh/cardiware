@@ -10,7 +10,6 @@ use App\Application\Seo\Support\SeoTemplateParser;
 use App\Application\Seo\Support\VariableBuilders\PostSeoVariableDataBuilder;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Models\User;
-use App\Domain\Media\Models\MediaFile;
 use App\Infrastructure\Support\ReadingTimeEstimator;
 
 final class ResolvePostSeoPayloadAction
@@ -102,7 +101,7 @@ final class ResolvePostSeoPayloadAction
             pageImageUrl: $post->picture?->url,
             pageImageWidth: $post->picture?->primaryVariant?->width,
             pageImageHeight: $post->picture?->primaryVariant?->height,
-            pageImageCaption: $this->resolveImageCaption($post->picture, $post->title),
+            pageImageCaption: $post->title,
 
             publishedTime: $publishedTime,
             modifiedTime: $modifiedTime,
@@ -119,21 +118,6 @@ final class ResolvePostSeoPayloadAction
 
             readingTimeLabel: $this->readingTimeEstimator->estimate($articleContentForAnalysis) . ' دقیقه',
         );
-    }
-
-    protected function resolveImageCaption(?MediaFile $image, string $fallback): string
-    {
-        if (!$image) {
-            return $fallback;
-        }
-
-        $caption = $image->caption
-            ?? $image->alt
-            ?? $image->title
-            ?? $image->name
-            ?? null;
-
-        return filled($caption) ? (string)$caption : $fallback;
     }
 
     /**
