@@ -48,7 +48,6 @@ final class BuildAuthorSchemaGraphAction
         $personNode = $this->buildAuthorPersonSchemaAction->execute(
             $author,
             $context,
-            $pageNode,
         );
 
         return $this->assembleSchemaGraphAction->execute(

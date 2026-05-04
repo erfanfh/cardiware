@@ -15,29 +15,30 @@ final class BuildAuthorPersonSchemaAction
     }
 
     /**
-     * @param array<string, mixed> $pageNode
+     * @param User $author
+     * @param SchemaContextDTO $context
      * @return array<string, mixed>
      */
     public function execute(
         User             $author,
         SchemaContextDTO $context,
-        array            $pageNode = [],
     ): array
     {
-        $personId = $this->schemaIdGenerator->custom($context->pageUrl, '#person');
-        $pageId = $pageNode['@id'] ?? $context->pageUrl;
+        $authorUrl = rtrim((string)$context->authorUrl, '/') . '/';
+
+        $personId = $this->schemaIdGenerator->custom($authorUrl, '#person');
 
         return [
             '@type' => 'Person',
             '@id' => $personId,
             'name' => $context->authorName,
-            'url' => $context->authorUrl,
+            'url' => $authorUrl,
             'image' => $context->pageImageSchemaId ? [
                 '@id' => $context->pageImageSchemaId,
             ] : null,
             'sameAs' => $context->authorSameAs,
             'mainEntityOfPage' => [
-                '@id' => $pageId,
+                '@id' => $authorUrl,
             ],
         ];
     }
