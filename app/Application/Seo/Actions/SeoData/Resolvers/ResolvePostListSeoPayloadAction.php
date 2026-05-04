@@ -108,12 +108,6 @@ final class ResolvePostListSeoPayloadAction
             return $title;
         }
 
-        $lastPage = request()->attributes->get('seo_paginator')?->lastPage();
-
-        if ($lastPage) {
-            return $this->appendBeforeSiteName($title, "صفحه {$page} از {$lastPage}");
-        }
-
         return $this->appendBeforeSiteName($title, "صفحه {$page}");
     }
 
