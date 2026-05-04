@@ -68,6 +68,9 @@ final class ResolvePageSeoPayloadAction
             fallbackUrl: $page->url,
         );
 
+        $publishedTime = $page->published_at?->utc()->toIso8601String();
+        $modifiedTime = $this->resolveModifiedTime($page, $publishedTime);
+
         return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $page->seoMeta?->robots ?: $defaults['robots'],
@@ -94,7 +97,23 @@ final class ResolvePageSeoPayloadAction
             pageImageHeight: $page->picture?->primaryVariant?->height,
             pageImageCaption: $page->title,
 
+            publishedTime: $publishedTime,
+            modifiedTime: $modifiedTime,
+
             readingTimeLabel: $this->readingTimeEstimator->estimate($page->body) . ' دقیقه',
         );
+    }
+
+    protected function resolveModifiedTime(Page $page, ?string $publishedTime): ?string
+    {
+        if (!$page->updated_at) {
+            return $publishedTime;
+        }
+
+        if ($page->published_at && $page->updated_at <= $page->published_at) {
+            return $publishedTime;
+        }
+
+        return $page->updated_at->utc()->toIso8601String();
     }
 }
