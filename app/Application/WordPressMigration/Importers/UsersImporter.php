@@ -133,6 +133,12 @@ class UsersImporter
     {
         $base = $wpUser->user_login ?: 'user_' . $wpUser->ID;
 
+        $base = Str::lower(trim($base));
+
+        if ($base === '') {
+            $base = 'user_' . $wpUser->ID;
+        }
+
         $username = $base;
         $counter = 1;
 
