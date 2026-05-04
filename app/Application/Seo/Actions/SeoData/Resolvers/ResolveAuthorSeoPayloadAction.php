@@ -45,6 +45,8 @@ final class ResolveAuthorSeoPayloadAction
 
         $sameAs = array_merge([$defaults['site_url']], $this->resolveSameAs($author));
 
+        $authorProfileUrl = $this->resolveAuthorProfileUrl($author);
+
         return new ResolvedSeoPayloadDTO(
             canonicalUrl: $canonicalUrl,
             robots: $defaults['robots'],
@@ -68,9 +70,14 @@ final class ResolveAuthorSeoPayloadAction
             pageImageCaption: $authorName,
 
             personName: $authorName,
-            personUrl: $canonicalUrl,
+            personUrl: $authorProfileUrl,
             sameAs: $sameAs,
         );
+    }
+
+    protected function resolveAuthorProfileUrl(User $author): string
+    {
+        return rtrim(front_route('author', $author), '/') . '/';
     }
 
     protected function resolveAuthorName(User $author): string
