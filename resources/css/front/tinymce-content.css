@@ -1877,8 +1877,6 @@
 
 .tinymce-content {
     --mw-card-radius: 14px;
-    --mw-card-shadow: 0 10px 30px rgba(15, 23, 42, .06);
-    --mw-card-shadow-hover: 0 16px 40px rgba(15, 23, 42, .10);
     --mw-border-light: rgba(148, 163, 184, .35);
     --mw-text-main: #1e293b;
     --mw-text-muted: #475569;
@@ -1892,19 +1890,8 @@
 .tinymce-content .sh313_link_box,
 .tinymce-content .sh313_dl_box {
     border-radius: var(--mw-card-radius) !important;
-    box-shadow: var(--mw-card-shadow) !important;
     transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease, transform .25s ease;
     overflow: hidden;
-}
-
-.tinymce-content .product_offer_box:hover,
-.tinymce-content .dl_box_shortcode:hover,
-.tinymce-content .alert-box-shortcode:hover,
-.tinymce-content .content-box-shortcode:hover,
-.tinymce-content .sh313_toggle_box:hover,
-.tinymce-content .sh313_link_box:hover,
-.tinymce-content .sh313_dl_box:hover {
-    box-shadow: var(--mw-card-shadow-hover) !important;
 }
 
 .tinymce-content .product_offer_box {
@@ -1977,8 +1964,6 @@
 
 .dark .tinymce-content,
 [data-theme="dark"] .tinymce-content {
-    --mw-card-shadow: 0 10px 30px rgba(0, 0, 0, .22);
-    --mw-card-shadow-hover: 0 16px 44px rgba(0, 0, 0, .32);
     --mw-border-light: rgba(148, 163, 184, .20);
     --mw-text-main: #e5e7eb;
     --mw-text-muted: #cbd5e1;
