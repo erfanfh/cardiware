@@ -62,16 +62,33 @@
                                     headingPlaceholder="اعلان بدون عنوان"
                                     :defaultItem="[
                                         'title' => '',
+                                        'subtitle' => '',
+                                        'url' => '',
                                         'sort_order' => 0,
                                     ]"
                                 >
-                                    <div class="grid grid-cols-1">
+                                    <div class="grid grid-cols-2 gap-5">
                                         <x-admin.field
                                             label="متن اعلان"
+                                            class="col-span-2"
                                         >
                                             <x-admin.form.input
                                                 x-bind:name="field(i, 'title')"
                                                 x-model="it.title"
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="زیرعنوان اعلان">
+                                            <x-admin.form.input
+                                                x-bind:name="field(i, 'subtitle')"
+                                                x-model="it.subtitle"
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="لینک اعلان">
+                                            <x-admin.form.input
+                                                x-bind:name="field(i, 'url')"
+                                                x-model="it.url"
                                             />
                                         </x-admin.field>
                                     </div>

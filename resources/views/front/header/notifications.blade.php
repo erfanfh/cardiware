@@ -54,19 +54,34 @@
 
         <div class="max-h-[24rem] overflow-y-auto">
             @forelse($notifications as $notification)
-                <div
-                    class="group flex items-center gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/70">
+                @php
+                    $hasLink = !empty($notification['url']);
+                    $hasSubtitle = !empty($notification['subtitle']);
+                @endphp
+
+                <a
+                    href="{{ $hasLink ? $notification['url'] : 'javascript:void(0)' }}"
+                    @if(!$hasLink) @click.prevent @endif
+                    class="group flex {{ $hasSubtitle ? 'items-start' : 'items-center' }} gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0
+                   hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/70
+                   {{ $hasLink ? 'cursor-pointer' : 'cursor-default' }}">
                     <span
                         class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                         @include('icons.notification-01')
                     </span>
 
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm font-semibold leading-6 text-slate-700 group-hover:text-slate-900 dark:text-slate-300 dark:group-hover:text-slate-100">
+                        <p class="text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300 {{ $hasLink ? 'group-hover:text-slate-900 dark:group-hover:text-slate-100' : '' }}">
                             {{ $notification['title'] }}
                         </p>
+
+                        @if($hasSubtitle)
+                            <p class="mt-1 text-[0.7rem] text-slate-500 dark:text-slate-400">
+                                {{ $notification['subtitle'] }}
+                            </p>
+                        @endif
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="px-4 py-10 text-center">
                     <div
