@@ -15,13 +15,41 @@
             </button>
 
             <a href="{{ route('home') }}" class="flex min-w-0 flex-1 items-center gap-2 md:flex-none">
-                <div class="h-10 w-10 grid place-items-center">
-                    <img
-                        src="{{ get_setting('header', 'logo')->path }}"
-                        alt="{{ get_setting('general', 'title') }}"
-                        title="{{ get_setting('general', 'title') }}"
-                        class="max-h-11 h-auto object-contain"
-                    />
+                <div class="group/logo relative h-11 w-11 shrink-0 grid place-items-center">
+                    {{-- Animated glow --}}
+                    <span
+                        class="absolute inset-0 rounded-2xl bg-gradient-to-tr from-brand-500 via-orange-300 to-amber-400
+                               opacity-25 blur-md animate-[logoPulse_2.6s_ease-in-out_infinite]
+                               transition-all duration-500
+                               group-hover/logo:opacity-60 group-hover/logo:blur-lg group-hover/logo:scale-125
+                               dark:from-brand-500 dark:via-orange-400 dark:to-amber-300 dark:opacity-30">
+                    </span>
+
+                    {{-- Rotating border --}}
+                    <span
+                        class="absolute inset-0 rounded-2xl p-[1px]
+                               bg-[conic-gradient(from_0deg,rgba(249,115,22,.15),rgba(251,146,60,.95),rgba(245,158,11,.35),rgba(249,115,22,.15))]
+                               animate-[logoSpin_5s_linear_infinite]
+                               opacity-70 transition-all duration-500
+                               group-hover/logo:opacity-100 group-hover/logo:scale-110">
+                    </span>
+
+                    {{-- Logo box --}}
+                    <span
+                        class="relative z-10 h-10 w-10 rounded-2xl bg-white/90 grid place-items-center
+                               shadow-sm ring-1 ring-white/70 overflow-hidden
+                               transition-all duration-500 ease-out
+                               group-hover/logo:scale-110 group-hover/logo:rotate-[-6deg] group-hover/logo:shadow-xl
+                               dark:bg-slate-950/90 dark:ring-slate-700/80">
+                        <img
+                            src="{{ get_setting('header', 'logo')->path }}"
+                            alt="{{ get_setting('general', 'title') }}"
+                            title="{{ get_setting('general', 'title') }}"
+                            class="max-h-10 h-auto object-contain transition-transform duration-500 ease-out
+                                   animate-[logoFloat_3.2s_ease-in-out_infinite]
+                                   group-hover/logo:scale-110 group-hover/logo:rotate-[8deg]"
+                        />
+                    </span>
                 </div>
                 <div class="min-w-0 leading-tight max-[380px]:hidden">
                     <div class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
