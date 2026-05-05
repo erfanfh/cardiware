@@ -52,12 +52,27 @@
                     </span>
                 </div>
                 <div class="min-w-0 leading-tight max-[380px]:hidden">
-                    <div class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
-                        {{ get_setting('general', 'title') }}
-                    </div>
-                    <div class="truncate text-xs text-slate-500 max-sm:hidden dark:text-slate-400">
-                        {{ get_setting('general', 'subtitle') }}
-                    </div>
+                    @if(request()->routeIs('home'))
+                        <h1 class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
+                            {{ get_setting('general', 'title') }}
+                        </h1>
+
+                        @if(filled(get_setting('general', 'subtitle')))
+                            <h2 class="truncate text-xs text-slate-500 max-sm:hidden dark:text-slate-400">
+                                {{ get_setting('general', 'subtitle') }}
+                            </h2>
+                        @endif
+                    @else
+                        <div class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
+                            {{ get_setting('general', 'title') }}
+                        </div>
+
+                        @if(filled(get_setting('general', 'subtitle')))
+                            <div class="truncate text-xs text-slate-500 max-sm:hidden dark:text-slate-400">
+                                {{ get_setting('general', 'subtitle') }}
+                            </div>
+                        @endif
+                    @endif
                 </div>
             </a>
 
