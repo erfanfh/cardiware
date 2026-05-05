@@ -61,7 +61,7 @@
                                                     @endif
 
                                                     @if($item['title'])
-                                                        <h1 class="text-2xl sm:text-3xl font-black leading-tight mt-1">{{ $item['title'] }}</h1>
+                                                        <h3 class="text-2xl sm:text-3xl font-black leading-tight mt-1">{{ $item['title'] }}</h3>
                                                     @endif
                                                 </div>
                                             </div>
