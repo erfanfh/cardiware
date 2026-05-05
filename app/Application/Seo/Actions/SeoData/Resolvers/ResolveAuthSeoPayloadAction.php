@@ -26,11 +26,9 @@ final class ResolveAuthSeoPayloadAction
         $pageTitle = 'ورود / ثبت نام';
         $variables = $this->authSeoVariableDataBuilder->build($pageTitle);
 
-        $titleTemplate = get_setting('seo', 'auth_seo_title')
-            ?: 'ورود / ثبت نام {separator} {site_title}';
+        $titleTemplate = 'ورود / ثبت نام {separator} {site_title}';
 
-        $descriptionTemplate = get_setting('seo', 'auth_seo_description')
-            ?: 'برای ورود به حساب کاربری یا ثبت نام در {site_title} از این صفحه استفاده کنید.';
+        $descriptionTemplate = 'برای ورود به حساب کاربری یا ثبت نام در {site_title} از این صفحه استفاده کنید.';
 
         $title = $this->seoTemplateParser->parse($titleTemplate, $variables);
         $description = $this->seoTemplateParser->parse($descriptionTemplate, $variables);
