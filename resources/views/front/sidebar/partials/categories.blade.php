@@ -13,7 +13,7 @@
                 <a href="{{ front_route('posts.categories', $category) }}"
                    class="flex items-center justify-between text-sm rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
                     <span class="font-semibold text-slate-800 dark:text-slate-200">
-                        {{ $category->title }}
+                        {{ $category->display_title ?: $category->title }}
                     </span>
 
                     <span

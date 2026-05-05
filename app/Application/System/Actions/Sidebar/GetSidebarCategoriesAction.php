@@ -54,7 +54,24 @@ class GetSidebarCategoriesAction
                 $categories = $categories->keyBy('id');
 
                 $orderedCategories = $items
-                    ->map(fn($item) => $categories->get($item['category_id'] ?? null))
+                    ->map(function ($item) use ($categories) {
+                        /** @var TaxonomyTerm|null $category */
+                        $category = $categories->get($item['category_id'] ?? null);
+
+                        if (!$category) {
+                            return null;
+                        }
+
+                        $customTitle = trim((string)($item['custom_title'] ?? ''));
+
+                        if ($customTitle !== '') {
+                            $category->setAttribute('display_title', $customTitle);
+                        } else {
+                            $category->setAttribute('display_title', $category->title);
+                        }
+
+                        return $category;
+                    })
                     ->filter()
                     ->values();
 

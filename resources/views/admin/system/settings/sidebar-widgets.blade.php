@@ -128,6 +128,7 @@
                                         ->map(fn ($item) => [
                                             'category_id' => $item['category_id'] ?? '',
                                             'category_title' => isset($item['category_id']) ? $categoryTitles[$item['category_id']] : null,
+                                            'custom_title' => $item['custom_title'] ?? '',
                                             'sort_order' => $item['sort_order'] ?? 0,
                                         ])
                                         ->all();
@@ -143,6 +144,7 @@
                                     :defaultItem="[
                                         'category_id' => '',
                                         'category_title' => '',
+                                        'custom_title' => '',
                                         'sort_order' => 0,
                                     ]"
                                 >
@@ -162,6 +164,14 @@
                                                 :multiple="false"
                                                 :search-url="route('admin.posts.categories.ajax-search')"
                                                 placeholder="دسته اصلی را انتخاب کنید..."
+                                            />
+                                        </x-admin.field>
+
+                                        <x-admin.field label="عنوان سفارشی">
+                                            <x-admin.form.input
+                                                x-bind:name="field(i, 'custom_title')"
+                                                x-model="it.custom_title"
+                                                placeholder="اگر خالی باشد، عنوان اصلی دسته نمایش داده می‌شود"
                                             />
                                         </x-admin.field>
                                     </div>
