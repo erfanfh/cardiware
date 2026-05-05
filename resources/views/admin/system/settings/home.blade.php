@@ -15,6 +15,7 @@
                     'services' => 'سرویس ها',
                     'products' => 'محصولات فیزیکی',
                     'projects' => 'پروژه‌ها',
+                    'services-options' => 'خدمات و آپشن ها',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
                     'ads' => 'تبلیغات',
@@ -61,6 +62,10 @@
 
                 <x-admin.tabs.panel name="ads">
                     @include('admin.system.settings.partials.home-ads')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="services-options">
+                    @include('admin.system.settings.partials.home-services-options')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>
