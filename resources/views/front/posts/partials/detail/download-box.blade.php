@@ -124,7 +124,7 @@
                                     @if($entry->content)
                                         <div
                                             class="mt-2 break-words px-3 py-2.5 text-sm leading-7 text-slate-700 max-sm:px-0 dark:text-slate-300">
-                                            {!! nl2br(htmlspecialchars(e($entry->content))) !!}
+                                            {!! nl2br(e($entry->content)) !!}
                                         </div>
                                     @endif
                                 </div>
