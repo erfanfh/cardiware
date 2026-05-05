@@ -14,23 +14,26 @@
                 headingKey="title"
                 headingPlaceholder="اسلاید بدون عنوان"
                 :defaultItem="[
-        'title' => '',
-        'subtitle' => '',
-        'top_label_text' => '',
-        'square_label_text' => '',
-        'description' => '',
-        'primary_button_text' => '',
-        'primary_button_url' => '',
-        'secondary_button_text' => '',
-        'secondary_button_url' => '',
-        'image_id' => null,
-        'image_path' => null,
-        'sort_order' => 0,
-    ]"
+                    'title' => '',
+                    'subtitle' => '',
+                    'url' => '',
+                    'top_label_text' => '',
+                    'square_label_text' => '',
+                    'description' => '',
+                    'primary_button_text' => '',
+                    'primary_button_url' => '',
+                    'secondary_button_text' => '',
+                    'secondary_button_url' => '',
+                    'image_id' => null,
+                    'image_path' => null,
+                    'show_dark_overlay' => true,
+                    'sort_order' => 0,
+                ]"
             >
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 lg:grid-cols-6 gap-4">
                     <x-admin.field
                         label="عنوان اصلی"
+                        class="col-span-2"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'title')"
@@ -40,6 +43,7 @@
 
                     <x-admin.field
                         label="عنوان فرعی"
+                        class="col-span-2"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'subtitle')"
@@ -48,7 +52,29 @@
                     </x-admin.field>
 
                     <x-admin.field
+                        label="لینک اسلاید"
+                        class="col-span-2"
+                    >
+                        <x-admin.form.input
+                            x-bind:name="field(i, 'url')"
+                            x-model="it.url"
+                            class="direction-ltr"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field
+                        label="نمایش هاله تیره"
+                        class="col-span-2 switch-field"
+                    >
+                        <x-admin.form.switch
+                            x-bind:name="field(i, 'show_dark_overlay')"
+                            x-model="it.show_dark_overlay"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field
                         label="متن لیبل بالا"
+                        class="col-span-2"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'top_label_text')"
@@ -58,6 +84,7 @@
 
                     <x-admin.field
                         label="متن لیبل مربعی"
+                        class="col-span-2"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'square_label_text')"
@@ -67,7 +94,7 @@
 
                     <x-admin.field
                         label="تصویر"
-                        class="lg:col-span-2"
+                        class="lg:col-span-6"
                     >
                         <x-admin.form.media-picker
                             mode="repeater"
@@ -77,7 +104,7 @@
 
                     <x-admin.field
                         label="توضیحات"
-                        class="lg:col-span-2"
+                        class="lg:col-span-6"
                     >
                         <x-admin.form.textarea
                             rows="4"
@@ -88,6 +115,7 @@
 
                     <x-admin.field
                         label="متن دکمه اصلی"
+                        class="col-span-3"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'primary_button_text')"
@@ -97,6 +125,7 @@
 
                     <x-admin.field
                         label="لینک دکمه اصلی"
+                        class="col-span-3"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'primary_button_url')"
@@ -107,6 +136,7 @@
 
                     <x-admin.field
                         label="متن دکمه دوم"
+                        class="col-span-3"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'secondary_button_text')"
@@ -116,6 +146,7 @@
 
                     <x-admin.field
                         label="لینک دکمه دوم"
+                        class="col-span-3"
                     >
                         <x-admin.form.input
                             x-bind:name="field(i, 'secondary_button_url')"
