@@ -57,7 +57,8 @@ class GetPostDetailDataAction
             'tags:id,title,path',
             'imageGallery.mediaFile.primaryVariant',
             'imageGallery.mediaFile.variants',
-            'downloadSections.entries'
+            'downloadSections.entries',
+            'informationBoxes',
         ]);
 
         $post->loadCount('approvedComments');

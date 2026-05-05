@@ -75,6 +75,9 @@ class UpdatePostRequest extends FormRequest
             'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
 
             'seo' => ['nullable', 'array'],
+
+            'information_boxes' => ['nullable', 'array'],
+            'information_boxes.*' => ['array'],
         ];
     }
 

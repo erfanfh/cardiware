@@ -20,16 +20,17 @@ use Throwable;
 class CreatePostAction
 {
     public function __construct(
-        protected SyncModelPostTagsAction       $syncModelPostTagsAction,
-        protected SyncModelPostCategoriesAction $syncModelPostCategoriesAction,
-        protected SyncPostFeaturesAction        $syncPostFeaturesAction,
-        protected AssignSlugAction              $assignSlugAction,
-        protected ContentSlugCacheInvalidator   $contentSlugCacheInvalidator,
-        protected SyncDownloadSectionsAction    $syncDownloadSectionsAction,
-        protected SyncPostImageGalleryAction    $syncPostImageGalleryAction,
-        protected SyncSeoMetaAction             $syncSeoMetaAction,
-        protected StoreSeoAnalysisAction        $storeSeoAnalysisAction,
-        protected PostCacheInvalidator          $postCacheInvalidator,
+        protected SyncModelPostTagsAction        $syncModelPostTagsAction,
+        protected SyncModelPostCategoriesAction  $syncModelPostCategoriesAction,
+        protected SyncPostFeaturesAction         $syncPostFeaturesAction,
+        protected AssignSlugAction               $assignSlugAction,
+        protected ContentSlugCacheInvalidator    $contentSlugCacheInvalidator,
+        protected SyncDownloadSectionsAction     $syncDownloadSectionsAction,
+        protected SyncPostImageGalleryAction     $syncPostImageGalleryAction,
+        protected SyncSeoMetaAction              $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction         $storeSeoAnalysisAction,
+        protected PostCacheInvalidator           $postCacheInvalidator,
+        protected SyncPostInformationBoxesAction $syncPostInformationBoxesAction,
     )
     {
     }
@@ -57,6 +58,7 @@ class CreatePostAction
                 $postData['download_sections'],
                 $postData['image_gallery_items'],
                 $postData['seo'],
+                $postData['information_boxes'],
             );
 
             $post = Post::create($postData);
@@ -76,6 +78,7 @@ class CreatePostAction
             $this->syncPostFeaturesAction->execute($post, $data);
             $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
             $this->syncPostImageGalleryAction->execute($post, $data['image_gallery'] ?? []);
+            $this->syncPostInformationBoxesAction->execute($post, $data['information_boxes'] ?? []);
 
             $this->syncSeoMetaAction->execute($post, $data['seo'] ?? []);
             $this->storeSeoAnalysisAction->execute($post, app(BuildPostSeoAnalysisInputAction::class));

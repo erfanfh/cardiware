@@ -6,10 +6,21 @@
             ['id', 'asc'],
         ])
         ->values();
+
+    $informationBoxes = $post->informationBoxes
+        ->filter(fn ($box) => filled($box->title) || filled($box->body))
+        ->values();
+
+    $hasDownloadSections = $downloadSections->isNotEmpty();
+    $hasInformationBoxes = $informationBoxes->isNotEmpty();
+
+    $defaultActiveTab = $hasDownloadSections
+        ? 'downloads'
+        : 'information-box-' . $informationBoxes->first()?->type->value;
 @endphp
 
-@if($downloadSections->isNotEmpty())
-    <section x-data="{ activeTab: 'downloads', ...downloadsBlock() }" class="mt-6">
+@if($hasDownloadSections || $hasInformationBoxes)
+    <section x-data="{ activeTab: @js($defaultActiveTab), ...downloadsBlock() }" class="mt-6">
         <div
             class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/25">
 
@@ -50,86 +61,100 @@
                         class="relative w-full rounded-2xl bg-white/85 px-2 py-2 shadow-sm ring-1 ring-slate-200/80 backdrop-blur-md dark:bg-slate-900/75 dark:ring-slate-700/70"
                     >
                         <div class="flex items-center justify-start gap-2 overflow-x-auto">
-                            <button
-                                type="button"
-                                @click="activeTab = 'downloads'"
-                                class="relative cursor-pointer whitespace-nowrap rounded-2xl px-5 py-2.5 text-xs font-black transition"
-                                :class="activeTab === 'downloads'
-                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
-                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'"
-                            >
-                                لینک‌های دانلود
-                            </button>
+                            @if($hasDownloadSections)
+                                <button
+                                    type="button"
+                                    @click="activeTab = 'downloads'"
+                                    class="relative cursor-pointer whitespace-nowrap rounded-2xl px-5 py-2.5 text-xs font-black transition"
+                                    :class="activeTab === 'downloads'
+                                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'"
+                                >
+                                    لینک‌های دانلود
+                                </button>
+                            @endif
 
-                            <button
-                                type="button"
-                                @click="activeTab = 'guide'"
-                                class="relative cursor-pointer whitespace-nowrap rounded-2xl px-5 py-2.5 text-xs font-black transition"
-                                :class="activeTab === 'guide'
-                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
-                                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'"
-                            >
-                                راهنمای نصب
-                            </button>
+                            @foreach($informationBoxes as $informationBox)
+                                @php
+                                    $informationBoxTitle = filled($informationBox->title)
+                                        ? $informationBox->title
+                                        : $informationBox->type->label();
+
+                                    $informationBoxTabKey = 'information-box-' . $informationBox->type->value;
+                                @endphp
+
+                                <button
+                                    type="button"
+                                    @click="activeTab = @js($informationBoxTabKey)"
+                                    class="relative cursor-pointer whitespace-nowrap rounded-2xl px-5 py-2.5 text-xs font-black transition"
+                                    :class="activeTab === @js($informationBoxTabKey)
+                                    ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
+                                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'"
+                                >
+                                    {{ $informationBoxTitle }}
+                                </button>
+                            @endforeach
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div x-show="activeTab === 'downloads'" x-transition.opacity.duration.200ms>
-                @foreach($downloadSections as $section)
-                    @php
-                        $entries = $section->entries
-                            ->sortBy([
-                                ['sort_order', 'asc'],
-                                ['id', 'asc'],
-                            ])
-                            ->values();
+            @if($hasDownloadSections)
+                <div x-show="activeTab === 'downloads'" x-transition.opacity.duration.200ms>
+                    @foreach($downloadSections as $section)
+                        @php
+                            $entries = $section->entries
+                                ->sortBy([
+                                    ['sort_order', 'asc'],
+                                    ['id', 'asc'],
+                                ])
+                                ->values();
 
-                        $linkEntries = $entries->filter(fn ($entry) => $entry->isLink())->values();
+                            $linkEntries = $entries->filter(fn ($entry) => $entry->isLink())->values();
 
-                        $copyAllText = $linkEntries
-                            ->map(fn ($entry) => $entry->title . ': ' . route('downloads.entry.redirect', $entry->public_id))
-                            ->implode("\n");
-                    @endphp
+                            $copyAllText = $linkEntries
+                                ->map(fn ($entry) => $entry->title . ': ' . route('downloads.entry.redirect', $entry->public_id))
+                                ->implode("\n");
+                        @endphp
 
-                    @if($entries->isNotEmpty())
-                        <div
-                            class="space-y-5 border-b border-slate-200/85 py-6 px-4 last:border-b-0 dark:border-slate-800/80">
+                        @if($entries->isNotEmpty())
+                            <div
+                                class="space-y-5 border-b border-slate-200/85 py-6 px-4 last:border-b-0 dark:border-slate-800/80">
 
-                            {{-- Section Header --}}
-                            <div class="flex items-center gap-3">
+                                {{-- Section Header --}}
+                                <div class="flex items-center gap-3">
                                 <span
                                     class="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_0_4px_rgba(249,115,22,0.12)]"></span>
 
-                                <h3 class="min-w-0 truncate text-[0.9rem] font-black text-slate-900 dark:text-slate-100">
-                                    {{ $section->title }}
-                                </h3>
-                            </div>
+                                    <h3 class="min-w-0 truncate text-[0.9rem] font-black text-slate-900 dark:text-slate-100">
+                                        {{ $section->title }}
+                                    </h3>
+                                </div>
 
-                            {{-- Entries --}}
-                            <div class="space-y-4">
-                                @foreach($entries as $entry)
-                                    @if($entry->isLink())
-                                        <div
-                                            class="group flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition bg-slate-100/80 p-3 dark:bg-slate-800/70 hover:bg-slate-200/50 dark:hover:bg-slate-900/50 max-sm:flex-col max-sm:items-stretch">
-                                            <div class="flex min-w-0 items-center gap-2">
-                                                <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"></span>
+                                {{-- Entries --}}
+                                <div class="space-y-4">
+                                    @foreach($entries as $entry)
+                                        @if($entry->isLink())
+                                            <div
+                                                class="group flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition bg-slate-100/80 p-3 dark:bg-slate-800/70 hover:bg-slate-200/50 dark:hover:bg-slate-900/50 max-sm:flex-col max-sm:items-stretch">
+                                                <div class="flex min-w-0 items-center gap-2">
+                                                    <span
+                                                        class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"></span>
 
-                                                <a href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
-                                                   class="min-w-0 truncate text-sm font-extrabold leading-7 text-slate-900 dark:text-slate-100">
-                                                    {{ $entry->title }}
-                                                </a>
-                                            </div>
+                                                    <a href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
+                                                       class="min-w-0 truncate text-sm font-extrabold leading-7 text-slate-900 dark:text-slate-100">
+                                                        {{ $entry->title }}
+                                                    </a>
+                                                </div>
 
-                                            <div class="flex items-center gap-2 max-sm:grid max-sm:grid-cols-2">
-                                                <button
-                                                    type="button"
-                                                    @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), $event.currentTarget, 'لینک دانلود کپی شد.')"
-                                                    data-default-text="کپی لینک"
-                                                    data-copied-text="کپی شد"
-                                                    class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
-                                                >
+                                                <div class="flex items-center gap-2 max-sm:grid max-sm:grid-cols-2">
+                                                    <button
+                                                        type="button"
+                                                        @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), $event.currentTarget, 'لینک دانلود کپی شد.')"
+                                                        data-default-text="کپی لینک"
+                                                        data-copied-text="کپی شد"
+                                                        class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
+                                                    >
                                                     <span class="js-copy-icon-default inline-flex items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                              viewBox="0 0 24 24">
@@ -144,7 +169,7 @@
                                                         </svg>
                                                     </span>
 
-                                                    <span class="js-copy-icon-success hidden items-center">
+                                                        <span class="js-copy-icon-success hidden items-center">
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                              viewBox="0 0 24 24"
                                                              fill="none">
@@ -154,49 +179,51 @@
                                                         </svg>
                                                     </span>
 
-                                                    <span class="js-copy-text">کپی لینک</span>
-                                                </button>
+                                                        <span class="js-copy-text">کپی لینک</span>
+                                                    </button>
 
-                                                <a
-                                                    href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
-                                                    class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:w-full"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                         viewBox="0 0 24 24">
-                                                        <path fill="none" stroke="currentColor" stroke-linecap="round"
-                                                              stroke-linejoin="round" stroke-width="1.5"
-                                                              d="M3 17c0 .93 0 1.395.102 1.777a3 3 0 0 0 2.121 2.121C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C21 18.395 21 17.93 21 17m-4.5-5.5S13.186 16 12 16s-4.5-4.5-4.5-4.5M12 15V3"/>
-                                                    </svg>
+                                                    <a
+                                                        href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
+                                                        class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:w-full"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                             viewBox="0 0 24 24">
+                                                            <path fill="none" stroke="currentColor"
+                                                                  stroke-linecap="round"
+                                                                  stroke-linejoin="round" stroke-width="1.5"
+                                                                  d="M3 17c0 .93 0 1.395.102 1.777a3 3 0 0 0 2.121 2.121C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C21 18.395 21 17.93 21 17m-4.5-5.5S13.186 16 12 16s-4.5-4.5-4.5-4.5M12 15V3"/>
+                                                        </svg>
 
-                                                    دانلود
-                                                </a>
+                                                        دانلود
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
-                                    @else
-                                        <div class="px-3 py-1">
-                                            @if($entry->title)
-                                                <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                                    {{ $entry->title }}
-                                                </div>
-                                            @endif
+                                        @else
+                                            <div class="px-3 py-1">
+                                                @if($entry->title)
+                                                    <div
+                                                        class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                                                        {{ $entry->title }}
+                                                    </div>
+                                                @endif
 
-                                            @if($entry->content)
-                                                <div
-                                                    class="mt-1 break-words text-sm leading-7 text-slate-700 dark:text-slate-300">
-                                                    {!! nl2br(e($entry->content)) !!}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
+                                                @if($entry->content)
+                                                    <div
+                                                        class="mt-1 break-words text-sm leading-7 text-slate-700 dark:text-slate-300">
+                                                        {!! nl2br(e($entry->content)) !!}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
 
-                            {{-- Password --}}
-                            @if(filled($section->password))
-                                <div
-                                    class="flex flex-col gap-3 rounded-2xl bg-slate-100/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-800/70"
-                                >
-                                    <div class="flex min-w-0 items-center gap-3">
+                                {{-- Password --}}
+                                @if(filled($section->password))
+                                    <div
+                                        class="flex flex-col gap-3 rounded-2xl bg-slate-100/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between dark:bg-slate-800/70"
+                                    >
+                                        <div class="flex min-w-0 items-center gap-3">
                                         <span
                                             class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-orange-600 shadow-sm dark:bg-slate-700 dark:text-orange-300"
                                         >
@@ -215,27 +242,27 @@
                                             </svg>
                                         </span>
 
-                                        <div class="min-w-0 text-sm leading-7">
+                                            <div class="min-w-0 text-sm leading-7">
                                             <span class="font-extrabold text-slate-600 dark:text-slate-300">
                                                 رمز فایل‌ها در صورت نیاز:
                                             </span>
 
-                                            <span
-                                                class="mr-2 break-all font-black text-slate-950 dark:text-white"
-                                                dir="ltr"
-                                            >
+                                                <span
+                                                    class="mr-2 break-all font-black text-slate-950 dark:text-white"
+                                                    dir="ltr"
+                                                >
                                                 {{ $section->password }}
                                             </span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <button
-                                        type="button"
-                                        @click="copyText(@js($section->password ?? ''), $event.currentTarget, 'رمز فایل کپی شد.')"
-                                        data-default-text="کپی رمز"
-                                        data-copied-text="کپی شد"
-                                        class="js-copy-button inline-flex cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-white px-4 text-xs font-extrabold leading-9 text-slate-800 shadow-sm transition hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
-                                    >
+                                        <button
+                                            type="button"
+                                            @click="copyText(@js($section->password ?? ''), $event.currentTarget, 'رمز فایل کپی شد.')"
+                                            data-default-text="کپی رمز"
+                                            data-copied-text="کپی شد"
+                                            class="js-copy-button inline-flex cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-white px-4 text-xs font-extrabold leading-9 text-slate-800 shadow-sm transition hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
+                                        >
                                         <span class="js-copy-icon-default inline-flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                  viewBox="0 0 24 24">
@@ -252,7 +279,7 @@
                                             </svg>
                                         </span>
 
-                                        <span class="js-copy-icon-success hidden items-center">
+                                            <span class="js-copy-icon-success hidden items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
                                                  viewBox="0 0 24 24" fill="none">
                                                 <path d="M5 12.5l4.2 4.2L19 7" stroke="currentColor"
@@ -261,35 +288,39 @@
                                             </svg>
                                         </span>
 
-                                        <span class="js-copy-text">کپی رمز</span>
-                                    </button>
-                                </div>
-                            @endif
-                        </div>
-                    @endif
-                @endforeach
-            </div>
+                                            <span class="js-copy-text">کپی رمز</span>
+                                        </button>
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
 
-            <div x-show="activeTab === 'guide'" x-transition.opacity.duration.200ms>
+            @foreach($informationBoxes as $informationBox)
+                @php
+                    $informationBoxTitle = filled($informationBox->title)
+                        ? $informationBox->title
+                        : $informationBox->type->label();
+
+                    $informationBoxTabKey = 'information-box-' . $informationBox->type->value;
+                @endphp
+
                 <div
-                    class="rounded-2xl border border-slate-200 bg-white px-5 py-5 dark:border-slate-800 dark:bg-slate-900">
-                    <h3 class="text-sm font-black text-slate-950 dark:text-white">
-                        راهنمای نصب
-                    </h3>
-
-                    <div class="mt-4 space-y-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
-                        <p>۱. ابتدا فایل‌های موردنیاز را به صورت کامل دریافت کنید.</p>
-                        <p>۲. اگر فایل‌ها فشرده هستند، آن‌ها را با WinRAR یا 7-Zip استخراج کنید.</p>
-                        <p>۳. در صورت نیاز، رمز قرار داده‌شده در بخش دانلود را وارد کنید.</p>
-                        <p>۴. فایل‌ها را طبق توضیحات همین مطلب در مسیر موردنظر کپی یا نصب کنید.</p>
-                    </div>
-
-                    <div
-                        class="mt-5 rounded-2xl bg-orange-50 px-4 py-3 text-xs font-bold leading-6 text-orange-800 dark:bg-orange-500/10 dark:text-orange-200">
-                        این بخش فعلاً تستی است و بعداً می‌تواند با محتوای اختصاصی هر مطلب جایگزین شود.
+                    x-show="activeTab === @js($informationBoxTabKey)"
+                    x-transition.opacity.duration.200ms
+                    x-cloak
+                >
+                    <div class="p-6">
+                        @if(filled($informationBox->body))
+                            <div class="tinymce-content dark:text-slate-200 dark:prose-invert">
+                                {!! $informationBox->body !!}
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
+            @endforeach
         </div>
     </section>
 @endif

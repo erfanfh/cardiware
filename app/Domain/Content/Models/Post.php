@@ -40,6 +40,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'published_at',
         'created_at',
         'updated_at',
+        'type',
     ];
 
     protected $casts = [
@@ -231,5 +232,10 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     public function tags(): MorphToMany
     {
         return $this->taxonomyTermsFor(TaxonomyKeyEnum::POST_TAG);
+    }
+
+    public function informationBoxes(): HasMany
+    {
+        return $this->hasMany(PostInformationBox::class);
     }
 }

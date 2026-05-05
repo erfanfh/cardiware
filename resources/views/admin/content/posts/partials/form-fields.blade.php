@@ -205,4 +205,34 @@
     >
         @include('admin.content.posts.partials.image-gallery')
     </x-admin.metabox>
+
+    @foreach(\App\Domain\Content\Enums\PostInformationBoxTypeEnum::cases() as $postInformationBox)
+        @php
+            $informationBoxes = $post?->informationBoxes?->keyBy(fn ($box) => $box->type->value) ?? collect();
+        @endphp
+
+        <x-admin.metabox
+            title="باکس های اطلاعات - {{ $postInformationBox->label() }}"
+            storageKey="post-information-box-{{ $postInformationBox->value }}"
+        >
+            <div class="flex flex-col gap-5">
+                <x-admin.field label="عنوان">
+                    <x-admin.form.input
+                        name="information_boxes[{{ $postInformationBox->value }}][title]"
+                        :value="old('information_boxes.' . $postInformationBox->value . '.title', $informationBoxes->get($postInformationBox->value)?->title)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field>
+                    <x-admin.form.editor
+                        name="information_boxes[{{ $postInformationBox->value }}][body]"
+                        :value="old('information_boxes.' . $postInformationBox->value . '.body', $informationBoxes->get($postInformationBox->value)?->body)"
+                        preset="full"
+                        height="500"
+                        placeholder="متن ..."
+                    />
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+    @endforeach
 </x-admin.page>
