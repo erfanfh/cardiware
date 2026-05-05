@@ -161,30 +161,22 @@ function buildImageHtml({
         return '';
     }
 
-    const imageHtml = `
-        <img
-            src="${safeUrl}"
-            alt="${safeAlt}"
-            title="${safeTitle}"
-            class="editor-media-image ${safeCaption ? '' : `image-size-${normalizedSize}`}"
-            data-media-type="image"
-            data-media-selected-size="${normalizedSize}"
-            data-media-selected-variant="${safeSelectedVariant}"
-            ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
-            ${variantAttributes}
-        >
+    return `
+        <figure class="content-media image-size-${normalizedSize}">
+            <img
+                src="${safeUrl}"
+                alt="${safeAlt}"
+                title="${safeTitle}"
+                class="editor-media-image"
+                data-media-type="image"
+                data-media-selected-size="${normalizedSize}"
+                data-media-selected-variant="${safeSelectedVariant}"
+                ${safeMediaId ? `data-media-id="${safeMediaId}"` : ''}
+                ${variantAttributes}
+            >
+            ${safeCaption ? `<figcaption>${safeCaption}</figcaption>` : ''}
+        </figure>
     `;
-
-    if (safeCaption) {
-        return `
-            <figure class="content-media image-size-${normalizedSize}">
-                ${imageHtml}
-                <figcaption>${safeCaption}</figcaption>
-            </figure>
-        `;
-    }
-
-    return imageHtml;
 }
 
 function registerCustomButtons(editor, element) {
@@ -382,6 +374,8 @@ function openImageEditDialog(editor) {
             setImageSize(editor, data.size || 'md');
 
             if (figure) {
+                setImageSize(editor, data.size || 'md');
+
                 let captionNode = figure.querySelector('figcaption');
 
                 if (data.caption?.trim()) {
@@ -411,6 +405,8 @@ function openImageEditDialog(editor) {
 
                 editor.dom.replace(wrapper, node);
                 editor.selection.select(clonedImg);
+            } else {
+                setImageSize(editor, data.size || 'md');
             }
 
             api.close();
