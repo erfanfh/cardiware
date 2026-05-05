@@ -15,7 +15,7 @@
 
             {{-- Wrapper Header --}}
             <div
-                class="relative mb-4 overflow-hidden rounded-[1.6rem] border-b border-slate-200/70 px-5 py-5 dark:border-slate-800 max-sm:px-4"
+                class="relative -mx-4 -mt-4 mb-4 overflow-hidden border-b border-slate-200/70 px-5 py-5 dark:border-slate-800"
             >
                 <div
                     class="absolute inset-0 bg-[radial-gradient(circle_at_92%_18%,rgba(249,115,22,0.18),transparent_30%),radial-gradient(circle_at_15%_0%,rgba(251,146,60,0.10),transparent_32%),linear-gradient(135deg,#ffffff_0%,#fffaf5_52%,#fff1df_100%)] dark:bg-[radial-gradient(circle_at_92%_18%,rgba(249,115,22,0.20),transparent_32%),radial-gradient(circle_at_12%_5%,rgba(251,146,60,0.08),transparent_34%),linear-gradient(135deg,#020617_0%,#0f172a_58%,#1e1510_100%)]"
