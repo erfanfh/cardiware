@@ -31,20 +31,6 @@
                                 </x-admin.field>
                             </div>
                         </x-admin.metabox>
-
-                        <x-admin.metabox title="جستجو">
-                            <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                                <x-admin.field
-                                    label="فعال بودن جستجوی Ajax"
-                                    hint="در صورت فعال بودن، نتایج جستجو به‌صورت زنده نمایش داده می‌شوند."
-                                >
-                                    <x-admin.form.switch
-                                        name="ajax_search"
-                                        :checked="get_setting('header', 'ajax_search')"
-                                    />
-                                </x-admin.field>
-                            </div>
-                        </x-admin.metabox>
                     </div>
                 </x-admin.tabs.panel>
 
