@@ -3,20 +3,9 @@
 namespace App\Application\Seo\Support\Sitemap;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 
 class StableSitemapPaginator
 {
-    private function numberedQuery(Builder $query, int $chunkSize): Builder
-    {
-        return (clone $query)
-            ->select('id')
-            ->selectRaw(
-                'CEIL(ROW_NUMBER() OVER (ORDER BY id) / ?) as sitemap_page',
-                [$chunkSize]
-            );
-    }
-
     /**
      * @return array<int, int>
      */
@@ -26,24 +15,28 @@ class StableSitemapPaginator
         int     $chunkSize
     ): array
     {
-        $pages = DB::query()
-            ->fromSub($this->numberedQuery($allItemsQuery, $chunkSize), 'items')
-            ->select('sitemap_page')
-            ->distinct()
-            ->orderBy('sitemap_page')
-            ->pluck('sitemap_page')
-            ->map(fn($page) => (int)$page)
-            ->all();
+        $total = (clone $allItemsQuery)->count();
 
-        return collect($pages)
-            ->filter(function (int $chunkPage) use ($allItemsQuery, $indexableQuery, $chunkSize) {
-                $ids = $this->idsForChunkPage(clone $allItemsQuery, $chunkPage, $chunkSize);
+        if ($total <= 0) {
+            return [];
+        }
 
-                return !empty($ids)
-                    && (clone $indexableQuery)->whereIn('id', $ids)->exists();
-            })
-            ->values()
-            ->all();
+        $lastChunkPage = (int)ceil($total / $chunkSize);
+
+        $activePages = [];
+
+        for ($chunkPage = 1; $chunkPage <= $lastChunkPage; $chunkPage++) {
+            $ids = $this->idsForChunkPage(clone $allItemsQuery, $chunkPage, $chunkSize);
+
+            if (
+                !empty($ids)
+                && (clone $indexableQuery)->whereIn('id', $ids)->exists()
+            ) {
+                $activePages[] = $chunkPage;
+            }
+        }
+
+        return $activePages;
     }
 
     /**
@@ -86,10 +79,10 @@ class StableSitemapPaginator
      */
     private function idsForChunkPage(Builder $allItemsQuery, int $chunkPage, int $chunkSize): array
     {
-        return DB::query()
-            ->fromSub($this->numberedQuery($allItemsQuery, $chunkSize), 'items')
-            ->where('sitemap_page', $chunkPage)
+        return (clone $allItemsQuery)
+            ->select('id')
             ->orderBy('id')
+            ->forPage($chunkPage, $chunkSize)
             ->pluck('id')
             ->map(fn($id) => (int)$id)
             ->all();
