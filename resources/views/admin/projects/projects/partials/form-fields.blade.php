@@ -41,6 +41,50 @@
             />
         </x-admin.metabox>
 
+        <x-admin.metabox title="باکس مشاهده محصول">
+            <div class="grid grid-cols-12 gap-5">
+                <x-admin.field
+                    class="col-span-12"
+                    label="لینک محصول"
+                >
+                    <div class="flex items-center gap-3">
+                        <x-admin.form.input class="direction-ltr" name="product_url"
+                                            value="{{ old('product_url', $project?->product_url) }}"/>
+                    </div>
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
+                    label="عنوان باکس"
+                >
+                    <x-admin.form.input
+                        name="product_box_title"
+                        :value="old('product_box_title', $project?->product_box_title)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
+                    label="زیرعنوان باکس"
+                >
+                    <x-admin.form.input
+                        name="product_box_subtitle"
+                        :value="old('product_box_subtitle', $project?->product_box_subtitle)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
+                    label="متن دکمه باکس"
+                >
+                    <x-admin.form.input
+                        name="product_box_button_text"
+                        :value="old('product_box_button_text', $project?->product_box_button_text)"
+                    />
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
+
         <x-admin.metabox title="اطلاعات پروژه">
             <div class="grid grid-cols-12 gap-5">
                 <x-admin.field

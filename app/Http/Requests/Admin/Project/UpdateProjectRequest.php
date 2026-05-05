@@ -36,6 +36,10 @@ class UpdateProjectRequest extends FormRequest
             'platform' => ['nullable', 'string', 'max:255'],
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
+            'product_url' => ['nullable', 'string'],
+            'product_box_title' => ['nullable', 'string'],
+            'product_box_subtitle' => ['nullable', 'string'],
+            'product_box_button_text' => ['nullable', 'string'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],

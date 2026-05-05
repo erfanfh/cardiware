@@ -32,6 +32,10 @@ class Project extends Model
         'body',
         'last_updated_at',
         'released_at',
+        'product_url',
+        'product_box_title',
+        'product_box_subtitle',
+        'product_box_button_text',
     ];
 
     protected $casts = [
