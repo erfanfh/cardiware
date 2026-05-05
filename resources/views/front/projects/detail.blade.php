@@ -141,8 +141,8 @@
                 </div>
 
                 @if($project->roadmapItems->count() > 0)
-                    <div
-                        class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                    <div id="roadmap"
+                         class="scroll-mt-36 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <span
@@ -220,8 +220,8 @@
                 @endif
 
                 @if($project->changelogs->count() > 0)
-                    <div
-                        class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                    <div id="updates"
+                         class="scroll-mt-36 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                         <div class="flex items-center gap-3">
                             <span
                                 class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
