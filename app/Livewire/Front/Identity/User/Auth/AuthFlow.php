@@ -192,6 +192,8 @@ class AuthFlow extends Component
      */
     public function register(): RedirectResponse|Redirector|null
     {
+        return null;
+
         if ($this->rateLimit('request.register'))
             return null;
 
