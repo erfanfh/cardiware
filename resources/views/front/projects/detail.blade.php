@@ -342,23 +342,24 @@
                     </div>
                 </div>
 
-                <div
-                    class="group relative overflow-hidden rounded-3xl border border-brand-300/40
+                @if($project->product_box_title || $project->product_box_subtitle || $project->product_box_button_text || $project->product_url)
+                    <div
+                        class="group relative overflow-hidden rounded-3xl border border-brand-300/40
                        bg-gradient-to-br from-brand-400 via-brand-500 to-orange-600
                        bg-[length:180%_180%] animate-[brandGradientFlow_7s_ease-in-out_infinite,heartbeat_2.2s_ease-in-out_infinite]
                        p-5 shadow-xl shadow-brand-500/25
                        dark:border-brand-400/25 dark:from-brand-500 dark:via-orange-600 dark:to-amber-700
                        dark:shadow-brand-900/40"
-                >
-                    <div
-                        class="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-white/20 blur-2xl animate-[softPulse_3.5s_ease-in-out_infinite]"></div>
-                    <div
-                        class="absolute -bottom-12 right-4 h-32 w-32 rounded-full bg-yellow-300/25 blur-2xl animate-[softFloat_5s_ease-in-out_infinite]"></div>
-                    <div
-                        class="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(255,255,255,.28),transparent_28%),radial-gradient(circle_at_85%_75%,rgba(255,255,255,.16),transparent_30%)]"></div>
+                    >
+                        <div
+                            class="absolute -top-10 -left-10 h-32 w-32 rounded-full bg-white/20 blur-2xl animate-[softPulse_3.5s_ease-in-out_infinite]"></div>
+                        <div
+                            class="absolute -bottom-12 right-4 h-32 w-32 rounded-full bg-yellow-300/25 blur-2xl animate-[softFloat_5s_ease-in-out_infinite]"></div>
+                        <div
+                            class="absolute inset-0 bg-[radial-gradient(circle_at_25%_15%,rgba(255,255,255,.28),transparent_28%),radial-gradient(circle_at_85%_75%,rgba(255,255,255,.16),transparent_30%)]"></div>
 
-                    <div class="relative">
-                        <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <div class="flex items-center gap-3">
                             <span
                                 class="grid h-11 w-11 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20 backdrop-blur">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -368,53 +369,56 @@
                                 </svg>
                             </span>
 
-                            <div>
-                                <h2 class="text-base font-black text-white">
-                                    {{ $project->product_box_title }}
-                                </h2>
-                                <p class="mt-1 text-xs font-semibold text-white/80">
-                                    {{ $project->product_box_subtitle }}
-                                </p>
+                                <div>
+                                    <h2 class="text-base font-black text-white">
+                                        {{ $project->product_box_title }}
+                                    </h2>
+                                    <p class="mt-1 text-xs font-semibold text-white/80">
+                                        {{ $project->product_box_subtitle }}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
 
-                        <a href="{{ $project->product_url }}"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           class="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-black text-brand-700 shadow-lg transition
+                            <a href="{{ $project->product_url }}"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="mt-5 flex items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-sm font-black text-brand-700 shadow-lg transition
                               hover:-translate-y-0.5 hover:bg-orange-50 active:translate-y-0
                               dark:bg-white/95 dark:text-orange-700 dark:hover:bg-orange-50"
-                        >
-                            {{ $project->product_box_button_text }}
-                            <span>←</span>
-                        </a>
+                            >
+                                {{ $project->product_box_button_text }}
+                                <span>←</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
+                @endif
             </aside>
 
         </section>
 
-        <div
-            class="fixed inset-x-0 bottom-0 z-40 border-t border-orange-200/40 bg-white/85 p-3 backdrop-blur-xl lg:hidden dark:border-orange-500/20 dark:bg-slate-950/85">
-            <a href="{{ $project->product_url }}"
-               target="_blank"
-               rel="noopener noreferrer"
-               class="relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl
+        @if($project->product_box_button_text || $project->product_url)
+            <div
+                class="fixed inset-x-0 bottom-0 z-40 border-t border-orange-200/40 bg-white/85 p-3 backdrop-blur-xl lg:hidden dark:border-orange-500/20 dark:bg-slate-950/85">
+                <a href="{{ $project->product_url }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl
                   bg-gradient-to-br from-brand-400 via-brand-500 to-orange-600
                   bg-[length:180%_180%] animate-[brandGradientFlow_6s_ease-in-out_infinite,heartbeat_2s_ease-in-out_infinite]
                   px-5 py-4 text-sm font-black text-white shadow-2xl shadow-brand-500/30 active:scale-[0.98]
                   dark:from-brand-500 dark:via-orange-600 dark:to-amber-700 dark:shadow-brand-900/50"
-            >
+                >
                 <span
                     class="absolute -left-8 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-white/20 blur-xl animate-[softPulse_3s_ease-in-out_infinite]"></span>
-                <span
-                    class="absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-yellow-200/80 animate-[softPing_2s_ease-out_infinite]"></span>
-                <span
-                    class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.22),transparent_32%)]"></span>
+                    <span
+                        class="absolute right-8 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-yellow-200/80 animate-[softPing_2s_ease-out_infinite]"></span>
+                    <span
+                        class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.22),transparent_32%)]"></span>
 
-                <span class="relative">{{ $project->product_box_button_text }}</span>
-                <span class="relative">←</span>
-            </a>
-        </div>
+                    <span class="relative">{{ $project->product_box_button_text }}</span>
+                    <span class="relative">←</span>
+                </a>
+            </div>
+        @endif
     </main>
 @endsection
