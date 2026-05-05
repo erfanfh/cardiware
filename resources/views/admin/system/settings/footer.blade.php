@@ -173,6 +173,61 @@
 
                         <x-admin.field
                             class="lg:col-span-2"
+                            label="آی دی ایتا"
+                        >
+                            <x-admin.form.input
+                                name="eitaa"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'eitaa') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی بله"
+                        >
+                            <x-admin.form.input
+                                name="bale"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'bale') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی روبیکا"
+                        >
+                            <x-admin.form.input
+                                name="rubika"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'rubika') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی سروش"
+                        >
+                            <x-admin.form.input
+                                name="soroush"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'soroush') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="آی دی آپارات"
+                        >
+                            <x-admin.form.input
+                                name="aparat"
+                                class="direction-ltr"
+                                value="{{ get_setting('footer', 'aparat') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
                             label="آدرس 1"
                         >
                             <x-admin.form.input

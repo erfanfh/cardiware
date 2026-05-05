@@ -217,12 +217,54 @@
 
 
                 <div class="flex gap-4 mt-3 text-slate-700 dark:text-slate-300">
-                    <a href="{{ get_setting('footer', 'telegram') }}" class="transition hover:opacity-70">
-                        @include('icons.instagram')
-                    </a>
-                    <a href="{{ get_setting('footer', 'instagram') }}" class="transition hover:opacity-70">
-                        @include('icons.telegram')
-                    </a>
+                    @if(get_setting('footer', 'telegram'))
+                        <a href="https://t.me/{{ get_setting('footer', 'telegram') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.telegram')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'instagram'))
+                        <a href="https://instagram.com/{{ get_setting('footer', 'instagram') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.instagram')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'eitaa'))
+                        <a href="https://eitaa.com/{{ get_setting('footer', 'eitaa') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.eitaa')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'bale'))
+                        <a href="https://ble.ir/{{ get_setting('footer', 'bale') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.bale')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'rubika'))
+                        <a href="https://rubika.ir/{{ get_setting('footer', 'rubika') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.rubika')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'soroush'))
+                        <a href="https://splus.ir/{{ get_setting('footer', 'soroush') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.soroush')
+                        </a>
+                    @endif
+
+                    @if(get_setting('footer', 'aparat'))
+                        <a href="https://aparat.com/{{ get_setting('footer', 'aparat') }}"
+                           class="transition hover:opacity-70">
+                            @include('icons.aparat')
+                        </a>
+                    @endif
                 </div>
             </div>
 
