@@ -141,7 +141,7 @@
                                                     <span
                                                         class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"></span>
 
-                                                    <a href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
+                                                    <a href="{{ $entry->content }}"
                                                        class="min-w-0 truncate text-sm font-extrabold leading-7 text-slate-900 dark:text-slate-100">
                                                         {{ $entry->title }}
                                                     </a>
@@ -150,7 +150,7 @@
                                                 <div class="flex items-center gap-2 max-sm:grid max-sm:grid-cols-2">
                                                     <button
                                                         type="button"
-                                                        @click="copyText(@js(route('downloads.entry.redirect', $entry->public_id)), $event.currentTarget, 'لینک دانلود کپی شد.')"
+                                                        @click="copyText(@js($entry->content), $event.currentTarget, 'لینک دانلود کپی شد.')"
                                                         data-default-text="کپی لینک"
                                                         data-copied-text="کپی شد"
                                                         class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
@@ -183,7 +183,7 @@
                                                     </button>
 
                                                     <a
-                                                        href="{{ route('downloads.entry.redirect', $entry->public_id) }}"
+                                                        href="{{ $entry->content }}"
                                                         class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:w-full"
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
