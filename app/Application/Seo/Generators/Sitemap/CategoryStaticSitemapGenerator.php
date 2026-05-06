@@ -4,8 +4,11 @@ namespace App\Application\Seo\Generators\Sitemap;
 
 use App\Application\Seo\DTOs\Sitemap\SitemapUrlDTO;
 use App\Application\Seo\Support\Sitemap\AbstractStaticSitemapGenerator;
+use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,7 +31,12 @@ class CategoryStaticSitemapGenerator extends AbstractStaticSitemapGenerator
                 'slug',
                 'path',
                 'updated_at',
-            ]);
+            ])
+            ->withMax([
+                'posts as latest_post_updated_at' => function (Builder $query): void {
+                    $query->where('status', PostStatusEnum::ACTIVE);
+                },
+            ], 'updated_at');
     }
 
     protected function filenameForPage(int $page): string
@@ -52,8 +60,15 @@ class CategoryStaticSitemapGenerator extends AbstractStaticSitemapGenerator
 
         return new SitemapUrlDTO(
             url: front_route('posts.categories', $term),
-            lastmod: $term->updated_at,
+            lastmod: $this->lastmod($term),
             images: [],
         );
+    }
+
+    private function lastmod(TaxonomyTerm $term): ?CarbonInterface
+    {
+        return $term->latest_post_updated_at
+            ? Carbon::parse($term->latest_post_updated_at)
+            : $term->updated_at;
     }
 }
