@@ -23,6 +23,9 @@ class TagStaticSitemapGenerator extends AbstractStaticSitemapGenerator
     {
         return TaxonomyTerm::query()
             ->where('taxonomy', TaxonomyKeyEnum::POST_TAG)
+            ->whereHas('posts', function (Builder $query): void {
+                $query->where('status', PostStatusEnum::ACTIVE);
+            })
             ->select([
                 'id',
                 'taxonomy',

@@ -23,6 +23,9 @@ class CategoryStaticSitemapGenerator extends AbstractStaticSitemapGenerator
     {
         return TaxonomyTerm::query()
             ->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY)
+            ->whereHas('posts', function (Builder $query): void {
+                $query->where('status', PostStatusEnum::ACTIVE);
+            })
             ->select([
                 'id',
                 'parent_id',
