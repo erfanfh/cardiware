@@ -28,7 +28,7 @@ class HandleSeoRedirectsMiddleware
         }
 
         if ($redirect->status_code->isGone()) {
-            return response('Gone', 410);
+            abort(410);
         }
 
         return redirect()->to(
