@@ -67,6 +67,8 @@ abstract class AbstractStaticSitemapGenerator implements StaticSitemapGeneratorI
 
                 $page++;
 
+                usleep(200000);
+
                 return true;
             });
 

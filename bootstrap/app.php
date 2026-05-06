@@ -25,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         );
     })
     ->withSchedule(function (Schedule $schedule): void {
-        $schedule->command('sitemap:regenerate-if-needed')
+        $schedule->exec('nice -n 10 ionice -c2 -n7 php artisan sitemap:regenerate-if-needed')
             ->everyFiveMinutes()
             ->withoutOverlapping();
     })
