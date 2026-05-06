@@ -2,6 +2,14 @@
 
 namespace App\Providers;
 
+use App\Application\Seo\Actions\Sitemap\MarkSitemapsDirtyAction;
+use App\Application\Seo\Contracts\StaticSitemapGeneratorInterface;
+use App\Application\Seo\Generators\Sitemap\AuthorStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\CategoryStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\PageStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\PostStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\ProjectStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\TagStaticSitemapGenerator;
 use App\Application\Seo\Resolvers\AuthorSeoResolver;
 use App\Application\Seo\Resolvers\AuthSeoResolver;
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
@@ -15,6 +23,13 @@ use App\Application\Seo\Resolvers\ProjectSeoResolver;
 use App\Application\Seo\Resolvers\SearchSeoResolver;
 use App\Application\Seo\Support\SeoManager;
 use App\Application\Seo\Support\SeoResolverRegistry;
+use App\Application\Seo\Support\Sitemap\SitemapStorage;
+use App\Application\Seo\Support\Sitemap\StaticSitemapGeneratorRegistry;
+use App\Domain\Content\Models\Page;
+use App\Domain\Content\Models\Post;
+use App\Domain\Identity\Models\User;
+use App\Domain\Project\Models\Project;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -51,6 +66,25 @@ class SeoServiceProvider extends ServiceProvider
                 request: $app->make(Request::class),
             );
         });
+
+
+        $this->app->singleton(SitemapStorage::class);
+
+        $this->app->tag([
+            PostStaticSitemapGenerator::class,
+            PageStaticSitemapGenerator::class,
+            ProjectStaticSitemapGenerator::class,
+            CategoryStaticSitemapGenerator::class,
+            TagStaticSitemapGenerator::class,
+            AuthorStaticSitemapGenerator::class,
+        ], StaticSitemapGeneratorInterface::class);
+
+        $this->app->bind(
+            StaticSitemapGeneratorRegistry::class,
+            fn($app) => new StaticSitemapGeneratorRegistry(
+                $app->tagged(StaticSitemapGeneratorInterface::class)
+            )
+        );
     }
 
     /**
@@ -58,6 +92,26 @@ class SeoServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $markSitemapsDirty = fn() => app(MarkSitemapsDirtyAction::class)->execute();
+
+        Post::saved($markSitemapsDirty);
+        Post::deleted($markSitemapsDirty);
+        Post::restored($markSitemapsDirty);
+
+        Page::saved($markSitemapsDirty);
+        Page::deleted($markSitemapsDirty);
+        Page::restored($markSitemapsDirty);
+
+        Project::saved($markSitemapsDirty);
+        Project::deleted($markSitemapsDirty);
+        Project::restored($markSitemapsDirty);
+
+        TaxonomyTerm::saved($markSitemapsDirty);
+        TaxonomyTerm::deleted($markSitemapsDirty);
+        TaxonomyTerm::restored($markSitemapsDirty);
+
+        User::saved($markSitemapsDirty);
+        User::deleted($markSitemapsDirty);
+        User::restored($markSitemapsDirty);
     }
 }

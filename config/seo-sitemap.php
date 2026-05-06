@@ -1,7 +1,5 @@
 <?php
 
-// config/seo-sitemap.php
-
 return [
     'enabled' => true,
 

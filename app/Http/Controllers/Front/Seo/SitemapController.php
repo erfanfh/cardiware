@@ -2,143 +2,90 @@
 
 namespace App\Http\Controllers\Front\Seo;
 
-use App\Application\Seo\Actions\Sitemap\BuildSitemapIndexAction;
-use App\Application\Seo\Renderers\SitemapIndexXmlRenderer;
-use App\Application\Seo\Renderers\SitemapXmlRenderer;
-use App\Application\Seo\Support\Sitemap\SitemapProviderRegistry;
+use App\Application\Seo\Support\Sitemap\SitemapStorage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SitemapController extends Controller
 {
-    public function index(
-        BuildSitemapIndexAction $action,
-        SitemapIndexXmlRenderer $renderer,
-    ): Response
+    public function __construct(
+        private readonly SitemapStorage $storage,
+    )
     {
-        return $renderer->render($action->execute());
     }
 
-    public function posts(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function index(): Response
     {
-        return $this->show('post', 1, $registry, $renderer);
+        return $this->xml('sitemap_index.xml');
     }
 
-    public function paginatedPosts(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function posts(): Response
     {
-        return $this->show('post', $page, $registry, $renderer);
+        return $this->xml('post-sitemap.xml');
     }
 
-    public function projects(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedPosts(int $page): Response
     {
-        return $this->show('project', 1, $registry, $renderer);
+        return $this->xml("post-sitemap{$page}.xml");
     }
 
-    public function paginatedProjects(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function projects(): Response
     {
-        return $this->show('project', $page, $registry, $renderer);
+        return $this->xml('project-sitemap.xml');
     }
 
-    public function pages(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedProjects(int $page): Response
     {
-        return $this->show('page', 1, $registry, $renderer);
+        return $this->xml("project-sitemap{$page}.xml");
     }
 
-    public function paginatedPages(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function pages(): Response
     {
-        return $this->show('page', $page, $registry, $renderer);
+        return $this->xml('page-sitemap.xml');
     }
 
-    public function categories(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedPages(int $page): Response
     {
-        return $this->show('category', 1, $registry, $renderer);
+        return $this->xml("page-sitemap{$page}.xml");
     }
 
-    public function paginatedCategories(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function categories(): Response
     {
-        return $this->show('category', $page, $registry, $renderer);
+        return $this->xml('category-sitemap.xml');
     }
 
-    public function tags(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedCategories(int $page): Response
     {
-        return $this->show('tag', 1, $registry, $renderer);
+        return $this->xml("category-sitemap{$page}.xml");
     }
 
-    public function paginatedTags(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function tags(): Response
     {
-        return $this->show('tag', $page, $registry, $renderer);
+        return $this->xml('post_tag-sitemap.xml');
     }
 
-    public function authors(
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedTags(int $page): Response
     {
-        return $this->show('author', 1, $registry, $renderer);
+        return $this->xml("post_tag-sitemap{$page}.xml");
     }
 
-    public function paginatedAuthors(
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function authors(): Response
     {
-        return $this->show('author', $page, $registry, $renderer);
+        return $this->xml('author-sitemap.xml');
     }
 
-    private function show(
-        string                  $type,
-        int                     $page,
-        SitemapProviderRegistry $registry,
-        SitemapXmlRenderer      $renderer,
-    ): Response
+    public function paginatedAuthors(int $page): Response
     {
-        $provider = $registry->findByType($type);
+        return $this->xml("author-sitemap{$page}.xml");
+    }
 
-        if (!$provider || !$provider->isEnabled()) {
-            throw new NotFoundHttpException();
-        }
+    private function xml(string $filename): Response
+    {
+        abort_unless($this->storage->exists($filename), 404);
 
-        if ($page < 1 || !$provider->hasPage($page)) {
-            throw new NotFoundHttpException();
-        }
-
-        return $renderer->render($provider->urls($page));
+        return response($this->storage->get($filename), 200, [
+            'Content-Type' => 'application/xml; charset=UTF-8',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
     }
 }
