@@ -7,6 +7,8 @@ use App\Application\Seo\DTOs\Sitemap\SitemapUrlDTO;
 use App\Application\Seo\Support\Sitemap\AbstractStaticSitemapGenerator;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
+use App\Domain\Project\Enums\ProjectStatusEnum;
+use App\Domain\Project\Models\Project;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -118,11 +120,24 @@ class PostStaticSitemapGenerator extends AbstractStaticSitemapGenerator
 
     private function homeLastmod(): ?CarbonInterface
     {
-        $lastmod = Post::query()
+        $postLastmod = Post::query()
             ->where('status', PostStatusEnum::ACTIVE)
             ->max('updated_at');
 
-        return $lastmod ? Carbon::parse($lastmod) : null;
+        $projectLastmod = Project::query()
+            ->where('status', ProjectStatusEnum::ACTIVE)
+            ->max('updated_at');
+
+        $dates = array_filter([
+            $postLastmod,
+            $projectLastmod,
+        ]);
+
+        if (empty($dates)) {
+            return null;
+        }
+
+        return Carbon::parse(max($dates));
     }
 
     /**
