@@ -161,4 +161,9 @@ final class CacheKey
     {
         return 'seo:redirects:version';
     }
+
+    public static function commentableApprovedCommentsCount(string $type, int|string $id): string
+    {
+        return "commentable:{$type}:{$id}:approved_comments_count";
+    }
 }

@@ -97,4 +97,9 @@ final class CacheTag
     {
         return "page-views:{$modelClass}:{$id}";
     }
+
+    public static function commentable(string $type, int|string $id): string
+    {
+        return "commentable:{$type}:{$id}";
+    }
 }

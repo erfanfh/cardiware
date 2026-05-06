@@ -2,6 +2,7 @@
 
 namespace App\Domain\Discussion\Models;
 
+use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class Comment extends Model
 {
@@ -43,6 +45,26 @@ class Comment extends Model
         'dislikes_count' => 'integer',
         'score' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(fn(Comment $comment) => $comment->flushCommentableCache());
+        static::updated(fn(Comment $comment) => $comment->flushCommentableCache());
+        static::deleted(fn(Comment $comment) => $comment->flushCommentableCache());
+        static::restored(fn(Comment $comment) => $comment->flushCommentableCache());
+        static::forceDeleted(fn(Comment $comment) => $comment->flushCommentableCache());
+    }
+
+    protected function flushCommentableCache(): void
+    {
+        Cache::tags([
+            CacheTag::COMMENTS,
+            CacheTag::commentable(
+                $this->commentable_type,
+                $this->commentable_id
+            ),
+        ])->flush();
+    }
 
     /**
      * @return MorphTo
