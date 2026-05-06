@@ -76,6 +76,6 @@ XML;
 
     private function formatDate(CarbonInterface $date): string
     {
-        return $date->toAtomString();
+        return $date->copy()->utc()->toAtomString();
     }
 }
