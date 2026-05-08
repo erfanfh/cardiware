@@ -149,6 +149,17 @@
                                 value="{{ get_setting('general', 'category_tag_posts_count_settings') ?? 9 }}"
                             />
                         </x-admin.field>
+
+                        <x-admin.field
+                            label="تعداد آیتم در صفحه لیست نوشته های نویسندگان"
+                            hint="بر اساس این تنظیمات تعیین کنید چه تعداد نوشته در صفحه نوشته های یک نویسنده صفحه بندی شوند."
+                        >
+                            <x-admin.form.input
+                                name="author_posts_count_settings"
+                                placeholder="تعداد نوشته"
+                                value="{{ get_setting('general', 'author_posts_count_settings') ?? 9 }}"
+                            />
+                        </x-admin.field>
                     </div>
                 </x-admin.metabox>
 

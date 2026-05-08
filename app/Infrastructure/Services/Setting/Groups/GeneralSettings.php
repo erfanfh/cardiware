@@ -25,6 +25,7 @@ class GeneralSettings extends BaseSettings
         'category_tag_posts_count_settings',
         'search_posts_count_settings',
         'search_projects_count_settings',
+        'author_posts_count_settings',
     ];
 
     protected array $casts = [
