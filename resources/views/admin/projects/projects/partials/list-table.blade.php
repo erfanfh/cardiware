@@ -62,6 +62,8 @@
 
                 <x-admin.list.th>برچسب‌ها</x-admin.list.th>
 
+                <x-admin.list.th>بازدید‌ها</x-admin.list.th>
+
                 <x-admin.list.th>امتیاز سئو</x-admin.list.th>
 
                 <x-admin.list.th
@@ -228,6 +230,10 @@
                                     <span class="text-xs text-slate-400">---</span>
                                 </template>
                             </div>
+                        </x-admin.list.td>
+
+                        <x-admin.list.td>
+                            <x-admin.badge size="md">{{ page_views($project) }}</x-admin.badge>
                         </x-admin.list.td>
 
                         <x-admin.list.td>

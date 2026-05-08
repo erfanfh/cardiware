@@ -6,6 +6,7 @@ use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Scopes\ActiveProjectScope;
 use App\Domain\Seo\Traits\HasSeoMeta;
+use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Project extends Model
+class Project extends Model implements PageViewableInterface
 {
     use HasTaxonomyTerms, HasExcerpt, HasSeoMeta, SoftDeletes;
 
