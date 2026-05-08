@@ -122,7 +122,7 @@
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="نوشته های مرتبط">
+                <x-admin.metabox title="نوشته ها">
                     <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         <x-admin.field
                             label="مبنای نوشته های مرتبط"
@@ -136,6 +136,17 @@
                                     'category' => 'دسته بندی',
                                 ]"
                                 value="{{ get_setting('general', 'select_related_content_settings') }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="تعداد آیتم در صفحه لیست نوشته های دسته بندی و برچسب"
+                            hint="بر اساس این تنظیمات تعیین کنید چه تعداد نوشته در صفحه نوشته های یک دسته بندی یا برچسب صفحه بندی شوند."
+                        >
+                            <x-admin.form.input
+                                name="select_category_tag_posts_count_settings"
+                                placeholder="تعداد نوشته"
+                                value="{{ get_setting('general', 'select_category_tag_posts_count_settings') ?? 9 }}"
                             />
                         </x-admin.field>
                     </div>

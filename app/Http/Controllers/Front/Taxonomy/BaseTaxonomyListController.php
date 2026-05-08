@@ -54,7 +54,7 @@ abstract class BaseTaxonomyListController extends Controller
             ])
             ->latest('published_at')
             ->paginate(
-                perPage: 9,
+                perPage: get_setting('general', 'select_category_tag_posts_count_settings') ?? 9,
                 pageName: 'page',
                 page: $page,
             );

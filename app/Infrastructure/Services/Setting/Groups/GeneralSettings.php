@@ -22,6 +22,7 @@ class GeneralSettings extends BaseSettings
         'melli_payamak_password',
         'melli_payamak_from_mobile',
         'select_related_content_settings',
+        'select_category_tag_posts_count_settings',
     ];
 
     protected array $casts = [
