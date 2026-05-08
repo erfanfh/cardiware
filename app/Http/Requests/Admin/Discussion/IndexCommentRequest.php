@@ -43,6 +43,7 @@ class IndexCommentRequest extends FormRequest
                 'string',
                 Rule::in(['asc', 'desc']),
             ],
+            'post_id' => ['nullable', 'integer', 'exists:posts,id'],
         ];
     }
 
@@ -58,6 +59,7 @@ class IndexCommentRequest extends FormRequest
             'type.in' => 'نوع دیدگاه انتخاب‌شده معتبر نیست.',
             'sort.in' => 'فیلد مرتب‌سازی معتبر نیست.',
             'direction.in' => 'جهت مرتب‌سازی معتبر نیست.',
+            'post_id.exists' => 'شناسه نوشته وارد شده معتبر نیست.',
         ];
     }
 }
