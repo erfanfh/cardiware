@@ -20,7 +20,7 @@ class AuthorController
             ], 301);
         }
 
-        $postsPerPage = get_setting('posts', 'posts_per_page') ?: 9;
+        $postsPerPage = get_setting('general', 'author_posts_count_settings') ?? 9;
 
         $posts = Post::query()
             ->with([
