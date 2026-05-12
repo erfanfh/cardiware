@@ -75,9 +75,10 @@ class SettingController extends Controller
         Gate::authorize('setting.seo');
 
         $this->storeSettings($request, 'seo');
+        $activeTab = $request->input('active_tab', 'main');
 
         return redirect()
-            ->route('admin.settings.seo')
+            ->route('admin.settings.seo', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 
@@ -106,8 +107,10 @@ class SettingController extends Controller
 
         $this->storeSettings($request, 'header');
 
+        $activeTab = $request->input('active_tab', 'general');
+
         return redirect()
-            ->route('admin.settings.header')
+            ->route('admin.settings.header', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 
@@ -227,8 +230,10 @@ class SettingController extends Controller
 
         $this->storeSettings($request, 'sidebarWidgets');
 
+        $activeTab = $request->input('active_tab', 'tools');
+
         return redirect()
-            ->route('admin.settings.sidebar-widgets')
+            ->route('admin.settings.sidebar-widgets', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 

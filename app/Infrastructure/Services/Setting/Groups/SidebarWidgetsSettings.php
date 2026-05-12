@@ -9,6 +9,8 @@ class SidebarWidgetsSettings extends BaseSettings
 {
     protected string $group = 'sidebar-widgets';
     protected array $allowedKeys = [
+        'active_tab',
+
         'tools_title',
         'tools_subtitle',
         'tools_items',
