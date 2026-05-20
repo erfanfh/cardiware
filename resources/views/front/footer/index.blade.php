@@ -329,8 +329,8 @@
             &copy; {{ get_setting('footer', 'copyright') }}
         </div>
 
-        <div>
+        <a href="https://avinoco.ir" target="_blank" rel="sponsored noopener">
             طراحی و توسعه توسط Avino
-        </div>
+        </a>
     </div>
 </footer>
