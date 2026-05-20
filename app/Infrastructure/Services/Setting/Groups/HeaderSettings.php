@@ -10,6 +10,8 @@ class HeaderSettings extends BaseSettings
 {
     protected string $group = 'header';
     protected array $allowedKeys = [
+        'active_tab',
+
         'announcement_active',
         'announcement_text',
         'announcement_button_text',

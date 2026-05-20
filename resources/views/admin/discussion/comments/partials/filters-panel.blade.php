@@ -72,6 +72,17 @@
                         />
                     </div>
                 </x-admin.filters.item>
+
+                <x-admin.filters.item label="نوشته">
+                    <x-admin.form.async-select
+                        name="post_id"
+                        :value="request('post_id')"
+                        :selected-options="$selectedPost"
+                        placeholder="جستجو در نوشته ها..."
+                        :multiple="false"
+                        :search-url="route('admin.posts.ajax-search')"
+                    />
+                </x-admin.filters.item>
             </x-admin.filters.grid>
 
             <x-admin.filters.actions>

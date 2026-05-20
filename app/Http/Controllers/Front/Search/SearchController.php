@@ -28,14 +28,14 @@ class SearchController extends Controller
             ->where('title', 'LIKE', '%' . $searchTerm . '%');
 
         if ($type === 'posts') {
-            $posts = $posts->latest()->paginate(12)->withQueryString();
+            $posts = $posts->latest()->paginate(get_setting('general', 'search_posts_count_settings') ?? 12)->withQueryString();
 
             request()->attributes->set('seo_paginator', $posts);
 
             $postsCount = $posts->total();
             $projectsCount = $projects->count();
         } elseif ($type === 'projects') {
-            $projects = $projects->latest()->paginate(9)->withQueryString();
+            $projects = $projects->latest()->paginate(get_setting('general', 'search_projects_count_settings') ?? 12)->withQueryString();
 
             request()->attributes->set('seo_paginator', $projects);
 

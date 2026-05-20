@@ -9,6 +9,8 @@ class SeoSettings extends BaseSettings
 {
     protected string $group = 'seo';
     protected array $allowedKeys = [
+        'active_tab',
+
         'site_name',
         'site_alternate_name',
         'site_description',

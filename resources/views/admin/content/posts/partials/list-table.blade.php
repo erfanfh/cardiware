@@ -237,7 +237,9 @@
                         </x-admin.list.td>
 
                         <x-admin.list.td>
-                            <x-admin.badge size="md">{{ $post->comments_count }}</x-admin.badge>
+                            <a href="{{ route('admin.comments.index') . '?post_id=' . $post->id }}">
+                                <x-admin.badge size="md">{{ $post->comments_count }}</x-admin.badge>
+                            </a>
                         </x-admin.list.td>
 
                         <x-admin.list.td>
