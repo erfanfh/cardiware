@@ -168,6 +168,8 @@
             </x-admin.tabs>
         </x-admin.page>
 
+        <input type="hidden" name="active_tab" id="active_tab_input" value="">
+
         <x-admin.form.save-button/>
     </x-admin.form>
 @endsection
