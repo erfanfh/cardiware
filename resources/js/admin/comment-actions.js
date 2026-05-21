@@ -64,12 +64,34 @@ document.addEventListener('alpine:init', () => {
         },
 
         applyRowResult(id, action) {
-            const row = document.querySelector(`[data-comment-row="${id}"]`);
+            id = Number(id);
 
             if (action === 'delete') {
                 this.hiddenIds.push(id);
                 return;
             }
+
+            if (action === 'approve') {
+                this.applyCommentStatus(id, 'approved');
+                return;
+            }
+
+            if (action === 'reject') {
+                this.applyCommentStatus(id, 'rejected');
+                return;
+            }
+
+            if (action === 'pending') {
+                this.applyCommentStatus(id, 'pending');
+            }
+        },
+
+        applyCommentStatus(id, status) {
+            id = Number(id);
+
+            const row = document.querySelector(`[data-comment-row="${id}"]`);
+
+            this.setRowStatus(id, status);
 
             if (!row) {
                 return;
@@ -83,20 +105,17 @@ document.addEventListener('alpine:init', () => {
                 '!border-b-slate-200'
             );
 
-            if (action === 'approve') {
-                this.setRowStatus(id, 'approved');
+            if (status === 'approved') {
                 row.classList.add('!border-b-slate-200');
                 return;
             }
 
-            if (action === 'reject') {
-                this.setRowStatus(id, 'rejected');
+            if (status === 'rejected') {
                 row.classList.add('!bg-rose-50', '!border-b-rose-200/70');
                 return;
             }
 
-            if (action === 'pending') {
-                this.setRowStatus(id, 'pending');
+            if (status === 'pending') {
                 row.classList.add('!bg-amber-50', '!border-b-amber-200/70');
             }
         },
@@ -246,6 +265,19 @@ document.addEventListener('alpine:init', () => {
                 }
 
                 this.notifySuccess(data.message || 'پاسخ با موفقیت ثبت شد.');
+
+                const parentCommentId = this.replyModal.id;
+
+                const parentStatus =
+                    data.parent_comment?.status ||
+                    data.parentComment?.status ||
+                    data.comment?.parent_status ||
+                    data.status;
+
+                if (parentCommentId && parentStatus) {
+                    this.applyCommentStatus(parentCommentId, parentStatus);
+                }
+
                 this.closeReplyModal(true);
             } catch (error) {
                 console.error(error);
