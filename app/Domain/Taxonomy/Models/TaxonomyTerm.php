@@ -2,6 +2,7 @@
 
 namespace App\Domain\Taxonomy\Models;
 
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
 use App\Domain\Seo\Traits\HasSeoMeta;
@@ -158,6 +159,22 @@ class TaxonomyTerm extends Model
     }
 
     /**
+     * Products related to this taxonomy term.
+     *
+     * @return MorphToMany
+     */
+    public function products(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Product::class,
+            'taxonomable',
+            'taxonomables',
+            'taxonomy_term_id',
+            'taxonomable_id'
+        );
+    }
+
+    /**
      * Recursive children relation.
      *
      * @return HasMany
@@ -192,6 +209,18 @@ class TaxonomyTerm extends Model
             : [$this->id];
 
         return Post::query()
+            ->whereHas('taxonomyTerms', function (Builder $query) use ($termIds): void {
+                $query->whereIn('taxonomy_terms.id', $termIds);
+            });
+    }
+
+    public function productsIncludingDescendants(): Builder
+    {
+        $termIds = $this->isHierarchical()
+            ? $this->selfAndDescendantIds()
+            : [$this->id];
+
+        return Product::query()
             ->whereHas('taxonomyTerms', function (Builder $query) use ($termIds): void {
                 $query->whereIn('taxonomy_terms.id', $termIds);
             });
