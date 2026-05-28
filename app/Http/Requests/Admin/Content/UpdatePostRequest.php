@@ -90,28 +90,8 @@ class UpdatePostRequest extends FormRequest
             'title' => 'عنوان',
             'slug' => 'اسلاگ',
             'status' => 'وضعیت',
-            'released_at' => 'تاریخ انتشار',
-            'last_updated_at' => 'تاریخ آخرین بروزرسانی',
-            'progress_percent' => 'درصد پیشرفت',
-            'current_version' => 'نسخه فعلی',
-            'creator_name' => 'نام سازنده',
-            'platform' => 'پلتفرم',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
-
-            'roadmap' => 'نقشه راه',
-            'roadmap.*.title' => 'عنوان آیتم نقشه راه',
-            'roadmap.*.status' => 'وضعیت آیتم نقشه راه',
-            'roadmap.*.progress_percent' => 'درصد پیشرفت آیتم نقشه راه',
-            'roadmap.*.excerpt' => 'توضیح آیتم نقشه راه',
-            'roadmap.*.sort_order' => 'ترتیب آیتم نقشه راه',
-
-            'changelogs' => 'آپدیت‌ها و تغییرات',
-            'changelogs.*.version' => 'نسخه آپدیت',
-            'changelogs.*.title' => 'عنوان آپدیت',
-            'changelogs.*.body' => 'توضیحات آپدیت',
-            'changelogs.*.released_at' => 'تاریخ انتشار آپدیت',
-            'changelogs.*.sort_order' => 'ترتیب آپدیت',
         ];
     }
 
