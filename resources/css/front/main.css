@@ -1,5 +1,9 @@
 @import "./tinymce-content.css";
 
+[x-cloak] {
+    display: none !important;
+}
+
 .mwGalleryPrev.swiper-button-disabled,
 .mwGalleryNext.swiper-button-disabled {
     opacity: 0.8;
