@@ -89,6 +89,38 @@ return [
     ],
 
     [
+        'label' => 'محصولات',
+        'route' => 'admin.products.index',
+        'icon' => 'icons.shopping-bag-03',
+        'children' => [
+            [
+                'label' => 'لیست محصولات',
+                'route' => 'admin.products.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'product.list',
+            ],
+            [
+                'label' => 'ایجاد محصول',
+                'route' => 'admin.products.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'product.create',
+            ],
+            [
+                'label' => 'دسته‌ها',
+                'route' => 'admin.products.categories.index',
+                'icon' => 'icons.tag-02',
+                'gate' => 'product.category',
+            ],
+            [
+                'label' => 'برچسب‌ها',
+                'route' => 'admin.products.tags.index',
+                'icon' => 'icons.tag-02',
+                'gate' => 'product.tag',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'کاربران',
         'route' => 'admin.users.index',
         'icon' => 'icons.user',
