@@ -2,6 +2,7 @@ import './lightbox-gallery.js';
 import typingPlaceholder from './typing-placeholder.js';
 import './old-toggle-box.js';
 import './sticky-columns.js';
+import './product-detail/image-gallery-slider.js';
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('typingPlaceholder', typingPlaceholder);
