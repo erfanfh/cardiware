@@ -12,6 +12,7 @@ enum SeoTemplateVariableEnum: string
     case TAXONOMY_TITLE = 'taxonomy_title';
     case AUTHOR_NAME = 'author_name';
     case SEARCH_TERM = 'search_term';
+    case PRODUCT_TITLE = 'product_title';
 
     public function token(): string
     {
@@ -29,6 +30,7 @@ enum SeoTemplateVariableEnum: string
             self::TAXONOMY_TITLE => 'عنوان',
             self::AUTHOR_NAME => 'نام نویسنده',
             self::SEARCH_TERM => 'عبارت جستجو شده',
+            self::PRODUCT_TITLE => 'عنوان محصول',
         };
     }
 
@@ -43,6 +45,7 @@ enum SeoTemplateVariableEnum: string
             self::TAXONOMY_TITLE => 'عنوان',
             self::AUTHOR_NAME => 'نام نویسنده',
             self::SEARCH_TERM => 'عبارت جستجو شده',
+            self::PRODUCT_TITLE => 'عنوان محصول',
         };
     }
 
@@ -77,6 +80,12 @@ enum SeoTemplateVariableEnum: string
                 self::SITE_TITLE,
                 self::SEPARATOR,
                 self::SEARCH_TERM,
+            ], true),
+
+            'product' => in_array($this, [
+                self::SITE_TITLE,
+                self::SEPARATOR,
+                self::PRODUCT_TITLE,
             ], true),
 
             default => in_array($this, [
