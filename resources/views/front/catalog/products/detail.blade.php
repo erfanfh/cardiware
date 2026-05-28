@@ -3,8 +3,8 @@
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8" x-data="productPage()"
           x-init="init()">
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-8 space-y-6">
+        <section data-smart-sidebar-layout class="grid grid-cols-1 lg:grid-cols-10 gap-6">
+            <div data-smart-sidebar-content class="lg:col-span-7 space-y-6">
                 @include('front.catalog.products.partials.detail.title')
                 @include('front.catalog.products.partials.detail.share-box')
                 @include('front.catalog.products.partials.detail.image-gallery')
@@ -504,8 +504,8 @@
                 </section>
             </div>
 
-            <aside class="lg:col-span-4 space-y-6">
-                <div class="lg:sticky lg:top-[102px] space-y-6">
+            <div data-smart-sidebar-column class="lg:col-span-3">
+                <aside data-smart-sidebar-box class="space-y-6">
                     <!-- price box -->
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                         <div class="flex items-start justify-between gap-3">
@@ -769,8 +769,8 @@
                             </div>
                         </div>
                     </section>
-                </div>
-            </aside>
+                </aside>
+            </div>
         </section>
     </main>
 @endsection
