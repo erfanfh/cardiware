@@ -1,6 +1,6 @@
 @php
     $imageWidth = $product->picture?->primaryVariant?->width;
-    $imageHeight = $product->picture?->primaryVariant->height;
+    $imageHeight = $product->picture?->primaryVariant?->height;
 
     $aspectRatio = ($imageWidth && $imageHeight)
         ? "{$imageWidth} / {$imageHeight}"
@@ -52,23 +52,18 @@
 
                     <div class="flex items-center gap-2 self-start sm:self-end">
                         <button
-                            class="h-10 w-10 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"
+                            class="cursor-pointer h-10 w-10 [&_svg]:w-5 [&_svg]:h-5 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"
                             aria-label="علاقه‌مندی">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M12 20s-7-4.35-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.65-7 10-7 10Z"
-                                    stroke="currentColor" stroke-width="2"/>
-                            </svg>
+                            @include('icons.favourite')
                         </button>
+
                         <button
-                            class="h-10 w-10 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"
-                            aria-label="اشتراک‌گذاری">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M16 8a3 3 0 1 0-2.83-4H13a3 3 0 0 0 .17 1L8.91 7.13a3 3 0 0 0-1.91-.63A3 3 0 1 0 10 9.5c0-.35-.06-.69-.17-1l4.26-2.13A3 3 0 0 0 16 8Zm0 0 0 8m0 0a3 3 0 1 0 2.83 4H19a3 3 0 0 0-.17-1l-4.26-2.13c.11-.31.17-.65.17-1a3 3 0 0 0-.17-1l4.26-2.13c.11.31.17.65.17 1Z"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round"/>
-                            </svg>
+                            x-data
+                            x-on:click="$dispatch('open-modal', 'product-share-{{ $product->id }}')"
+                            class="cursor-pointer h-10 w-10 [&_svg]:w-5 [&_svg]:h-5 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"
+                            aria-label="اشتراک‌گذاری"
+                        >
+                            @include('icons.share-08')
                         </button>
                     </div>
                 </div>
