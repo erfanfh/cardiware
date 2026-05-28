@@ -106,7 +106,7 @@
             />
         </x-admin.metabox>
 
-        <x-admin.metabox title="برچسب‌ها">
+        <x-admin.metabox title="برچسب‌ها" class="!overflow-visible">
             @php
                 $oldExistingIds = collect(old('tags.existing', []))
                     ->filter()
@@ -136,6 +136,7 @@
                 existingName="tags[existing]"
                 newName="tags[new]"
                 :selected="$resolvedSelectedTags"
+                :search-url="route('admin.posts.tags.ajax-search')"
             />
         </x-admin.metabox>
 
@@ -144,7 +145,8 @@
                 name="category_ids"
                 :items="$allCategories"
                 :selected="old('category_ids', $selectedCategoryIds ?? [])"
-                quick-create-url="{{ route('admin.posts.categories.quick-create') }}"
+                :quick-create-url="route('admin.posts.categories.quick-create')"
+                :search-url="route('admin.posts.categories.ajax-search')"
             />
         </x-admin.metabox>
     </x-slot:sidebar>

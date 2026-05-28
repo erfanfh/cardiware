@@ -4,6 +4,8 @@ namespace App\Application\Catalog\Actions;
 
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
+use App\Application\Taxonomy\Actions\SyncModelProductCategoriesAction;
+use App\Application\Taxonomy\Actions\SyncModelProductTagsAction;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +14,9 @@ use Throwable;
 class CreateProductAction
 {
     public function __construct(
-        protected AssignSlugAction $assignSlugAction,
+        protected AssignSlugAction                 $assignSlugAction,
+        protected SyncModelProductTagsAction       $syncModelProductTagsAction,
+        protected SyncModelProductCategoriesAction $syncModelProductCategoriesAction,
     )
     {
     }
@@ -35,6 +39,8 @@ class CreateProductAction
 
             unset(
                 $productData['slug'],
+                $productData['tags'],
+                $productData['category_ids'],
             );
 
             $product = Product::create($productData);
@@ -48,6 +54,9 @@ class CreateProductAction
                     desiredSlug: $desiredSlug,
                 )
             );
+
+            $this->syncModelProductTagsAction->execute($product, $data['tags'] ?? []);
+            $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
 
             return $product;
         });

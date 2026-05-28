@@ -76,6 +76,50 @@
                 :allow-clear="false"
             />
         </x-admin.metabox>
+
+        <x-admin.metabox title="برچسب‌ها" class="!overflow-visible">
+            @php
+                $oldExistingIds = collect(old('tags.existing', []))
+                    ->filter()
+                    ->map(fn ($id) => (int) $id);
+
+                $oldExistingTags = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()
+                    ->whereIn('id', $oldExistingIds)
+                    ->get(['id', 'title'])
+                    ->map(fn ($tag) => [
+                        'id' => $tag->id,
+                        'name' => $tag->title,
+                    ]);
+
+                $oldNewTags = collect(old('tags.new', []))
+                    ->filter()
+                    ->map(fn ($name) => [
+                        'id' => null,
+                        'name' => trim((string) $name),
+                    ]);
+
+                $resolvedSelectedTags = old('tags.existing') !== null || old('tags.new') !== null
+                    ? $oldExistingTags->concat($oldNewTags)->values()->all()
+                    : ($selectedTags ?? []);
+            @endphp
+
+            <x-admin.form.tags
+                existingName="tags[existing]"
+                newName="tags[new]"
+                :selected="$resolvedSelectedTags"
+                :search-url="route('admin.products.tags.ajax-search')"
+            />
+        </x-admin.metabox>
+
+        <x-admin.metabox title="دسته‌بندی‌ها">
+            <x-admin.form.categories
+                name="category_ids"
+                :items="$allCategories"
+                :selected="old('category_ids', $selectedCategoryIds ?? [])"
+                :quick-create-url="route('admin.products.categories.quick-create')"
+                :search-url="route('admin.products.categories.ajax-search')"
+            />
+        </x-admin.metabox>
     </x-slot:sidebar>
 
     <x-admin.form.validation-errors class="mb-6"/>

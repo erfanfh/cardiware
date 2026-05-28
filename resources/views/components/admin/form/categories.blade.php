@@ -6,6 +6,7 @@
     'quickCreate' => true,
     'quickCreateParentEnabled' => true,
     'quickCreateUrl' => null,
+    'searchUrl' => null,
 ])
 
 @php
@@ -195,7 +196,7 @@
                                     x-model="newCategoryParentId"
                                     placeholder="بدون والد"
                                     :multiple="false"
-                                    :search-url="route('admin.posts.categories.ajax-search')"
+                                    :search-url="$searchUrl"
                                 />
                             </div>
                         </template>

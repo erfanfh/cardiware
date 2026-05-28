@@ -33,6 +33,14 @@ class UpdateProductRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
+
+            'tags' => ['nullable', 'array'],
+            'tags.existing' => ['nullable', 'array'],
+            'tags.existing.*' => ['integer', 'exists:taxonomy_terms,id'],
+            'tags.new' => ['nullable', 'array'],
+            'tags.new.*' => ['string', 'max:255'],
+
+            'category_ids' => ['nullable', 'array'],
         ];
     }
 
@@ -71,9 +79,30 @@ class UpdateProductRequest extends FormRequest
             ?: $product?->store_id
                 ?: Store::query()->orderBy('id')->value('id');
 
+        $tags = $this->input('tags', []);
+
+        $existing = collect(data_get($tags, 'existing', []))
+            ->filter(fn($id) => filled($id))
+            ->map(fn($id) => (int)$id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $new = collect(data_get($tags, 'new', []))
+            ->filter(fn($title) => filled($title))
+            ->map(fn($title) => preg_replace('/\s+/', ' ', trim((string)$title)))
+            ->filter()
+            ->unique(fn($title) => mb_strtolower($title))
+            ->values()
+            ->all();
+
         $this->merge([
             'store_id' => $defaultStoreId,
             'picture_id' => $this->input('picture.id'),
+            'tags' => [
+                'existing' => $existing,
+                'new' => $new,
+            ],
             'published_at' => $this->input('published_at')
                 ? gregorian_date($this->input('published_at'))
                 : date('Y-m-d H:i:s'),

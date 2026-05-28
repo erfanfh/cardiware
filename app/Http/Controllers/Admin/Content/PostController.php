@@ -7,10 +7,11 @@ use App\Application\Content\Actions\DeletePostAction;
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\UpdatePostAction;
 use App\Application\Content\Listings\PostListing;
-use App\Application\Taxonomy\Actions\GetAllPostCategoriesAction;
+use App\Application\Taxonomy\Actions\GetAllTaxonomiesAction;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Models\User;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Content\IndexPostRequest;
@@ -24,8 +25,8 @@ use Throwable;
 class PostController extends Controller
 {
     public function __construct(
-        protected GetAllPostCategoriesAction $getAllPostCategoriesAction,
-        protected GetPostFeaturesAction      $getPostFeaturesAction,
+        protected GetAllTaxonomiesAction $getAllTaxonomiesAction,
+        protected GetPostFeaturesAction  $getPostFeaturesAction,
     )
     {
 
@@ -126,7 +127,7 @@ class PostController extends Controller
         Gate::authorize('post.create');
 
         return view('admin.content.posts.create', [
-            'allCategories' => $this->getAllPostCategoriesAction->execute(),
+            'allCategories' => $this->getAllTaxonomiesAction->execute(TaxonomyKeyEnum::POST_CATEGORY),
         ]);
     }
 
@@ -166,7 +167,7 @@ class PostController extends Controller
             ->values()
             ->all();
 
-        $allCategories = $this->getAllPostCategoriesAction->execute();
+        $allCategories = $this->getAllTaxonomiesAction->execute(TaxonomyKeyEnum::POST_CATEGORY);
         $selectedCategoryIds = $post->categories()->pluck('taxonomy_terms.id')->all();
         $selectedFeatures = $this->getPostFeaturesAction->execute($post);
 

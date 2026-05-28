@@ -9,10 +9,12 @@ use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\System\Interfaces\PageViewableInterface;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model implements PageViewableInterface
@@ -57,5 +59,25 @@ class Product extends Model implements PageViewableInterface
     public function picture(): BelongsTo
     {
         return $this->belongsTo(MediaFile::class, 'picture_id');
+    }
+
+    /**
+     * Product categories relation.
+     *
+     * @return MorphToMany
+     */
+    public function categories(): MorphToMany
+    {
+        return $this->taxonomyTermsFor(TaxonomyKeyEnum::PRODUCT_CATEGORY);
+    }
+
+    /**
+     * Product tags relation.
+     *
+     * @return MorphToMany
+     */
+    public function tags(): MorphToMany
+    {
+        return $this->taxonomyTermsFor(TaxonomyKeyEnum::PRODUCT_TAG);
     }
 }

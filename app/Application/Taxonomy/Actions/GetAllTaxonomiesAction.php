@@ -5,16 +5,16 @@ namespace App\Application\Taxonomy\Actions;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 
-final class GetAllPostCategoriesAction
+final class GetAllTaxonomiesAction
 {
     /**
      * @return array<int, array{id:int,title:string,parent_id:int|null}>
      */
-    public function execute(): array
+    public function execute(TaxonomyKeyEnum $taxonomyKey): array
     {
         return TaxonomyTerm::query()
             ->select(['id', 'title', 'parent_id'])
-            ->forTaxonomy(TaxonomyKeyEnum::POST_CATEGORY)
+            ->forTaxonomy($taxonomyKey)
             ->orderBy('title')
             ->get()
             ->map(fn(TaxonomyTerm $term) => [

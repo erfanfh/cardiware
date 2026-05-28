@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin\Catalog;
 
 use App\Application\Catalog\Actions\CreateProductAction;
 use App\Application\Catalog\Actions\UpdateProductAction;
+use App\Application\Taxonomy\Actions\GetAllTaxonomiesAction;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Catalog\UpdateProductRequest;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +25,9 @@ class ProductController extends Controller
     {
         Gate::authorize('product.create');
 
-        return view('admin.catalog.products.create');
+        return view('admin.catalog.products.create', [
+            'allCategories' => app(GetAllTaxonomiesAction::class)->execute(TaxonomyKeyEnum::PRODUCT_CATEGORY),
+        ]);
     }
 
     /**
@@ -54,7 +58,18 @@ class ProductController extends Controller
     {
         Gate::authorize('product.edit');
 
-        return view('admin.catalog.products.edit', compact('product'));
+        $selectedTags = $product->tags
+            ->map(fn($tag) => [
+                'id' => $tag->id,
+                'name' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
+        $allCategories = app(GetAllTaxonomiesAction::class)->execute(TaxonomyKeyEnum::PRODUCT_CATEGORY);
+        $selectedCategoryIds = $product->categories()->pluck('taxonomy_terms.id')->all();
+
+        return view('admin.catalog.products.edit', compact('product', 'allCategories', 'selectedCategoryIds', 'selectedTags'));
     }
 
 

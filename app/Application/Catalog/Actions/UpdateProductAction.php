@@ -4,8 +4,9 @@ namespace App\Application\Catalog\Actions;
 
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
+use App\Application\Taxonomy\Actions\SyncModelProductCategoriesAction;
+use App\Application\Taxonomy\Actions\SyncModelProductTagsAction;
 use App\Domain\Catalog\Models\Product;
-use App\Domain\Content\Models\Post;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -13,7 +14,9 @@ use Throwable;
 class UpdateProductAction
 {
     public function __construct(
-        protected AssignSlugAction $assignSlugAction,
+        protected AssignSlugAction                 $assignSlugAction,
+        protected SyncModelProductTagsAction       $syncModelProductTagsAction,
+        protected SyncModelProductCategoriesAction $syncModelProductCategoriesAction,
     )
     {
     }
@@ -21,10 +24,10 @@ class UpdateProductAction
     /**
      * @param Product $product
      * @param array $data
-     * @return Post
+     * @return Product
      * @throws Throwable
      */
-    public function execute(Product $product, array $data): Post
+    public function execute(Product $product, array $data): Product
     {
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['body'] = $data['body'] ?: '';
@@ -35,6 +38,8 @@ class UpdateProductAction
 
             unset(
                 $productData['slug'],
+                $productData['tags'],
+                $productData['category_ids'],
             );
 
             $product->update($productData);
@@ -48,6 +53,9 @@ class UpdateProductAction
                     desiredSlug: $desiredSlug,
                 )
             );
+
+            $this->syncModelProductTagsAction->execute($product, $data['tags'] ?? []);
+            $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
 
             return $product;
         });
