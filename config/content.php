@@ -19,6 +19,9 @@ return [
         'search',
         'category',
         'tag',
+        'product-category',
+        'product-tag',
+        'products',
 
         'cart',
         'checkout',
