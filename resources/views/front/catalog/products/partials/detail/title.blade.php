@@ -33,10 +33,12 @@
                 <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                     <div>
                         <div class="flex flex-wrap items-center gap-2 mb-4">
-                            <span
-                                class="text-[11px] font-extrabold text-white bg-white/10 px-2 py-1 rounded-xl border border-white/10">FC 26</span>
-                            <span
-                                class="text-[11px] font-extrabold text-white bg-white/10 px-2 py-1 rounded-xl border border-white/10">PC</span>
+                            @foreach($product->categories as $category)
+                                <span
+                                    class="text-[0.6875rem] font-extrabold text-white bg-white/10 px-2 py-1 rounded-xl border border-white/10">
+                                    {{ $category->title }}
+                                </span>
+                            @endforeach
                         </div>
 
                         <h1 class="text-xl sm:text-2xl font-black text-white leading-tight">
