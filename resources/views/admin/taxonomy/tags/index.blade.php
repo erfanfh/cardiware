@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'مدیریت برچسب‌ها')
+@section('title', 'برچسب نوشته ها')
 
 @section('content')
     @livewire('admin.taxonomy.manage-post-tags')

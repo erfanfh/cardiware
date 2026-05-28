@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'مدیریت دسته‌بندی‌ها')
+@section('title', 'دسته بندی نوشته ها')
 
 @section('content')
     @livewire('admin.taxonomy.manage-post-categories')

@@ -78,7 +78,7 @@
 
                     @include('livewire.admin.taxonomy.partials.bulk-bar')
 
-                    @include('livewire.admin.taxonomy.partials.category-table', [
+                    @include('livewire.admin.taxonomy.partials.hierarchical-table', [
                         'items' => $items,
                         'taxonomyLabel' => $taxonomyLabel,
                         'sortBy' => $sortBy,
