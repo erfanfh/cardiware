@@ -4,45 +4,24 @@ namespace App\Http\Controllers\Admin\Taxonomy;
 
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\Admin\AdminSearchController;
+use Illuminate\Database\Eloquent\Builder;
 
-class ProjectTagSearchController extends Controller
+class ProjectTagSearchController extends AdminSearchController
 {
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function __invoke(Request $request): JsonResponse
+    protected function modelClass(): string
     {
-        Gate::authorize('project.edit'); //TODO: this should be change
+        return TaxonomyTerm::class;
+    }
 
-        $query = trim((string)$request->string('q'));
+    protected function permissionName(): string
+    {
+        return 'project.edit'; // TODO: this should be changed
+    }
 
-        if (mb_strlen($query) < 2) {
-            return response()->json(['items' => []]);
-        }
-
-        $items = TaxonomyTerm::query()
-            ->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG)
-            ->select(['id', 'title'])
-            ->where(function ($builder) use ($query) {
-                $builder->where('title', 'like', '%' . $query . '%')
-                    ->orWhere('id', $query);
-            })
-            ->orderBy('title')
-            ->limit(50)
-            ->get()
-            ->map(fn(TaxonomyTerm $taxonomyTerm) => [
-                'value' => (string)$taxonomyTerm->id,
-                'label' => "$taxonomyTerm->title ($taxonomyTerm->id)",
-            ])
-            ->values();
-
-        return response()->json([
-            'items' => $items,
-        ]);
+    protected function baseQuery(): Builder
+    {
+        return parent::baseQuery()
+            ->where('taxonomy', TaxonomyKeyEnum::PROJECT_TAG);
     }
 }

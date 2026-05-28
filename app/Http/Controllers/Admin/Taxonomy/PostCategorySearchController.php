@@ -4,47 +4,24 @@ namespace App\Http\Controllers\Admin\Taxonomy;
 
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\Admin\AdminSearchController;
+use Illuminate\Database\Eloquent\Builder;
 
-class PostCategorySearchController extends Controller
+class PostCategorySearchController extends AdminSearchController
 {
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function __invoke(Request $request): JsonResponse
+    protected function modelClass(): string
     {
-        Gate::authorize('category.manage');
+        return TaxonomyTerm::class;
+    }
 
-        $query = trim((string)$request->string('q'));
+    protected function permissionName(): string
+    {
+        return 'category.manage';
+    }
 
-        if (mb_strlen($query) < 2) {
-            return response()->json([
-                'items' => [],
-            ]);
-        }
-
-        $items = TaxonomyTerm::query()
-            ->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY)
-            ->select(['id', 'title'])
-            ->where(function ($builder) use ($query) {
-                $builder->where('title', 'like', '%' . $query . '%')
-                    ->orWhere('id', $query);
-            })
-            ->orderBy('title')
-            ->limit(50)
-            ->get()
-            ->map(fn(TaxonomyTerm $taxonomyTerm) => [
-                'value' => (string)$taxonomyTerm->id,
-                'label' => "$taxonomyTerm->title ($taxonomyTerm->id)",
-            ])
-            ->values();
-
-        return response()->json([
-            'items' => $items,
-        ]);
+    protected function baseQuery(): Builder
+    {
+        return parent::baseQuery()
+            ->where('taxonomy', TaxonomyKeyEnum::POST_CATEGORY);
     }
 }
