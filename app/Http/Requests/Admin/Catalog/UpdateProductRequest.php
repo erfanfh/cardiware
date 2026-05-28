@@ -41,6 +41,14 @@ class UpdateProductRequest extends FormRequest
             'tags.new.*' => ['string', 'max:255'],
 
             'category_ids' => ['nullable', 'array'],
+            
+            'image_gallery_items' => ['nullable', 'array'],
+            'image_gallery_items.*' => ['array'],
+
+            'image_gallery_items.*.id' => ['nullable', 'integer'],
+            'image_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
+            'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
+            'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Domain\Catalog\Enums\ProductMediaCollectionEnum;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Enums\ProductStatusEnum;
 use App\Domain\Marketplace\Enums\ProductStructureEnum;
@@ -14,6 +15,7 @@ use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -79,5 +81,45 @@ class Product extends Model implements PageViewableInterface
     public function tags(): MorphToMany
     {
         return $this->taxonomyTermsFor(TaxonomyKeyEnum::PRODUCT_TAG);
+    }
+
+    public function media(): HasMany
+    {
+        return $this->hasMany(ProductMedia::class);
+    }
+
+    public function imageGallery(): HasMany
+    {
+        return $this->media()
+            ->where('collection', ProductMediaCollectionEnum::IMAGE_GALLERY)
+            ->orderBy('sort_order');
+    }
+
+    public function videoGallery(): HasMany
+    {
+        return $this->media()
+            ->where('collection', ProductMediaCollectionEnum::VIDEO_GALLERY)
+            ->orderBy('sort_order');
+    }
+
+    /**
+     * @return array
+     */
+    public function getImageGalleryForForm(): array
+    {
+        return $this->imageGallery
+            ->map(function ($imageGallery) {
+                return [
+                    'id' => $imageGallery->id,
+                    'title' => $imageGallery->title,
+                    'image' => [
+                        'id' => $imageGallery->media_file_id,
+                        'path' => $imageGallery->mediaFile->url,
+                    ],
+                    'sort_order' => $imageGallery->sort_order,
+                ];
+            })
+            ->values()
+            ->all();
     }
 }

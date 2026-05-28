@@ -157,4 +157,11 @@
                 value="{{ old('excerpt', $product->excerpt ?? '') }}"/>
         </x-admin.field>
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="گالری تصاویر"
+        storageKey="post-image-gallery"
+    >
+        @include('admin.catalog.products.partials.image-gallery')
+    </x-admin.metabox>
 </x-admin.page>

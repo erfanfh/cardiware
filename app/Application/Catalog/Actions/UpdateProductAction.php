@@ -17,6 +17,7 @@ class UpdateProductAction
         protected AssignSlugAction                 $assignSlugAction,
         protected SyncModelProductTagsAction       $syncModelProductTagsAction,
         protected SyncModelProductCategoriesAction $syncModelProductCategoriesAction,
+        protected SyncProductImageGalleryAction    $syncProductImageGalleryAction,
     )
     {
     }
@@ -56,6 +57,7 @@ class UpdateProductAction
 
             $this->syncModelProductTagsAction->execute($product, $data['tags'] ?? []);
             $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
+            $this->syncProductImageGalleryAction->execute($product, $data['image_gallery_items'] ?? []);
 
             return $product;
         });
