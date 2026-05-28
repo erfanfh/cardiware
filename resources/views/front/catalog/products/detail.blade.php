@@ -6,7 +6,7 @@
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div class="lg:col-span-8 space-y-6">
                 @include('front.catalog.products.partials.detail.title')
-
+                @include('front.catalog.products.partials.detail.share-box')
                 @include('front.catalog.products.partials.detail.image-gallery')
 
 
