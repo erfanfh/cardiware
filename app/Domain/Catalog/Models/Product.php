@@ -2,11 +2,14 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Enums\ProductStatusEnum;
 use App\Domain\Marketplace\Enums\ProductStructureEnum;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\System\Interfaces\PageViewableInterface;
+use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model implements PageViewableInterface
 {
-    use SoftDeletes, HasExcerpt;
+    use SoftDeletes, HasTaxonomyTerms, HasComments, HasSeoMeta, HasExcerpt;
 
     protected $fillable = [
         'store_id',
