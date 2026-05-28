@@ -25,6 +25,13 @@
             ];
         }
 
+        if(\Illuminate\Support\Facades\Gate::allows('product.create')){
+            $quickActions[] = [
+                'title' => 'محصول جدید',
+                'href' => route('admin.products.create'),
+            ];
+        }
+
         $contextAction = null;
 
         if (request()->routeIs('contents.detail') and \Illuminate\Support\Facades\Gate::allows('post.edit') and isset($post)) {
@@ -41,6 +48,11 @@
             $contextAction = [
                 'title' => 'ویرایش برگه',
                 'href' => route('admin.pages.edit', $page),
+            ];
+        } elseif (request()->routeIs('products.detail') and \Illuminate\Support\Facades\Gate::allows('product.edit') and isset($product)) {
+            $contextAction = [
+                'title' => 'ویرایش محصول',
+                'href' => route('admin.products.edit', $product),
             ];
         }
     @endphp
@@ -237,6 +249,16 @@
                         class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
                     >
                         <span>برگه جدید</span>
+                        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
+                        </svg>
+                    </a>
+
+                    <a
+                        href="{{ route('admin.products.create') }}"
+                        class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
+                    >
+                        <span>محصول جدید</span>
                         <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
                         </svg>
