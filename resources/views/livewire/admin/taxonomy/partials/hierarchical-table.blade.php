@@ -41,6 +41,7 @@
                 $depth = (int) ($item->depth ?? 0);
                 $indent = $depth * 1.2;
                 $isChild = $depth > 0;
+                $usageCount = (int) ($item->{$countColumn} ?? 0);
             @endphp
 
             <tr
@@ -103,7 +104,7 @@
                         <x-admin.list.row-actions class="mt-2">
                             <x-admin.list.action
                                 tag="a"
-                                :href="front_route('posts.categories', $item)"
+                                :href="front_route($frontRouteName, $item)"
                                 target="_blank"
                             >
                                 مشاهده
@@ -126,10 +127,21 @@
                                     viewBox="0 0 24 24"
                                     fill="none"
                                 >
-                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25"
-                                            stroke-width="4"></circle>
-                                    <path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="4"
-                                          stroke-linecap="round"></path>
+                                    <circle
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        stroke-opacity=".25"
+                                        stroke-width="4"
+                                    ></circle>
+
+                                    <path
+                                        d="M22 12a10 10 0 0 0-10-10"
+                                        stroke="currentColor"
+                                        stroke-width="4"
+                                        stroke-linecap="round"
+                                    ></path>
                                 </svg>
 
                                 <span>ویرایش</span>
@@ -178,7 +190,7 @@
                 <x-admin.list.td>
                     <span
                         class="inline-flex items-center justify-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">
-                        {{ $item->posts_count }}
+                        {{ $usageCount }}
                     </span>
                 </x-admin.list.td>
 
@@ -186,6 +198,7 @@
                     <div class="text-xs font-bold text-slate-500">
                         {{ jalali_date($item->created_at, 'Y/n/j') }}
                     </div>
+
                     <div class="mt-1 text-[11px] text-slate-400">
                         {{ jalali_date($item->created_at, 'H:i') }}
                     </div>
