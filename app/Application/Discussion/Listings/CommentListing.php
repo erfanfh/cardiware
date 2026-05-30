@@ -21,6 +21,7 @@ class CommentListing extends BaseListing
             'type',
             'created_at_from',
             'created_at_to',
+            'post_id'
         ];
     }
 
@@ -85,5 +86,12 @@ class CommentListing extends BaseListing
     protected function filterCreatedAtTo(mixed $value): void
     {
         $this->query->whereDate('created_at', '<=', $value);
+    }
+
+    protected function filterPostId(mixed $value): void
+    {
+        $this->query->whereHas('commentable', function ($query) use ($value) {
+            $query->where('id', $value);
+        });
     }
 }

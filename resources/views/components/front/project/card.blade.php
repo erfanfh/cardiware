@@ -22,27 +22,72 @@
                 </div>
             </div>
 
+            @php
+                $progress = max(0, min(100, (int) ($project->progress_percent ?? 0)));
+
+                $progressColor = match (true) {
+                    $progress >= 100 => 'from-emerald-400 via-emerald-500 to-emerald-600',
+                    $progress >= 70 => 'from-cyan-400 via-sky-500 to-blue-600',
+                    $progress >= 40 => 'from-amber-300 via-yellow-400 to-orange-400',
+                    $progress >= 1 => 'from-rose-400 via-red-500 to-orange-500',
+                    default => 'from-slate-300 via-slate-300 to-slate-400 dark:from-slate-600 dark:via-slate-600 dark:to-slate-700',
+                };
+
+                $progressIconColor = match (true) {
+                    $progress >= 100 => 'text-emerald-600 dark:text-emerald-400',
+                    $progress >= 70 => 'text-sky-600 dark:text-sky-400',
+                    $progress >= 40 => 'text-amber-600 dark:text-amber-400',
+                    $progress >= 1 => 'text-rose-600 dark:text-rose-400',
+                    default => 'text-slate-500 dark:text-slate-400',
+                };
+            @endphp
+
             <div class="mt-3">
                 <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span>پیشرفت</span>
+
                     <span class="font-extrabold text-slate-700 dark:text-slate-200">
-                        {{ $project->progress_percent }}%
+                        {{ $progress }}%
                     </span>
                 </div>
 
-                <div
-                    class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden dark:bg-slate-800">
+                <div class="relative h-7">
                     <div
-                        class="h-full rounded-full transition-all duration-300"
-                        :class="{
-                            'bg-emerald-500': ({{ $project->progress_percent }} ?? 0) >= 100,
-                            'bg-sky-500': {{ $project->progress_percent }} >= 70 && ({{ $project->progress_percent }} ?? 0) < 100,
-                            'bg-yellow-500': ({{ $project->progress_percent }} ?? 0) >= 40 && ({{ $project->progress_percent }} ?? 0) < 70,
-                            'bg-red-500': ({{ $project->progress_percent }} ?? 0) >= 1 && ({{ $project->progress_percent }} ?? 0) < 40,
-                            'bg-slate-300 dark:bg-slate-600': ({{ $project->progress_percent }} ?? 0) < 1
-                        }"
-                        style="width: {{ $project->progress_percent . '%' }}"
-                    ></div>
+                        class="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-slate-100 ring-1 ring-slate-200/70 dark:bg-slate-800 dark:ring-slate-700/70">
+                        <div
+                            class="absolute inset-y-0 right-0 overflow-hidden rounded-full bg-gradient-to-l {{ $progressColor }} transition-all duration-700 ease-out"
+                            style="width: {{ $progress }}%;"
+                        >
+                            @if($progress > 0)
+                                <div class="project-progress-flow absolute inset-0 opacity-80"></div>
+
+                                <div
+                                    class="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/40 via-white/20 to-transparent"></div>
+                            @endif
+                        </div>
+                    </div>
+                    
+                    @if($progress > 0 && $progress < 100)
+                        <div
+                            class="project-progress-tip absolute top-1/2 z-20"
+                            style="right: calc({{ $progress }}% - 25px);"
+                        >
+                            <div
+                                class="relative flex h-6 w-6 items-center justify-center {{ $progressIconColor }} [&_svg]:relative [&_svg]:h-4 [&_svg]:w-4">
+                                <div
+                                    class="absolute inset-0 rounded-full bg-white ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"></div>
+
+                                @include('icons.arrow-left-01')
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($progress >= 100)
+                        <div
+                            class="project-progress-target absolute left-0 top-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-emerald-300 bg-white {{ $progressIconColor }} dark:border-emerald-500/50 dark:bg-slate-900 [&_svg]:h-4 [&_svg]:w-4">
+                            @include('icons.target-01')
+                        </div>
+                    @endif
                 </div>
             </div>
 

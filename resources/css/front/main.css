@@ -1,4 +1,5 @@
 @import "./tinymce-content.css";
+@import "./project-card.css";
 
 [x-cloak] {
     display: none !important;

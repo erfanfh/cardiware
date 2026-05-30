@@ -15,6 +15,8 @@
 
                 <x-admin.list.th>نام نمایشی</x-admin.list.th>
 
+                <x-admin.list.th>نام کاربری</x-admin.list.th>
+
                 <x-admin.list.th>موبایل</x-admin.list.th>
 
                 <x-admin.list.th>ایمیل</x-admin.list.th>
@@ -104,6 +106,12 @@
                         <x-admin.list.td>
                             <div class="text-xs leading-6">
                                 <div>{{ $user->display_name }}</div>
+                            </div>
+                        </x-admin.list.td>
+
+                        <x-admin.list.td>
+                            <div class="text-xs leading-6">
+                                <div>{{ $user->username }}</div>
                             </div>
                         </x-admin.list.td>
 

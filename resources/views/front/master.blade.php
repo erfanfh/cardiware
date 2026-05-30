@@ -22,6 +22,7 @@
 @include('front.partials.admin-bar')
 @include('front.footer.index')
 <x-front.lightbox-gallery/>
+<x-front.scroll-to-top/>
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts

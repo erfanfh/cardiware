@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Project;
 
 use App\Application\Project\Actions\GetProjectDetailAction;
 use App\Application\Project\Actions\GetProjectListPageDataAction;
+use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Project\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -13,6 +14,14 @@ use Illuminate\View\View;
 class ProjectController extends Controller
 {
     /**
+     * @param StoreViewAction $storeViewAction
+     */
+    public function __construct(private readonly StoreViewAction $storeViewAction)
+    {
+
+    }
+
+    /**
      * Project detail
      *
      * @param Project $project
@@ -21,6 +30,8 @@ class ProjectController extends Controller
     public function detail(Project $project): View
     {
         $project = app(GetProjectDetailAction::class)->execute($project);
+
+        $this->storeViewAction->execute($project);
 
         return view('front.projects.detail', compact('project'));
     }

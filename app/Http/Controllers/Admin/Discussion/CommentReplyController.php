@@ -4,14 +4,20 @@ namespace App\Http\Controllers\Admin\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
+use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
 use App\Http\Requests\Admin\Discussion\ReplyToCommentRequest;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CommentReplyController
 {
+    /**
+     * @throws Throwable
+     */
     public function __invoke(
         ReplyToCommentRequest $request,
         Comment               $comment,
@@ -26,19 +32,27 @@ class CommentReplyController
             ]);
         }
 
-        $reply = $createCommentAction->execute(new CreateCommentDataDTO(
-            commentable: $comment->commentable,
-            parentId: $comment->id,
-            userId: auth()->id(),
-            authorName: null,
-            authorEmail: null,
-            content: $request->content(),
-            ratingPercent: null,
-            ipAddress: $request->ip(),
-            userAgent: $request->userAgent(),
-            allowReplyToUnapprovedParent: true,
-            bypassCooldown: true,
-        ));
+        $reply = DB::transaction(function () use ($comment, $request, $createCommentAction) {
+            if (auth()->user()->can('comment.auto_approve')) {
+                $comment->update([
+                    'status' => CommentStatusEnum::APPROVED,
+                ]);
+            }
+
+            return $createCommentAction->execute(new CreateCommentDataDTO(
+                commentable: $comment->commentable,
+                parentId: $comment->id,
+                userId: auth()->id(),
+                authorName: null,
+                authorEmail: null,
+                content: $request->content(),
+                ratingPercent: null,
+                ipAddress: $request->ip(),
+                userAgent: $request->userAgent(),
+                allowReplyToUnapprovedParent: true,
+                bypassCooldown: true,
+            ));
+        });
 
         return response()->json([
             'ok' => true,
@@ -52,6 +66,11 @@ class CommentReplyController
                 'created_at_date' => jalali_date($reply->created_at, 'Y/m/d'),
                 'created_at_time' => jalali_date($reply->created_at, 'H:i'),
             ],
+
+            'parent_comment' => $reply->parent ? [
+                'id' => $reply->parent->id,
+                'status' => $reply->parent->status?->value,
+            ] : null,
         ]);
     }
 }

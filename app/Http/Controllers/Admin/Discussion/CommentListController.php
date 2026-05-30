@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Discussion;
 
 use App\Application\Discussion\Listings\CommentListing;
+use App\Domain\Content\Models\Post;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
 use App\Http\Controllers\Controller;
@@ -48,8 +49,19 @@ class CommentListController extends Controller
             'rejected' => (clone $baseQuery)->where('status', CommentStatusEnum::REJECTED)->count(),
         ];
 
+        $selectedPost = Post::query()
+            ->where('id', $request->post_id)
+            ->get(['id', 'title'])
+            ->map(fn($tag) => [
+                'value' => (string)$tag->id,
+                'label' => $tag->title,
+            ])
+            ->values()
+            ->all();
+
         return view('admin.discussion.comments.index', compact(
             'comments',
+            'selectedPost',
             'bulkActionOptions',
             'hasActiveFilters',
             'statuses',

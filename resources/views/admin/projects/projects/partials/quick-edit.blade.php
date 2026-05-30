@@ -1,4 +1,4 @@
-<x-admin.list.quick-edit-row :row-id="$project->id" colspan="7">
+<x-admin.list.quick-edit-row :row-id="$project->id" colspan="9">
     <div class="space-y-5">
         <x-admin.form
             method="PATCH"
