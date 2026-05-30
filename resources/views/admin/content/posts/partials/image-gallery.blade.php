@@ -10,7 +10,6 @@
         'title' => '',
         'image' => '',
     ]"
-    title="گالری تصاویر"
     addText="افزودن تصویر"
     emptyText="هنوز تصویری برای گالری اضافه نشده است."
     headingKey="title"
@@ -24,27 +23,19 @@
         >
 
         <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            <div class="space-y-2">
-                <label class="block text-sm font-bold text-slate-700">
-                    عنوان
-                </label>
-
+            <x-admin.field label="عنوان">
                 <x-admin.form.input
                     x-bind:name="field(i, 'title')"
                     x-model="it.title"
                 />
-            </div>
+            </x-admin.field>
 
-            <div class="space-y-2">
-                <label class="block text-sm font-bold text-slate-700">
-                    تصویر
-                </label>
-
+            <x-admin.field label="تصویر">
                 <x-admin.form.media-picker
                     mode="repeater"
                     name="image"
                 />
-            </div>
+            </x-admin.field>
         </div>
     </div>
 </x-admin.form.repeater>
