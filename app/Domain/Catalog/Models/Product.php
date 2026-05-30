@@ -140,4 +140,9 @@ class Product extends Model implements PageViewableInterface
     {
         return $this->hasMany(ProductRelease::class)->orderBy('sort_order');
     }
+
+    public function attributeAssignments(): HasMany
+    {
+        return $this->hasMany(ProductAttributeAssignment::class);
+    }
 }
