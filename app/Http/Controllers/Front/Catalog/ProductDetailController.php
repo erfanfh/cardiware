@@ -28,7 +28,15 @@ class ProductDetailController extends Controller
         }
 
         /** @var Product $product */
-        $product = $resolvedSlug->model;
+        $product = $resolvedSlug->model->load([
+            'categories',
+            'picture.primaryVariant',
+            'imageGallery',
+            'requirements',
+            'installationSteps',
+            'faqs',
+            'releases.releaseChanges'
+        ]);
 
 
         return view('front.catalog.products.detail', compact('product'));
