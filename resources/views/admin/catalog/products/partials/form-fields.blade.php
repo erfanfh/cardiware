@@ -160,8 +160,36 @@
 
     <x-admin.metabox
         title="گالری تصاویر"
-        storageKey="post-image-gallery"
+        storageKey="image-gallery"
     >
         @include('admin.catalog.products.partials.image-gallery')
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="سیستم مورد نیاز"
+        storageKey="requirements"
+    >
+        @include('admin.catalog.products.partials.requirements')
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="آموزش نصب"
+        storageKey="installation-steps"
+    >
+        @include('admin.catalog.products.partials.installation-steps')
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="سوالات متداول"
+        storageKey="faqs"
+    >
+        @include('admin.catalog.products.partials.faqs')
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="لیست تغییرات"
+        storageKey="releases"
+    >
+        @include('admin.catalog.products.partials.releases')
     </x-admin.metabox>
 </x-admin.page>

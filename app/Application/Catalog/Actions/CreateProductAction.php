@@ -14,10 +14,14 @@ use Throwable;
 class CreateProductAction
 {
     public function __construct(
-        protected AssignSlugAction                 $assignSlugAction,
-        protected SyncModelProductTagsAction       $syncModelProductTagsAction,
-        protected SyncModelProductCategoriesAction $syncModelProductCategoriesAction,
-        protected SyncProductImageGalleryAction    $syncProductImageGalleryAction,
+        protected AssignSlugAction                   $assignSlugAction,
+        protected SyncModelProductTagsAction         $syncModelProductTagsAction,
+        protected SyncModelProductCategoriesAction   $syncModelProductCategoriesAction,
+        protected SyncProductImageGalleryAction      $syncProductImageGalleryAction,
+        protected SyncProductRequirementsAction      $syncProductRequirementsAction,
+        protected SyncProductInstallationStepsAction $syncProductInstallationStepsAction,
+        protected SyncProductFaqsAction              $syncProductFaqsAction,
+        protected SyncProductReleasesAction          $syncProductReleasesAction,
     )
     {
     }
@@ -42,6 +46,11 @@ class CreateProductAction
                 $productData['slug'],
                 $productData['tags'],
                 $productData['category_ids'],
+                $productData['image_gallery_items'],
+                $productData['requirements'],
+                $productData['installation_steps'],
+                $productData['faqs'],
+                $productData['releases'],
             );
 
             $product = Product::create($productData);
@@ -59,6 +68,10 @@ class CreateProductAction
             $this->syncModelProductTagsAction->execute($product, $data['tags'] ?? []);
             $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
             $this->syncProductImageGalleryAction->execute($product, $data['image_gallery_items'] ?? []);
+            $this->syncProductRequirementsAction->execute($product, $data['requirements'] ?? []);
+            $this->syncProductInstallationStepsAction->execute($product, $data['installation_steps'] ?? []);
+            $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);
+            $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
 
             return $product;
         });

@@ -41,7 +41,7 @@ class UpdateProductRequest extends FormRequest
             'tags.new.*' => ['string', 'max:255'],
 
             'category_ids' => ['nullable', 'array'],
-            
+
             'image_gallery_items' => ['nullable', 'array'],
             'image_gallery_items.*' => ['array'],
 
@@ -49,6 +49,18 @@ class UpdateProductRequest extends FormRequest
             'image_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
             'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
             'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'requirements' => ['nullable', 'array'],
+            'requirements.*' => ['array'],
+
+            'installation_steps' => ['nullable', 'array'],
+            'installation_steps.*' => ['array'],
+
+            'faqs' => ['nullable', 'array'],
+            'faqs.*' => ['array'],
+
+            'releases' => ['nullable', 'array'],
+            'releases.*' => ['array'],
         ];
     }
 
