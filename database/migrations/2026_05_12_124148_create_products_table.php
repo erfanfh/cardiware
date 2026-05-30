@@ -17,12 +17,10 @@ return new class extends Migration {
             $table->string('slug')->nullable()->unique();
             $table->text('excerpt')->nullable();
             $table->longText('body')->nullable();
-//            $table->string('type', 30);
-//            $table->string('structure', 30);
+            $table->string('type', 30);
+            $table->string('structure', 30);
             $table->string('status', 40)->index();
             $table->foreignId('picture_id')->nullable()->constrained('media_files')->nullOnDelete();
-//            $table->unsignedBigInteger('base_price')->nullable();
-//            $table->string('currency', 10);
             $table->timestamp('published_at')->index();
             $table->timestamps();
             $table->softDeletes();

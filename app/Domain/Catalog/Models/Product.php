@@ -33,8 +33,6 @@ class Product extends Model implements PageViewableInterface
         'structure',
         'status',
         'picture_id',
-        'base_price',
-        'currency',
         'published_at',
     ];
 
