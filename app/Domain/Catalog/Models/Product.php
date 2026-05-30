@@ -122,4 +122,24 @@ class Product extends Model implements PageViewableInterface
             ->values()
             ->all();
     }
+
+    public function requirements(): HasMany
+    {
+        return $this->hasMany(ProductRequirement::class)->orderBy('sort_order');
+    }
+
+    public function installationSteps(): HasMany
+    {
+        return $this->hasMany(ProductInstallationStep::class)->orderBy('sort_order');
+    }
+
+    public function faqs(): HasMany
+    {
+        return $this->hasMany(ProductFaq::class)->orderBy('sort_order');
+    }
+
+    public function releases(): HasMany
+    {
+        return $this->hasMany(ProductRelease::class)->orderBy('sort_order');
+    }
 }
