@@ -123,6 +123,7 @@
                                 visible: this.normalizeBoolean(item.visible, true),
                                 use_for_sale_items: this.normalizeBoolean(item.use_for_sale_items, false),
                                 sort_order: item.sort_order ?? 0,
+                                _open: this.normalizeBoolean(item._open, false),
                             };
                         });
                     },
@@ -137,6 +138,7 @@
                                 visible: this.normalizeBoolean(item.visible, true),
                                 use_for_sale_items: this.normalizeBoolean(item.use_for_sale_items, false),
                                 sort_order: item.sort_order ?? 0,
+                                _open: this.normalizeBoolean(item._open, false),
                             };
                         });
                     },
@@ -187,6 +189,7 @@
                             visible: true,
                             use_for_sale_items: false,
                             sort_order: this.assignedAttributes.length,
+                            _open: true,
                         });
 
                         this.selectedAttributeId = '';
@@ -220,6 +223,7 @@
                             visible: true,
                             use_for_sale_items: false,
                             sort_order: this.customAttributes.length,
+                            _open: true,
                         });
                     },
 
