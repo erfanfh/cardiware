@@ -82,15 +82,17 @@
         },
         saleItems: @js($saleItems),
     })"
-    class="space-y-5"
+    class="space-y-4"
 >
     @include('admin.catalog.products.partials.information.tabs')
 
-    @include('admin.catalog.products.partials.information.basic')
+    <div>
+        @include('admin.catalog.products.partials.information.basic')
 
-    @include('admin.catalog.products.partials.information.attributes')
+        @include('admin.catalog.products.partials.information.attributes')
 
-    @include('admin.catalog.products.partials.information.pricing')
+        @include('admin.catalog.products.partials.information.pricing')
+    </div>
 </div>
 
 @include('admin.catalog.products.partials.information.scripts')

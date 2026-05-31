@@ -10,7 +10,7 @@
                             ? 'bg-brand-600 text-white shadow-sm'
                             : 'text-slate-600 hover:bg-white hover:text-slate-900'"
                 >
-                    <template x-if="tab.badge !== null">
+                    <template x-if="tab.badge !== null && tab.badge > 0">
                             <span
                                 class="inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-[11px] font-bold"
                                 :class="activeTab === tab.key
