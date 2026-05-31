@@ -12,9 +12,13 @@ return new class extends Migration {
     {
         Schema::create('product_attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
+            $table->string('title');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->tinyInteger('active_unique_key')->storedAs('CASE WHEN deleted_at IS NULL THEN 1 ELSE NULL END');
+
+            $table->unique(['title', 'active_unique_key'], 'product_attributes_active_title_unique');
         });
     }
 
