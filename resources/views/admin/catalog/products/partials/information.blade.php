@@ -81,6 +81,7 @@
             custom: @js($customAttributeItems),
         },
         saleItems: @js($saleItems),
+        simpleFiles: @js($simpleSaleItemFiles),
     })"
     class="space-y-4"
 >

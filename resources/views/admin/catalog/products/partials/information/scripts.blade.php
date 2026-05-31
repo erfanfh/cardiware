@@ -17,6 +17,7 @@
                     assignedAttributes: [],
                     customAttributes: [],
                     saleItems: [],
+                    simpleFiles: [],
 
                     init() {
                         this.assignedAttributes = this.normalizeAssignedAttributes(
@@ -28,6 +29,8 @@
                         );
 
                         this.saleItems = this.normalizeSaleItems(config.saleItems ?? []);
+
+                        this.simpleFiles = this.normalizeSaleItemFiles(config.simpleFiles ?? []);
                     },
 
                     get tabs() {
@@ -250,17 +253,27 @@
                                 __key: item.__key ?? this.makeKey('sale-item'),
                                 id: item.id ?? null,
                                 sku: item.sku ?? '',
-                                title: item.title ?? '',
                                 base_price: item.base_price ?? '',
                                 status: item.status ?? 'available',
                                 download_limit: item.download_limit ?? '',
                                 download_expires_in_days: item.download_expires_in_days ?? '',
                                 description: item.description ?? '',
-                                attribute_values: item.attribute_values ?? {},
+                                attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
                                 files: this.normalizeSaleItemFiles(item.files ?? []),
                                 _open: this.normalizeBoolean(item._open, true),
                             };
                         });
+                    },
+
+                    normalizeSaleItemAttributeValues(attributeValues) {
+                        if (Array.isArray(attributeValues)) {
+                            return {};
+                        }
+
+                        return Object.entries(attributeValues ?? {}).reduce((carry, [key, value]) => {
+                            carry[String(key)] = String(value);
+                            return carry;
+                        }, {});
                     },
 
                     normalizeSaleItemFiles(files) {
@@ -343,7 +356,6 @@
                             __key: this.makeKey('sale-item'),
                             id: payload.id ?? null,
                             sku: payload.sku ?? '',
-                            title: payload.title ?? '',
                             base_price: payload.base_price ?? '',
                             status: payload.status ?? 'available',
                             download_limit: payload.download_limit ?? '',
@@ -353,6 +365,21 @@
                             files: this.normalizeSaleItemFiles(payload.files ?? []),
                             _open: true,
                         });
+                    },
+
+                    syncSaleItemTitleFromCombination(item) {
+                        if (item.title_manually_changed && item.title) {
+                            return;
+                        }
+
+                        const label = this.saleItemCombinationLabel(item);
+
+                        if (!label) {
+                            return;
+                        }
+
+                        item.title = label;
+                        item.title_auto_generated = true;
                     },
 
                     removeSaleItem(index) {
@@ -391,14 +418,14 @@
                         const parts = [];
 
                         this.saleItemVariationAttributes.forEach((attribute) => {
-                            const selectedValueKey = item.attribute_values?.[attribute.key];
+                            const selectedValueKey = String(item.attribute_values?.[attribute.key] ?? '');
 
                             if (!selectedValueKey) {
                                 return;
                             }
 
                             const selectedValue = attribute.values.find((value) => {
-                                return value.key === selectedValueKey;
+                                return String(value.key) === selectedValueKey;
                             });
 
                             if (!selectedValue) {
@@ -422,11 +449,9 @@
 
                         combinations.forEach((combination) => {
                             const attributeValues = {};
-                            const titleParts = [];
 
                             combination.forEach((item) => {
-                                attributeValues[item.attribute.key] = item.value.key;
-                                titleParts.push(item.value.title);
+                                attributeValues[String(item.attribute.key)] = String(item.value.key);
                             });
 
                             if (this.saleItemCombinationExists(attributeValues)) {
@@ -434,7 +459,6 @@
                             }
 
                             this.addSaleItem({
-                                title: titleParts.join(' / '),
                                 attribute_values: attributeValues,
                             });
                         });
@@ -467,16 +491,34 @@
                     },
 
                     areAttributeValuesEqual(first, second) {
-                        const firstKeys = Object.keys(first).sort();
-                        const secondKeys = Object.keys(second).sort();
+                        const normalizedFirst = this.normalizeSaleItemAttributeValues(first);
+                        const normalizedSecond = this.normalizeSaleItemAttributeValues(second);
+
+                        const firstKeys = Object.keys(normalizedFirst).sort();
+                        const secondKeys = Object.keys(normalizedSecond).sort();
 
                         if (firstKeys.length !== secondKeys.length) {
                             return false;
                         }
 
                         return firstKeys.every((key, index) => {
-                            return key === secondKeys[index] && first[key] === second[key];
+                            return key === secondKeys[index]
+                                && String(normalizedFirst[key]) === String(normalizedSecond[key]);
                         });
+                    },
+
+                    addSimpleFile() {
+                        this.simpleFiles.push({
+                            __key: this.makeKey('simple-file'),
+                            id: null,
+                            title: '',
+                            url: '',
+                            sort_order: this.simpleFiles.length,
+                        });
+                    },
+
+                    removeSimpleFile(fileIndex) {
+                        this.simpleFiles.splice(fileIndex, 1);
                     },
                 };
             }
