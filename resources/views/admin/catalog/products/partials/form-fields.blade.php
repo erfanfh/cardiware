@@ -1,6 +1,6 @@
 @php
     use App\Application\Seo\Support\SeoTemplateVariableRegistry;
-    use App\Domain\Marketplace\Enums\ProductStatusEnum;
+    use App\Domain\Catalog\Enums\ProductStatusEnum;
     use App\Domain\Marketplace\Models\Store;
 
     $isEdit = isset($product) && $product;
@@ -156,6 +156,13 @@
                 placeholder="یک خلاصه کوتاه از محصول ..."
                 value="{{ old('excerpt', $product->excerpt ?? '') }}"/>
         </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox
+        title="اطلاعات محصول"
+        storageKey="product-information"
+    >
+        @include('admin.catalog.products.partials.information')
     </x-admin.metabox>
 
     <x-admin.metabox
