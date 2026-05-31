@@ -12,16 +12,34 @@ return new class extends Migration {
     {
         Schema::create('product_attribute_assignment_values', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_attribute_assignment_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_attribute_value_id')->constrained()->cascadeOnDelete();
+
+            $table->foreignId('product_attribute_assignment_id');
+            $table->foreignId('product_attribute_value_id');
+
             $table->unsignedInteger('sort_order')->default(0);
+
             $table->timestamps();
 
             $table->unique(
                 ['product_attribute_assignment_id', 'product_attribute_value_id'],
-                'product_attribute_assignment_value_unique'
+                'paav_assignment_value_unique'
             );
-            $table->index('sort_order');
+
+            $table->index('product_attribute_assignment_id', 'paav_assignment_id_index');
+            $table->index('product_attribute_value_id', 'paav_value_id_index');
+            $table->index('sort_order', 'paav_sort_order_index');
+
+            $table
+                ->foreign('product_attribute_assignment_id', 'paav_assignment_id_foreign')
+                ->references('id')
+                ->on('product_attribute_assignments')
+                ->cascadeOnDelete();
+
+            $table
+                ->foreign('product_attribute_value_id', 'paav_value_id_foreign')
+                ->references('id')
+                ->on('product_attribute_values')
+                ->cascadeOnDelete();
         });
     }
 
