@@ -39,7 +39,6 @@
                     <x-admin.form.input
                         x-bind:name="field(i, 'title')"
                         x-model="it.title"
-                        placeholder="مثلاً آپدیت 1.4 یا بخش اصلی پچ"
                     />
                 </div>
 
@@ -51,7 +50,6 @@
                     <x-admin.form.input
                         x-bind:name="field(i, 'password')"
                         x-model="it.password"
-                        placeholder="مثلاً PES_PATCH_2025"
                     />
                 </div>
             </div>
@@ -223,7 +221,6 @@
                                             <x-admin.form.input
                                                 x-bind:name="field(entryIndex, 'title')"
                                                 x-model="entry.title"
-                                                placeholder="مثلاً لینک مستقیم، Part 01 یا رمز نصب"
                                             />
                                         </div>
                                     </div>
@@ -239,7 +236,6 @@
                                                     rows="3"
                                                     x-bind:name="field(entryIndex, 'content')"
                                                     x-model="entry.content"
-                                                    placeholder="مثلاً رمز فایل یا توضیح متنی"
                                                 />
                                             </div>
                                         </template>
