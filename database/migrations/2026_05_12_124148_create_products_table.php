@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('store_id')->constrained('stores');
             $table->string('title');
             $table->string('slug')->nullable()->unique();
+            $table->string('sku')->nullable()->unique();
             $table->text('excerpt')->nullable();
             $table->longText('body')->nullable();
             $table->string('type', 30);

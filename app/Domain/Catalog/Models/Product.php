@@ -27,6 +27,7 @@ class Product extends Model implements PageViewableInterface
         'store_id',
         'title',
         'slug',
+        'sku',
         'excerpt',
         'body',
         'type',
