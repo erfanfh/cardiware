@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Marketplace\Enums;
+namespace App\Domain\Catalog\Enums;
 
 enum ProductStructureEnum: string
 {

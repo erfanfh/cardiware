@@ -3,9 +3,10 @@
 namespace App\Domain\Catalog\Models;
 
 use App\Domain\Catalog\Enums\ProductMediaCollectionEnum;
+use App\Domain\Catalog\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Enums\ProductStructureEnum;
+use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Discussion\Traits\HasComments;
-use App\Domain\Marketplace\Enums\ProductStatusEnum;
-use App\Domain\Marketplace\Enums\ProductStructureEnum;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Seo\Traits\HasSeoMeta;
@@ -39,6 +40,7 @@ class Product extends Model implements PageViewableInterface
 
     protected $casts = [
         'status' => ProductStatusEnum::class,
+        'type' => ProductTypeEnum::class,
         'structure' => ProductStructureEnum::class,
     ];
 
