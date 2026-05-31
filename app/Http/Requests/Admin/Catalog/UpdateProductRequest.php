@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Admin\Catalog;
 
-use App\Domain\Marketplace\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Enums\ProductStructureEnum;
+use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Marketplace\Models\Store;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -27,7 +29,10 @@ class UpdateProductRequest extends FormRequest
                 'max:255',
                 'alpha_dash',
             ],
+            'sku' => ['nullable', 'string', 'max:255'],
             'status' => ['required', Rule::enum(ProductStatusEnum::class)],
+            'type' => ['required', Rule::enum(ProductTypeEnum::class)],
+            'structure' => ['required', Rule::enum(ProductStructureEnum::class)],
             'store_id' => ['required', 'integer', 'exists:stores,id'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'body' => ['nullable', 'string'],
