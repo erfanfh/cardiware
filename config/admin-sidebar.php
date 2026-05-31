@@ -117,6 +117,12 @@ return [
                 'icon' => 'icons.tag-02',
                 'gate' => 'product.tag',
             ],
+            [
+                'label' => 'ویژگی‌ها',
+                'route' => 'admin.products.attributes.index',
+                'icon' => 'icons.sliders-horizontal',
+                'gate' => 'product.attribute',
+            ],
         ],
     ],
 

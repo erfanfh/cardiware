@@ -47,6 +47,7 @@ class PermissionSeeder extends Seeder
                 'delete' => 'حذف محصول',
                 'category' => 'مدیریت دسته های محصولات',
                 'tag' => 'مدیریت برچسب های محصولات',
+                'attribute' => 'مدیریت ویژگی های محصولات',
             ],
             'tag' => [
                 'manage' => 'مدیریت برچسب ها',
