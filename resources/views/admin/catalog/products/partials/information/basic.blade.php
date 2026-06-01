@@ -47,7 +47,6 @@
                     name="sku"
                     :value="$currentSku"
                     class="direction-ltr"
-                    placeholder="مثلا MW-FC25-001"
                 />
             </x-admin.field>
         </div>
