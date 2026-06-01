@@ -6,6 +6,7 @@ use App\Application\Slug\Contracts\SlugResolverDriver;
 use App\Application\Slug\DTOs\ResolvedSlugDTO;
 use App\Domain\Catalog\Models\ProductSlug;
 use App\Domain\Slug\Enums\SlugScopeEnum;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductSlugResolverDriver implements SlugResolverDriver
 {
@@ -30,10 +31,29 @@ class ProductSlugResolverDriver implements SlugResolverDriver
             return ResolvedSlugDTO::notFound($value);
         }
 
-        return ResolvedSlugDTO::current(
+        /** @var Model|null $model */
+        $model = $productSlug->product;
+
+        if ($model === null) {
+            return ResolvedSlugDTO::notFound($value);
+        }
+
+        $currentSlug = $model->getAttribute('slug');
+        $currentSlugValue = is_string($currentSlug) ? $currentSlug : '';
+
+        if ($productSlug->is_current) {
+            return ResolvedSlugDTO::current(
+                requestedValue: $value,
+                currentValue: $currentSlugValue,
+                model: $model,
+            );
+        }
+
+        return ResolvedSlugDTO::redirect(
             requestedValue: $value,
-            currentValue: $value,
-            model: $productSlug->product,
+            currentValue: $currentSlugValue,
+            redirectTo: route('products.detail', $currentSlugValue),
+            model: $model,
         );
     }
 }
