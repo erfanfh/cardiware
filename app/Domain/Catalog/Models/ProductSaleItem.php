@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Represents a sellable item of a product.
  */
-class ProductSaleItem extends Model
+class ProductSaleItem extends Model implements Purchasable
 {
     protected $fillable = [
         'product_id',
@@ -62,5 +63,62 @@ class ProductSaleItem extends Model
     public function attributeValues(): HasMany
     {
         return $this->hasMany(ProductSaleItemAttributeValue::class);
+    }
+
+    /**
+     * Get the purchasable display title.
+     */
+    public function getPurchasableTitle(): string
+    {
+        return $this->title ?: $this->product?->title;
+    }
+
+    /**
+     * Get the current price in toman.
+     */
+    public function getPurchasablePrice(): int
+    {
+        return (int)$this->price;
+    }
+
+    /**
+     * Determine whether this item can be purchased.
+     */
+    public function isPurchasable(): bool
+    {
+        return $this->status === ProductSaleItemStatusEnum::AVAILABLE;
+    }
+
+    /**
+     * Determine whether this item is dependent on another item.
+     */
+    public function isDependentPurchasable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Get the maximum quantity allowed per order.
+     */
+    public function getMaxQuantityPerOrder(): ?int
+    {
+        return $this->max_quantity_per_order;
+    }
+
+    /**
+     * Get snapshot data for cart/order display.
+     *
+     * @return array<string, mixed>
+     */
+    public function getPurchasableSnapshot(): array
+    {
+        return [
+            'type' => 'sale_item',
+            'title' => $this->getPurchasableTitle(),
+            'product_id' => $this->product_id,
+            'product_title' => $this->product?->title,
+            'sale_item_id' => $this->id,
+            'sale_item_title' => $this->title,
+        ];
     }
 }
