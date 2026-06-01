@@ -35,7 +35,7 @@ class ProductAttributeAssignment extends Model
     /**
      * @return HasMany
      */
-    public function selectedValues(): HasMany
+    public function assignmentValues(): HasMany
     {
         return $this->hasMany(ProductAttributeAssignmentValue::class);
     }
