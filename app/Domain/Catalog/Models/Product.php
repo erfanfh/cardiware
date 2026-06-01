@@ -148,4 +148,24 @@ class Product extends Model implements PageViewableInterface
     {
         return $this->hasMany(ProductAttributeAssignment::class);
     }
+
+    /**
+     * Get the sale items of the product.
+     *
+     * @return HasMany
+     */
+    public function saleItems(): HasMany
+    {
+        return $this->hasMany(ProductSaleItem::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get the custom attributes of the product.
+     *
+     * @return HasMany
+     */
+    public function customAttributes(): HasMany
+    {
+        return $this->hasMany(ProductCustomAttribute::class)->orderBy('sort_order');
+    }
 }
