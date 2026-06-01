@@ -20,9 +20,16 @@ interface Purchasable
     public function isPurchasable(): bool;
 
     /**
-     * Determine whether this item is dependent on another item.
+     * Determine whether this item is dependent on another purchasable item.
      */
     public function isDependentPurchasable(): bool;
+
+    /**
+     * Get dependency data for dependent purchasable items.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getPurchasableDependency(): ?array;
 
     /**
      * Get the maximum quantity allowed per order.
