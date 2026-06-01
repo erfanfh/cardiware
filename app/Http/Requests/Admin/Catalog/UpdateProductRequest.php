@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Catalog;
 
+use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -29,7 +30,12 @@ class UpdateProductRequest extends FormRequest
                 'max:255',
                 'alpha_dash',
             ],
-            'sku' => ['nullable', 'string', 'max:255'],
+            'sku' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('products', 'sku')->ignore($this->route('product')),
+            ],
             'status' => ['required', Rule::enum(ProductStatusEnum::class)],
             'type' => ['required', Rule::enum(ProductTypeEnum::class)],
             'structure' => ['required', Rule::enum(ProductStructureEnum::class)],
@@ -66,6 +72,49 @@ class UpdateProductRequest extends FormRequest
 
             'releases' => ['nullable', 'array'],
             'releases.*' => ['array'],
+
+            'attributes' => ['nullable', 'array'],
+            'attributes.*.id' => ['nullable', 'integer', 'exists:product_attribute_assignments,id'],
+            'attributes.*.attribute_id' => ['required', 'integer', 'exists:product_attributes,id'],
+            'attributes.*.value_ids' => ['nullable', 'array'],
+            'attributes.*.value_ids.*' => ['integer', 'exists:product_attribute_values,id'],
+            'attributes.*.is_visible' => ['nullable', 'boolean'],
+            'attributes.*.is_variation_defining' => ['nullable', 'boolean'],
+            'attributes.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'custom_attributes' => ['nullable', 'array'],
+            'custom_attributes.*.id' => ['nullable', 'integer', 'exists:product_custom_attributes,id'],
+            'custom_attributes.*.title' => ['nullable', 'string', 'max:255'],
+            'custom_attributes.*.is_visible' => ['nullable', 'boolean'],
+            'custom_attributes.*.is_variation_defining' => ['nullable', 'boolean'],
+            'custom_attributes.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'custom_attributes.*.values' => ['nullable', 'array'],
+            'custom_attributes.*.values.*.id' => ['nullable', 'integer', 'exists:product_custom_attribute_values,id'],
+            'custom_attributes.*.values.*.title' => ['nullable', 'string', 'max:255'],
+            'custom_attributes.*.values.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'sale_items' => ['nullable', 'array'],
+            'sale_items.*.id' => ['nullable', 'integer', 'exists:product_sale_items,id'],
+            'sale_items.*.sku' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.base_price' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.status' => [
+                'nullable',
+                Rule::in(array_column(ProductSaleItemStatusEnum::cases(), 'value')),
+            ],
+            'sale_items.*.download_limit' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.download_expires_in_days' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
+            'sale_items.*.description' => ['nullable', 'string'],
+
+            'sale_items.*.attribute_values' => ['nullable', 'array'],
+            'sale_items.*.attribute_values.*' => ['nullable', 'string', 'max:255'],
+
+            'sale_items.*.files' => ['nullable', 'array'],
+            'sale_items.*.files.*.id' => ['nullable', 'integer', 'exists:product_sale_item_files,id'],
+            'sale_items.*.files.*.title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.files.*.url' => ['nullable', 'url', 'max:2048'],
+            'sale_items.*.files.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
