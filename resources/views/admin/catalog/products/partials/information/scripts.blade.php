@@ -123,8 +123,8 @@
                                 title: item.title ?? sourceAttribute?.title ?? 'ویژگی',
                                 values: item.values ?? sourceAttribute?.values ?? [],
                                 selected_value_ids: selectedValueIds.map((id) => Number(id)),
-                                visible: this.normalizeBoolean(item.visible, true),
-                                use_for_sale_items: this.normalizeBoolean(item.use_for_sale_items, false),
+                                is_visible: this.normalizeBoolean(item.is_visible, true),
+                                is_variation_defining: this.normalizeBoolean(item.is_variation_defining, false),
                                 sort_order: item.sort_order ?? 0,
                                 _open: this.normalizeBoolean(item._open, false),
                             };
@@ -138,8 +138,8 @@
                                 id: item.id ?? null,
                                 title: item.title ?? '',
                                 values: this.normalizeCustomAttributeValues(item.values ?? []),
-                                visible: this.normalizeBoolean(item.visible, true),
-                                use_for_sale_items: this.normalizeBoolean(item.use_for_sale_items, false),
+                                is_visible: this.normalizeBoolean(item.is_visible, true),
+                                is_variation_defining: this.normalizeBoolean(item.is_variation_defining, false),
                                 sort_order: item.sort_order ?? 0,
                                 _open: this.normalizeBoolean(item._open, false),
                             };
@@ -189,8 +189,8 @@
                             title: sourceAttribute.title,
                             values: sourceAttribute.values ?? [],
                             selected_value_ids: [],
-                            visible: true,
-                            use_for_sale_items: false,
+                            is_visible: true,
+                            is_variation_defining: false,
                             sort_order: this.assignedAttributes.length,
                             _open: true,
                         });
@@ -223,8 +223,8 @@
                             id: null,
                             title: '',
                             values: [],
-                            visible: true,
-                            use_for_sale_items: false,
+                            is_visible: true,
+                            is_variation_defining: false,
                             sort_order: this.customAttributes.length,
                             _open: true,
                         });
@@ -257,10 +257,11 @@
                                 status: item.status ?? 'available',
                                 download_limit: item.download_limit ?? '',
                                 download_expires_in_days: item.download_expires_in_days ?? '',
+                                max_quantity_per_order: item.max_quantity_per_order ?? '',
                                 description: item.description ?? '',
                                 attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
                                 files: this.normalizeSaleItemFiles(item.files ?? []),
-                                _open: this.normalizeBoolean(item._open, true),
+                                _open: this.normalizeBoolean(item._open, false),
                             };
                         });
                     },
@@ -291,7 +292,7 @@
                     get saleItemVariationAttributes() {
                         const globalAttributes = this.assignedAttributes
                             .filter((attribute) => {
-                                return attribute.use_for_sale_items && attribute.selected_value_ids.length > 0;
+                                return attribute.is_variation_defining && attribute.selected_value_ids.length > 0;
                             })
                             .map((attribute) => {
                                 const selectedValues = attribute.values.filter((value) => {
@@ -316,7 +317,7 @@
 
                         const customAttributes = this.customAttributes
                             .filter((attribute) => {
-                                return attribute.use_for_sale_items && attribute.values.length > 0;
+                                return attribute.is_variation_defining && attribute.values.length > 0;
                             })
                             .map((attribute, index) => {
                                 const attributeKey = attribute.id
@@ -360,6 +361,7 @@
                             status: payload.status ?? 'available',
                             download_limit: payload.download_limit ?? '',
                             download_expires_in_days: payload.download_expires_in_days ?? '',
+                            max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
                             attribute_values: payload.attribute_values ?? {},
                             files: this.normalizeSaleItemFiles(payload.files ?? []),
