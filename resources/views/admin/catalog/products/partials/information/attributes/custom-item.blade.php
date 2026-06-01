@@ -61,7 +61,6 @@
                 <x-admin.form.input
                     x-bind:name="`custom_attributes[${i}][title]`"
                     x-model="attribute.title"
-                    placeholder="مثلا نسخه مود"
                 />
             </x-admin.field>
         </div>
@@ -97,7 +96,6 @@
                             <x-admin.form.input
                                 x-bind:name="`custom_attributes[${i}][values][${valueIndex}][title]`"
                                 x-model="value.title"
-                                placeholder="مثلا Full Version"
                             />
 
                             <input
@@ -130,7 +128,7 @@
                 <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700">
                     <input
                         type="hidden"
-                        x-bind:name="`custom_attributes[${i}][visible]`"
+                        x-bind:name="`custom_attributes[${i}][is_visible]`"
                         value="0"
                     >
 
@@ -138,8 +136,8 @@
                         type="checkbox"
                         value="1"
                         class="cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-200"
-                        x-bind:name="`custom_attributes[${i}][visible]`"
-                        x-model="attribute.visible"
+                        x-bind:name="`custom_attributes[${i}][is_visible]`"
+                        x-model="attribute.is_visible"
                     >
 
                     <span>نمایش در صفحه محصول</span>
@@ -148,7 +146,7 @@
                 <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-slate-700">
                     <input
                         type="hidden"
-                        x-bind:name="`custom_attributes[${i}][use_for_sale_items]`"
+                        x-bind:name="`custom_attributes[${i}][is_variation_defining]`"
                         value="0"
                     >
 
@@ -156,8 +154,8 @@
                         type="checkbox"
                         value="1"
                         class="cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-200"
-                        x-bind:name="`custom_attributes[${i}][use_for_sale_items]`"
-                        x-model="attribute.use_for_sale_items"
+                        x-bind:name="`custom_attributes[${i}][is_variation_defining]`"
+                        x-model="attribute.is_variation_defining"
                     >
 
                     <span>استفاده برای آیتم فروش</span>
