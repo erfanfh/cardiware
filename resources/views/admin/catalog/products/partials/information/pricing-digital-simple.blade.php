@@ -22,13 +22,12 @@
 
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="قیمت پایه">
+                    <x-admin.field label="قیمت پایه (تومان)">
                         <x-admin.form.input
                             type="number"
                             min="0"
                             name="sale_items[0][base_price]"
                             :value="old('sale_items.0.base_price', $simpleSaleItem['base_price'] ?? null)"
-                            placeholder="مثلا 250000"
                         />
                     </x-admin.field>
                 </div>
@@ -46,38 +45,37 @@
                     </x-admin.field>
                 </div>
 
+                <div class="col-span-12 md:col-span-6 xl:col-span-4"></div>
+
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="حداکثر تعداد در هر سفارش">
+                    <x-admin.field label="حداکثر تعداد در هر سفارش" hint="برای نامحدود، خالی بذارید.">
                         <x-admin.form.input
                             type="number"
                             min="1"
                             name="sale_items[0][max_quantity_per_order]"
                             :value="old('sale_items.0.max_quantity_per_order', $simpleSaleItem['max_quantity_per_order'] ?? null)"
-                            placeholder="مثلا 1"
                         />
                     </x-admin.field>
                 </div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="محدودیت دانلود">
+                    <x-admin.field label="محدودیت دانلود (تعداد)" hint="برای نامحدود، خالی بگذارید.">
                         <x-admin.form.input
                             type="number"
                             min="0"
                             name="sale_items[0][download_limit]"
                             :value="old('sale_items.0.download_limit', $simpleSaleItem['download_limit'] ?? null)"
-                            placeholder="مثلا 5"
                         />
                     </x-admin.field>
                 </div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="انقضای لینک دانلود">
+                    <x-admin.field label="انقضای لینک دانلود (روز)" hint="برای نامحدود، خالی بگذارید.">
                         <x-admin.form.input
                             type="number"
                             min="0"
                             name="sale_items[0][download_expires_in_days]"
                             :value="old('sale_items.0.download_expires_in_days', $simpleSaleItem['download_expires_in_days'] ?? null)"
-                            placeholder="تعداد روز، مثلا 7"
                         />
                     </x-admin.field>
                 </div>
@@ -143,7 +141,7 @@
 
                         <button
                             type="button"
-                            class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
+                            class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
                             @click="removeSimpleFile(fileIndex)"
                         >
                             حذف
