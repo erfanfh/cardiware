@@ -51,6 +51,14 @@ class Cart extends Model
     }
 
     /**
+     * Get child cart items.
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_cart_item_id')->orderBy('id');
+    }
+
+    /**
      * Scope active carts.
      */
     public function scopeActive(Builder $query): Builder
