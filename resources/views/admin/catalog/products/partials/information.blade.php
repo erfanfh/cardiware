@@ -45,7 +45,7 @@
         ->values()
         ->all();
 
-    $assignedAttributeItems = $product
+    $assignedAttributeItems = !isset($product) ? [] : $product
         ->attributeAssignments()
         ->with([
             'attribute.values' => fn ($query) => $query->orderBy('title'),
@@ -82,7 +82,7 @@
 
     $assignedAttributeItems = old('attributes', $assignedAttributeItems ?? []);
 
-    $customAttributeItems = $product
+    $customAttributeItems = !isset($product) ? [] : $product
         ->customAttributes()
         ->with([
             'values' => fn ($query) => $query->orderBy('sort_order'),
@@ -111,7 +111,7 @@
 
     $customAttributeItems = old('custom_attributes', $customAttributeItems ?? []);
 
-    $saleItems = $product
+    $saleItems = !isset($product) ? [] : $product
         ->saleItems()
         ->with([
             'files' => fn ($query) => $query->orderBy('sort_order'),
@@ -171,7 +171,7 @@
 
     $simpleSaleItem = $saleItems[0] ?? $simpleSaleItem ?? [];
     $simpleSaleItemFiles = old('sale_items.0.files', $simpleSaleItem['files'] ?? []);
-    
+
 @endphp
 
 <div
