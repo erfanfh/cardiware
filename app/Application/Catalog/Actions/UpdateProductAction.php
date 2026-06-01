@@ -2,6 +2,7 @@
 
 namespace App\Application\Catalog\Actions;
 
+use App\Application\Catalog\Actions\ProductInformation\SyncProductInformationAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelProductCategoriesAction;
@@ -22,6 +23,7 @@ class UpdateProductAction
         protected SyncProductInstallationStepsAction $syncProductInstallationStepsAction,
         protected SyncProductFaqsAction              $syncProductFaqsAction,
         protected SyncProductReleasesAction          $syncProductReleasesAction,
+        protected SyncProductInformationAction       $syncProductInformationAction,
     )
     {
     }
@@ -50,6 +52,9 @@ class UpdateProductAction
                 $productData['installation_steps'],
                 $productData['faqs'],
                 $productData['releases'],
+                $productData['attributes'],
+                $productData['custom_attributes'],
+                $productData['sale_items'],
             );
 
             $product->update($productData);
@@ -71,6 +76,7 @@ class UpdateProductAction
             $this->syncProductInstallationStepsAction->execute($product, $data['installation_steps'] ?? []);
             $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
+            $this->syncProductInformationAction->execute($product, $data);
 
             return $product;
         });
