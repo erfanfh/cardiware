@@ -20,13 +20,16 @@
                             <select
                                 class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:outline-none focus:ring-2 focus:ring-orange-200"
                                 x-bind:name="`sale_items[${i}][attribute_values][${variationAttribute.key}]`"
-                                x-model="item.attribute_values[variationAttribute.key]"
+                                x-bind:value="item.attribute_values[variationAttribute.key] ?? ''"
+                                @click.stop
+                                @change.stop="item.attribute_values[variationAttribute.key] = $event.target.value"
                             >
                                 <option value="">انتخاب کنید</option>
 
                                 <template x-for="value in variationAttribute.values" :key="value.key">
                                     <option
                                         x-bind:value="value.key"
+                                        x-bind:selected="String(item.attribute_values[variationAttribute.key] ?? '') === String(value.key)"
                                         x-text="value.title"
                                     ></option>
                                 </template>
@@ -99,19 +102,17 @@
                             x-bind:name="`sale_items[${i}][sku]`"
                             x-model="item.sku"
                             class="direction-ltr"
-                            placeholder="مثلا MW-FC25-PC"
                         />
                     </x-admin.field>
                 </div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="قیمت پایه">
+                    <x-admin.field label="قیمت پایه (تومان)">
                         <x-admin.form.input
                             type="number"
                             min="0"
                             x-bind:name="`sale_items[${i}][base_price]`"
                             x-model="item.base_price"
-                            placeholder="مثلا 250000"
                         />
                     </x-admin.field>
                 </div>
@@ -130,25 +131,34 @@
                 </div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="محدودیت دانلود">
+                    <x-admin.field label="حداکثر تعداد در هر سفارش" hint="برای نامحدود، خالی بذارید.">
                         <x-admin.form.input
                             type="number"
-                            min="0"
-                            x-bind:name="`sale_items[${i}][download_limit]`"
-                            x-model="item.download_limit"
-                            placeholder="مثلا 5"
+                            min="1"
+                            x-bind:name="`sale_items[${i}][max_quantity_per_order]`"
+                            x-model="item.max_quantity_per_order"
                         />
                     </x-admin.field>
                 </div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="انقضای لینک دانلود">
+                    <x-admin.field label="محدودیت دانلود (تعداد)" hint="برای نامحدود، خالی بگذارید.">
+                        <x-admin.form.input
+                            type="number"
+                            min="0"
+                            x-bind:name="`sale_items[${i}][download_limit]`"
+                            x-model="item.download_limit"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="انقضای لینک دانلود (روز)" hint="برای نامحدود، خالی بگذارید.">
                         <x-admin.form.input
                             type="number"
                             min="0"
                             x-bind:name="`sale_items[${i}][download_expires_in_days]`"
                             x-model="item.download_expires_in_days"
-                            placeholder="تعداد روز، مثلا 7"
                         />
                     </x-admin.field>
                 </div>
@@ -213,7 +223,7 @@
 
                         <button
                             type="button"
-                            class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
+                            class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
                             @click="removeSaleItemFile(item, fileIndex)"
                         >
                             حذف
