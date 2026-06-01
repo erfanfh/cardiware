@@ -168,4 +168,12 @@ class Product extends Model implements PageViewableInterface
     {
         return $this->hasMany(ProductCustomAttribute::class)->orderBy('sort_order');
     }
+
+    /**
+     * Get product add-ons.
+     */
+    public function addons(): HasMany
+    {
+        return $this->hasMany(ProductAddon::class)->orderBy('sort_order');
+    }
 }
