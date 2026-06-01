@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Domain\Catalog\Models\ProductAddon;
+use App\Domain\Catalog\Models\ProductSaleItem;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
@@ -35,5 +38,10 @@ class AppServiceProvider extends ServiceProvider
         else {
             Paginator::defaultView('vendor.pagination.front');
         }
+
+        Relation::enforceMorphMap([
+            'product_sale_item' => ProductSaleItem::class,
+            'product_addon' => ProductAddon::class,
+        ]);
     }
 }
