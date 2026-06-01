@@ -70,7 +70,7 @@ class ProductSaleItem extends Model implements Purchasable
      */
     public function getPurchasableTitle(): string
     {
-        return $this->title ?: $this->product?->title;
+        return $this->product?->title ?? 'آیتم فروش محصول';
     }
 
     /**
@@ -78,7 +78,7 @@ class ProductSaleItem extends Model implements Purchasable
      */
     public function getPurchasablePrice(): int
     {
-        return (int)$this->price;
+        return (int)$this->base_price;
     }
 
     /**
