@@ -90,11 +90,21 @@ class ProductSaleItem extends Model implements Purchasable
     }
 
     /**
-     * Determine whether this item is dependent on another item.
+     * Determine whether this item is dependent on another purchasable item.
      */
     public function isDependentPurchasable(): bool
     {
         return false;
+    }
+
+    /**
+     * Get dependency data for dependent purchasable items.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function getPurchasableDependency(): ?array
+    {
+        return null;
     }
 
     /**
@@ -113,12 +123,12 @@ class ProductSaleItem extends Model implements Purchasable
     public function getPurchasableSnapshot(): array
     {
         return [
-            'type' => 'sale_item',
+            'type' => 'product_sale_item',
             'title' => $this->getPurchasableTitle(),
             'product_id' => $this->product_id,
             'product_title' => $this->product?->title,
-            'sale_item_id' => $this->id,
-            'sale_item_title' => $this->title,
+            'product_sale_item_id' => $this->id,
+            'product_sale_item_title' => $this->title,
         ];
     }
 }
