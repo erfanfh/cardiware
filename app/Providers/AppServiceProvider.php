@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -39,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
             Paginator::defaultView('vendor.pagination.front');
         }
 
-        Relation::enforceMorphMap([
+        Relation::morphMap([
+            'product' => Product::class,
             'product_sale_item' => ProductSaleItem::class,
             'product_addon' => ProductAddon::class,
         ]);
