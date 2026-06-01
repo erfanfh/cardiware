@@ -1,29 +1,6 @@
 <template x-if="isVariableDigitalProduct">
     <div class="overflow-hidden rounded-2xl border border-slate-200">
         <div class="px-4 py-4">
-            <div class="mb-4">
-                <h4 class="text-sm font-bold text-slate-900">تنظیمات کلی فروش</h4>
-                <p class="mt-1 text-xs text-slate-500">
-                    این تنظیمات روی کل محصول متغیر اعمال می‌شود.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12 md:col-span-6 xl:col-span-4">
-                    <x-admin.field label="حداکثر تعداد در هر سفارش">
-                        <x-admin.form.input
-                            type="number"
-                            min="1"
-                            name="variable_max_quantity_per_order"
-                            :value="old('variable_max_quantity_per_order')"
-                            placeholder="مثلا 1"
-                        />
-                    </x-admin.field>
-                </div>
-            </div>
-        </div>
-
-        <div class="border-t border-slate-200 px-4 py-4">
             <div class="mb-4 flex flex-wrap items-start justify-between gap-4">
                 <div>
                     <h4 class="text-sm font-bold text-slate-900">آیتم‌های فروش</h4>
