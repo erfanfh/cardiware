@@ -70,7 +70,6 @@
                 :search-url="route('admin.stores.ajax-search')"
                 :value="old('store_id', $defaultStore?->id)"
                 :selected-options="$storeSelectedOptions"
-                :required="true"
                 :min-chars="1"
                 :max-options="20"
                 :allow-clear="false"
