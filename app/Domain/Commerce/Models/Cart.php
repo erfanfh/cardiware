@@ -13,7 +13,9 @@ class Cart extends Model
 {
     protected $fillable = [
         'user_id',
+        'session_id',
         'status',
+        'expires_at',
         'subtotal_amount',
         'discount_amount',
         'total_amount',
@@ -21,6 +23,7 @@ class Cart extends Model
 
     protected $casts = [
         'status' => CartStatusEnum::class,
+        'expires_at' => 'datetime',
         'subtotal_amount' => 'integer',
         'discount_amount' => 'integer',
         'total_amount' => 'integer',
@@ -72,5 +75,13 @@ class Cart extends Model
     public function isEditable(): bool
     {
         return $this->status->isEditable();
+    }
+
+    /**
+     * Determine whether cart belongs to a guest session.
+     */
+    public function isGuestCart(): bool
+    {
+        return $this->user_id === null && filled($this->session_id);
     }
 }
