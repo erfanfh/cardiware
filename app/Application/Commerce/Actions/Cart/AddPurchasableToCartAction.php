@@ -3,6 +3,7 @@
 namespace App\Application\Commerce\Actions\Cart;
 
 use App\Application\Commerce\Contracts\Purchasable;
+use App\Application\Commerce\DTOs\CartOwnerDTO;
 use App\Domain\Commerce\Models\CartItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ use Throwable;
 class AddPurchasableToCartAction
 {
     public function __construct(
+        private readonly ResolveCurrentCartOwnerAction    $resolveCurrentCartOwnerAction,
         private readonly GetOrCreateActiveCartAction      $getOrCreateActiveCartAction,
         private readonly ValidatePurchasableForCartAction $validatePurchasableForCartAction,
         private readonly FindMatchingCartItemAction       $findMatchingCartItemAction,
@@ -24,25 +26,27 @@ class AddPurchasableToCartAction
     }
 
     /**
-     * Add a purchasable item to the user's active cart.
+     * Add a purchasable item to the current active cart.
      *
      * @param Purchasable&Model $purchasable
      * @param array<string, mixed> $metadata
      * @throws Throwable
      */
     public function execute(
-        int               $userId,
         Purchasable&Model $purchasable,
         int               $quantity = 1,
         ?CartItem         $parentCartItem = null,
         array             $metadata = [],
+        ?CartOwnerDTO     $owner = null,
     ): CartItem
     {
-        return DB::transaction(function () use ($userId, $purchasable, $quantity, $parentCartItem, $metadata) {
-            $cart = $this->getOrCreateActiveCartAction->execute($userId);
+        return DB::transaction(function () use ($purchasable, $quantity, $parentCartItem, $metadata, $owner) {
+            $owner ??= $this->resolveCurrentCartOwnerAction->execute();
+
+            $cart = $this->getOrCreateActiveCartAction->execute($owner);
 
             $this->validatePurchasableForCartAction->execute(
-                userId: $userId,
+                owner: $owner,
                 cart: $cart,
                 purchasable: $purchasable,
                 quantity: $quantity,

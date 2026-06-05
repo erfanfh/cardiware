@@ -3,6 +3,7 @@
 namespace App\Application\Commerce\Actions\Cart;
 
 use App\Application\Commerce\Contracts\Purchasable;
+use App\Application\Commerce\DTOs\CartOwnerDTO;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use DomainException;
@@ -13,6 +14,8 @@ use Throwable;
 class UpdateCartItemQuantityAction
 {
     public function __construct(
+        private readonly ResolveCurrentCartOwnerAction   $resolveCurrentCartOwnerAction,
+        private readonly EnsureCartBelongsToOwnerAction  $ensureCartBelongsToOwnerAction,
         private readonly RecalculateCartItemTotalsAction $recalculateCartItemTotalsAction,
         private readonly RecalculateCartTotalsAction     $recalculateCartTotalsAction,
     )
@@ -21,14 +24,17 @@ class UpdateCartItemQuantityAction
 
     /**
      * Update cart item quantity.
+     *
      * @throws Throwable
      */
-    public function execute(int $userId, CartItem $cartItem, int $quantity): CartItem
+    public function execute(CartItem $cartItem, int $quantity, ?CartOwnerDTO $owner = null): CartItem
     {
-        return DB::transaction(function () use ($userId, $cartItem, $quantity) {
+        return DB::transaction(function () use ($cartItem, $quantity, $owner) {
+            $owner ??= $this->resolveCurrentCartOwnerAction->execute();
+
             $cart = $cartItem->cart;
 
-            $this->validate($userId, $cart, $cartItem, $quantity);
+            $this->validate($owner, $cart, $cartItem, $quantity);
 
             $cartItem->forceFill([
                 'quantity' => $quantity,
@@ -45,11 +51,9 @@ class UpdateCartItemQuantityAction
     /**
      * Validate quantity update.
      */
-    private function validate(int $userId, Cart $cart, CartItem $cartItem, int $quantity): void
+    private function validate(CartOwnerDTO $owner, Cart $cart, CartItem $cartItem, int $quantity): void
     {
-        if ((int)$cart->user_id !== $userId) {
-            throw new DomainException('Cart item does not belong to the user.');
-        }
+        $this->ensureCartBelongsToOwnerAction->execute($owner, $cart);
 
         if (!$cart->isEditable()) {
             throw new DomainException('Cart is not editable.');

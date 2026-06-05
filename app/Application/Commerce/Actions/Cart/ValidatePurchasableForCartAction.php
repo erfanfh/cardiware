@@ -3,6 +3,7 @@
 namespace App\Application\Commerce\Actions\Cart;
 
 use App\Application\Commerce\Contracts\Purchasable;
+use App\Application\Commerce\DTOs\CartOwnerDTO;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use DomainException;
@@ -12,6 +13,7 @@ class ValidatePurchasableForCartAction
 {
     public function __construct(
         private readonly ValidatePurchasableDependencyAction $validatePurchasableDependencyAction,
+        private readonly EnsureCartBelongsToOwnerAction      $ensureCartBelongsToOwnerAction,
     )
     {
     }
@@ -22,25 +24,18 @@ class ValidatePurchasableForCartAction
      * @param Purchasable&Model $purchasable
      */
     public function execute(
-        int               $userId,
+        CartOwnerDTO      $owner,
         Cart              $cart,
         Purchasable&Model $purchasable,
         int               $quantity,
         ?CartItem         $parentCartItem = null,
     ): void
     {
-        $this->validateCartBelongsToUser($userId, $cart);
+        $this->ensureCartBelongsToOwnerAction->execute($owner, $cart);
         $this->validateCartIsEditable($cart);
         $this->validateQuantity($quantity);
         $this->validatePurchasable($purchasable);
         $this->validateParentRules($cart, $purchasable, $parentCartItem);
-    }
-
-    private function validateCartBelongsToUser(int $userId, Cart $cart): void
-    {
-        if ((int)$cart->user_id !== $userId) {
-            throw new DomainException('Cart does not belong to the user.');
-        }
     }
 
     private function validateCartIsEditable(Cart $cart): void
