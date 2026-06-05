@@ -21,6 +21,11 @@ class ProductTagListController extends BaseTaxonomyListController
         return 'products.tags.page';
     }
 
+    protected function viewName(): string
+    {
+        return 'front.catalog.products.list';
+    }
+
     protected function termViewVariableName(): string
     {
         return 'tag';
