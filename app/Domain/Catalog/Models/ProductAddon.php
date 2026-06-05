@@ -93,7 +93,7 @@ class ProductAddon extends Model implements Purchasable
      */
     public function isDependentPurchasable(): bool
     {
-        return $this->requires_purchase;
+        return true;
     }
 
     /**
@@ -110,10 +110,6 @@ class ProductAddon extends Model implements Purchasable
         return [
             'required_parent_type' => 'product_sale_item',
             'product_id' => $this->product_id,
-            'allowed_product_sale_item_ids' => $this->productSaleItems()
-                ->pluck('product_sale_items.id')
-                ->map(fn($id) => (int)$id)
-                ->all(),
         ];
     }
 
@@ -134,12 +130,11 @@ class ProductAddon extends Model implements Purchasable
     {
         return [
             'type' => 'product_addon',
+            'product_id' => $this->product_id,
+            'addon_id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'product_id' => $this->product_id,
-            'product_title' => $this->product?->title,
-            'product_addon_id' => $this->id,
-            'product_addon_title' => $this->title,
+            'unit_price' => $this->price,
         ];
     }
 }
