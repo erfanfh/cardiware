@@ -172,6 +172,24 @@
     $simpleSaleItem = $saleItems[0] ?? $simpleSaleItem ?? [];
     $simpleSaleItemFiles = old('sale_items.0.files', $simpleSaleItem['files'] ?? []);
 
+    $productAddons = !isset($product) ? [] : $product
+        ->addons()
+        ->orderBy('sort_order')
+        ->get()
+        ->map(fn ($addon) => [
+            'id' => $addon->id,
+            'title' => $addon->title,
+            'description' => $addon->description,
+            'price' => $addon->price,
+            'max_quantity_per_order' => $addon->max_quantity_per_order,
+            'requires_purchase' => (bool) $addon->requires_purchase,
+            'is_active' => (bool) $addon->is_active,
+            'sort_order' => (int) $addon->sort_order,
+        ])
+        ->values()
+        ->all();
+
+    $productAddons = old('addons', $productAddons ?? []);
 @endphp
 
 <div
@@ -198,6 +216,7 @@
         },
         saleItems: @js($saleItems),
         simpleFiles: @js($simpleSaleItemFiles),
+        addons: @js($productAddons),
     })"
     class="space-y-4"
 >
@@ -209,6 +228,8 @@
         @include('admin.catalog.products.partials.information.attributes')
 
         @include('admin.catalog.products.partials.information.pricing')
+
+        @include('admin.catalog.products.partials.information.addons')
     </div>
 </div>
 

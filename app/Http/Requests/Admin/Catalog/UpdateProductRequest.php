@@ -115,6 +115,18 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.files.*.title' => ['nullable', 'string', 'max:255'],
             'sale_items.*.files.*.url' => ['nullable', 'url', 'max:2048'],
             'sale_items.*.files.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'addons' => ['nullable', 'array'],
+
+            'addons.*.id' => ['nullable', 'integer', 'exists:product_addons,id'],
+            'addons.*.title' => ['required', 'string', 'max:255'],
+            'addons.*.description' => ['nullable', 'string'],
+            'addons.*.price' => ['required', 'integer', 'min:0'],
+            'addons.*.max_quantity_per_order' => ['required', 'integer', 'min:1'],
+            'addons.*.requires_purchase' => ['nullable', 'boolean'],
+            'addons.*.is_active' => ['nullable', 'boolean'],
+            'addons.*.sort_order' => ['nullable', 'integer', 'min:0'],
+            'addons.*.metadata' => ['nullable', 'array'],
         ];
     }
 

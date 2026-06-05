@@ -24,6 +24,7 @@ class UpdateProductAction
         protected SyncProductFaqsAction              $syncProductFaqsAction,
         protected SyncProductReleasesAction          $syncProductReleasesAction,
         protected SyncProductInformationAction       $syncProductInformationAction,
+        protected SyncProductAddonsAction            $syncProductAddonsAction,
     )
     {
     }
@@ -77,6 +78,7 @@ class UpdateProductAction
             $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
             $this->syncProductInformationAction->execute($product, $data);
+            $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
 
             return $product;
         });

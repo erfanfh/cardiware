@@ -18,6 +18,7 @@
                     customAttributes: [],
                     saleItems: [],
                     simpleFiles: [],
+                    productAddons: [],
 
                     init() {
                         this.assignedAttributes = this.normalizeAssignedAttributes(
@@ -31,6 +32,8 @@
                         this.saleItems = this.normalizeSaleItems(config.saleItems ?? []);
 
                         this.simpleFiles = this.normalizeSaleItemFiles(config.simpleFiles ?? []);
+
+                        this.productAddons = this.normalizeProductAddons(config.addons ?? []);
                     },
 
                     get tabs() {
@@ -49,6 +52,11 @@
                                 key: 'pricing',
                                 label: 'قیمت‌گذاری و فایل‌ها',
                                 badge: null,
+                            },
+                            {
+                                key: 'addons',
+                                label: 'خدمات افزوده',
+                                badge: this.productAddons.length,
                             },
                         ];
                     },
@@ -521,6 +529,23 @@
 
                     removeSimpleFile(fileIndex) {
                         this.simpleFiles.splice(fileIndex, 1);
+                    },
+
+                    normalizeProductAddons(items) {
+                        return (items ?? []).map((item) => {
+                            return {
+                                __key: item.__key ?? this.makeKey('product-addon'),
+                                id: item.id ?? null,
+                                title: item.title ?? '',
+                                description: item.description ?? '',
+                                price: item.price ?? 0,
+                                max_quantity_per_order: item.max_quantity_per_order ?? 1,
+                                requires_purchase: this.normalizeBoolean(item.requires_purchase, true),
+                                is_active: this.normalizeBoolean(item.is_active, true),
+                                sort_order: item.sort_order ?? 0,
+                                _open: this.normalizeBoolean(item._open, false),
+                            };
+                        });
                     },
                 };
             }
