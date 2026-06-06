@@ -2,14 +2,18 @@
 
 namespace App\Domain\Commerce\Models;
 
+use App\Application\Financial\Contracts\Payable;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
+use App\Domain\Financial\Models\Payment;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
-class Order extends Model
+class Order extends Model implements Payable
 {
     protected $fillable = [
         'user_id',
@@ -83,5 +87,47 @@ class Order extends Model
     public function isPaid(): bool
     {
         return $this->status->isPaid();
+    }
+
+    /**
+     * Get order payments.
+     */
+    public function payments(): MorphMany
+    {
+        return $this->morphMany(Payment::class, 'payable')
+            ->latest('id');
+    }
+
+    /**
+     * Get latest payment.
+     */
+    public function latestPayment(): MorphOne
+    {
+        return $this->morphOne(Payment::class, 'payable')
+            ->latestOfMany();
+    }
+
+    /**
+     * Get payable amount in toman.
+     */
+    public function getPayableAmount(): int
+    {
+        return (int)$this->total_amount;
+    }
+
+    /**
+     * Get payable display title.
+     */
+    public function getPayableTitle(): string
+    {
+        return 'سفارش ' . $this->order_number;
+    }
+
+    /**
+     * Determine whether this payable can start payment.
+     */
+    public function canStartPayment(): bool
+    {
+        return $this->status->canStartPayment();
     }
 }

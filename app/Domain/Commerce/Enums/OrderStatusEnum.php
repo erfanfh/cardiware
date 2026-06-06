@@ -39,4 +39,12 @@ enum OrderStatusEnum: string
     {
         return $this === self::PENDING_PAYMENT;
     }
+
+    /**
+     * Determine whether the order can be marked as paid.
+     */
+    public function canBePaid(): bool
+    {
+        return $this === self::PENDING_PAYMENT;
+    }
 }
