@@ -5,6 +5,7 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\ContentServiceProvider::class,
     App\Providers\EventServiceProvider::class,
+    App\Providers\FinancialServiceProvider::class,
     App\Providers\HorizonServiceProvider::class,
     App\Providers\NavigationServiceProvider::class,
     App\Providers\PageLayoutServiceProvider::class,

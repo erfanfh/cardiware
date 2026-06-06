@@ -7,10 +7,13 @@ use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
+use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
+use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use DomainException;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -186,7 +189,7 @@ class CartPage extends Component
         }
     }
 
-    public function checkout(): void
+    public function checkout(): ?RedirectResponse
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
@@ -203,7 +206,7 @@ class CartPage extends Component
 
         if (!$this->cart) {
             $this->checkoutError = 'سبد خریدی برای پرداخت یافت نشد.';
-            return;
+            return null;
         }
 
         try {
@@ -220,27 +223,54 @@ class CartPage extends Component
 
             $this->resetCartComputedProperties();
 
-            // مرحله بعد:
-            // app(StartPaymentAction::class)->execute($order);
+            if ($order->total_amount <= 0) {
+                // TODO: بعدا CompleteFreeOrderAction را اینجا صدا می‌زنیم.
+                $this->checkoutError = 'پردازش سفارش رایگان هنوز پیاده‌سازی نشده است.';
+                return null;
+            }
 
-            $this->dispatch('checkout-requested');
+            $gateway = PaymentGatewayEnum::ZIBAL;
+
+            $payment = app(StartPaymentAction::class)->execute(
+                payable: $order,
+                gateway: $gateway,
+                callbackUrl: route('payment.callback', [
+                    'gateway' => $gateway->value,
+                ]),
+                metadata: [
+                    'source' => 'web',
+                    'order_id' => $order->id,
+                    'order_number' => $order->order_number,
+                    'description' => 'پرداخت سفارش ' . $order->order_number,
+                    'mobile' => auth()->user()?->mobile ?? $this->mobile,
+                ],
+            );
+
+            $redirectUrl = data_get($payment->request_payload, 'redirect_url');
+
+            if (!$redirectUrl) {
+                $this->checkoutError = 'امکان اتصال به درگاه پرداخت وجود ندارد. لطفا دوباره تلاش کنید.';
+                return null;
+            }
+
+            return redirect()->away($redirectUrl);
         } catch (CartItemPriceChangedException $exception) {
             $this->checkoutError = $exception->userMessage();
             $this->cartNeedsRefresh = true;
 
             $this->resetCartComputedProperties();
 
-            return;
+            return null;
         } catch (DomainException $exception) {
             $this->checkoutError = 'امکان تکمیل پرداخت وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
 
-            return;
+            return null;
         } catch (Throwable $exception) {
             report($exception);
 
             $this->checkoutError = 'خطایی در پردازش پرداخت رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
 
-            return;
+            return null;
         }
     }
 
