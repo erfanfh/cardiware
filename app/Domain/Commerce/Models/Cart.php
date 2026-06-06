@@ -19,6 +19,7 @@ class Cart extends Model
         'subtotal_amount',
         'discount_amount',
         'total_amount',
+        'synced_at',
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Cart extends Model
         'subtotal_amount' => 'integer',
         'discount_amount' => 'integer',
         'total_amount' => 'integer',
+        'synced_at' => 'datetime',
     ];
 
     /**
