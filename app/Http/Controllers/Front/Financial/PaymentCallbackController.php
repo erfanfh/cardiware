@@ -16,7 +16,14 @@ class PaymentCallbackController extends Controller
         $gatewayReference = $request->input('trackId')
             ?? $request->input('track_id')
             ?? $request->input('Authority')
-            ?? $request->input('authority');
+            ?? $request->input('authority')
+            ?? $request->input('refId')
+            ?? $request->input('RefId')
+            ?? $request->input('refid')
+            ?? $request->input('referenceId')
+            ?? $request->input('reference_id')
+            ?? $request->input('code')
+            ?? $request->input('Code');
 
         if (!$gatewayReference) {
             return redirect()

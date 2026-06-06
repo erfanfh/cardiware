@@ -37,5 +37,47 @@ return [
 
             'timeout' => env('ZARINPAL_TIMEOUT', 20),
         ],
+
+        'payping' => [
+            'token' => env('PAYPING_TOKEN'),
+
+            /*
+            |--------------------------------------------------------------------------
+            | PayPing Sandbox
+            |--------------------------------------------------------------------------
+            |
+            | PayPing usually works with token-based API access.
+            | If PayPing provides a separate test endpoint/token, set PAYPING_SANDBOX=true
+            | and override the sandbox URLs in .env.
+            |
+            */
+            'sandbox' => env('PAYPING_SANDBOX', false),
+
+            'production' => [
+                'pay_url' => env('PAYPING_PAY_URL', 'https://api.payping.ir/v3/pay'),
+                'verify_url' => env('PAYPING_VERIFY_URL', 'https://api.payping.ir/v3/pay/verify'),
+                'start_url' => env('PAYPING_START_URL', 'https://api.payping.ir/new/v2/pay/gotoipg/'),
+            ],
+
+            'sandbox_urls' => [
+                'pay_url' => env('PAYPING_SANDBOX_PAY_URL', 'https://api.payping.ir/v3/pay'),
+                'verify_url' => env('PAYPING_SANDBOX_VERIFY_URL', 'https://api.payping.ir/v3/pay/verify'),
+                'start_url' => env('PAYPING_SANDBOX_START_URL', 'https://api.payping.ir/new/v2/pay/gotoipg/'),
+            ],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Amount Unit
+            |--------------------------------------------------------------------------
+            |
+            | Your internal system stores amounts in toman.
+            | If your PayPing account expects toman, keep this 1.
+            | If it expects rial, set it to 10.
+            |
+            */
+            'amount_multiplier' => env('PAYPING_AMOUNT_MULTIPLIER', 1),
+
+            'timeout' => env('PAYPING_TIMEOUT', 20),
+        ],
     ],
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Application\Financial\Gateways\PaypingPaymentGateway;
 use App\Application\Financial\Gateways\ZarinpalPaymentGateway;
 use App\Application\Financial\Gateways\ZibalPaymentGateway;
 use App\Application\Financial\Support\PaymentGatewayManager;
@@ -18,6 +19,7 @@ class FinancialServiceProvider extends ServiceProvider
             return new PaymentGatewayManager([
                 app(ZibalPaymentGateway::class),
                 app(ZarinpalPaymentGateway::class),
+                app(PaypingPaymentGateway::class),
             ]);
         });
     }
