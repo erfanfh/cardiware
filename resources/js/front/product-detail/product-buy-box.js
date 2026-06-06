@@ -67,7 +67,7 @@ export default function productBuyBox(config) {
         },
 
         get totalPrice() {
-            const saleItemPrice = Number(this.selectedSaleItem?.price ?? 0);
+            const saleItemPrice = Number(this.selectedSaleItem?.price ?? 0) * Number(this.quantity || 1);
 
             const addonsPrice = this.selectedAddons.reduce((total, addon) => {
                 return total + Number(addon.price ?? 0);
@@ -100,7 +100,10 @@ export default function productBuyBox(config) {
 
         async submit(showModal = true) {
             if (!this.selectedSaleItemId || this.isSubmitting) {
-                return;
+                return {
+                    success: false,
+                    message: 'درخواست معتبر نیست.',
+                };
             }
 
             this.isSubmitting = true;
@@ -114,7 +117,8 @@ export default function productBuyBox(config) {
 
                 if (!result?.success) {
                     this.openErrorModal(result?.message ?? 'به‌روزرسانی سبد خرید ناموفق بود.');
-                    return;
+
+                    return result;
                 }
 
                 this.applyPurchaseState(result.state);
@@ -122,8 +126,17 @@ export default function productBuyBox(config) {
                 if (showModal) {
                     this.openSuccessModal(result);
                 }
+
+                return result;
             } catch (error) {
-                this.openErrorModal('خطایی هنگام به‌روزرسانی سبد خرید رخ داد.');
+                const result = {
+                    success: false,
+                    message: 'خطایی هنگام به‌روزرسانی سبد خرید رخ داد.',
+                };
+
+                this.openErrorModal(result.message);
+
+                return result;
             } finally {
                 this.isSubmitting = false;
             }
@@ -224,11 +237,14 @@ export default function productBuyBox(config) {
             this.purchaseState = state ?? {};
 
             this.inCart = Boolean(this.purchaseState.in_cart);
-            this.quantity = Number(this.purchaseState.quantity ?? 1);
-            this.canChangeQuantity = Boolean(this.purchaseState.can_change_quantity);
-            this.maxQuantityPerOrder = this.purchaseState.max_quantity_per_order;
 
             if (this.inCart) {
+                this.quantity = Number(this.purchaseState.quantity ?? 1);
+                this.canChangeQuantity = Boolean(this.purchaseState.can_change_quantity);
+                this.maxQuantityPerOrder = this.purchaseState.max_quantity_per_order === null
+                    ? null
+                    : Number(this.purchaseState.max_quantity_per_order);
+
                 this.selectedSaleItemId = Number(this.purchaseState.sale_item_id);
                 this.selectedAddonIds = (this.purchaseState.selected_addon_ids ?? []).map(Number);
 
@@ -245,22 +261,36 @@ export default function productBuyBox(config) {
             this.originalAddonIds = [];
         },
 
-        increaseQuantity() {
-            if (!this.canIncreaseQuantity) {
+        async increaseQuantity() {
+            if (!this.canIncreaseQuantity || this.isSubmitting) {
                 return;
             }
+
+            const previousQuantity = this.quantity;
 
             this.quantity += 1;
-            this.submit(false);
+
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.quantity = previousQuantity;
+            }
         },
 
-        decreaseQuantity() {
-            if (!this.canChangeQuantity || this.quantity <= 1) {
+        async decreaseQuantity() {
+            if (!this.canChangeQuantity || this.quantity <= 1 || this.isSubmitting) {
                 return;
             }
 
+            const previousQuantity = this.quantity;
+
             this.quantity -= 1;
-            this.submit(false);
+
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.quantity = previousQuantity;
+            }
         },
     };
 }

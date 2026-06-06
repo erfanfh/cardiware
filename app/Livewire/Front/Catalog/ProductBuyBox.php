@@ -5,9 +5,11 @@ namespace App\Livewire\Front\Catalog;
 use App\Application\Commerce\Actions\Cart\AddProductSaleItemWithAddonsToCartAction;
 use App\Application\Commerce\Actions\Cart\GetProductCartStateAction;
 use App\Application\Commerce\Actions\Cart\RemoveProductFromCartAction;
+use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use DomainException;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Throwable;
 
@@ -50,6 +52,7 @@ class ProductBuyBox extends Component
      * @return array<string, mixed>
      * @throws Throwable
      */
+    #[Renderless]
     public function addToCart(
         AddProductSaleItemWithAddonsToCartAction $action,
         GetProductCartStateAction                $getProductCartStateAction,
@@ -109,6 +112,7 @@ class ProductBuyBox extends Component
      *
      * @return array<string, mixed>
      */
+    #[Renderless]
     public function removeFromCart(
         RemoveProductFromCartAction $removeProductFromCartAction,
         GetProductCartStateAction   $getProductCartStateAction,
@@ -150,6 +154,7 @@ class ProductBuyBox extends Component
     {
         return $this->product
             ->saleItems()
+            ->where('status', ProductSaleItemStatusEnum::AVAILABLE)
             ->with([
                 'product',
                 'attributeValues.globalValue.attribute',
