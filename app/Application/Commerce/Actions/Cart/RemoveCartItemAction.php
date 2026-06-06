@@ -37,6 +37,11 @@ class RemoveCartItemAction
                 throw new DomainException('Cart is not editable.');
             }
 
+            CartItem::query()
+                ->where('cart_id', $cart->id)
+                ->where('parent_cart_item_id', $cartItem->id)
+                ->delete();
+
             $cartItem->delete();
 
             return $this->recalculateCartTotalsAction->execute($cart);
