@@ -20,6 +20,7 @@ class GetCurrentActiveCartAction
 
         if ($owner->isAuthenticated()) {
             return Cart::query()
+                ->with(['items.purchasable'])
                 ->where('user_id', $owner->userId)
                 ->where('status', CartStatusEnum::ACTIVE)
                 ->latest('id')
@@ -27,6 +28,7 @@ class GetCurrentActiveCartAction
         }
 
         return Cart::query()
+            ->with(['items.purchasable'])
             ->whereNull('user_id')
             ->where('session_id', $owner->sessionId)
             ->where('status', CartStatusEnum::ACTIVE)
