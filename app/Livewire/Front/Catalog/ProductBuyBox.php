@@ -3,10 +3,13 @@
 namespace App\Livewire\Front\Catalog;
 
 use App\Application\Commerce\Actions\Cart\AddProductSaleItemWithAddonsToCartAction;
+use App\Application\Commerce\Actions\Cart\GetProductCartStateAction;
+use App\Application\Commerce\Actions\Cart\RemoveProductFromCartAction;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use DomainException;
 use Livewire\Component;
+use Throwable;
 
 class ProductBuyBox extends Component
 {
@@ -22,35 +25,49 @@ class ProductBuyBox extends Component
      */
     public array $addons = [];
 
-    public function mount(Product $product): void
+    /**
+     * @var array<string, mixed>
+     */
+    public array $purchaseState = [];
+
+    public function mount(
+        Product                   $product,
+        GetProductCartStateAction $getProductCartStateAction,
+    ): void
     {
         $this->product = $product;
 
         $this->saleItems = $this->makeSaleItemsData();
-
         $this->addons = $this->makeAddonsData();
+
+        $this->purchaseState = $getProductCartStateAction->execute($product);
     }
 
     /**
-     * Add selected product sale item with selected addons to cart.
+     * Add or update selected product sale item with selected addons.
      *
      * @param array<int, int|string> $addonIds
      * @return array<string, mixed>
+     * @throws Throwable
      */
     public function addToCart(
         AddProductSaleItemWithAddonsToCartAction $action,
+        GetProductCartStateAction                $getProductCartStateAction,
         int                                      $saleItemId,
         array                                    $addonIds = [],
+        int                                      $quantity = 1,
     ): array
     {
         try {
             $cart = $action->execute(
                 productSaleItemId: $saleItemId,
                 addonIds: $addonIds,
-                quantity: 1,
+                quantity: $quantity,
             );
 
-            $cart->loadMissing('items');
+            $state = $getProductCartStateAction->execute($this->product);
+
+            $this->purchaseState = $state;
 
             $summary = [
                 'id' => $cart->id,
@@ -66,13 +83,57 @@ class ProductBuyBox extends Component
 
             return [
                 'success' => true,
-                'message' => 'محصول با موفقیت به سبد خرید اضافه شد.',
+                'message' => 'سبد خرید با موفقیت به‌روزرسانی شد.',
+                'state' => $state,
                 'cart' => $summary,
             ];
         } catch (DomainException $exception) {
+            report($exception);
+
             return [
                 'success' => false,
                 'message' => $exception->getMessage(),
+            ];
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return [
+                'success' => false,
+                'message' => 'خطایی هنگام به‌روزرسانی سبد خرید رخ داد.',
+            ];
+        }
+    }
+
+    /**
+     * Remove current product from cart.
+     *
+     * @return array<string, mixed>
+     */
+    public function removeFromCart(
+        RemoveProductFromCartAction $removeProductFromCartAction,
+        GetProductCartStateAction   $getProductCartStateAction,
+    ): array
+    {
+        try {
+            $removeProductFromCartAction->execute($this->product);
+
+            $state = $getProductCartStateAction->execute($this->product);
+
+            $this->purchaseState = $state;
+
+            $this->dispatch('cart-updated');
+
+            return [
+                'success' => true,
+                'message' => 'محصول از سبد خرید حذف شد.',
+                'state' => $state,
+            ];
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return [
+                'success' => false,
+                'message' => 'خطایی هنگام حذف محصول از سبد خرید رخ داد.',
             ];
         }
     }

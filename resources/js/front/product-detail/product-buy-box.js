@@ -21,10 +21,21 @@ export default function productBuyBox(config) {
             type: 'success',
         },
 
+        purchaseState: config.purchaseState ?? {},
+
+        inCart: false,
+        quantity: 1,
+        canChangeQuantity: false,
+        maxQuantityPerOrder: null,
+        originalSaleItemId: null,
+        originalAddonIds: [],
+
         init() {
             if (this.saleItems.length > 0) {
                 this.selectedSaleItemId = Number(this.saleItems[0].id);
             }
+
+            this.applyPurchaseState(this.purchaseState);
 
             this.$watch('modalOpen', (isOpen) => {
                 document.body.classList.toggle('overflow-hidden', isOpen);
@@ -87,7 +98,7 @@ export default function productBuyBox(config) {
             return this.selectedAddonIds.includes(Number(addonId));
         },
 
-        async submit() {
+        async submit(showModal = true) {
             if (!this.selectedSaleItemId || this.isSubmitting) {
                 return;
             }
@@ -98,16 +109,44 @@ export default function productBuyBox(config) {
                 const result = await this.$wire.addToCart(
                     this.selectedSaleItemId,
                     this.selectedAddonIds,
+                    this.quantity,
                 );
 
                 if (!result?.success) {
-                    this.openErrorModal(result?.message ?? 'افزودن محصول به سبد خرید ناموفق بود.');
+                    this.openErrorModal(result?.message ?? 'به‌روزرسانی سبد خرید ناموفق بود.');
                     return;
                 }
 
-                this.openSuccessModal(result);
+                this.applyPurchaseState(result.state);
+
+                if (showModal) {
+                    this.openSuccessModal(result);
+                }
             } catch (error) {
-                this.openErrorModal('خطایی هنگام افزودن محصول به سبد خرید رخ داد.');
+                this.openErrorModal('خطایی هنگام به‌روزرسانی سبد خرید رخ داد.');
+            } finally {
+                this.isSubmitting = false;
+            }
+        },
+
+        async removeFromCart() {
+            if (!this.inCart || this.isSubmitting) {
+                return;
+            }
+
+            this.isSubmitting = true;
+
+            try {
+                const result = await this.$wire.removeFromCart();
+
+                if (!result?.success) {
+                    this.openErrorModal(result?.message ?? 'حذف محصول از سبد خرید ناموفق بود.');
+                    return;
+                }
+
+                this.applyPurchaseState(result.state);
+            } catch (error) {
+                this.openErrorModal('خطایی هنگام حذف محصول از سبد خرید رخ داد.');
             } finally {
                 this.isSubmitting = false;
             }
@@ -155,6 +194,73 @@ export default function productBuyBox(config) {
             }
 
             return new Intl.NumberFormat('fa-IR').format(normalizedPrice) + ' تومان';
+        },
+
+        get hasUnsavedChanges() {
+            if (!this.inCart) {
+                return false;
+            }
+
+            const currentAddonIds = [...this.selectedAddonIds].map(Number).sort();
+            const originalAddonIds = [...this.originalAddonIds].map(Number).sort();
+
+            return Number(this.selectedSaleItemId) !== Number(this.originalSaleItemId)
+                || JSON.stringify(currentAddonIds) !== JSON.stringify(originalAddonIds);
+        },
+
+        get canIncreaseQuantity() {
+            if (!this.canChangeQuantity) {
+                return false;
+            }
+
+            if (this.maxQuantityPerOrder === null) {
+                return true;
+            }
+
+            return Number(this.quantity) < Number(this.maxQuantityPerOrder);
+        },
+
+        applyPurchaseState(state) {
+            this.purchaseState = state ?? {};
+
+            this.inCart = Boolean(this.purchaseState.in_cart);
+            this.quantity = Number(this.purchaseState.quantity ?? 1);
+            this.canChangeQuantity = Boolean(this.purchaseState.can_change_quantity);
+            this.maxQuantityPerOrder = this.purchaseState.max_quantity_per_order;
+
+            if (this.inCart) {
+                this.selectedSaleItemId = Number(this.purchaseState.sale_item_id);
+                this.selectedAddonIds = (this.purchaseState.selected_addon_ids ?? []).map(Number);
+
+                this.originalSaleItemId = Number(this.purchaseState.sale_item_id);
+                this.originalAddonIds = [...this.selectedAddonIds];
+
+                return;
+            }
+
+            this.quantity = 1;
+            this.canChangeQuantity = false;
+            this.maxQuantityPerOrder = null;
+            this.originalSaleItemId = null;
+            this.originalAddonIds = [];
+        },
+
+        increaseQuantity() {
+            if (!this.canIncreaseQuantity) {
+                return;
+            }
+
+            this.quantity += 1;
+            this.submit(false);
+        },
+
+        decreaseQuantity() {
+            if (!this.canChangeQuantity || this.quantity <= 1) {
+                return;
+            }
+
+            this.quantity -= 1;
+            this.submit(false);
         },
     };
 }
