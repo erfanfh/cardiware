@@ -41,20 +41,20 @@ class PaymentCallbackController extends Controller
             );
 
             if ($payment->isPaid()) {
-                return redirect()
-                    ->route('cart.index')
-                    ->with('success', 'پرداخت با موفقیت انجام شد.');
+                return redirect()->route('payment.success', [
+                    'payment' => $payment->tracking_code,
+                ]);
             }
 
-            return redirect()
-                ->route('cart.index')
-                ->with('error', 'پرداخت ناموفق بود.');
+            return redirect()->route('payment.failed', [
+                'payment' => $payment->tracking_code,
+            ]);
         } catch (Throwable $exception) {
             report($exception);
 
-            return redirect()
-                ->route('cart.index')
-                ->with('error', 'خطایی در بررسی پرداخت رخ داد.');
+            return redirect()->route('payment.failed', [
+                'payment' => $payment->tracking_code,
+            ]);
         }
     }
 }
