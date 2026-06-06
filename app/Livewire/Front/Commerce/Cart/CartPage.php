@@ -4,8 +4,12 @@ namespace App\Livewire\Front\Commerce\Cart;
 
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
+use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
+use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
+use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
+use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
@@ -26,6 +30,12 @@ class CartPage extends Component
 
     public ?string $email = null;
 
+    public ?string $checkoutError = null;
+
+    public ?string $checkoutNotice = null;
+
+    public bool $cartNeedsRefresh = false;
+
     public function mount(): void
     {
         $user = auth()->user();
@@ -43,6 +53,7 @@ class CartPage extends Component
         $cart = app(GetCurrentActiveCartAction::class)->execute();
 
         $cart?->load([
+            'items.children',
             'items.purchasable',
             'items.purchasable.product.picture',
         ]);
@@ -83,9 +94,7 @@ class CartPage extends Component
     public function cartSubtotal(): int
     {
         return (int)(
-            $this->cart?->subtotal
-            ?? $this->cart?->subtotal_amount
-            ?? $this->cart?->items_subtotal
+            $this->cart?->subtotal_amount
             ?? $this->cartItems->sum(fn(CartItem $item): int => $this->itemTotal($item))
         );
     }
@@ -93,32 +102,20 @@ class CartPage extends Component
     #[Computed]
     public function cartDiscount(): int
     {
-        return (int)(
-            $this->cart?->discount_total
-            ?? $this->cart?->discount_amount
-            ?? $this->cart?->total_discount
-            ?? 0
-        );
+        return (int)($this->cart?->discount_amount ?? 0);
     }
 
     #[Computed]
     public function cartTax(): int
     {
-        return (int)(
-            $this->cart?->tax_total
-            ?? $this->cart?->tax_amount
-            ?? $this->cart?->total_tax
-            ?? 0
-        );
+        return 0;
     }
 
     #[Computed]
     public function cartTotal(): int
     {
         return (int)(
-            $this->cart?->total
-            ?? $this->cart?->total_amount
-            ?? $this->cart?->payable_amount
+            $this->cart?->total_amount
             ?? max(0, $this->cartSubtotal - $this->cartDiscount + $this->cartTax)
         );
     }
@@ -134,6 +131,10 @@ class CartPage extends Component
      */
     public function removeItem(int $cartItemId, RemoveCartItemAction $removeCartItemAction): void
     {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+        $this->cartNeedsRefresh = false;
+
         $cartItem = CartItem::query()->findOrFail($cartItemId);
 
         $removeCartItemAction->execute($cartItem);
@@ -145,15 +146,50 @@ class CartPage extends Component
 
     public function applyCoupon(): void
     {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+
         // TODO: Implement coupon logic later.
-        // Example:
         // app(ApplyCouponToCartAction::class)->execute($this->cart, $this->couponCode);
 
         $this->dispatch('coupon-apply-requested');
     }
 
+    public function refreshCart(SyncCartItemsAction $syncCartItemsAction): void
+    {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+
+        if (!$this->cart) {
+            $this->checkoutError = 'سبد خریدی برای به‌روزرسانی یافت نشد.';
+            return;
+        }
+
+        try {
+            $result = $syncCartItemsAction->execute($this->cart);
+
+            $this->cartNeedsRefresh = false;
+
+            $this->resetCartComputedProperties();
+
+            $this->checkoutNotice = $result['has_changes']
+                ? 'سبد خرید شما با آخرین قیمت‌ها به‌روزرسانی شد.'
+                : 'سبد خرید شما از قبل به‌روز بود.';
+
+            $this->dispatch('cart-updated');
+        } catch (DomainException $exception) {
+            $this->checkoutError = 'امکان به‌روزرسانی سبد خرید وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در به‌روزرسانی سبد خرید رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+        }
+    }
+
     public function checkout(): void
     {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
         $this->paymentMethod = 'gateway';
 
         if (!auth()->check()) {
@@ -165,14 +201,47 @@ class CartPage extends Component
             ]);
         }
 
-        // TODO: Implement checkout logic later.
-        // Example:
-        // app(StartCheckoutAction::class)->execute(
-        //     cart: $this->cart,
-        //     paymentMethod: $this->paymentMethod,
-        // );
+        if (!$this->cart) {
+            $this->checkoutError = 'سبد خریدی برای پرداخت یافت نشد.';
+            return;
+        }
 
-        $this->dispatch('checkout-requested');
+        try {
+            $order = app(CreateOrderFromCartAction::class)->execute(
+                cart: $this->cart,
+                metadata: [
+                    'source' => 'web',
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ],
+            );
+
+            $this->cartNeedsRefresh = false;
+
+            $this->resetCartComputedProperties();
+
+            // مرحله بعد:
+            // app(StartPaymentAction::class)->execute($order);
+
+            $this->dispatch('checkout-requested');
+        } catch (CartItemPriceChangedException $exception) {
+            $this->checkoutError = $exception->userMessage();
+            $this->cartNeedsRefresh = true;
+
+            $this->resetCartComputedProperties();
+
+            return;
+        } catch (DomainException $exception) {
+            $this->checkoutError = 'امکان تکمیل پرداخت وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
+
+            return;
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در پردازش پرداخت رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+
+            return;
+        }
     }
 
     public function itemTitle(CartItem $item): string
@@ -180,7 +249,8 @@ class CartPage extends Component
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
-        return $item->title
+        return data_get($item->snapshot, 'title')
+            ?? data_get($item->snapshot, 'product_title')
             ?? $product?->title
             ?? $purchasable?->title
             ?? $purchasable?->name
@@ -192,7 +262,7 @@ class CartPage extends Component
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
-        return $item->description
+        return data_get($item->snapshot, 'description')
             ?? $purchasable?->description
             ?? $product?->short_description
             ?? $product?->description
@@ -204,7 +274,7 @@ class CartPage extends Component
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
-        return $item->image_url
+        return data_get($item->snapshot, 'image_url')
             ?? $purchasable?->image_url
             ?? $product?->picture?->url
             ?? $product?->image?->url
@@ -214,12 +284,18 @@ class CartPage extends Component
 
     public function itemBadge(CartItem $item): string
     {
+        $type = data_get($item->snapshot, 'type');
+
+        if ($type === 'product_addon') {
+            return 'خدمت افزوده';
+        }
+
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
-        $type = $product?->type?->value ?? $product?->type ?? null;
+        $productType = $product?->type?->value ?? $product?->type ?? null;
 
-        return $type === 'DIGITAL'
+        return $productType === 'DIGITAL'
             ? 'فایل دیجیتال'
             : 'محصول';
     }
@@ -227,11 +303,8 @@ class CartPage extends Component
     public function itemTotal(CartItem $item): int
     {
         return (int)(
-            $item->total
-            ?? $item->line_total
-            ?? $item->subtotal
-            ?? $item->line_subtotal
-            ?? ((int)($item->price ?? $item->unit_price ?? 0) * (int)($item->quantity ?? 1))
+            $item->total_amount
+            ?? ((int)($item->unit_price ?? 0) * (int)($item->quantity ?? 1))
         );
     }
 

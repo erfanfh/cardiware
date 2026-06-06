@@ -35,6 +35,81 @@
         </div>
 
         <form wire:submit.prevent="checkout" class="p-5 sm:p-6">
+            @if($checkoutError)
+                <div class="mb-5 rounded-3xl border border-red-200 bg-red-50 p-4">
+                    <div class="flex items-start gap-3">
+            <span
+                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-red-600 ring-1 ring-red-100">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 9v4m0 4h.01M10.3 4.6 2.8 17.5A2 2 0 0 0 4.5 20h15a2 2 0 0 0 1.7-2.5L13.7 4.6a2 2 0 0 0-3.4 0Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </span>
+
+                        <div class="min-w-0 flex-1">
+                            <div class="text-sm font-extrabold text-red-900">
+                                پرداخت قابل انجام نیست
+                            </div>
+
+                            <p class="mt-1 text-xs leading-6 text-red-700">
+                                {{ $checkoutError }}
+                            </p>
+
+                            @if($cartNeedsRefresh)
+                                <button
+                                    type="button"
+                                    wire:click="refreshCart"
+                                    wire:loading.attr="disabled"
+                                    wire:target="refreshCart"
+                                    class="mt-3 inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
+                                >
+                                    <svg wire:loading.remove wire:target="refreshCart" class="h-4 w-4"
+                                         viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"/>
+                                    </svg>
+
+                                    <span wire:loading.remove wire:target="refreshCart">
+                            به‌روزرسانی سبد خرید
+                        </span>
+
+                                    <span wire:loading wire:target="refreshCart">
+                            در حال به‌روزرسانی...
+                        </span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if($checkoutNotice)
+                <div class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
+                    <div class="flex items-start gap-3">
+            <span
+                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                          stroke-linejoin="round"/>
+                </svg>
+            </span>
+
+                        <div>
+                            <div class="text-sm font-extrabold text-emerald-900">
+                                سبد خرید به‌روزرسانی شد
+                            </div>
+
+                            <p class="mt-1 text-xs leading-6 text-emerald-700">
+                                {{ $checkoutNotice }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @guest
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <label class="block">
@@ -209,9 +284,41 @@
             </div>
 
             <div class="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                <div class="flex items-center justify-between gap-3">
-                    <span class="text-sm font-extrabold text-slate-700">مبلغ قابل پرداخت</span>
-                    <span class="text-lg font-black text-slate-900">{{ $this->money($this->cartTotal) }}</span>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <span class="text-sm font-extrabold text-slate-700">مبلغ قابل پرداخت</span>
+
+                        <p class="mt-1 text-xs leading-6 text-slate-500">
+                            در صورت تغییر قیمت‌ها، می‌توانید سبد خرید را به‌روزرسانی کنید.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col items-stretch gap-2 sm:items-end">
+                        <span class="text-lg font-black text-slate-900">{{ $this->money($this->cartTotal) }}</span>
+
+                        <button
+                            type="button"
+                            wire:click="refreshCart"
+                            wire:loading.attr="disabled"
+                            wire:target="refreshCart"
+                            class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            <svg wire:loading.remove wire:target="refreshCart" class="h-4 w-4" viewBox="0 0 24 24"
+                                 fill="none">
+                                <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"
+                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+
+                            <span wire:loading.remove wire:target="refreshCart">
+                                به‌روزرسانی سبد
+                            </span>
+
+                            <span wire:loading wire:target="refreshCart">
+                                در حال بررسی...
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
