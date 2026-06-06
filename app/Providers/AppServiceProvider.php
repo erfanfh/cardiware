@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Commerce\Models\Order;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
@@ -44,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
             'product' => Product::class,
             'product_sale_item' => ProductSaleItem::class,
             'product_addon' => ProductAddon::class,
+            'order' => Order::class,
         ]);
     }
 }
