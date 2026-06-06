@@ -7,18 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-/**
- * @property int $id
- * @property int $product_id
- * @property string $title
- * @property string|null $description
- * @property int $price
- * @property int $max_quantity_per_order
- * @property bool $requires_purchase
- * @property bool $is_active
- * @property int $sort_order
- * @property array|null $metadata
- */
 class ProductAddon extends Model implements Purchasable
 {
     protected $fillable = [
@@ -26,8 +14,6 @@ class ProductAddon extends Model implements Purchasable
         'title',
         'description',
         'price',
-        'max_quantity_per_order',
-        'requires_purchase',
         'is_active',
         'sort_order',
         'metadata',
@@ -36,8 +22,6 @@ class ProductAddon extends Model implements Purchasable
     protected $casts = [
         'product_id' => 'integer',
         'price' => 'integer',
-        'max_quantity_per_order' => 'integer',
-        'requires_purchase' => 'boolean',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
         'metadata' => 'array',
@@ -103,10 +87,6 @@ class ProductAddon extends Model implements Purchasable
      */
     public function getPurchasableDependency(): ?array
     {
-        if (!$this->requires_purchase) {
-            return null;
-        }
-
         return [
             'required_parent_type' => 'product_sale_item',
             'product_id' => $this->product_id,
@@ -118,7 +98,7 @@ class ProductAddon extends Model implements Purchasable
      */
     public function getMaxQuantityPerOrder(): ?int
     {
-        return $this->max_quantity_per_order;
+        return 1;
     }
 
     /**

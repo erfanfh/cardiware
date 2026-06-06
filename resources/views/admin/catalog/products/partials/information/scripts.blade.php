@@ -539,8 +539,6 @@
                                 title: item.title ?? '',
                                 description: item.description ?? '',
                                 price: item.price ?? 0,
-                                max_quantity_per_order: item.max_quantity_per_order ?? 1,
-                                requires_purchase: this.normalizeBoolean(item.requires_purchase, true),
                                 is_active: this.normalizeBoolean(item.is_active, true),
                                 sort_order: item.sort_order ?? 0,
                                 _open: this.normalizeBoolean(item._open, false),

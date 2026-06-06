@@ -181,9 +181,7 @@
             'title' => $addon->title,
             'description' => $addon->description,
             'price' => $addon->price,
-            'max_quantity_per_order' => $addon->max_quantity_per_order,
-            'requires_purchase' => (bool) $addon->requires_purchase,
-            'is_active' => (bool) $addon->is_active,
+            'is_active' => (string) (bool) $addon->is_active,
             'sort_order' => (int) $addon->sort_order,
         ])
         ->values()

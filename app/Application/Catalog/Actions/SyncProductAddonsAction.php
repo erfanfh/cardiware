@@ -72,8 +72,6 @@ class SyncProductAddonsAction
                 ? trim((string)Arr::get($addonData, 'description'))
                 : null,
             'price' => max(0, (int)Arr::get($addonData, 'price', 0)),
-            'max_quantity_per_order' => max(1, (int)Arr::get($addonData, 'max_quantity_per_order', 1)),
-            'requires_purchase' => $this->toBoolean(Arr::get($addonData, 'requires_purchase', true)),
             'is_active' => $this->toBoolean(Arr::get($addonData, 'is_active', true)),
             'sort_order' => $index,
             'metadata' => Arr::get($addonData, 'metadata'),
