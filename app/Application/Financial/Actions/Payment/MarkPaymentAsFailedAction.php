@@ -2,7 +2,6 @@
 
 namespace App\Application\Financial\Actions\Payment;
 
-use App\Application\Financial\Events\PaymentFailed;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 
@@ -21,7 +20,7 @@ class MarkPaymentAsFailedAction
     ): Payment
     {
         if ($payment->isPaid()) {
-            return $payment;
+            return $payment->refresh();
         }
 
         $payment->forceFill([
@@ -32,10 +31,6 @@ class MarkPaymentAsFailedAction
             'failed_at' => now(),
         ])->save();
 
-        $payment = $payment->refresh();
-
-        event(new PaymentFailed($payment));
-
-        return $payment;
+        return $payment->refresh();
     }
 }

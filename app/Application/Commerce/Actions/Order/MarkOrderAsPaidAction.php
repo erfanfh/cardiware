@@ -2,7 +2,6 @@
 
 namespace App\Application\Commerce\Actions\Order;
 
-use App\Application\Commerce\Events\OrderPaid;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Order;
 use DomainException;
@@ -36,11 +35,7 @@ class MarkOrderAsPaidAction
                 'paid_at' => now(),
             ])->save();
 
-            $order = $order->refresh();
-
-            event(new OrderPaid($order));
-
-            return $order;
+            return $order->refresh();
         });
     }
 }

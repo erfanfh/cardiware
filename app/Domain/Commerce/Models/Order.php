@@ -130,4 +130,12 @@ class Order extends Model implements Payable
     {
         return $this->status->canStartPayment();
     }
+
+    /**
+     * Get purchase accesses granted by this order.
+     */
+    public function purchaseAccesses(): HasMany
+    {
+        return $this->hasMany(PurchaseAccess::class);
+    }
 }

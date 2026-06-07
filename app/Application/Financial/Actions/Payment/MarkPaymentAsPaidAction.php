@@ -2,7 +2,6 @@
 
 namespace App\Application\Financial\Actions\Payment;
 
-use App\Application\Financial\Events\PaymentPaid;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use DomainException;
@@ -22,6 +21,10 @@ class MarkPaymentAsPaidAction
         array   $verifyPayload = [],
     ): Payment
     {
+        if ($payment->isPaid()) {
+            return $payment->refresh();
+        }
+
         if (!$payment->canBeVerified()) {
             throw new DomainException('Payment cannot be marked as paid.');
         }
@@ -36,10 +39,6 @@ class MarkPaymentAsPaidAction
             'failed_at' => null,
         ])->save();
 
-        $payment = $payment->refresh();
-
-        event(new PaymentPaid($payment));
-
-        return $payment;
+        return $payment->refresh();
     }
 }

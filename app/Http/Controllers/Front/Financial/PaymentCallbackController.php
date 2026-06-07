@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Financial;
 
+use App\Application\Commerce\Actions\Checkout\CompletePaidOrderPaymentAction;
 use App\Application\Financial\Actions\Payment\VerifyPaymentAction;
 use App\Domain\Financial\Models\Payment;
 use App\Http\Controllers\Controller;
@@ -11,7 +12,12 @@ use Throwable;
 
 class PaymentCallbackController extends Controller
 {
-    public function __invoke(string $gateway, Request $request, VerifyPaymentAction $verifyPaymentAction): RedirectResponse
+    public function __invoke(
+        string                         $gateway,
+        Request                        $request,
+        VerifyPaymentAction            $verifyPaymentAction,
+        CompletePaidOrderPaymentAction $completePaidOrderPaymentAction,
+    ): RedirectResponse
     {
         $gatewayReference = $request->input('trackId')
             ?? $request->input('track_id')
@@ -48,6 +54,8 @@ class PaymentCallbackController extends Controller
             );
 
             if ($payment->isPaid()) {
+                $completePaidOrderPaymentAction->execute($payment);
+
                 return redirect()->route('payment.success', [
                     'payment' => $payment->tracking_code,
                 ]);

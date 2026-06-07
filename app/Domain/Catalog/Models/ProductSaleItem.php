@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\Models;
 
 use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -130,5 +131,13 @@ class ProductSaleItem extends Model implements Purchasable
             'product_sale_item_id' => $this->id,
             'product_sale_item_title' => $this->title,
         ];
+    }
+
+    /**
+     * Get purchase accesses for this sale item.
+     */
+    public function purchaseAccesses(): HasMany
+    {
+        return $this->hasMany(PurchaseAccess::class);
     }
 }

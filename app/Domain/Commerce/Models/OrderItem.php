@@ -5,6 +5,7 @@ namespace App\Domain\Commerce\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class OrderItem extends Model
@@ -82,5 +83,13 @@ class OrderItem extends Model
     public function isRoot(): bool
     {
         return $this->parent_order_item_id === null;
+    }
+
+    /**
+     * Get purchase access granted by this order item.
+     */
+    public function purchaseAccess(): HasOne
+    {
+        return $this->hasOne(PurchaseAccess::class);
     }
 }

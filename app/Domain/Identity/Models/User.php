@@ -3,6 +3,7 @@
 namespace App\Domain\Identity\Models;
 
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
@@ -106,5 +107,13 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get user purchase accesses.
+     */
+    public function purchaseAccesses(): HasMany
+    {
+        return $this->hasMany(PurchaseAccess::class);
     }
 }
