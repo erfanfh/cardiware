@@ -117,7 +117,6 @@
                         <input
                             type="text"
                             wire:model="firstName"
-                            placeholder="مثلاً محمد"
                             class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
                         >
                         @error('firstName')
@@ -130,7 +129,6 @@
                         <input
                             type="text"
                             wire:model="lastName"
-                            placeholder="مثلاً شریفی"
                             class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
                         >
                         @error('lastName')

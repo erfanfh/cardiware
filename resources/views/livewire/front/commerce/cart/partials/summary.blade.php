@@ -63,7 +63,6 @@
                 <input
                     type="text"
                     wire:model="couponCode"
-                    placeholder="مثلا MW2026"
                     class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                 >
 

@@ -49,7 +49,6 @@
                         <x-admin.form.input
                             x-bind:name="field(i, 'title')"
                             x-model="it.title"
-                            placeholder="مثلا نصب اختصاصی، پشتیبانی ویژه یا فایل اضافه"
                         />
                     </x-admin.field>
                 </div>
