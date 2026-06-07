@@ -2,6 +2,7 @@
 
 namespace App\Domain\Identity\Models;
 
+use App\Domain\Commerce\Models\Order;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
@@ -97,5 +98,13 @@ class User extends Authenticatable
     public function avatar(): BelongsTo
     {
         return $this->belongsTo(MediaFile::class);
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }
