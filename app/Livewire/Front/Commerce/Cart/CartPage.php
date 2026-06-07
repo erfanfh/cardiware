@@ -7,10 +7,10 @@ use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
+use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
-use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -229,7 +229,7 @@ class CartPage extends Component
                 return null;
             }
 
-            $gateway = PaymentGatewayEnum::ZIBAL;
+            $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();
 
             $payment = app(StartPaymentAction::class)->execute(
                 payable: $order,

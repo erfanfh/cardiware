@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Front\Financial;
 
+use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Domain\Commerce\Models\Order;
-use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +23,7 @@ class PaymentRetryController extends Controller
         }
 
         try {
-            $gateway = PaymentGatewayEnum::ZIBAL;
+            $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();
 
             $newPayment = $startPaymentAction->execute(
                 payable: $order,
