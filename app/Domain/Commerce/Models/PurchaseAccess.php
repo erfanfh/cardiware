@@ -9,6 +9,7 @@ use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseAccess extends Model
 {
@@ -110,5 +111,14 @@ class PurchaseAccess extends Model
         return $this->status->isUsable()
             && !$this->isExpiredByDate()
             && !$this->hasReachedDownloadLimit();
+    }
+
+    /**
+     * Get download logs for this access.
+     */
+    public function downloads(): HasMany
+    {
+        return $this->hasMany(PurchaseAccessDownload::class)
+            ->latest('id');
     }
 }

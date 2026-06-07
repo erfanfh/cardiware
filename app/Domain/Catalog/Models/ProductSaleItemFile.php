@@ -2,8 +2,10 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Represents a downloadable file link for a product sale item.
@@ -29,5 +31,13 @@ class ProductSaleItemFile extends Model
     public function saleItem(): BelongsTo
     {
         return $this->belongsTo(ProductSaleItem::class, 'product_sale_item_id');
+    }
+
+    /**
+     * Get download logs for this file.
+     */
+    public function purchaseAccessDownloads(): HasMany
+    {
+        return $this->hasMany(PurchaseAccessDownload::class);
     }
 }
