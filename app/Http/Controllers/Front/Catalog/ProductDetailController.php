@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Catalog;
 
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
+use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
@@ -38,6 +39,7 @@ class ProductDetailController extends Controller
             'releases.releaseChanges'
         ]);
 
+        app(StoreViewAction::class)->execute($product);
 
         return view('front.catalog.products.detail', compact('product'));
     }

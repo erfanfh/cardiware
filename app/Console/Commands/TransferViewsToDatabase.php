@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
@@ -23,6 +24,7 @@ class TransferViewsToDatabase extends Command
             'Post' => Post::class,
             'Page' => Page::class,
             'Project' => Project::class,
+            'Product' => Product::class,
         ];
 
         $limit = (int)$this->option('limit');
