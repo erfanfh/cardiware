@@ -29,7 +29,6 @@ return new class extends Migration {
             $table->index(['user_id', 'created_at']);
             $table->index(['product_sale_item_id', 'created_at'], 'purchase_download_sale_item_created_index');
             $table->index('product_sale_item_file_id', 'purchase_download_file_index');
-            $table->index(['purchase_access_id', 'status'], 'purchase_download_access_status_index');
         });
     }
 
