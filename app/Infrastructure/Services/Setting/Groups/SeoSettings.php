@@ -42,6 +42,11 @@ class SeoSettings extends BaseSettings
         'post_social_seo_title',
         'post_social_seo_description',
 
+        'product_seo_title',
+        'product_seo_description',
+        'product_social_seo_title',
+        'product_social_seo_description',
+
         'page_seo_title',
         'page_seo_description',
         'page_social_seo_title',
@@ -64,6 +69,9 @@ class SeoSettings extends BaseSettings
 
         'post_list_seo_title',
         'post_list_seo_description',
+
+        'product_list_seo_title',
+        'product_list_seo_description',
 
         'project_list_seo_title',
         'project_list_seo_description',

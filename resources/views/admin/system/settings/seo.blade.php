@@ -11,11 +11,13 @@
                     'schema' => 'اسکیما',
                     'home' => 'صفحه اصلی',
                     'post' => 'صفحه نوشته',
+                    'product' => 'صفحه محصول',
                     'page' => 'صفحه برگه',
                     'project' => 'صفحه پروژه',
                     'post-category' => 'صفحه دسته‌بندی نوشته',
                     'post-tag' => 'صفحه برچسب نوشته',
                     'post-list' => 'صفحه لیست نوشته‌ها',
+                    'product-list' => 'صفحه لیست محصولات',
                     'project-list' => 'صفحه لیست پروژه‌ها',
                     'search' => 'صفحه جستجو',
                 ]"
@@ -37,6 +39,10 @@
                     @include('admin.system.settings.partials.seo.post')
                 </x-admin.tabs.panel>
 
+                <x-admin.tabs.panel name="product">
+                    @include('admin.system.settings.partials.seo.product')
+                </x-admin.tabs.panel>
+
                 <x-admin.tabs.panel name="page">
                     @include('admin.system.settings.partials.seo.page')
                 </x-admin.tabs.panel>
@@ -55,6 +61,10 @@
 
                 <x-admin.tabs.panel name="post-list">
                     @include('admin.system.settings.partials.seo.post-list')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="product-list">
+                    @include('admin.system.settings.partials.seo.product-list')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="project-list">
