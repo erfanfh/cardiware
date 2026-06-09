@@ -3,6 +3,9 @@
 namespace App\Application\Catalog\Actions;
 
 use App\Application\Catalog\Actions\ProductInformation\SyncProductInformationAction;
+use App\Application\Seo\Actions\Analysis\BuildProductSeoAnalysisInputAction;
+use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
+use App\Application\Seo\Actions\SyncSeoMetaAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelProductCategoriesAction;
@@ -25,6 +28,8 @@ class CreateProductAction
         protected SyncProductReleasesAction          $syncProductReleasesAction,
         protected SyncProductInformationAction       $syncProductInformationAction,
         protected SyncProductAddonsAction            $syncProductAddonsAction,
+        protected SyncSeoMetaAction                  $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction             $storeSeoAnalysisAction,
     )
     {
     }
@@ -57,6 +62,8 @@ class CreateProductAction
                 $productData['attributes'],
                 $productData['custom_attributes'],
                 $productData['sale_items'],
+                $productData['addons'],
+                $productData['seo'],
             );
 
             $product = Product::create($productData);
@@ -80,6 +87,9 @@ class CreateProductAction
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
             $this->syncProductInformationAction->execute($product, $data);
             $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
+
+            $this->syncSeoMetaAction->execute($product, $data['seo'] ?? []);
+            $this->storeSeoAnalysisAction->execute($product, app(BuildProductSeoAnalysisInputAction::class));
 
             return $product;
         });

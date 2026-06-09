@@ -165,6 +165,13 @@
     </x-admin.metabox>
 
     <x-admin.metabox
+        title="سئو"
+        storageKey="seo-section"
+    >
+        @include('admin.catalog.products.partials.seo-box')
+    </x-admin.metabox>
+
+    <x-admin.metabox
         title="گالری تصاویر"
         storageKey="image-gallery"
     >
