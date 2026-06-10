@@ -12,4 +12,13 @@ Route::redirect('login', '/auth')->name('login');
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::get('account', [AccountController::class, 'dashboard'])->name('account');
+Route::prefix('account')->name('account.')->controller(AccountController::class)->group(function () {
+    Route::get('dashboard', [AccountController::class, 'dashboard'])->name('dashboard');
+    Route::get('downloads', [AccountController::class, 'downloads'])->name('downloads');
+    Route::get('orders', [AccountController::class, 'orders'])->name('orders');
+    Route::get('information', [AccountController::class, 'information'])->name('information');
+    Route::get('tickets', [AccountController::class, 'tickets'])->name('tickets');
+    Route::get('favorites', [AccountController::class, 'favorites'])->name('favorites');
+    Route::get('security', [AccountController::class, 'security'])->name('security');
+});
+

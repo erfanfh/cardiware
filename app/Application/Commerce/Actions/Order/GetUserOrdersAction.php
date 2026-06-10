@@ -3,16 +3,14 @@
 namespace App\Application\Commerce\Actions\Order;
 
 use App\Domain\Commerce\Models\Order;
-use Illuminate\Support\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GetUserOrdersAction
 {
     /**
      * Get latest user orders.
-     *
-     * @return Collection<int, Order>
      */
-    public function execute(int $userId): Collection
+    public function execute(int $userId, int $perPage = 5): LengthAwarePaginator
     {
         return Order::query()
             ->where('user_id', $userId)
@@ -20,10 +18,9 @@ class GetUserOrdersAction
                 'rootItems.children',
                 'rootItems.purchasable',
                 'latestPayment',
-                'payments',
                 'purchaseAccesses',
             ])
             ->latest('id')
-            ->get();
+            ->paginate($perPage);
     }
 }

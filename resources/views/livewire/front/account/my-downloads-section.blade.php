@@ -1,10 +1,10 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+<section id="my-downloads-section" class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div class="flex flex-col gap-1">
         <div class="text-base font-extrabold text-slate-900">دانلودهای من</div>
-        <div class="text-xs text-slate-500">فایل‌های خریداری‌شده شما به ترتیب آخرین خرید</div>
+        <div class="text-xs text-slate-500">فایل‌های خریداری‌شده شما</div>
     </div>
 
-    <div class="mt-5 space-y-4">
+    <div class="mt-5 space-y-4 transition" wire:loading.class="opacity-40">
         @forelse($this->purchaseAccesses as $access)
             @php
                 $files = $access->productSaleItem?->files ?? collect();
@@ -259,5 +259,11 @@
                 </p>
             </div>
         @endforelse
+
+        @if($this->purchaseAccesses->hasPages())
+            <div class="pt-2">
+                {{ $this->purchaseAccesses->links(data: ['scrollTo' => '#my-downloads-section']) }}
+            </div>
+        @endif
     </div>
 </section>

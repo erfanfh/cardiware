@@ -20,7 +20,7 @@ class EnsureUserIsAdmin
             return redirect()->route('auth.index');
 
         if (!Gate::allows('admin.display'))
-            return redirect()->route('account');
+            return redirect()->route('account.dashboard');
 
         return $next($request);
     }

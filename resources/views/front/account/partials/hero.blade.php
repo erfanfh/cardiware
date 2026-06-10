@@ -40,21 +40,19 @@
                 </p>
 
                 <div class="mt-4 flex flex-wrap gap-2">
-                    <button
-                        type="button"
-                        @click="setTab('profile')"
+                    <a
+                        href="{{ route('account.information') }}"
                         class="cursor-pointer inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-extrabold text-brand-700 hover:bg-brand-50 hover:border-brand-200 transition"
                     >
                         ویرایش پروفایل
-                    </button>
+                    </a>
 
-                    <button
-                        type="button"
-                        @click="setTab('downloads')"
+                    <a
+                        href="{{ route('account.downloads') }}"
                         class="cursor-pointer inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-extrabold text-white shadow-soft hover:bg-brand-600 transition"
                     >
                         دانلودهای من
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -62,7 +60,8 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:w-[420px]">
             <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-center">
                 <div class="text-[11px] font-extrabold text-slate-500">دانلود فعال</div>
-                <div class="mt-2 text-xl sm:text-2xl font-black text-slate-900">0</div>
+                <div
+                    class="mt-2 text-xl sm:text-2xl font-black text-slate-900">{{ $user->purchase_accesses_count }}</div>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-center">
                 <div class="text-[11px] font-extrabold text-slate-500">سفارش‌ها</div>

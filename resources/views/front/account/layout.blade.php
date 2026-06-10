@@ -5,23 +5,15 @@
 @endsection
 
 @section('content')
-    <section
-        class="mx-auto max-w-7xl px-4 py-8"
-        x-data="{
-            activeTab: 'dashboard',
-            setTab(tab) {
-                this.activeTab = tab;
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }">
+    <section class="mx-auto max-w-7xl px-4 py-8">
         @include('front.account.partials.hero')
-
-        @include('front.account.partials.mobile-tabs')
 
         <section class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             @include('front.account.partials.sidebar')
 
-            @include('front.account.partials.content')
+            <div class="lg:col-span-8 xl:col-span-9">
+                @yield('page-content')
+            </div>
         </section>
     </section>
 @endsection

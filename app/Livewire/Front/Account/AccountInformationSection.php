@@ -170,7 +170,7 @@ class AccountInformationSection extends Component
         $user = auth()->user();
 
         return $user->username
-            ? '@' . ltrim($user->username, '@')
+            ? ltrim($user->username, '@')
             : 'ثبت نشده';
     }
 

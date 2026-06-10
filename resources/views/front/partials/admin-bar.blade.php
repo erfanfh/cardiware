@@ -155,7 +155,7 @@
                     <div class="flex items-center gap-1.5">
                         <div class="hidden items-center gap-1 md:flex">
                             <a
-                                href="{{ route('account') }}"
+                                href="{{ route('account.dashboard') }}"
                                 class="inline-flex items-center gap-2 rounded-lg px-2.5 leading-7 [&_svg]:w-3.5 [&_svg]:h-3.5 text-xs font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
                             >
                                 @include('icons.user')
@@ -265,7 +265,7 @@
                     </a>
 
                     <a
-                        href="{{ route('account') }}"
+                        href="{{ route('account.dashboard') }}"
                         class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
                     >
                         <span>حساب کاربری</span>

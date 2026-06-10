@@ -168,14 +168,14 @@
                 </button>
 
                 @if(auth()->check())
-                    <a href="{{ route('account') }}"
+                    <a href="{{ route('account.dashboard') }}"
                        class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
                     hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
                         @include('icons.user')
                         حساب کاربری
                     </a>
 
-                    <a href="{{ route('account') }}"
+                    <a href="{{ route('account.dashboard') }}"
                        class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="حساب کاربری">
                         @include('icons.user')

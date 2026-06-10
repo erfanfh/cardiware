@@ -1,5 +1,5 @@
 @php $url = url()->current(); @endphp
-<x-front.modal name="product-share-{{ $product->id }}" max-width="max-w-xl">
+<x-front.share-modal name="product-share-{{ $product->id }}" max-width="max-w-xl">
     <div
         x-data="{
         copied: false,
@@ -137,4 +137,4 @@
             </button>
         </div>
     </div>
-</x-front.modal>
+</x-front.share-modal>

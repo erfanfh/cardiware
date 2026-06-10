@@ -14,7 +14,7 @@ class RedirectLoggedInUserAction
     public function execute(): RedirectResponse|Redirector
     {
         if (!Gate::allows('admin.display'))
-            return redirect()->route('account');
+            return redirect()->route('account.dashboard');
         else
             return redirect()->route('admin.dashboard');
     }

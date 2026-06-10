@@ -1,10 +1,10 @@
-<section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+<section id="my-orders-section" class="scroll-mt-36 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
     <div class="flex flex-col gap-1">
         <div class="text-base font-extrabold text-slate-900">سفارش‌های من</div>
         <div class="text-xs text-slate-500">تاریخچه سفارش‌ها، پرداخت‌ها و فاکتورها به ترتیب آخرین سفارش</div>
     </div>
 
-    <div class="mt-5 space-y-4">
+    <div class="mt-5 space-y-4 transition" wire:loading.class="opacity-40">
         @forelse($this->orders as $order)
             <article
                 x-data="{ open: false }"
@@ -268,5 +268,11 @@
                 </p>
             </div>
         @endforelse
+
+        @if($this->orders->hasPages())
+            <div class="pt-2">
+                {{ $this->orders->links(data: ['scrollTo' => '#my-orders-section']) }}
+            </div>
+        @endif
     </div>
 </section>

@@ -1,33 +1,40 @@
 <?php
 
-namespace App\Livewire\Front\Commerce\Downloads;
+namespace App\Livewire\Front\Account;
 
 use App\Application\Commerce\Actions\Access\GeneratePurchaseAccessDownloadUrlAction;
 use App\Application\Commerce\Actions\Access\GetUserPurchaseAccessesAction;
 use App\Application\Commerce\Actions\Access\HasPurchaseAccessFileReachedDownloadLimitAction;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class MyDownloadsSection extends Component
 {
+    use WithPagination;
+
+    public int $perPage = 5;
+
     /**
      * Get current user's purchase accesses.
      *
      * @return Collection<int, PurchaseAccess>
      */
     #[Computed]
-    public function purchaseAccesses(): Collection
+    public function purchaseAccesses(): LengthAwarePaginator
     {
         if (!auth()->check()) {
-            return collect();
+            return new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
         }
 
         return app(GetUserPurchaseAccessesAction::class)->execute(
             userId: (int)auth()->id(),
+            perPage: $this->perPage,
         );
     }
 
@@ -234,6 +241,6 @@ class MyDownloadsSection extends Component
 
     public function render(): View
     {
-        return view('livewire.front.commerce.downloads.my-downloads-section');
+        return view('livewire.front.account.my-downloads-section');
     }
 }

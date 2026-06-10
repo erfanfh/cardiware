@@ -115,7 +115,8 @@
 
             <button
                 type="button"
-                @click="setTab('orders')"
+                x-data
+                @click="$dispatch('open-modal', 'vip-coming-soon-modal')"
                 class="mt-5 [&_svg]:w-4 [&_svg]:h-4  inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-amber-500 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-amber-600"
             >
                 فعال‌سازی اشتراک VIP
@@ -125,3 +126,92 @@
         </div>
     </template>
 </x-front.cart>
+
+<x-front.modal
+    name="vip-coming-soon-modal"
+    title="اشتراک VIP در راه است"
+    description="یک قابلیت ویژه برای کاربران حرفه‌ای مودینگ‌وی به زودی فعال می‌شود."
+    maxWidth="max-w-lg"
+>
+    <div class="rounded-3xl border border-amber-100 bg-amber-50 p-5">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <div
+                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl border border-amber-200 bg-white text-amber-600 shadow-sm"
+            >
+                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 3l2.7 5.47 6.03.88-4.36 4.25 1.03 6-5.4-2.84-5.4 2.84 1.03-6-4.36-4.25 6.03-.88L12 3Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+            </div>
+
+            <div>
+                <h3 class="text-sm font-black text-slate-900">
+                    دسترسی ویژه به زودی فعال می‌شود
+                </h3>
+
+                <p class="mt-2 text-[0.8rem] font-bold leading-6 text-slate-600">
+                    با اشتراک VIP، دسترسی سریع‌تر به امکانات ویژه، پیشنهادهای اختصاصی و تجربه حرفه‌ای‌تر از مودینگ‌وی
+                    برای کاربران فعال فراهم می‌شود.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-3">
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+            <div class="text-sm font-black text-slate-900">مزایای ویژه</div>
+            <div class="mt-1 text-xs font-bold leading-6 text-slate-500">
+                امکانات اختصاصی
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+            <div class="text-sm font-black text-slate-900">اولویت دسترسی</div>
+            <div class="mt-1 text-xs font-bold leading-6 text-slate-500">
+                زودتر از بقیه
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-center">
+            <div class="text-sm font-black text-slate-900">پیشنهاد خاص</div>
+            <div class="mt-1 text-xs font-bold leading-6 text-slate-500">
+                مخصوص VIPها
+            </div>
+        </div>
+    </div>
+
+    <x-slot name="footer">
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <button
+                type="button"
+                x-data
+                @click="$dispatch('close-modal', 'vip-coming-soon-modal')"
+                class="cursor-pointer inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
+            >
+                بعداً بررسی می‌کنم
+            </button>
+
+            <button
+                type="button"
+                x-data
+                @click="$dispatch('close-modal', 'vip-coming-soon-modal')"
+                class="cursor-pointer inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-amber-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-amber-600"
+            >
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 3l2.7 5.47 6.03.88-4.36 4.25 1.03 6-5.4-2.84-5.4 2.84 1.03-6-4.36-4.25 6.03-.88L12 3Z"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linejoin="round"
+                    />
+                </svg>
+
+                منتظر VIP می‌مانم
+            </button>
+        </div>
+    </x-slot>
+</x-front.modal>

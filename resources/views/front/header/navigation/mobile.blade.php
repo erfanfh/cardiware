@@ -66,7 +66,7 @@
 
         <div class="border-t border-slate-100 p-4 dark:border-slate-800">
             @if(auth()->check())
-                <a href="{{ route('account') }}"
+                <a href="{{ route('account.dashboard') }}"
                    class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
                     @include('icons.user')
                     حساب کاربری
