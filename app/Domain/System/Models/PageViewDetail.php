@@ -3,6 +3,7 @@
 namespace App\Domain\System\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class PageViewDetail extends Model
 {
@@ -12,4 +13,14 @@ class PageViewDetail extends Model
         'count',
         'date',
     ];
+
+    protected $casts = [
+        'count' => 'integer',
+        'date' => 'date',
+    ];
+
+    public function pageable(): MorphTo
+    {
+        return $this->morphTo();
+    }
 }
