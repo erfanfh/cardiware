@@ -9,14 +9,11 @@ use DomainException;
 class EnsurePurchaseAccessCanDownloadFileAction
 {
     public function __construct(
-        private readonly CanUsePurchaseAccessAction $canUsePurchaseAccessAction,
+        private readonly HasPurchaseAccessFileReachedDownloadLimitAction $hasPurchaseAccessFileReachedDownloadLimitAction,
     )
     {
     }
 
-    /**
-     * Ensure purchase access can download the given file.
-     */
     public function execute(
         PurchaseAccess      $purchaseAccess,
         ProductSaleItemFile $file,
@@ -31,8 +28,16 @@ class EnsurePurchaseAccessCanDownloadFileAction
             throw new DomainException('File does not belong to this purchase access.');
         }
 
-        if (!$this->canUsePurchaseAccessAction->execute($purchaseAccess)) {
-            throw new DomainException('Purchase access is not usable.');
+        if (!$purchaseAccess->status->isUsable()) {
+            throw new DomainException('Purchase access is not active.');
+        }
+
+        if ($purchaseAccess->isExpiredByDate()) {
+            throw new DomainException('Purchase access has expired.');
+        }
+
+        if ($this->hasPurchaseAccessFileReachedDownloadLimitAction->execute($purchaseAccess, $file)) {
+            throw new DomainException('File download limit has been reached.');
         }
     }
 }

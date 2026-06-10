@@ -32,7 +32,7 @@
             </span>
             دانلودهای من
         </span>
-        <span class="text-slate-400">0</span>
+        <span class="text-slate-400">{{ $user->purchase_accesses_count }}</span>
     </button>
 
     <button

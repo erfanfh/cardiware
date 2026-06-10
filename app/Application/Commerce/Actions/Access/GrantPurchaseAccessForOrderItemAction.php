@@ -38,7 +38,6 @@ class GrantPurchaseAccessForOrderItemAction
             'product_sale_item_id' => $purchasable->id,
             'status' => PurchaseAccessStatusEnum::ACTIVE,
             'download_limit' => $purchasable->download_limit,
-            'downloads_count' => 0,
             'starts_at' => now(),
             'expires_at' => $this->resolveExpiresAt($purchasable),
             'metadata' => [

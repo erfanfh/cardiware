@@ -15,7 +15,8 @@ class AccountController extends Controller
                 'avatar.primaryVariant'
             ])
             ->loadCount([
-                'orders as paid_orders_count' => fn($q) => $q->where('status', OrderStatusEnum::PAID)
+                'orders as paid_orders_count' => fn($q) => $q->where('status', OrderStatusEnum::PAID),
+                'purchaseAccesses'
             ]);
 
         return view('front.account.dashboard', compact('user'));

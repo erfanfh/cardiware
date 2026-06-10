@@ -21,7 +21,6 @@ class PurchaseAccess extends Model
         'product_sale_item_id',
         'status',
         'download_limit',
-        'downloads_count',
         'starts_at',
         'expires_at',
         'last_downloaded_at',
@@ -31,7 +30,6 @@ class PurchaseAccess extends Model
     protected $casts = [
         'status' => PurchaseAccessStatusEnum::class,
         'download_limit' => 'integer',
-        'downloads_count' => 'integer',
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
         'last_downloaded_at' => 'datetime',
@@ -92,25 +90,6 @@ class PurchaseAccess extends Model
     public function isExpiredByDate(): bool
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
-    }
-
-    /**
-     * Determine whether download limit has been reached.
-     */
-    public function hasReachedDownloadLimit(): bool
-    {
-        return $this->download_limit !== null
-            && $this->downloads_count >= $this->download_limit;
-    }
-
-    /**
-     * Determine whether this access can be used for download.
-     */
-    public function isUsable(): bool
-    {
-        return $this->status->isUsable()
-            && !$this->isExpiredByDate()
-            && !$this->hasReachedDownloadLimit();
     }
 
     /**

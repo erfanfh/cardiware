@@ -8,15 +8,19 @@ use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class RecordPurchaseAccessDownloadAction
 {
+    public function __construct(
+        private readonly HasPurchaseAccessFileReachedDownloadLimitAction $hasPurchaseAccessFileReachedDownloadLimitAction,
+    )
+    {
+    }
+
     /**
-     * Record a successful download attempt and increment downloads count.
+     * Record a successful download attempt and increment total downloads count.
      *
      * @param array<string, mixed> $metadata
-     * @throws Throwable
      */
     public function execute(
         PurchaseAccess      $purchaseAccess,
@@ -31,8 +35,20 @@ class RecordPurchaseAccessDownloadAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!$purchaseAccess->isUsable()) {
-                throw new DomainException('Purchase access is not usable.');
+            if (!$purchaseAccess->status->isUsable()) {
+                throw new DomainException('Purchase access is not active.');
+            }
+
+            if ($purchaseAccess->isExpiredByDate()) {
+                throw new DomainException('Purchase access has expired.');
+            }
+
+            if ((int)$file->product_sale_item_id !== (int)$purchaseAccess->product_sale_item_id) {
+                throw new DomainException('File does not belong to this purchase access.');
+            }
+
+            if ($this->hasPurchaseAccessFileReachedDownloadLimitAction->execute($purchaseAccess, $file)) {
+                throw new DomainException('File download limit has been reached.');
             }
 
             $download = PurchaseAccessDownload::query()->create([
@@ -50,7 +66,6 @@ class RecordPurchaseAccessDownloadAction
             ]);
 
             $purchaseAccess->forceFill([
-                'downloads_count' => $purchaseAccess->downloads_count + 1,
                 'last_downloaded_at' => now(),
             ])->save();
 
@@ -60,23 +75,17 @@ class RecordPurchaseAccessDownloadAction
 
     private function resolveFileName(ProductSaleItemFile $file): ?string
     {
-        return $file->file_name
-            ?? $file->name
-            ?? $file->title
-            ?? basename((string)($file->path ?? $file->file_path ?? ''));
+        return $file->title
+            ?? basename(parse_url((string)$file->url, PHP_URL_PATH) ?: '');
     }
 
     private function resolveFileDisk(ProductSaleItemFile $file): ?string
     {
-        return $file->disk
-            ?? $file->file_disk
-            ?? null;
+        return 'external_url';
     }
 
     private function resolveFilePath(ProductSaleItemFile $file): ?string
     {
-        return $file->path
-            ?? $file->file_path
-            ?? null;
+        return $file->url;
     }
 }
