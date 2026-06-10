@@ -137,6 +137,19 @@ final class CacheKey
         return 'project:stats';
     }
 
+    public static function productSeoData(
+        int|string $productId,
+        int        $productUpdatedAt
+    ): string
+    {
+        return "seo-data:product:{$productId}:{$productUpdatedAt}";
+    }
+
+    public static function productSlug(string $slug): string
+    {
+        return 'product:slug:' . trim($slug);
+    }
+
     public static function pageSeoData(int|string $pageId, int $pageUpdatedAt): string
     {
         return "seo-data:page:{$pageId}:{$pageUpdatedAt}";

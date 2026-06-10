@@ -34,6 +34,31 @@ final class SchemaIdGenerator
         return rtrim($pageUrl, '/') . '/#article';
     }
 
+    public function product(string $pageUrl): string
+    {
+        return rtrim($pageUrl, '/') . '/#product';
+    }
+
+    public function offer(string $pageUrl, string|int|null $identifier = null): string
+    {
+        return rtrim($pageUrl, '/') . ($identifier ? '#offer-' . $identifier : '#offer');
+    }
+
+    public function aggregateOffer(string $pageUrl): string
+    {
+        return rtrim($pageUrl, '/') . '/#aggregate-offer';
+    }
+
+    public function store(string $siteUrl, string|int $identifier): string
+    {
+        return rtrim($siteUrl, '/') . '/#/schema/store/' . md5((string)$identifier);
+    }
+
+    public function storePage(string $storeUrl): string
+    {
+        return rtrim($storeUrl, '/') . '/#store';
+    }
+
     public function person(string $siteUrl, string $identifier): string
     {
         return rtrim($siteUrl, '/') . '/#/schema/person/' . md5($identifier);

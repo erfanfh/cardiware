@@ -18,6 +18,7 @@ use App\Application\Seo\Resolvers\PostCategorySeoResolver;
 use App\Application\Seo\Resolvers\PostListSeoResolver;
 use App\Application\Seo\Resolvers\PostSeoResolver;
 use App\Application\Seo\Resolvers\PostTagSeoResolver;
+use App\Application\Seo\Resolvers\ProductSeoResolver;
 use App\Application\Seo\Resolvers\ProjectListSeoResolver;
 use App\Application\Seo\Resolvers\ProjectSeoResolver;
 use App\Application\Seo\Resolvers\SearchSeoResolver;
@@ -55,6 +56,7 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(PostCategorySeoResolver::class),
 
                 $app->make(ProjectSeoResolver::class),
+                $app->make(ProductSeoResolver::class),
                 $app->make(PostSeoResolver::class),
                 $app->make(PageSeoResolver::class),
             ]);

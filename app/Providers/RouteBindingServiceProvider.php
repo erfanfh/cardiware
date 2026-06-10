@@ -6,7 +6,7 @@ use App\Application\Content\Actions\ResolveContentBySlugAction;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-class ContentServiceProvider extends ServiceProvider
+class RouteBindingServiceProvider extends ServiceProvider
 {
     /**
      * Register services.

@@ -42,6 +42,7 @@ class Product extends Model implements PageViewableInterface
         'status' => ProductStatusEnum::class,
         'type' => ProductTypeEnum::class,
         'structure' => ProductStructureEnum::class,
+        'published_at' => 'datetime',
     ];
 
     public function getRouteKeyName(): string

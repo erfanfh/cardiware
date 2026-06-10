@@ -14,6 +14,8 @@ final class CacheTag
 
     public const PROJECTS = 'projects';
 
+    public const PRODUCTS = 'products';
+
     public const FOOTER_STATS = 'footer-stats';
 
     public const SEO = 'seo';
@@ -61,6 +63,11 @@ final class CacheTag
     public static function project(int|string $projectId): string
     {
         return "project:{$projectId}";
+    }
+
+    public static function product(int|string $productId): string
+    {
+        return "product:{$productId}";
     }
 
     public static function page(int|string $pageId): string
