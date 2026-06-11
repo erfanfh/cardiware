@@ -262,25 +262,6 @@
                 </div>
             </div>
 
-            <div class="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="flex items-center gap-2">
-                        <span
-                            class="grid h-8 w-8 place-items-center rounded-xl bg-white text-brand-700 ring-1 ring-slate-200">
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                                <path
-                                    d="M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 0V5a2 2 0 0 1 2-2h9"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                <path d="M17 13h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                            </svg>
-                        </span>
-                        <span class="text-xs font-extrabold text-slate-700">موجودی فعلی کیف پول</span>
-                    </div>
-
-                    <span class="text-sm font-black text-slate-900">{{ $this->money($this->walletBalance) }}</span>
-                </div>
-            </div>
-
             <div class="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>

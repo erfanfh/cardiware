@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Commerce\Cart;
 
+use App\Application\Commerce\Actions\Cart\AdjustCartItemQuantityAction;
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
@@ -9,6 +10,7 @@ use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use DomainException;
@@ -55,7 +57,13 @@ class CartPage extends Component
         /** @var Cart|null $cart */
         $cart = app(GetCurrentActiveCartAction::class)->execute();
 
-        $cart?->load([
+        if (!$cart) {
+            return null;
+        }
+
+        $cart->refresh();
+
+        $cart->load([
             'items.children',
             'items.purchasable',
             'items.purchasable.product.picture',
@@ -109,17 +117,11 @@ class CartPage extends Component
     }
 
     #[Computed]
-    public function cartTax(): int
-    {
-        return 0;
-    }
-
-    #[Computed]
     public function cartTotal(): int
     {
         return (int)(
             $this->cart?->total_amount
-            ?? max(0, $this->cartSubtotal - $this->cartDiscount + $this->cartTax)
+            ?? max(0, $this->cartSubtotal - $this->cartDiscount)
         );
     }
 
@@ -127,6 +129,58 @@ class CartPage extends Component
     public function walletBalance(): int
     {
         return (int)(auth()->user()?->wallet?->balance ?? 0);
+    }
+
+    public function increaseQuantity(
+        int                          $cartItemId,
+        AdjustCartItemQuantityAction $adjustCartItemQuantityAction
+    ): void
+    {
+        $this->adjustQuantity(
+            cartItemId: $cartItemId,
+            delta: 1,
+            adjustCartItemQuantityAction: $adjustCartItemQuantityAction,
+        );
+    }
+
+    public function decreaseQuantity(
+        int                          $cartItemId,
+        AdjustCartItemQuantityAction $adjustCartItemQuantityAction
+    ): void
+    {
+        $this->adjustQuantity(
+            cartItemId: $cartItemId,
+            delta: -1,
+            adjustCartItemQuantityAction: $adjustCartItemQuantityAction,
+        );
+    }
+
+    private function adjustQuantity(
+        int                          $cartItemId,
+        int                          $delta,
+        AdjustCartItemQuantityAction $adjustCartItemQuantityAction
+    ): void
+    {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+        $this->cartNeedsRefresh = false;
+
+        try {
+            $cartItem = CartItem::query()->findOrFail($cartItemId);
+
+            $adjustCartItemQuantityAction->execute(
+                cartItem: $cartItem,
+                delta: $delta,
+            );
+
+            $this->afterCartMutation();
+        } catch (DomainException $exception) {
+            $this->checkoutError = $this->cartDomainExceptionMessage($exception);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در تغییر تعداد آیتم رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+        }
     }
 
     /**
@@ -138,13 +192,21 @@ class CartPage extends Component
         $this->checkoutNotice = null;
         $this->cartNeedsRefresh = false;
 
-        $cartItem = CartItem::query()->findOrFail($cartItemId);
+        try {
+            $cartItem = CartItem::query()->findOrFail($cartItemId);
 
-        $removeCartItemAction->execute($cartItem);
+            $removeCartItemAction->execute($cartItem);
 
-        $this->resetCartComputedProperties();
+            $this->dispatch('close-modal', 'remove-cart-item-' . $cartItemId);
 
-        $this->dispatch('cart-updated');
+            $this->afterCartMutation();
+        } catch (DomainException $exception) {
+            $this->checkoutError = $this->cartDomainExceptionMessage($exception);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در حذف آیتم رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+        }
     }
 
     public function applyCoupon(): void
@@ -173,13 +235,11 @@ class CartPage extends Component
 
             $this->cartNeedsRefresh = false;
 
-            $this->resetCartComputedProperties();
+            $this->afterCartMutation();
 
             $this->checkoutNotice = $result['has_changes']
                 ? 'سبد خرید شما با آخرین قیمت‌ها به‌روزرسانی شد.'
                 : 'سبد خرید شما از قبل به‌روز بود.';
-
-            $this->dispatch('cart-updated');
         } catch (DomainException $exception) {
             $this->checkoutError = 'امکان به‌روزرسانی سبد خرید وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
         } catch (Throwable $exception) {
@@ -287,16 +347,20 @@ class CartPage extends Component
             ?? 'آیتم سبد خرید';
     }
 
+    public function itemLink(CartItem $item): string
+    {
+        $product = $item->purchasable?->product ?? null;
+
+        if ($product instanceof Product) {
+            return route('products.detail', $product->slug);
+        }
+
+        return '#';
+    }
+
     public function itemDescription(CartItem $item): string
     {
-        $purchasable = $item->purchasable;
-        $product = $purchasable?->product ?? null;
-
-        return data_get($item->snapshot, 'description')
-            ?? $purchasable?->description
-            ?? $product?->short_description
-            ?? $product?->description
-            ?? 'این آیتم در سبد خرید شما قرار دارد.';
+        return $item->purchasable?->product?->excerpt() ?? '';
     }
 
     public function itemImage(CartItem $item): string
@@ -317,7 +381,7 @@ class CartPage extends Component
         $type = data_get($item->snapshot, 'type');
 
         if ($type === 'product_addon') {
-            return 'خدمت افزوده';
+            return '+ خدمت افزوده';
         }
 
         $purchasable = $item->purchasable;
@@ -328,6 +392,17 @@ class CartPage extends Component
         return $productType === 'DIGITAL'
             ? 'فایل دیجیتال'
             : 'محصول';
+    }
+
+    public function itemMaxQuantity(CartItem $item): int
+    {
+        $purchasable = $item->purchasable;
+
+        if (!$purchasable instanceof \App\Application\Commerce\Contracts\Purchasable) {
+            return 1;
+        }
+
+        return (int)($purchasable->getMaxQuantityPerOrder() ?? 1);
     }
 
     public function itemTotal(CartItem $item): int
@@ -343,6 +418,26 @@ class CartPage extends Component
         return number_format($amount) . ' تومان';
     }
 
+    private function afterCartMutation(): void
+    {
+        $this->resetCartComputedProperties();
+
+        $this->dispatch('$refresh');
+        $this->dispatch('cart-updated');
+    }
+
+    private function cartDomainExceptionMessage(DomainException $exception): string
+    {
+        return match ($exception->getMessage()) {
+            'Cart is not editable.' => 'سبد خرید در وضعیت قابل ویرایش نیست.',
+            'Quantity must be at least 1.' => 'تعداد انتخاب‌شده معتبر نیست.',
+            'Dependent cart items cannot have quantity greater than 1.' => 'تعداد خدمات افزوده به‌صورت جداگانه قابل تغییر نیست.',
+            'Cart item has invalid purchasable model.' => 'آیتم انتخاب‌شده معتبر نیست.',
+            'Requested quantity exceeds the allowed maximum per order.' => 'تعداد انتخاب‌شده بیشتر از سقف مجاز خرید این آیتم است.',
+            default => 'امکان انجام این عملیات روی سبد خرید وجود ندارد.',
+        };
+    }
+
     private function resetCartComputedProperties(): void
     {
         unset($this->cart);
@@ -352,7 +447,6 @@ class CartPage extends Component
         unset($this->itemsCount);
         unset($this->cartSubtotal);
         unset($this->cartDiscount);
-        unset($this->cartTax);
         unset($this->cartTotal);
         unset($this->walletBalance);
     }
