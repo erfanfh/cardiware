@@ -7,7 +7,7 @@ use Illuminate\View\View;
 
 class CartController extends Controller
 {
-    public function index(): View
+    public function __invoke(): View
     {
         return view('front.commerce.cart.index');
     }
