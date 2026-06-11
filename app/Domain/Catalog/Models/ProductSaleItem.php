@@ -136,8 +136,24 @@ class ProductSaleItem extends Model implements Purchasable
 
     public function isPurchasableAvailable(): bool
     {
-        return $this->product->status === ProductStatusEnum::ACTIVE
-            && $this->status === ProductSaleItemStatusEnum::AVAILABLE;
+        if ($this->status !== ProductSaleItemStatusEnum::AVAILABLE) {
+            return false;
+        }
+
+        $product = $this->product()
+            ->withoutGlobalScopes()
+            ->withTrashed()
+            ->first();
+
+        if (!$product) {
+            return false;
+        }
+
+        if (method_exists($product, 'trashed') && $product->trashed()) {
+            return false;
+        }
+
+        return $product->status === ProductStatusEnum::ACTIVE;
     }
 
     /**

@@ -3,11 +3,13 @@
 namespace App\Livewire\Front\Commerce\Cart;
 
 use App\Application\Commerce\Actions\Cart\AdjustCartItemQuantityAction;
+use App\Application\Commerce\Actions\Cart\EnsureCartReadyForCheckoutAction;
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
+use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Domain\Catalog\Models\Product;
@@ -254,7 +256,7 @@ class CartPage extends Component
         }
     }
 
-    public function checkout(): ?RedirectResponse
+    public function checkout(EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction): ?RedirectResponse
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
@@ -275,8 +277,10 @@ class CartPage extends Component
         }
 
         try {
+            $cart = $ensureCartReadyForCheckoutAction->execute($this->cart);
+
             $order = app(CreateOrderFromCartAction::class)->execute(
-                cart: $this->cart,
+                cart: $cart,
                 metadata: [
                     'source' => 'web',
                     'ip' => request()->ip(),
@@ -319,20 +323,37 @@ class CartPage extends Component
             }
 
             return redirect()->away($redirectUrl);
+        } catch (CartNeedsRefreshException $exception) {
+            $this->cartNeedsRefresh = false;
+            $this->checkoutError = null;
+
+            $this->resetCartComputedProperties();
+
+            $this->checkoutNotice = $this->checkoutRefreshMessage($exception->syncResult());
+
+            $this->dispatch('$refresh');
+            $this->dispatch('cart-updated');
+
+            return null;
         } catch (CartItemPriceChangedException $exception) {
             $this->checkoutError = $exception->userMessage()
-                ?: 'قیمت برخی آیتم‌های سبد خرید تغییر کرده است. لطفا سبد خرید را به‌روزرسانی کنید.';
+                ?: 'قیمت برخی آیتم‌های سبد خرید تغییر کرده است. لطفا دوباره ادامه دهید.';
 
             $this->checkoutNotice = null;
-            $this->cartNeedsRefresh = true;
+            $this->cartNeedsRefresh = false;
 
             $this->resetCartComputedProperties();
 
             return null;
         } catch (DomainException $exception) {
-            $this->checkoutError = 'برخی آیتم‌های سبد خرید تغییر کرده‌اند یا دیگر قابل خرید نیستند. لطفا سبد خرید را به‌روزرسانی کنید و دوباره ادامه دهید.';
             $this->checkoutNotice = null;
             $this->cartNeedsRefresh = true;
+
+            $this->checkoutError = match ($exception->getMessage()) {
+                'Cart is empty.' => 'سبد خرید شما خالی شده است. لطفا محصول جدیدی انتخاب کنید.',
+                'Cart is not editable.' => 'سبد خرید در وضعیت قابل پرداخت نیست.',
+                default => 'برخی آیتم‌های سبد خرید تغییر کرده‌اند یا دیگر قابل خرید نیستند. لطفا سبد خرید را به‌روزرسانی کنید و دوباره ادامه دهید.',
+            };
 
             $this->resetCartComputedProperties();
 
@@ -340,10 +361,31 @@ class CartPage extends Component
         } catch (Throwable $exception) {
             report($exception);
 
+            $this->checkoutNotice = null;
             $this->checkoutError = 'خطایی در پردازش پرداخت رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
 
             return null;
         }
+    }
+
+    private function checkoutRefreshMessage(array $syncResult): string
+    {
+        $removedItemsCount = (int)($syncResult['removed_items_count'] ?? 0);
+        $updatedItemsCount = (int)($syncResult['updated_items_count'] ?? 0);
+
+        if ($removedItemsCount > 0 && $updatedItemsCount > 0) {
+            return 'سبد خرید به‌روزرسانی شد. برخی آیتم‌هایی که دیگر قابل خرید نبودند حذف شدند و قیمت یا اطلاعات برخی آیتم‌ها تغییر کرد. لطفا دوباره ادامه دهید.';
+        }
+
+        if ($removedItemsCount > 0) {
+            return 'سبد خرید به‌روزرسانی شد. برخی آیتم‌هایی که دیگر قابل خرید نبودند از سبد خرید حذف شدند. لطفا دوباره ادامه دهید.';
+        }
+
+        if ($updatedItemsCount > 0) {
+            return 'سبد خرید با آخرین قیمت‌ها و اطلاعات محصولات به‌روزرسانی شد. لطفا دوباره ادامه دهید.';
+        }
+
+        return 'سبد خرید به‌روزرسانی شد. لطفا دوباره ادامه دهید.';
     }
 
     public function itemTitle(CartItem $item): string

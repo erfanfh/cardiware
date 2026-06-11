@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Catalog;
 
 use App\Application\Catalog\Actions\CreateProductAction;
+use App\Application\Catalog\Actions\DeleteProductAction;
 use App\Application\Catalog\Actions\UpdateProductAction;
 use App\Application\Catalog\Listings\ProductListing;
 use App\Application\Taxonomy\Actions\GetAllTaxonomiesAction;
@@ -173,7 +174,6 @@ class ProductController extends Controller
         return view('admin.catalog.products.edit', compact('product', 'allCategories', 'selectedCategoryIds', 'selectedTags'));
     }
 
-
     /**
      * Update the specified resource in storage.
      *
@@ -192,5 +192,16 @@ class ProductController extends Controller
         return redirect()
             ->route('admin.products.edit', $product)
             ->with('success', 'محصول با موفقیت بروزرسانی شد.');
+    }
+
+    public function destroy(Product $product): RedirectResponse
+    {
+        Gate::authorize('product.delete');
+
+        app(DeleteProductAction::class)->execute($product);
+
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', 'محصول با موفقیت حذف شد.');
     }
 }
