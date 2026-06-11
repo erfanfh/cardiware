@@ -4,6 +4,7 @@ namespace App\Domain\Catalog\Models;
 
 use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
+use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -131,6 +132,12 @@ class ProductSaleItem extends Model implements Purchasable
             'product_sale_item_id' => $this->id,
             'product_sale_item_title' => $this->title,
         ];
+    }
+
+    public function isPurchasableAvailable(): bool
+    {
+        return $this->product->status === ProductStatusEnum::ACTIVE
+            && $this->status === ProductSaleItemStatusEnum::AVAILABLE;
     }
 
     /**

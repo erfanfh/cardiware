@@ -117,4 +117,9 @@ class ProductAddon extends Model implements Purchasable
             'unit_price' => $this->price,
         ];
     }
+
+    public function isPurchasableAvailable(): bool
+    {
+        return $this->is_active;
+    }
 }

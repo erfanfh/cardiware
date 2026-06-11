@@ -42,4 +42,6 @@ interface Purchasable
      * @return array<string, mixed>
      */
     public function getPurchasableSnapshot(): array;
+
+    public function isPurchasableAvailable(): bool;
 }
