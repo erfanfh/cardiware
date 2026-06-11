@@ -234,14 +234,19 @@ class CartPage extends Component
             $result = $syncCartItemsAction->execute($this->cart);
 
             $this->cartNeedsRefresh = false;
+            $this->checkoutError = null;
 
-            $this->afterCartMutation();
+            $this->resetCartComputedProperties();
 
             $this->checkoutNotice = $result['has_changes']
-                ? 'سبد خرید شما با آخرین قیمت‌ها به‌روزرسانی شد.'
-                : 'سبد خرید شما از قبل به‌روز بود.';
+                ? 'سبد خرید شما با آخرین تغییرات به‌روزرسانی شد. لطفا دوباره پرداخت را ادامه دهید.'
+                : 'سبد خرید شما از قبل به‌روز بود. می‌توانید پرداخت را ادامه دهید.';
+
+            $this->dispatch('$refresh');
+            $this->dispatch('cart-updated');
         } catch (DomainException $exception) {
-            $this->checkoutError = 'امکان به‌روزرسانی سبد خرید وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
+            $this->cartNeedsRefresh = true;
+            $this->checkoutError = 'هنوز امکان به‌روزرسانی کامل سبد خرید وجود ندارد. لطفا آیتم‌های سبد خرید را بررسی کنید.';
         } catch (Throwable $exception) {
             report($exception);
 
@@ -315,14 +320,21 @@ class CartPage extends Component
 
             return redirect()->away($redirectUrl);
         } catch (CartItemPriceChangedException $exception) {
-            $this->checkoutError = $exception->userMessage();
+            $this->checkoutError = $exception->userMessage()
+                ?: 'قیمت برخی آیتم‌های سبد خرید تغییر کرده است. لطفا سبد خرید را به‌روزرسانی کنید.';
+
+            $this->checkoutNotice = null;
             $this->cartNeedsRefresh = true;
 
             $this->resetCartComputedProperties();
 
             return null;
         } catch (DomainException $exception) {
-            $this->checkoutError = 'امکان تکمیل پرداخت وجود ندارد. لطفا سبد خرید خود را بررسی کنید.';
+            $this->checkoutError = 'برخی آیتم‌های سبد خرید تغییر کرده‌اند یا دیگر قابل خرید نیستند. لطفا سبد خرید را به‌روزرسانی کنید و دوباره ادامه دهید.';
+            $this->checkoutNotice = null;
+            $this->cartNeedsRefresh = true;
+
+            $this->resetCartComputedProperties();
 
             return null;
         } catch (Throwable $exception) {
