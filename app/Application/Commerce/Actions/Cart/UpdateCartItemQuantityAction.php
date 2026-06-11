@@ -29,8 +29,10 @@ class UpdateCartItemQuantityAction
      */
     public function execute(CartItem $cartItem, int $quantity, ?CartOwnerDTO $owner = null): CartItem
     {
-        return DB::transaction(function () use ($cartItem, $quantity, $owner) {
+        return DB::transaction(function () use ($cartItem, $quantity, $owner): CartItem {
             $owner ??= $this->resolveCurrentCartOwnerAction->execute();
+
+            $cartItem->loadMissing(['cart', 'purchasable']);
 
             $cart = $cartItem->cart;
 
@@ -40,9 +42,9 @@ class UpdateCartItemQuantityAction
                 'quantity' => $quantity,
             ])->save();
 
-            $cartItem = $this->recalculateCartItemTotalsAction->execute($cartItem);
+            $cartItem = $this->recalculateCartItemTotalsAction->execute($cartItem->refresh());
 
-            $this->recalculateCartTotalsAction->execute($cart);
+            $this->recalculateCartTotalsAction->execute($cart->refresh());
 
             return $cartItem->refresh();
         });
