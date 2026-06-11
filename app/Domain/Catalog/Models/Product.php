@@ -177,4 +177,9 @@ class Product extends Model implements PageViewableInterface
     {
         return $this->hasMany(ProductAddon::class)->orderBy('sort_order');
     }
+
+    public function informationEntries(): HasMany
+    {
+        return $this->hasMany(ProductInformationEntry::class);
+    }
 }

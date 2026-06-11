@@ -123,6 +123,12 @@ return [
                 'icon' => 'icons.sliders-horizontal',
                 'gate' => 'product.attribute',
             ],
+            [
+                'label' => 'اطلاعات محصول',
+                'route' => 'admin.products.information.index',
+                'icon' => 'icons.sliders-horizontal',
+                'gate' => 'product.information',
+            ],
         ],
     ],
 
