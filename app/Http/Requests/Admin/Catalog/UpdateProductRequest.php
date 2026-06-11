@@ -126,6 +126,9 @@ class UpdateProductRequest extends FormRequest
             'addons.*.sort_order' => ['nullable', 'integer', 'min:0'],
             'addons.*.metadata' => ['nullable', 'array'],
 
+            'information_fields' => ['nullable', 'array'],
+            'information_fields.*' => ['nullable', 'string', 'max:255'],
+
             'seo' => ['nullable', 'array'],
         ];
     }

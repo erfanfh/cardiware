@@ -160,6 +160,11 @@ class ProductController extends Controller
     {
         Gate::authorize('product.edit');
 
+        $product->load([
+            'informationEntries',
+            'imageGallery.mediaFile.primaryVariant',
+        ]);
+
         $selectedTags = $product->tags
             ->map(fn($tag) => [
                 'id' => $tag->id,

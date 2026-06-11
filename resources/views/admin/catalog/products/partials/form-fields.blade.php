@@ -119,6 +119,10 @@
                 :search-url="route('admin.products.categories.ajax-search')"
             />
         </x-admin.metabox>
+
+        <x-admin.metabox title="فیلدهای اطلاعات">
+            @include('admin.catalog.products.partials.information-fields')
+        </x-admin.metabox>
     </x-slot:sidebar>
 
     <x-admin.form.validation-errors class="mb-6"/>

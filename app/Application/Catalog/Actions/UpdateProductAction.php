@@ -3,6 +3,7 @@
 namespace App\Application\Catalog\Actions;
 
 use App\Application\Catalog\Actions\ProductInformation\SyncProductInformationAction;
+use App\Application\Catalog\Actions\ProductInformationField\SyncProductInformationEntriesAction;
 use App\Application\Seo\Actions\Analysis\BuildProductSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
@@ -18,18 +19,19 @@ use Throwable;
 class UpdateProductAction
 {
     public function __construct(
-        protected AssignSlugAction                   $assignSlugAction,
-        protected SyncModelProductTagsAction         $syncModelProductTagsAction,
-        protected SyncModelProductCategoriesAction   $syncModelProductCategoriesAction,
-        protected SyncProductImageGalleryAction      $syncProductImageGalleryAction,
-        protected SyncProductRequirementsAction      $syncProductRequirementsAction,
-        protected SyncProductInstallationStepsAction $syncProductInstallationStepsAction,
-        protected SyncProductFaqsAction              $syncProductFaqsAction,
-        protected SyncProductReleasesAction          $syncProductReleasesAction,
-        protected SyncProductInformationAction       $syncProductInformationAction,
-        protected SyncProductAddonsAction            $syncProductAddonsAction,
-        protected SyncSeoMetaAction                  $syncSeoMetaAction,
-        protected StoreSeoAnalysisAction             $storeSeoAnalysisAction,
+        protected AssignSlugAction                    $assignSlugAction,
+        protected SyncModelProductTagsAction          $syncModelProductTagsAction,
+        protected SyncModelProductCategoriesAction    $syncModelProductCategoriesAction,
+        protected SyncProductImageGalleryAction       $syncProductImageGalleryAction,
+        protected SyncProductRequirementsAction       $syncProductRequirementsAction,
+        protected SyncProductInstallationStepsAction  $syncProductInstallationStepsAction,
+        protected SyncProductFaqsAction               $syncProductFaqsAction,
+        protected SyncProductReleasesAction           $syncProductReleasesAction,
+        protected SyncProductInformationAction        $syncProductInformationAction,
+        protected SyncProductAddonsAction             $syncProductAddonsAction,
+        protected SyncProductInformationEntriesAction $syncProductInformationEntriesAction,
+        protected SyncSeoMetaAction                   $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction              $storeSeoAnalysisAction,
     )
     {
     }
@@ -62,6 +64,7 @@ class UpdateProductAction
                 $productData['custom_attributes'],
                 $productData['sale_items'],
                 $productData['addons'],
+                $productData['information_fields'],
                 $productData['seo'],
             );
 
@@ -86,6 +89,7 @@ class UpdateProductAction
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
             $this->syncProductInformationAction->execute($product, $data);
             $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
+            $this->syncProductInformationEntriesAction->execute($product, $data['information_fields'] ?? []);
 
             $this->syncSeoMetaAction->execute($product, $data['seo'] ?? []);
             $this->storeSeoAnalysisAction->execute($product, app(BuildProductSeoAnalysisInputAction::class));
