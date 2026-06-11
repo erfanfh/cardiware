@@ -8,6 +8,7 @@ enum CartStatusEnum: string
     case CHECKOUT_STARTED = 'checkout_started';
     case CONVERTED = 'converted';
     case ABANDONED = 'abandoned';
+    case CANCELLED = 'cancelled';
 
     /**
      * Get the human-readable label.
@@ -19,6 +20,7 @@ enum CartStatusEnum: string
             self::CHECKOUT_STARTED => 'در حال پرداخت',
             self::CONVERTED => 'تبدیل شده به سفارش',
             self::ABANDONED => 'رها شده',
+            self::CANCELLED => 'لغو شده',
         };
     }
 
