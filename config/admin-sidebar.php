@@ -124,7 +124,7 @@ return [
                 'gate' => 'product.attribute',
             ],
             [
-                'label' => 'اطلاعات محصول',
+                'label' => 'فیلدهای اطلاعات',
                 'route' => 'admin.products.information.index',
                 'icon' => 'icons.sliders-horizontal',
                 'gate' => 'product.information',

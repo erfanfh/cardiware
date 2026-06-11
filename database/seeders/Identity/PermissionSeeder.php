@@ -48,7 +48,7 @@ class PermissionSeeder extends Seeder
                 'category' => 'مدیریت دسته های محصولات',
                 'tag' => 'مدیریت برچسب های محصولات',
                 'attribute' => 'مدیریت ویژگی های محصولات',
-                'information' => 'مدیریت اطلاعات محصولات',
+                'information' => 'مدیریت فیلدهای اطلاعات محصولات',
             ],
             'tag' => [
                 'manage' => 'مدیریت برچسب ها',

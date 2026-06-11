@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'اطلاعات محصولات')
+@section('title', 'فیلدهای اطلاعات محصولات')
 
 @section('content')
     @livewire('admin.catalog.manage-product-information-fields')
