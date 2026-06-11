@@ -3,6 +3,7 @@
 namespace App\Application\Commerce\Actions\Cart;
 
 use App\Domain\Commerce\Models\Cart;
+use App\Domain\Commerce\Models\CartItem;
 
 class RecalculateCartTotalsAction
 {
@@ -13,7 +14,13 @@ class RecalculateCartTotalsAction
     {
         $items = $cart->items()->get();
 
-        $subtotalAmount = (int)$items->sum('subtotal_amount');
+        $subtotalAmount = (int)$items->sum(function (CartItem $item): int {
+            return (int)(
+                $item->subtotal_amount
+                ?? ((int)$item->unit_price * (int)$item->quantity)
+            );
+        });
+
         $discountAmount = (int)$items->sum('discount_amount');
 
         $cart->forceFill([
