@@ -103,28 +103,7 @@
                 </div>
             @endif
 
-            <div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
-                <div class="flex items-start gap-3">
-                    <span
-                        class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                            <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                        </svg>
-                    </span>
-
-                    <div>
-                        <div class="text-sm font-extrabold text-emerald-900">
-                            شما وارد حساب کاربری خود شده‌اید.
-                        </div>
-                        <p class="mt-1 text-xs leading-6 text-emerald-700">
-                            سفارش داخل حساب شما ذخیره می‌شود و بعد از پرداخت از بخش سفارش‌ها قابل پیگیری است.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-5">
+            <div>
                 <div class="mb-3 text-xs font-extrabold text-slate-700">روش پرداخت را انتخاب کنید</div>
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
