@@ -58,7 +58,6 @@
                         <x-admin.form.input
                             type="number"
                             min="0"
-                            step="1000"
                             x-bind:name="field(i, 'price')"
                             x-model="it.price"
                             class="direction-ltr"
