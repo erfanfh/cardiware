@@ -8,6 +8,7 @@ use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
+use App\Application\Commerce\Contracts\Purchasable;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
@@ -29,28 +30,17 @@ class CartPage extends Component
 
     public ?string $couponCode = null;
 
-    public ?string $firstName = null;
-
-    public ?string $lastName = null;
-
-    public ?string $mobile = null;
-
-    public ?string $email = null;
-
     public ?string $checkoutError = null;
 
     public ?string $checkoutNotice = null;
 
     public bool $cartNeedsRefresh = false;
 
+    public bool $openCheckoutOnLoad = false;
+
     public function mount(): void
     {
-        $user = auth()->user();
-
-        $this->firstName = $user?->first_name;
-        $this->lastName = $user?->last_name;
-        $this->mobile = $user?->mobile;
-        $this->email = $user?->email;
+        $this->openCheckoutOnLoad = (bool)session()->pull('open_checkout_after_auth', false);
     }
 
     #[Computed]
@@ -185,9 +175,6 @@ class CartPage extends Component
         }
     }
 
-    /**
-     * @throws Throwable
-     */
     public function removeItem(int $cartItemId, RemoveCartItemAction $removeCartItemAction): void
     {
         $this->checkoutError = null;
@@ -240,35 +227,29 @@ class CartPage extends Component
 
             $this->resetCartComputedProperties();
 
-            $this->checkoutNotice = $result['has_changes']
-                ? 'سبد خرید شما با آخرین تغییرات به‌روزرسانی شد. لطفا دوباره پرداخت را ادامه دهید.'
-                : 'سبد خرید شما از قبل به‌روز بود. می‌توانید پرداخت را ادامه دهید.';
+            $this->checkoutNotice = $this->checkoutRefreshMessage($result);
 
             $this->dispatch('$refresh');
             $this->dispatch('cart-updated');
-        } catch (DomainException $exception) {
-            $this->cartNeedsRefresh = true;
-            $this->checkoutError = 'هنوز امکان به‌روزرسانی کامل سبد خرید وجود ندارد. لطفا آیتم‌های سبد خرید را بررسی کنید.';
         } catch (Throwable $exception) {
             report($exception);
 
+            $this->cartNeedsRefresh = true;
             $this->checkoutError = 'خطایی در به‌روزرسانی سبد خرید رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
         }
     }
 
-    public function checkout(EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction): ?RedirectResponse
+    public function checkout(
+        EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction,
+    ): ?RedirectResponse
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
         $this->paymentMethod = 'gateway';
 
         if (!auth()->check()) {
-            $this->validate([
-                'firstName' => ['required', 'string', 'max:255'],
-                'lastName' => ['required', 'string', 'max:255'],
-                'mobile' => ['required', 'string', 'max:20'],
-                'email' => ['nullable', 'email', 'max:255'],
-            ]);
+            $this->dispatch('open-modal', 'auth-modal');
+            return null;
         }
 
         if (!$this->cart) {
@@ -311,7 +292,7 @@ class CartPage extends Component
                     'order_id' => $order->id,
                     'order_number' => $order->order_number,
                     'description' => 'پرداخت سفارش ' . $order->order_number,
-                    'mobile' => auth()->user()?->mobile ?? $this->mobile,
+                    'mobile' => auth()->user()?->mobile,
                 ],
             );
 
@@ -347,13 +328,17 @@ class CartPage extends Component
             return null;
         } catch (DomainException $exception) {
             $this->checkoutNotice = null;
-            $this->cartNeedsRefresh = true;
 
             $this->checkoutError = match ($exception->getMessage()) {
                 'Cart is empty.' => 'سبد خرید شما خالی شده است. لطفا محصول جدیدی انتخاب کنید.',
                 'Cart is not editable.' => 'سبد خرید در وضعیت قابل پرداخت نیست.',
-                default => 'برخی آیتم‌های سبد خرید تغییر کرده‌اند یا دیگر قابل خرید نیستند. لطفا سبد خرید را به‌روزرسانی کنید و دوباره ادامه دهید.',
+                default => 'امکان ادامه پرداخت وجود ندارد. لطفا سبد خرید را بررسی کنید و دوباره تلاش کنید.',
             };
+
+            $this->cartNeedsRefresh = in_array($exception->getMessage(), [
+                'Cart is empty.',
+                'Cart is not editable.',
+            ], true);
 
             $this->resetCartComputedProperties();
 
@@ -385,7 +370,7 @@ class CartPage extends Component
             return 'سبد خرید با آخرین قیمت‌ها و اطلاعات محصولات به‌روزرسانی شد. لطفا دوباره ادامه دهید.';
         }
 
-        return 'سبد خرید به‌روزرسانی شد. لطفا دوباره ادامه دهید.';
+        return 'سبد خرید شما از قبل به‌روز بود. می‌توانید پرداخت را ادامه دهید.';
     }
 
     public function itemTitle(CartItem $item): string
@@ -452,7 +437,7 @@ class CartPage extends Component
     {
         $purchasable = $item->purchasable;
 
-        if (!$purchasable instanceof \App\Application\Commerce\Contracts\Purchasable) {
+        if (!$purchasable instanceof Purchasable) {
             return 1;
         }
 

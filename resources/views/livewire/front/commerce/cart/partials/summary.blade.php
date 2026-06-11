@@ -94,12 +94,25 @@
 
             <button
                 type="button"
-                @click="checkoutModalOpen = true"
-                @disabled($this->mainCartItems->isEmpty())
-                class="mt-5 [&_svg]:w-5 [&_svg]:h-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+                @auth
+                    @click="checkoutModalOpen = true"
+                @else
+                    @click="$dispatch('open-modal', 'auth-modal')"
+                @endauth
+                @disabled($this->mainCartItems->isEmpty() || $cartNeedsRefresh)
+                class="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-                ادامه فرآیند پرداخت
-                @include('icons.credit-card')
+                @auth
+                    ادامه فرآیند پرداخت
+                @else
+                    ورود و ادامه پرداخت
+                @endauth
+
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M3 10h18M7 15h1m4 0h5M6 19h12a3 3 0 0 0 3-3V8a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
             </button>
 
             <a href="{{ route('products.list') }}"

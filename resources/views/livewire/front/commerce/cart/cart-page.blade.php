@@ -1,7 +1,6 @@
-<div x-data="{ checkoutModalOpen: false }">
+<div x-data="{ checkoutModalOpen: @js($openCheckoutOnLoad) }">
     <main class="mx-auto max-w-7xl px-4 py-8">
         <section class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-
             <div class="lg:col-span-8">
                 <div class="space-y-4">
                     @forelse($this->mainCartItems as $cartItem)
@@ -34,9 +33,18 @@
             </div>
 
             @include('livewire.front.commerce.cart.partials.summary')
-
         </section>
     </main>
 
-    @include('livewire.front.commerce.cart.partials.checkout-modal')
+    @auth
+        @include('livewire.front.commerce.cart.partials.checkout-modal')
+    @endauth
+
+    @guest
+        <livewire:front.identity.auth-modal
+            name="auth-modal"
+            :claim-current-cart="true"
+            :open-checkout-after-auth="true"
+        />
+    @endguest
 </div>

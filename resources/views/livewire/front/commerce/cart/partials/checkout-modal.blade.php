@@ -15,7 +15,7 @@
     >
         <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-6">
             <div>
-                <h2 class="text-base font-extrabold text-slate-900">تکمیل اطلاعات پرداخت</h2>
+                <h2 class="text-base font-extrabold text-slate-900">تکمیل پرداخت</h2>
                 <p class="mt-1 text-xs leading-6 text-slate-500">
                     روش پرداخت را انتخاب کنید و سفارش خود را تکمیل کنید.
                 </p>
@@ -38,14 +38,15 @@
             @if($checkoutError)
                 <div class="mb-5 rounded-3xl border border-red-200 bg-red-50 p-4">
                     <div class="flex items-start gap-3">
-            <span
-                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-red-600 ring-1 ring-red-100">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <path
-                        d="M12 9v4m0 4h.01M10.3 4.6 2.8 17.5A2 2 0 0 0 4.5 20h15a2 2 0 0 0 1.7-2.5L13.7 4.6a2 2 0 0 0-3.4 0Z"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </span>
+                        <span
+                            class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-red-600 ring-1 ring-red-100">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 9v4m0 4h.01M10.3 4.6 2.8 17.5A2 2 0 0 0 4.5 20h15a2 2 0 0 0 1.7-2.5L13.7 4.6a2 2 0 0 0-3.4 0Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round"/>
+                            </svg>
+                        </span>
 
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-extrabold text-red-900">
@@ -64,21 +65,13 @@
                                     wire:target="refreshCart"
                                     class="mt-3 inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-red-600 px-4 py-2.5 text-xs font-extrabold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                    <svg wire:loading.remove wire:target="refreshCart" class="h-4 w-4"
-                                         viewBox="0 0 24 24" fill="none">
-                                        <path
-                                            d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round"/>
-                                    </svg>
-
                                     <span wire:loading.remove wire:target="refreshCart">
-                            به‌روزرسانی سبد خرید
-                        </span>
+                                        به‌روزرسانی سبد خرید
+                                    </span>
 
                                     <span wire:loading wire:target="refreshCart">
-                            در حال به‌روزرسانی...
-                        </span>
+                                        در حال به‌روزرسانی...
+                                    </span>
                                 </button>
                             @endif
                         </div>
@@ -89,13 +82,13 @@
             @if($checkoutNotice)
                 <div class="mb-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
                     <div class="flex items-start gap-3">
-            <span
-                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
-                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                    <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                          stroke-linejoin="round"/>
-                </svg>
-            </span>
+                        <span
+                            class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
+                            </svg>
+                        </span>
 
                         <div>
                             <div class="text-sm font-extrabold text-emerald-900">
@@ -110,82 +103,26 @@
                 </div>
             @endif
 
-            @guest
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <label class="block">
-                        <span class="mb-2 block text-xs font-extrabold text-slate-700">نام</span>
-                        <input
-                            type="text"
-                            wire:model="firstName"
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
-                        >
-                        @error('firstName')
-                        <span class="mt-1 block text-xs font-bold text-red-600">{{ $message }}</span>
-                        @enderror
-                    </label>
+            <div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
+                <div class="flex items-start gap-3">
+                    <span
+                        class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                            <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                  stroke-linejoin="round"/>
+                        </svg>
+                    </span>
 
-                    <label class="block">
-                        <span class="mb-2 block text-xs font-extrabold text-slate-700">نام خانوادگی</span>
-                        <input
-                            type="text"
-                            wire:model="lastName"
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
-                        >
-                        @error('lastName')
-                        <span class="mt-1 block text-xs font-bold text-red-600">{{ $message }}</span>
-                        @enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="mb-2 block text-xs font-extrabold text-slate-700">شماره موبایل</span>
-                        <input
-                            type="tel"
-                            wire:model="mobile"
-                            dir="ltr"
-                            placeholder="09123456789"
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
-                        >
-                        @error('mobile')
-                        <span class="mt-1 block text-xs font-bold text-red-600">{{ $message }}</span>
-                        @enderror
-                    </label>
-
-                    <label class="block">
-                        <span class="mb-2 block text-xs font-extrabold text-slate-700">ایمیل</span>
-                        <input
-                            type="email"
-                            wire:model="email"
-                            dir="ltr"
-                            placeholder="example@email.com"
-                            class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100"
-                        >
-                        @error('email')
-                        <span class="mt-1 block text-xs font-bold text-red-600">{{ $message }}</span>
-                        @enderror
-                    </label>
-                </div>
-            @else
-                <div class="rounded-3xl border border-emerald-200 bg-emerald-50 p-4">
-                    <div class="flex items-start gap-3">
-                        <span
-                            class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-emerald-700 ring-1 ring-emerald-100">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-                                <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                      stroke-linejoin="round"/>
-                            </svg>
-                        </span>
-
-                        <div>
-                            <div class="text-sm font-extrabold text-emerald-900">
-                                شما وارد حساب کاربری خود شده‌اید.
-                            </div>
-                            <p class="mt-1 text-xs leading-6 text-emerald-700">
-                                اطلاعات پرداخت از حساب کاربری شما دریافت می‌شود و نیازی به ورود مجدد مشخصات نیست.
-                            </p>
+                    <div>
+                        <div class="text-sm font-extrabold text-emerald-900">
+                            شما وارد حساب کاربری خود شده‌اید.
                         </div>
+                        <p class="mt-1 text-xs leading-6 text-emerald-700">
+                            سفارش داخل حساب شما ذخیره می‌شود و بعد از پرداخت از بخش سفارش‌ها قابل پیگیری است.
+                        </p>
                     </div>
                 </div>
-            @endguest
+            </div>
 
             <div class="mt-5">
                 <div class="mb-3 text-xs font-extrabold text-slate-700">روش پرداخت را انتخاب کنید</div>
@@ -223,9 +160,7 @@
                         </div>
                     </label>
 
-                    <label
-                        class="cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 p-4 opacity-60"
-                    >
+                    <label class="cursor-not-allowed rounded-3xl border border-slate-200 bg-slate-50 p-4 opacity-60">
                         <input
                             type="radio"
                             value="wallet"
@@ -268,12 +203,18 @@
                         <span class="text-sm font-extrabold text-slate-700">مبلغ قابل پرداخت</span>
 
                         <p class="mt-1 text-xs leading-6 text-slate-500">
-                            در صورت تغییر قیمت‌ها، می‌توانید سبد خرید را به‌روزرسانی کنید.
+                            قبل از پرداخت، سبد خرید با آخرین تغییرات محصولات بررسی می‌شود.
                         </p>
                     </div>
 
                     <div class="flex flex-col items-stretch gap-2 sm:items-end">
-                        <span class="text-lg font-black text-slate-900">{{ $this->money($this->cartTotal) }}</span>
+                        <span
+                            class="text-lg font-black text-slate-900 transition"
+                            wire:loading.class="animate-pulse"
+                            wire:target="refreshCart, checkout"
+                        >
+                            {{ $this->money($this->cartTotal) }}
+                        </span>
 
                         <button
                             type="button"
@@ -282,13 +223,6 @@
                             wire:target="refreshCart"
                             class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                            <svg wire:loading.remove wire:target="refreshCart" class="h-4 w-4" viewBox="0 0 24 24"
-                                 fill="none">
-                                <path d="M20 11a8.1 8.1 0 0 0-15.5-2M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2M20 19v-4h-4"
-                                      stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                      stroke-linejoin="round"/>
-                            </svg>
-
                             <span wire:loading.remove wire:target="refreshCart">
                                 به‌روزرسانی سبد
                             </span>
@@ -323,6 +257,12 @@
                     <span wire:loading wire:target="checkout">
                         در حال پردازش...
                     </span>
+
+                    <span
+                        wire:loading
+                        wire:target="checkout"
+                        class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+                    ></span>
                 </button>
             </div>
         </form>
