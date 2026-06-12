@@ -4,7 +4,9 @@ namespace App\Domain\Marketplace\Models;
 
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
+use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,6 +18,7 @@ class Store extends Model
         'title',
         'slug',
         'body',
+        'picture_id',
         'status',
     ];
 
@@ -26,6 +29,11 @@ class Store extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function picture(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'picture_id');
     }
 
     public function users(): HasMany
