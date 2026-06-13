@@ -1,0 +1,34 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->foreignId('product_id')->nullable()->after('purchasable_id')->constrained();
+            $table->foreignId('store_id')->nullable()->after('product_id')->constrained();
+
+            $table->index(['order_id', 'product_id']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('order_items', function (Blueprint $table) {
+            $table->dropIndex(['order_id', 'product_id']);
+            $table->dropForeign('order_items_product_id_foreign');
+            $table->dropForeign('order_items_store_id_foreign');
+            $table->dropColumn('product_id');
+            $table->dropColumn('store_id');
+        });
+    }
+};

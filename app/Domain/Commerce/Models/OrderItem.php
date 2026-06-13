@@ -15,6 +15,8 @@ class OrderItem extends Model
         'parent_order_item_id',
         'purchasable_type',
         'purchasable_id',
+        'product_id',
+        'store_id',
         'quantity',
         'unit_price',
         'subtotal_amount',
