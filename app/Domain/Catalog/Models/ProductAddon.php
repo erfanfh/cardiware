@@ -2,13 +2,14 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Application\Commerce\Contracts\ProductReportablePurchasable;
 use App\Application\Commerce\Contracts\Purchasable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ProductAddon extends Model implements Purchasable
+class ProductAddon extends Model implements Purchasable, ProductReportablePurchasable
 {
     use SoftDeletes;
 
@@ -124,5 +125,15 @@ class ProductAddon extends Model implements Purchasable
     public function isPurchasableAvailable(): bool
     {
         return $this->is_active;
+    }
+
+    public function getReportProductId(): ?int
+    {
+        return $this->product_id;
+    }
+
+    public function getReportStoreId(): ?int
+    {
+        return $this->product?->store_id;
     }
 }
