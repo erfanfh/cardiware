@@ -4,6 +4,7 @@ namespace App\Http\Requests\Admin\Identity;
 
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Rules\MobileRule;
+use App\Rules\ValidPassword;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -88,7 +89,7 @@ class UpdateUserRequest extends FormRequest
             'password' => array_filter([
                 $isCreate ? 'required' : 'nullable',
                 'string',
-                'min:8',
+                new ValidPassword(),
                 'confirmed',
             ]),
 

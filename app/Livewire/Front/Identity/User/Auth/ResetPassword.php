@@ -7,6 +7,7 @@ use App\Application\System\RateLimiterAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
+use App\Rules\ValidPassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
@@ -102,7 +103,7 @@ class ResetPassword extends Component
             'password' => [
                 'required',
                 'string',
-                'min:8',
+                new ValidPassword(),
                 'confirmed',
             ],
             'password_confirmation' => ['required'],

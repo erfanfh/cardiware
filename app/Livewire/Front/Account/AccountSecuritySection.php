@@ -3,6 +3,7 @@
 namespace App\Livewire\Front\Account;
 
 use App\Domain\Identity\Models\User;
+use App\Rules\ValidPassword;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
@@ -26,7 +27,7 @@ class AccountSecuritySection extends Component
     {
         return [
             'current_password' => ['required', 'string'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', new ValidPassword(), 'confirmed'],
             'password_confirmation' => ['required', 'string'],
         ];
     }

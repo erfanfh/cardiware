@@ -8,6 +8,7 @@ use App\Application\Identity\Actions\Auth\LoginUserByIdentifierAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Domain\Identity\Models\User;
 use App\Rules\MobileRule;
+use App\Rules\ValidPassword;
 use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
@@ -170,7 +171,7 @@ class AuthModal extends Component
             'lastName' => ['required', 'string', 'max:255'],
             'mobile' => ['required', 'string', new MobileRule()],
             'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string', new ValidPassword()],
         ];
     }
 
