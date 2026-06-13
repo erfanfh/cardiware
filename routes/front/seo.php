@@ -47,3 +47,10 @@ Route::get('/author-sitemap.xml', [SitemapController::class, 'authors'])
 Route::get('/author-sitemap{page}.xml', [SitemapController::class, 'paginatedAuthors'])
     ->whereNumber('page')
     ->name('sitemap.authors.paginated');
+
+Route::get('/product-sitemap.xml', [SitemapController::class, 'products'])
+    ->name('sitemap.products');
+
+Route::get('/product-sitemap{page}.xml', [SitemapController::class, 'paginatedProducts'])
+    ->whereNumber('page')
+    ->name('sitemap.products.paginated');

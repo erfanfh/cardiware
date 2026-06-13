@@ -79,6 +79,16 @@ class SitemapController extends Controller
         return $this->xml("author-sitemap{$page}.xml");
     }
 
+    public function products(): Response
+    {
+        return $this->xml('product-sitemap.xml');
+    }
+
+    public function paginatedProducts(int $page): Response
+    {
+        return $this->xml("product-sitemap{$page}.xml");
+    }
+
     private function xml(string $filename): Response
     {
         abort_unless($this->storage->exists($filename), 404);
