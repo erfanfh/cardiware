@@ -50,5 +50,12 @@ return [
             'route_pattern' => 'author-sitemap{page}.xml',
             'include_images' => false,
         ],
+
+        'product' => [
+            'enabled' => true,
+            'route_pattern' => 'product-sitemap{page}.xml',
+            'include_listing_in_first_page' => true,
+            'include_images' => true,
+        ],
     ],
 ];

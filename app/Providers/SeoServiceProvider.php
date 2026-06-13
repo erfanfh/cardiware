@@ -8,6 +8,7 @@ use App\Application\Seo\Generators\Sitemap\AuthorStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\CategoryStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\PageStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\PostStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\ProductStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProjectStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\TagStaticSitemapGenerator;
 use App\Application\Seo\Resolvers\AuthorSeoResolver;
@@ -26,6 +27,7 @@ use App\Application\Seo\Support\SeoManager;
 use App\Application\Seo\Support\SeoResolverRegistry;
 use App\Application\Seo\Support\Sitemap\SitemapStorage;
 use App\Application\Seo\Support\Sitemap\StaticSitemapGeneratorRegistry;
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Models\User;
@@ -79,6 +81,7 @@ class SeoServiceProvider extends ServiceProvider
             CategoryStaticSitemapGenerator::class,
             TagStaticSitemapGenerator::class,
             AuthorStaticSitemapGenerator::class,
+            ProductStaticSitemapGenerator::class,
         ], StaticSitemapGeneratorInterface::class);
 
         $this->app->bind(
@@ -115,5 +118,9 @@ class SeoServiceProvider extends ServiceProvider
         User::saved($markSitemapsDirty);
         User::deleted($markSitemapsDirty);
         User::restored($markSitemapsDirty);
+
+        Product::saved($markSitemapsDirty);
+        Product::deleted($markSitemapsDirty);
+        Product::restored($markSitemapsDirty);
     }
 }
