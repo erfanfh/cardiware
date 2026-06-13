@@ -34,20 +34,36 @@ abstract class AbstractStaticSitemapGenerator implements StaticSitemapGeneratorI
     }
 
     /**
+     * @return array<int, SitemapUrlDTO>
+     */
+    protected function firstPageStaticUrls(): array
+    {
+        return [];
+    }
+
+    /**
      * @return array<int, SitemapIndexItemDTO>
      */
     public function generate(): array
     {
         $indexItems = [];
         $page = 1;
+        $hasGeneratedAnyFile = false;
 
         $this->query()
             ->orderBy('id')
-            ->chunkById($this->chunkSize(), function (Collection $models) use (&$page, &$indexItems) {
+            ->chunkById($this->chunkSize(), function (Collection $models) use (&$page, &$indexItems, &$hasGeneratedAnyFile) {
                 $urls = $models
                     ->map(fn(Model $model) => $this->mapModelToUrl($model))
                     ->values()
                     ->all();
+
+                if ($page === 1) {
+                    $urls = [
+                        ...$this->firstPageStaticUrls(),
+                        ...$urls,
+                    ];
+                }
 
                 if (empty($urls)) {
                     return true;
@@ -65,12 +81,31 @@ abstract class AbstractStaticSitemapGenerator implements StaticSitemapGeneratorI
                     lastmod: $this->lastmodFromUrls($urls),
                 );
 
+                $hasGeneratedAnyFile = true;
                 $page++;
 
                 usleep(200000);
 
                 return true;
             });
+
+        if (!$hasGeneratedAnyFile) {
+            $urls = $this->firstPageStaticUrls();
+
+            if (!empty($urls)) {
+                $filename = $this->filenameForPage(1);
+
+                $this->storage->put(
+                    $filename,
+                    $this->renderer->urlset($urls)
+                );
+
+                $indexItems[] = new SitemapIndexItemDTO(
+                    url: $this->sitemapUrlForPage(1),
+                    lastmod: $this->lastmodFromUrls($urls),
+                );
+            }
+        }
 
         return $indexItems;
     }
