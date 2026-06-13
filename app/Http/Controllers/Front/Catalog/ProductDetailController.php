@@ -32,6 +32,7 @@ class ProductDetailController extends Controller
         /** @var Product $product */
         $product = $resolvedSlug->model->load([
             'categories',
+            'tags',
             'picture.primaryVariant',
             'imageGallery.mediaFile.primaryVariant',
             'requirements',
