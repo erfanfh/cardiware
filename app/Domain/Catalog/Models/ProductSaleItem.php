@@ -9,12 +9,15 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Represents a sellable item of a product.
  */
 class ProductSaleItem extends Model implements Purchasable
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'product_id',
         'sku',
