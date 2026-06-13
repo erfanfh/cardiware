@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Admin\Marketplace;
 
-use App\Application\Catalog\Listings\ProductListing;
 use App\Application\Marketplace\Actions\CreateStoreAction;
 use App\Application\Marketplace\Actions\UpdateStoreAction;
+use App\Application\Marketplace\Listings\StoreListing;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Marketplace\Models\Store;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\Catalog\IndexProductRequest;
+use App\Http\Requests\Admin\Marketplace\IndexStoreRequest;
 use App\Http\Requests\Admin\Marketplace\UpdateStoreRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -20,95 +22,45 @@ class StoreController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param IndexProductRequest $request
-     * @param ProductListing $productListing
+     * @param IndexStoreRequest $request
+     * @param StoreListing $storeListing
      * @return View
      */
-    public function index(IndexProductRequest $request, ProductListing $productListing): View
+    public function index(IndexStoreRequest $request, StoreListing $storeListing): View
     {
         Gate::authorize('store.list');
 
-//        $products = $productListing
-//            ->handle(
-//                Product::query()
-//                    ->with([
-//                        'store',
-//                        'picture',
-//                        'seoAnalysis',
-//                        'categories',
-//                        'tags',
-//                        'saleItems',
-//                    ])
-//                    ->withCount('comments'),
-//                $request->validated()
-//            )
-//            ->paginate($productListing->perPage())
-//            ->withQueryString();
-//
-//        $statuses = collect(ProductStatusEnum::cases())
-//            ->mapWithKeys(fn(ProductStatusEnum $status) => [
-//                $status->value => $status->label(),
-//            ])
-//            ->all();
-//
-//        $types = collect(ProductTypeEnum::cases())
-//            ->mapWithKeys(fn(ProductTypeEnum $status) => [
-//                $status->value => $status->label(),
-//            ])
-//            ->all();
-//
-//        $structures = collect(ProductStructureEnum::cases())
-//            ->mapWithKeys(fn(ProductStructureEnum $status) => [
-//                $status->value => $status->label(),
-//            ])
-//            ->all();
-//
-//        $hasActiveFilters = $productListing->hasActiveFilters($request->validated());
-//
-//        $selectedTagIds = collect(request('tag_ids', []))
-//            ->filter(fn($id) => filled($id))
-//            ->map(fn($id) => (int)$id)
-//            ->filter(fn($id) => $id > 0)
-//            ->values();
-//
-//        $selectedTagOptions = TaxonomyTerm::query()
-//            ->whereIn('id', $selectedTagIds)
-//            ->get(['id', 'title'])
-//            ->map(fn($tag) => [
-//                'value' => (string)$tag->id,
-//                'label' => $tag->title,
-//            ])
-//            ->values()
-//            ->all();
-//
-//        $selectedCategoryIds = collect(request('category_ids', []))
-//            ->filter(fn($id) => filled($id))
-//            ->map(fn($id) => (int)$id)
-//            ->filter(fn($id) => $id > 0)
-//            ->values();
-//
-//        $selectedCategoryOptions = TaxonomyTerm::query()
-//            ->whereIn('id', $selectedCategoryIds)
-//            ->get(['id', 'title'])
-//            ->map(fn($category) => [
-//                'value' => (string)$category->id,
-//                'label' => $category->title,
-//            ])
-//            ->values()
-//            ->all();
-//
-//        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
-//
-//        return view('admin.catalog.products.index', compact(
-//            'products',
-//            'statuses',
-//            'types',
-//            'structures',
-//            'hasActiveFilters',
-//            'selectedTagOptions',
-//            'selectedCategoryOptions',
-//            'bulkActionOptions',
-//        ));
+        $stores = $storeListing
+            ->handle(
+                Store::query()
+                    ->with([
+                        'picture',
+                    ])
+                    ->withCount([
+                        'users',
+                        'products',
+                    ]),
+                $request->validated()
+            )
+            ->paginate($storeListing->perPage())
+            ->withQueryString();
+
+        $statuses = collect(StoreStatusEnum::cases())
+            ->mapWithKeys(fn(StoreStatusEnum $status) => [
+                $status->value => $status->label(),
+            ])
+            ->all();
+
+        $hasActiveFilters = $storeListing->hasActiveFilters($request->validated());
+
+        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
+
+        return view('admin.marketplace.stores.index', compact(
+            'stores',
+            'statuses',
+            'hasActiveFilters',
+            'bulkActionOptions',
+        ));
     }
 
     /**

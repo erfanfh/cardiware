@@ -133,6 +133,19 @@ return [
     ],
 
     [
+        'label' => 'فروشگاه',
+        'icon' => 'icons.store-01',
+        'children' => [
+            [
+                'label' => 'فروشنده ها',
+                'route' => 'admin.stores.index',
+                'icon' => 'icons.user-multiple-02',
+                'gate' => 'store.list',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'کاربران',
         'route' => 'admin.users.index',
         'icon' => 'icons.user',

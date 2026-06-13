@@ -5,12 +5,13 @@ namespace App\Domain\Marketplace\Models;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\System\Interfaces\PageViewableInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Store extends Model
+class Store extends Model implements PageViewableInterface
 {
     use SoftDeletes;
 
