@@ -114,11 +114,12 @@ class ProductAddon extends Model implements Purchasable, ProductReportablePurcha
     {
         return [
             'type' => 'product_addon',
+            'title' => $this->getPurchasableTitle(),
             'product_id' => $this->product_id,
-            'addon_id' => $this->id,
-            'title' => $this->title,
-            'description' => $this->description,
-            'unit_price' => $this->price,
+            'store_id' => $this->product?->store_id,
+            'product_title' => $this->product?->title,
+            'product_addon_id' => $this->id,
+            'product_addon_title' => $this->title,
         ];
     }
 
