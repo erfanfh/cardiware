@@ -82,73 +82,43 @@
                     </section>
 
                     <!-- product info -->
-                    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <x-front.cart>
                         <div class="text-sm font-extrabold text-slate-900 mb-4">باکس اطلاعات محصول</div>
 
-                        <div class="space-y-3">
+                        <div class="space-y-3 [&_svg]:w-4 [&_svg]:h-4">
                             <div
                                 class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">نام محصول</div>
-                                <div class="text-sm font-bold text-slate-900">پچ حرفه‌ای لیگ ایران برای FC 26</div>
+                                <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                                    @include('icons.view')
+                                    <span>تعداد بازدید</span>
+                                </div>
+                                <div
+                                    class="text-sm font-bold text-slate-900">{{ number_format(page_views($product)) }}</div>
                             </div>
 
                             <div
                                 class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تاریخ انتشار</div>
-                                <div class="text-sm font-bold text-slate-900">۱۴۰۴/۱۲/۲۸</div>
+                                <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                                    @include('icons.shopping-basket-03')
+                                    <span>تعداد فروش</span>
+                                </div>
+                                <div
+                                    class="text-sm font-bold text-slate-900">{{ $soldQuantity ? number_format($soldQuantity) : 'جدید!' }}</div>
                             </div>
 
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تعداد بازدید</div>
-                                <div class="text-sm font-bold text-slate-900">۱۲,۴۸۰</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تعداد فروش</div>
-                                <div class="text-sm font-bold text-slate-900">۱,۳۱۰</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تاریخ آپدیت</div>
-                                <div class="text-sm font-bold text-slate-900">۱۴۰۵/۰۱/۰۲</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تاریخ آپدیت بعدی</div>
-                                <div class="text-sm font-bold text-slate-900">۱۴۰۵/۰۱/۱۰</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">تیم سازنده</div>
-                                <div class="text-sm font-bold text-slate-900">ModdingWay Studio</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">قابل نصب در</div>
-                                <div class="text-sm font-bold text-slate-900">FC 26 - PC</div>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">فروشنده</div>
-                                <a href="#"
-                                   class="text-sm font-bold text-brand-700 hover:text-brand-800 transition">مشاهده
-                                    صفحه فروشنده ←</a>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
-                                <div class="text-xs font-extrabold text-slate-500">شناسه محصول</div>
-                                <div class="text-sm font-bold text-slate-900">MW-FC26-IRPL-0481</div>
-                            </div>
+                            @foreach($product->informationEntries as $info)
+                                <div
+                                    class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
+                                    <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                                        @include('icons.menu-01')
+                                        <span>{{ $info->field->title }}</span>
+                                    </div>
+                                    <div
+                                        class="text-sm font-bold text-slate-900">{{ $info->value }}</div>
+                                </div>
+                            @endforeach
                         </div>
-                    </section>
+                    </x-front.cart>
 
                     <!-- tags -->
                     <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

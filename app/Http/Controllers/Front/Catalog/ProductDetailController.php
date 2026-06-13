@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Catalog;
 
+use App\Application\Commerce\Reports\ProductSalesReport;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
@@ -36,11 +37,15 @@ class ProductDetailController extends Controller
             'requirements',
             'installationSteps',
             'faqs',
-            'releases.releaseChanges'
+            'releases.releaseChanges',
+            'informationEntries.field',
         ]);
+
+        $salesSummary = app(ProductSalesReport::class)->saleItemSummary($product->id);
+        $soldQuantity = $salesSummary['sold_quantity'];
 
         app(StoreViewAction::class)->execute($product);
 
-        return view('front.catalog.products.detail', compact('product'));
+        return view('front.catalog.products.detail', compact('product', 'soldQuantity'));
     }
 }
