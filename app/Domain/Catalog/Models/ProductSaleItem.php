@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Application\Commerce\Contracts\ProductReportablePurchasable;
 use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 /**
  * Represents a sellable item of a product.
  */
-class ProductSaleItem extends Model implements Purchasable
+class ProductSaleItem extends Model implements Purchasable, ProductReportablePurchasable
 {
     use SoftDeletes;
 
@@ -165,5 +166,15 @@ class ProductSaleItem extends Model implements Purchasable
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function getReportProductId(): ?int
+    {
+        return $this->product_id;
+    }
+
+    public function getReportStoreId(): ?int
+    {
+        return $this->product?->store_id;
     }
 }
