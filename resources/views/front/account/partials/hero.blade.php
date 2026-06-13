@@ -18,8 +18,12 @@
 
             <div>
                 <div class="flex flex-wrap items-center gap-2">
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900">
-                        سلام {{ "$user->first_name $user->last_name" }} 👋
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center [&_svg]:w-6 [&_svg]:h-6 [&_svg]:text-yellow-600 gap-1.5">
+                        <span>
+                            سلام
+                            {{ "$user->first_name $user->last_name" }}
+                        </span>
+                        @include('icons.waving-hand-02')
                     </h1>
                     @if(false)
                         <span
