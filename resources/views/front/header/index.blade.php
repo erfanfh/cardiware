@@ -152,6 +152,8 @@
             <div class="flex shrink-0 items-center gap-2 max-sm:gap-1.5">
                 @include('front.header.notifications')
 
+                <livewire:front.commerce.cart.header-cart-dropdown/>
+
                 <button
                     x-data="themeSwitcher()"
                     x-on:click="toggle()"
