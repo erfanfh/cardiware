@@ -87,13 +87,6 @@
                                         انتخاب شده
                                     </span>
                                     </div>
-
-                                    <div
-                                        x-show="saleItem.description"
-                                        x-cloak
-                                        class="mt-2 text-xs leading-6 text-slate-500"
-                                        x-text="saleItem.description"
-                                    ></div>
                                 </div>
 
                                 <div
@@ -101,6 +94,13 @@
                                     x-text="formatPrice(saleItem.price)"
                                 ></div>
                             </div>
+
+                            <div
+                                x-show="saleItem.description"
+                                x-cloak
+                                class="mt-2 text-xs text-justify leading-6 text-slate-500"
+                                x-text="saleItem.description"
+                            ></div>
                         </button>
                     </template>
                 </div>
