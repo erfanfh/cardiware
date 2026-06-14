@@ -136,6 +136,8 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
             'product_title' => $this->product?->title,
             'product_sale_item_id' => $this->id,
             'product_sale_item_title' => $this->title ?? null,
+            'sku' => $this->sku,
+            'max_quantity_per_order' => $this->max_quantity_per_order,
         ];
     }
 
