@@ -133,6 +133,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
             'title' => $this->getPurchasableTitle(),
             'product_id' => $this->product_id,
             'store_id' => $this->product?->store_id,
+            'image_url' => $this->product?->picture?->url,
             'product_title' => $this->product?->title,
             'product_sale_item_id' => $this->id,
             'product_sale_item_title' => $this->title ?? null,
