@@ -16,13 +16,7 @@
         class="relative cursor-pointer h-10 w-10 [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
         aria-label="سبد خرید"
     >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-[1.125rem] w-[1.125rem]" viewBox="0 0 24 24" fill="none">
-            <path d="M8 8.5V7a4 4 0 0 1 8 0v1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <path
-                d="M5.7 8.2c.12-1.1 1.05-1.95 2.16-1.95h8.28c1.11 0 2.04.85 2.16 1.95l.86 8.1A3.35 3.35 0 0 1 15.83 20H8.17a3.35 3.35 0 0 1-3.33-3.7l.86-8.1Z"
-                stroke="currentColor" stroke-width="1.8"/>
-            <path d="M9.5 11h.01M14.5 11h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-        </svg>
+        @include('icons.shopping-basket-03')
 
         @if($summary['items_count'] > 0)
             <span
@@ -71,11 +65,10 @@
                     aria-label="به‌روزرسانی سبد خرید"
                 >
                     <svg wire:loading.class="animate-spin" wire:target="reloadCart,toggle"
-                         xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                        <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="1.8"
-                              stroke-linecap="round"/>
-                        <path d="M20 4.5v5h-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-                              stroke-linejoin="round"/>
+                         xmlns="http://www.w3.org/2000/svg" class="cursor-pointer h-4 w-4" viewBox="0 0 24 24">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="1.5"
+                              d="m15.167 1l.598 1.118c.404.755.606 1.133.472 1.295c-.133.162-.573.031-1.454-.23A9.8 9.8 0 0 0 12 2.78c-5.247 0-9.5 4.128-9.5 9.22a8.97 8.97 0 0 0 1.27 4.61M8.834 23l-.598-1.118c-.404-.756-.606-1.134-.472-1.295c.133-.162.573-.032 1.454.23c.88.261 1.815.402 2.783.402c5.247 0 9.5-4.128 9.5-9.22a8.97 8.97 0 0 0-1.27-4.609"/>
                     </svg>
                 </button>
             </div>
@@ -161,7 +154,7 @@
                                                 type="button"
                                                 x-on:click="$dispatch('product-buy-box-sync-started')"
                                                 wire:click="decrease({{ $item['id'] }})"
-                                                class="grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                                                class="cursor-pointer grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                                                 aria-label="کم کردن تعداد"
                                             >
                                                 −
@@ -178,7 +171,7 @@
                                                 x-on:click="$dispatch('product-buy-box-sync-started')"
                                                 @disabled(! $item['can_increase'])
                                                 title="{{ ! $item['can_increase'] ? 'حداکثر تعداد مجاز برای این آیتم انتخاب شده است.' : '' }}"
-                                                class="grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                                                class="cursor-pointer grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                                                 aria-label="زیاد کردن تعداد"
                                             >
                                                 +
@@ -205,15 +198,10 @@
                                     type="button"
                                     x-on:click="$dispatch('product-buy-box-sync-started')"
                                     wire:click="remove({{ $item['id'] }})"
-                                    class="h-9 w-9 shrink-0 rounded-2xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20"
+                                    class="cursor-pointer h-9 w-9 [&_svg]:mx-auto [&_svg]:h-4 [&_svg]:w-4 shrink-0 rounded-2xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20"
                                     aria-label="حذف از سبد خرید"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-4 w-4" viewBox="0 0 24 24"
-                                         fill="none">
-                                        <path
-                                            d="M9.5 4.5h5M5 7h14M17.5 7l-.55 10.05A2.5 2.5 0 0 1 14.45 19.4h-4.9a2.5 2.5 0 0 1-2.5-2.35L6.5 7"
-                                            stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                    </svg>
+                                    @include('icons.delete-02')
                                 </button>
                             </div>
                         </div>
