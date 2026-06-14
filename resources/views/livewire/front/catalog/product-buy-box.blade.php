@@ -65,7 +65,8 @@
                     <template x-for="saleItem in saleItems" :key="saleItem.id">
                         <button
                             type="button"
-                            class="w-full cursor-pointer rounded-2xl border p-4 text-right transition"
+                            class="w-full cursor-pointer rounded-2xl border p-4 text-right transition disabled:cursor-not-allowed disabled:opacity-60"
+                            :disabled="isSubmitting"
                             :class="selectedSaleItemId === saleItem.id
                             ? 'border-brand-300 bg-brand-50 shadow-sm'
                             : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'"
@@ -146,15 +147,16 @@
                     <template x-for="addon in addons" :key="addon.id">
                         <label
                             class="block cursor-pointer rounded-2xl border p-4 transition"
-                            :class="isAddonSelected(addon.id)
-                            ? 'border-orange-200 bg-orange-50'
-                            : 'border-slate-200 bg-white hover:bg-slate-50'"
+                            :class="isSubmitting ? 'pointer-events-none opacity-70' : (isAddonSelected(addon.id)
+                                ? 'border-orange-200 bg-orange-50'
+                                : 'border-slate-200 bg-white hover:bg-slate-50')"
                         >
                             <div class="flex items-start gap-3">
                                 <input
                                     type="checkbox"
-                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400"
+                                    class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400 disabled:cursor-not-allowed disabled:opacity-60"
                                     :checked="isAddonSelected(addon.id)"
+                                    :disabled="isSubmitting"
                                     @change="toggleAddon(addon.id)"
                                 >
 
@@ -228,14 +230,26 @@
         <div
             x-show="inCart"
             x-cloak
-            class="mt-5 overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50 shadow-sm"
+            class="mt-5 overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm"
+            :class="isSubmitting ? 'pointer-events-none opacity-75' : ''"
         >
-            <div class="p-4">
-                {{-- Row 1: icon + title --}}
+            <div class="relative p-3.5">
+                {{-- Loading --}}
+                <div
+                    x-show="isSubmitting"
+                    x-cloak
+                    class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2 py-1 text-[10px] font-extrabold text-emerald-700 ring-1 ring-emerald-100"
+                >
+                    <span
+                        class="h-3 w-3 animate-spin rounded-full border-2 border-emerald-200 border-t-emerald-600"></span>
+                    <span>در حال اعمال...</span>
+                </div>
+
+                {{-- Header --}}
                 <div class="flex items-center gap-3">
                     <div
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+                        <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M20 6L9 17L4 12"
                                 stroke="currentColor"
@@ -246,21 +260,93 @@
                         </svg>
                     </div>
 
-                    <div class="text-sm font-black leading-6 text-emerald-900">
-                        این محصول در سبد خرید شماست
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-black text-emerald-950">
+                            محصول در سبد خرید است
+                        </div>
+
+                        <div class="mt-0.5 text-[11px] font-bold text-emerald-700">
+                            تغییرات به‌صورت خودکار ذخیره می‌شود
+                        </div>
                     </div>
                 </div>
 
-                {{-- Row 2: full-width description --}}
-                <div class="mt-3 text-xs leading-7 text-emerald-700">
-                    انتخاب‌های فعلی شما ذخیره شده‌اند. می‌توانید نسخه محصول، گزینه‌های همراه یا تعداد را تغییر دهید.
+                {{-- Quantity --}}
+                <div
+                    x-show="canChangeQuantity"
+                    x-cloak
+                    class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-3 py-2.5"
+                >
+                    <div class="text-xs font-black text-slate-800">
+                        تعداد
+                    </div>
+
+                    <div
+                        class="flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+                        <button
+                            type="button"
+                            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-base font-black text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                            :disabled="isSubmitting || quantity <= 1"
+                            @click="decreaseQuantity()"
+                        >
+                            −
+                        </button>
+
+                        <div
+                            class="flex h-8 min-w-10 items-center justify-center rounded-xl bg-slate-50 px-2 text-sm font-black text-slate-900"
+                            x-text="new Intl.NumberFormat('fa-IR').format(quantity)"
+                        ></div>
+
+                        <button
+                            type="button"
+                            class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-base font-black text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
+                            :disabled="isSubmitting || !canIncreaseQuantity"
+                            @click="increaseQuantity()"
+                        >
+                            +
+                        </button>
+                    </div>
                 </div>
 
-                {{-- Row 3: remove button --}}
-                <div class="mt-4">
+                {{-- Actions --}}
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <a
+                        href="{{ route('cart.index') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-emerald-700"
+                    >
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M6 6H21L19 14H8L6 6Z"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linejoin="round"
+                            />
+                            <path
+                                d="M6 6L5 3H3"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M9 20H9.01"
+                                stroke="currentColor"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M18 20H18.01"
+                                stroke="currentColor"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+
+                        <span>سبد خرید</span>
+                    </a>
+
                     <button
                         type="button"
-                        class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-white px-4 py-2.5 text-xs font-extrabold text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-white px-3 py-2.5 text-xs font-extrabold text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
                         :disabled="isSubmitting"
                         @click="removeFromCart()"
                     >
@@ -297,135 +383,7 @@
                             />
                         </svg>
 
-                        <span>حذف از سبد خرید</span>
-                    </button>
-                </div>
-            </div>
-
-            <div
-                x-show="canChangeQuantity || hasUnsavedChanges"
-                x-cloak
-                class="border-t border-emerald-100 bg-white p-4"
-            >
-                <div class="space-y-3">
-                    <div
-                        x-show="canChangeQuantity"
-                        x-cloak
-                        class="rounded-2xl border border-slate-200 bg-slate-50 p-3"
-                    >
-                        <div class="flex flex-wrap items-center justify-between gap-3">
-                            <div>
-                                <div class="text-xs font-black text-slate-800">
-                                    تعداد خرید
-                                </div>
-
-                                <div class="mt-1 text-[11px] leading-5 text-slate-500">
-                                    تعداد موردنظر برای همین محصول در سبد خرید
-                                </div>
-                            </div>
-
-                            <div class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white p-1">
-                                <button
-                                    type="button"
-                                    class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-lg font-black text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                                    :disabled="isSubmitting || quantity <= 1"
-                                    @click="decreaseQuantity()"
-                                >
-                                    −
-                                </button>
-
-                                <div
-                                    class="flex h-9 min-w-12 items-center justify-center rounded-xl bg-slate-50 px-3 text-sm font-black text-slate-900"
-                                    x-text="new Intl.NumberFormat('fa-IR').format(quantity)"
-                                ></div>
-
-                                <button
-                                    type="button"
-                                    class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl text-lg font-black text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
-                                    :disabled="isSubmitting || !canIncreaseQuantity"
-                                    @click="increaseQuantity()"
-                                >
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        x-show="hasUnsavedChanges"
-                        x-cloak
-                        class="rounded-2xl border border-amber-200 bg-amber-50 p-3"
-                    >
-                        <div class="flex items-start gap-3">
-                            <div
-                                class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M12 8V12"
-                                        stroke="currentColor"
-                                        stroke-width="2.5"
-                                        stroke-linecap="round"
-                                    />
-                                    <path
-                                        d="M12 16H12.01"
-                                        stroke="currentColor"
-                                        stroke-width="3"
-                                        stroke-linecap="round"
-                                    />
-                                    <path
-                                        d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-                            </div>
-
-                            <div class="min-w-0 flex-1">
-                                <div class="text-xs font-black text-amber-800">
-                                    تغییرات شما هنوز ذخیره نشده‌اند
-                                </div>
-
-                                <div class="mt-1 text-[11px] leading-5 text-amber-700">
-                                    برای اعمال نسخه یا گزینه‌های همراه جدید، تغییرات سبد خرید را ذخیره کنید.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        x-show="hasUnsavedChanges"
-                        x-cloak
-                        type="button"
-                        class="w-full cursor-pointer rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
-                        :disabled="isSubmitting"
-                        @click="submit(false)"
-                    >
-                <span
-                    x-show="!isSubmitting"
-                    class="inline-flex items-center justify-center gap-2"
-                >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M20 6L9 17L4 12"
-                            stroke="currentColor"
-                            stroke-width="2.3"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-
-                    <span>ذخیره تغییرات سبد خرید</span>
-                </span>
-
-                        <span
-                            x-show="isSubmitting"
-                            x-cloak
-                            class="inline-flex items-center justify-center gap-2"
-                        >
-                    <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-                    <span>در حال ذخیره...</span>
-                </span>
+                        <span>حذف</span>
                     </button>
                 </div>
             </div>

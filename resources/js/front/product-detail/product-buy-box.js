@@ -81,22 +81,57 @@ export default function productBuyBox(config) {
             return saleItemPrice + addonsPrice;
         },
 
-        selectSaleItem(saleItemId) {
-            this.selectedSaleItemId = Number(saleItemId);
+        async selectSaleItem(saleItemId) {
+            if (this.isSubmitting) {
+                return;
+            }
+
+            const normalizedSaleItemId = Number(saleItemId);
+
+            if (Number(this.selectedSaleItemId) === normalizedSaleItemId) {
+                return;
+            }
+
+            const previousSaleItemId = this.selectedSaleItemId;
+
+            this.selectedSaleItemId = normalizedSaleItemId;
+
+            if (!this.inCart) {
+                return;
+            }
+
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.selectedSaleItemId = previousSaleItemId;
+            }
         },
 
-        toggleAddon(addonId) {
+        async toggleAddon(addonId) {
+            if (this.isSubmitting) {
+                return;
+            }
+
             const normalizedAddonId = Number(addonId);
+            const previousAddonIds = [...this.selectedAddonIds];
 
             if (this.selectedAddonIds.includes(normalizedAddonId)) {
                 this.selectedAddonIds = this.selectedAddonIds.filter((id) => {
                     return Number(id) !== normalizedAddonId;
                 });
+            } else {
+                this.selectedAddonIds.push(normalizedAddonId);
+            }
 
+            if (!this.inCart) {
                 return;
             }
 
-            this.selectedAddonIds.push(normalizedAddonId);
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.selectedAddonIds = previousAddonIds;
+            }
         },
 
         isAddonSelected(addonId) {
@@ -136,6 +171,9 @@ export default function productBuyBox(config) {
                 }
 
                 this.applyPurchaseState(result.state);
+
+                this.originalSaleItemId = Number(this.selectedSaleItemId);
+                this.originalAddonIds = [...this.selectedAddonIds];
 
                 if (showModal) {
                     this.openSuccessModal(result);
@@ -221,18 +259,6 @@ export default function productBuyBox(config) {
             }
 
             return new Intl.NumberFormat('fa-IR').format(normalizedPrice) + ' تومان';
-        },
-
-        get hasUnsavedChanges() {
-            if (!this.inCart) {
-                return false;
-            }
-
-            const currentAddonIds = [...this.selectedAddonIds].map(Number).sort();
-            const originalAddonIds = [...this.originalAddonIds].map(Number).sort();
-
-            return Number(this.selectedSaleItemId) !== Number(this.originalSaleItemId)
-                || JSON.stringify(currentAddonIds) !== JSON.stringify(originalAddonIds);
         },
 
         get canIncreaseQuantity() {
