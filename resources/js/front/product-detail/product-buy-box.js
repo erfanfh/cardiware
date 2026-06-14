@@ -10,6 +10,8 @@ export default function productBuyBox(config) {
         selectedAddonIds: [],
 
         isSubmitting: false,
+        isSyncingFromExternalCart: false,
+        externalSyncTimeout: null,
 
         modalOpen: false,
         modal: {
@@ -289,6 +291,7 @@ export default function productBuyBox(config) {
             }
 
             this.applyPurchaseState(detail.state ?? {});
+            this.stopExternalSync();
         },
 
         applyPurchaseState(state) {
@@ -385,6 +388,27 @@ export default function productBuyBox(config) {
             }
 
             return new Intl.NumberFormat('fa-IR').format(normalizedPrice) + ' تومان';
+        },
+
+        startExternalSync() {
+            if (this.isSubmitting) {
+                return;
+            }
+
+            this.isSyncingFromExternalCart = true;
+
+            clearTimeout(this.externalSyncTimeout);
+
+            this.externalSyncTimeout = setTimeout(() => {
+                this.isSyncingFromExternalCart = false;
+            }, 8000);
+        },
+
+        stopExternalSync() {
+            clearTimeout(this.externalSyncTimeout);
+
+            this.externalSyncTimeout = null;
+            this.isSyncingFromExternalCart = false;
         },
     };
 }

@@ -159,6 +159,7 @@
                                             class="inline-flex items-center overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
                                             <button
                                                 type="button"
+                                                x-on:click="$dispatch('product-buy-box-sync-started')"
                                                 wire:click="decrease({{ $item['id'] }})"
                                                 class="grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                                                 aria-label="کم کردن تعداد"
@@ -174,6 +175,7 @@
                                             <button
                                                 type="button"
                                                 wire:click="increase({{ $item['id'] }})"
+                                                x-on:click="$dispatch('product-buy-box-sync-started')"
                                                 @disabled(! $item['can_increase'])
                                                 title="{{ ! $item['can_increase'] ? 'حداکثر تعداد مجاز برای این آیتم انتخاب شده است.' : '' }}"
                                                 class="grid h-8 w-8 place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
@@ -201,6 +203,7 @@
 
                                 <button
                                     type="button"
+                                    x-on:click="$dispatch('product-buy-box-sync-started')"
                                     wire:click="remove({{ $item['id'] }})"
                                     class="h-9 w-9 shrink-0 rounded-2xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20"
                                     aria-label="حذف از سبد خرید"
