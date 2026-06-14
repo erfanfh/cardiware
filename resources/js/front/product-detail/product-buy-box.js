@@ -37,10 +37,6 @@ export default function productBuyBox(config) {
             }
 
             this.applyPurchaseState(this.purchaseState);
-
-            this.$watch('modalOpen', (isOpen) => {
-                document.body.classList.toggle('overflow-hidden', isOpen);
-            });
         },
 
         get shouldShowSaleItemSelector() {
@@ -220,8 +216,8 @@ export default function productBuyBox(config) {
         openSuccessModal(result) {
             this.modal = {
                 type: 'success',
-                title: 'با موفقیت به سبد خرید اضافه شد',
-                message: result.message ?? 'محصول انتخاب‌شده در سبد خرید شما قرار گرفت.',
+                title: 'محصول به سبد خرید اضافه شد',
+                message: result.message ?? 'انتخاب شما با موفقیت در سبد خرید ذخیره شد.',
                 itemsCount: result.cart?.items_count ?? 0,
                 subtotalAmount: result.cart?.subtotal_amount ?? 0,
                 discountAmount: result.cart?.discount_amount ?? 0,
@@ -229,13 +225,13 @@ export default function productBuyBox(config) {
                 selectedAddons: this.selectedAddons,
             };
 
-            this.modalOpen = true;
+            this.$dispatch('open-modal', 'product-cart-feedback');
         },
 
         openErrorModal(message) {
             this.modal = {
                 type: 'error',
-                title: 'افزودن به سبد خرید ناموفق بود',
+                title: 'عملیات ناموفق بود',
                 message,
                 itemsCount: 0,
                 subtotalAmount: 0,
@@ -244,11 +240,11 @@ export default function productBuyBox(config) {
                 selectedAddons: [],
             };
 
-            this.modalOpen = true;
+            this.$dispatch('open-modal', 'product-cart-feedback');
         },
 
         closeModal() {
-            this.modalOpen = false;
+            this.$dispatch('close-modal', 'product-cart-feedback');
         },
 
         formatPrice(price) {

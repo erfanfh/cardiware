@@ -39,11 +39,6 @@
                             <span class="text-slate-300">•</span>
                             <span>تعداد: {{ $quantity }}</span>
                         @endif
-
-                        @if($canChangeQuantity)
-                            <span class="text-slate-300">•</span>
-                            <span>حداکثر تعداد: {{ $maxQuantity }}</span>
-                        @endif
                     </div>
                 </div>
             </div>

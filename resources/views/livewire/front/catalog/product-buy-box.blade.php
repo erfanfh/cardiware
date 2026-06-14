@@ -357,97 +357,80 @@
         </div>
 
         {{-- Modal --}}
-        <div
-            x-show="modalOpen"
-            x-cloak
-            x-transition.opacity.duration.150ms
-            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 px-4 py-6 backdrop-blur-sm"
-            @keydown.escape.window="closeModal()"
-            @click.self="closeModal()"
+        <x-front.modal
+            name="product-cart-feedback"
+            max-width="max-w-md"
+            title="وضعیت سبد خرید"
+            description="نتیجه عملیات افزودن یا به‌روزرسانی محصول در سبد خرید"
         >
-            <div
-                x-show="modalOpen"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 translate-y-4"
-                x-transition:enter-end="opacity-100 translate-y-0"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100 translate-y-0"
-                x-transition:leave-end="opacity-0 translate-y-4"
-                class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200"
-            >
-                <div class="p-5">
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl"
-                            :class="modal.type === 'success'
-                        ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100'
-                        : 'bg-rose-50 text-rose-600 ring-1 ring-rose-100'"
-                        >
-                            <template x-if="modal.type === 'success'">
-                                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M20 6L9 17L4 12"
-                                        stroke="currentColor"
-                                        stroke-width="2.5"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-                            </template>
+            <div>
+                {{-- Status --}}
+                <div class="flex items-start gap-4">
+                    <div
+                        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+                        :class="modal.type === 'success'
+                    ? 'bg-brand-50 text-brand-600 ring-1 ring-brand-100'
+                    : 'bg-rose-50 text-rose-600 ring-1 ring-rose-100'"
+                    >
+                        <template x-if="modal.type === 'success'">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M20 6L9 17L4 12"
+                                    stroke="currentColor"
+                                    stroke-width="2.6"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </template>
 
-                            <template x-if="modal.type === 'error'">
-                                <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
-                                    <path
-                                        d="M12 8V12"
-                                        stroke="currentColor"
-                                        stroke-width="2.5"
-                                        stroke-linecap="round"
-                                    />
-                                    <path
-                                        d="M12 16H12.01"
-                                        stroke="currentColor"
-                                        stroke-width="3"
-                                        stroke-linecap="round"
-                                    />
-                                    <path
-                                        d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
-                                        stroke="currentColor"
-                                        stroke-width="2"
-                                        stroke-linejoin="round"
-                                    />
-                                </svg>
-                            </template>
-                        </div>
-
-                        <div class="min-w-0 flex-1">
-                            <div
-                                class="text-base font-black text-slate-900"
-                                x-text="modal.title"
-                            ></div>
-
-                            <div
-                                class="mt-1 text-xs leading-6 text-slate-500"
-                                x-text="modal.message"
-                            ></div>
-                        </div>
-
-                        <button
-                            type="button"
-                            class="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-2xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                            @click="closeModal()"
-                        >
-                            ✕
-                        </button>
+                        <template x-if="modal.type === 'error'">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 8V12"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                    stroke-linecap="round"
+                                />
+                                <path
+                                    d="M12 16H12.01"
+                                    stroke="currentColor"
+                                    stroke-width="3"
+                                    stroke-linecap="round"
+                                />
+                                <path
+                                    d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </template>
                     </div>
 
-                    <div
-                        x-show="modal.type === 'success'"
-                        x-cloak
-                        class="mt-5 grid grid-cols-2 gap-3"
-                    >
+                    <div class="min-w-0 flex-1">
+                        <div
+                            class="text-base font-black text-slate-900"
+                            x-text="modal.title"
+                        ></div>
+
+                        <div
+                            class="mt-1.5 text-xs leading-6 text-slate-500"
+                            x-text="modal.message"
+                        ></div>
+                    </div>
+                </div>
+
+                {{-- Success Summary --}}
+                <div
+                    x-show="modal.type === 'success'"
+                    x-cloak
+                    class="mt-5 space-y-3"
+                >
+                    <div class="grid grid-cols-2 gap-3">
                         <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <div class="text-xs font-bold text-slate-500">
-                                محصولات سبد خرید
+                            <div class="text-[11px] font-extrabold text-slate-500">
+                                تعداد آیتم‌ها
                             </div>
 
                             <div class="mt-2 flex items-end gap-1">
@@ -455,28 +438,29 @@
                             class="text-2xl font-black text-slate-900"
                             x-text="new Intl.NumberFormat('fa-IR').format(modal.itemsCount)"
                         ></span>
+
                                 <span class="pb-1 text-xs font-bold text-slate-500">
                             مورد
                         </span>
                             </div>
                         </div>
 
-                        <div class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
-                            <div class="text-xs font-bold text-emerald-700">
-                                مبلغ فعلی سبد
+                        <div class="rounded-2xl border border-brand-100 bg-brand-50 p-4">
+                            <div class="text-[11px] font-extrabold text-brand-700">
+                                مبلغ سبد
                             </div>
 
                             <div
-                                class="mt-2 whitespace-nowrap text-base font-black text-emerald-700"
+                                class="mt-2 whitespace-nowrap text-base font-black text-brand-700"
                                 x-text="formatPrice(modal.totalAmount)"
                             ></div>
                         </div>
                     </div>
 
                     <div
-                        x-show="modal.type === 'success' && modal.selectedAddons.length > 0"
+                        x-show="modal.selectedAddons.length > 0"
                         x-cloak
-                        class="mt-4 rounded-2xl border border-slate-200 bg-white p-4"
+                        class="rounded-2xl border border-slate-200 bg-white p-4"
                     >
                         <div class="text-xs font-black text-slate-700">
                             گزینه‌های همراه انتخاب‌شده
@@ -493,12 +477,12 @@
                     </div>
 
                     <div
-                        x-show="modal.type === 'success' && modal.discountAmount > 0"
+                        x-show="modal.discountAmount > 0"
                         x-cloak
-                        class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-4"
+                        class="rounded-2xl border border-emerald-100 bg-emerald-50 p-4"
                     >
                         <div class="flex items-center justify-between gap-3">
-                            <div class="text-xs font-bold text-emerald-700">
+                            <div class="text-xs font-extrabold text-emerald-700">
                                 تخفیف اعمال‌شده
                             </div>
 
@@ -508,26 +492,28 @@
                             ></div>
                         </div>
                     </div>
-
-                    <div class="mt-5 space-y-3">
-                        <a
-                            x-show="modal.type === 'success'"
-                            x-cloak
-                            :href="cartUrl"
-                            class="flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-600"
-                        >
-                            مشاهده سبد خرید و ادامه خرید
-                        </a>
-
-                        <button
-                            type="button"
-                            class="w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
-                            @click="closeModal()"
-                            x-text="modal.type === 'success' ? 'ادامه مشاهده محصول' : 'متوجه شدم'"
-                        ></button>
-                    </div>
                 </div>
             </div>
-        </div>
+
+            <x-slot:footer>
+                <div class="grid gap-3" :class="modal.type === 'success' ? 'grid-cols-2' : 'grid-cols-1'">
+                    <a
+                        x-show="modal.type === 'success'"
+                        x-cloak
+                        :href="cartUrl"
+                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700"
+                    >
+                        مشاهده سبد خرید
+                    </a>
+
+                    <button
+                        type="button"
+                        class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
+                        @click="closeModal()"
+                        x-text="modal.type === 'success' ? 'ادامه مشاهده محصول' : 'متوجه شدم'"
+                    ></button>
+                </div>
+            </x-slot:footer>
+        </x-front.modal>
     </div>
 </x-front.cart>
