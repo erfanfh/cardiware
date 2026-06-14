@@ -124,13 +124,13 @@ class CreateCommentAction
 
         if ($parent === null && $commentable->requiresCommentRating() && $data->ratingPercent === null) {
             throw ValidationException::withMessages([
-                'rating_percent' => 'ثبت نمره الزامی است.',
+                'rating_percent' => 'ثبت امتیاز الزامی است.',
             ]);
         }
 
         if ($data->ratingPercent !== null && ($data->ratingPercent < 0 || $data->ratingPercent > 100)) {
             throw ValidationException::withMessages([
-                'rating_percent' => 'نمره باید بین 0 تا 100 باشد.',
+                'rating_percent' => 'امتیاز باید بین 0 تا 100 باشد.',
             ]);
         }
     }

@@ -43,21 +43,33 @@ class CommentItem extends Component
 
     public bool $repliesLoading = false;
 
+    public bool $showReplies = true;
+
+    public bool $allowReplySubmission = true;
+
     public function mount(
         int    $commentId,
         string $commentableType,
         int    $commentableId,
-        int    $level = 0
+        int    $level = 0,
+        bool   $showReplies = true,
+        bool   $allowReplySubmission = true,
     ): void
     {
         $this->commentId = $commentId;
         $this->commentableType = $commentableType;
         $this->commentableId = $commentableId;
         $this->level = $level;
+        $this->showReplies = $showReplies;
+        $this->allowReplySubmission = $allowReplySubmission;
     }
 
     public function toggleReplies(): void
     {
+        if (!$this->showReplies) {
+            return;
+        }
+
         if ($this->repliesOpen || $this->repliesLoading) {
             return;
         }
@@ -81,6 +93,10 @@ class CommentItem extends Component
         PendingCommentSessionStore $pendingCommentSessionStore
     ): void
     {
+        if (!$this->allowReplySubmission) {
+            return;
+        }
+
         $this->replyGeneralError = null;
         $this->replySuccessMessage = null;
         $this->resetErrorBag();

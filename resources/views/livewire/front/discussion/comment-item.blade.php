@@ -125,16 +125,18 @@
                     @endif
                 </div>
 
-                <button
-                    @click="openReplyForm()"
-                    type="button"
-                    class="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
-                >
-                    <span>پاسخ</span>
-                    <span class="text-slate-400 dark:text-slate-500">
+                @if($allowReplySubmission)
+                    <button
+                        @click="openReplyForm()"
+                        type="button"
+                        class="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
+                    >
+                        <span>پاسخ</span>
+                        <span class="text-slate-400 dark:text-slate-500">
                         @include('icons.arrow-left-double')
                     </span>
-                </button>
+                    </button>
+                @endif
             </div>
         </div>
     </div>
@@ -155,18 +157,20 @@
             {!! $this->comment->safe_content !!}
         </div>
 
-        <button
-            @click="openReplyForm()"
-            type="button"
-            class="mt-4 inline-flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white sm:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
-        >
-            <span>پاسخ</span>
-            <span class="text-slate-400 dark:text-slate-500">
+        @if($allowReplySubmission)
+            <button
+                @click="openReplyForm()"
+                type="button"
+                class="mt-4 inline-flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white sm:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
+            >
+                <span>پاسخ</span>
+                <span class="text-slate-400 dark:text-slate-500">
                 @include('icons.arrow-left-double')
             </span>
-        </button>
+            </button>
+        @endif
 
-        @if($this->hasVisibleReplies)
+        @if($showReplies && $this->hasVisibleReplies)
             @if(! $repliesOpen)
                 <div class="mt-4">
                     <div
@@ -291,7 +295,9 @@
                                     :commentable-type="$this->commentableType"
                                     :commentable-id="$this->commentableId"
                                     :level="$level + 1"
-                                    :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id"
+                                    :show-replies="$showReplies"
+                                    :allow-reply-submission="$allowReplySubmission"
+                                    :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id.'-show-'.(int) $showReplies.'-submit-'.(int) $allowReplySubmission"
                                 />
                             @endforeach
                         </div>
@@ -300,143 +306,145 @@
             @endif
         @endif
 
-        <div
-            x-show="replyOpen"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 translate-y-1"
-            x-transition:enter-end="opacity-100 translate-y-0"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 translate-y-0"
-            x-transition:leave-end="opacity-0 translate-y-1"
-            x-ref="replyForm"
-            class="relative mt-4 scroll-mt-40 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-3.5 sm:p-4 dark:border-slate-700 dark:bg-slate-950/80"
-        >
+        @if($allowReplySubmission)
             <div
-                wire:loading.flex
-                wire:target="submitReply"
-                class="absolute inset-0 z-10 items-center justify-center rounded-[1.25rem] bg-white/55 px-3 backdrop-blur-[1px] dark:bg-slate-950/65"
+                x-show="replyOpen"
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 translate-y-1"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-150"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 translate-y-1"
+                x-ref="replyForm"
+                class="relative mt-4 scroll-mt-40 rounded-[1.25rem] border border-slate-200 bg-slate-50/80 p-3.5 sm:p-4 dark:border-slate-700 dark:bg-slate-950/80"
             >
                 <div
-                    class="inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/20">
-                    <svg class="h-4 w-4 shrink-0 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
-                                stroke-width="4"></circle>
-                        <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
-                              stroke-linecap="round"></path>
-                    </svg>
-                    <span class="truncate">در حال ارسال پاسخ...</span>
-                </div>
-            </div>
-
-            <form wire:submit.prevent="submitReply" wire:loading.class="pointer-events-none opacity-60"
-                  wire:target="submitReply">
-                <div class="flex items-center justify-between gap-3">
-                    <div class="min-w-0 text-sm font-black leading-7 text-slate-800 dark:text-slate-200">
-                        پاسخ به
-                        <span class="break-words text-brand-600 dark:text-brand-300">
-                            {{ $this->comment->display_name }}
-                        </span>
-                    </div>
-
-                    <button
-                        @click="closeReplyForm()"
-                        type="button"
-                        class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-                    >
-                        ×
-                    </button>
-                </div>
-
-                @if($replyGeneralError)
-                    <div
-                        class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold leading-7 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
-                        {{ $replyGeneralError }}
-                    </div>
-                @endif
-
-                @if($replySuccessMessage)
-                    <div
-                        class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold leading-7 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                        {{ $replySuccessMessage }}
-                    </div>
-                @endif
-
-                @guest
-                    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <div>
-                            <input
-                                wire:model.defer="replyAuthorName"
-                                wire:loading.attr="disabled"
-                                wire:target="submitReply"
-                                type="text"
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                                placeholder="نام شما (الزامی)"
-                            >
-                            @error('replyAuthorName')
-                            <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div>
-                            <input
-                                wire:model.defer="replyAuthorEmail"
-                                wire:loading.attr="disabled"
-                                wire:target="submitReply"
-                                type="email"
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                                placeholder="ایمیل شما (الزامی)"
-                            >
-                            @error('replyAuthorEmail')
-                            <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-                @endguest
-
-                <textarea
-                    x-ref="replyTextarea"
-                    wire:model.defer="replyContent"
-                    wire:loading.attr="disabled"
+                    wire:loading.flex
                     wire:target="submitReply"
-                    rows="3"
-                    class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                    placeholder="پاسخ شما…"
-                ></textarea>
-
-                @error('replyContent')
-                <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
-                @enderror
-
-                <div class="mt-3 flex items-center justify-end gap-2 max-sm:grid max-sm:grid-cols-2">
-                    <button
-                        @click="closeReplyForm()"
-                        wire:loading.attr="disabled"
-                        wire:target="submitReply"
-                        type="button"
-                        class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-                    >
-                        لغو
-                    </button>
-
-                    <button
-                        wire:loading.attr="disabled"
-                        wire:target="submitReply"
-                        type="submit"
-                        class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 max-sm:w-full dark:hover:bg-brand-400"
-                    >
-                        <svg wire:loading wire:target="submitReply" class="h-4 w-4 shrink-0 animate-spin"
-                             viewBox="0 0 24 24" fill="none">
+                    class="absolute inset-0 z-10 items-center justify-center rounded-[1.25rem] bg-white/55 px-3 backdrop-blur-[1px] dark:bg-slate-950/65"
+                >
+                    <div
+                        class="inline-flex max-w-full items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs font-extrabold text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/20">
+                        <svg class="h-4 w-4 shrink-0 animate-spin" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
                                     stroke-width="4"></circle>
                             <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
                                   stroke-linecap="round"></path>
                         </svg>
-
-                        <span wire:loading.remove wire:target="submitReply">ارسال پاسخ</span>
-                        <span wire:loading wire:target="submitReply" class="truncate">در حال ارسال...</span>
-                    </button>
+                        <span class="truncate">در حال ارسال پاسخ...</span>
+                    </div>
                 </div>
-            </form>
-        </div>
+
+                <form wire:submit.prevent="submitReply" wire:loading.class="pointer-events-none opacity-60"
+                      wire:target="submitReply">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="min-w-0 text-sm font-black leading-7 text-slate-800 dark:text-slate-200">
+                            پاسخ به
+                            <span class="break-words text-brand-600 dark:text-brand-300">
+                            {{ $this->comment->display_name }}
+                        </span>
+                        </div>
+
+                        <button
+                            @click="closeReplyForm()"
+                            type="button"
+                            class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                        >
+                            ×
+                        </button>
+                    </div>
+
+                    @if($replyGeneralError)
+                        <div
+                            class="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold leading-7 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
+                            {{ $replyGeneralError }}
+                        </div>
+                    @endif
+
+                    @if($replySuccessMessage)
+                        <div
+                            class="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold leading-7 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                            {{ $replySuccessMessage }}
+                        </div>
+                    @endif
+
+                    @guest
+                        <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <div>
+                                <input
+                                    wire:model.defer="replyAuthorName"
+                                    wire:loading.attr="disabled"
+                                    wire:target="submitReply"
+                                    type="text"
+                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
+                                    placeholder="نام شما (الزامی)"
+                                >
+                                @error('replyAuthorName')
+                                <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <input
+                                    wire:model.defer="replyAuthorEmail"
+                                    wire:loading.attr="disabled"
+                                    wire:target="submitReply"
+                                    type="email"
+                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
+                                    placeholder="ایمیل شما (الزامی)"
+                                >
+                                @error('replyAuthorEmail')
+                                <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    @endguest
+
+                    <textarea
+                        x-ref="replyTextarea"
+                        wire:model.defer="replyContent"
+                        wire:loading.attr="disabled"
+                        wire:target="submitReply"
+                        rows="3"
+                        class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
+                        placeholder="پاسخ شما…"
+                    ></textarea>
+
+                    @error('replyContent')
+                    <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
+                    @enderror
+
+                    <div class="mt-3 flex items-center justify-end gap-2 max-sm:grid max-sm:grid-cols-2">
+                        <button
+                            @click="closeReplyForm()"
+                            wire:loading.attr="disabled"
+                            wire:target="submitReply"
+                            type="button"
+                            class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                            لغو
+                        </button>
+
+                        <button
+                            wire:loading.attr="disabled"
+                            wire:target="submitReply"
+                            type="submit"
+                            class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 max-sm:w-full dark:hover:bg-brand-400"
+                        >
+                            <svg wire:loading wire:target="submitReply" class="h-4 w-4 shrink-0 animate-spin"
+                                 viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                        stroke-width="4"></circle>
+                                <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                                      stroke-linecap="round"></path>
+                            </svg>
+
+                            <span wire:loading.remove wire:target="submitReply">ارسال پاسخ</span>
+                            <span wire:loading wire:target="submitReply" class="truncate">در حال ارسال...</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
     </div>
 </article>

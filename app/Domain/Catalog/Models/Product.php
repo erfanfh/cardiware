@@ -6,6 +6,7 @@ use App\Domain\Catalog\Enums\ProductMediaCollectionEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
+use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
@@ -20,7 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model implements PageViewableInterface
+class Product extends Model implements PageViewableInterface, CommentableContract
 {
     use SoftDeletes, HasTaxonomyTerms, HasComments, HasSeoMeta, HasExcerpt;
 
@@ -181,5 +182,20 @@ class Product extends Model implements PageViewableInterface
     public function informationEntries(): HasMany
     {
         return $this->hasMany(ProductInformationEntry::class);
+    }
+
+    public function commentsEnabled(): bool
+    {
+        return true;
+    }
+
+    public function guestCommentsEnabled(): bool
+    {
+        return true;
+    }
+
+    public function requiresCommentRating(): bool
+    {
+        return true;
     }
 }
