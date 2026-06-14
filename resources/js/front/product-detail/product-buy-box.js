@@ -3,6 +3,7 @@ export default function productBuyBox(config) {
         saleItems: config.saleItems ?? [],
         addons: config.addons ?? [],
         cartUrl: config.cartUrl,
+        hasAvailableSaleItems: Boolean(config.hasAvailableSaleItems ?? false),
 
         selectedSaleItemId: null,
         selectedAddonIds: [],
@@ -31,7 +32,7 @@ export default function productBuyBox(config) {
         originalAddonIds: [],
 
         init() {
-            if (this.saleItems.length > 0) {
+            if (this.hasAvailableSaleItems && this.saleItems.length > 0) {
                 this.selectedSaleItemId = Number(this.saleItems[0].id);
             }
 
@@ -67,6 +68,10 @@ export default function productBuyBox(config) {
         },
 
         get totalPrice() {
+            if (!this.hasAvailableSaleItems) {
+                return null;
+            }
+
             const saleItemPrice = Number(this.selectedSaleItem?.price ?? 0) * Number(this.quantity || 1);
 
             const addonsPrice = this.selectedAddons.reduce((total, addon) => {
@@ -99,6 +104,15 @@ export default function productBuyBox(config) {
         },
 
         async submit(showModal = true) {
+            if (!this.hasAvailableSaleItems) {
+                this.openErrorModal('این محصول در حال حاضر ناموجود است.');
+
+                return {
+                    success: false,
+                    message: 'این محصول در حال حاضر ناموجود است.',
+                };
+            }
+
             if (!this.selectedSaleItemId || this.isSubmitting) {
                 return {
                     success: false,

@@ -4,9 +4,50 @@
             saleItems: @js($saleItems),
             addons: @js($addons),
             purchaseState: @js($purchaseState),
+            hasAvailableSaleItems: @js($hasAvailableSaleItems),
             cartUrl: @js(route('cart.index')),
         })"
     >
+        <template x-if="!hasAvailableSaleItems">
+            <div class="rounded-2xl border border-rose-200 bg-rose-50 p-4">
+                <div class="flex items-start gap-3">
+                    <div
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M12 8V12"
+                                stroke="currentColor"
+                                stroke-width="2.5"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M12 16H12.01"
+                                stroke="currentColor"
+                                stroke-width="3"
+                                stroke-linecap="round"
+                            />
+                            <path
+                                d="M10.29 3.86L1.82 18A2 2 0 0 0 3.53 21H20.47A2 2 0 0 0 22.18 18L13.71 3.86A2 2 0 0 0 10.29 3.86Z"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+                    </div>
+
+                    <div class="min-w-0">
+                        <div class="text-sm font-black text-rose-900">
+                            ناموجود
+                        </div>
+
+                        <div class="mt-1 text-xs leading-6 text-rose-700">
+                            در حال حاضر هیچ نسخه فعالی برای خرید این محصول وجود ندارد.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
         {{-- Version selector: only for variable products --}}
         <template x-if="shouldShowSaleItemSelector">
             <div>
@@ -89,7 +130,7 @@
         </template>
 
         {{-- Addons --}}
-        <template x-if="addons.length > 0">
+        <template x-if="hasAvailableSaleItems && addons.length > 0">
             <div :class="(shouldShowSaleItemSelector || isSimpleProductWithAddons) ? 'mt-6' : ''">
                 <div class="mb-3">
                     <div class="text-sm font-extrabold text-slate-900">
@@ -145,42 +186,44 @@
         </template>
 
         {{-- Total --}}
-        <div
-            class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-            :class="(shouldShowSaleItemSelector || addons.length > 0 || isSimpleProductWithAddons) ? 'mt-6' : ''"
-        >
-            <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                    <div class="text-sm font-extrabold text-slate-800">
-                        مبلغ قابل پرداخت
+        <template x-if="hasAvailableSaleItems">
+            <div
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                :class="(shouldShowSaleItemSelector || addons.length > 0 || isSimpleProductWithAddons) ? 'mt-6' : ''"
+            >
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <div class="text-sm font-extrabold text-slate-800">
+                            مبلغ قابل پرداخت
+                        </div>
                     </div>
+
+                    <div
+                        class="shrink-0 whitespace-nowrap text-xl font-black text-brand-700"
+                        x-text="formatPrice(totalPrice)"
+                    ></div>
                 </div>
 
                 <div
-                    class="shrink-0 whitespace-nowrap text-xl font-black text-brand-700"
-                    x-text="formatPrice(totalPrice)"
-                ></div>
-            </div>
+                    x-show="selectedAddons.length > 0"
+                    x-cloak
+                    class="mt-3 border-t border-slate-200 pt-3"
+                >
+                    <div class="text-xs font-bold text-slate-500">
+                        گزینه‌های انتخاب‌شده:
+                    </div>
 
-            <div
-                x-show="selectedAddons.length > 0"
-                x-cloak
-                class="mt-3 border-t border-slate-200 pt-3"
-            >
-                <div class="text-xs font-bold text-slate-500">
-                    گزینه‌های انتخاب‌شده:
-                </div>
-
-                <div class="mt-2 flex flex-wrap gap-1.5">
-                    <template x-for="addon in selectedAddons" :key="'selected-addon-' + addon.id">
+                    <div class="mt-2 flex flex-wrap gap-1.5">
+                        <template x-for="addon in selectedAddons" :key="'selected-addon-' + addon.id">
                     <span
                         class="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600 ring-1 ring-slate-200"
                         x-text="addon.title"
                     ></span>
-                    </template>
+                        </template>
+                    </div>
                 </div>
             </div>
-        </div>
+        </template>
 
         <div
             x-show="inCart"
@@ -387,12 +430,14 @@
                 </div>
             </div>
         </div>
-        
+
         {{-- Actions --}}
-        <div class="mt-5 space-y-3">
+        <div
+            x-show="hasAvailableSaleItems && !inCart"
+            x-cloak
+            class="mt-5 space-y-3"
+        >
             <button
-                x-show="!inCart"
-                x-cloak
                 type="button"
                 class="w-full inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
                 :disabled="!selectedSaleItemId || isSubmitting"
@@ -407,17 +452,10 @@
                     x-cloak
                     class="inline-flex items-center gap-2"
                 >
-                    <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
+                <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
                     <span>در حال افزودن...</span>
                 </span>
             </button>
-
-            <a
-                href="{{ route('cart.index') }}"
-                class="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50"
-            >
-                مشاهده سبد خرید
-            </a>
         </div>
 
         {{-- Modal --}}

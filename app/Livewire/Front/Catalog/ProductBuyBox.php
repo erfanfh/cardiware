@@ -32,6 +32,8 @@ class ProductBuyBox extends Component
      */
     public array $purchaseState = [];
 
+    public bool $hasAvailableSaleItems = false;
+
     public function mount(
         Product                   $product,
         GetProductCartStateAction $getProductCartStateAction,
@@ -41,6 +43,8 @@ class ProductBuyBox extends Component
 
         $this->saleItems = $this->makeSaleItemsData();
         $this->addons = $this->makeAddonsData();
+
+        $this->hasAvailableSaleItems = count($this->saleItems) > 0;
 
         $this->purchaseState = $getProductCartStateAction->execute($product);
     }
@@ -61,6 +65,13 @@ class ProductBuyBox extends Component
         int                                      $quantity = 1,
     ): array
     {
+        if (!$this->hasAvailableSaleItems) {
+            return [
+                'success' => false,
+                'message' => 'این محصول در حال حاضر ناموجود است.',
+            ];
+        }
+
         try {
             $cart = $action->execute(
                 productSaleItemId: $saleItemId,
