@@ -43,7 +43,9 @@ class IndexCommentRequest extends FormRequest
                 'string',
                 Rule::in(['asc', 'desc']),
             ],
+            'commentable_type' => ['nullable', 'string', 'in:post,product'],
             'post_id' => ['nullable', 'integer', 'exists:posts,id'],
+            'product_id' => ['nullable', 'integer', 'exists:products,id'],
         ];
     }
 

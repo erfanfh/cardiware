@@ -43,6 +43,7 @@
                     $commentable = $comment->commentable;
 
                     $commentableTitle = '---';
+                    $commentableUrl = null;
 
                     if ($commentable) {
                         if (isset($commentable->title) && filled($commentable->title)) {
@@ -50,7 +51,24 @@
                         } elseif (isset($commentable->name) && filled($commentable->name)) {
                             $commentableTitle = $commentable->name;
                         }
+
+                        $commentableUrl = $commentable->url ?? null;
                     }
+
+                    $resolvedCommentableClass = \Illuminate\Database\Eloquent\Relations\Relation::getMorphedModel($comment->commentable_type)
+                        ?? $comment->commentable_type;
+
+                    $commentableTypeLabel = match ($resolvedCommentableClass) {
+                        \App\Domain\Content\Models\Post::class => 'نوشته',
+                        \App\Domain\Catalog\Models\Product::class => 'محصول',
+                        default => 'محتوا',
+                    };
+
+                    $commentableTypeBadgeClass = match ($resolvedCommentableClass) {
+                        \App\Domain\Content\Models\Post::class => 'border-sky-200 bg-sky-50 text-sky-700',
+                        \App\Domain\Catalog\Models\Product::class => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                        default => 'border-slate-200 bg-slate-50 text-slate-600',
+                    };
                 @endphp
 
                 <x-admin.list.tr
@@ -303,11 +321,32 @@
                     </x-admin.list.td>
 
                     <x-admin.list.td>
-                        <div class="min-w-[220px] space-y-2">
-                            <a href="{{ $commentable->url }}"
-                               class="text-sm font-bold text-slate-700 hover:text-brand-600 transition">
-                                {{ $commentableTitle }}
-                            </a>
+                        <div class="min-w-[240px] space-y-2">
+                            <div>
+                                <span
+                                    class="inline-flex items-center rounded-xl border px-2.5 py-1 text-[11px] font-bold {{ $commentableTypeBadgeClass }}">
+                                    {{ $commentableTypeLabel }}
+                                </span>
+                            </div>
+
+                            @if($commentableUrl)
+                                <a
+                                    href="{{ $commentableUrl }}"
+                                    target="_blank"
+                                    class="line-clamp-2 text-sm font-bold leading-7 text-slate-700 transition hover:text-brand-600"
+                                >
+                                    {{ $commentableTitle }}
+                                </a>
+                            @else
+                                <div class="line-clamp-2 text-sm font-bold leading-7 text-slate-700">
+                                    {{ $commentableTitle }}
+                                </div>
+                            @endif
+
+                            <div class="text-xs text-slate-400">
+                                {{ class_basename($resolvedCommentableClass) }}
+                                #{{ $comment->commentable_id }}
+                            </div>
                         </div>
                     </x-admin.list.td>
 

@@ -2,6 +2,8 @@
 
 namespace App\Application\Discussion\Listings;
 
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Content\Models\Post;
 use App\Infrastructure\Support\Listings\BaseListing;
 
 class CommentListing extends BaseListing
@@ -19,9 +21,11 @@ class CommentListing extends BaseListing
             'content',
             'status',
             'type',
+            'commentable_type',
             'created_at_from',
             'created_at_to',
-            'post_id'
+            'post_id',
+            'product_id',
         ];
     }
 
@@ -78,6 +82,21 @@ class CommentListing extends BaseListing
         }
     }
 
+    protected function filterCommentableType(mixed $value): void
+    {
+        $modelClass = match ($value) {
+            'post' => Post::class,
+            'product' => Product::class,
+            default => null,
+        };
+
+        if (!$modelClass) {
+            return;
+        }
+
+        $this->query->where('commentable_type', (new $modelClass())->getMorphClass());
+    }
+
     protected function filterCreatedAtFrom(mixed $value): void
     {
         $this->query->whereDate('created_at', '>=', $value);
@@ -90,8 +109,15 @@ class CommentListing extends BaseListing
 
     protected function filterPostId(mixed $value): void
     {
-        $this->query->whereHas('commentable', function ($query) use ($value) {
-            $query->where('id', $value);
-        });
+        $this->query
+            ->where('commentable_type', (new Post())->getMorphClass())
+            ->where('commentable_id', $value);
+    }
+
+    protected function filterProductId(mixed $value): void
+    {
+        $this->query
+            ->where('commentable_type', (new Product())->getMorphClass())
+            ->where('commentable_id', $value);
     }
 }

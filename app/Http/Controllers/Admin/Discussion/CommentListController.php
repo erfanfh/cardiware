@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Discussion;
 
 use App\Application\Discussion\Listings\CommentListing;
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
@@ -42,6 +43,11 @@ class CommentListController extends Controller
             'reply' => 'فقط پاسخ‌ها',
         ];
 
+        $commentableTypes = [
+            'post' => 'نوشته‌ها',
+            'product' => 'محصولات',
+        ];
+
         $statusCounts = [
             'all' => (clone $baseQuery)->count(),
             'pending' => (clone $baseQuery)->where('status', CommentStatusEnum::PENDING)->count(),
@@ -52,9 +58,19 @@ class CommentListController extends Controller
         $selectedPost = Post::query()
             ->where('id', $request->post_id)
             ->get(['id', 'title'])
-            ->map(fn($tag) => [
-                'value' => (string)$tag->id,
-                'label' => $tag->title,
+            ->map(fn(Post $post) => [
+                'value' => (string)$post->id,
+                'label' => $post->title,
+            ])
+            ->values()
+            ->all();
+
+        $selectedProduct = Product::query()
+            ->where('id', $request->product_id)
+            ->get(['id', 'title'])
+            ->map(fn(Product $product) => [
+                'value' => (string)$product->id,
+                'label' => $product->title,
             ])
             ->values()
             ->all();
@@ -62,10 +78,12 @@ class CommentListController extends Controller
         return view('admin.discussion.comments.index', compact(
             'comments',
             'selectedPost',
+            'selectedProduct',
             'bulkActionOptions',
             'hasActiveFilters',
             'statuses',
             'types',
+            'commentableTypes',
             'statusCounts',
         ));
     }

@@ -57,6 +57,14 @@
                     />
                 </x-admin.filters.item>
 
+                <x-admin.filters.item label="نوع محتوا">
+                    <x-admin.form.select
+                        name="commentable_type"
+                        :options="['' => 'همه محتواها'] + $commentableTypes"
+                        :value="request('commentable_type')"
+                    />
+                </x-admin.filters.item>
+
                 <x-admin.filters.item label="تاریخ ارسال">
                     <div class="flex gap-2">
                         <x-admin.form.date-picker
@@ -73,14 +81,25 @@
                     </div>
                 </x-admin.filters.item>
 
-                <x-admin.filters.item label="نوشته">
+                <x-admin.filters.item label="نوشته مرتبط">
                     <x-admin.form.async-select
                         name="post_id"
                         :value="request('post_id')"
                         :selected-options="$selectedPost"
-                        placeholder="جستجو در نوشته ها..."
+                        placeholder="جستجو در نوشته‌ها..."
                         :multiple="false"
                         :search-url="route('admin.posts.ajax-search')"
+                    />
+                </x-admin.filters.item>
+
+                <x-admin.filters.item label="محصول مرتبط">
+                    <x-admin.form.async-select
+                        name="product_id"
+                        :value="request('product_id')"
+                        :selected-options="$selectedProduct"
+                        placeholder="جستجو در محصولات..."
+                        :multiple="false"
+                        :search-url="route('admin.products.ajax-search')"
                     />
                 </x-admin.filters.item>
             </x-admin.filters.grid>
