@@ -9,6 +9,7 @@ use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use DomainException;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Throwable;
@@ -54,12 +55,10 @@ class ProductBuyBox extends Component
      *
      * @param array<int, int|string> $addonIds
      * @return array<string, mixed>
-     * @throws Throwable
      */
     #[Renderless]
     public function addToCart(
         AddProductSaleItemWithAddonsToCartAction $action,
-        GetProductCartStateAction                $getProductCartStateAction,
         int                                      $saleItemId,
         array                                    $addonIds = [],
         int                                      $quantity = 1,
@@ -79,21 +78,24 @@ class ProductBuyBox extends Component
                 quantity: $quantity,
             );
 
-            $state = $getProductCartStateAction->execute($this->product);
-
-            $this->purchaseState = $state;
+            $state = $this->refreshPurchaseState();
 
             $summary = [
                 'id' => $cart->id,
                 'items_count' => $cart->items()
                     ->whereNull('parent_cart_item_id')
                     ->count(),
-                'subtotal_amount' => $cart->subtotal_amount,
-                'discount_amount' => $cart->discount_amount,
-                'total_amount' => $cart->total_amount,
+                'subtotal_amount' => (int)$cart->subtotal_amount,
+                'discount_amount' => (int)$cart->discount_amount,
+                'total_amount' => (int)$cart->total_amount,
             ];
 
-            $this->dispatch('cart-updated', cart: $summary);
+            $this->dispatch(
+                'cart-updated',
+                source: 'product-buy-box',
+                productId: $this->product->id,
+                cart: $summary,
+            );
 
             return [
                 'success' => true,
@@ -126,17 +128,18 @@ class ProductBuyBox extends Component
     #[Renderless]
     public function removeFromCart(
         RemoveProductFromCartAction $removeProductFromCartAction,
-        GetProductCartStateAction   $getProductCartStateAction,
     ): array
     {
         try {
             $removeProductFromCartAction->execute($this->product);
 
-            $state = $getProductCartStateAction->execute($this->product);
+            $state = $this->refreshPurchaseState();
 
-            $this->purchaseState = $state;
-
-            $this->dispatch('cart-updated');
+            $this->dispatch(
+                'cart-updated',
+                source: 'product-buy-box',
+                productId: $this->product->id,
+            );
 
             return [
                 'success' => true,
@@ -153,9 +156,40 @@ class ProductBuyBox extends Component
         }
     }
 
+    /**
+     * Refresh this product buy box when cart is changed from another component,
+     * for example header cart dropdown.
+     */
+    #[On('cart-updated')]
+    #[Renderless]
+    public function refreshPurchaseStateFromCart(?string $source = null, ?int $productId = null): void
+    {
+        if ($source === 'product-buy-box') {
+            return;
+        }
+
+        $state = $this->refreshPurchaseState();
+
+        $this->dispatch(
+            'product-buy-box-state-refreshed',
+            productId: $this->product->id,
+            state: $state,
+        );
+    }
+
     public function render()
     {
         return view('livewire.front.catalog.product-buy-box');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function refreshPurchaseState(): array
+    {
+        $this->purchaseState = app(GetProductCartStateAction::class)->execute($this->product);
+
+        return $this->purchaseState;
     }
 
     /**

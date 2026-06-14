@@ -1,5 +1,6 @@
 export default function productBuyBox(config) {
     return {
+        productId: Number(config.productId),
         saleItems: config.saleItems ?? [],
         addons: config.addons ?? [],
         cartUrl: config.cartUrl,
@@ -32,6 +33,24 @@ export default function productBuyBox(config) {
         originalAddonIds: [],
 
         init() {
+            this.saleItems = this.saleItems.map((saleItem) => ({
+                ...saleItem,
+                id: Number(saleItem.id),
+                price: Number(saleItem.price ?? 0),
+                max_quantity_per_order: saleItem.max_quantity_per_order === null
+                    ? null
+                    : Number(saleItem.max_quantity_per_order),
+            }));
+
+            this.addons = this.addons.map((addon) => ({
+                ...addon,
+                id: Number(addon.id),
+                price: Number(addon.price ?? 0),
+                max_quantity_per_order: addon.max_quantity_per_order === null
+                    ? null
+                    : Number(addon.max_quantity_per_order),
+            }));
+
             if (this.hasAvailableSaleItems && this.saleItems.length > 0) {
                 this.selectedSaleItemId = Number(this.saleItems[0].id);
             }
@@ -77,6 +96,18 @@ export default function productBuyBox(config) {
             return saleItemPrice + addonsPrice;
         },
 
+        get canIncreaseQuantity() {
+            if (!this.canChangeQuantity) {
+                return false;
+            }
+
+            if (this.maxQuantityPerOrder === null) {
+                return true;
+            }
+
+            return Number(this.quantity) < Number(this.maxQuantityPerOrder);
+        },
+
         async selectSaleItem(saleItemId) {
             if (this.isSubmitting) {
                 return;
@@ -93,6 +124,8 @@ export default function productBuyBox(config) {
             this.selectedSaleItemId = normalizedSaleItemId;
 
             if (!this.inCart) {
+                this.normalizeQuantityForSelectedSaleItem();
+
                 return;
             }
 
@@ -151,6 +184,8 @@ export default function productBuyBox(config) {
                 };
             }
 
+            this.normalizeQuantityForSelectedSaleItem();
+
             this.isSubmitting = true;
 
             try {
@@ -202,6 +237,7 @@ export default function productBuyBox(config) {
 
                 if (!result?.success) {
                     this.openErrorModal(result?.message ?? 'حذف محصول از سبد خرید ناموفق بود.');
+
                     return;
                 }
 
@@ -210,6 +246,100 @@ export default function productBuyBox(config) {
                 this.openErrorModal('خطایی هنگام حذف محصول از سبد خرید رخ داد.');
             } finally {
                 this.isSubmitting = false;
+            }
+        },
+
+        async increaseQuantity() {
+            if (!this.canIncreaseQuantity || this.isSubmitting) {
+                return;
+            }
+
+            const previousQuantity = this.quantity;
+
+            this.quantity += 1;
+
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.quantity = previousQuantity;
+            }
+        },
+
+        async decreaseQuantity() {
+            if (!this.canChangeQuantity || this.quantity <= 1 || this.isSubmitting) {
+                return;
+            }
+
+            const previousQuantity = this.quantity;
+
+            this.quantity -= 1;
+
+            const result = await this.submit(false);
+
+            if (!result?.success) {
+                this.quantity = previousQuantity;
+            }
+        },
+
+        handleExternalPurchaseStateRefreshed(event) {
+            const detail = event?.detail ?? {};
+
+            if (Number(detail.productId) !== Number(this.productId)) {
+                return;
+            }
+
+            this.applyPurchaseState(detail.state ?? {});
+        },
+
+        applyPurchaseState(state) {
+            this.purchaseState = state ?? {};
+
+            this.inCart = Boolean(this.purchaseState.in_cart);
+
+            if (this.inCart) {
+                this.quantity = Number(this.purchaseState.quantity ?? 1);
+                this.canChangeQuantity = Boolean(this.purchaseState.can_change_quantity);
+                this.maxQuantityPerOrder = this.purchaseState.max_quantity_per_order === null
+                    ? null
+                    : Number(this.purchaseState.max_quantity_per_order);
+
+                this.selectedSaleItemId = Number(this.purchaseState.sale_item_id);
+                this.selectedAddonIds = (this.purchaseState.selected_addon_ids ?? []).map(Number);
+
+                this.originalSaleItemId = Number(this.purchaseState.sale_item_id);
+                this.originalAddonIds = [...this.selectedAddonIds];
+
+                this.normalizeQuantityForSelectedSaleItem();
+
+                return;
+            }
+
+            this.quantity = 1;
+            this.canChangeQuantity = false;
+            this.maxQuantityPerOrder = null;
+            this.originalSaleItemId = null;
+            this.originalAddonIds = [];
+
+            if (this.hasAvailableSaleItems && this.saleItems.length > 0) {
+                this.selectedSaleItemId = Number(this.saleItems[0].id);
+            }
+
+            this.selectedAddonIds = [];
+        },
+
+        normalizeQuantityForSelectedSaleItem() {
+            const maxQuantity = this.selectedSaleItem?.max_quantity_per_order ?? null;
+
+            if (maxQuantity === null) {
+                return;
+            }
+
+            if (Number(this.quantity) > Number(maxQuantity)) {
+                this.quantity = Number(maxQuantity);
+            }
+
+            if (Number(this.quantity) < 1) {
+                this.quantity = 1;
             }
         },
 
@@ -255,78 +385,6 @@ export default function productBuyBox(config) {
             }
 
             return new Intl.NumberFormat('fa-IR').format(normalizedPrice) + ' تومان';
-        },
-
-        get canIncreaseQuantity() {
-            if (!this.canChangeQuantity) {
-                return false;
-            }
-
-            if (this.maxQuantityPerOrder === null) {
-                return true;
-            }
-
-            return Number(this.quantity) < Number(this.maxQuantityPerOrder);
-        },
-
-        applyPurchaseState(state) {
-            this.purchaseState = state ?? {};
-
-            this.inCart = Boolean(this.purchaseState.in_cart);
-
-            if (this.inCart) {
-                this.quantity = Number(this.purchaseState.quantity ?? 1);
-                this.canChangeQuantity = Boolean(this.purchaseState.can_change_quantity);
-                this.maxQuantityPerOrder = this.purchaseState.max_quantity_per_order === null
-                    ? null
-                    : Number(this.purchaseState.max_quantity_per_order);
-
-                this.selectedSaleItemId = Number(this.purchaseState.sale_item_id);
-                this.selectedAddonIds = (this.purchaseState.selected_addon_ids ?? []).map(Number);
-
-                this.originalSaleItemId = Number(this.purchaseState.sale_item_id);
-                this.originalAddonIds = [...this.selectedAddonIds];
-
-                return;
-            }
-
-            this.quantity = 1;
-            this.canChangeQuantity = false;
-            this.maxQuantityPerOrder = null;
-            this.originalSaleItemId = null;
-            this.originalAddonIds = [];
-        },
-
-        async increaseQuantity() {
-            if (!this.canIncreaseQuantity || this.isSubmitting) {
-                return;
-            }
-
-            const previousQuantity = this.quantity;
-
-            this.quantity += 1;
-
-            const result = await this.submit(false);
-
-            if (!result?.success) {
-                this.quantity = previousQuantity;
-            }
-        },
-
-        async decreaseQuantity() {
-            if (!this.canChangeQuantity || this.quantity <= 1 || this.isSubmitting) {
-                return;
-            }
-
-            const previousQuantity = this.quantity;
-
-            this.quantity -= 1;
-
-            const result = await this.submit(false);
-
-            if (!result?.success) {
-                this.quantity = previousQuantity;
-            }
         },
     };
 }
