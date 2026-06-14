@@ -147,7 +147,7 @@
                     <template x-for="addon in addons" :key="addon.id">
                         <label
                             class="block cursor-pointer rounded-2xl border p-4 transition"
-                            :class="isSubmitting ? 'pointer-events-none opacity-70' : (isAddonSelected(addon.id)
+                            :class="isSubmitting ? 'pointer-events-none border-slate-200 opacity-70' : (isAddonSelected(addon.id)
                                 ? 'border-orange-200 bg-orange-50'
                                 : 'border-slate-200 bg-white hover:bg-slate-50')"
                         >
@@ -230,7 +230,7 @@
         <div
             x-show="inCart"
             x-cloak
-            class="mt-5 overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm"
+            class="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-sm ring-1 ring-slate-100"
             :class="isSubmitting ? 'pointer-events-none opacity-75' : ''"
         >
             <div class="relative p-3.5">
@@ -238,17 +238,17 @@
                 <div
                     x-show="isSubmitting"
                     x-cloak
-                    class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2 py-1 text-[10px] font-extrabold text-emerald-700 ring-1 ring-emerald-100"
+                    class="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2 py-1 text-[10px] font-extrabold text-slate-500 ring-1 ring-slate-200 backdrop-blur"
                 >
                     <span
-                        class="h-3 w-3 animate-spin rounded-full border-2 border-emerald-200 border-t-emerald-600"></span>
+                        class="h-3 w-3 animate-spin rounded-full border-2 border-slate-200 border-t-brand-500"></span>
                     <span>در حال اعمال...</span>
                 </div>
 
                 {{-- Header --}}
                 <div class="flex items-center gap-3">
                     <div
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm">
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
                         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none">
                             <path
                                 d="M20 6L9 17L4 12"
@@ -261,12 +261,8 @@
                     </div>
 
                     <div class="min-w-0 flex-1">
-                        <div class="text-sm font-black text-emerald-950">
+                        <div class="text-sm font-black text-slate-900">
                             محصول در سبد خرید است
-                        </div>
-
-                        <div class="mt-0.5 text-[11px] font-bold text-emerald-700">
-                            تغییرات به‌صورت خودکار ذخیره می‌شود
                         </div>
                     </div>
                 </div>
@@ -275,14 +271,14 @@
                 <div
                     x-show="canChangeQuantity"
                     x-cloak
-                    class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-3 py-2.5"
+                    class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2.5 ring-1 ring-slate-100"
                 >
                     <div class="text-xs font-black text-slate-800">
                         تعداد
                     </div>
 
                     <div
-                        class="flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1 shadow-sm">
+                        class="flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
                         <button
                             type="button"
                             class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl text-base font-black text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40"
@@ -293,7 +289,7 @@
                         </button>
 
                         <div
-                            class="flex h-8 min-w-10 items-center justify-center rounded-xl bg-slate-50 px-2 text-sm font-black text-slate-900"
+                            class="flex h-8 min-w-10 items-center justify-center rounded-xl bg-white px-2 text-sm font-black text-slate-900 ring-1 ring-slate-100"
                             x-text="new Intl.NumberFormat('fa-IR').format(quantity)"
                         ></div>
 
@@ -312,76 +308,20 @@
                 <div class="mt-3 grid grid-cols-2 gap-2">
                     <a
                         href="{{ route('cart.index') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-emerald-700"
+                        class="inline-flex items-center justify-center [&_svg]:w-4 [&_svg]:h-4 gap-2 rounded-2xl bg-brand-500 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700"
                     >
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                            <path
-                                d="M6 6H21L19 14H8L6 6Z"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M6 6L5 3H3"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M9 20H9.01"
-                                stroke="currentColor"
-                                stroke-width="3"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M18 20H18.01"
-                                stroke="currentColor"
-                                stroke-width="3"
-                                stroke-linecap="round"
-                            />
-                        </svg>
+                        @include('icons.shopping-cart-02')
 
                         <span>سبد خرید</span>
                     </a>
 
                     <button
                         type="button"
-                        class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-rose-200 bg-white px-3 py-2.5 text-xs font-extrabold text-rose-600 transition hover:border-rose-300 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        class="inline-flex cursor-pointer items-center justify-center [&_svg]:w-4 [&_svg]:h-4 gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-extrabold text-slate-500 transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-60"
                         :disabled="isSubmitting"
                         @click="removeFromCart()"
                     >
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
-                            <path
-                                d="M4 7H20"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M10 11V17"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M14 11V17"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                            />
-                            <path
-                                d="M6 7L7 20H17L18 7"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linejoin="round"
-                            />
-                            <path
-                                d="M9 7V4H15V7"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linejoin="round"
-                            />
-                        </svg>
+                        @include('icons.delete-02')
 
                         <span>حذف</span>
                     </button>
