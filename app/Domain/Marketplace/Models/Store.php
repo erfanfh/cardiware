@@ -6,6 +6,7 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\System\Interfaces\PageViewableInterface;
+use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Store extends Model implements PageViewableInterface
 {
-    use SoftDeletes;
+    use SoftDeletes, HasExcerpt;
 
     protected $fillable = [
         'title',
@@ -30,6 +31,11 @@ class Store extends Model implements PageViewableInterface
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function getExcerptAttribute(): string
+    {
+        return '';
     }
 
     public function picture(): BelongsTo
