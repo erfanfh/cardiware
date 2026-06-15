@@ -31,6 +31,7 @@
                 @include('front.catalog.products.partials.detail.faqs')
                 @include('front.catalog.products.partials.detail.releases')
                 @include('front.catalog.products.partials.detail.comments')
+                @include('front.catalog.products.partials.detail.related-products')
             </div>
 
             <div data-smart-sidebar-column class="lg:col-span-3">
