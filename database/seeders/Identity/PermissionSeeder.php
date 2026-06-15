@@ -94,6 +94,7 @@ class PermissionSeeder extends Seeder
                 'auth' => 'ورود/ثبت نام',
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
+                'products' => 'تنظیمات صفحه محصولات',
             ],
         ];
 

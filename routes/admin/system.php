@@ -23,4 +23,6 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('projects', 'storeProjects')->name('projects.store');
     Route::get('posts', 'posts')->name('posts');
     Route::put('posts', 'storePosts')->name('posts.store');
+    Route::get('products', 'products')->name('products');
+    Route::put('products', 'storeProducts')->name('products.store');
 });

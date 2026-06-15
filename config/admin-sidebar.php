@@ -261,6 +261,12 @@ return [
                 'gate' => 'setting.projects',
             ],
             [
+                'label' => 'صفحه محصولات',
+                'route' => 'admin.settings.products',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.products',
+            ],
+            [
                 'label' => 'درباره ما',
                 'route' => 'admin.settings.about-us',
                 'icon' => 'icons.settings-02',

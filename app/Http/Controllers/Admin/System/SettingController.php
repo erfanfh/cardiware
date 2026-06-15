@@ -329,6 +329,32 @@ class SettingController extends Controller
     }
 
     /**
+     * @return View
+     */
+    public function products(): View
+    {
+        Gate::authorize('setting.products');
+
+        return view('admin.system.settings.products');
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeProducts(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.products');
+
+        $this->storeSettings($request, 'products');
+
+        return redirect()
+            ->route('admin.settings.products')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * @param Request $request
      * @param string $group
      * @return void
