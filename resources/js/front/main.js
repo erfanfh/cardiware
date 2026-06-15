@@ -5,6 +5,7 @@ import './sticky-columns.js';
 import './scroll-to-top.js';
 import './product-detail/image-gallery-slider.js';
 import productBuyBox from './product-detail/product-buy-box.js';
+import './product-list/hero-slider.js';
 
 window.productBuyBox = productBuyBox;
 
