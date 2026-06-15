@@ -81,7 +81,7 @@
                 </div>
 
                 @if($products->hasPages())
-                    <div class="mt-8">
+                    <div class="mt-6">
                         {{ $products->links() }}
                     </div>
                 @endif
