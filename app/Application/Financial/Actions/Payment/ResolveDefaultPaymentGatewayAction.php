@@ -12,7 +12,7 @@ class ResolveDefaultPaymentGatewayAction
      */
     public function execute(): PaymentGatewayEnum
     {
-        $gateway = 'zibal';
+        $gateway = get_setting('general', 'default_payment_gateway');
 
         $gatewayEnum = PaymentGatewayEnum::tryFrom((string)$gateway);
 

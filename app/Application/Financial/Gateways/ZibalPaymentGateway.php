@@ -191,7 +191,11 @@ class ZibalPaymentGateway implements PaymentGateway
 
     private function merchant(): string
     {
-        return (string)config('financial.gateways.zibal.merchant');
+        if (get_setting('general', 'zibal_sandbox')) {
+            return 'zibal';
+        }
+
+        return get_setting('general', 'zibal_merchant_id');
     }
 
     private function requestUrl(): string

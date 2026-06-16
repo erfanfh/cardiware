@@ -37,9 +37,10 @@ class SettingController extends Controller
         Gate::authorize('setting.general');
 
         $this->storeSettings($request, 'general');
+        $activeTab = $request->input('active_tab', 'main');
 
         return redirect()
-            ->route('admin.settings.general')
+            ->route('admin.settings.general', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 

@@ -3,20 +3,14 @@
 return [
     'gateways' => [
         'zibal' => [
-            'merchant' => env('ZIBAL_MERCHANT', 'zibal'),
+            'request_url' => 'https://gateway.zibal.ir/v1/request',
+            'verify_url' => 'https://gateway.zibal.ir/v1/verify',
+            'start_url' => 'https://gateway.zibal.ir/start/',
 
-            'request_url' => env('ZIBAL_REQUEST_URL', 'https://gateway.zibal.ir/v1/request'),
-            'verify_url' => env('ZIBAL_VERIFY_URL', 'https://gateway.zibal.ir/v1/verify'),
-            'start_url' => env('ZIBAL_START_URL', 'https://gateway.zibal.ir/start/'),
-
-            'timeout' => env('ZIBAL_TIMEOUT', 20),
+            'timeout' => 20,
         ],
 
         'zarinpal' => [
-            'merchant_id' => env('ZARINPAL_MERCHANT_ID'),
-
-            'sandbox' => env('ZARINPAL_SANDBOX', true),
-
             'production' => [
                 'request_url' => 'https://payment.zarinpal.com/pg/v4/payment/request.json',
                 'verify_url' => 'https://payment.zarinpal.com/pg/v4/payment/verify.json',
@@ -33,9 +27,9 @@ return [
              * Internal system amounts are stored in toman.
              * Zarinpal request/verify amount should be sent in rial unless you explicitly use currency.
              */
-            'amount_multiplier' => env('ZARINPAL_AMOUNT_MULTIPLIER', 10),
+            'amount_multiplier' => 10,
 
-            'timeout' => env('ZARINPAL_TIMEOUT', 20),
+            'timeout' => 20,
         ],
 
         'payping' => [
@@ -54,15 +48,15 @@ return [
             'sandbox' => env('PAYPING_SANDBOX', false),
 
             'production' => [
-                'pay_url' => env('PAYPING_PAY_URL', 'https://api.payping.ir/v3/pay'),
-                'verify_url' => env('PAYPING_VERIFY_URL', 'https://api.payping.ir/v3/pay/verify'),
-                'start_url' => env('PAYPING_START_URL', 'https://api.payping.ir/new/v2/pay/gotoipg/'),
+                'pay_url' => 'https://api.payping.ir/v3/pay',
+                'verify_url' => 'https://api.payping.ir/v3/pay/verify',
+                'start_url' => 'https://api.payping.ir/new/v2/pay/gotoipg/',
             ],
 
             'sandbox_urls' => [
-                'pay_url' => env('PAYPING_SANDBOX_PAY_URL', 'https://api.payping.ir/v3/pay'),
-                'verify_url' => env('PAYPING_SANDBOX_VERIFY_URL', 'https://api.payping.ir/v3/pay/verify'),
-                'start_url' => env('PAYPING_SANDBOX_START_URL', 'https://api.payping.ir/new/v2/pay/gotoipg/'),
+                'pay_url' => 'https://api.payping.ir/v3/pay',
+                'verify_url' => 'https://api.payping.ir/v3/pay/verify',
+                'start_url' => 'https://api.payping.ir/new/v2/pay/gotoipg/',
             ],
 
             /*
@@ -75,9 +69,9 @@ return [
             | If it expects rial, set it to 10.
             |
             */
-            'amount_multiplier' => env('PAYPING_AMOUNT_MULTIPLIER', 1),
+            'amount_multiplier' => 1,
 
-            'timeout' => env('PAYPING_TIMEOUT', 20),
+            'timeout' => 20,
         ],
     ],
 ];

@@ -201,7 +201,7 @@ class ZarinpalPaymentGateway implements PaymentGateway
 
     private function merchantId(): string
     {
-        return (string)config('financial.gateways.zarinpal.merchant_id');
+        return get_setting('general', 'zarinpal_merchant_id', '');
     }
 
     private function requestUrl(): string
@@ -228,7 +228,7 @@ class ZarinpalPaymentGateway implements PaymentGateway
 
     private function isSandbox(): bool
     {
-        return (bool)config('financial.gateways.zarinpal.sandbox', true);
+        return get_setting('general', 'zarinpal_sandbox', false);
     }
 
     private function timeout(): int

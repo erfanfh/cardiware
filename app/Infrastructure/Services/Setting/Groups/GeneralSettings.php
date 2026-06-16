@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
+use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\MediaFileCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -9,9 +10,9 @@ class GeneralSettings extends BaseSettings
 {
     protected string $group = 'general';
     protected array $allowedKeys = [
+        'active_tab',
         'title',
         'subtitle',
-        'favicon',
         'default_sms_provider',
         'smsir_tepmlate_id',
         'smsir_api_token',
@@ -27,9 +28,20 @@ class GeneralSettings extends BaseSettings
         'search_projects_count_settings',
         'search_products_count_settings',
         'author_posts_count_settings',
+
+        'default_payment_gateway',
+        'zibal_sandbox',
+        'zibal_merchant_id',
+        'zarinpal_merchant_id',
+        'zarinpal_sandbox',
+        'payping_sandbox',
+        'payping_token',
     ];
 
     protected array $casts = [
         'favicon' => MediaFileCast::class,
+        'zibal_sandbox' => BooleanCast::class,
+        'zarinpal_sandbox' => BooleanCast::class,
+        'payping_sandbox' => BooleanCast::class,
     ];
 }

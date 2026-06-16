@@ -223,7 +223,7 @@ class PaypingPaymentGateway implements PaymentGateway
 
     private function token(): string
     {
-        return (string)config('financial.gateways.payping.token');
+        return get_setting('general', 'payping_token');
     }
 
     private function payUrl(): string
@@ -250,7 +250,7 @@ class PaypingPaymentGateway implements PaymentGateway
 
     private function isSandbox(): bool
     {
-        return (bool)config('financial.gateways.payping.sandbox', false);
+        return get_setting('general', 'payping_sandbox', false);
     }
 
     private function timeout(): int
