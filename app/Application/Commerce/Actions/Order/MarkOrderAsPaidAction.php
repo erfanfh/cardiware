@@ -20,7 +20,10 @@ class MarkOrderAsPaidAction
     public function execute(Order $order): Order
     {
         return DB::transaction(function () use ($order) {
-            $order = $order->refresh();
+            $order = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if ($order->status === OrderStatusEnum::PAID) {
                 return $order;
@@ -32,7 +35,7 @@ class MarkOrderAsPaidAction
 
             $order->forceFill([
                 'status' => OrderStatusEnum::PAID,
-                'paid_at' => now(),
+                'paid_at' => $order->paid_at ?? now(),
             ])->save();
 
             return $order->refresh();

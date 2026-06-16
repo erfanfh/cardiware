@@ -8,22 +8,39 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Throwable;
 
 class PaymentRetryController extends Controller
 {
-    public function __invoke(Payment $payment, StartPaymentAction $startPaymentAction): RedirectResponse
+    public function __invoke(
+        string                             $paymentToken,
+        StartPaymentAction                 $startPaymentAction,
+        ResolveDefaultPaymentGatewayAction $resolveDefaultPaymentGatewayAction,
+    ): RedirectResponse
     {
+        $payment = Payment::query()
+            ->where('public_token', $paymentToken)
+            ->firstOrFail();
+
         $order = $payment->payable;
 
         if (!$order instanceof Order) {
+            abort(404);
+        }
+
+        if ((int)$order->user_id !== (int)Auth::id()) {
+            abort(404);
+        }
+
+        if ($payment->isPaid()) {
             return redirect()
-                ->route('cart.index')
-                ->with('error', 'سفارش مربوط به پرداخت یافت نشد.');
+                ->route('payment.result', ['paymentToken' => $payment->public_token])
+                ->with('success', 'این سفارش قبلا با موفقیت پرداخت شده است.');
         }
 
         try {
-            $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();
+            $gateway = $resolveDefaultPaymentGatewayAction->execute();
 
             $newPayment = $startPaymentAction->execute(
                 payable: $order,
@@ -33,6 +50,7 @@ class PaymentRetryController extends Controller
                 ]),
                 metadata: [
                     'source' => 'retry',
+                    'previous_payment_id' => $payment->id,
                     'order_id' => $order->id,
                     'order_number' => $order->order_number,
                     'description' => 'پرداخت مجدد سفارش ' . $order->order_number,
@@ -44,7 +62,7 @@ class PaymentRetryController extends Controller
 
             if (!$redirectUrl) {
                 return redirect()
-                    ->route('payment.failed', ['payment' => $newPayment->tracking_code])
+                    ->route('payment.result', ['paymentToken' => $newPayment->public_token])
                     ->with('error', 'امکان اتصال مجدد به درگاه پرداخت وجود ندارد.');
             }
 
@@ -53,7 +71,7 @@ class PaymentRetryController extends Controller
             report($exception);
 
             return redirect()
-                ->route('payment.failed', ['payment' => $payment->tracking_code])
+                ->route('payment.result', ['paymentToken' => $payment->public_token])
                 ->with('error', 'خطایی در تلاش مجدد برای پرداخت رخ داد.');
         }
     }

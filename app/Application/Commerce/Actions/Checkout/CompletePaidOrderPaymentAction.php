@@ -29,7 +29,10 @@ class CompletePaidOrderPaymentAction
     public function execute(Payment $payment): Order
     {
         return DB::transaction(function () use ($payment) {
-            $payment = $payment->refresh();
+            $payment = Payment::query()
+                ->whereKey($payment->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if (!$payment->isPaid()) {
                 throw new DomainException('Only paid payments can complete an order.');

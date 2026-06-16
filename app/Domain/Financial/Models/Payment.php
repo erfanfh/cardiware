@@ -6,6 +6,7 @@ use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Str;
 
 class Payment extends Model
 {
@@ -37,6 +38,15 @@ class Payment extends Model
         'paid_at' => 'datetime',
         'failed_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Payment $payment) {
+            if (blank($payment->public_token)) {
+                $payment->public_token = (string)Str::ulid();
+            }
+        });
+    }
 
     /**
      * Get the payable model.

@@ -1,18 +1,17 @@
 <?php
 
 use App\Http\Controllers\Front\Financial\PaymentCallbackController;
-use App\Http\Controllers\Front\Financial\PaymentFailedController;
+use App\Http\Controllers\Front\Financial\PaymentResultController;
 use App\Http\Controllers\Front\Financial\PaymentRetryController;
-use App\Http\Controllers\Front\Financial\PaymentSuccessController;
 
 Route::get('/payment/{gateway}/callback', PaymentCallbackController::class)
+    ->middleware('throttle:30,1')
     ->name('payment.callback');
 
-Route::get('/payment/success/{payment:tracking_code}', PaymentSuccessController::class)
-    ->name('payment.success');
+Route::get('/payment/result/{paymentToken}', PaymentResultController::class)
+    ->middleware(['throttle:30,1'])
+    ->name('payment.result');
 
-Route::get('/payment/failed/{payment:tracking_code}', PaymentFailedController::class)
-    ->name('payment.failed');
-
-Route::post('/payment/retry/{payment:tracking_code}', PaymentRetryController::class)
+Route::post('/payment/retry/{paymentToken}', PaymentRetryController::class)
+    ->middleware(['auth', 'throttle:10,1'])
     ->name('payment.retry');

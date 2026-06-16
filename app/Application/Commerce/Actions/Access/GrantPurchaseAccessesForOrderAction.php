@@ -25,7 +25,10 @@ class GrantPurchaseAccessesForOrderAction
     public function execute(Order $order): Collection
     {
         return DB::transaction(function () use ($order) {
-            $order = $order->refresh();
+            $order = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if (!$order->isPaid()) {
                 return collect();
@@ -33,6 +36,7 @@ class GrantPurchaseAccessesForOrderAction
 
             $order->loadMissing([
                 'items.purchasable',
+                'items.children.purchasable',
             ]);
 
             $accesses = collect();

@@ -8,7 +8,6 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Route;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -155,8 +154,8 @@ class MyOrdersSection extends Component
     {
         $payment = $order->latestPayment;
 
-        if ($payment && Route::has('payment.retry')) {
-            return route('payment.retry', $payment->tracking_code);
+        if ($payment) {
+            return route('payment.retry', ['paymentToken' => $payment->public_token]);
         }
 
         return '#';
