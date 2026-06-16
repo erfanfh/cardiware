@@ -51,6 +51,26 @@
                     </span>
                 </a>
 
+                {{-- Products --}}
+                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'products']) }}"
+                   class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
+                    {{ $type == 'products' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
+
+                    @if($type == 'products')
+                        <span class="absolute inset-0 rounded-xl ring-1 ring-black/5"></span>
+                    @endif
+
+                    <span class="opacity-80 group-hover:opacity-100 transition">
+                        {{ $productsCount }}
+                    </span>
+
+                    <span>محصولات</span>
+
+                    <span class="opacity-70 group-hover:opacity-100 transition [&_svg]:w-4 [&_svg]:h-4">
+                        @include('icons.shopping-bag-03')
+                    </span>
+                </a>
+
                 {{-- Projects --}}
                 <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'projects']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
@@ -163,6 +183,38 @@
                         @endif
                     </div>
                 </section>
+            @elseif($type == 'products')
+                <section class="mt-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        @foreach($products as $product)
+                            <x-front.product.card :product="$product"/>
+                        @endforeach
+                    </div>
+
+                    @if($products->isEmpty())
+                        <div
+                            class="col-span-3 rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 p-6 text-center sm:p-8 dark:border-slate-700 dark:bg-slate-900">
+                            <div
+                                class="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 [&_svg]:h-6 [&_svg]:w-6 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-500">
+                                @include('icons.inbox')
+                            </div>
+
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                                محصولی یافت نشد!
+                            </h3>
+                            <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+                                فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                            </p>
+                        </div>
+                    @endif
+
+                    @if($products->hasPages())
+                        <div
+                            class="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                            <x-front.list.pagination :model="$products"/>
+                        </div>
+                    @endif
+                </section>
             @elseif($type == 'projects')
                 <section class="mt-6">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -179,8 +231,9 @@
                                 @include('icons.inbox')
                             </div>
 
-                            <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">پروژه ای یافت
-                                شد!</h3>
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                                پروژه ای یافت نشد!
+                            </h3>
                             <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
                                 فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
                             </p>
