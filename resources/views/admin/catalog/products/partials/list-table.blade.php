@@ -146,7 +146,7 @@
 
                     <x-admin.list.td>
                         @if($product->sku)
-                            <x-admin.badge color="slate" size="md" dir="ltr">
+                            <x-admin.badge class="whitespace-nowrap" color="slate" size="md" dir="ltr">
                                 {{ $product->sku }}
                             </x-admin.badge>
                         @else
@@ -166,19 +166,19 @@
 
                     <x-admin.list.td>
                         @if($product->saleItems->isEmpty())
-                            <span class="text-xs text-slate-400">بدون آیتم فروش</span>
+                            <span class="text-xs text-slate-400 whitespace-nowrap">بدون آیتم فروش</span>
                         @elseif($salePrices->isEmpty())
-                            <x-admin.badge color="slate" size="md">
+                            <x-admin.badge class="whitespace-nowrap" color="slate" size="md">
                                 رایگان
                             </x-admin.badge>
                         @elseif($minPrice === $maxPrice)
-                            <x-admin.badge color="green" size="md">
+                            <x-admin.badge class="whitespace-nowrap" color="green" size="md">
                                 {{ number_format($minPrice) }} تومان
                             </x-admin.badge>
                         @else
                             <div class="space-y-1 text-xs leading-5 text-slate-600">
-                                <div>از {{ number_format($minPrice) }} تومان</div>
-                                <div>تا {{ number_format($maxPrice) }} تومان</div>
+                                <div class="whitespace-nowrap">از {{ number_format($minPrice) }} تومان</div>
+                                <div class="whitespace-nowrap">تا {{ number_format($maxPrice) }} تومان</div>
                             </div>
                         @endif
                     </x-admin.list.td>
