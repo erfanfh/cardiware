@@ -57,6 +57,11 @@ class SeoSettings extends BaseSettings
         'project_social_seo_title',
         'project_social_seo_description',
 
+        'store_seo_title',
+        'store_seo_description',
+        'store_social_seo_title',
+        'store_social_seo_description',
+
         'post_tag_seo_title',
         'post_tag_seo_description',
         'post_tag_social_seo_title',

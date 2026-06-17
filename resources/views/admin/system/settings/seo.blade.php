@@ -14,6 +14,7 @@
                     'product' => 'صفحه محصول',
                     'page' => 'صفحه برگه',
                     'project' => 'صفحه پروژه',
+                    'store' => 'صفحه فروشنده',
                     'post-category' => 'صفحه دسته‌بندی نوشته',
                     'post-tag' => 'صفحه برچسب نوشته',
                     'post-list' => 'صفحه لیست نوشته‌ها',
@@ -49,6 +50,10 @@
 
                 <x-admin.tabs.panel name="project">
                     @include('admin.system.settings.partials.seo.project')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="store">
+                    @include('admin.system.settings.partials.seo.store')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="post-category">

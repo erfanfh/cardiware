@@ -58,11 +58,12 @@ class SettingController extends Controller
         $productSeoVariables = $seoVariableRegistry->forContext('product');
         $pageSeoVariables = $seoVariableRegistry->forContext('page');
         $projectSeoVariables = $seoVariableRegistry->forContext('project');
+        $storeSeoVariables = $seoVariableRegistry->forContext('store');
         $taxonomySeoVariables = $seoVariableRegistry->forContext('taxonomy');
         $searchSeoVariables = $seoVariableRegistry->forContext('search');
         $seoVariables = $seoVariableRegistry->forContext('');
 
-        return view('admin.system.settings.seo', compact('postSeoVariables', 'pageSeoVariables', 'projectSeoVariables', 'taxonomySeoVariables', 'searchSeoVariables', 'seoVariables', 'productSeoVariables'));
+        return view('admin.system.settings.seo', compact('postSeoVariables', 'pageSeoVariables', 'projectSeoVariables', 'taxonomySeoVariables', 'searchSeoVariables', 'seoVariables', 'productSeoVariables', 'storeSeoVariables'));
     }
 
     /**
