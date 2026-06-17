@@ -160,6 +160,14 @@ final class CacheKey
         return "content:page:{$pageId}:detail-data:{$pageUpdatedAt}";
     }
 
+    public static function storeSeoData(
+        int|string $storeId,
+        int        $storeUpdatedAt,
+    ): string
+    {
+        return "seo-data:post:{$storeId}:{$storeUpdatedAt}";
+    }
+
     public static function taxonomySlug(string $taxonomy, string $routeKey): string
     {
         return "taxonomy:slug:{$taxonomy}:{$routeKey}";
