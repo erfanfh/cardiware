@@ -67,4 +67,11 @@
             />
         </x-admin.field>
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="سئو"
+        storageKey="seo-section"
+    >
+        @include('admin.marketplace.stores.partials.seo-box')
+    </x-admin.metabox>
 </x-admin.page>

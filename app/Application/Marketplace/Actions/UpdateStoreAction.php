@@ -2,6 +2,9 @@
 
 namespace App\Application\Marketplace\Actions;
 
+use App\Application\Seo\Actions\Analysis\BuildStoreSeoAnalysisInputAction;
+use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
+use App\Application\Seo\Actions\SyncSeoMetaAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Marketplace\Models\Store;
@@ -12,7 +15,9 @@ use Throwable;
 class UpdateStoreAction
 {
     public function __construct(
-        protected AssignSlugAction $assignSlugAction,
+        protected AssignSlugAction       $assignSlugAction,
+        protected SyncSeoMetaAction      $syncSeoMetaAction,
+        protected StoreSeoAnalysisAction $storeSeoAnalysisAction,
     )
     {
     }
@@ -34,6 +39,7 @@ class UpdateStoreAction
 
             unset(
                 $storeData['slug'],
+                $storeData['seo'],
             );
 
             $store->update($storeData);
@@ -47,6 +53,9 @@ class UpdateStoreAction
                     desiredSlug: $desiredSlug,
                 )
             );
+
+            $this->syncSeoMetaAction->execute($store, $data['seo'] ?? []);
+            $this->storeSeoAnalysisAction->execute($store, app(BuildStoreSeoAnalysisInputAction::class));
 
             return $store;
         });
