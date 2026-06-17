@@ -34,26 +34,22 @@ final class BuildStoreSchemaAction
         return [
             '@type' => 'WebPage',
             '@id' => $context->pageUrl,
+
             'url' => $context->pageUrl,
             'name' => $context->pageTitle,
             'description' => $context->pageDescription,
 
             'isPartOf' => $websiteId ? ['@id' => $websiteId] : null,
 
-            'about' => [
-                '@id' => $storeId,
-            ],
+            'about' => ['@id' => $storeId],
+            'mainEntity' => ['@id' => $storeId],
 
-            'mainEntity' => [
-                '@id' => $storeId,
-            ],
-
-            'primaryImageOfPage' => $context->pageImageSchemaId ? [
-                '@id' => $context->pageImageSchemaId,
+            'primaryImageOfPage' => $context->pageImageUrl ? [
+                '@id' => $this->schemaIdGenerator->primaryImage($context->pageUrl),
             ] : null,
 
-            'image' => $context->pageImageSchemaId ? [
-                '@id' => $context->pageImageSchemaId,
+            'image' => $context->pageImageUrl ? [
+                '@id' => $this->schemaIdGenerator->primaryImage($context->pageUrl),
             ] : null,
 
             'thumbnailUrl' => $context->pageImageUrl,
@@ -61,9 +57,7 @@ final class BuildStoreSchemaAction
             'datePublished' => $context->publishedTime,
             'dateModified' => $context->modifiedTime,
 
-            'breadcrumb' => $breadcrumbId ? [
-                '@id' => $breadcrumbId,
-            ] : null,
+            'breadcrumb' => $breadcrumbId ? ['@id' => $breadcrumbId] : null,
 
             'inLanguage' => $context->inLanguage,
 

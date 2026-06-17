@@ -15,20 +15,23 @@ final class BuildStoreEntitySchemaAction
     }
 
     /**
+     * @param array<string, mixed> $organizationNode
      * @param array<string, mixed> $primaryImageNode
      */
     public function execute(
         Store            $store,
         SchemaContextDTO $context,
+        array            $organizationNode = [],
         array            $primaryImageNode = [],
     ): array
     {
 
         $primaryImageId = $primaryImageNode['@id'] ?? null;
+        $organizationId = $organizationNode['@id'] ?? null;
 
         $storeId = $this->schemaIdGenerator->custom($context->pageUrl, '#store');
 
-        $node = [
+        return [
             '@type' => 'Organization',
             '@id' => $storeId,
 
@@ -36,24 +39,32 @@ final class BuildStoreEntitySchemaAction
             'url' => $context->pageUrl,
             'description' => $context->pageDescription,
 
-            'image' => $primaryImageId
-                ? ['@id' => $primaryImageId]
-                : $context->pageImageUrl,
+            /**
+             * Image (preferred: real picture)
+             */
+            'image' => $store->picture?->url
+                ? $store->picture->url
+                : ($primaryImageId ? ['@id' => $primaryImageId] : null),
+
+            /**
+             * IMPORTANT: link to main site org
+             */
+            'parentOrganization' => $organizationId
+                ? ['@id' => $organizationId]
+                : null,
 
             'keywords' => $context->keywords,
+
+            /**
+             * Optional rating
+             */
+            'aggregateRating' => (isset($store->rating_avg) && isset($store->reviews_count))
+                ? [
+                    '@type' => 'AggregateRating',
+                    'ratingValue' => $store->rating_avg,
+                    'reviewCount' => $store->reviews_count,
+                ]
+                : null,
         ];
-
-        /**
-         * Optional rating (only if exists)
-         */
-        if (isset($store->rating_avg) && isset($store->reviews_count)) {
-            $node['aggregateRating'] = [
-                '@type' => 'AggregateRating',
-                'ratingValue' => $store->rating_avg,
-                'reviewCount' => $store->reviews_count,
-            ];
-        }
-
-        return $node;
     }
 }
