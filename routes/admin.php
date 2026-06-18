@@ -21,4 +21,5 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/navigation.php';
         require __DIR__ . '/admin/marketplace.php';
         require __DIR__ . '/admin/catalog.php';
+        require __DIR__ . '/admin/commerce.php';
     });

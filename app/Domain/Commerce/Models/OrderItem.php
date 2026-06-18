@@ -2,6 +2,8 @@
 
 namespace App\Domain\Commerce\Models;
 
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Marketplace\Models\Store;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -93,5 +95,15 @@ class OrderItem extends Model
     public function purchaseAccess(): HasOne
     {
         return $this->hasOne(PurchaseAccess::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function store(): BelongsTo
+    {
+        return $this->belongsTo(Store::class);
     }
 }
