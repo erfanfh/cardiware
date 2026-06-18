@@ -41,7 +41,7 @@
                             @endforeach
                         </div>
 
-                        <h1 class="text-xl sm:text-2xl font-black text-white leading-tight">
+                        <h1 class="text-xl sm:text-2xl font-black text-white leading-9">
                             {{ $product->title }}
                         </h1>
 
@@ -51,11 +51,11 @@
                     </div>
 
                     <div class="flex items-center gap-2 self-start sm:self-end">
-                        <button
-                            class="cursor-pointer h-10 w-10 [&_svg]:w-5 [&_svg]:h-5 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"
-                            aria-label="علاقه‌مندی">
-                            @include('icons.favourite')
-                        </button>
+                        {{--                        <button--}}
+                        {{--                            class="cursor-pointer h-10 w-10 [&_svg]:w-5 [&_svg]:h-5 rounded-2xl bg-white/10 text-white border border-white/10 hover:bg-white/15 transition grid place-items-center"--}}
+                        {{--                            aria-label="علاقه‌مندی">--}}
+                        {{--                            @include('icons.favourite')--}}
+                        {{--                        </button>--}}
 
                         <button
                             x-data
