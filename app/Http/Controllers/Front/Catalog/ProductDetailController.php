@@ -13,7 +13,11 @@ use Illuminate\Support\Collection;
 
 class ProductDetailController extends Controller
 {
-    public function __invoke(string $productSlug, ResolveSlugAction $resolveSlugAction)
+    public function __invoke(
+        string             $productSlug,
+        ResolveSlugAction  $resolveSlugAction,
+        ProductSalesReport $productSalesReport,
+    )
     {
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
@@ -31,26 +35,31 @@ class ProductDetailController extends Controller
         }
 
         /** @var Product $product */
-        $product = $resolvedSlug->model->load([
-            'categories',
-            'tags',
-            'picture.primaryVariant',
-            'imageGallery.mediaFile.primaryVariant',
-            'requirements',
-            'installationSteps',
-            'faqs',
-            'releases.releaseChanges',
-            'informationEntries.field',
-        ]);
+        $product = $resolvedSlug
+            ->model
+            ->load([
+                'categories',
+                'tags',
+                'picture.primaryVariant',
+                'imageGallery.mediaFile.primaryVariant',
+                'requirements',
+                'installationSteps',
+                'faqs',
+                'releases.releaseChanges',
+                'informationEntries.field',
+            ]);
 
         $salesSummary = app(ProductSalesReport::class)->saleItemSummary($product->id);
         $soldQuantity = $salesSummary['sold_quantity'];
 
         $relatedProducts = $this->getRelatedProducts($product);
 
+        $salesSummary = $productSalesReport->storeSummary($product->store->id);
+        $storeSoldQuantity = $salesSummary['sold_quantity'];
+
         app(StoreViewAction::class)->execute($product);
 
-        return view('front.catalog.products.detail', compact('product', 'soldQuantity', 'relatedProducts'));
+        return view('front.catalog.products.detail', compact('product', 'soldQuantity', 'relatedProducts', 'storeSoldQuantity'));
     }
 
     private function getRelatedProducts(Product $product): Collection

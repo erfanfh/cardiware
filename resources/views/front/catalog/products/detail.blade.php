@@ -122,6 +122,8 @@
                         </div>
                     </x-front.cart>
 
+                    @include('front.catalog.products.partials.detail.sidebar.store')
+
                     @if($product->tags)
                         <x-front.cart>
                             <div class="text-sm font-extrabold text-slate-900 mb-4">برچسب‌ها</div>
