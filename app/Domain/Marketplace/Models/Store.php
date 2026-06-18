@@ -21,6 +21,7 @@ class Store extends Model implements PageViewableInterface
         'title',
         'slug',
         'body',
+        'activity_field',
         'picture_id',
         'status',
     ];

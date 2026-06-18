@@ -29,6 +29,7 @@ class UpdateStoreRequest extends FormRequest
             'status' => ['required', Rule::enum(StoreStatusEnum::class)],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'body' => ['nullable', 'string'],
+            'activity_field' => ['nullable', 'string'],
 
             'seo' => ['nullable', 'array'],
         ];

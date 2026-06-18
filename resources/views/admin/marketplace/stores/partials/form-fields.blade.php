@@ -57,13 +57,22 @@
     />
 
     <x-admin.metabox title="توضیحات">
-        <x-admin.field required>
+        <x-admin.field>
             <x-admin.form.editor
                 name="body"
                 :value="old('body', $store?->body)"
                 preset="full"
                 height="500"
                 placeholder="درباره فروشنده ..."
+            />
+        </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="زمینه فعالیت">
+        <x-admin.field>
+            <x-admin.form.input
+                name="activity_field"
+                :value="old('activity_field', $store?->activity_field)"
             />
         </x-admin.field>
     </x-admin.metabox>
