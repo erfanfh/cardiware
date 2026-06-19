@@ -1,6 +1,7 @@
-<x-front.cart class="!p-4 sm:!p-5">
+<x-front.cart class="!p-4 sm:!p-5 border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
     <div class="flex items-center gap-3">
-        <div class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+        <div
+            class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
             <img
                 src="{{ $product->store->picture?->url }}"
                 alt="{{ $product->store->title }}"
@@ -10,17 +11,18 @@
 
         <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
-                <h3 class="line-clamp-1 text-sm font-extrabold text-slate-900">
+                <h3 class="line-clamp-1 text-sm font-extrabold text-slate-900 dark:text-white">
                     {{ $product->store->title }}
                 </h3>
 
-                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600">
+                <span
+                    class="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
                     تایید شده
                 </span>
             </div>
 
             @if($product->store->activity_field)
-                <p class="mt-1 line-clamp-1 text-xs leading-5 text-slate-500">
+                <p class="mt-1 line-clamp-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
                     {{ $product->store->activity_field }}
                 </p>
             @endif
@@ -28,22 +30,22 @@
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-2">
-        <div class="rounded-xl bg-slate-50 p-3">
-            <div class="text-[11px] text-slate-500">تعداد محصولات</div>
-            <div class="mt-1 text-sm font-extrabold text-slate-900">
+        <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+            <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد محصولات</div>
+            <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
                 {{ number_format($product->store->products()->count()) }}
             </div>
         </div>
 
-        <div class="rounded-xl bg-slate-50 p-3">
-            <div class="text-[11px] text-slate-500">میزان فروش</div>
-            <div class="mt-1 text-sm font-extrabold text-slate-900">
+        <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+            <div class="text-[11px] text-slate-500 dark:text-slate-400">میزان فروش</div>
+            <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
                 {{ number_format($storeSoldQuantity) }}
             </div>
         </div>
     </div>
 
-    <p class="mt-4 text-justify text-xs leading-6 text-slate-600">
+    <p class="mt-4 text-justify text-xs leading-6 text-slate-600 dark:text-slate-400">
         {{ $product->store->excerpt(35) }}
     </p>
 

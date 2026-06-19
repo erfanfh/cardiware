@@ -17,7 +17,7 @@
 
         @if($generalError || $errors->any())
             <div
-                class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs leading-6 text-red-700 sm:text-sm">
+                class="rounded-2xl border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30 px-4 py-3 text-xs leading-6 text-red-700 dark:text-red-300 sm:text-sm">
                 <div class="font-extrabold">لطفاً موارد زیر را بررسی کنید:</div>
 
                 @if($generalError)
@@ -37,7 +37,7 @@
         @guest
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div class="min-w-0">
-                    <label class="mb-2 block text-xs font-bold text-slate-600">
+                    <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
                         نام شما
                     </label>
 
@@ -46,12 +46,12 @@
                         wire:model.defer="authorName"
                         wire:loading.attr="disabled"
                         wire:target="submit"
-                        class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
+                        class="h-11 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:disabled:bg-slate-800"
                     >
                 </div>
 
                 <div class="min-w-0">
-                    <label class="mb-2 block text-xs font-bold text-slate-600">
+                    <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
                         ایمیل شما
                     </label>
 
@@ -61,14 +61,14 @@
                         wire:loading.attr="disabled"
                         wire:target="submit"
                         dir="ltr"
-                        class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
+                        class="h-11 w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 text-left text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:disabled:bg-slate-800"
                     >
                 </div>
             </div>
         @endguest
 
         <div class="min-w-0">
-            <label class="mb-2 block text-xs font-bold text-slate-600">
+            <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
                 متن دیدگاه
             </label>
 
@@ -77,7 +77,7 @@
                 wire:model.defer="content"
                 wire:loading.attr="disabled"
                 wire:target="submit"
-                class="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 sm:rounded-3xl"
+                class="w-full resize-none rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:disabled:bg-slate-800 sm:rounded-3xl"
             ></textarea>
         </div>
 
@@ -95,11 +95,11 @@
                     $wire.generalError = null;
                 }
             }"
-            class="rounded-2xl border border-slate-200 bg-white p-4 sm:rounded-3xl"
+            class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:rounded-3xl"
         >
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div class="text-sm font-black text-slate-700">
+                    <div class="text-sm font-black text-slate-700 dark:text-slate-200">
                         امتیاز شما
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                             <svg
                                 viewBox="0 0 20 20"
                                 class="h-7 w-7 transition"
-                                :class="(hoverRating ? hoverRating : currentStars) >= {{ $n }} ? 'text-amber-400' : 'text-slate-200'"
+                                :class="(hoverRating ? hoverRating : currentStars) >= {{ $n }} ? 'text-amber-400' : 'text-slate-200 dark:text-slate-600'"
                             >
                                 <path
                                     fill="currentColor"
@@ -129,7 +129,7 @@
                     @endfor
 
                     <span
-                        class="mr-1 text-xs font-extrabold text-slate-500 sm:mr-2"
+                        class="mr-1 text-xs font-extrabold text-slate-500 dark:text-slate-400 sm:mr-2"
                         x-text="currentStars ? `${currentStars} از 5` : 'بدون امتیاز'"
                     ></span>
                 </div>
@@ -137,8 +137,9 @@
         </div>
 
         <div
-            class="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-xs font-bold leading-6 text-slate-500">
+            class="flex flex-col-reverse gap-3 border-t border-slate-100 dark:border-slate-800 pt-4 sm:flex-row sm:items-center sm:justify-between"
+        >
+            <p class="text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
                 دیدگاه‌ها پس از بررسی نمایش داده می‌شوند.
             </p>
 
@@ -149,7 +150,7 @@
                     @click="$dispatch('close-modal', { name: @js($modalName) })"
                     wire:loading.attr="disabled"
                     wire:target="submit"
-                    class="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
+                    class="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 text-sm font-extrabold text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
                     انصراف
                 </button>
@@ -161,20 +162,10 @@
                     class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
                     <svg wire:loading wire:target="submit" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            stroke-opacity="0.25"
-                            stroke-width="4"
-                        ></circle>
-                        <path
-                            d="M22 12a10 10 0 0 1-10 10"
-                            stroke="currentColor"
-                            stroke-width="4"
-                            stroke-linecap="round"
-                        ></path>
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"
+                                stroke-width="4"></circle>
+                        <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
+                              stroke-linecap="round"></path>
                     </svg>
 
                     <span wire:loading.remove wire:target="submit">

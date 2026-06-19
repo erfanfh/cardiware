@@ -1,5 +1,5 @@
 @if($product->imageGallery->isNotEmpty())
-    <x-front.cart class="relative overflow-hidden">
+    <x-front.cart class="relative overflow-hidden border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
             title="گالری تصاویر"
             subtitle="نمونه تصاویر، شات‌ها و خروجی نهایی"
@@ -32,7 +32,6 @@
 
                                 <div
                                     class="pointer-events-none absolute inset-0 bg-slate-900/0 transition duration-300 group-hover:bg-slate-900/20"></div>
-
                                 <div
                                     class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent opacity-0 transition group-hover:opacity-100"></div>
 
@@ -52,20 +51,16 @@
         </div>
 
         <div class="absolute left-3 top-3 flex items-center justify-between gap-2 sm:left-4 sm:top-4">
-            <div
-                id="product-image-gallery-pagination-prev"
-                class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
-            >
-                <span class="text-slate-700 dark:text-slate-200 [&_svg]:h-5 [&_svg]:w-5">
+            <div id="product-image-gallery-pagination-prev"
+                 class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
+                <span class="[&_svg]:h-5 [&_svg]:w-5">
                     @include('icons.arrow-right-01')
                 </span>
             </div>
 
-            <div
-                id="product-image-gallery-pagination-next"
-                class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
-            >
-                <span class="text-slate-700 dark:text-slate-200 [&_svg]:h-5 [&_svg]:w-5">
+            <div id="product-image-gallery-pagination-next"
+                 class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
+                <span class="[&_svg]:h-5 [&_svg]:w-5">
                     @include('icons.arrow-left-01')
                 </span>
             </div>

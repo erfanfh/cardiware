@@ -1,5 +1,5 @@
 @if($relatedProducts->isNotEmpty())
-    <x-front.cart id="related-products">
+    <x-front.cart id="related-products" class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
             title="محصولات مشابه"
             subtitle="موارد مرتبط برای همین سبک محصول"

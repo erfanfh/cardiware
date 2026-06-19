@@ -7,7 +7,8 @@
         : "16 / 9";
 @endphp
 
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+<div
+    class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
     <div class="relative">
         <div style="aspect-ratio: {{ $aspectRatio }};" class="w-full min-h-[320px] overflow-hidden sm:min-h-0">
             <x-front.responsive-image
@@ -27,16 +28,17 @@
         </div>
 
         <div
-            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent sm:from-black/50 sm:via-black/10"></div>
+            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent sm:from-black/60 sm:via-black/15"></div>
 
         <div class="absolute inset-x-3 bottom-3 sm:inset-x-4 sm:bottom-4">
-            <div class="rounded-2xl bg-white/10 p-3 ring-1 ring-white/10 backdrop-blur sm:rounded-3xl sm:p-4">
+            <div
+                class="rounded-2xl bg-white/10 p-3 ring-1 ring-white/10 backdrop-blur sm:rounded-3xl sm:p-4 dark:bg-slate-950/30 dark:ring-white/10">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div class="min-w-0">
                         <div class="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
                             @foreach($product->categories as $category)
                                 <span
-                                    class="rounded-xl border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-extrabold text-white sm:text-[0.6875rem]">
+                                    class="rounded-xl border border-white/10 bg-white/10 px-2 py-1 text-[10px] font-extrabold text-white sm:text-[0.6875rem] dark:bg-white/10">
                                     {{ $category->title }}
                                 </span>
                             @endforeach

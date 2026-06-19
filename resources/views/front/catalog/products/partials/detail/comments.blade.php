@@ -1,4 +1,4 @@
-<x-front.cart id="comments" class="relative">
+<x-front.cart id="comments" class="relative border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <x-front.cart-title
             title="دیدگاه‌ها"
@@ -10,7 +10,7 @@
             type="button"
             x-data
             @click="$dispatch('open-modal', { name: 'product-send-comment-modal' })"
-            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] sm:w-auto"
+            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] sm:w-auto dark:hover:bg-brand-400"
         >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
                 <path
