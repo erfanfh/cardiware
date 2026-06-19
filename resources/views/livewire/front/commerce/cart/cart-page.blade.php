@@ -10,23 +10,25 @@
                         ])
                     @empty
                         <div
-                            class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:rounded-3xl sm:p-8">
+                            class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center shadow-sm sm:rounded-3xl sm:p-8"
+                        >
                             <div
-                                class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
+                                class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-2xl"
+                            >
                                 🛒
                             </div>
 
-                            <div class="mt-4 text-sm font-extrabold text-slate-900">
+                            <div class="mt-4 text-sm font-extrabold text-slate-900 dark:text-slate-100">
                                 سبد خرید شما خالی است.
                             </div>
 
-                            <p class="mt-2 text-xs leading-6 text-slate-500">
+                            <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
                                 هنوز محصولی به سبد خرید اضافه نکرده‌اید.
                             </p>
 
                             <a
                                 href="{{ route('products.list') }}"
-                                class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-xs font-extrabold text-white transition hover:bg-slate-800 sm:w-auto"
+                                class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 text-xs font-extrabold text-white dark:text-slate-900 transition hover:bg-slate-800 dark:hover:bg-slate-200 sm:w-auto"
                             >
                                 مشاهده محصولات
                             </a>
