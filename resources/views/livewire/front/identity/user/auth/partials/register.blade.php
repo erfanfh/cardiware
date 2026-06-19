@@ -12,43 +12,48 @@
         <div class="grid gap-4">
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
-                    <label for="mobile" class="block text-xs font-semibold text-slate-700">موبایل</label>
+                    <label for="mobile"
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">موبایل</label>
                     <input id="mobile" type="text" wire:model.defer="mobile" dir="ltr"
-                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
 
                 <div class="min-w-0 space-y-1.5">
-                    <label for="email" class="block text-xs font-semibold text-slate-700">ایمیل</label>
+                    <label for="email"
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">ایمیل</label>
                     <input id="email" type="text" wire:model.defer="email" dir="ltr"
-                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
-                    <label for="first_name" class="block text-xs font-semibold text-slate-700">نام</label>
+                    <label for="first_name"
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">نام</label>
                     <input id="first_name" type="text" wire:model.defer="first_name"
-                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
 
                 <div class="min-w-0 space-y-1.5">
-                    <label for="last_name" class="block text-xs font-semibold text-slate-700">نام خانوادگی</label>
+                    <label for="last_name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">نام
+                        خانوادگی</label>
                     <input id="last_name" type="text" wire:model.defer="last_name"
-                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                           class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
-                    <label for="reg-password" class="block text-xs font-semibold text-slate-700">رمز عبور</label>
+                    <label for="reg-password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">رمز
+                        عبور</label>
 
                     <div class="relative">
                         <input id="reg-password" :type="show1 ? 'text':'password'"
                                wire:model.defer="password" dir="ltr" autocomplete="off"
-                               class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                               class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
 
                         <button type="button" @click="show1 = !show1"
-                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors cursor-pointer">
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors cursor-pointer dark:text-slate-500 dark:hover:text-brand-400">
                             <svg x-show="!show1" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
                                  viewBox="0 0 24 24">
                                 <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -71,16 +76,16 @@
                 </div>
 
                 <div class="min-w-0 space-y-1.5">
-                    <label for="reg-password-confirm" class="block text-xs font-semibold text-slate-700">تکرار رمز
-                        عبور</label>
+                    <label for="reg-password-confirm"
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">تکرار رمز عبور</label>
 
                     <div class="relative">
                         <input id="reg-password-confirm" :type="show2 ? 'text':'password'"
                                wire:model.defer="password_confirmation" dir="ltr" autocomplete="off"
-                               class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                               class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
 
                         <button type="button" @click="show2 = !show2"
-                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors cursor-pointer">
+                                class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-brand-600 transition-colors cursor-pointer dark:text-slate-500 dark:hover:text-brand-400">
                             <svg x-show="!show2" xmlns="http://www.w3.org/2000/svg" width="17" height="17"
                                  viewBox="0 0 24 24">
                                 <g fill="none" stroke="currentColor" stroke-width="1.5">
@@ -115,11 +120,11 @@
             </svg>
         </button>
 
-        <div class="pt-1 text-center text-xs leading-6 text-slate-500">
+        <div class="pt-1 text-center text-xs leading-6 text-slate-500 dark:text-slate-400">
             حساب کاربری دارید؟
             <button type="button"
                     wire:click.prevent="goToLogin"
-                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700">
+                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
                 ورود
             </button>
         </div>

@@ -6,7 +6,7 @@
 @section('auth-form')
     <form wire:submit.prevent="sendOtp" class="space-y-4" novalidate>
         <div class="space-y-1.5">
-            <label for="username" class="block text-xs font-semibold text-slate-700">
+            <label for="username" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 شماره موبایل یا ایمیل
             </label>
 
@@ -15,7 +15,7 @@
                 type="text"
                 dir="ltr"
                 wire:model.defer="username"
-                class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"
+                class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"
             />
         </div>
 
@@ -30,11 +30,11 @@
             </svg>
         </button>
 
-        <div class="pt-1 text-center text-xs leading-6 text-slate-500">
+        <div class="pt-1 text-center text-xs leading-6 text-slate-500 dark:text-slate-400">
             ورود با رمز عبور؟
             <button type="button"
                     wire:click.prevent="goToLogin"
-                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700">
+                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
                 ورود
             </button>
         </div>

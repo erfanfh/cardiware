@@ -6,7 +6,7 @@
 @section('auth-form')
     <form wire:submit.prevent="login" class="space-y-4" novalidate x-data="{ show:false }">
         <div class="space-y-1.5">
-            <label for="username" class="block text-xs font-semibold text-slate-700">
+            <label for="username" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 شماره موبایل یا ایمیل
             </label>
 
@@ -15,19 +15,19 @@
                 type="text"
                 dir="ltr"
                 wire:model.defer="username"
-                class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"
+                class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"
             />
         </div>
 
         <div class="space-y-1.5">
             <div class="flex items-center justify-between gap-3">
-                <label for="login-password" class="text-xs font-semibold text-slate-700">
+                <label for="login-password" class="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     رمز عبور
                 </label>
 
                 <button type="button"
                         wire:click="goToEnterUsername"
-                        class="cursor-pointer text-xs font-medium text-slate-500 transition-colors hover:text-brand-600">
+                        class="cursor-pointer text-xs font-medium text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">
                     فراموشی رمز؟
                 </button>
             </div>
@@ -39,12 +39,12 @@
                     wire:model.defer="password"
                     autocomplete="off"
                     dir="ltr"
-                    class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"
+                    class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 pl-10 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"
                 />
 
                 <button type="button"
                         @click="show = !show"
-                        class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors hover:text-brand-600">
+                        class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors hover:text-brand-600 dark:text-slate-500 dark:hover:text-brand-400">
                     <svg x-show="!show" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24">
                         <g fill="none" stroke="currentColor" stroke-width="1.5">
                             <path
@@ -79,15 +79,15 @@
 
         <button type="button"
                 wire:click="goToOtpLogin"
-                class="h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700">
+                class="h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 transition-all hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
             ورود با کد یکبار مصرف
         </button>
 
-        <div class="pt-1 text-center text-xs leading-6 text-slate-500">
+        <div class="pt-1 text-center text-xs leading-6 text-slate-500 dark:text-slate-400">
             حساب کاربری ندارید؟
             <button type="button"
                     wire:click.prevent="goToRegister"
-                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700">
+                    class="mr-1 cursor-pointer font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300">
                 ثبت نام
             </button>
         </div>

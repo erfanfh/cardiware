@@ -1,23 +1,24 @@
-<div class="flex min-w-0 flex-col gap-5">
+<div class="flex min-w-0 flex-col gap-5 dark:text-slate-200">
     <div class="flex justify-end">
         <button wire:click.prevent="goToEnterUsername"
-                class="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-slate-500 transition-colors hover:text-brand-600">
+                class="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400">
             @include('icons.arrow-left-01')
             <span>بازگشت</span>
         </button>
     </div>
 
     <div class="text-center">
-        <h2 class="text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+        <h2 class="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-slate-100">
             بازیابی رمز عبور
         </h2>
 
-        <p class="mt-1 text-xs text-slate-500">
+        <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
             کد تایید و رمز جدید خود را وارد کنید
         </p>
 
-        <div class="mt-3 inline-flex max-w-full items-center rounded-full bg-brand-50 px-3.5 py-1.5">
-            <span class="truncate text-xs font-semibold text-slate-700">
+        <div
+            class="mt-3 inline-flex max-w-full items-center rounded-full bg-brand-50 px-3.5 py-1.5 dark:bg-brand-900/20">
+            <span class="truncate text-xs font-semibold text-slate-700 dark:text-slate-200">
                 {{ $username }}
             </span>
         </div>
@@ -26,7 +27,7 @@
     <form wire:submit.prevent="forgotPassword" class="space-y-4" novalidate>
         <div class="grid gap-4 sm:grid-cols-2">
             <div class="min-w-0 space-y-1.5">
-                <label for="fp-pass" class="block text-xs font-semibold text-slate-700">
+                <label for="fp-pass" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                     رمز عبور جدید
                 </label>
 
@@ -35,11 +36,11 @@
                        dir="ltr"
                        autocomplete="off"
                        wire:model.defer="password"
-                       class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                       class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
             </div>
 
             <div class="min-w-0 space-y-1.5">
-                <label for="fp-pass2" class="block text-xs font-semibold text-slate-700">
+                <label for="fp-pass2" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                     تکرار رمز عبور
                 </label>
 
@@ -48,12 +49,12 @@
                        dir="ltr"
                        autocomplete="off"
                        wire:model.defer="password_confirmation"
-                       class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100"/>
+                       class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
             </div>
         </div>
 
         <div class="space-y-1.5">
-            <label for="fp-otp" class="block text-xs font-semibold text-slate-700">
+            <label for="fp-otp" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
                 کد تایید ۶ رقمی
             </label>
 
@@ -64,7 +65,7 @@
                    wire:model.defer="otp_code"
                    placeholder="_ _ _ _ _ _"
                    maxlength="6"
-                   class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-center text-sm tracking-[0.35em] outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 sm:tracking-[0.45em]"/>
+                   class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-center text-sm tracking-[0.35em] outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500 sm:tracking-[0.45em]"/>
         </div>
 
         <button type="submit"
@@ -82,7 +83,7 @@
     <div class="text-center"
          x-data="{ seconds: 60, timer: null, start(){ clearInterval(this.timer); this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
          x-init="start()">
-        <p class="mb-2 text-xs text-slate-500">
+        <p class="mb-2 text-xs text-slate-500 dark:text-slate-400">
             کد دریافت نکرده‌اید؟
         </p>
 
@@ -91,8 +92,9 @@
                 @click="$wire.resendOtp(); start();"
                 class="inline-flex items-center justify-center gap-1.5 text-xs font-semibold transition-all"
                 :class="seconds > 0
-                    ? 'text-slate-400 cursor-not-allowed'
-                    : 'text-brand-600 hover:text-brand-700 cursor-pointer'">
+                    ? 'text-slate-400 cursor-not-allowed dark:text-slate-600'
+                    : 'text-brand-600 hover:text-brand-700 cursor-pointer dark:text-brand-400 dark:hover:text-brand-300'">
+
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
             </svg>
