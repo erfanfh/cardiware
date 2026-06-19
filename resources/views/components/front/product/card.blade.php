@@ -13,12 +13,17 @@
 
 <a
     href="{{ front_route('products.detail', $product->slug) }}"
-    class="group relative block h-full rounded-2xl outline-none transition duration-300 hover:-translate-y-1 focus-visible:ring-4 focus-visible:ring-brand-100"
+    class="group relative block h-full rounded-2xl outline-none transition duration-300 hover:-translate-y-1 focus-visible:ring-4 focus-visible:ring-brand-100
+    dark:focus-visible:ring-brand-900/40"
 >
     <article
-        class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 group-hover:border-brand-200 group-hover:shadow-2xl group-hover:shadow-brand-100/60">
+        class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300
+        group-hover:border-brand-200 group-hover:shadow-2xl group-hover:shadow-brand-100/60
+        dark:border-slate-800 dark:bg-slate-900/40 dark:group-hover:border-brand-700 dark:group-hover:shadow-brand-900/20"
+    >
+
         {{-- Image --}}
-        <div class="relative aspect-[1.22/1] overflow-hidden bg-slate-100">
+        <div class="relative aspect-[1.22/1] overflow-hidden bg-slate-100 dark:bg-slate-800">
             @if($productImage)
                 <img
                     src="{{ $productImage }}"
@@ -27,8 +32,10 @@
                 >
             @else
                 <div
-                    class="grid h-full w-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200">
-                    <svg class="h-14 w-14 text-slate-300" viewBox="0 0 24 24" fill="none">
+                    class="grid h-full w-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200
+                    dark:from-slate-800 dark:to-slate-900"
+                >
+                    <svg class="h-14 w-14 text-slate-300 dark:text-slate-600" viewBox="0 0 24 24" fill="none">
                         <path
                             d="M4 7.5C4 5.57 5.57 4 7.5 4h9C18.43 4 20 5.57 20 7.5v9c0 1.93-1.57 3.5-3.5 3.5h-9C5.57 20 4 18.43 4 16.5v-9Z"
                             stroke="currentColor"
@@ -58,76 +65,91 @@
                 <div class="flex min-w-0 flex-wrap gap-1.5">
                     @foreach($categories as $category)
                         <span
-                            class="max-w-[120px] truncate rounded-2xl border border-white/20 bg-white/90 px-2.5 py-1 text-[11px] font-black text-slate-700 backdrop-blur">
-                                                    {{ $category->title }}
-                                                </span>
+                            class="max-w-[120px] truncate rounded-2xl border border-white/20 bg-white/90 px-2.5 py-1 text-[11px] font-black text-slate-700 backdrop-blur
+                            dark:bg-slate-900/60 dark:text-slate-200 dark:border-slate-700"
+                        >
+                            {{ $category->title }}
+                        </span>
                     @endforeach
                 </div>
 
                 @if($saleItemsCount > 1)
                     <span
-                        class="shrink-0 rounded-2xl border border-brand-200 bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700">
-                                                {{ $saleItemsCount }} نسخه
-                                            </span>
+                        class="shrink-0 rounded-2xl border border-brand-200 bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700
+                        dark:border-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
+                    >
+                        {{ $saleItemsCount }} نسخه
+                    </span>
                 @endif
             </div>
         </div>
 
         {{-- Body --}}
-        <div class="flex flex-1 flex-col p-4">
+        <div class="flex flex-1 flex-col p-4 dark:text-slate-100">
+
             {{-- Store --}}
-            <div
-                class="mb-3 flex min-w-0 items-center gap-2 text-[11px] font-black text-brand-600">
+            <div class="mb-3 flex min-w-0 items-center gap-2 text-[11px] font-black text-brand-600 dark:text-brand-300">
                 <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
 
                 <span class="truncate">
-                                            {{ $storeTitle }}
-                                        </span>
+                    {{ $storeTitle }}
+                </span>
             </div>
 
-            <h3 class="line-clamp-2 min-h-[56px] text-base font-black leading-7 text-slate-950 transition group-hover:text-brand-700">
+            <h3 class="line-clamp-2 min-h-[56px] text-base font-black leading-7 text-slate-950 transition group-hover:text-brand-700
+            dark:text-slate-100 dark:group-hover:text-brand-300">
                 {{ $product->title }}
             </h3>
 
-            <p class="mt-2 line-clamp-2 min-h-[48px] text-xs leading-6 text-slate-500">
+            <p class="mt-2 line-clamp-2 min-h-[48px] text-xs leading-6 text-slate-500 dark:text-slate-400">
                 {{ $product->excerpt() }}
             </p>
 
             <div class="mt-auto pt-4">
-                <div
-                    class="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-3 transition group-hover:bg-brand-50/70">
-                    <div class="min-w-0">
-                                                <span class="mb-1 block text-[11px] font-bold text-slate-400">
-                                                    قیمت محصول
-                                                </span>
 
-                        <div class="text-sm font-black text-slate-950">
+                <div class="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-3 transition group-hover:bg-brand-50/70
+                dark:bg-slate-800 dark:group-hover:bg-brand-900/20">
+
+                    <div class="min-w-0">
+
+                        <span class="mb-1 block text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                            قیمت محصول
+                        </span>
+
+                        <div class="text-sm font-black text-slate-950 dark:text-slate-100">
+
                             @if($minPrice)
                                 @if((int) $minPrice === (int) $maxPrice)
                                     {{ number_format($minPrice) }}
-                                    <span
-                                        class="text-[11px] font-bold text-slate-500">تومان</span>
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
                                 @else
-                                    <span class="text-[11px] font-bold text-slate-500">از</span>
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">از</span>
                                     {{ number_format($minPrice) }}
-                                    <span
-                                        class="text-[11px] font-bold text-slate-500">تومان</span>
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
                                 @endif
                             @else
-                                <span class="text-slate-400">نامشخص</span>
+                                <span class="text-slate-400 dark:text-slate-500">نامشخص</span>
                             @endif
+
                         </div>
+
                     </div>
 
                     <div
-                        class="grid h-10 w-10 [&_svg]:w-4 [&_svg]:h-4 shrink-0 place-items-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200 transition group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600">
+                        class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200 transition group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600
+                        dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700"
+                    >
                         @include('icons.arrow-left-01')
                     </div>
+
                 </div>
+
             </div>
+
         </div>
 
-        <div
-            class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent transition group-hover:ring-brand-200"></div>
+        <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent transition group-hover:ring-brand-200
+        dark:group-hover:ring-brand-900/40"></div>
+
     </article>
 </a>
