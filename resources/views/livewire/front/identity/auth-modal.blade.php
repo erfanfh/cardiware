@@ -7,6 +7,7 @@
     <form
         wire:submit.prevent="submit"
         x-data="{ mode: @entangle('mode') }"
+        class="min-w-0"
     >
         @if($authError)
             <div class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
@@ -19,14 +20,16 @@
                                 stroke="currentColor"
                                 stroke-width="2"
                                 stroke-linecap="round"
-                                stroke-linejoin="round"/>
+                                stroke-linejoin="round"
+                            />
                         </svg>
                     </span>
 
-                    <div>
+                    <div class="min-w-0">
                         <div class="text-xs font-black text-red-900">
                             عملیات ناموفق بود
                         </div>
+
                         <p class="mt-1 text-[11px] font-bold leading-5 text-red-700">
                             {{ $authError }}
                         </p>
@@ -61,29 +64,33 @@
 
         <div x-show="mode === 'login'" x-cloak>
             <div class="mt-4 space-y-3">
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">موبایل یا ایمیل</label>
+
                     <input
                         type="text"
                         wire:model.defer="identifier"
-                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         dir="ltr"
                         autocomplete="username"
                     >
+
                     @error('identifier')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">رمز عبور</label>
+
                     <input
                         type="password"
                         wire:model.defer="password"
-                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         dir="ltr"
                         autocomplete="current-password"
                     >
+
                     @error('password')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
@@ -93,69 +100,79 @@
 
         <div x-show="mode === 'register'" x-cloak>
             <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">نام</label>
+
                     <input
                         type="text"
                         wire:model.defer="firstName"
                         class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         autocomplete="given-name"
                     >
+
                     @error('firstName')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">نام خانوادگی</label>
+
                     <input
                         type="text"
                         wire:model.defer="lastName"
                         class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         autocomplete="family-name"
                     >
+
                     @error('lastName')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">شماره موبایل</label>
+
                     <input
                         type="text"
                         wire:model.defer="mobile"
-                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         dir="ltr"
                         autocomplete="tel"
                     >
+
                     @error('mobile')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label class="text-[11px] font-extrabold text-slate-600">ایمیل</label>
+
                     <input
                         type="text"
                         wire:model.defer="email"
-                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         dir="ltr"
                         autocomplete="email"
                     >
+
                     @error('email')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="sm:col-span-2">
+                <div class="min-w-0 sm:col-span-2">
                     <label class="text-[11px] font-extrabold text-slate-600">رمز عبور</label>
+
                     <input
                         type="password"
                         wire:model.defer="password"
-                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
+                        class="mt-1.5 w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-left text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100"
                         dir="ltr"
                         autocomplete="new-password"
                     >
+
                     @error('password')
                     <p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>
                     @enderror
@@ -163,11 +180,11 @@
             </div>
         </div>
 
-        <div class="mt-5 flex items-center justify-end gap-2">
+        <div class="mt-5 grid grid-cols-1 gap-2 sm:flex sm:items-center sm:justify-end">
             <button
                 type="button"
                 x-on:click="$dispatch('close-modal', '{{ $name }}')"
-                class="cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50"
+                class="h-11 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50"
             >
                 انصراف
             </button>
@@ -176,7 +193,7 @@
                 type="submit"
                 wire:loading.attr="disabled"
                 wire:target="submit"
-                class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-2.5 text-xs font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
+                class="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-xs font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
                 <span wire:loading.remove wire:target="submit">
                     <span x-show="mode === 'login'">ورود و ادامه</span>

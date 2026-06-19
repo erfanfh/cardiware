@@ -1,15 +1,16 @@
 <div x-data="{ checkoutModalOpen: @js($openCheckoutOnLoad) }">
-    <main class="mx-auto max-w-7xl px-4 py-8">
-        <section class="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div class="lg:col-span-8">
-                <div class="space-y-4">
+    <main class="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
+        <section class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
+            <div class="min-w-0 lg:col-span-8">
+                <div class="space-y-3 sm:space-y-4">
                     @forelse($this->mainCartItems as $cartItem)
                         @include('livewire.front.commerce.cart.partials.cart-item', [
                             'cartItem' => $cartItem,
                             'addonItems' => $this->addonItemsByParentId->get($cartItem->id, collect()),
                         ])
                     @empty
-                        <div class="rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+                        <div
+                            class="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:rounded-3xl sm:p-8">
                             <div
                                 class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-2xl">
                                 🛒
@@ -23,8 +24,10 @@
                                 هنوز محصولی به سبد خرید اضافه نکرده‌اید.
                             </p>
 
-                            <a href="{{ route('products.list') }}"
-                               class="mt-5 inline-flex items-center justify-center rounded-2xl bg-slate-900 px-5 py-3 text-xs font-extrabold text-white transition hover:bg-slate-800">
+                            <a
+                                href="{{ route('products.list') }}"
+                                class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-xs font-extrabold text-white transition hover:bg-slate-800 sm:w-auto"
+                            >
                                 مشاهده محصولات
                             </a>
                         </div>
