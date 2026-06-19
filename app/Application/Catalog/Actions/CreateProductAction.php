@@ -7,6 +7,7 @@ use App\Application\Catalog\Actions\ProductInformationField\SyncProductInformati
 use App\Application\Seo\Actions\Analysis\BuildProductSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
+use App\Application\Shared\Cache\Invalidators\ProductCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelProductCategoriesAction;
@@ -32,6 +33,7 @@ class CreateProductAction
         protected SyncProductInformationEntriesAction $syncProductInformationEntriesAction,
         protected SyncSeoMetaAction                   $syncSeoMetaAction,
         protected StoreSeoAnalysisAction              $storeSeoAnalysisAction,
+        protected ProductCacheInvalidator             $productCacheInvalidator,
     )
     {
     }
@@ -97,6 +99,8 @@ class CreateProductAction
 
             return $product;
         });
+
+        $this->productCacheInvalidator->afterCreated($product);
 
         return $product;
     }

@@ -5,6 +5,7 @@ namespace App\Application\Marketplace\Actions;
 use App\Application\Seo\Actions\Analysis\BuildStoreSeoAnalysisInputAction;
 use App\Application\Seo\Actions\Analysis\StoreSeoAnalysisAction;
 use App\Application\Seo\Actions\SyncSeoMetaAction;
+use App\Application\Shared\Cache\Invalidators\StoreCacheInvalidator;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Marketplace\Models\Store;
@@ -18,6 +19,7 @@ class CreateStoreAction
         protected AssignSlugAction       $assignSlugAction,
         protected SyncSeoMetaAction      $syncSeoMetaAction,
         protected StoreSeoAnalysisAction $storeSeoAnalysisAction,
+        protected StoreCacheInvalidator  $storeCacheInvalidator,
     )
     {
     }
@@ -60,6 +62,8 @@ class CreateStoreAction
 
             return $store;
         });
+
+        $this->storeCacheInvalidator->afterCreated($store);
 
         return $store;
     }

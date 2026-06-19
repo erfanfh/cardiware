@@ -8,6 +8,7 @@ final class CacheTag
     public const HOME_FREE_POSTS = 'home:free-posts';
     public const HOME_VIDEOS = 'home:videos';
     public const HOME_PROJECTS = 'home:projects';
+    public const HOME_PRODUCTS = 'home:products';
 
     public const POSTS = 'posts';
     public const POST_LISTS = 'post-lists';
@@ -52,6 +53,11 @@ final class CacheTag
     public const PROJECT_DETAIL = 'project-detail';
     public const PROJECT_LISTS = 'project-lists';
     public const PROJECT_STATS = 'project-stats';
+
+    public const PRODUCT_DETAIL = 'product-detail';
+    public const PRODUCT_LISTS = 'product-lists';
+
+    public const STORE_DETAIL = 'store-detail';
 
     public const PAGES = 'pages';
     public const PAGE_DETAIL = 'page-detail';
