@@ -1,16 +1,13 @@
-<div>
-    <div class="mb-5">
+<div class="flex flex-col gap-5">
+    <div class="flex justify-end">
         <button wire:click.prevent="goToEnterUsername"
-                class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-brand-600 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
-                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="1.8" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-            </svg>
-            تغییر شماره موبایل یا ایمیل
+                class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600 transition-colors cursor-pointer">
+            @include('icons.arrow-left-01')
+            <span>بازگشت</span>
         </button>
     </div>
 
-    <div class="mb-5 text-center">
+    <div class="text-center">
         <h2 class="text-xl font-bold tracking-tight text-slate-900">
             بازیابی رمز عبور
         </h2>
@@ -38,7 +35,6 @@
                        dir="ltr"
                        autocomplete="off"
                        wire:model.defer="password"
-                       placeholder="رمز جدید"
                        class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-slate-50/60
                               px-3.5 py-2.5 text-sm outline-none transition-all
                               focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100"/>
@@ -54,7 +50,6 @@
                        dir="ltr"
                        autocomplete="off"
                        wire:model.defer="password_confirmation"
-                       placeholder="تکرار رمز جدید"
                        class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-slate-50/60
                               px-3.5 py-2.5 text-sm outline-none transition-all
                               focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100"/>
@@ -101,7 +96,7 @@
         </button>
     </form>
 
-    <div class="mt-4 text-center"
+    <div class="text-center"
          x-data="{ seconds: 60, timer: null, start(){ clearInterval(this.timer); this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
          x-init="start()">
 

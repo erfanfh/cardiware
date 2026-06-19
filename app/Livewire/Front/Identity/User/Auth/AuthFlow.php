@@ -165,7 +165,7 @@ class AuthFlow extends Component
             return (new RedirectLoggedInUserAction())->execute();
         }
 
-        $this->addError('password', 'شماره موبایل یا ایمیل یا رمز عبور اشتباه است.');
+        $this->addError('password', 'اطلاعات وارد شده صحیح نمی‌باشد');
         return null;
     }
 
@@ -200,8 +200,6 @@ class AuthFlow extends Component
      */
     public function register(): RedirectResponse|Redirector|null
     {
-        return null;
-
         if ($this->rateLimit('request.register'))
             return null;
 
@@ -246,6 +244,9 @@ class AuthFlow extends Component
         return (new RedirectLoggedInUserAction())->execute();
     }
 
+    /**
+     * @throws RandomException
+     */
     public function sendOtp(): void
     {
         $this->validate([
@@ -255,16 +256,8 @@ class AuthFlow extends Component
             'username.regex' => 'شماره موبایل یا ایمیل معتبر نیست',
         ]);
 
-        if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
-            $this->addError('username', 'کاربری با این شماره موبایل یا ایمیل ثبت نشده است');
-            return;
-        }
-
-        $sent = (new GenerateOtpAction())->execute($this->username, OtpTypeEnum::LOGIN);
-
-        if (!$sent) {
-            $this->addError('username', 'برای ارسال مجدد کد باید کمی صبر کنید');
-            return;
+        if (User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
+            app(GenerateOtpAction::class)->execute($this->username, OtpTypeEnum::LOGIN);
         }
 
         $this->otpType = OtpTypeEnum::LOGIN->value;
@@ -272,7 +265,6 @@ class AuthFlow extends Component
 
         session()->flash('success', 'کد تایید ارسال شد');
     }
-
 
     /**
      * @return void
@@ -364,6 +356,9 @@ class AuthFlow extends Component
         return false;
     }
 
+    /**
+     * @throws RandomException
+     */
     public function sendResetPasswordOtp(): void
     {
         $this->username = normalize_number($this->username);
@@ -376,15 +371,7 @@ class AuthFlow extends Component
         ]);
 
         if (!User::where('mobile', $this->username)->orWhere('email', $this->username)->exists()) {
-            $this->addError('username', 'کاربری با این شماره موبایل یا ایمیل ثبت نشده است');
-            return;
-        }
-
-        $sent = (new GenerateOtpAction())->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
-
-        if (!$sent) {
-            $this->addError('username', 'برای ارسال مجدد کد باید کمی صبر کنید');
-            return;
+            app(GenerateOtpAction::class)->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
         }
 
         $this->otpType = OtpTypeEnum::RESET_PASSWORD->value;

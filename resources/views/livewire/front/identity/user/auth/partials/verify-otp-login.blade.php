@@ -1,16 +1,13 @@
-<div>
-    <div class="mb-5">
+<div class="flex flex-col gap-5">
+    <div class="flex justify-end">
         <button wire:click.prevent="goToLogin"
-                class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-brand-600 transition-colors cursor-pointer">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24">
-                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                      stroke-width="1.8" d="M9 6s6 4.419 6 6s-6 6-6 6"/>
-            </svg>
-            بازگشت
+                class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-brand-600 transition-colors cursor-pointer">
+            @include('icons.arrow-left-01')
+            <span>بازگشت</span>
         </button>
     </div>
 
-    <div class="mb-5 text-center">
+    <div class="text-center">
         <h2 class="text-xl font-bold tracking-tight text-slate-900">
             تایید اطلاعات
         </h2>
@@ -33,14 +30,14 @@
             </label>
 
             <input
-                id="otp_code"
-                type="text"
-                dir="ltr"
-                autocomplete="off"
-                wire:model.defer="otp_code"
-                placeholder="_ _ _ _ _ _"
-                maxlength="6"
-                class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-slate-50/60
+                    id="otp_code"
+                    type="text"
+                    dir="ltr"
+                    autocomplete="off"
+                    wire:model.defer="otp_code"
+                    placeholder="_ _ _ _ _ _"
+                    maxlength="6"
+                    class="no-autofill-bg w-full rounded-xl border border-slate-200 bg-slate-50/60
                        px-3.5 py-2.5 text-center text-sm tracking-[0.45em] outline-none transition-all
                        focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-100"
             />
@@ -78,17 +75,17 @@
         </p>
 
         <button
-            type="button"
-            :disabled="seconds > 0"
-            @click="$wire.resendOtp(); start();"
-            class="inline-flex items-center gap-1.5 text-xs font-semibold transition-all"
-            :class="seconds > 0
+                type="button"
+                :disabled="seconds > 0"
+                @click="$wire.resendOtp(); start();"
+                class="inline-flex items-center gap-1.5 text-xs font-semibold transition-all"
+                :class="seconds > 0
                 ? 'text-slate-400 cursor-not-allowed'
                 : 'text-brand-600 hover:text-brand-700 cursor-pointer'">
 
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path
-                    d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                        d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
             </svg>
 
             <span x-show="seconds === 0">
