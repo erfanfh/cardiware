@@ -6,7 +6,7 @@
             iconName="puzzle"
         />
 
-        <div class="grid grid-cols-3 gap-4">
+        <div class="mt-4 grid grid-cols-1 gap-3 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
             @foreach($relatedProducts as $product)
                 <x-front.product.card :product="$product"/>
             @endforeach

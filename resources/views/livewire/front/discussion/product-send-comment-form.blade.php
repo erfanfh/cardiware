@@ -1,5 +1,5 @@
-<div>
-    <form wire:submit.prevent="submit" class="space-y-5">
+<div class="min-w-0">
+    <form wire:submit.prevent="submit" class="space-y-4 sm:space-y-5">
         <input type="hidden" wire:model="parentId">
         <input type="hidden" wire:model="ratingPercent">
         <input type="hidden" wire:model="startedAt">
@@ -16,7 +16,8 @@
         </div>
 
         @if($generalError || $errors->any())
-            <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div
+                class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs leading-6 text-red-700 sm:text-sm">
                 <div class="font-extrabold">لطفاً موارد زیر را بررسی کنید:</div>
 
                 @if($generalError)
@@ -35,7 +36,7 @@
 
         @guest
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div>
+                <div class="min-w-0">
                     <label class="mb-2 block text-xs font-bold text-slate-600">
                         نام شما
                     </label>
@@ -49,7 +50,7 @@
                     >
                 </div>
 
-                <div>
+                <div class="min-w-0">
                     <label class="mb-2 block text-xs font-bold text-slate-600">
                         ایمیل شما
                     </label>
@@ -59,13 +60,14 @@
                         wire:model.defer="authorEmail"
                         wire:loading.attr="disabled"
                         wire:target="submit"
-                        class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
+                        dir="ltr"
+                        class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
                     >
                 </div>
             </div>
         @endguest
 
-        <div>
+        <div class="min-w-0">
             <label class="mb-2 block text-xs font-bold text-slate-600">
                 متن دیدگاه
             </label>
@@ -75,7 +77,7 @@
                 wire:model.defer="content"
                 wire:loading.attr="disabled"
                 wire:target="submit"
-                class="w-full resize-none rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
+                class="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 sm:rounded-3xl"
             ></textarea>
         </div>
 
@@ -93,7 +95,7 @@
                     $wire.generalError = null;
                 }
             }"
-            class="rounded-3xl border border-slate-200 bg-white p-4"
+            class="rounded-2xl border border-slate-200 bg-white p-4 sm:rounded-3xl"
         >
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -102,7 +104,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center" @mouseleave="hoverRating = 0">
+                <div class="flex flex-wrap items-center gap-1" @mouseleave="hoverRating = 0">
                     @for($n = 1; $n <= 5; $n++)
                         <button
                             type="button"
@@ -127,7 +129,7 @@
                     @endfor
 
                     <span
-                        class="mr-2 text-xs font-extrabold text-slate-500"
+                        class="mr-1 text-xs font-extrabold text-slate-500 sm:mr-2"
                         x-text="currentStars ? `${currentStars} از 5` : 'بدون امتیاز'"
                     ></span>
                 </div>
@@ -140,14 +142,14 @@
                 دیدگاه‌ها پس از بررسی نمایش داده می‌شوند.
             </p>
 
-            <div class="flex items-center gap-2">
+            <div class="grid grid-cols-1 gap-2 sm:flex sm:items-center">
                 <button
                     type="button"
                     x-data
                     @click="$dispatch('close-modal', { name: @js($modalName) })"
                     wire:loading.attr="disabled"
                     wire:target="submit"
-                    class="inline-flex h-11 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+                    class="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
                     انصراف
                 </button>
@@ -156,7 +158,7 @@
                     type="submit"
                     wire:loading.attr="disabled"
                     wire:target="submit"
-                    class="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70"
+                    class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
                     <svg wire:loading wire:target="submit" class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
                         <circle

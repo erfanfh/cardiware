@@ -8,7 +8,7 @@
         :style="`--header-offset: ${headerOffset}px`"
     >
         <section data-smart-sidebar-layout class="grid grid-cols-1 lg:grid-cols-10 gap-6">
-            <div data-smart-sidebar-content class="lg:col-span-7 space-y-6">
+            <div data-smart-sidebar-content class="min-w-0 lg:col-span-7 space-y-6">
                 @include('front.catalog.products.partials.detail.title')
                 @include('front.catalog.products.partials.detail.share-box')
                 @include('front.catalog.products.partials.detail.image-gallery')
@@ -23,14 +23,14 @@
                 @include('front.catalog.products.partials.detail.related-products')
             </div>
 
-            <div data-smart-sidebar-column class="lg:col-span-3">
+            <div data-smart-sidebar-column class="min-w-0 lg:col-span-3">
                 <aside data-smart-sidebar-box class="space-y-6">
                     <livewire:front.catalog.product-buy-box :product="$product"/>
-                    {{--                    @include('front.catalog.products.partials.detail.sidebar.update-progress')--}}
+                    {{-- @include('front.catalog.products.partials.detail.sidebar.update-progress') --}}
                     @include('front.catalog.products.partials.detail.sidebar.product-information')
                     @include('front.catalog.products.partials.detail.sidebar.store')
                     @include('front.catalog.products.partials.detail.sidebar.tags')
-                    {{--                    @include('front.catalog.products.partials.detail.sidebar.support')--}}
+                    {{-- @include('front.catalog.products.partials.detail.sidebar.support') --}}
                 </aside>
             </div>
         </section>

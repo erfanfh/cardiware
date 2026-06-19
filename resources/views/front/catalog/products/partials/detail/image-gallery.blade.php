@@ -1,5 +1,5 @@
 @if($product->imageGallery->isNotEmpty())
-    <x-front.cart class="relative">
+    <x-front.cart class="relative overflow-hidden">
         <x-front.cart-title
             title="گالری تصاویر"
             subtitle="نمونه تصاویر، شات‌ها و خروجی نهایی"
@@ -12,7 +12,7 @@
                     @foreach($product->imageGallery as $item)
                         <div class="swiper-slide">
                             <div
-                                class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 cursor-pointer dark:border-slate-700 dark:bg-slate-800"
+                                class="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800"
                                 data-lightbox="product-gallery"
                                 data-src="{{ $item->mediaFile->url }}"
                                 data-title="{{ $item->title }}"
@@ -23,23 +23,23 @@
                                     :alt="$item->title"
                                     :title="$item->title"
                                     variant="medium_large"
-                                    class="w-full aspect-square object-cover transition-transform duration-300 group-hover:scale-[1.05]"
+                                    class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-[1.05]"
                                     wrapper-class="w-full"
                                     :lazy="true"
                                     :async="true"
-                                    sizes="(max-width: 640px) 100vw, 420px"
+                                    sizes="(max-width: 640px) 70vw, (max-width: 1024px) 33vw, 260px"
                                 />
 
                                 <div
-                                    class="pointer-events-none absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition duration-300"></div>
+                                    class="pointer-events-none absolute inset-0 bg-slate-900/0 transition duration-300 group-hover:bg-slate-900/20"></div>
 
                                 <div
-                                    class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                                    class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent opacity-0 transition group-hover:opacity-100"></div>
 
                                 @if($item->title)
                                     <div
-                                        class="pointer-events-none absolute bottom-3 right-3 left-3 opacity-0 group-hover:opacity-100 transition duration-300">
-                                        <div class="text-white text-xs font-bold line-clamp-2">
+                                        class="pointer-events-none absolute bottom-3 left-3 right-3 opacity-0 transition duration-300 group-hover:opacity-100">
+                                        <div class="line-clamp-2 text-xs font-bold text-white">
                                             {{ $item->title }}
                                         </div>
                                     </div>
@@ -51,17 +51,21 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between absolute gap-2 top-4 left-4">
-            <div id="product-image-gallery-pagination-prev"
-                 class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800">
-                <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5 dark:text-slate-200">
+        <div class="absolute left-3 top-3 flex items-center justify-between gap-2 sm:left-4 sm:top-4">
+            <div
+                id="product-image-gallery-pagination-prev"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
+            >
+                <span class="text-slate-700 dark:text-slate-200 [&_svg]:h-5 [&_svg]:w-5">
                     @include('icons.arrow-right-01')
                 </span>
             </div>
 
-            <div id="product-image-gallery-pagination-next"
-                 class="h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800">
-                <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5 dark:text-slate-200">
+            <div
+                id="product-image-gallery-pagination-next"
+                class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800"
+            >
+                <span class="text-slate-700 dark:text-slate-200 [&_svg]:h-5 [&_svg]:w-5">
                     @include('icons.arrow-left-01')
                 </span>
             </div>

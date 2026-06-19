@@ -7,7 +7,7 @@
         />
 
         <div
-            class="space-y-3"
+            class="mt-4 space-y-3 sm:mt-5"
             x-data="{
                 openRelease: null,
 
@@ -21,38 +21,39 @@
             }"
         >
             @foreach($product->releases as $i => $release)
-                <div class="rounded-3xl border border-slate-200 overflow-hidden">
+                <div class="overflow-hidden rounded-2xl border border-slate-200 sm:rounded-3xl">
                     <button
                         type="button"
-                        class="cursor-pointer w-full px-4 sm:px-5 py-4 flex items-center justify-between gap-3 bg-white hover:bg-slate-50 transition text-right"
+                        class="flex w-full cursor-pointer items-center justify-between gap-3 bg-white px-4 py-4 text-right transition hover:bg-slate-50 sm:px-5"
                         @click="toggleRelease({{ $i }})"
                     >
-                        <div>
+                        <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-sm font-extrabold text-slate-900">{{ $release->title }}</span>
+                                <span class="text-sm font-extrabold leading-7 text-slate-900">
+                                    {{ $release->title }}
+                                </span>
+
                                 <span
-                                    class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl">
+                                    class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[11px] font-extrabold text-brand-800">
                                     {{ jalali_date($release->released_at, 'Y/m/d') }}
                                 </span>
                             </div>
-                            <div class="mt-1 text-xs text-slate-500">{{ $release->excerpt }}</div>
+
+                            <div class="mt-1 line-clamp-2 text-xs leading-6 text-slate-500">
+                                {{ $release->excerpt }}
+                            </div>
                         </div>
 
                         <span
-                            class="shrink-0 h-9 w-9 rounded-2xl border border-slate-200 bg-slate-50 grid place-items-center text-slate-600">
+                            class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600">
                             <svg
                                 class="h-4 w-4 transition-transform duration-300"
                                 :class="isReleaseOpen({{ $i }}) ? 'rotate-180' : ''"
                                 viewBox="0 0 24 24"
                                 fill="none"
                             >
-                                <path
-                                    d="M6 9l6 6 6-6"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                />
+                                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                      stroke-linejoin="round"/>
                             </svg>
                         </span>
                     </button>
@@ -63,24 +64,25 @@
                         x-cloak
                         class="bg-slate-50"
                     >
-                        <div class="px-4 sm:px-5 py-5">
+                        <div class="px-4 py-4 sm:px-5 sm:py-5">
                             <ul class="space-y-3">
                                 @foreach($release->releaseChanges as $change)
-                                    <li class="flex items-center gap-3 text-sm text-slate-700">
+                                    <li class="flex items-start gap-3 text-sm leading-7 text-slate-700">
                                         <span
                                             @class([
-                                                'shrink-0 rounded-full',
+                                                'mt-2 shrink-0 rounded-full',
                                                 'h-2 w-2 bg-brand-600' => ! $change->is_special,
                                                 'relative h-2.5 w-2.5 bg-brand-600 shadow-[0_0_0_4px_rgba(249,115,22,0.12)] animate-pulse' => $change->is_special,
                                             ])
                                         >
                                             @if($change->is_special)
                                                 <span
-                                                    class="absolute inset-0 rounded-full bg-brand-500 animate-ping opacity-75"></span>
+                                                    class="absolute inset-0 animate-ping rounded-full bg-brand-500 opacity-75"></span>
                                                 <span class="absolute inset-0 rounded-full bg-brand-600"></span>
                                             @endif
                                         </span>
-                                        <span>{{ $change->title }}</span>
+
+                                        <span class="min-w-0">{{ $change->title }}</span>
                                     </li>
                                 @endforeach
                             </ul>

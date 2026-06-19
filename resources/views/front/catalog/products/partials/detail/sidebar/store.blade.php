@@ -1,4 +1,4 @@
-<x-front.cart class="!p-5">
+<x-front.cart class="!p-4 sm:!p-5">
     <div class="flex items-center gap-3">
         <div class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
             <img
@@ -8,9 +8,9 @@
             />
         </div>
 
-        <div class="flex-1">
+        <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-sm font-extrabold text-slate-900">
+                <h3 class="line-clamp-1 text-sm font-extrabold text-slate-900">
                     {{ $product->store->title }}
                 </h3>
 
@@ -20,36 +20,37 @@
             </div>
 
             @if($product->store->activity_field)
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-1 line-clamp-1 text-xs leading-5 text-slate-500">
                     {{ $product->store->activity_field }}
                 </p>
             @endif
         </div>
-
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-2">
-
         <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[11px] text-slate-500">تعداد محصولات</div>
-            <div
-                class="mt-1 text-sm font-extrabold text-slate-900">{{ number_format($product->store->products()->count()) }}</div>
+            <div class="mt-1 text-sm font-extrabold text-slate-900">
+                {{ number_format($product->store->products()->count()) }}
+            </div>
         </div>
 
         <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[11px] text-slate-500">میزان فروش</div>
-            <div class="mt-1 text-sm font-extrabold text-slate-900">{{ number_format($storeSoldQuantity) }}</div>
+            <div class="mt-1 text-sm font-extrabold text-slate-900">
+                {{ number_format($storeSoldQuantity) }}
+            </div>
         </div>
-
     </div>
 
-    <p class="mt-4 text-xs text-justify leading-6 text-slate-600">
+    <p class="mt-4 text-justify text-xs leading-6 text-slate-600">
         {{ $product->store->excerpt(35) }}
     </p>
 
-    <a href="{{ route('stores.detail', $product->store) }}"
-       class="mt-4 flex w-full items-center justify-center rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white hover:bg-brand-600 transition">
+    <a
+        href="{{ route('stores.detail', $product->store) }}"
+        class="mt-4 flex h-10 w-full items-center justify-center rounded-xl bg-brand-500 px-4 text-xs font-bold text-white transition hover:bg-brand-600"
+    >
         مشاهده فروشگاه
     </a>
-
 </x-front.cart>

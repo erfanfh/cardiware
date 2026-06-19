@@ -10,7 +10,7 @@
             type="button"
             x-data
             @click="$dispatch('open-modal', { name: 'product-send-comment-modal' })"
-            class="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] max-sm:w-full"
+            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 hover:opacity-95 active:scale-[0.99] sm:w-auto"
         >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
                 <path
@@ -26,7 +26,7 @@
         </button>
     </div>
 
-    <div class="mt-5">
+    <div class="mt-5 min-w-0">
         <livewire:front.discussion.product-comments-list
             :commentable="$product"
             :key="'product-comments-list-' . $product->id"
