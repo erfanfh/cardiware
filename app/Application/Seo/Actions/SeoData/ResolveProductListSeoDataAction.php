@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Application\Seo\Actions\SeoData;
+
+use App\Application\Seo\Actions\GetSeoDefaultsAction;
+use App\Application\Seo\Actions\ResolveSeoPaginationLinksAction;
+use App\Application\Seo\Actions\Schema\Graphs\BuildProductListSchemaGraphAction;
+use App\Application\Seo\Actions\Schema\RenderSchemaGraphAction;
+use App\Application\Seo\Actions\SeoData\Resolvers\ResolveProductListSeoPayloadAction;
+use App\Application\Seo\DTOs\OpenGraphDataDTO;
+use App\Application\Seo\DTOs\SeoDataDTO;
+use App\Application\Seo\DTOs\TwitterCardDataDTO;
+use App\Domain\Seo\Enums\OgTypeEnum;
+
+final class ResolveProductListSeoDataAction
+{
+    public function __construct(
+        protected GetSeoDefaultsAction               $getSeoDefaultsAction,
+        protected ResolveProductListSeoPayloadAction $resolveProductListSeoPayloadAction,
+        protected BuildProductListSchemaGraphAction  $buildProductListSchemaGraphAction,
+        protected RenderSchemaGraphAction            $renderSchemaGraphAction,
+        protected ResolveSeoPaginationLinksAction    $resolveSeoPaginationLinksAction,
+    )
+    {
+    }
+
+    public function execute(): SeoDataDTO
+    {
+        $defaults = $this->getSeoDefaultsAction->execute();
+        $payload = $this->resolveProductListSeoPayloadAction->execute();
+
+        $schemaGraph = $this->buildProductListSchemaGraphAction->execute($payload);
+        $schemaJson = $this->renderSchemaGraphAction->execute($schemaGraph);
+
+        $paginator = request()->attributes->get('seo_paginator');
+        $paginationBaseUrl = request()->attributes->get('seo_pagination_base_url');
+
+        return new SeoDataDTO(
+            robots: $payload->robots ?: $defaults['robots'],
+            title: $payload->title,
+            description: $payload->description,
+            canonicalUrl: $payload->canonicalUrl,
+            author: null,
+            openGraph: new OpenGraphDataDTO(
+                type: OgTypeEnum::WEBSITE,
+                title: $payload->ogTitle,
+                description: $payload->ogDescription,
+                url: $payload->canonicalUrl,
+                siteName: $defaults['site_name'],
+                locale: $defaults['og_locale'],
+                image: $payload->ogImage['url'] ?? null,
+                imageWidth: $payload->ogImage['width'] ?? null,
+                imageHeight: $payload->ogImage['height'] ?? null,
+                imageType: $payload->ogImage['type'] ?? null,
+            ),
+            twitter: new TwitterCardDataDTO(
+                card: $defaults['twitter_card'],
+                title: $payload->xTitle,
+                description: $payload->xDescription,
+                image: $payload->xImageUrl,
+            ),
+            schemaJson: $schemaJson,
+            pagination: $paginator && $paginationBaseUrl
+                ? $this->resolveSeoPaginationLinksAction->execute($paginator, $paginationBaseUrl)
+                : null,
+        );
+    }
+}

@@ -2,6 +2,6 @@
 
 @section('content')
     <main class="mx-auto max-w-7xl px-4 py-8">
-        <livewire:front.catalog.product-list-page/>
+        @include('front.catalog.products.partials.list.page')
     </main>
 @endsection
