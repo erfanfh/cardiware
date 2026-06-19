@@ -61,13 +61,16 @@
 @endsection
 
 @section('content')
-    <section class="mx-auto flex max-w-7xl items-center justify-center px-4 py-8">
+    <section class="mx-auto flex max-w-7xl items-center justify-center px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
         <div class="print-card w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-soft2">
             <div
-                class="flex flex-col gap-3 border-b border-slate-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-                <div>
-                    <h1 class="text-base font-extrabold text-slate-900">رسید پرداخت سفارش</h1>
-                    <p class="mt-1 text-xs text-slate-500">
+                class="flex flex-col gap-3 border-b border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+                <div class="min-w-0">
+                    <h1 class="text-sm font-extrabold text-slate-900 sm:text-base">
+                        رسید پرداخت سفارش
+                    </h1>
+
+                    <p class="mt-1 text-xs leading-5 text-slate-500">
                         {{ $isPaid ? 'جزئیات پرداخت موفق و محصولات خریداری‌شده' : 'جزئیات پرداخت ناموفق و وضعیت سفارش' }}
                     </p>
                 </div>
@@ -80,12 +83,13 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12">
-                <div class="min-w-0 p-5 sm:p-7 lg:col-span-8 lg:p-9">
-                    <div class="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                <div class="min-w-0 p-4 sm:p-7 lg:col-span-8 lg:p-9">
+                    <div
+                        class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-right">
                         <div
-                            class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl border {{ $iconBoxClasses }}">
+                            class="grid h-16 w-16 shrink-0 place-items-center rounded-3xl border sm:h-20 sm:w-20 {{ $iconBoxClasses }}">
                             @if($isPaid)
-                                <svg class="h-11 w-11" viewBox="0 0 24 24" fill="none">
+                                <svg class="h-9 w-9 sm:h-11 sm:w-11" viewBox="0 0 24 24" fill="none">
                                     <path d="M20 6L9 17l-5-5"
                                           stroke="currentColor"
                                           stroke-width="2.5"
@@ -93,7 +97,7 @@
                                           stroke-linejoin="round"/>
                                 </svg>
                             @else
-                                <svg class="h-11 w-11" viewBox="0 0 24 24" fill="none">
+                                <svg class="h-9 w-9 sm:h-11 sm:w-11" viewBox="0 0 24 24" fill="none">
                                     <path d="M18 6L6 18M6 6l12 12"
                                           stroke="currentColor"
                                           stroke-width="2.5"
@@ -102,18 +106,19 @@
                             @endif
                         </div>
 
-                        <div>
-                            <h2 class="text-2xl font-black leading-tight text-slate-900 sm:text-3xl">
+                        <div class="min-w-0">
+                            <h2 class="text-xl font-black leading-8 text-slate-900 sm:text-3xl sm:leading-tight">
                                 {{ $mainTitle }}
                             </h2>
-                            <p class="mt-3 max-w-xl text-sm leading-7 text-slate-600">
+
+                            <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600 sm:mx-0">
                                 {{ $mainDescription }}
                             </p>
                         </div>
                     </div>
 
                     @unless($isPaid)
-                        <div class="mt-7 rounded-3xl border border-red-200 bg-red-50 p-4">
+                        <div class="mt-5 rounded-2xl border border-red-200 bg-red-50 p-4 sm:mt-7 sm:rounded-3xl">
                             <div class="flex gap-3">
                                 <div
                                     class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-red-700 ring-1 ring-red-200">
@@ -127,7 +132,7 @@
                                     </svg>
                                 </div>
 
-                                <div>
+                                <div class="min-w-0">
                                     <h3 class="text-sm font-extrabold text-red-900">دلیل احتمالی خطا</h3>
                                     <p class="mt-1 text-xs leading-6 text-red-800">
                                         {{ $payment->gateway_message ?: 'پرداخت توسط بانک تایید نشده، ارتباط با درگاه قطع شده یا تراکنش توسط کاربر لغو شده است.' }}
@@ -137,9 +142,10 @@
                         </div>
                     @endunless
 
-                    <div class="mt-7 min-w-0">
+                    <div class="mt-5 min-w-0 sm:mt-7">
                         <div class="mb-3 flex items-center justify-between gap-3">
                             <h3 class="text-sm font-extrabold text-slate-900">{{ $itemsTitle }}</h3>
+
                             <span
                                 class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[11px] font-extrabold text-slate-700">
                                 {{ $rootItems->count() }} محصول
@@ -154,16 +160,16 @@
                                 @endphp
 
                                 <article
-                                    class="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-soft">
+                                    class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-soft sm:flex-row sm:items-center sm:rounded-3xl">
                                     <img
                                         src="{{ $itemImage($item) }}"
                                         alt="{{ data_get($item->snapshot, 'title', 'محصول سفارش') }}"
-                                        class="h-20 w-24 shrink-0 rounded-2xl object-cover sm:h-24 sm:w-32"
+                                        class="aspect-video w-full rounded-2xl object-cover sm:h-24 sm:w-32 sm:shrink-0"
                                     >
 
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <h4 class="line-clamp-1 text-sm font-extrabold text-slate-900">
+                                            <h4 class="line-clamp-2 text-sm font-extrabold leading-7 text-slate-900 sm:line-clamp-1">
                                                 {{ data_get($item->snapshot, 'title', 'آیتم سفارش') }}
                                             </h4>
 
@@ -279,46 +285,47 @@
                                 </article>
                             @empty
                                 <div
-                                    class="rounded-3xl border border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500">
+                                    class="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500 sm:rounded-3xl">
                                     آیتمی برای این سفارش یافت نشد.
                                 </div>
                             @endforelse
                         </div>
                     </div>
 
-                    <div class="mt-7 flex flex-col gap-3 sm:flex-row">
+                    <div class="mt-5 grid grid-cols-1 gap-3 sm:mt-7 sm:flex sm:flex-row sm:flex-wrap">
                         @if($isPaid)
                             <a href="{{ $downloadsUrl }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
+                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
                                 مشاهده دانلودها
                             </a>
 
                             <a href="{{ $productsUrl }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50">
+                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50">
                                 بازگشت به فروشگاه
                                 <span>←</span>
                             </a>
                         @else
                             @if(method_exists($order->status, 'canStartPayment') && $order->status->canStartPayment())
                                 <form method="POST"
-                                      action="{{ route('payment.retry', ['paymentToken' => $payment->public_token]) }}">
+                                      action="{{ route('payment.retry', ['paymentToken' => $payment->public_token]) }}"
+                                      class="w-full sm:w-auto">
                                     @csrf
 
                                     <button type="submit"
-                                            class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700 sm:w-auto">
+                                            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700 sm:w-auto">
                                         تلاش مجدد برای پرداخت
                                     </button>
                                 </form>
                             @endif
 
                             <a href="{{ route('cart.index') }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50">
+                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50">
                                 بازگشت به سبد خرید
                                 <span>←</span>
                             </a>
 
                             <a href="{{ $productsUrl }}"
-                               class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50">
+                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50">
                                 بازگشت به فروشگاه
                             </a>
                         @endif
@@ -327,11 +334,11 @@
 
                 <aside
                     class="border-t border-slate-200 bg-slate-50 p-4 sm:p-5 lg:col-span-4 lg:border-r lg:border-t-0 lg:p-5">
-                    <div class="rounded-3xl border border-slate-200 bg-white p-4">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4 sm:rounded-3xl">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <div class="text-xs font-bold text-slate-500">{{ $amountTitle }}</div>
-                                <div class="mt-2 text-xl font-black text-slate-900">
+                                <div class="mt-2 text-lg font-black text-slate-900 sm:text-xl">
                                     {{ $money((int) $payment->amount) }}
                                 </div>
                             </div>
@@ -340,24 +347,25 @@
                         <div class="mt-4 space-y-2.5 border-t border-slate-100 pt-4">
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500">شماره سفارش</span>
-                                <span class="font-extrabold text-slate-900">{{ $order->order_number }}</span>
+                                <span class="text-left font-extrabold text-slate-900">{{ $order->order_number }}</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500">کد رسید</span>
-                                <span class="font-extrabold text-slate-900">{{ $receiptCode }}</span>
+                                <span
+                                    class="break-all text-left font-extrabold text-slate-900">{{ $receiptCode }}</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500">جمع محصولات</span>
-                                <span class="font-extrabold text-slate-900">
+                                <span class="text-left font-extrabold text-slate-900">
                                     {{ $money((int) $order->subtotal_amount) }}
                                 </span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500">تخفیف</span>
-                                <span class="font-extrabold text-emerald-700">
+                                <span class="text-left font-extrabold text-emerald-700">
                                     {{ $money((int) $order->discount_amount) }}
                                 </span>
                             </div>
@@ -374,7 +382,8 @@
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500">{{ $dateTitle }}</span>
-                                <span class="font-extrabold text-slate-900">{{ jalali_date($happenedAt) }}</span>
+                                <span
+                                    class="text-left font-extrabold text-slate-900">{{ jalali_date($happenedAt) }}</span>
                             </div>
                         </div>
 
