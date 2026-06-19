@@ -158,7 +158,7 @@ class MyOrdersSection extends Component
             return route('payment.retry', ['paymentToken' => $payment->public_token]);
         }
 
-        return '#';
+        return '';
     }
 
     public function invoiceUrl(Order $order): string

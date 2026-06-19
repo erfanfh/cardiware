@@ -1,37 +1,37 @@
-<section id="my-orders-section" class="scroll-mt-36 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+<section id="my-orders-section" class="scroll-mt-36 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
     <div class="flex flex-col gap-1">
-        <div class="text-base font-extrabold text-slate-900">سفارش‌های من</div>
-        <div class="text-xs text-slate-500">تاریخچه سفارش‌ها، پرداخت‌ها و فاکتورها به ترتیب آخرین سفارش</div>
+        <div class="text-sm font-extrabold text-slate-900 sm:text-base">سفارش‌های من</div>
+        <div class="text-xs leading-5 text-slate-500">تاریخچه سفارش‌ها، پرداخت‌ها و فاکتورها به ترتیب آخرین سفارش</div>
     </div>
 
-    <div class="mt-5 space-y-4 transition" wire:loading.class="opacity-40">
+    <div class="mt-4 space-y-3 transition sm:mt-5 sm:space-y-4" wire:loading.class="opacity-40">
         @forelse($this->orders as $order)
             <article
                 x-data="{ open: false }"
                 wire:key="order-{{ $order->id }}"
-                class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition"
+                class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition sm:rounded-3xl"
             >
                 <button
                     type="button"
                     @click="open = !open"
-                    class="block w-full p-4 text-right cursor-pointer"
+                    class="block w-full cursor-pointer p-3 text-right sm:p-4"
                 >
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span
-                                    class="rounded-xl border px-2 py-1 text-[11px] font-extrabold {{ $this->orderStatusClass($order) }}">
+                                    class="rounded-xl border px-2 py-1 text-[10px] font-extrabold sm:text-[11px] {{ $this->orderStatusClass($order) }}">
                                     {{ $this->orderStatusLabel($order) }}
                                 </span>
 
                                 <span
-                                    class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-extrabold text-slate-600">
+                                    class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px]">
                                     {{ $this->dateLabel($order->created_at) }}
                                 </span>
 
                                 @if($order->isPaid())
                                     <span
-                                        class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-extrabold text-emerald-700">
+                                        class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 sm:text-[11px]">
                                         پرداخت: {{ $this->dateTimeLabel($order->paid_at) }}
                                     </span>
                                 @endif
@@ -42,29 +42,23 @@
                                     سفارش {{ $order->order_number }}
                                 </div>
 
-                                <div class="text-sm font-extrabold leading-7 text-slate-700">
+                                <div
+                                    class="line-clamp-2 text-xs font-extrabold leading-6 text-slate-700 sm:text-sm sm:leading-7">
                                     {{ $this->orderTitle($order) }}
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex flex-col items-start gap-2 lg:items-end">
-                            <div class="text-lg font-black text-slate-900">
+                        <div class="flex flex-row items-center justify-between gap-3 lg:flex-col lg:items-end">
+                            <div class="text-base font-black text-slate-900 sm:text-lg">
                                 {{ $this->money($order->total_amount) }}
                             </div>
 
                             <div class="inline-flex items-center gap-1 text-xs font-extrabold text-brand-700">
                                 <span x-text="open ? 'بستن جزئیات' : 'مشاهده جزئیات'"></span>
-                                <svg
-                                    class="h-4 w-4 transition"
-                                    :class="open ? 'rotate-180' : ''"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                >
-                                    <path d="m6 9 6 6 6-6"
-                                          stroke="currentColor"
-                                          stroke-width="2"
-                                          stroke-linecap="round"
+                                <svg class="h-4 w-4 transition" :class="open ? 'rotate-180' : ''" viewBox="0 0 24 24"
+                                     fill="none">
+                                    <path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                           stroke-linejoin="round"/>
                                 </svg>
                             </div>
@@ -72,14 +66,10 @@
                     </div>
                 </button>
 
-                <div
-                    x-show="open"
-                    x-collapse
-                    class="border-t border-slate-100 bg-slate-50/60"
-                >
-                    <div class="grid gap-4 p-4 xl:grid-cols-[1fr_320px]">
-                        <div class="space-y-3">
-                            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                <div x-show="open" x-collapse class="border-t border-slate-100 bg-slate-50/60">
+                    <div class="grid gap-3 p-3 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-4 sm:p-4">
+                        <div class="min-w-0 space-y-3">
+                            <div class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
                                 <div class="mb-3 text-sm font-black text-slate-900">آیتم‌های سفارش</div>
 
                                 <div class="space-y-3">
@@ -103,18 +93,18 @@
 
                                                     <div class="mt-2 flex flex-wrap gap-2">
                                                         <span
-                                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1 text-[11px] font-extrabold text-slate-600">
+                                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px]">
                                                             {{ $this->quantityLabel($item) }}
                                                         </span>
 
                                                         <span
-                                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1 text-[11px] font-extrabold text-slate-600">
+                                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px]">
                                                             قیمت واحد: {{ $this->money($item->unit_price) }}
                                                         </span>
 
                                                         @if($item->discount_amount > 0)
                                                             <span
-                                                                class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-extrabold text-emerald-700">
+                                                                class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 sm:text-[11px]">
                                                                 تخفیف: {{ $this->money($item->discount_amount) }}
                                                             </span>
                                                         @endif
@@ -133,7 +123,8 @@
                                                             wire:key="order-{{ $order->id }}-child-{{ $child->id }}"
                                                             class="flex flex-col gap-2 rounded-xl bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
                                                         >
-                                                            <div class="text-xs font-extrabold text-slate-700">
+                                                            <div
+                                                                class="text-xs font-extrabold leading-5 text-slate-700">
                                                                 {{ $this->orderItemTitle($child) }}
                                                             </div>
 
@@ -155,8 +146,8 @@
                             </div>
                         </div>
 
-                        <aside class="space-y-3">
-                            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                        <aside class="min-w-0 space-y-3">
+                            <div class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
                                 <div class="mb-3 text-sm font-black text-slate-900">خلاصه سفارش</div>
 
                                 <div class="space-y-3 text-xs font-bold text-slate-600">
@@ -168,7 +159,7 @@
                                     <div class="flex items-center justify-between gap-3">
                                         <span>تاریخ ثبت</span>
                                         <span
-                                            class="font-black text-slate-900">{{ $this->dateTimeLabel($order->created_at) }}</span>
+                                            class="text-left font-black text-slate-900">{{ $this->dateTimeLabel($order->created_at) }}</span>
                                     </div>
 
                                     <div class="flex items-center justify-between gap-3">
@@ -182,7 +173,7 @@
                                     <div class="flex items-center justify-between gap-3">
                                         <span>آخرین پرداخت</span>
                                         <span
-                                            class="font-black text-slate-900">{{ $this->latestPaymentLabel($order) }}</span>
+                                            class="text-left font-black text-slate-900">{{ $this->latestPaymentLabel($order) }}</span>
                                     </div>
 
                                     <div class="border-t border-slate-100 pt-3">
@@ -209,33 +200,27 @@
                                 </div>
                             </div>
 
-                            <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                            <div class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
                                 <div class="mb-3 text-sm font-black text-slate-900">عملیات</div>
 
                                 <div class="flex flex-col gap-2">
-                                    @if($this->canRetryPayment($order))
-                                        <a
-                                            href="{{ $this->retryPaymentUrl($order) }}"
-                                            class="inline-flex h-11 items-center justify-center rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600"
-                                        >
+                                    @if($this->canRetryPayment($order) and $this->retryPaymentUrl($order))
+                                        <a href="{{ $this->retryPaymentUrl($order) }}"
+                                           class="inline-flex h-11 items-center justify-center rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600">
                                             پرداخت سفارش
                                         </a>
                                     @endif
 
                                     @if($this->hasDownloads($order))
-                                        <a
-                                            href="{{ $this->downloadsUrl() }}"
-                                            class="inline-flex h-11 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 px-4 text-sm font-extrabold text-brand-800 transition hover:bg-brand-100"
-                                        >
+                                        <a href="{{ $this->downloadsUrl() }}"
+                                           class="inline-flex h-11 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 px-4 text-sm font-extrabold text-brand-800 transition hover:bg-brand-100">
                                             مشاهده دانلودها
                                         </a>
                                     @endif
 
                                     @if($this->hasInvoiceRoute())
-                                        <a
-                                            href="{{ $this->invoiceUrl($order) }}"
-                                            class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50"
-                                        >
+                                        <a href="{{ $this->invoiceUrl($order) }}"
+                                           class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50">
                                             دریافت فاکتور
                                         </a>
                                     @endif
@@ -246,24 +231,20 @@
                 </div>
             </article>
         @empty
-            <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
+            <div
+                class="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center sm:rounded-3xl sm:p-8">
                 <div
                     class="mx-auto grid h-14 w-14 place-items-center rounded-3xl bg-slate-50 text-slate-400 ring-1 ring-slate-200">
                     <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none">
                         <path
                             d="M8 7h8M8 12h8M8 17h5M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"/>
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </div>
 
-                <div class="mt-4 text-sm font-extrabold text-slate-800">
-                    سفارشی یافت نشد
-                </div>
+                <div class="mt-4 text-sm font-extrabold text-slate-800">سفارشی یافت نشد</div>
 
-                <p class="mt-2 text-xs leading-6 text-slate-500">
+                <p class="mx-auto mt-2 max-w-sm text-xs leading-6 text-slate-500">
                     بعد از ثبت اولین سفارش، تاریخچه خریدهای شما در این بخش نمایش داده می‌شود.
                 </p>
             </div>

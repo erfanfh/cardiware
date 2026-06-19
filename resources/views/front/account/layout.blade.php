@@ -11,7 +11,7 @@
         <section class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             @include('front.account.partials.sidebar')
 
-            <div class="lg:col-span-8 xl:col-span-9">
+            <div class="min-w-0 lg:col-span-8 xl:col-span-9">
                 @yield('page-content')
             </div>
         </section>
