@@ -50,11 +50,51 @@ class MyOrdersSection extends Component
     public function orderStatusClass(Order $order): string
     {
         return match ($order->status) {
-            OrderStatusEnum::PAID => 'text-emerald-700 bg-emerald-50 border-emerald-200',
-            OrderStatusEnum::PENDING_PAYMENT => 'text-amber-700 bg-amber-50 border-amber-200',
-            OrderStatusEnum::FAILED, OrderStatusEnum::CANCELLED => 'text-red-700 bg-red-50 border-red-200',
-            OrderStatusEnum::REFUNDED => 'text-slate-700 bg-slate-100 border-slate-200',
-            default => 'text-slate-700 bg-slate-100 border-slate-200',
+            OrderStatusEnum::PAID => '
+            border border-emerald-200
+            bg-emerald-50
+            text-emerald-700
+            dark:border-emerald-500/20
+            dark:bg-emerald-500/10
+            dark:text-emerald-300
+        ',
+
+            OrderStatusEnum::PENDING_PAYMENT => '
+            border border-amber-200
+            bg-amber-50
+            text-amber-700
+            dark:border-amber-500/20
+            dark:bg-amber-500/10
+            dark:text-amber-300
+        ',
+
+            OrderStatusEnum::FAILED,
+            OrderStatusEnum::CANCELLED => '
+            border border-red-200
+            bg-red-50
+            text-red-700
+            dark:border-red-500/20
+            dark:bg-red-500/10
+            dark:text-red-300
+        ',
+
+            OrderStatusEnum::REFUNDED => '
+            border border-slate-200
+            bg-slate-100
+            text-slate-700
+            dark:border-slate-700
+            dark:bg-slate-800
+            dark:text-slate-300
+        ',
+
+            default => '
+            border border-slate-200
+            bg-slate-100
+            text-slate-700
+            dark:border-slate-700
+            dark:bg-slate-800
+            dark:text-slate-300
+        ',
         };
     }
 

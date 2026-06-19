@@ -206,7 +206,8 @@ class AccountInformationSection extends Component
      */
     public function accountTypeClass(): string
     {
-        return 'text-slate-700 bg-slate-100 border-slate-200';
+        return 'border border-slate-300 bg-slate-50 text-slate-800
+            dark:border-slate-600 dark:bg-slate-800/70 dark:text-slate-200';
     }
 
     /**
@@ -229,8 +230,8 @@ class AccountInformationSection extends Component
         $user = auth()->user();
 
         return $user->email_verified_at
-            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
-            : 'text-amber-700 bg-amber-50 border-amber-200';
+            ? 'border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
+            : 'border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300';
     }
 
     /**
@@ -253,8 +254,8 @@ class AccountInformationSection extends Component
         $user = auth()->user();
 
         return $user->mobile_verified_at
-            ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
-            : 'text-amber-700 bg-amber-50 border-amber-200';
+            ? 'border border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
+            : 'border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300';
     }
 
     /**
