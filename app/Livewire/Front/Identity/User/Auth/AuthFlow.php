@@ -6,6 +6,7 @@ use App\Application\Identity\Actions\Auth\GenerateOtpAction;
 use App\Application\Identity\Actions\Auth\RedirectLoggedInUserAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Application\System\RateLimiterAction;
+use App\Domain\Identity\Enums\AuthFlowStepEnum;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
@@ -21,7 +22,8 @@ use Random\RandomException;
 
 class AuthFlow extends Component
 {
-    public string $step = 'login';
+    public AuthFlowStepEnum $step;
+
     public string $username = '';
     public string $mobile = '';
     public string $email = '';
@@ -33,6 +35,11 @@ class AuthFlow extends Component
     public ?string $otp_code = null;
 
     public ?string $otpType = null;
+
+    public function mount(): void
+    {
+        $this->step = AuthFlowStepEnum::LOGIN;
+    }
 
     /**
      * @return View
@@ -60,7 +67,7 @@ class AuthFlow extends Component
             'password_confirmation',
         ]);
 
-        $this->step = 'register';
+        $this->step = AuthFlowStepEnum::REGISTER;
     }
 
     public function goToLogin(): void
@@ -76,7 +83,7 @@ class AuthFlow extends Component
             'password_confirmation',
         ]);
 
-        $this->step = 'login';
+        $this->step = AuthFlowStepEnum::LOGIN;
     }
 
     /**
@@ -87,7 +94,7 @@ class AuthFlow extends Component
         $this->resetValidation();
         $this->reset(['otp_code']);
 
-        $this->step = 'otp-login-username';
+        $this->step = AuthFlowStepEnum::OTP_LOGIN;
     }
 
 
@@ -99,7 +106,7 @@ class AuthFlow extends Component
         $this->resetValidation();
         $this->resetErrorBag();
 
-        $this->step = 'enter-username';
+        $this->step = AuthFlowStepEnum::ENTER_USERNAME;
     }
 
     /**
@@ -123,7 +130,7 @@ class AuthFlow extends Component
         }
 
         $this->otpType = OtpTypeEnum::LOGIN->value;
-        $this->step = 'otp-login';
+        $this->step = AuthFlowStepEnum::OTP_LOGIN;
         session()->flash('success', 'کد تایید با موفقیت ارسال شد.');
     }
 
@@ -261,7 +268,7 @@ class AuthFlow extends Component
         }
 
         $this->otpType = OtpTypeEnum::LOGIN->value;
-        $this->step = 'otp-login-verify';
+        $this->step = AuthFlowStepEnum::VERIFY_OTP_LOGIN;
 
         session()->flash('success', 'کد تایید ارسال شد');
     }
@@ -305,7 +312,7 @@ class AuthFlow extends Component
             'otp_code',
             'otpType',
         ]);
-        $this->step = 'enter-username';
+        $this->step = AuthFlowStepEnum::ENTER_USERNAME;
     }
 
     /**
@@ -381,7 +388,7 @@ class AuthFlow extends Component
         }
 
         $this->otpType = OtpTypeEnum::RESET_PASSWORD->value;
-        $this->step = 'forgot-password';
+        $this->step = AuthFlowStepEnum::FORGOT_PASSWORD;
 
         session()->flash('success', 'کد تایید ارسال شد');
     }
