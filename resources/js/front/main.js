@@ -6,6 +6,9 @@ import './scroll-to-top.js';
 import './product-detail/image-gallery-slider.js';
 import productBuyBox from './product-detail/product-buy-box.js';
 import './product-list/hero-slider.js';
+import productTabs from './product-detail/tabs.js';
+
+Alpine.data('productTabs', productTabs);
 
 window.productBuyBox = productBuyBox;
 

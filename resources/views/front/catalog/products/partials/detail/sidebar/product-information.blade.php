@@ -1,0 +1,40 @@
+<x-front.cart>
+    <div class="text-sm font-extrabold text-slate-900 mb-4">باکس اطلاعات محصول</div>
+
+    <div class="space-y-3 [&_svg]:w-4 [&_svg]:h-4">
+        <div
+            class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
+            <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                @include('icons.view')
+                <span>تعداد بازدید</span>
+            </div>
+            <div class="text-sm font-bold text-slate-900">
+                {{ number_format(page_views($product)) }}
+            </div>
+        </div>
+
+        <div
+            class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
+            <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                @include('icons.shopping-basket-03')
+                <span>تعداد فروش</span>
+            </div>
+            <div class="text-sm font-bold text-slate-900">
+                {{ $soldQuantity ? number_format($soldQuantity) : 'جدید!' }}
+            </div>
+        </div>
+
+        @foreach($product->informationEntries as $info)
+            <div
+                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 flex items-center justify-between gap-3">
+                <div class="text-xs font-extrabold text-slate-500 flex items-center gap-1.5">
+                    @include('icons.menu-01')
+                    <span>{{ $info->field->title }}</span>
+                </div>
+                <div class="text-sm font-bold text-slate-900">
+                    {{ $info->value }}
+                </div>
+            </div>
+        @endforeach
+    </div>
+</x-front.cart>
