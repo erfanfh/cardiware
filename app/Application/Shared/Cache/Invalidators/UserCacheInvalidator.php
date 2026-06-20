@@ -6,7 +6,7 @@ use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Identity\Models\User;
 use Illuminate\Support\Facades\Cache;
 
-class UserAccessCacheInvalidator
+class UserCacheInvalidator
 {
     public function flushAll(): void
     {
@@ -29,6 +29,7 @@ class UserAccessCacheInvalidator
 
         Cache::tags([
             CacheTag::userAccess($userId),
+            CacheTag::user($userId),
         ])->flush();
     }
 }

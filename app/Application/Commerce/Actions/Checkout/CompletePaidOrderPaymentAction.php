@@ -4,7 +4,7 @@ namespace App\Application\Commerce\Actions\Checkout;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
 use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
-use App\Application\Shared\Cache\Invalidators\UserAccessCacheInvalidator;
+use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
 use DomainException;
@@ -52,7 +52,7 @@ class CompletePaidOrderPaymentAction
             return $order->refresh();
         });
 
-        app(UserAccessCacheInvalidator::class)->flushForUser($payment->payable->user);
+        app(UserCacheInvalidator::class)->flushForUser($payment->payable->user);
 
         return $order;
     }
