@@ -38,6 +38,7 @@ class AccountController extends Controller
     public function orders(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.orders', compact('user'));
     }
@@ -45,6 +46,7 @@ class AccountController extends Controller
     public function tickets(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.tickets', compact('user'));
     }
@@ -52,6 +54,7 @@ class AccountController extends Controller
     public function favorites(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.favorites', compact('user'));
     }
@@ -59,6 +62,7 @@ class AccountController extends Controller
     public function information(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.information', compact('user'));
     }
@@ -66,6 +70,7 @@ class AccountController extends Controller
     public function security(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.security', compact('user'));
     }
