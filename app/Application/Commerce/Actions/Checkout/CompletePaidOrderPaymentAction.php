@@ -4,6 +4,7 @@ namespace App\Application\Commerce\Actions\Checkout;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
 use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
+use App\Application\Shared\Cache\Invalidators\UserAccessCacheInvalidator;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
 use DomainException;
@@ -28,7 +29,7 @@ class CompletePaidOrderPaymentAction
      */
     public function execute(Payment $payment): Order
     {
-        return DB::transaction(function () use ($payment) {
+        $order = DB::transaction(function () use ($payment) {
             $payment = Payment::query()
                 ->whereKey($payment->id)
                 ->lockForUpdate()
@@ -50,5 +51,9 @@ class CompletePaidOrderPaymentAction
 
             return $order->refresh();
         });
+
+        app(UserAccessCacheInvalidator::class)->flushForUser($payment->payable->user);
+
+        return $order;
     }
 }
