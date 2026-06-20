@@ -25,4 +25,9 @@ final class CacheTtl
     {
         return now()->addDay();
     }
+
+    public static function endOfToday(): DateTimeInterface
+    {
+        return now()->endOfDay();
+    }
 }

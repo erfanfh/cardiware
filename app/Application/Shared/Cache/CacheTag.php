@@ -62,6 +62,11 @@ final class CacheTag
     public const PAGES = 'pages';
     public const PAGE_DETAIL = 'page-detail';
 
+    public const DASHBOARD = 'dashboard';
+    public const DASHBOARD_TOP_POSTS = 'dashboard:top-posts';
+
+    public const ACCOUNT = 'account';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";
@@ -95,6 +100,11 @@ final class CacheTag
     public static function tag(int|string $tagId): string
     {
         return "tag:{$tagId}";
+    }
+
+    public static function user(int|string $userId): string
+    {
+        return "user:{$userId}";
     }
 
     public static function userAccess(int|string $userId): string

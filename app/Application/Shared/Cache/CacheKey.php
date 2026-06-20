@@ -187,4 +187,19 @@ final class CacheKey
     {
         return "commentable:{$type}:{$id}:approved_comments_count";
     }
+
+    public static function dashboardYesterdayTopPosts(string $date, int $limit): string
+    {
+        return "dashboard:yesterday-top-posts:{$date}:limit:{$limit}";
+    }
+
+    public static function accountUserStats(int|string $userId): string
+    {
+        return "account:user:{$userId}:stats";
+    }
+
+    public static function userAvatar(int|string $userId): string
+    {
+        return "user:{$userId}:avatar";
+    }
 }
