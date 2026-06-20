@@ -27,11 +27,17 @@
                             @click="open = !open"
                             class="flex min-w-0 flex-col gap-3 text-right sm:flex-row sm:gap-4"
                         >
-                            <img
-                                src="{{ $this->accessImage($access) }}"
-                                alt="{{ $this->accessTitle($access) }}"
+                            <x-front.responsive-image
+                                :media="$access->product?->picture"
+                                :fallback="$access->product?->picture?->url ?? asset('img/placeholder.png')"
+                                :alt="$this->accessTitle($access)"
+                                :title="$this->accessTitle($access)"
                                 class="aspect-video w-full rounded-2xl object-cover ring-1 ring-slate-200 sm:h-28 sm:w-40 sm:shrink-0 dark:ring-slate-700"
-                            >
+                                wrapper-class="aspect-video w-full sm:h-28 sm:w-40 sm:shrink-0 rounded-2xl overflow-hidden"
+                                :lazy="true"
+                                :skeleton="true"
+                                fetchpriority="low"
+                            />
 
                             <div class="min-w-0 flex-1">
                                 <a

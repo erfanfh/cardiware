@@ -82,17 +82,6 @@ class MyDownloadsSection extends Component
     }
 
     /**
-     * Resolve purchase access image.
-     */
-    public function accessImage(PurchaseAccess $access): string
-    {
-        return $access->product?->picture?->url
-            ?? $access->product?->picture?->primaryVariant?->url
-            ?? data_get($access->metadata, 'order_item_snapshot.image_url')
-            ?? asset('front/assets/images/placeholder.webp');
-    }
-
-    /**
      * Resolve access status label.
      */
     public function accessStatusLabel(PurchaseAccess $access): string
