@@ -2,34 +2,35 @@
 
 namespace App\Http\Controllers\Front\Identity;
 
-use App\Domain\Commerce\Enums\OrderStatusEnum;
-use App\Domain\Content\Models\Post;
+use App\Application\Content\Actions\GetYesterdayTopPostsAction;
+use App\Application\Identity\Actions\GetAccountUserStatsAction;
+use App\Application\Identity\Actions\GetUserAvatarAction;
 use App\Domain\Identity\Models\User;
-use App\Domain\System\Models\PageViewDetail;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
 
 class AccountController extends Controller
 {
-    public function dashboard(): View
+    public function dashboard(
+        GetYesterdayTopPostsAction $getYesterdayTopPostsAction,
+
+    ): View
     {
+        $yesterdayTopPosts = $getYesterdayTopPostsAction->execute();
+
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
-        $yesterdayTopPosts = PageViewDetail::query()
-            ->where('pageable_type', Post::class)
-            ->whereDate('date', now()->subDay()->toDateString())
-            ->where('count', '>', 0)
-            ->with('pageable')
-            ->orderByDesc('count')
-            ->limit(3)
-            ->get();
-
-        return view('front.account.pages.dashboard', compact('user', 'yesterdayTopPosts'));
+        return view('front.account.pages.dashboard', compact(
+            'user',
+            'yesterdayTopPosts'
+        ));
     }
 
     public function downloads(): View
     {
         $user = $this->getUser();
+        $this->hydrateUser($user);
 
         return view('front.account.pages.downloads', compact('user'));
     }
@@ -71,13 +72,17 @@ class AccountController extends Controller
 
     private function getUser(): User
     {
-        return auth()->user()
-            ->load([
-                'avatar.primaryVariant'
-            ])
-            ->loadCount([
-                'orders as paid_orders_count' => fn($q) => $q->where('status', OrderStatusEnum::PAID),
-                'purchaseAccesses'
-            ]);
+        return auth()->user();
+    }
+
+    private function hydrateUser(User $user): void
+    {
+        $stats = app(GetAccountUserStatsAction::class)->execute($user);
+        $avatar = app(GetUserAvatarAction::class)->execute($user);
+
+        $user->setAttribute('paid_orders_count', $stats['paid_orders_count']);
+        $user->setAttribute('purchase_accesses_count', $stats['purchase_accesses_count']);
+
+        $user->setAttribute('avatar_url', $avatar['url']);
     }
 }

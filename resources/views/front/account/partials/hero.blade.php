@@ -7,7 +7,7 @@
         <div class="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start">
             <div class="relative mx-auto shrink-0 sm:mx-0">
                 <img
-                    src="{{ $user->avatar?->url ?? asset('img/user-avatar.png') }}"
+                    src="{{ $user->avatar_url ?? asset('img/user-avatar.png') }}"
                     alt="آواتار کاربر"
                     class="h-20 w-20 rounded-3xl object-cover shadow-sm ring-4 ring-brand-100 sm:h-24 sm:w-24 dark:ring-brand-500/20"
                 />
