@@ -202,4 +202,19 @@ final class CacheKey
     {
         return "user:{$userId}:avatar";
     }
+
+    public static function productDetail(int|string $productId, int $updatedAt): string
+    {
+        return "product:detail:{$productId}:{$updatedAt}";
+    }
+
+    public static function productDetailStats(int|string $productId): string
+    {
+        return "product:detail:{$productId}:stats";
+    }
+
+    public static function productRelated(int|string $productId, int $updatedAt): string
+    {
+        return "product:detail:{$productId}:related:{$updatedAt}";
+    }
 }

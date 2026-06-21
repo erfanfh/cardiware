@@ -2,22 +2,29 @@
 
 namespace App\Http\Controllers\Front\Catalog;
 
-use App\Application\Commerce\Reports\ProductSalesReport;
+use App\Application\Catalog\Actions\GetProductDetailAction;
+use App\Application\Catalog\Actions\GetProductDetailStatsAction;
+use App\Application\Catalog\Actions\GetRelatedProductsAction;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 
 class ProductDetailController extends Controller
 {
     public function __invoke(
-        string             $productSlug,
-        ResolveSlugAction  $resolveSlugAction,
-        ProductSalesReport $productSalesReport,
-    )
+        string                      $productSlug,
+        ResolveSlugAction           $resolveSlugAction,
+        GetProductDetailAction      $getProductDetailAction,
+        GetProductDetailStatsAction $getProductDetailStatsAction,
+        GetRelatedProductsAction    $getRelatedProductsAction,
+        StoreViewAction             $storeViewAction,
+    ): View|RedirectResponse
     {
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
@@ -34,32 +41,20 @@ class ProductDetailController extends Controller
             return redirect()->to($resolvedSlug->redirectTo, 301);
         }
 
-        /** @var Product $product */
-        $product = $resolvedSlug
-            ->model
-            ->load([
-                'categories',
-                'tags',
-                'picture.primaryVariant',
-                'imageGallery.mediaFile.primaryVariant',
-                'requirements',
-                'installationSteps',
-                'faqs',
-                'releases.releaseChanges',
-                'informationEntries.field',
-            ]);
+        $product = $getProductDetailAction->execute($resolvedSlug->model);
 
-        $salesSummary = app(ProductSalesReport::class)->saleItemSummary($product->id);
-        $soldQuantity = $salesSummary['sold_quantity'];
+        $stats = $getProductDetailStatsAction->execute($product);
 
-        $relatedProducts = $this->getRelatedProducts($product);
+        $relatedProducts = $getRelatedProductsAction->execute($product);
 
-        $salesSummary = $productSalesReport->storeSummary($product->store->id);
-        $storeSoldQuantity = $salesSummary['sold_quantity'];
+        $storeViewAction->execute($product);
 
-        app(StoreViewAction::class)->execute($product);
-
-        return view('front.catalog.products.detail', compact('product', 'soldQuantity', 'relatedProducts', 'storeSoldQuantity'));
+        return view('front.catalog.products.detail', [
+            'product' => $product,
+            'soldQuantity' => $stats['sold_quantity'],
+            'storeSoldQuantity' => $stats['store_sold_quantity'],
+            'relatedProducts' => $relatedProducts,
+        ]);
     }
 
     private function getRelatedProducts(Product $product): Collection

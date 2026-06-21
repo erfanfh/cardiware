@@ -56,6 +56,8 @@ final class CacheTag
 
     public const PRODUCT_DETAIL = 'product-detail';
     public const PRODUCT_LISTS = 'product-lists';
+    public const PRODUCT_STATS = 'product-stats';
+    public const PRODUCT_RELATED = 'product-related';
 
     public const STORE_DETAIL = 'store-detail';
 
@@ -66,6 +68,8 @@ final class CacheTag
     public const DASHBOARD_TOP_POSTS = 'dashboard:top-posts';
 
     public const ACCOUNT = 'account';
+
+    public const STORE = 'store';
 
     public static function post(int|string $postId): string
     {
