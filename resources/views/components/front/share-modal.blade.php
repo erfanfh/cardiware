@@ -37,7 +37,7 @@
                 x-show="open"
                 x-transition.opacity
                 x-on:click="closeModal()"
-                class="fixed inset-0 bg-slate-950/55 backdrop-blur-sm"
+                class="fixed inset-0 bg-slate-950/55 backdrop-blur-sm dark:bg-black/75"
             ></div>
 
             <div
@@ -48,7 +48,7 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
                 x-transition:leave-end="opacity-0 translate-y-6 sm:scale-95"
-                class="relative z-[1] w-full {{ $maxWidth }} rounded-t-[2rem] sm:rounded-[2rem] bg-white shadow-2xl ring-1 ring-slate-900/10 overflow-hidden"
+                class="relative z-[1] w-full {{ $maxWidth }} rounded-t-[2rem] sm:rounded-[2rem] bg-white shadow-2xl ring-1 ring-slate-900/10 overflow-hidden dark:bg-slate-900 dark:ring-slate-700"
             >
                 {{ $slot }}
             </div>

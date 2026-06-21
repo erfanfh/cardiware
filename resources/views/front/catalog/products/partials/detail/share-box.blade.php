@@ -36,7 +36,7 @@
                 }
             }
         }"
-        class="p-4 sm:p-6"
+        class="p-4 sm:p-6 dark:text-slate-100"
     >
         <div class="flex items-start justify-between gap-4">
             <div class="min-w-0">
@@ -45,7 +45,7 @@
                     اشتراک گذاری
                 </div>
 
-                <h3 class="mt-4 text-base font-black leading-8 text-slate-900 sm:text-xl dark:text-white">
+                <h3 class="mt-4 text-base font-black leading-8 text-slate-900 sm:text-xl dark:text-slate-100">
                     این صفحه را با دیگران به اشتراک بگذارید
                 </h3>
 
@@ -78,7 +78,7 @@
                 <button
                     type="button"
                     x-on:click="copyLink()"
-                    class="h-11 w-full shrink-0 cursor-pointer rounded-2xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                    class="h-11 w-full shrink-0 cursor-pointer rounded-2xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:bg-slate-800 sm:w-auto dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                 >
                     <span x-show="!copied">کپی</span>
                     <span x-show="copied" x-cloak>کپی شد</span>
@@ -89,7 +89,7 @@
         <div class="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
             <a href="https://t.me/share/url?url={{ urlencode($url) }}&text={{ urlencode($product->title) }}"
                target="_blank" rel="nofollow noopener"
-               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-sky-200 hover:bg-sky-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-sky-500/20 dark:hover:bg-sky-500/10">
+               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-sky-200 hover:bg-sky-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-sky-500/30 dark:hover:bg-sky-500/10">
                 <span
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-sky-500/10 dark:text-sky-300 dark:group-hover:bg-sky-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.telegram')
@@ -99,7 +99,7 @@
 
             <a href="https://wa.me/?text={{ urlencode($product->title . ' ' . $url) }}" target="_blank"
                rel="nofollow noopener"
-               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-emerald-200 hover:bg-emerald-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-emerald-500/20 dark:hover:bg-emerald-500/10">
+               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-emerald-200 hover:bg-emerald-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/10">
                 <span
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-emerald-500/10 dark:text-emerald-300 dark:group-hover:bg-emerald-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.whatsapp')
@@ -109,7 +109,7 @@
 
             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($url) }}" target="_blank"
                rel="nofollow noopener"
-               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-blue-200 hover:bg-blue-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500/20 dark:hover:bg-blue-500/10">
+               class="group flex flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-blue-200 hover:bg-blue-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-500/30 dark:hover:bg-blue-500/10">
                 <span
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-blue-600 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-blue-500/10 dark:text-blue-300 dark:group-hover:bg-blue-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.linkedin-in')
@@ -118,7 +118,7 @@
             </a>
 
             <button type="button" x-on:click="nativeShare()"
-                    class="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-brand-200 hover:bg-brand-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-500/20 dark:hover:bg-brand-500/10">
+                    class="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-brand-200 hover:bg-brand-50 sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">
                 <span
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-brand-50 text-brand-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-brand-500/10 dark:text-brand-300 dark:group-hover:bg-brand-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.share-08')
