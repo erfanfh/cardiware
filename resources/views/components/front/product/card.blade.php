@@ -5,7 +5,6 @@
 @php
     $minPrice = $product->min_price ?? $product->saleItems->min('base_price');
     $maxPrice = $product->max_price ?? $product->saleItems->max('base_price');
-    $productImage = $product->picture?->url ?? '';
     $categories = $product->categories->take(2);
     $saleItemsCount = $product->saleItems->count();
     $storeTitle = $product->store?->title ?? 'فروشنده مودینگ وی';
@@ -23,13 +22,33 @@
     >
 
         {{-- Image --}}
-        <div class="relative aspect-[1.22/1] overflow-hidden bg-slate-100 dark:bg-slate-800">
-            @if($productImage)
-                <img
-                    src="{{ $productImage }}"
-                    alt="{{ $product->title }}"
-                    class="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+        <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800">
+            @if($product->picture)
+                @php
+                    $w = $product->picture?->primaryVariant?->width;
+                    $h = $product->picture?->primaryVariant?->height;
+
+                    $ratio = ($w && $h) ? "{$w} / {$h}" : "4 / 3";
+                @endphp
+
+                <div
+                    class="w-full overflow-hidden group"
+                    style="aspect-ratio: {{ $ratio }};"
                 >
+                    <x-front.responsive-image
+                        :media="$product->picture"
+                        :fallback="$product->picture->url"
+                        :alt="$product->title"
+                        :title="$product->title"
+                        variant="medium"
+                        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        :lazy="true"
+                        :async="true"
+                        :skeleton="true"
+                        fetchpriority="high"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                </div>
             @else
                 <div
                     class="grid h-full w-full place-items-center bg-gradient-to-br from-slate-100 to-slate-200
