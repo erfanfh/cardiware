@@ -8,15 +8,18 @@
             class="[&_h2]:text-sm [&_span]:border [&_span]:border-slate-200 [&_span]:bg-white dark:[&_span]:bg-slate-800 dark:[&_span]:border-slate-700 [&_svg]:text-blue-500"
         />
 
-        <div class="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2 sm:gap-4">
+        <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
             @foreach($product->requirements as $requirement)
                 <div
-                    class="min-w-0 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 sm:p-4">
-                    <div class="text-xs font-extrabold leading-5 text-slate-500 dark:text-slate-400">
+                    class="flex items-center justify-between gap-3
+                           rounded-lg border border-slate-200 bg-white px-3 py-2
+                           text-sm dark:border-slate-700 dark:bg-slate-800">
+                    <div class="text-xs font-medium text-slate-500 dark:text-slate-400 shrink-0">
                         {{ $requirement->title }}
                     </div>
 
-                    <div class="mt-2 break-words text-sm font-bold leading-7 text-slate-900 dark:text-slate-100">
+                    <div
+                        class="min-w-0 truncate text-[0.8rem] font-semibold text-slate-900 dark:text-slate-100 text-left">
                         {{ $requirement->value }}
                     </div>
                 </div>
