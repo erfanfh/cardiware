@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Commerce\Cart;
 
+use App\Application\Commerce\Actions\Cart\GetActiveCartItemsCountAction;
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartIfStaleAction;
@@ -12,6 +13,7 @@ use App\Livewire\Front\Catalog\ProductBuyBox;
 use DomainException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Throwable;
@@ -30,7 +32,7 @@ class HeaderCartDropdown extends Component
 
     public function mount(): void
     {
-        $this->reloadCart(syncIfStale: false);
+        $this->loadCountOnly();
     }
 
     public function openDropdown(): void
@@ -47,7 +49,11 @@ class HeaderCartDropdown extends Component
             return;
         }
 
-        $this->reloadCart(syncIfStale: true);
+        if ($this->hasLoadedOnce) {
+            $this->reloadCart(syncIfStale: true);
+        } else {
+            $this->loadCountOnly();
+        }
     }
 
     public function reloadCart(bool $syncIfStale = true): void
@@ -217,7 +223,7 @@ class HeaderCartDropdown extends Component
             : $this->cartUrl;
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.front.commerce.cart.header-cart-dropdown');
     }
@@ -241,6 +247,11 @@ class HeaderCartDropdown extends Component
             ->whereKey($cartItemId)
             ->whereNull('parent_cart_item_id')
             ->first();
+    }
+
+    private function loadCountOnly(): void
+    {
+        $this->summary['items_count'] = app(GetActiveCartItemsCountAction::class)->execute();
     }
 
     private function serializeItem(CartItem $item): array
