@@ -26,6 +26,8 @@ class ProductCommentsList extends Component
 
     public Model $commentable;
 
+    public bool $isOpen = false;
+
     public string $sort = 'new';
 
     public ?int $pendingScrollToCommentId = null;
@@ -37,6 +39,11 @@ class ProductCommentsList extends Component
         $this->commentable = $commentable;
         $this->commentableId = (int)$commentable->getKey();
         $this->commentableType = $commentable->getMorphClass();
+    }
+
+    public function openComments(): void
+    {
+        $this->isOpen = true;
     }
 
     public function updatedSort(): void
@@ -62,10 +69,12 @@ class ProductCommentsList extends Component
         $this->pendingScrollToCommentId = $commentId;
         $this->resetPage();
 
-        $this->dispatch(
-            'product-comments-refresh-requested',
-            commentId: $commentId,
-        );
+        if ($this->isOpen && $commentId) {
+            $this->dispatch(
+                'product-comments-refresh-requested',
+                commentId: $commentId,
+            );
+        }
     }
 
     public function finishIncomingCommentTransition(): void
