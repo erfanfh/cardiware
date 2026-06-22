@@ -194,29 +194,8 @@
 
                         <div class="max-h-[68vh] overflow-y-auto p-4 sm:max-h-[60vh] sm:p-5">
                             @if($hasInstallationSteps)
-                                <div class="space-y-3">
-                                    @foreach($access->product->installationSteps as $step)
-                                        <div
-                                            class="rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-800/70">
-                                            <div class="flex gap-3">
-                                                <div
-                                                    class="grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-brand-50 text-xs font-black text-brand-700 ring-1 ring-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20">
-                                                    {{ $loop->iteration }}
-                                                </div>
-
-                                                <div class="min-w-0">
-                                                    <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                                        {{ $step->title }}
-                                                    </div>
-
-                                                    <div
-                                                        class="mt-2 text-sm font-medium leading-8 text-slate-600 dark:text-slate-300">
-                                                        {!! nl2br(e($step->value)) !!}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                                <div class="tinymce-content dark:text-slate-300">
+                                    {!! $access->product->installationSteps->first()?->body !!}
                                 </div>
                             @else
                                 <div

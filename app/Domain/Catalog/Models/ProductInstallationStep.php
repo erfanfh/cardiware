@@ -9,8 +9,7 @@ class ProductInstallationStep extends Model
 {
     protected $fillable = [
         'product_id',
-        'title',
-        'value',
+        'body',
         'sort_order',
     ];
 

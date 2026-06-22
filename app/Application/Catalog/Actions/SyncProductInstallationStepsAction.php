@@ -2,43 +2,28 @@
 
 namespace App\Application\Catalog\Actions;
 
-use App\Infrastructure\Support\Actions\AbstractSyncRepeaterAction;
-use Illuminate\Database\Eloquent\Model;
+use App\Domain\Catalog\Models\Product;
 
-class SyncProductInstallationStepsAction extends AbstractSyncRepeaterAction
+class SyncProductInstallationStepsAction
 {
-    /**
-     * @return string
-     */
-    protected function relationName(): string
+    public function execute(Product $product, string $body): void
     {
-        return 'installationSteps';
-    }
+        $installationStep = $product->installationSteps()->first();
 
-    /**
-     * @param mixed $item
-     * @return bool
-     */
-    protected function isMeaningfulItem(mixed $item): bool
-    {
-        if (!is_array($item)) {
-            return false;
+        if ($installationStep) {
+            $installationStep->update([
+                'body' => $body,
+                'sort_order' => 0,
+            ]);
+
+            $product->installationSteps()->where('id', '!=', $installationStep->id)->delete();
+
+            return;
         }
 
-        return true;
-    }
-
-    /**
-     * @param array $item
-     * @param int $sortOrder
-     * @param Model $owner
-     * @return array|null
-     */
-    protected function mapItemToPayload(array $item, int $sortOrder, Model $owner): ?array
-    {
-        return [
-            'title' => $this->stringOrDefault($item['title'] ?? ''),
-            'value' => $this->stringOrDefault($item['value'] ?? ''),
-        ];
+        $product->installationSteps()->create([
+            'body' => $body,
+            'sort_order' => 0,
+        ]);
     }
 }

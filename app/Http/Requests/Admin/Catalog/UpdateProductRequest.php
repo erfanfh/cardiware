@@ -64,8 +64,7 @@ class UpdateProductRequest extends FormRequest
             'requirements' => ['nullable', 'array'],
             'requirements.*' => ['array'],
 
-            'installation_steps' => ['nullable', 'array'],
-            'installation_steps.*' => ['array'],
+            'installation_step_body' => ['nullable', 'string'],
 
             'faqs' => ['nullable', 'array'],
             'faqs.*' => ['array'],

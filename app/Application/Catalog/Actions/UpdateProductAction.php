@@ -59,7 +59,7 @@ class UpdateProductAction
                 $productData['category_ids'],
                 $productData['image_gallery_items'],
                 $productData['requirements'],
-                $productData['installation_steps'],
+                $productData['installation_step_body'],
                 $productData['faqs'],
                 $productData['releases'],
                 $productData['attributes'],
@@ -86,7 +86,7 @@ class UpdateProductAction
             $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
             $this->syncProductImageGalleryAction->execute($product, $data['image_gallery_items'] ?? []);
             $this->syncProductRequirementsAction->execute($product, $data['requirements'] ?? []);
-            $this->syncProductInstallationStepsAction->execute($product, $data['installation_steps'] ?? []);
+            $this->syncProductInstallationStepsAction->execute($product, $data['installation_step_body'] ?? '');
             $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
             $this->syncProductInformationAction->execute($product, $data);
