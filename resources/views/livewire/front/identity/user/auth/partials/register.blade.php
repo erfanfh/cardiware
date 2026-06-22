@@ -13,14 +13,20 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
                     <label for="mobile"
-                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">موبایل</label>
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="text-red-500">*</span>
+                        موبایل
+                    </label>
                     <input id="mobile" type="text" wire:model.defer="mobile" dir="ltr"
                            class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
 
                 <div class="min-w-0 space-y-1.5">
                     <label for="email"
-                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">ایمیل</label>
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        ایمیل
+                        <span class="text-[0.7rem] text-slate-700 dark:text-slate-400">(اختیاری)</span>
+                    </label>
                     <input id="email" type="text" wire:model.defer="email" dir="ltr"
                            class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-left text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
@@ -29,14 +35,19 @@
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
                     <label for="first_name"
-                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">نام</label>
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="text-red-500">*</span>
+                        نام
+                    </label>
                     <input id="first_name" type="text" wire:model.defer="first_name"
                            class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
 
                 <div class="min-w-0 space-y-1.5">
-                    <label for="last_name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">نام
-                        خانوادگی</label>
+                    <label for="last_name" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="text-red-500">*</span>
+                        نام خانوادگی
+                    </label>
                     <input id="last_name" type="text" wire:model.defer="last_name"
                            class="no-autofill-bg h-11 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-sm outline-none transition-all focus:border-brand-400 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:bg-slate-900 dark:focus:ring-brand-500"/>
                 </div>
@@ -44,8 +55,10 @@
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="min-w-0 space-y-1.5">
-                    <label for="reg-password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">رمز
-                        عبور</label>
+                    <label for="reg-password" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="text-red-500">*</span>
+                        رمز عبور
+                    </label>
 
                     <div class="relative">
                         <input id="reg-password" :type="show1 ? 'text':'password'"
@@ -77,7 +90,10 @@
 
                 <div class="min-w-0 space-y-1.5">
                     <label for="reg-password-confirm"
-                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">تکرار رمز عبور</label>
+                           class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                        <span class="text-red-500">*</span>
+                        تکرار رمز عبور
+                    </label>
 
                     <div class="relative">
                         <input id="reg-password-confirm" :type="show2 ? 'text':'password'"

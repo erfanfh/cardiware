@@ -57,7 +57,7 @@
 
     <x-admin.metabox title="اطلاعات تماس">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <x-admin.field required label="ایمیل">
+            <x-admin.field label="ایمیل">
                 <x-admin.form.input
                     dir="ltr"
                     name="email"

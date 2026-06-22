@@ -80,7 +80,7 @@ class UpdateUserRequest extends FormRequest
             ],
 
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),

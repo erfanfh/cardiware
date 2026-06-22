@@ -20,7 +20,7 @@ class RegisterUserAction
      * @param string $lastName
      * @param string|null $displayName
      * @param string $mobile
-     * @param string $email
+     * @param string|null $email
      * @param string $password
      * @param int|null $roleId
      * @param string|null $status
@@ -32,7 +32,7 @@ class RegisterUserAction
         string  $lastName,
         ?string $displayName,
         string  $mobile,
-        string  $email,
+        ?string $email,
         string  $password,
         ?int    $roleId = null,
         ?string $status = null,
@@ -65,7 +65,7 @@ class RegisterUserAction
                     'last_name' => $lastName,
                     'display_name' => $displayName ?: $firstName . ' ' . $lastName,
                     'mobile' => $mobile,
-                    'email' => $email,
+                    'email' => $email ?: null,
                     'username' => $finalUsername,
                     'password' => Hash::make($password),
                     'status' => $status ?? UserStatusEnum::ACTIVE,

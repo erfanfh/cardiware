@@ -170,7 +170,7 @@ class AuthModal extends Component
             'firstName' => ['required', 'string', 'max:255'],
             'lastName' => ['required', 'string', 'max:255'],
             'mobile' => ['required', 'string', new MobileRule()],
-            'email' => ['required', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
             'password' => ['required', 'string', new ValidPassword()],
         ];
     }
@@ -193,7 +193,6 @@ class AuthModal extends Component
             'mobile.required' => 'شماره موبایل را وارد کنید.',
             'mobile.string' => 'شماره موبایل وارد شده معتبر نیست.',
 
-            'email.required' => 'ایمیل را وارد کنید.',
             'email.email' => 'ایمیل وارد شده معتبر نیست.',
             'email.max' => 'ایمیل نباید بیشتر از ۲۵۵ کاراکتر باشد.',
 
