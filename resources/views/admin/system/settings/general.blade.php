@@ -8,6 +8,7 @@
             <x-admin.tabs
                 :tabs="[
                     'main' => 'اصلی',
+                    'goftino' => 'گفتینو',
                     'sms-panel' => 'پنل پیامکی',
                     'payment-gateway' => 'درگاه پرداخت',
                 ]"
@@ -15,6 +16,10 @@
             >
                 <x-admin.tabs.panel name="main">
                     @include('admin.system.settings.partials.general.main')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="goftino">
+                    @include('admin.system.settings.partials.general.goftino')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="sms-panel">

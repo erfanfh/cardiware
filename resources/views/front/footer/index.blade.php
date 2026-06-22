@@ -334,3 +334,5 @@
         </a>
     </div>
 </footer>
+
+@include('front.footer.goftino')

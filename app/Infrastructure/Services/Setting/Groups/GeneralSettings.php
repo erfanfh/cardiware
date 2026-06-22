@@ -36,6 +36,8 @@ class GeneralSettings extends BaseSettings
         'zarinpal_sandbox',
         'payping_sandbox',
         'payping_token',
+
+        'goftino_code',
     ];
 
     protected array $casts = [
