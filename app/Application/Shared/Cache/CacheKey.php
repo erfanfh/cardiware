@@ -217,4 +217,23 @@ final class CacheKey
     {
         return "product:detail:{$productId}:related:{$updatedAt}";
     }
+
+    public static function storeDetail(int|string $storeId, int $storeUpdatedAt): string
+    {
+        return "store:detail:{$storeId}:{$storeUpdatedAt}";
+    }
+
+    public static function storeProducts(
+        int|string $storeId,
+        int        $page,
+        int        $perPage
+    ): string
+    {
+        return "store:{$storeId}:products:page:{$page}:per-page:{$perPage}";
+    }
+
+    public static function storeDetailStats(int|string $storeId): string
+    {
+        return "store:detail:{$storeId}:stats";
+    }
 }

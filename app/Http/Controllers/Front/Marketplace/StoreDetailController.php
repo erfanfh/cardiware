@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Front\Marketplace;
 
-use App\Application\Commerce\Reports\ProductSalesReport;
+use App\Application\Marketplace\Actions\GetStoreDetailAction;
+use App\Application\Marketplace\Actions\GetStoreDetailStatsAction;
+use App\Application\Marketplace\Actions\GetStoreProductsAction;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class StoreDetailController extends Controller
 {
     public function __invoke(
-        string             $storeSlug,
-        ResolveSlugAction  $resolveSlugAction,
-        ProductSalesReport $productSalesReport,
-    )
+        string                    $storeSlug,
+        Request                   $request,
+        ResolveSlugAction         $resolveSlugAction,
+        GetStoreDetailAction      $getStoreDetailAction,
+        GetStoreProductsAction    $getStoreProductsAction,
+        GetStoreDetailStatsAction $getStoreDetailStatsAction,
+        StoreViewAction           $storeViewAction,
+    ): View|RedirectResponse
     {
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
@@ -34,28 +43,22 @@ class StoreDetailController extends Controller
         }
 
         /** @var Store $store */
-        $store = $resolvedSlug->model
-            ->load([
-                'picture.primaryVariant',
-            ])
-            ->loadCount([
-                'products',
-            ]);
+        $store = $getStoreDetailAction->execute($resolvedSlug->model);
 
-        $storeProducts = $store
-            ->products()
-            ->with([
-                'picture.primaryVariant',
-                'store',
-                'saleItems'
-            ])
-            ->paginate(12);
+        $storeProducts = $getStoreProductsAction->execute(
+            store: $store,
+            page: $request->integer('page', 1),
+            perPage: 12
+        );
 
-        $salesSummary = $productSalesReport->storeSummary($store->id);
-        $soldQuantity = $salesSummary['sold_quantity'];
+        $stats = $getStoreDetailStatsAction->execute($store);
 
-        app(StoreViewAction::class)->execute($store);
+        $storeViewAction->execute($store);
 
-        return view('front.marketplace.stores.detail', compact('store', 'storeProducts', 'soldQuantity'));
+        return view('front.marketplace.stores.detail', [
+            'store' => $store,
+            'storeProducts' => $storeProducts,
+            'soldQuantity' => $stats['sold_quantity'],
+        ]);
     }
 }

@@ -36,6 +36,7 @@ class ProductCacheInvalidator
         $this->flushProductDetailCaches($product);
         $this->flushProductListCaches();
         $this->flushProductHomeCaches();
+        $this->flushProductStoreCaches($product);
     }
 
     protected function flushProductSeoCaches(Product $product): void
@@ -69,6 +70,14 @@ class ProductCacheInvalidator
         Cache::tags([
             CacheTag::HOME,
             CacheTag::HOME_PRODUCTS,
+        ])->flush();
+    }
+
+    protected function flushProductStoreCaches(Product $product): void
+    {
+        Cache::tags([
+            CacheTag::STORE_PRODUCTS,
+            CacheTag::store($product->store->id),
         ])->flush();
     }
 }

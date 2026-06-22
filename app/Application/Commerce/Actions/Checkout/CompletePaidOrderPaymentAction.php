@@ -4,6 +4,7 @@ namespace App\Application\Commerce\Actions\Checkout;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
 use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
+use App\Application\Shared\Cache\Invalidators\OrderCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
@@ -53,6 +54,7 @@ class CompletePaidOrderPaymentAction
         });
 
         app(UserCacheInvalidator::class)->flushForUser($payment->payable->user);
+        app(OrderCacheInvalidator::class)->flushSuccessfulPayment($payment->payable->user);
 
         return $order;
     }

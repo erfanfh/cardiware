@@ -71,6 +71,9 @@ final class CacheTag
 
     public const STORE = 'store';
 
+    public const STORE_PRODUCTS = 'store-products';
+    public const STORE_STATS = 'store-stats';
+
     public static function post(int|string $postId): string
     {
         return "post:{$postId}";
