@@ -8,6 +8,6 @@ Route::middleware(ForceTrailingSlash::class)->group(function () {
     Route::get('/cart', CartController::class)->name('cart.index');
 });
 
-Route::get('/downloads/accesses/{purchaseAccess}/files/{file}', DownloadPurchasedFileController::class)
+Route::get('/accesses/{purchaseAccess}/files/{file}', DownloadPurchasedFileController::class)
     ->middleware(['auth', 'signed'])
     ->name('downloads.purchase-access.file');
