@@ -174,11 +174,19 @@
                                 <article
                                     class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:shadow-soft sm:flex-row sm:items-center sm:rounded-3xl dark:border-slate-700 dark:bg-slate-900"
                                 >
-                                    <img
-                                        src="{{ $itemImage($item) }}"
-                                        alt="{{ data_get($item->snapshot, 'title', 'محصول سفارش') }}"
+                                    <x-front.responsive-image
+                                        :media="$item->purchasable?->product?->picture"
+                                        :fallback="$itemImage($item)"
+                                        :alt="data_get($item->snapshot, 'title', 'محصول سفارش')"
+                                        :title="data_get($item->snapshot, 'title', 'محصول سفارش')"
+                                        variant="thumbnail"
                                         class="aspect-video w-full rounded-2xl object-cover sm:h-24 sm:w-32 sm:shrink-0"
-                                    >
+                                        wrapper-class="aspect-video w-full rounded-2xl sm:h-24 sm:w-32 sm:shrink-0"
+                                        :skeleton="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                        sizes="(max-width: 640px) 100vw, 128px"
+                                    />
 
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">

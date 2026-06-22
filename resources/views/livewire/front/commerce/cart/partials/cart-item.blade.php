@@ -22,11 +22,19 @@
                     class="h-20 w-20 shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 sm:h-24 sm:w-24
                     dark:border-slate-700 dark:bg-slate-800"
                 >
-                    <img
-                        src="{{ $this->itemImage($cartItem) }}"
-                        alt="{{ $this->itemTitle($cartItem) }}"
+                    <x-front.responsive-image
+                        :media="$this->itemPictureMedia($cartItem)"
+                        :fallback="$this->itemImage($cartItem)"
+                        :alt="$this->itemTitle($cartItem)"
+                        :title="$this->itemTitle($cartItem)"
+                        variant="thumbnail"
                         class="h-full w-full object-cover"
-                    >
+                        wrapper-class="h-full w-full rounded-2xl"
+                        :skeleton="true"
+                        loading="lazy"
+                        decoding="async"
+                        sizes="150px"
+                    />
                 </div>
 
                 <div class="min-w-0 flex-1">
@@ -280,11 +288,19 @@
                 dark:border-rose-900/40 dark:bg-rose-950/30">
                 <div
                     class="h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-rose-100 bg-white dark:bg-slate-900">
-                    <img
-                        src="{{ $this->itemImage($cartItem) }}"
-                        alt="{{ $this->itemTitle($cartItem) }}"
+                    <x-front.responsive-image
+                        :media="$this->itemPictureMedia($cartItem)"
+                        :fallback="$this->itemImage($cartItem)"
+                        :alt="$this->itemTitle($cartItem)"
+                        :title="$this->itemTitle($cartItem)"
+                        variant="thumbnail"
                         class="h-full w-full object-cover"
-                    >
+                        wrapper-class="h-full w-full rounded-2xl"
+                        :skeleton="true"
+                        loading="lazy"
+                        decoding="async"
+                        sizes="56px"
+                    />
                 </div>
 
                 <div class="min-w-0">

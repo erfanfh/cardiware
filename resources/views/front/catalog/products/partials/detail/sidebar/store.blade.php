@@ -2,10 +2,18 @@
     <div class="flex items-center gap-3">
         <div
             class="h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800">
-            <img
-                src="{{ $product->store->picture?->url }}"
-                alt="{{ $product->store->title }}"
+            <x-front.responsive-image
+                :media="$product->store->picture"
+                :fallback="$product->store->picture?->url"
+                :alt="$product->store->title"
+                :title="$product->store->title"
+                variant="thumbnail"
                 class="h-full w-full object-cover"
+                wrapper-class="h-full w-full rounded-2xl"
+                :skeleton="true"
+                loading="lazy"
+                decoding="async"
+                sizes="48px"
             />
         </div>
 

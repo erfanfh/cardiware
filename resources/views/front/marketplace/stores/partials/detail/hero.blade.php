@@ -21,12 +21,20 @@ dark:border-slate-700 dark:bg-slate-900">
                         <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-end sm:gap-5">
                             <div class="shrink-0 rounded-full bg-white p-1.5 shadow-sm ring-4 ring-white
                             dark:bg-slate-900 dark:ring-slate-900">
-                                <div class="h-24 w-24 overflow-hidden rounded-full bg-slate-100 sm:h-28 sm:w-28
-                                dark:bg-slate-800">
-                                    <img
-                                        src="{{ $store->picture?->url }}"
-                                        alt="{{ $store->title }}"
+                                <div
+                                    class="h-24 w-24 overflow-hidden rounded-full bg-slate-100 sm:h-28 sm:w-28 dark:bg-slate-800">
+                                    <x-front.responsive-image
+                                        :media="$store->picture"
+                                        :fallback="$store->picture?->url"
+                                        :alt="$store->title"
+                                        :title="$store->title"
+                                        variant="thumbnail"
                                         class="h-full w-full object-cover"
+                                        wrapper-class="h-full w-full rounded-full"
+                                        :skeleton="true"
+                                        loading="lazy"
+                                        decoding="async"
+                                        sizes="112px"
                                     />
                                 </div>
                             </div>
