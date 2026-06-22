@@ -96,6 +96,9 @@ class PermissionSeeder extends Seeder
                 'posts' => 'تنظیمات صفحه نوشته ها',
                 'products' => 'تنظیمات صفحه محصولات',
             ],
+            'order' => [
+                'list' => 'لیست سفارش ها',
+            ],
         ];
 
         $permissionIds = [];
