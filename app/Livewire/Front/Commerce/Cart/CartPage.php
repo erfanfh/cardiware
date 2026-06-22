@@ -402,6 +402,11 @@ class CartPage extends Component
         return $item->purchasable?->product?->excerpt() ?? '';
     }
 
+    public function itemPictureMedia(CartItem $item): mixed
+    {
+        return $item->purchasable?->product?->picture;
+    }
+
     public function itemImage(CartItem $item): string
     {
         $purchasable = $item->purchasable;
