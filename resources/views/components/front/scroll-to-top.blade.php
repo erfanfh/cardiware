@@ -4,7 +4,7 @@
     aria-label="پرش به بالای صفحه"
     class="
         cursor-pointer
-        group fixed bottom-5 right-5 z-[9999]
+        group fixed bottom-5 left-5 z-[9999]
         flex h-[52px] w-[52px] items-center justify-center
         overflow-hidden
         rounded-[22px]
@@ -37,7 +37,7 @@
         dark:hover:bg-orange-400
         dark:hover:shadow-[0_22px_54px_rgba(249,115,22,0.36),0_12px_32px_rgba(0,0,0,0.52)]
 
-        md:bottom-6 md:right-6 md:h-14 md:w-14
+        md:bottom-6 md:left-6 md:h-14 md:w-14
     "
 >
     {{-- لایه داخلی برای خروج از حالت مربع ساده --}}
