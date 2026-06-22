@@ -58,6 +58,7 @@ final class CacheTag
     public const PRODUCT_LISTS = 'product-lists';
     public const PRODUCT_STATS = 'product-stats';
     public const PRODUCT_RELATED = 'product-related';
+    public const PRODUCT_BUY_BOX = 'product-buy-box';
 
     public const STORE_DETAIL = 'store-detail';
 

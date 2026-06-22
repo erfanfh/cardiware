@@ -2,13 +2,13 @@
 
 namespace App\Livewire\Front\Catalog;
 
+use App\Application\Catalog\Actions\GetProductBuyBoxDataAction;
 use App\Application\Commerce\Actions\Cart\AddProductSaleItemWithAddonsToCartAction;
 use App\Application\Commerce\Actions\Cart\GetProductCartStateAction;
 use App\Application\Commerce\Actions\Cart\RemoveProductFromCartAction;
-use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Models\Product;
-use App\Domain\Catalog\Models\ProductSaleItem;
 use DomainException;
+use Illuminate\Contracts\View\View;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Renderless;
 use Livewire\Component;
@@ -36,16 +36,18 @@ class ProductBuyBox extends Component
     public bool $hasAvailableSaleItems = false;
 
     public function mount(
-        Product                   $product,
-        GetProductCartStateAction $getProductCartStateAction,
+        Product                    $product,
+        GetProductBuyBoxDataAction $getProductBuyBoxDataAction,
+        GetProductCartStateAction  $getProductCartStateAction,
     ): void
     {
         $this->product = $product;
 
-        $this->saleItems = $this->makeSaleItemsData();
-        $this->addons = $this->makeAddonsData();
+        $buyBoxData = $getProductBuyBoxDataAction->execute($product);
 
-        $this->hasAvailableSaleItems = count($this->saleItems) > 0;
+        $this->saleItems = $buyBoxData['saleItems'];
+        $this->addons = $buyBoxData['addons'];
+        $this->hasAvailableSaleItems = $buyBoxData['hasAvailableSaleItems'];
 
         $this->purchaseState = $getProductCartStateAction->execute($product);
     }
@@ -177,7 +179,7 @@ class ProductBuyBox extends Component
         );
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.front.catalog.product-buy-box');
     }
@@ -187,84 +189,9 @@ class ProductBuyBox extends Component
      */
     private function refreshPurchaseState(): array
     {
-        $this->purchaseState = app(GetProductCartStateAction::class)->execute($this->product);
+        $this->purchaseState = app(GetProductCartStateAction::class)
+            ->execute($this->product);
 
         return $this->purchaseState;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function makeSaleItemsData(): array
-    {
-        return $this->product
-            ->saleItems()
-            ->where('status', ProductSaleItemStatusEnum::AVAILABLE)
-            ->with([
-                'product',
-                'attributeValues.globalValue.attribute',
-                'attributeValues.customValue.customAttribute',
-            ])
-            ->orderBy('sort_order')
-            ->get()
-            ->map(function (ProductSaleItem $saleItem) {
-                return [
-                    'id' => $saleItem->id,
-                    'title' => $this->makeSaleItemTitle($saleItem),
-                    'description' => $saleItem->description,
-                    'price' => (int)$saleItem->base_price,
-                    'status' => $saleItem->status instanceof \BackedEnum
-                        ? $saleItem->status->value
-                        : $saleItem->status,
-                    'max_quantity_per_order' => $saleItem->max_quantity_per_order,
-                ];
-            })
-            ->values()
-            ->all();
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function makeAddonsData(): array
-    {
-        return $this->product
-            ->addons()
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get()
-            ->map(fn($addon) => [
-                'id' => $addon->id,
-                'title' => $addon->title,
-                'description' => $addon->description,
-                'price' => (int)$addon->price,
-                'max_quantity_per_order' => (int)$addon->max_quantity_per_order,
-            ])
-            ->values()
-            ->all();
-    }
-
-    private function makeSaleItemTitle(ProductSaleItem $saleItem): string
-    {
-        $labels = $saleItem->attributeValues
-            ->map(function ($selectedValue) {
-                if ($selectedValue->globalValue) {
-                    return $selectedValue->globalValue->attribute?->title . ': ' . $selectedValue->globalValue->title;
-                }
-
-                if ($selectedValue->customValue) {
-                    return $selectedValue->customValue->customAttribute?->title . ': ' . $selectedValue->customValue->title;
-                }
-
-                return null;
-            })
-            ->filter()
-            ->values();
-
-        if ($labels->isNotEmpty()) {
-            return $labels->implode(' / ');
-        }
-
-        return 'نسخه اصلی محصول';
     }
 }

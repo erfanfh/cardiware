@@ -263,4 +263,9 @@ final class CacheKey
 
         return 'product:category-descendants:' . md5(json_encode($categoryIds, JSON_THROW_ON_ERROR));
     }
+
+    public static function productBuyBoxData(int|string $productId, int $productUpdatedAt): string
+    {
+        return "product:{$productId}:buy-box-data:{$productUpdatedAt}";
+    }
 }

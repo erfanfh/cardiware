@@ -53,6 +53,7 @@ class ProductCacheInvalidator
     {
         Cache::tags([
             CacheTag::PRODUCT_DETAIL,
+            CacheTag::PRODUCT_BUY_BOX,
             CacheTag::CATEGORIES,
             CacheTag::product($product->id),
         ])->flush();
