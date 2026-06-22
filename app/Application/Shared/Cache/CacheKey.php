@@ -236,4 +236,31 @@ final class CacheKey
     {
         return "store:detail:{$storeId}:stats";
     }
+
+    public static function productListPage(array $payload): string
+    {
+        return 'product:list:page:' . md5(json_encode($payload, JSON_THROW_ON_ERROR));
+    }
+
+    public static function productAvailablePriceRange(): string
+    {
+        return 'product:list:available-price-range';
+    }
+
+    public static function productCategoryTree(): string
+    {
+        return 'product:list:category-tree';
+    }
+
+    public static function productFeatured(): string
+    {
+        return 'product:list:featured';
+    }
+
+    public static function productCategoryDescendants(array $categoryIds): string
+    {
+        sort($categoryIds);
+
+        return 'product:category-descendants:' . md5(json_encode($categoryIds, JSON_THROW_ON_ERROR));
+    }
 }
