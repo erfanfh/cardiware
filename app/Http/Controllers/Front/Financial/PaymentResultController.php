@@ -19,8 +19,10 @@ class PaymentResultController extends Controller
                 'payable.rootItems.children',
                 'payable.rootItems.purchasable',
                 'payable.rootItems.children.purchasable',
-                'payable.rootItems.purchasable.product.picture',
-                'payable.rootItems.children.purchasable.product.picture',
+                'payable.rootItems.purchasable.product.picture.primaryVariant',
+                'payable.rootItems.purchasable.product.picture.variants',
+                'payable.rootItems.children.purchasable.product.picture.primaryVariant',
+                'payable.rootItems.children.purchasable.product.picture.variants',
             ])
             ->firstOrFail();
 
