@@ -53,12 +53,11 @@ class CartPage extends Component
             return null;
         }
 
-        $cart->refresh();
-
-        $cart->load([
+        $cart->loadMissing([
             'items.children',
             'items.purchasable',
-            'items.purchasable.product.picture',
+            'items.purchasable.product.picture.primaryVariant',
+            'items.purchasable.product.picture.variants',
         ]);
 
         return $cart;
