@@ -44,6 +44,16 @@
                             </a>
                         @endcan
 
+                        @can('product.create')
+                            <a href="{{ route('admin.products.create') }}"
+                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                                <span class="[&_svg]:h-5 [&_svg]:w-5 text-slate-500">
+                                    @include('icons.plus-sign')
+                                </span>
+                                محصول جدید
+                            </a>
+                        @endcan
+
                         @can('project.create')
                             <a href="{{ route('admin.projects.create') }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
@@ -53,28 +63,18 @@
                                 پروژه جدید
                             </a>
                         @endcan
-
-                        @can('page.create')
-                            <a href="{{ route('admin.pages.create') }}"
-                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
-                                <span class="[&_svg]:h-5 [&_svg]:w-5 text-slate-500">
-                                    @include('icons.plus-sign')
-                                </span>
-                                برگه جدید
-                            </a>
-                        @endcan
                     </div>
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:w-[340px]">
                     @can('product.list')
-                        <a href="#"
+                        <a href="{{ route('admin.products.index') }}"
                            class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
                                     <div class="text-sm font-black text-slate-900">محصولات</div>
                                     <div class="mt-1 text-xs text-slate-500">
-                                        {{ number_format($stats['products']) }} منتشرشده
+                                        {{ number_format($stats['active_products']) }} منتشرشده
                                     </div>
                                 </div>
 
@@ -105,39 +105,41 @@
                         </a>
                     @endcan
 
-                    <a href="#"
-                       class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <div class="text-sm font-black text-slate-900">فروش امروز</div>
-                                <div class="mt-1 text-xs text-slate-500">
-                                    نامشخص
+                    @can('order.list')
+                        <a href="{{ route('admin.orders.index') }}"
+                           class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="text-sm font-black text-slate-900">فروش امروز</div>
+                                    <div class="mt-1 text-xs text-slate-500">
+                                        {{ $stats['today_revenue'] ? number_format($stats['today_revenue']) . ' تومان' : 'بدون فروش' }}
+                                    </div>
                                 </div>
-                            </div>
 
-                            <span
-                                class="text-slate-400 transition group-hover:text-orange-600 [&_svg]:h-5 [&_svg]:w-5">
+                                <span
+                                    class="text-slate-400 transition group-hover:text-orange-600 [&_svg]:h-5 [&_svg]:w-5">
                                 @include('icons.chart-03')
                             </span>
-                        </div>
-                    </a>
-
-                    <a href="#"
-                       class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
-                        <div class="flex items-start justify-between gap-3">
-                            <div>
-                                <div class="text-sm font-black text-slate-900">فروش این ماه</div>
-                                <div class="mt-1 text-xs text-slate-500">
-                                    نامشخص
-                                </div>
                             </div>
+                        </a>
 
-                            <span
-                                class="text-slate-400 transition group-hover:text-orange-600 [&_svg]:h-5 [&_svg]:w-5">
+                        <a href="{{ route('admin.orders.index') }}"
+                           class="group rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-orange-200 hover:bg-orange-50">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="text-sm font-black text-slate-900">فروش این ماه</div>
+                                    <div class="mt-1 text-xs text-slate-500">
+                                        {{ $stats['month_revenue'] ? number_format($stats['month_revenue']) . ' تومان' : 'بدون فروش' }}
+                                    </div>
+                                </div>
+
+                                <span
+                                    class="text-slate-400 transition group-hover:text-orange-600 [&_svg]:h-5 [&_svg]:w-5">
                                 @include('icons.chart-03')
                             </span>
-                        </div>
-                    </a>
+                            </div>
+                        </a>
+                    @endcan
                 </div>
             </div>
         </section>
@@ -184,21 +186,20 @@
                 </div>
             @endcan
 
-            @can('post.list')
+            @can('product.list')
                 <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-sm">
                     <div class="flex items-start justify-between gap-3">
                         <div>
-                            <div class="text-sm font-bold text-slate-500">دانلودها</div>
+                            <div class="text-sm font-bold text-slate-500">کل محصولات</div>
                             <div
-                                class="mt-2 text-3xl font-black text-slate-900">{{ number_format($stats['downloads']) }}</div>
+                                class="mt-2 text-3xl font-black text-slate-900">{{ number_format($stats['products']) }}</div>
                             <div class="mt-2 text-xs font-medium text-violet-600">
-                                محبوب ترین:
-                                {{ number_format($stats['popular_downloads']) }}
+                                {{ number_format($stats['month_products']) }} این ماه
                             </div>
                         </div>
                         <div class="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-600">
                             <span class="[&_svg]:h-6 [&_svg]:w-6">
-                                @include('icons.download-01')
+                                @include('icons.shopping-basket-03')
                             </span>
                         </div>
                     </div>
@@ -382,7 +383,7 @@
                     @endcan
 
                     @can('product.list')
-                        <a href="#"
+                        <a href="{{ route('admin.products.index', ['status' => 'inactive']) }}"
                            class="flex items-center justify-between rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 transition hover:bg-sky-100/70">
                             <div>
                                 <div class="text-sm font-black text-slate-900">محصولات پیش‌نویس</div>

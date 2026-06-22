@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Domain\Catalog\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Commerce\Models\Order;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
-use App\Domain\Download\Models\DownloadEntry;
 use App\Domain\Identity\Models\User;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
@@ -20,22 +22,35 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $startOfMonth = Jalalian::now()->getFirstDayOfMonth()->toCarbon();
-        $endOfMonth = Jalalian::now()->getEndDayOfMonth()->toCarbon();
+        $startOfMonth = Jalalian::now()->getFirstDayOfMonth()->toCarbon()->startOfDay();
+        $endOfMonth = Jalalian::now()->getEndDayOfMonth()->toCarbon()->endOfDay();
+
+        $startOfToday = Carbon::today();
+        $endOfToday = Carbon::today()->endOfDay();
 
         $stats = [
-            'products' => 0,
-            'inactive_products' => 0,
             'users' => User::count(),
             'posts' => Post::count(),
             'month_posts' => Post::whereBetween('published_at', [$startOfMonth, $endOfMonth])->count(),
             'inactive_posts' => Post::where('status', PostStatusEnum::INACTIVE)->count(),
             'projects' => Project::count(),
             'active_projects' => Project::where('status', ProjectStatusEnum::ACTIVE)->count(),
-            'downloads' => DownloadEntry::sum('download_click_count'),
-            'popular_downloads' => DownloadEntry::latest('download_click_count')->limit(1)->select('download_click_count')->first()?->download_click_count,
+            'products' => Product::count(),
+            'active_products' => Product::where('status', ProductStatusEnum::ACTIVE)->count(),
+            'inactive_products' => Product::whereNot('status', ProductStatusEnum::ACTIVE)->count(),
+            'month_products' => Product::whereBetween('published_at', [$startOfMonth, $endOfMonth])->count(),
             'comments' => Comment::count(),
             'pending_comments' => Comment::where('status', CommentStatusEnum::PENDING)->count(),
+            'today_revenue' => Order::query()
+                ->paid()
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$startOfToday, $endOfToday])
+                ->sum('total_amount'),
+            'month_revenue' => Order::query()
+                ->paid()
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$startOfMonth, $endOfMonth])
+                ->sum('total_amount'),
         ];
 
         $topYesterdayPosts = $this->getTopYesterdayPosts();
