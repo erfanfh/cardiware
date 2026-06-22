@@ -22,8 +22,9 @@ return [
         'product-category',
         'product-tag',
         'products',
-
         'cart',
-        'checkout',
+        'accesses',
+        'stores',
+        'payment',
     ],
 ];
