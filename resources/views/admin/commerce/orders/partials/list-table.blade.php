@@ -53,7 +53,7 @@
                 {{-- order number --}}
                 <x-admin.list.td>
                     <a
-                        href="{{ route('admin.orders.show', $order) }}"
+                        href="#"
                         class="font-bold text-sm text-slate-800 hover:text-brand-600 whitespace-nowrap"
                     >
                         {{ $order->order_number }}
