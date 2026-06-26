@@ -142,6 +142,12 @@ return [
                 'icon' => 'icons.user-multiple-02',
                 'gate' => 'store.list',
             ],
+            [
+                'label' => 'سفارش ها',
+                'route' => 'admin.orders.index',
+                'icon' => 'icons.invoice-03',
+                'gate' => 'order.list',
+            ],
         ],
     ],
 
