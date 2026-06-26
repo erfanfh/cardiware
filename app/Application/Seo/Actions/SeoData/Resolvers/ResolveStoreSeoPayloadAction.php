@@ -6,14 +6,16 @@ use App\Application\Seo\Actions\Canonical\ResolveCanonicalUrlAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\Support\SeoTemplateParser;
+use App\Application\Seo\Support\VariableBuilders\StoreSeoVariableDataBuilder;
 use App\Domain\Marketplace\Models\Store;
 
 final class ResolveStoreSeoPayloadAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction      $getSeoDefaultsAction,
-        protected ResolveCanonicalUrlAction $resolveCanonicalUrlAction,
-        protected SeoTemplateParser         $seoTemplateParser,
+        protected GetSeoDefaultsAction        $getSeoDefaultsAction,
+        protected ResolveCanonicalUrlAction   $resolveCanonicalUrlAction,
+        protected SeoTemplateParser           $seoTemplateParser,
+        protected StoreSeoVariableDataBuilder $storeSeoVariableDataBuilder,
     )
     {
     }
@@ -21,12 +23,7 @@ final class ResolveStoreSeoPayloadAction
     public function execute(Store $store): ResolvedSeoPayloadDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
-
-        $variables = [
-            'store_name' => $store->title,
-            'site_name' => $defaults['site_name'],
-            'separator' => get_setting('seo', 'separator', '|'),
-        ];
+        $variables = $this->storeSeoVariableDataBuilder->build($store);
 
         $titleTemplate = $store->seoMeta?->title
             ?: get_setting('seo', 'store_seo_title')
