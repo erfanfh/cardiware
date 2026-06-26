@@ -25,6 +25,9 @@
         'page-layout' => 'مدیریت چیدمان',
         'comment' => 'دیدگاه‌ها',
         'navigation-menu' => 'فهرست‌ها',
+        'product' => 'محصولات',
+        'order' => 'سفارش‌ها',
+        'store' => 'فروشنده‌ها',
     ];
 @endphp
 
