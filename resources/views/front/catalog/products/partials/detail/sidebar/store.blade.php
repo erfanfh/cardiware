@@ -41,12 +41,12 @@
         <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد محصولات</div>
             <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
-                {{ number_format($storeOrders) }}
+                {{ number_format($storeProducts) }}
             </div>
         </div>
 
         <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
-            <div class="text-[11px] text-slate-500 dark:text-slate-400">میزان فروش</div>
+            <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد فروش</div>
             <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
                 {{ number_format($storeSoldQuantity) }}
             </div>

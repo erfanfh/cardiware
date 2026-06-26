@@ -54,7 +54,7 @@ class ProductDetailController extends Controller
             'soldQuantity' => $stats['sold_quantity'],
             'storeSoldQuantity' => $stats['store_sold_quantity'],
             'relatedProducts' => $relatedProducts,
-            'storeOrders' => $stats['store_orders_count'],
+            'storeProducts' => $stats['store_products_count'],
         ]);
     }
 

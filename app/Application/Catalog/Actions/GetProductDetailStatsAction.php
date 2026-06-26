@@ -27,7 +27,7 @@ final class GetProductDetailStatsAction
             fn() => [
                 'sold_quantity' => $this->salesReport->saleItemSummary($product->id)['sold_quantity'] ?? 0,
                 'store_sold_quantity' => $this->salesReport->storeSummary($product->store_id)['sold_quantity'] ?? 0,
-                'store_orders_count' => $this->salesReport->storeSummary($product->store_id)['orders_count'] ?? 0,
+                'store_products_count' => $this->salesReport->storeSummary($product->store_id)['products_count'] ?? 0,
             ]
         );
     }
