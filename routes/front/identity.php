@@ -12,7 +12,7 @@ Route::redirect('login', '/auth')->name('login');
 
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-Route::prefix('account')->name('account.')->controller(AccountController::class)->group(function () {
+Route::prefix('account')->middleware('auth')->name('account.')->controller(AccountController::class)->group(function () {
     Route::get('dashboard', [AccountController::class, 'dashboard'])->name('dashboard');
     Route::get('downloads', [AccountController::class, 'downloads'])->name('downloads');
     Route::get('orders', [AccountController::class, 'orders'])->name('orders');
