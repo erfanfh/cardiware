@@ -53,12 +53,7 @@ class RegisterUserAction
             try {
                 $finalUsername = $isManualUsername
                     ? $username
-                    : app(GenerateUniqueUsernameAction::class)->execute(
-                        firstName: $firstName,
-                        lastName: $lastName,
-                        email: $email,
-                        mobile: $mobile,
-                    );
+                    : app(GenerateUniqueUsernameAction::class)->execute();
 
                 return User::query()->create([
                     'first_name' => $firstName,

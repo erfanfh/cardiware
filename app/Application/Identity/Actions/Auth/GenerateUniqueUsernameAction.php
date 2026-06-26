@@ -7,7 +7,9 @@ use Illuminate\Support\Str;
 
 class GenerateUniqueUsernameAction
 {
-    private const MAX_LENGTH = 60;
+    private const PREFIX = 'user_';
+
+    private const RANDOM_LENGTH = 12;
 
     private const RESERVED_USERNAMES = [
         'admin',
@@ -26,30 +28,14 @@ class GenerateUniqueUsernameAction
     ];
 
     /**
-     * Generate a unique username.
+     * Generate a random unique username.
      *
-     * @param string|null $firstName
-     * @param string|null $lastName
-     * @param string|null $email
-     * @param string|null $mobile
      * @return string
      */
-    public function execute(
-        ?string $firstName = null,
-        ?string $lastName = null,
-        ?string $email = null,
-        ?string $mobile = null,
-    ): string
+    public function execute(): string
     {
-        $baseUsername = $this->makeBaseUsername(
-            firstName: $firstName,
-            lastName: $lastName,
-            email: $email,
-            mobile: $mobile,
-        );
-
-        for ($attempt = 1; $attempt <= 10; $attempt++) {
-            $username = $this->makeCandidate($baseUsername, $attempt);
+        for ($attempt = 1; $attempt <= 20; $attempt++) {
+            $username = $this->makeRandomUsername();
 
             if ($this->isAvailable($username)) {
                 return $username;
@@ -60,60 +46,13 @@ class GenerateUniqueUsernameAction
     }
 
     /**
-     * Make base username from email, mobile, or name.
+     * Make random username.
      *
-     * @param string|null $firstName
-     * @param string|null $lastName
-     * @param string|null $email
-     * @param string|null $mobile
      * @return string
      */
-    private function makeBaseUsername(
-        ?string $firstName,
-        ?string $lastName,
-        ?string $email,
-        ?string $mobile,
-    ): string
+    private function makeRandomUsername(): string
     {
-        if (filled($email)) {
-            $base = Str::before($email, '@');
-        } elseif (filled($mobile)) {
-            $base = 'user' . substr($mobile, -6);
-        } else {
-            $base = trim(($firstName ?? '') . ' ' . ($lastName ?? ''));
-        }
-
-        $base = Str::of($base)
-            ->lower()
-            ->replaceMatches('/[^a-z0-9._-]+/i', '')
-            ->trim('._-')
-            ->toString();
-
-        if (blank($base) || in_array($base, self::RESERVED_USERNAMES, true)) {
-            $base = 'user';
-        }
-
-        return Str::limit($base, 35, '');
-    }
-
-    /**
-     * Make username candidate.
-     *
-     * @param string $baseUsername
-     * @param int $attempt
-     * @return string
-     */
-    private function makeCandidate(string $baseUsername, int $attempt): string
-    {
-        if ($attempt === 1 && !$this->isReserved($baseUsername)) {
-            return $baseUsername;
-        }
-
-        $suffix = random_int(1000, 999999);
-
-        $maxBaseLength = self::MAX_LENGTH - strlen((string)$suffix);
-
-        return Str::limit($baseUsername, $maxBaseLength, '') . $suffix;
+        return self::PREFIX . Str::lower(Str::random(self::RANDOM_LENGTH));
     }
 
     /**
@@ -147,7 +86,7 @@ class GenerateUniqueUsernameAction
     private function makeFallbackUsername(): string
     {
         do {
-            $username = 'user' . random_int(10000000, 99999999);
+            $username = self::PREFIX . random_int(1000000000, 9999999999);
         } while (!$this->isAvailable($username));
 
         return $username;
