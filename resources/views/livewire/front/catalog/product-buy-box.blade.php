@@ -176,15 +176,43 @@
                     <div class="space-y-3">
                         <template x-for="addon in addons" :key="addon.id">
                             <label
-                                class="block cursor-pointer rounded-2xl border p-4 transition
-                    border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800"
-                                :class="isSubmitting
-                        ? 'pointer-events-none opacity-70'
-                        : (isAddonSelected(addon.id)
-                            ? 'border-orange-200 bg-orange-50 dark:bg-orange-950/20'
-                            : '')"
+                                class="relative isolate block cursor-pointer overflow-hidden rounded-2xl border p-4 transition-all duration-200"
+                                :class="[
+                                    isSubmitting
+                                        ? 'pointer-events-none opacity-70'
+                                        : '',
+                                    isAddonSelected(addon.id)
+                                        ? 'border-brand-200 bg-brand-50 ring-2 ring-brand-100 dark:border-brand-500/30 dark:bg-brand-900/20 dark:ring-brand-500/10'
+                                        : 'border-slate-200 bg-white hover:bg-slate-50 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800'
+                                ]"
                             >
-                                <div class="flex items-start gap-3">
+                                <!-- background icon -->
+                                <div
+                                    aria-hidden="true"
+                                    class="pointer-events-none absolute -bottom-5 -left-5 z-0 transition-all duration-200"
+                                    :class="isAddonSelected(addon.id)
+                                        ? 'text-orange-200/70 dark:text-orange-500/10 scale-105'
+                                        : 'text-slate-200/60 dark:text-slate-700/30'"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-28 w-28"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    >
+                                        <path d="M21 8.5 12 3 3 8.5"/>
+                                        <path d="M21 8.5v7L12 21l-9-5.5v-7"/>
+                                        <path d="M12 12.5 3 8.5"/>
+                                        <path d="M12 12.5 21 8.5"/>
+                                        <path d="M12 12.5V21"/>
+                                    </svg>
+                                </div>
+
+                                <div class="relative z-10 flex items-start gap-3">
                                     <input
                                         type="checkbox"
                                         class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400 disabled:cursor-not-allowed disabled:opacity-60"
