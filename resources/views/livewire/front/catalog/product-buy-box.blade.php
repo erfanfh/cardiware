@@ -85,13 +85,21 @@
                         <template x-for="saleItem in saleItems" :key="saleItem.id">
                             <button
                                 type="button"
-                                class="w-full cursor-pointer rounded-2xl border p-4 text-right transition disabled:cursor-not-allowed disabled:opacity-60
-                    border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                class="w-full transform-gpu cursor-pointer rounded-2xl border p-4 text-right transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                                 :disabled="isSubmitting"
-                                :class="selectedSaleItemId === Number(saleItem.id)
-                        ? 'border-brand-300 bg-brand-50 dark:bg-brand-900/20 shadow-sm'
-                        : ''"
-                                @click="selectSaleItem(saleItem.id)"
+                                :class="[
+                                    selectedSaleItemId === Number(saleItem.id)
+                                        ? 'border-brand-300 bg-brand-50 shadow-sm ring-2 ring-brand-200/70 dark:border-brand-500/40 dark:bg-brand-900/20 dark:ring-brand-500/20'
+                                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800',
+
+                                    selectedSaleItemAnimationId === Number(saleItem.id)
+                                        ? 'scale-[1.015] -translate-y-0.5'
+                                        : 'scale-100 translate-y-0'
+                                ]"
+                                @click="
+                                    selectSaleItem(saleItem.id);
+                                    playSaleItemSelectAnimation(saleItem.id);
+                                "
                             >
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">

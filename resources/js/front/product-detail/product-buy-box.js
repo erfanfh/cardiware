@@ -34,6 +34,25 @@ export default function productBuyBox(config) {
         originalSaleItemId: null,
         originalAddonIds: [],
 
+        selectedSaleItemAnimationId: null,
+        selectedSaleItemAnimationTimer: null,
+
+        playSaleItemSelectAnimation(id) {
+            const itemId = Number(id);
+
+            clearTimeout(this.selectedSaleItemAnimationTimer);
+
+            this.selectedSaleItemAnimationId = null;
+
+            this.$nextTick(() => {
+                this.selectedSaleItemAnimationId = itemId;
+
+                this.selectedSaleItemAnimationTimer = setTimeout(() => {
+                    this.selectedSaleItemAnimationId = null;
+                }, 260);
+            });
+        },
+
         init() {
             this.saleItems = this.saleItems.map((saleItem) => ({
                 ...saleItem,
