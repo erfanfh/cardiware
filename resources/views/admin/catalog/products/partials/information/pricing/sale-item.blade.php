@@ -177,6 +177,113 @@
         </div>
 
         <div class="border-t border-slate-100 px-4 py-3">
+            <input
+                type="hidden"
+                x-bind:name="`sale_items[${i}][discount][id]`"
+                x-model="item.discount.id"
+            >
+
+            <div class="mb-3 flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <div>
+                            <div class="text-xs font-bold text-slate-800">تخفیف ویژه</div>
+                        </div>
+                    </div>
+                </div>
+
+                <span
+                    class="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                    :class="item.discount.discounted_price
+                ? 'bg-orange-100 text-orange-700'
+                : 'bg-slate-100 text-slate-500'"
+                    x-text="item.discount.discounted_price ? 'تخفیف فعال' : 'بدون تخفیف'"
+                ></span>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="مبلغ با تخفیف (تومان)" hint="اگر خالی باشد، تخفیفی اعمال نمی‌شود.">
+                        <x-admin.form.input
+                            type="number"
+                            min="0"
+                            x-bind:name="`sale_items[${i}][discount][discounted_price]`"
+                            x-model="item.discount.discounted_price"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="زمان شروع">
+                        <x-admin.form.date-picker
+                            type="datetime-local"
+                            x-bind:name="`sale_items[${i}][discount][starts_at]`"
+                            x-model="item.discount.starts_at"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="زمان پایان">
+                        <x-admin.form.date-picker
+                            type="datetime-local"
+                            x-bind:name="`sale_items[${i}][discount][ends_at]`"
+                            x-model="item.discount.ends_at"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12">
+                    <input
+                        type="hidden"
+                        x-bind:name="`sale_items[${i}][discount][show_special_box]`"
+                        value="0"
+                    >
+
+                    <label
+                        class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 transition hover:border-orange-200 hover:bg-orange-50/40">
+                        <input
+                            type="checkbox"
+                            x-bind:name="`sale_items[${i}][discount][show_special_box]`"
+                            value="1"
+                            x-model="item.discount.show_special_box"
+                            class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        >
+
+                        <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            نمایش باکس تخفیف ویژه
+                        </span>
+
+                        <span class="mt-1 block text-xs leading-6 text-slate-500">
+                            این گزینه فقط برای کنترل نمایش باکس تبلیغاتی تخفیف در فرانت محصول استفاده می‌شود.
+                        </span>
+                    </span>
+                    </label>
+                </div>
+
+                <div class="col-span-12 md:col-span-6">
+                    <x-admin.field label="عنوان باکس تخفیف ویژه">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][discount][special_box_title]`"
+                            x-model="item.discount.special_box_title"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6">
+                    <x-admin.field label="توضیحات باکس تخفیف ویژه">
+                        <x-admin.form.textarea
+                            rows="2"
+                            x-bind:name="`sale_items[${i}][discount][special_box_description]`"
+                            x-model="item.discount.special_box_description"
+                        />
+                    </x-admin.field>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-slate-100 px-4 py-3">
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div class="text-xs font-bold text-slate-700">فایل‌های دانلودی</div>
 

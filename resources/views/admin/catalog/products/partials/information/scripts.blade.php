@@ -268,10 +268,23 @@
                                 max_quantity_per_order: item.max_quantity_per_order ?? '',
                                 description: item.description ?? '',
                                 attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
+                                discount: this.normalizeSaleItemDiscount(item.discount ?? {}),
                                 files: this.normalizeSaleItemFiles(item.files ?? []),
                                 _open: this.normalizeBoolean(item._open, false),
                             };
                         });
+                    },
+
+                    normalizeSaleItemDiscount(discount = {}) {
+                        return {
+                            id: discount?.id ?? null,
+                            discounted_price: discount?.discounted_price ?? '',
+                            starts_at: discount?.starts_at ?? '',
+                            ends_at: discount?.ends_at ?? '',
+                            show_special_box: this.normalizeBoolean(discount?.show_special_box, false),
+                            special_box_title: discount?.special_box_title ?? '',
+                            special_box_description: discount?.special_box_description ?? '',
+                        };
                     },
 
                     normalizeSaleItemAttributeValues(attributeValues) {
@@ -372,6 +385,7 @@
                             max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
                             attribute_values: payload.attribute_values ?? {},
+                            discount: this.normalizeSaleItemDiscount(payload.discount ?? {}),
                             files: this.normalizeSaleItemFiles(payload.files ?? []),
                             _open: true,
                         });

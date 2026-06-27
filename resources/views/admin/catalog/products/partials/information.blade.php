@@ -153,6 +153,15 @@
                 'description' => $saleItem->description,
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,
+                'discount' => [
+                    'id' => data_get($saleItem, 'discount.id'),
+                    'discounted_price' => data_get($saleItem, 'discount.discounted_price'),
+                    'starts_at' => data_get($saleItem, 'discount.starts_at'),
+                    'ends_at' => data_get($saleItem, 'discount.ends_at'),
+                    'show_special_box' => (bool) data_get($saleItem, 'discount.show_special_box', false),
+                    'special_box_title' => data_get($saleItem, 'discount.special_box_title'),
+                    'special_box_description' => data_get($saleItem, 'discount.special_box_description'),
+                ],
                 'files' => $saleItem->files
                     ->map(fn ($file) => [
                         'id' => $file->id,
@@ -171,6 +180,15 @@
 
     $simpleSaleItem = $saleItems[0] ?? $simpleSaleItem ?? [];
     $simpleSaleItemFiles = old('sale_items.0.files', $simpleSaleItem['files'] ?? []);
+    $simpleSaleItemDiscount = old('sale_items.0.discount', $simpleSaleItem['discount'] ?? [
+        'id' => null,
+        'discounted_price' => null,
+        'starts_at' => null,
+        'ends_at' => null,
+        'show_special_box' => false,
+        'special_box_title' => null,
+        'special_box_description' => null,
+    ]);
 
     $productAddons = !isset($product) ? [] : $product
         ->addons()
