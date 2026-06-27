@@ -10,6 +10,7 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -180,5 +181,10 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function getReportStoreId(): ?int
     {
         return $this->product?->store_id;
+    }
+
+    public function discount(): HasOne
+    {
+        return $this->hasOne(ProductSaleItemDiscount::class);
     }
 }
