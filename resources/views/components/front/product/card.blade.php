@@ -6,7 +6,6 @@
     $minPrice = $product->min_price ?? $product->saleItems->min('base_price');
     $maxPrice = $product->max_price ?? $product->saleItems->max('base_price');
     $categories = $product->categories->take(2);
-    $saleItemsCount = $product->saleItems->count();
     $storeTitle = $product->store?->title ?? 'فروشنده مودینگ وی';
 @endphp
 
@@ -91,15 +90,6 @@
                         </span>
                     @endforeach
                 </div>
-
-                @if($saleItemsCount > 1)
-                    <span
-                        class="shrink-0 rounded-2xl border border-brand-200 bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700
-                        dark:border-brand-700 dark:bg-brand-900/30 dark:text-brand-300"
-                    >
-                        {{ $saleItemsCount }} نسخه
-                    </span>
-                @endif
             </div>
         </div>
 
