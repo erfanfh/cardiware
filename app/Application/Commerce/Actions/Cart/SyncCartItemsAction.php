@@ -202,7 +202,10 @@ class SyncCartItemsAction
             $cartItem->unit_price = $currentPrice;
         }
 
-        if (($cartItem->snapshot ?? []) !== $currentSnapshot) {
+        $oldSnapshotForComparison = $this->normalizeSnapshotForComparison($cartItem->snapshot ?? []);
+        $currentSnapshotForComparison = $this->normalizeSnapshotForComparison($currentSnapshot);
+
+        if ($oldSnapshotForComparison !== $currentSnapshotForComparison) {
             $changes['snapshot'] = true;
 
             $cartItem->snapshot = $currentSnapshot;
@@ -218,7 +221,7 @@ class SyncCartItemsAction
         }
 
         /**
-         * برای child/addon بهتره quantity همیشه 1 بماند.
+         * برای child/addon بهتر است quantity همیشه 1 بماند.
          */
         if ($cartItem->isChild() && (int)$cartItem->quantity !== 1) {
             $changes['quantity'] = [
@@ -240,6 +243,23 @@ class SyncCartItemsAction
             'reason' => null,
             'changes' => $changes,
         ];
+    }
+
+    private function normalizeSnapshotForComparison(mixed $value): mixed
+    {
+        if (!is_array($value)) {
+            return $value;
+        }
+
+        foreach ($value as $key => $item) {
+            $value[$key] = $this->normalizeSnapshotForComparison($item);
+        }
+
+        if (!array_is_list($value)) {
+            ksort($value);
+        }
+
+        return $value;
     }
 
     private function deleteCartItemWithChildren(CartItem $cartItem): void
