@@ -18,6 +18,7 @@ use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -54,6 +55,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function getUrlAttribute(): string
     {
         return front_route('products.detail', $this->slug);
+    }
+
+    public function displaySetting(): HasOne
+    {
+        return $this->hasOne(ProductDisplaySetting::class);
     }
 
     public function store(): BelongsTo
