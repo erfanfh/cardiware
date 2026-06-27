@@ -14,17 +14,20 @@
             </div>
         </div>
 
-        <div
-            class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
-            <div class="flex min-w-0 items-center gap-1.5 text-xs font-extrabold text-slate-500 dark:text-slate-400">
-                @include('icons.shopping-basket-03')
-                <span>تعداد فروش</span>
-            </div>
+        @if($product->displaySetting?->show_sales_count)
+            <div
+                class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
+                <div
+                    class="flex min-w-0 items-center gap-1.5 text-xs font-extrabold text-slate-500 dark:text-slate-400">
+                    @include('icons.shopping-basket-03')
+                    <span>تعداد فروش</span>
+                </div>
 
-            <div class="shrink-0 text-sm font-bold text-slate-900 dark:text-white">
-                {{ $soldQuantity ? number_format($soldQuantity) : 'جدید!' }}
+                <div class="shrink-0 text-sm font-bold text-slate-900 dark:text-white">
+                    {{ $soldQuantity ? number_format($soldQuantity) : 'جدید!' }}
+                </div>
             </div>
-        </div>
+        @endif
 
         @foreach($product->informationEntries as $info)
             <div

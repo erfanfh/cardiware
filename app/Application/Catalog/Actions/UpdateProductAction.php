@@ -31,6 +31,7 @@ class UpdateProductAction
         protected SyncProductInformationAction        $syncProductInformationAction,
         protected SyncProductAddonsAction             $syncProductAddonsAction,
         protected SyncProductInformationEntriesAction $syncProductInformationEntriesAction,
+        protected SyncProductSettingAction            $syncProductSettingAction,
         protected SyncSeoMetaAction                   $syncSeoMetaAction,
         protected StoreSeoAnalysisAction              $storeSeoAnalysisAction,
         protected ProductCacheInvalidator             $productCacheInvalidator,
@@ -68,6 +69,7 @@ class UpdateProductAction
                 $productData['addons'],
                 $productData['information_fields'],
                 $productData['seo'],
+                $productData['display_setting'],
             );
 
             $product->update($productData);
@@ -92,6 +94,7 @@ class UpdateProductAction
             $this->syncProductInformationAction->execute($product, $data);
             $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
             $this->syncProductInformationEntriesAction->execute($product, $data['information_fields'] ?? []);
+            $this->syncProductSettingAction->execute($product, $data['display_setting'] ?? []);
 
             $this->syncSeoMetaAction->execute($product, $data['seo'] ?? []);
             $this->storeSeoAnalysisAction->execute($product, app(BuildProductSeoAnalysisInputAction::class));

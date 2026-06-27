@@ -120,6 +120,22 @@
             />
         </x-admin.metabox>
 
+        <x-admin.metabox title="تنظیمات نمایشی">
+            <x-admin.field
+                class="col-span-12"
+                label="نمایش تعداد فروش"
+            >
+                <x-admin.form.select
+                    name="display_setting[show_sales_count]"
+                    :options="[
+                        '0' => 'خیر',
+                        '1' => 'بله',
+                    ]"
+                    :value="old('display_setting.show_sales_count', $product?->displaySetting?->show_sales_count)"
+                />
+            </x-admin.field>
+        </x-admin.metabox>
+
         <x-admin.metabox title="فیلدهای اطلاعات">
             @include('admin.catalog.products.partials.information-fields')
         </x-admin.metabox>

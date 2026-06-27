@@ -19,6 +19,7 @@ final class GetProductDetailAction
             CacheKey::productDetail($product->id, $product->updated_at->timestamp),
             CacheTtl::long(),
             fn() => $product->load([
+                'displaySetting',
                 'categories',
                 'tags',
                 'picture.primaryVariant',

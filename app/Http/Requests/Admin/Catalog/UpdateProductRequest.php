@@ -129,6 +129,8 @@ class UpdateProductRequest extends FormRequest
             'information_fields.*' => ['nullable', 'string', 'max:255'],
 
             'seo' => ['nullable', 'array'],
+
+            'display_setting' => ['nullable', 'array'],
         ];
     }
 
