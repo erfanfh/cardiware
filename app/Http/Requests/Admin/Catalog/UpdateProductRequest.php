@@ -106,6 +106,15 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.description' => ['nullable', 'string'],
 
+            'sale_items.*.discount' => ['nullable', 'array'],
+            'sale_items.*.discount.id' => ['nullable', 'integer'],
+            'sale_items.*.discount.discounted_price' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.discount.starts_at' => ['nullable', 'date'],
+            'sale_items.*.discount.ends_at' => ['nullable', 'date'],
+            'sale_items.*.discount.show_special_box' => ['nullable', 'boolean'],
+            'sale_items.*.discount.special_box_title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.discount.special_box_description' => ['nullable', 'string', 'max:1000'],
+
             'sale_items.*.attribute_values' => ['nullable', 'array'],
             'sale_items.*.attribute_values.*' => ['nullable', 'string', 'max:255'],
 
@@ -146,6 +155,13 @@ class UpdateProductRequest extends FormRequest
             'store_id' => 'فروشنده',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'sale_items.*.base_price' => 'قیمت پایه آیتم فروش',
+            'sale_items.*.discount.discounted_price' => 'مبلغ با تخفیف',
+            'sale_items.*.discount.starts_at' => 'تاریخ شروع تخفیف',
+            'sale_items.*.discount.ends_at' => 'تاریخ پایان تخفیف',
+            'sale_items.*.discount.show_special_box' => 'نمایش باکس تخفیف ویژه',
+            'sale_items.*.discount.special_box_title' => 'عنوان باکس تخفیف ویژه',
+            'sale_items.*.discount.special_box_description' => 'توضیحات باکس تخفیف ویژه',
         ];
     }
 
@@ -186,6 +202,8 @@ class UpdateProductRequest extends FormRequest
             ->values()
             ->all();
 
+        $saleItems = $this->normalizeSaleItemsForValidation();
+
         $this->merge([
             'store_id' => $defaultStoreId,
             'picture_id' => $this->input('picture.id'),
@@ -193,9 +211,118 @@ class UpdateProductRequest extends FormRequest
                 'existing' => $existing,
                 'new' => $new,
             ],
+            'sale_items' => $saleItems,
             'published_at' => $this->input('published_at')
                 ? gregorian_date($this->input('published_at'))
                 : date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeSaleItemsForValidation(): array
+    {
+        return collect($this->input('sale_items', []))
+            ->filter(fn($item) => is_array($item))
+            ->map(function (array $item): array {
+                $discount = data_get($item, 'discount', []);
+
+                if (!is_array($discount)) {
+                    $discount = [];
+                }
+
+                $item['discount'] = [
+                    'id' => filled(data_get($discount, 'id'))
+                        ? (int)data_get($discount, 'id')
+                        : null,
+
+                    'discounted_price' => $this->normalizeIntegerInput(
+                        data_get($discount, 'discounted_price')
+                    ),
+
+                    'starts_at' => $this->normalizeJalaliDateTimeInput(
+                        data_get($discount, 'starts_at')
+                    ),
+
+                    'ends_at' => $this->normalizeJalaliDateTimeInput(
+                        data_get($discount, 'ends_at')
+                    ),
+
+                    'show_special_box' => $this->normalizeBooleanInput(
+                        data_get($discount, 'show_special_box'),
+                        false
+                    ),
+
+                    'special_box_title' => filled(data_get($discount, 'special_box_title'))
+                        ? trim((string)data_get($discount, 'special_box_title'))
+                        : null,
+
+                    'special_box_description' => filled(data_get($discount, 'special_box_description'))
+                        ? trim((string)data_get($discount, 'special_box_description'))
+                        : null,
+                ];
+
+                return $item;
+            })
+            ->values()
+            ->all();
+    }
+
+    private function normalizeIntegerInput(mixed $value): ?int
+    {
+        if (!filled($value)) {
+            return null;
+        }
+
+        $value = $this->normalizeDigits((string)$value);
+        $value = str_replace([',', '٬', ' '], '', $value);
+
+        return is_numeric($value) ? max(0, (int)$value) : null;
+    }
+
+    private function normalizeBooleanInput(mixed $value, bool $fallback = false): bool
+    {
+        $normalized = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        return $normalized ?? $fallback;
+    }
+
+    private function normalizeJalaliDateTimeInput(mixed $value): ?string
+    {
+        if (!filled($value)) {
+            return null;
+        }
+
+        $value = $this->normalizeDigits(trim((string)$value));
+        $value = str_replace('T', ' ', $value);
+
+        return gregorian_date($value);
+    }
+
+    private function normalizeDigits(string $value): string
+    {
+        return strtr($value, [
+            '۰' => '0',
+            '۱' => '1',
+            '۲' => '2',
+            '۳' => '3',
+            '۴' => '4',
+            '۵' => '5',
+            '۶' => '6',
+            '۷' => '7',
+            '۸' => '8',
+            '۹' => '9',
+            '٠' => '0',
+            '١' => '1',
+            '٢' => '2',
+            '٣' => '3',
+            '٤' => '4',
+            '٥' => '5',
+            '٦' => '6',
+            '٧' => '7',
+            '٨' => '8',
+            '٩' => '9',
         ]);
     }
 }

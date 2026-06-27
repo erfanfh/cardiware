@@ -175,7 +175,8 @@
                         <x-admin.form.textarea
                             rows="2"
                             name="sale_items[0][discount][special_box_description]"
-                        >{{ old('sale_items.0.discount.special_box_description', $simpleSaleItemDiscount['special_box_description'] ?? null) }}</x-admin.form.textarea>
+                            :value="old('sale_items.0.discount.special_box_description', $simpleSaleItemDiscount['special_box_description'] ?? null)"
+                        />
                     </x-admin.field>
                 </div>
             </div>

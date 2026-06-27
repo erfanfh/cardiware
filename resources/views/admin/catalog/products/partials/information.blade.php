@@ -114,6 +114,8 @@
     $saleItems = !isset($product) ? [] : $product
         ->saleItems()
         ->with([
+            'discount',
+
             'files' => fn ($query) => $query->orderBy('sort_order'),
 
             'attributeValues.globalValue.attribute',
@@ -154,13 +156,17 @@
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,
                 'discount' => [
-                    'id' => data_get($saleItem, 'discount.id'),
-                    'discounted_price' => data_get($saleItem, 'discount.discounted_price'),
-                    'starts_at' => data_get($saleItem, 'discount.starts_at'),
-                    'ends_at' => data_get($saleItem, 'discount.ends_at'),
-                    'show_special_box' => (bool) data_get($saleItem, 'discount.show_special_box', false),
-                    'special_box_title' => data_get($saleItem, 'discount.special_box_title'),
-                    'special_box_description' => data_get($saleItem, 'discount.special_box_description'),
+                    'id' => $saleItem->discount?->id,
+                    'discounted_price' => $saleItem->discount?->discounted_price,
+                    'starts_at' => $saleItem->discount?->starts_at
+                        ? jalali_date($saleItem->discount->starts_at)
+                        : null,
+                    'ends_at' => $saleItem->discount?->ends_at
+                        ? jalali_date($saleItem->discount->ends_at)
+                        : null,
+                    'show_special_box' => (bool) $saleItem->discount?->show_special_box,
+                    'special_box_title' => $saleItem->discount?->special_box_title,
+                    'special_box_description' => $saleItem->discount?->special_box_description,
                 ],
                 'files' => $saleItem->files
                     ->map(fn ($file) => [
