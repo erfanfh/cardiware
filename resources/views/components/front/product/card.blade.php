@@ -40,7 +40,7 @@
                         :alt="$product->title"
                         :title="$product->title"
                         variant="medium"
-                        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        class="h-full w-full object-cover transition-transform duration-700"
                         :lazy="true"
                         :async="true"
                         :skeleton="true"
