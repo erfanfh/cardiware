@@ -3,10 +3,59 @@
 ])
 
 @php
-    $minPrice = $product->min_price ?? $product->saleItems->min('base_price');
-    $maxPrice = $product->max_price ?? $product->saleItems->max('base_price');
     $categories = $product->categories->take(2);
     $storeTitle = $product->store?->title ?? 'فروشنده مودینگ وی';
+
+    $saleItems = $product->relationLoaded('saleItems')
+        ? $product->saleItems
+        : $product->saleItems()->with('discount')->get();
+
+    $availableSaleItems = $saleItems
+        ->filter(function ($saleItem): bool {
+            $status = $saleItem->status;
+            $statusValue = $status instanceof \BackedEnum ? $status->value : $status;
+
+            return $statusValue === 'available';
+        })
+        ->values();
+
+    $priceResolver = app(\App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction::class);
+
+    $priceRows = $availableSaleItems
+        ->map(function ($saleItem) use ($priceResolver): array {
+            $price = $priceResolver->execute($saleItem);
+
+            $discountPercent = $price->basePrice > 0 && $price->unitDiscountAmount > 0
+                ? (int) round(($price->unitDiscountAmount / $price->basePrice) * 100)
+                : 0;
+
+            return [
+                'regular_price' => $price->basePrice,
+                'final_price' => $price->finalPrice,
+                'has_discount' => $price->hasDiscount(),
+                'discount_percent' => $discountPercent,
+            ];
+        })
+        ->filter(fn (array $row): bool => $row['final_price'] !== null)
+        ->values();
+
+    $displayPriceRow = $priceRows
+        ->sortBy('final_price')
+        ->first();
+
+    $minPrice = $priceRows->min('final_price');
+    $maxPrice = $priceRows->max('final_price');
+
+    $isPriceRange = $minPrice !== null
+        && $maxPrice !== null
+        && (int) $minPrice !== (int) $maxPrice;
+
+    $hasDiscountForDisplay = $displayPriceRow
+        && $displayPriceRow['has_discount']
+        && (int) $displayPriceRow['regular_price'] > (int) $displayPriceRow['final_price'];
+
+    $regularPriceForDisplay = $displayPriceRow['regular_price'] ?? null;
+    $discountPercentForDisplay = $displayPriceRow['discount_percent'] ?? 0;
 @endphp
 
 <a
@@ -121,26 +170,49 @@
 
                     <div class="min-w-0">
 
-                        <span class="mb-1 block text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                            قیمت محصول
-                        </span>
+                        <div class="mb-1 flex items-center gap-1.5">
+                            <span class="block text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                                قیمت محصول
+                            </span>
 
-                        <div class="text-sm font-black text-slate-950 dark:text-slate-100">
+                            @if($hasDiscountForDisplay && $discountPercentForDisplay > 0)
+                                <span
+                                    class="rounded-full bg-brand-50 px-1.5 py-0.5 text-[9px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
+                                >
+                                    {{ number_format($discountPercentForDisplay) }}٪
+                                </span>
+                            @endif
+                        </div>
 
-                            @if($minPrice)
-                                @if((int) $minPrice === (int) $maxPrice)
-                                    {{ number_format($minPrice) }}
-                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
-                                @else
-                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">از</span>
-                                    {{ number_format($minPrice) }}
-                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
-                                @endif
-                            @else
-                                <span class="text-slate-400 dark:text-slate-500">نامشخص</span>
+                        @if($minPrice !== null)
+                            @if($hasDiscountForDisplay)
+                                <div
+                                    class="mb-0.5 whitespace-nowrap text-[11px] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
+                                >
+                                    @if($isPriceRange)
+                                        <span>از</span>
+                                    @endif
+
+                                    {{ number_format($regularPriceForDisplay) }}
+                                    <span class="text-[10px]">تومان</span>
+                                </div>
                             @endif
 
-                        </div>
+                            <div
+                                class="whitespace-nowrap text-sm font-black {{ $hasDiscountForDisplay ? 'text-brand-600 dark:text-brand-400' : 'text-slate-950 dark:text-slate-100' }}"
+                            >
+                                @if($isPriceRange)
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">از</span>
+                                @endif
+
+                                {{ number_format($minPrice) }}
+                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                            </div>
+                        @else
+                            <span class="text-sm font-black text-slate-400 dark:text-slate-500">
+                                نامشخص
+                            </span>
+                        @endif
 
                     </div>
 
