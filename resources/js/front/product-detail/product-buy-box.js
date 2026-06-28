@@ -37,6 +37,19 @@ export default function productBuyBox(config) {
         selectedSaleItemAnimationId: null,
         selectedSaleItemAnimationTimer: null,
 
+        offerTimerInterval: null,
+
+        offerCountdown: {
+            days: '۰۰',
+            hours: '۰۰',
+            minutes: '۰۰',
+            seconds: '۰۰',
+        },
+
+        offerProgressPercent: 100,
+        offerExpired: false,
+        offerUrgencyText: '',
+
         playSaleItemSelectAnimation(id) {
             const itemId = Number(id);
 
@@ -77,6 +90,14 @@ export default function productBuyBox(config) {
             }
 
             this.applyPurchaseState(this.purchaseState);
+
+            this.$nextTick(() => {
+                this.startSpecialOfferTimer();
+
+                this.$watch('selectedSaleItemId', () => {
+                    this.startSpecialOfferTimer();
+                });
+            });
         },
 
         get shouldShowSaleItemSelector() {
@@ -92,9 +113,7 @@ export default function productBuyBox(config) {
         },
 
         get selectedSaleItem() {
-            return this.saleItems.find((saleItem) => {
-                return Number(saleItem.id) === Number(this.selectedSaleItemId);
-            }) ?? null;
+            return this.saleItems.find(item => Number(item.id) === Number(this.selectedSaleItemId)) ?? null;
         },
 
         get selectedAddons() {
@@ -155,6 +174,8 @@ export default function productBuyBox(config) {
             if (!result?.success) {
                 this.selectedSaleItemId = previousSaleItemId;
             }
+
+            this.startSpecialOfferTimer();
         },
 
         async toggleAddon(addonId) {
@@ -428,6 +449,145 @@ export default function productBuyBox(config) {
 
             this.externalSyncTimeout = null;
             this.isSyncingFromExternalCart = false;
+        },
+
+        get shouldShowSpecialOfferBox() {
+            return Boolean(
+                this.selectedSaleItem
+                && this.selectedSaleItem.has_discount
+                && this.selectedSaleItem.special_box
+                && this.selectedSaleItem.special_box.show
+            );
+        },
+
+        get shouldShowSpecialOfferTimer() {
+            return Boolean(
+                this.shouldShowSpecialOfferBox
+                && Number(this.selectedSaleItem?.special_box?.ends_at_ts || 0) > 0
+            );
+        },
+
+        get shouldShowSpecialOfferProgress() {
+            return Boolean(
+                this.shouldShowSpecialOfferTimer
+                && Number(this.selectedSaleItem?.special_box?.starts_at_ts || 0) > 0
+            );
+        },
+
+        startSpecialOfferTimer() {
+            this.stopSpecialOfferTimer();
+            this.updateSpecialOfferCountdown();
+
+            this.offerTimerInterval = setInterval(() => {
+                this.updateSpecialOfferCountdown();
+            }, 1000);
+        },
+
+        stopSpecialOfferTimer() {
+            if (this.offerTimerInterval) {
+                clearInterval(this.offerTimerInterval);
+                this.offerTimerInterval = null;
+            }
+        },
+
+        updateSpecialOfferCountdown() {
+            if (!this.shouldShowSpecialOfferTimer) {
+                this.resetSpecialOfferCountdown();
+                return;
+            }
+
+            const endTs = Number(this.selectedSaleItem?.special_box?.ends_at_ts || 0);
+
+            if (!endTs) {
+                this.resetSpecialOfferCountdown();
+                return;
+            }
+
+            const nowTs = Date.now();
+            const diff = endTs - nowTs;
+
+            if (diff <= 0) {
+                this.offerExpired = true;
+                this.offerCountdown = {
+                    days: '۰۰',
+                    hours: '۰۰',
+                    minutes: '۰۰',
+                    seconds: '۰۰',
+                };
+                this.offerProgressPercent = 0;
+                this.offerUrgencyText = 'این تخفیف به پایان رسیده است.';
+                this.stopSpecialOfferTimer();
+                return;
+            }
+
+            this.offerExpired = false;
+
+            const totalSeconds = Math.floor(diff / 1000);
+            const days = Math.floor(totalSeconds / 86400);
+            const hours = Math.floor((totalSeconds % 86400) / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            this.offerCountdown = {
+                days: this.toFaDigits(String(days).padStart(2, '0')),
+                hours: this.toFaDigits(String(hours).padStart(2, '0')),
+                minutes: this.toFaDigits(String(minutes).padStart(2, '0')),
+                seconds: this.toFaDigits(String(seconds).padStart(2, '0')),
+            };
+
+            if (this.shouldShowSpecialOfferProgress) {
+                this.updateOfferProgress(nowTs, endTs);
+            } else {
+                this.offerProgressPercent = 100;
+            }
+            this.updateOfferUrgencyText(totalSeconds);
+        },
+
+        updateOfferProgress(nowTs, endTs) {
+            const startTs = Number(this.selectedSaleItem?.special_box?.starts_at_ts || 0);
+
+            if (!startTs || !endTs || endTs <= startTs) {
+                this.offerProgressPercent = 100;
+                return;
+            }
+
+            const remaining = endTs - nowTs;
+            const total = endTs - startTs;
+
+            this.offerProgressPercent = Math.max(
+                0,
+                Math.min(100, Math.round((remaining / total) * 100))
+            );
+        },
+
+        updateOfferUrgencyText(totalSeconds) {
+            if (totalSeconds <= 3600) {
+                this.offerUrgencyText = 'کمتر از یک ساعت تا پایان تخفیف باقی مانده.';
+                return;
+            }
+
+            if (totalSeconds <= 86400) {
+                this.offerUrgencyText = 'کمتر از یک روز تا پایان این پیشنهاد فرصت دارید.';
+                return;
+            }
+
+            this.offerUrgencyText = '';
+        },
+
+        resetSpecialOfferCountdown() {
+            this.offerExpired = false;
+            this.offerProgressPercent = 100;
+            this.offerUrgencyText = '';
+            this.offerCountdown = {
+                days: '۰۰',
+                hours: '۰۰',
+                minutes: '۰۰',
+                seconds: '۰۰',
+            };
+        },
+
+        toFaDigits(value) {
+            return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
         },
     };
 }

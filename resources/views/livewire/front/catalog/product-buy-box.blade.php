@@ -119,10 +119,28 @@
                                         </div>
                                     </div>
 
-                                    <div
-                                        class="shrink-0 whitespace-nowrap text-left text-sm font-black text-brand-700 dark:text-brand-400"
-                                        x-text="formatPrice(saleItem.price)"
-                                    ></div>
+                                    <div class="shrink-0 text-left">
+                                        <div
+                                            x-show="saleItem.has_discount"
+                                            x-cloak
+                                            class="mb-1 flex items-center justify-end gap-1.5"
+                                        >
+                                            <span
+                                                class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
+                                                x-text="new Intl.NumberFormat('fa-IR').format(saleItem.discount_percent) + '٪ تخفیف'"
+                                            ></span>
+
+                                            <span
+                                                class="text-[11px] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
+                                                x-text="formatPrice(saleItem.regular_price)"
+                                            ></span>
+                                        </div>
+
+                                        <div
+                                            class="whitespace-nowrap text-base font-black text-brand-700 dark:text-brand-400"
+                                            x-text="formatPrice(saleItem.price)"
+                                        ></div>
+                                    </div>
                                 </div>
 
                                 <div
@@ -140,11 +158,21 @@
             {{-- Simple product with addons: show base product price to avoid ambiguity --}}
             <template x-if="isSimpleProductWithAddons">
                 <div
-                    class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
+                    class="overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4"
+                >
                     <div class="flex items-center justify-between gap-3">
-                        <div>
-                            <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                قیمت محصول
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                                    قیمت محصول
+                                </div>
+
+                                <span
+                                    x-show="selectedSaleItem?.has_discount"
+                                    x-cloak
+                                    class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
+                                    x-text="new Intl.NumberFormat('fa-IR').format(selectedSaleItem?.discount_percent || 0) + '٪ تخفیف'"
+                                ></span>
                             </div>
 
                             <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -152,12 +180,164 @@
                             </div>
                         </div>
 
-                        <div
-                            class="shrink-0 whitespace-nowrap text-sm font-black text-brand-700 dark:text-brand-400"
-                            x-text="formatPrice(selectedSaleItem?.price || 0)"
-                        ></div>
+                        <div class="shrink-0 text-left">
+                            <div
+                                x-show="selectedSaleItem?.has_discount"
+                                x-cloak
+                                class="mb-1 whitespace-nowrap text-[0.7rem] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
+                                x-text="formatPrice(selectedSaleItem?.regular_price || 0)"
+                            ></div>
+
+                            <div
+                                class="whitespace-nowrap text-sm font-black text-brand-700 dark:text-brand-400"
+                                x-text="formatPrice(selectedSaleItem?.price || 0)"
+                            ></div>
+                        </div>
                     </div>
                 </div>
+            </template>
+
+            <template x-if="shouldShowSpecialOfferBox">
+                <section class="mt-4">
+                    <div
+                        class="relative overflow-hidden rounded-3xl border border-orange-200 bg-gradient-to-br from-orange-50 via-white to-rose-50 p-3.5 shadow-sm ring-1 ring-orange-100/70 dark:border-orange-900/40 dark:from-slate-900 dark:via-slate-950 dark:to-orange-950/20 dark:ring-orange-900/20"
+                    >
+                        {{-- Decorative --}}
+                        <div
+                            class="pointer-events-none absolute -left-8 -top-8 h-24 w-24 rounded-full bg-orange-300/30 blur-3xl dark:bg-orange-500/10"></div>
+                        <div
+                            class="pointer-events-none absolute -bottom-10 -right-8 h-24 w-24 rounded-full bg-rose-300/25 blur-3xl dark:bg-rose-500/10"></div>
+
+                        <div class="relative">
+                            {{-- Header --}}
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <span
+                                            class="inline-flex items-center gap-1 rounded-full bg-gradient-to-l from-rose-500 to-orange-500 px-2.5 py-1 text-[10px] font-black text-white shadow-sm"
+                                        >
+                                            <span class="[&_svg]:w-3 [&_svg]:h-3 text-orange-100">
+                                                @include('icons.fire')
+                                            </span>
+                                            <span>پیشنهاد ویژه</span>
+                                        </span>
+                                    </div>
+
+                                    <h3
+                                        class="mt-3 text-sm font-black leading-6 text-slate-900 dark:text-white"
+                                        x-text="selectedSaleItem?.special_box?.title || 'تخفیف ویژه زمان‌دار'"
+                                    ></h3>
+
+                                    <p
+                                        x-show="selectedSaleItem?.special_box?.description"
+                                        x-cloak
+                                        class="mt-1.5 text-xs leading-6 text-slate-600 dark:text-slate-300"
+                                        x-text="selectedSaleItem?.special_box?.description"
+                                    ></p>
+                                </div>
+                            </div>
+
+                            {{-- Timer --}}
+                            <div
+                                x-show="shouldShowSpecialOfferTimer"
+                                x-cloak
+                                class="mt-3 rounded-2xl border border-white/80 bg-white/75 p-3 shadow-sm ring-1 ring-slate-100 backdrop-blur dark:border-white/10 dark:bg-white/[0.04] dark:ring-white/10"
+                            >
+                                <div class="mb-2 flex items-center justify-between gap-2">
+                                    <span class="text-[10px] font-black text-slate-500 dark:text-slate-300">
+                                        زمان پایان
+                                    </span>
+
+                                    <span
+                                        x-show="selectedSaleItem?.special_box?.ends_at_label"
+                                        x-cloak
+                                        class="text-[10px] font-bold text-slate-400 dark:text-slate-500"
+                                        x-text="selectedSaleItem?.special_box?.ends_at_label"
+                                    ></span>
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-1.5">
+                                    <div
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
+                                        <div class="text-sm font-black text-slate-900 dark:text-white"
+                                             x-text="offerCountdown.seconds"></div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">ثانیه</div>
+                                    </div>
+
+                                    <div
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
+                                        <div class="text-sm font-black text-slate-900 dark:text-white"
+                                             x-text="offerCountdown.minutes"></div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">دقیقه</div>
+                                    </div>
+
+                                    <div
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
+                                        <div class="text-sm font-black text-slate-900 dark:text-white"
+                                             x-text="offerCountdown.hours"></div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">ساعت</div>
+                                    </div>
+
+                                    <div
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
+                                        <div class="text-sm font-black text-slate-900 dark:text-white"
+                                             x-text="offerCountdown.days"></div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">روز</div>
+                                    </div>
+                                </div>
+
+                                {{-- Progress --}}
+                                <div
+                                    x-show="shouldShowSpecialOfferProgress"
+                                    x-cloak
+                                    class="mt-3"
+                                >
+                                    <div class="mb-1.5 flex items-center justify-between">
+                                        <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500">
+                                            زمان باقی‌مانده از بازه تخفیف
+                                        </span>
+
+                                        <span
+                                            class="text-[10px] font-black text-orange-600 dark:text-orange-300"
+                                            x-text="new Intl.NumberFormat('fa-IR').format(offerProgressPercent) + '٪'"
+                                        ></span>
+                                    </div>
+
+                                    <div class="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+                                        <div
+                                            class="h-full rounded-full bg-gradient-to-l from-brand-500 via-brand-600 to-rose-600 shadow-[0_0_14px_rgba(244,63,94,0.35)] transition-all duration-500"
+                                            :style="`width: ${offerProgressPercent}%`"
+                                        ></div>
+                                    </div>
+                                </div>
+
+                                <div
+                                    x-show="offerUrgencyText"
+                                    x-cloak
+                                    class="mt-2 rounded-xl bg-orange-50 px-2.5 py-2 text-[10px] font-bold text-orange-700 ring-1 ring-orange-100 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/10"
+                                    x-text="offerUrgencyText"
+                                ></div>
+
+                                <div
+                                    x-show="offerExpired"
+                                    x-cloak
+                                    class="mt-2 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-2 text-center text-[11px] font-bold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300"
+                                >
+                                    زمان این پیشنهاد به پایان رسیده است.
+                                </div>
+                            </div>
+
+                            {{-- No timer fallback --}}
+                            <div
+                                x-show="!shouldShowSpecialOfferTimer"
+                                x-cloak
+                                class="mt-3 rounded-2xl border border-orange-100 bg-white/70 px-3 py-2 text-xs font-bold leading-6 text-orange-700 ring-1 ring-orange-100 dark:border-orange-500/10 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/10"
+                            >
+                                این پیشنهاد ویژه برای مدت محدود فعال شده است.
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </template>
 
             {{-- Addons --}}
@@ -265,6 +445,36 @@
                             class="shrink-0 whitespace-nowrap text-xl font-black text-brand-700 dark:text-brand-400"
                             x-text="formatPrice(totalPrice)"
                         ></div>
+                    </div>
+
+                    <div
+                        x-show="selectedSaleItem?.has_discount"
+                        x-cloak
+                        class="mt-4 grid grid-cols-2 gap-2 border-t border-slate-200 pt-3 dark:border-slate-700"
+                    >
+                        <div
+                            class="rounded-2xl bg-white p-3 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
+                            <div class="text-[10px] font-black text-slate-400 dark:text-slate-500">
+                                قیمت اصلی
+                            </div>
+
+                            <div
+                                class="mt-1 whitespace-nowrap text-xs font-black text-slate-500 line-through decoration-brand-400/70 decoration-2 dark:text-slate-400"
+                                x-text="formatPrice((selectedSaleItem?.regular_price || 0) * quantity)"
+                            ></div>
+                        </div>
+
+                        <div
+                            class="rounded-2xl bg-emerald-50 p-3 ring-1 ring-emerald-100 dark:bg-emerald-950/20 dark:ring-emerald-900/40">
+                            <div class="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
+                                سود شما از خرید
+                            </div>
+
+                            <div
+                                class="mt-1 whitespace-nowrap text-xs font-black text-emerald-700 dark:text-emerald-300"
+                                x-text="formatPrice((selectedSaleItem?.discount_amount || 0) * quantity)"
+                            ></div>
+                        </div>
                     </div>
 
                     <div
