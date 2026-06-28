@@ -206,17 +206,47 @@
                                             </div>
 
                                             <div class="text-left">
-                                                <div class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                                    {{ number_format($item['total_amount']) }}
-                                                    <span
-                                                        class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
-                                                </div>
-
-                                                @if($item['quantity'] > 1)
+                                                @if($item['has_discount'])
                                                     <div
-                                                        class="mt-0.5 text-[0.65rem] text-slate-400 dark:text-slate-500">
-                                                        هر عدد {{ number_format($item['unit_price']) }}
+                                                        class="mb-0.5 whitespace-nowrap text-[0.7rem] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
+                                                    >
+                                                        {{ number_format($item['regular_total_amount']) }}
+                                                        <span class="text-[0.6rem]">تومان</span>
                                                     </div>
+
+                                                    <div
+                                                        class="whitespace-nowrap text-sm font-black text-brand-600 dark:text-brand-400">
+                                                        {{ number_format($item['total_amount']) }}
+                                                        <span
+                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                                    </div>
+
+                                                    @if($item['quantity'] > 1)
+                                                        <div
+                                                            class="mt-0.5 text-[0.65rem] text-slate-400 dark:text-slate-500">
+                                                            هر عدد
+                                                            <span
+                                                                class="line-through decoration-brand-400/70 decoration-2">
+                                                                {{ number_format($item['regular_unit_price']) }}
+                                                            </span>
+                                                            <span class="font-bold text-brand-500 dark:text-brand-400">
+                                                                {{ number_format($item['unit_price']) }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">
+                                                        {{ number_format($item['total_amount']) }}
+                                                        <span
+                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                                    </div>
+
+                                                    @if($item['quantity'] > 1)
+                                                        <div
+                                                            class="mt-0.5 text-[0.65rem] text-slate-400 dark:text-slate-500">
+                                                            هر عدد {{ number_format($item['unit_price']) }}
+                                                        </div>
+                                                    @endif
                                                 @endif
                                             </div>
                                         </div>

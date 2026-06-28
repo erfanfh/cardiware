@@ -258,14 +258,35 @@ class HeaderCartDropdown extends Component
     {
         $maxQuantity = $this->maxQuantityForItem($item);
 
+        $pricing = Arr::get($item->snapshot ?? [], 'pricing', []);
+
+        $quantity = max(1, (int)$item->quantity);
+
+        $regularUnitPrice = (int)Arr::get($pricing, 'base_price', $item->unit_price);
+        $finalUnitPrice = (int)Arr::get($pricing, 'final_price', $item->unit_price);
+        $unitDiscountAmount = (int)Arr::get($pricing, 'unit_discount_amount', max(0, $regularUnitPrice - $finalUnitPrice));
+
+        $hasDiscount = (bool)Arr::get($pricing, 'has_discount', $unitDiscountAmount > 0)
+            && $regularUnitPrice > $finalUnitPrice;
+
+        $regularTotalAmount = $hasDiscount
+            ? $regularUnitPrice * $quantity
+            : (int)$item->total_amount;
+
         return [
             'id' => $item->id,
             'title' => $this->itemTitle($item),
             'subtitle' => $this->itemSubtitle($item),
             'image_url' => $this->itemImageUrl($item),
-            'quantity' => (int)$item->quantity,
+            'quantity' => $quantity,
             'unit_price' => (int)$item->unit_price,
             'total_amount' => (int)$item->total_amount,
+
+            'has_discount' => $hasDiscount,
+            'regular_unit_price' => $regularUnitPrice,
+            'regular_total_amount' => $regularTotalAmount,
+            'unit_discount_amount' => $unitDiscountAmount,
+
             'max_quantity' => $maxQuantity,
             'can_decrease' => $item->quantity > 1,
             'can_increase' => $maxQuantity === null || $item->quantity < $maxQuantity,
