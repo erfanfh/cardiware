@@ -22,6 +22,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\Features\SupportRedirects\Redirector;
 use Throwable;
 
 class CartPage extends Component
@@ -240,7 +241,7 @@ class CartPage extends Component
 
     public function checkout(
         EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction,
-    ): ?RedirectResponse
+    ): RedirectResponse|Redirector|null
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
