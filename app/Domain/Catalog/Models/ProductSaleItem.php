@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction;
 use App\Application\Commerce\Contracts\ProductReportablePurchasable;
 use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
@@ -73,6 +74,22 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     }
 
     /**
+     * Get the current special discount of this sale item.
+     */
+    public function discount(): HasOne
+    {
+        return $this->hasOne(ProductSaleItemDiscount::class);
+    }
+
+    /**
+     * Get purchase accesses for this sale item.
+     */
+    public function purchaseAccesses(): HasMany
+    {
+        return $this->hasMany(PurchaseAccess::class);
+    }
+
+    /**
      * Get the purchasable display title.
      */
     public function getPurchasableTitle(): string
@@ -81,15 +98,22 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     }
 
     /**
-     * Get the current price in toman.
+     * Get the current final purchasable price in toman.
+     *
+     * This price includes active product sale item discount.
      */
     public function getPurchasablePrice(): int
     {
-        return (int)$this->base_price;
+        return app(ResolvePurchasablePriceAction::class)
+            ->execute($this)
+            ->finalPrice;
     }
 
     /**
      * Determine whether this item can be purchased.
+     *
+     * This checks only the sale item status.
+     * For full product + sale item availability, use isPurchasableAvailable().
      */
     public function isPurchasable(): bool
     {
@@ -129,6 +153,8 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
      */
     public function getPurchasableSnapshot(): array
     {
+        $price = app(ResolvePurchasablePriceAction::class)->execute($this);
+
         return [
             'type' => 'product_sale_item',
             'title' => $this->getPurchasableTitle(),
@@ -140,9 +166,13 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
             'product_sale_item_title' => $this->title ?? null,
             'sku' => $this->sku,
             'max_quantity_per_order' => $this->max_quantity_per_order,
+            'pricing' => $price->toSnapshot(),
         ];
     }
 
+    /**
+     * Determine whether this sale item and its product are available for purchase.
+     */
     public function isPurchasableAvailable(): bool
     {
         if ($this->status !== ProductSaleItemStatusEnum::AVAILABLE) {
@@ -165,14 +195,6 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         return $product->status === ProductStatusEnum::ACTIVE;
     }
 
-    /**
-     * Get purchase accesses for this sale item.
-     */
-    public function purchaseAccesses(): HasMany
-    {
-        return $this->hasMany(PurchaseAccess::class);
-    }
-
     public function getReportProductId(): ?int
     {
         return $this->product_id;
@@ -181,10 +203,5 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function getReportStoreId(): ?int
     {
         return $this->product?->store_id;
-    }
-
-    public function discount(): HasOne
-    {
-        return $this->hasOne(ProductSaleItemDiscount::class);
     }
 }
