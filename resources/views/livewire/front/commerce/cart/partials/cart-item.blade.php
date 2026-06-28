@@ -3,6 +3,27 @@
     $unitPrice = (int) ($cartItem->unit_price ?? 0);
     $totalPrice = $this->itemTotal($cartItem);
 
+    $pricing = data_get($cartItem->snapshot ?? [], 'pricing', []);
+
+    $regularUnitPrice = (int) data_get($pricing, 'base_price', $unitPrice);
+    $finalUnitPrice = (int) data_get($pricing, 'final_price', $unitPrice);
+    $unitDiscountAmount = (int) data_get(
+        $pricing,
+        'unit_discount_amount',
+        max(0, $regularUnitPrice - $finalUnitPrice)
+    );
+
+    $hasDiscount = (bool) data_get($pricing, 'has_discount', $unitDiscountAmount > 0)
+        && $regularUnitPrice > $finalUnitPrice;
+
+    $regularTotalPrice = $hasDiscount
+        ? $regularUnitPrice * max(1, $quantity)
+        : $totalPrice;
+
+    $itemDiscountAmount = $hasDiscount
+        ? max(0, $regularTotalPrice - $totalPrice)
+        : 0;
+
     $maxQuantity = $this->itemMaxQuantity($cartItem);
     $canChangeQuantity = $maxQuantity > 1;
 
@@ -51,8 +72,23 @@
                     </p>
 
                     <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-bold leading-5 text-slate-500
-                        dark:text-slate-400">
-                        <span>قیمت واحد: {{ $this->money($unitPrice) }}</span>
+    dark:text-slate-400">
+                        @if($hasDiscount)
+                            <span class="inline-flex flex-wrap items-center gap-1.5">
+                                <span>قیمت واحد:</span>
+
+                                <span
+                                    class="text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500">
+                                    {{ $this->money($regularUnitPrice) }}
+                                </span>
+
+                                <span class="font-black text-brand-600 dark:text-brand-400">
+                                    {{ $this->money($unitPrice) }}
+                                </span>
+                            </span>
+                        @else
+                            <span>قیمت واحد: {{ $this->money($unitPrice) }}</span>
+                        @endif
 
                         @if($quantity > 1)
                             <span class="text-slate-300 dark:text-slate-600">•</span>
@@ -70,11 +106,24 @@
                     </div>
 
                     <div
-                        class="text-base font-black text-slate-900 transition md:mt-1 dark:text-slate-100"
+                        class="transition md:mt-1"
                         wire:loading.class="animate-pulse"
                         wire:target="increaseQuantity({{ $cartItem->id }}), decreaseQuantity({{ $cartItem->id }})"
                     >
-                        {{ $this->money($totalPrice) }}
+                        @if($hasDiscount)
+                            <div
+                                class="mb-0.5 text-[11px] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500">
+                                {{ $this->money($regularTotalPrice) }}
+                            </div>
+
+                            <div class="text-base font-black text-brand-600 dark:text-brand-400">
+                                {{ $this->money($totalPrice) }}
+                            </div>
+                        @else
+                            <div class="text-base font-black text-slate-900 dark:text-slate-100">
+                                {{ $this->money($totalPrice) }}
+                            </div>
+                        @endif
                     </div>
                 </div>
 
