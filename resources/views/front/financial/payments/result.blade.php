@@ -5,6 +5,8 @@
 
     $isPaid = $isPaid ?? $payment->isPaid();
 
+    $isFreePayment = (int) $payment->amount === 0;
+
     $money = fn (int $amount): string => number_format($amount) . ' تومان';
 
     $happenedAt = $isPaid
@@ -33,19 +35,37 @@
         ? 'success-pulse border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300'
         : 'failed-pulse border-red-200 bg-red-50 text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300';
 
-    $mainTitle = $isPaid ? 'پرداخت با موفقیت انجام شد' : 'پرداخت شما انجام نشد';
+    $mainTitle = match (true) {
+        $isFreePayment => 'سفارش رایگان با موفقیت ثبت شد',
+        $isPaid => 'پرداخت با موفقیت انجام شد',
+        default => 'پرداخت شما انجام نشد',
+    };
 
-    $mainDescription = $isPaid
-        ? 'سفارش شما تایید شد و دسترسی به محصولات خریداری‌شده فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.'
-        : 'تراکنش شما تایید نشد و مبلغی برای این سفارش ثبت نشده است. می‌توانید دوباره پرداخت را انجام دهید یا به سبد خرید برگردید.';
+    $mainDescription = match (true) {
+        $isFreePayment => 'سفارش شما بدون نیاز به پرداخت تایید شد و دسترسی به محصولات فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.',
+        $isPaid => 'سفارش شما تایید شد و دسترسی به محصولات خریداری‌شده فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.',
+        default => 'تراکنش شما تایید نشد و مبلغی برای این سفارش ثبت نشده است. می‌توانید دوباره پرداخت را انجام دهید یا به سبد خرید برگردید.',
+    };
 
-    $paymentStatusLabel = $isPaid ? 'پرداخت تایید شد' : 'پرداخت ناموفق بود';
+    $paymentStatusLabel = match (true) {
+        $isFreePayment => 'سفارش رایگان تایید شد',
+        $isPaid => 'پرداخت تایید شد',
+        default => 'پرداخت ناموفق بود',
+    };
 
     $itemsTitle = $isPaid ? 'محصولات خریداری‌شده' : 'محصولات داخل سفارش';
 
-    $amountTitle = $isPaid ? 'مبلغ پرداخت‌شده' : 'مبلغ پرداخت‌نشده';
+    $amountTitle = match (true) {
+        $isFreePayment => 'مبلغ قابل پرداخت',
+        $isPaid => 'مبلغ پرداخت‌شده',
+        default => 'مبلغ پرداخت‌نشده',
+    };
 
-    $dateTitle = $isPaid ? 'تاریخ پرداخت' : 'تاریخ تلاش';
+    $dateTitle = match (true) {
+        $isFreePayment => 'تاریخ ثبت سفارش',
+        $isPaid => 'تاریخ پرداخت',
+        default => 'تاریخ تلاش',
+    };
 
     $receiptCode = $payment->gateway_transaction_id
         ?? $payment->gateway_reference

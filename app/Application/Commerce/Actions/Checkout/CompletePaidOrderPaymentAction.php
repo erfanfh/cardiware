@@ -2,8 +2,6 @@
 
 namespace App\Application\Commerce\Actions\Checkout;
 
-use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
-use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
 use App\Application\Shared\Cache\Invalidators\OrderCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Models\Order;
@@ -15,8 +13,7 @@ use Throwable;
 class CompletePaidOrderPaymentAction
 {
     public function __construct(
-        private readonly MarkOrderAsPaidAction               $markOrderAsPaidAction,
-        private readonly GrantPurchaseAccessesForOrderAction $grantPurchaseAccessesForOrderAction,
+        private readonly CompleteOrderAfterSuccessfulPaymentAction $completeOrderAfterSuccessfulPaymentAction,
     )
     {
     }
@@ -24,13 +21,11 @@ class CompletePaidOrderPaymentAction
     /**
      * Complete commerce side effects after a successful order payment.
      *
-     * @param Payment $payment
-     * @return Order
      * @throws Throwable
      */
     public function execute(Payment $payment): Order
     {
-        $order = DB::transaction(function () use ($payment) {
+        $order = DB::transaction(function () use ($payment): Order {
             $payment = Payment::query()
                 ->whereKey($payment->id)
                 ->lockForUpdate()
@@ -46,15 +41,21 @@ class CompletePaidOrderPaymentAction
                 throw new DomainException('Payment payable is not an order.');
             }
 
-            $order = $this->markOrderAsPaidAction->execute($payable);
+            /** @var Order $order */
+            $order = Order::query()
+                ->whereKey($payable->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-            $this->grantPurchaseAccessesForOrderAction->execute($order);
-
-            return $order->refresh();
+            return $this->completeOrderAfterSuccessfulPaymentAction->execute($order);
         });
 
-        app(UserCacheInvalidator::class)->flushForUser($payment->payable->user);
-        app(OrderCacheInvalidator::class)->flushSuccessfulPayment($payment->payable->user);
+        $order->loadMissing('user');
+
+        if ($order->user) {
+            app(UserCacheInvalidator::class)->flushForUser($order->user);
+            app(OrderCacheInvalidator::class)->flushSuccessfulPayment();
+        }
 
         return $order;
     }

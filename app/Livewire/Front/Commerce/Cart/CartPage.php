@@ -7,6 +7,7 @@ use App\Application\Commerce\Actions\Cart\EnsureCartReadyForCheckoutAction;
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
+use App\Application\Commerce\Actions\Checkout\CompleteFreeOrderAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Contracts\Purchasable;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
@@ -241,6 +242,7 @@ class CartPage extends Component
 
     public function checkout(
         EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction,
+        CompleteFreeOrderAction          $completeFreeOrderAction,
     ): RedirectResponse|Redirector|null
     {
         $this->checkoutError = null;
@@ -273,10 +275,15 @@ class CartPage extends Component
 
             $this->resetCartComputedProperties();
 
-            if ($order->total_amount <= 0) {
-                // TODO: بعدا CompleteFreeOrderAction را اینجا صدا می‌زنیم.
-                $this->checkoutError = 'پردازش سفارش رایگان هنوز پیاده‌سازی نشده است.';
-                return null;
+            if ((int)$order->total_amount <= 0) {
+                $payment = $completeFreeOrderAction->execute($order);
+
+                $this->cartNeedsRefresh = false;
+                $this->resetCartComputedProperties();
+
+                return redirect()->route('payment.result', [
+                    'paymentToken' => $payment->public_token,
+                ]);
             }
 
             $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();

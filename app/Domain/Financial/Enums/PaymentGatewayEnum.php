@@ -8,6 +8,8 @@ enum PaymentGatewayEnum: string
     case ZARINPAL = 'zarinpal';
     case PAYPING = 'payping';
 
+    case FREE = 'free';
+
     /**
      * Get the human-readable label.
      */
@@ -17,6 +19,7 @@ enum PaymentGatewayEnum: string
             self::ZIBAL => 'زیبال',
             self::ZARINPAL => 'زرین پال',
             self::PAYPING => 'پی پینگ',
+            self::FREE => 'پرداخت رایگان',
         };
     }
 }
