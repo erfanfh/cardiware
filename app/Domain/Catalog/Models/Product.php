@@ -6,6 +6,7 @@ use App\Domain\Catalog\Enums\ProductMediaCollectionEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
+use App\Domain\Catalog\Scopes\ActiveProductScope;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Models\Store;
@@ -46,6 +47,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'structure' => ProductStructureEnum::class,
         'published_at' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ActiveProductScope());
+    }
 
     public function getRouteKeyName(): string
     {
