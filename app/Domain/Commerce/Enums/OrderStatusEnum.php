@@ -47,4 +47,9 @@ enum OrderStatusEnum: string
     {
         return $this === self::PENDING_PAYMENT;
     }
+
+    public function grantsPurchaseAccess(): bool
+    {
+        return $this === self::PAID;
+    }
 }

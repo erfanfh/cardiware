@@ -98,6 +98,7 @@ class PermissionSeeder extends Seeder
             ],
             'order' => [
                 'list' => 'لیست سفارش ها',
+                'edit' => 'ویرایش سفارش',
             ],
         ];
 

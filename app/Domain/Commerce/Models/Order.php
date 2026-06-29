@@ -38,6 +38,11 @@ class Order extends Model implements Payable
         'metadata' => 'array',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'order_number';
+    }
+
     /**
      * Get the user that owns the order.
      */

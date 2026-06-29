@@ -12,7 +12,7 @@ use Illuminate\Support\Carbon;
 class GrantPurchaseAccessForOrderItemAction
 {
     /**
-     * Grant purchase access for an order item if it is a ProductSaleItem.
+     * Grant or reactivate purchase access for an order item if it is a ProductSaleItem.
      */
     public function execute(Order $order, OrderItem $orderItem): ?PurchaseAccess
     {
@@ -27,7 +27,12 @@ class GrantPurchaseAccessForOrderItemAction
             ->first();
 
         if ($existingAccess instanceof PurchaseAccess) {
-            return $existingAccess;
+            return $this->handleExistingAccess(
+                access: $existingAccess,
+                order: $order,
+                orderItem: $orderItem,
+                productSaleItem: $purchasable,
+            );
         }
 
         return PurchaseAccess::query()->create([
@@ -48,9 +53,41 @@ class GrantPurchaseAccessForOrderItemAction
         ]);
     }
 
-    /**
-     * Resolve access expiration date from product sale item.
-     */
+    private function handleExistingAccess(
+        PurchaseAccess  $access,
+        Order           $order,
+        OrderItem       $orderItem,
+        ProductSaleItem $productSaleItem,
+    ): PurchaseAccess
+    {
+        if ($access->status === PurchaseAccessStatusEnum::ACTIVE) {
+            return $access->refresh();
+        }
+
+        if ($access->status === PurchaseAccessStatusEnum::EXPIRED) {
+            return $access->refresh();
+        }
+
+        if ($access->status === PurchaseAccessStatusEnum::REVOKED) {
+            $access->forceFill([
+                'status' => PurchaseAccessStatusEnum::ACTIVE,
+                'download_limit' => $productSaleItem->download_limit,
+                'starts_at' => now(),
+                'expires_at' => $this->resolveExpiresAt($productSaleItem),
+                'metadata' => array_merge($access->metadata ?? [], [
+                    'reactivated_at' => now()->toDateTimeString(),
+                    'reactivated_reason' => 'order_status_grants_access',
+                    'reactivated_by_order_status' => $order->status->value,
+                    'order_item_snapshot' => $orderItem->snapshot,
+                ]),
+            ])->save();
+
+            return $access->refresh();
+        }
+
+        return $access->refresh();
+    }
+
     private function resolveExpiresAt(ProductSaleItem $productSaleItem): ?Carbon
     {
         if ($productSaleItem->download_expires_in_days === null) {

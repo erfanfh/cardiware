@@ -5,6 +5,7 @@ namespace App\Domain\Commerce\Models;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Enums\PurchaseAccessStatusEnum;
+use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,11 @@ class PurchaseAccess extends Model
         'last_downloaded_at' => 'datetime',
         'metadata' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new ActivePurchaseAccessScope());
+    }
 
     /**
      * Get the user that owns this access.

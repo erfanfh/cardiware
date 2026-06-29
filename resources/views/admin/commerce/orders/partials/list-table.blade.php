@@ -53,7 +53,7 @@
                 {{-- order number --}}
                 <x-admin.list.td>
                     <a
-                        href="#"
+                        href="{{ route('admin.orders.edit', $order) }}"
                         class="font-bold text-sm text-slate-800 hover:text-brand-600 whitespace-nowrap"
                     >
                         {{ $order->order_number }}
@@ -62,41 +62,49 @@
 
                 {{-- user --}}
                 <x-admin.list.td>
-                    <div class="text-sm font-medium text-slate-800">
-                        {{ $order->user?->first_name . ' ' . $order->user?->last_name }}
-                    </div>
+                    <a href="{{ route('admin.orders.edit', $order) }}">
+                        <div class="text-sm font-medium text-slate-800">
+                            {{ $order->user?->first_name . ' ' . $order->user?->last_name }}
+                        </div>
 
-                    <div class="text-xs text-slate-400">
-                        {{ $order->user?->email . ' | ' . $order->user?->mobile }}
-                    </div>
+                        <div class="text-xs text-slate-400">
+                            {{ $order->user?->email . ' | ' . $order->user?->mobile }}
+                        </div>
+                    </a>
                 </x-admin.list.td>
 
                 {{-- status --}}
                 <x-admin.list.td>
-                    <x-admin.badge :color="$statusColor" size="md">
-                        {{ $order->status?->label() ?? 'نامشخص' }}
-                    </x-admin.badge>
+                    <a href="{{ route('admin.orders.edit', $order) }}">
+                        <x-admin.badge :color="$statusColor" size="md">
+                            {{ $order->status?->label() ?? 'نامشخص' }}
+                        </x-admin.badge>
+                    </a>
                 </x-admin.list.td>
 
                 {{-- total --}}
                 <x-admin.list.td>
-                    <div class="font-bold text-slate-800 whitespace-nowrap">
-                        {{ number_format($order->total_amount) }}
-                        <span class="text-[0.7rem] font-normal">تومان</span>
-                    </div>
-
-                    @if($order->discount_amount > 0)
-                        <div class="text-xs text-red-500">
-                            - {{ number_format($order->discount_amount) }}
+                    <a href="{{ route('admin.orders.edit', $order) }}">
+                        <div class="font-bold text-slate-800 whitespace-nowrap">
+                            {{ number_format($order->total_amount) }}
+                            <span class="text-[0.7rem] font-normal">تومان</span>
                         </div>
-                    @endif
+
+                        @if($order->discount_amount > 0)
+                            <div class="text-xs text-red-500">
+                                - {{ number_format($order->discount_amount) }}
+                            </div>
+                        @endif
+                    </a>
                 </x-admin.list.td>
 
                 {{-- items count --}}
                 <x-admin.list.td>
-                    <x-admin.badge size="md" color="slate">
-                        {{ $order->items_count ?? $order->items->count() }}
-                    </x-admin.badge>
+                    <a href="{{ route('admin.orders.edit', $order) }}">
+                        <x-admin.badge size="md" color="slate">
+                            {{ $order->items_count ?? $order->items->count() }}
+                        </x-admin.badge>
+                    </a>
                 </x-admin.list.td>
 
                 {{-- date --}}
