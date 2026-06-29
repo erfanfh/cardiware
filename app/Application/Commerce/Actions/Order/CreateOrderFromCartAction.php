@@ -10,6 +10,7 @@ use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\Order;
 use DomainException;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CreateOrderFromCartAction
 {
@@ -29,6 +30,7 @@ class CreateOrderFromCartAction
      * Create an order from a cart.
      *
      * @param array<string, mixed> $metadata
+     * @throws Throwable
      */
     public function execute(Cart $cart, array $metadata = []): Order
     {
@@ -50,12 +52,15 @@ class CreateOrderFromCartAction
             $order = Order::query()->create([
                 'user_id' => $cart->user_id,
                 'cart_id' => $cart->id,
-                'order_number' => $this->generateOrderNumberAction->execute(),
                 'status' => OrderStatusEnum::PENDING_PAYMENT,
                 'subtotal_amount' => $cart->subtotal_amount,
                 'discount_amount' => $cart->discount_amount,
                 'total_amount' => $cart->total_amount,
                 'metadata' => $metadata,
+            ]);
+
+            $order->update([
+                'order_number' => $this->generateOrderNumberAction->execute($order),
             ]);
 
             $this->createOrderItemsFromCartAction->execute(
