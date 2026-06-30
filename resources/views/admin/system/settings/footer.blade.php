@@ -367,7 +367,7 @@
                         </x-admin.field>
 
                         <x-admin.field
-                            class="lg:col-span-4"
+                            class="lg:col-span-2"
                             label="تصویر نمادها"
                         >
                             <x-admin.form.media-picker
@@ -376,6 +376,18 @@
                                     'id' => old('column4_image.id', get_setting('footer', 'column4_image')->id),
                                     'path' => old('column4_image.path', get_setting('footer', 'column4_image')->path),
                                 ]"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-2"
+                            label="کد نمادها"
+                        >
+                            <x-admin.form.textarea
+                                name="namad_code"
+                                value="{!! get_setting('footer', 'namad_code') !!}"
+                                class="direction-ltr"
+                                rows="6"
                             />
                         </x-admin.field>
                     </div>

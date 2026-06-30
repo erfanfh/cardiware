@@ -26,5 +26,6 @@ return [
         'accesses',
         'stores',
         'payment',
+        'namad',
     ],
 ];

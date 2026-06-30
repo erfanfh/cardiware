@@ -304,7 +304,7 @@
                 <div class="font-extrabold mb-3 dark:text-slate-100">{{ get_setting('footer', 'column4_title') }}</div>
 
                 @if(get_setting('footer', 'column4_image')->path)
-                    <div>
+                    <a href="{{ route('namad') }}" target="_blank">
                         <x-front.responsive-image
                             :fallback="get_setting('footer', 'column4_image')->path"
                             :alt="get_setting('footer', 'column4_title')"
@@ -315,7 +315,7 @@
                             :async="true"
                             sizes="180px"
                         />
-                    </div>
+                    </a>
                 @endif
             </div>
         </div>

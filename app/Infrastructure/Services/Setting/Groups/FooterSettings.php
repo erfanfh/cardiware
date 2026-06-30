@@ -40,6 +40,7 @@ class FooterSettings extends BaseSettings
         'column3_items',
         'column4_title',
         'column4_image',
+        'namad_code',
     ];
 
     protected array $casts = [
