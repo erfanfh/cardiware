@@ -16,7 +16,7 @@ class ActiveProductScope implements Scope
             return;
         }
 
-        if (Gate::authorize('product.edit')) {
+        if (Gate::allows('product.edit')) {
             return;
         }
 
