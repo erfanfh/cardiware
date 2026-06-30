@@ -13,15 +13,22 @@ class GeneralSettings extends BaseSettings
         'active_tab',
         'title',
         'subtitle',
+
         'default_sms_provider',
-        'smsir_tepmlate_id',
-        'smsir_api_token',
-        'farazsms_tepmlate_id',
-        'farazsms_api_token',
-        'farazsms_from_mobile',
+
+        'smsir_api_key',
+        'smsir_otp_template_id',
+        'smsir_otp_parameter_name',
+
+        'farazsms_api_key',
+        'farazsms_line_number',
+        'farazsms_otp_pattern',
+        'farazsms_otp_attribute_name',
+
         'melipayamak_username',
         'melipayamak_password',
         'melipayamak_otp_pattern',
+
         'select_related_content_settings',
         'category_tag_posts_count_settings',
         'search_posts_count_settings',

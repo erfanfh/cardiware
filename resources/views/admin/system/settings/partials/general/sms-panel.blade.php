@@ -8,7 +8,7 @@
                     name="default_sms_provider"
                     placeholder="انتخاب سرویس"
                     :options="[
-                        \App\Infrastructure\Services\Sms\Providers\SmsirProvider::class => 'اس ام اس دات آی آر (SMS.ir)',
+                        \App\Infrastructure\Services\Sms\Providers\SmsIrProvider::class => 'اس ام اس دات آی آر (SMS.ir)',
                         \App\Infrastructure\Services\Sms\Providers\MeliPayamakProvider::class => 'ملی پیامک',
                         \App\Infrastructure\Services\Sms\Providers\FarazSmsProvider::class => 'فراز اس ام اس',
                     ]"
@@ -19,22 +19,31 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="تنظیمات sms.ir">
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 mt-3">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-3 mt-3">
             <x-admin.field
-                label="کد قالب sms.ir"
+                label="کلید API"
             >
                 <x-admin.form.input
-                    name="smsir_tepmlate_id"
-                    value="{{ get_setting('general', 'smsir_tepmlate_id') }}"
+                    name="smsir_api_key"
+                    value="{{ get_setting('general', 'smsir_api_key') }}"
                 />
             </x-admin.field>
 
             <x-admin.field
-                label="کلید توکن sms.ir"
+                label="شناسه الگوی OTP"
             >
                 <x-admin.form.input
-                    name="smsir_api_token"
-                    value="{{ get_setting('general', 'smsir_api_token') }}"
+                    name="smsir_otp_template_id"
+                    value="{{ get_setting('general', 'smsir_otp_template_id') }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field
+                label="نام متغیر کد در الگوی OTP"
+            >
+                <x-admin.form.input
+                    name="smsir_otp_parameter_name"
+                    value="{{ get_setting('general', 'smsir_otp_parameter_name') }}"
                 />
             </x-admin.field>
         </div>
@@ -43,29 +52,38 @@
     <x-admin.metabox title="تنظیمات فراز اس ام اس">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3 mt-3">
             <x-admin.field
-                label="کد قالب فراز اس ام اس"
+                label="کلید API"
             >
                 <x-admin.form.input
-                    name="farazsms_tepmlate_id"
-                    value="{{ get_setting('general', 'farazsms_tepmlate_id') }}"
+                    name="farazsms_api_key"
+                    value="{{ get_setting('general', 'farazsms_api_key') }}"
                 />
             </x-admin.field>
 
             <x-admin.field
-                label="کلید توکن فراز اس ام اس"
+                label="شماره خط ارسال کننده"
             >
                 <x-admin.form.input
-                    name="farazsms_api_token"
-                    value="{{ get_setting('general', 'farazsms_api_token') }}"
+                    name="farazsms_line_number"
+                    value="{{ get_setting('general', 'farazsms_line_number') }}"
                 />
             </x-admin.field>
 
             <x-admin.field
-                label="شماره موبایل فراز اس ام اس"
+                label="شناسه الگوی OTP"
             >
                 <x-admin.form.input
-                    name="farazsms_from_mobile"
-                    value="{{ get_setting('general', 'farazsms_from_mobile') }}"
+                    name="farazsms_otp_pattern"
+                    value="{{ get_setting('general', 'farazsms_otp_pattern') }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field
+                label="نام متغیر کد در الگوی OTP"
+            >
+                <x-admin.form.input
+                    name="farazsms_otp_attribute_name"
+                    value="{{ get_setting('general', 'farazsms_otp_attribute_name') }}"
                 />
             </x-admin.field>
         </div>
@@ -74,7 +92,7 @@
     <x-admin.metabox title="تنظیمات ملی پیامک">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3 mt-3">
             <x-admin.field
-                label="نام کاربری ملی پیامک"
+                label="نام کاربری"
             >
                 <x-admin.form.input
                     name="melipayamak_username"
@@ -83,7 +101,7 @@
             </x-admin.field>
 
             <x-admin.field
-                label="رمزعبور ملی پیامک"
+                label="رمزعبور"
             >
                 <x-admin.form.input
                     name="melipayamak_password"
@@ -92,7 +110,7 @@
             </x-admin.field>
 
             <x-admin.field
-                label="شناسه الگوی ارسال OTP"
+                label="شناسه الگوی OTP"
             >
                 <x-admin.form.input
                     name="melipayamak_otp_pattern"
