@@ -47,7 +47,7 @@ class GenerateOtpAction
         ]);
 
         if ($isMobile) {
-            (new SmsService())->send($username, $code);
+            (new SmsService())->sendOtp($username, $code);
         } elseif ($isEmail) {
             Mail::to($username)->send(new OtpMail($code));
         }

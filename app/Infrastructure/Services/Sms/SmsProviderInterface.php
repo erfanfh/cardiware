@@ -8,12 +8,7 @@ namespace App\Infrastructure\Services\Sms;
  */
 interface SmsProviderInterface
 {
-    /**
-     * Sends an SMS message.
-     *
-     * @param string $mobile
-     * @param string $message
-     * @return bool
-     */
-    public function send(string $mobile, string $message): bool;
+    public function sendPattern(string $mobile, string $patternId, array $values): string;
+    
+    public function sendOtp(string $mobile, string $code): string;
 }

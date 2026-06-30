@@ -9,7 +9,7 @@
                     placeholder="انتخاب سرویس"
                     :options="[
                         \App\Infrastructure\Services\Sms\Providers\SmsirProvider::class => 'اس ام اس دات آی آر (SMS.ir)',
-                        \App\Infrastructure\Services\Sms\Providers\MelliPayamakProvider::class => 'ملی پیامک',
+                        \App\Infrastructure\Services\Sms\Providers\MeliPayamakProvider::class => 'ملی پیامک',
                         \App\Infrastructure\Services\Sms\Providers\FarazSmsProvider::class => 'فراز اس ام اس',
                     ]"
                     value="{{ get_setting('general', 'default_sms_provider') }}"
@@ -77,8 +77,8 @@
                 label="نام کاربری ملی پیامک"
             >
                 <x-admin.form.input
-                    name="melli_payamak_username"
-                    value="{{ get_setting('general', 'melli_payamak_username') }}"
+                    name="melipayamak_username"
+                    value="{{ get_setting('general', 'melipayamak_username') }}"
                 />
             </x-admin.field>
 
@@ -86,17 +86,17 @@
                 label="رمزعبور ملی پیامک"
             >
                 <x-admin.form.input
-                    name="melli_payamak_password"
-                    value="{{ get_setting('general', 'melli_payamak_password') }}"
+                    name="melipayamak_password"
+                    value="{{ get_setting('general', 'melipayamak_password') }}"
                 />
             </x-admin.field>
 
             <x-admin.field
-                label="شماره موبایل ملی پیامک"
+                label="شناسه الگوی ارسال OTP"
             >
                 <x-admin.form.input
-                    name="melli_payamak_from_mobile"
-                    value="{{ get_setting('general', 'melli_payamak_from_mobile') }}"
+                    name="melipayamak_otp_pattern"
+                    value="{{ get_setting('general', 'melipayamak_otp_pattern') }}"
                 />
             </x-admin.field>
         </div>
