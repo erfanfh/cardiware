@@ -34,7 +34,8 @@ class StoreController extends Controller
             ->handle(
                 Store::query()
                     ->with([
-                        'picture',
+                        'picture.primaryVariant',
+                        'seoAnalysis'
                     ])
                     ->withCount([
                         'users',
