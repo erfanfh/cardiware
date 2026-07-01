@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin\Marketplace;
 
 use App\Application\Marketplace\Actions\CreateStoreAction;
+use App\Application\Marketplace\Actions\DeleteStoreAction;
 use App\Application\Marketplace\Actions\UpdateStoreAction;
 use App\Application\Marketplace\Listings\StoreListing;
-use App\Domain\Catalog\Models\Product;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Marketplace\Models\Store;
 use App\Http\Controllers\Controller;
@@ -126,14 +126,20 @@ class StoreController extends Controller
             ->with('success', 'فروشنده با موفقیت بروزرسانی شد.');
     }
 
-    public function destroy(Product $product): RedirectResponse
+    public function destroy(Store $store): RedirectResponse
     {
-//        Gate::authorize('product.delete');
-//
-//        app(DeleteProductAction::class)->execute($product);
-//
-//        return redirect()
-//            ->route('admin.products.index')
-//            ->with('success', 'محصول با موفقیت حذف شد.');
+        Gate::authorize('store.delete');
+
+        $resultDTO = app(DeleteStoreAction::class)->execute($store);
+
+        if (!$resultDTO->status) {
+            return redirect()
+                ->back()
+                ->with('error', $resultDTO->message);
+        }
+
+        return redirect()
+            ->route('admin.stores.index')
+            ->with('success', 'فروشنده با موفقیت حذف شد.');
     }
 }
