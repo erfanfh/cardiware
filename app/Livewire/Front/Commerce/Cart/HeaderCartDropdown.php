@@ -277,6 +277,7 @@ class HeaderCartDropdown extends Component
             'id' => $item->id,
             'title' => $this->itemTitle($item),
             'subtitle' => $this->itemSubtitle($item),
+            'url' => $item->url,
             'image_url' => $this->itemImageUrl($item),
             'quantity' => $quantity,
             'unit_price' => (int)$item->unit_price,
