@@ -20,6 +20,11 @@ class Cart extends Model
         'discount_amount',
         'total_amount',
         'synced_at',
+        'coupon_id',
+        'coupon_code',
+        'coupon_eligible_amount',
+        'coupon_discount_amount',
+        'coupon_applied_at',
     ];
 
     protected $casts = [

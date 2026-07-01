@@ -26,6 +26,10 @@ class Order extends Model implements Payable
         'paid_at',
         'cancelled_at',
         'metadata',
+        'coupon_id',
+        'coupon_code',
+        'coupon_eligible_amount',
+        'coupon_discount_amount',
     ];
 
     protected $casts = [
