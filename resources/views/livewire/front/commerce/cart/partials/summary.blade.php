@@ -98,7 +98,7 @@
                 <a
                     href="{{ route('products.list') }}"
                     class="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50
-                    dark:border-slate-700 dark:bg-slate-900 dark:text-brand-400 dark:hover:bg-slate-800"
+                    dark:border-slate-700 dark:bg-slate-900 dark:text-brand-400 dark:hover:bg-slate-800 dark:hover:border-slate-600"
                 >
                     بازگشت به فروشگاه
 

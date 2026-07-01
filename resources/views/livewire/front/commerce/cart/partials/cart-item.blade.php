@@ -184,7 +184,7 @@
                         wire:loading.attr="disabled"
                         wire:target="removeItem({{ $cartItem->id }})"
                         class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-2xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100
-                        dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
+                        dark:border-rose-900/40 dark:bg-rose-950/30 dark:hover:bg-rose-900/30 dark:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         <span
                             class="h-4 w-4 [&_svg]:h-4 [&_svg]:w-4"
@@ -249,7 +249,7 @@
                                         wire:loading.attr="disabled"
                                         wire:target="removeItem({{ $addonItem->id }})"
                                         class="flex h-8 w-8 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100
-                                        dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
+                                        dark:border-rose-900/40 dark:bg-rose-950/30 dark:hover:bg-rose-900/30 dark:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
                                     >
                                         <span
                                             wire:loading.remove
@@ -292,7 +292,7 @@
                                                 type="button"
                                                 x-on:click="$dispatch('close-modal', '{{ $removeAddonModalName }}')"
                                                 class="h-10 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50
-                                                dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                                                dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300"
                                             >
                                                 انصراف
                                             </button>
@@ -369,7 +369,7 @@
                         type="button"
                         x-on:click="$dispatch('close-modal', '{{ $removeMainModalName }}')"
                         class="h-10 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50
-                        dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                        dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300"
                     >
                         انصراف
                     </button>
