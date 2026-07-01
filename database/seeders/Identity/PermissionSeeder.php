@@ -100,6 +100,12 @@ class PermissionSeeder extends Seeder
                 'list' => 'لیست سفارش ها',
                 'edit' => 'ویرایش سفارش',
             ],
+            'coupon' => [
+                'list' => 'لیست کدهای تخفیف',
+                'create' => 'ایجاد کد تخفیف',
+                'edit' => 'ویرایش کد تخفیف',
+                'delete' => 'حذف کد تخفیف',
+            ],
         ];
 
         $permissionIds = [];
