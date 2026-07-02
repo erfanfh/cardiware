@@ -5,15 +5,67 @@ namespace App\Http\Controllers\Admin\Promotion;
 use App\Application\Promotion\Actions\Coupon\CreateCouponAction;
 use App\Application\Promotion\Actions\Coupon\GetCouponFormDataAction;
 use App\Application\Promotion\Actions\Coupon\UpdateCouponAction;
+use App\Application\Promotion\Listings\CouponListing;
+use App\Domain\Promotion\Enums\CouponScopeEnum;
+use App\Domain\Promotion\Enums\CouponStatusEnum;
+use App\Domain\Promotion\Enums\CouponTypeEnum;
 use App\Domain\Promotion\Models\Coupon;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Promotion\IndexCouponRequest;
 use App\Http\Requests\Admin\Promotion\UpdateCouponRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Throwable;
 
 class CouponController extends Controller
 {
+    public function index(IndexCouponRequest $request, CouponListing $couponListing): View
+    {
+        $coupons = $couponListing
+            ->handle(
+                Coupon::query()
+                    ->withCount([
+                        'users',
+                        'targets',
+                    ]),
+                $request->validated()
+            )
+            ->paginate($couponListing->perPage())
+            ->withQueryString();
+
+        $statuses = collect(CouponStatusEnum::cases())
+            ->mapWithKeys(fn(CouponStatusEnum $status) => [
+                $status->value => $status->label(),
+            ])
+            ->all();
+
+        $types = collect(CouponTypeEnum::cases())
+            ->mapWithKeys(fn(CouponTypeEnum $type) => [
+                $type->value => $type->label(),
+            ])
+            ->all();
+
+        $scopes = collect(CouponScopeEnum::cases())
+            ->mapWithKeys(fn(CouponScopeEnum $scope) => [
+                $scope->value => $scope->label(),
+            ])
+            ->all();
+
+        $hasActiveFilters = $couponListing->hasActiveFilters($request->validated());
+
+        $bulkActionOptions = DefaultBulkActions::set()->toOptions();
+
+        return view('admin.promotion.coupons.index', compact(
+            'coupons',
+            'statuses',
+            'types',
+            'scopes',
+            'hasActiveFilters',
+            'bulkActionOptions',
+        ));
+    }
+
     public function create(): View
     {
         return view('admin.promotion.coupons.create');
