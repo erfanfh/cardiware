@@ -279,7 +279,7 @@ class CartPage extends Component
             'Coupon usage limit reached.' => 'ظرفیت استفاده از این کدتخفیف به پایان رسیده است.',
             'Coupon minimum order amount not met.' => 'مبلغ سبد خرید برای استفاده از این کدتخفیف کافی نیست.',
             'Coupon requires authenticated user.' => 'برای استفاده از این کدتخفیف ابتدا وارد حساب کاربری شوید.',
-            'Coupon is not allowed for this user.' => 'این کدتخفیف برای حساب کاربری شما قابل استفاده نیست.',
+            'Coupon is not allowed for this user.' => 'این کدتخفیف برای شما قابل استفاده نیست.',
             'Coupon per user usage limit reached.' => 'شما قبلاً از این کدتخفیف به سقف مجاز استفاده کرده‌اید.',
             'Coupon has no eligible cart items.' => 'این کدتخفیف برای آیتم‌های موجود در سبد خرید شما قابل استفاده نیست.',
             'Coupon discount amount is zero.' => 'این کدتخفیف مبلغ قابل کسر برای سبد خرید فعلی ندارد.',
