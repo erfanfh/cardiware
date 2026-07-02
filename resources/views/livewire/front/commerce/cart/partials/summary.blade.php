@@ -79,7 +79,6 @@
                                 type="text"
                                 wire:model.defer="couponCode"
                                 dir="ltr"
-                                placeholder="مثلاً OFF20"
                                 class="h-11 min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100
                                 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-900/30"
                                 @disabled($this->mainCartItems->isEmpty() || $cartNeedsRefresh)
@@ -88,7 +87,7 @@
                             <button
                                 type="submit"
                                 class="cursor-pointer inline-flex h-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50
-                                dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+                                dark:bg-slate-700 dark:text-slate-50 dark:hover:bg-slate-600"
                                 wire:loading.attr="disabled"
                                 wire:target="applyCoupon"
                                 @disabled($this->mainCartItems->isEmpty() || $cartNeedsRefresh)
