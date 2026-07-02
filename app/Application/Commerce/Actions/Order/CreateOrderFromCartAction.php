@@ -41,9 +41,18 @@ class CreateOrderFromCartAction
                 throw new DomainException('Only active carts can be converted to order.');
             }
 
-            $cart = $this->markCartAsCheckoutStartedAction->execute($cart);
-
+            /*
+             * Important:
+             * Recalculate while cart is still ACTIVE.
+             * Coupon validation depends on editable cart.
+             */
             $cart = $this->recalculateCartTotalsAction->execute($cart);
+
+            /*
+             * Now move cart to checkout started.
+             * ValidateCartForOrderAction expects this status.
+             */
+            $cart = $this->markCartAsCheckoutStartedAction->execute($cart);
 
             $this->validateCartForOrderAction->execute($cart);
 
@@ -53,9 +62,16 @@ class CreateOrderFromCartAction
                 'user_id' => $cart->user_id,
                 'cart_id' => $cart->id,
                 'status' => OrderStatusEnum::PENDING_PAYMENT,
+
                 'subtotal_amount' => $cart->subtotal_amount,
                 'discount_amount' => $cart->discount_amount,
                 'total_amount' => $cart->total_amount,
+
+                'coupon_id' => $cart->coupon_id,
+                'coupon_code' => $cart->coupon_code,
+                'coupon_eligible_amount' => $cart->coupon_eligible_amount,
+                'coupon_discount_amount' => $cart->coupon_discount_amount,
+
                 'metadata' => $metadata,
             ]);
 

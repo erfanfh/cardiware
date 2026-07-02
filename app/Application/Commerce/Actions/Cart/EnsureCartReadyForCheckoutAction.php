@@ -20,12 +20,18 @@ class EnsureCartReadyForCheckoutAction
      */
     public function execute(Cart $cart): Cart
     {
+        $hadCoupon = filled($cart->coupon_id) || filled($cart->coupon_code);
+
         $result = $this->syncCartItemsAction->execute($cart);
 
-        $cart = $result['cart'];
+        $cart = $result['cart']->refresh();
 
         if ((bool)($result['has_changes'] ?? false)) {
             throw new CartNeedsRefreshException($result);
+        }
+
+        if ($hadCoupon && blank($cart->coupon_id) && blank($cart->coupon_code)) {
+            throw new DomainException('Applied coupon is no longer valid.');
         }
 
         if ($cart->items()->count() < 1) {

@@ -14,6 +14,8 @@ use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
+use App\Application\Promotion\Actions\Coupon\ApplyCouponToCartAction;
+use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
@@ -43,6 +45,12 @@ class CartPage extends Component
     public function mount(): void
     {
         $this->openCheckoutOnLoad = (bool)session()->pull('open_checkout_after_auth', false);
+
+        $cart = app(GetCurrentActiveCartAction::class)->execute();
+
+        if ($cart) {
+            $this->couponCode = $cart->coupon_code;
+        }
     }
 
     #[Computed]
@@ -199,15 +207,79 @@ class CartPage extends Component
         }
     }
 
-    public function applyCoupon(): void
+    public function applyCoupon(ApplyCouponToCartAction $applyCouponToCartAction): void
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
 
-        // TODO: Implement coupon logic later.
-        // app(ApplyCouponToCartAction::class)->execute($this->cart, $this->couponCode);
+        if (!$this->cart) {
+            $this->checkoutError = 'سبد خریدی برای اعمال کدتخفیف یافت نشد.';
+            return;
+        }
 
-        $this->dispatch('coupon-apply-requested');
+        try {
+            $cart = $applyCouponToCartAction->execute(
+                cart: $this->cart,
+                code: (string)$this->couponCode,
+                user: auth()->user(),
+            );
+
+            $this->couponCode = $cart->coupon_code;
+            $this->checkoutNotice = 'کدتخفیف با موفقیت اعمال شد.';
+
+            $this->afterCartMutation();
+        } catch (DomainException $exception) {
+            $this->checkoutError = $this->couponDomainExceptionMessage($exception);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در اعمال کدتخفیف رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+        }
+    }
+
+    public function removeCoupon(RemoveCouponFromCartAction $removeCouponFromCartAction): void
+    {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+
+        if (!$this->cart) {
+            $this->checkoutError = 'سبد خریدی برای حذف کدتخفیف یافت نشد.';
+            return;
+        }
+
+        try {
+            $removeCouponFromCartAction->execute($this->cart);
+
+            $this->couponCode = null;
+            $this->checkoutNotice = 'کدتخفیف از سبد خرید حذف شد.';
+
+            $this->afterCartMutation();
+        } catch (DomainException $exception) {
+            $this->checkoutError = $this->couponDomainExceptionMessage($exception);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $this->checkoutError = 'خطایی در حذف کدتخفیف رخ داد. لطفا چند لحظه بعد دوباره تلاش کنید.';
+        }
+    }
+
+    private function couponDomainExceptionMessage(DomainException $exception): string
+    {
+        return match ($exception->getMessage()) {
+            'Coupon code is required.' => 'لطفاً کدتخفیف را وارد کنید.',
+            'Coupon not found.' => 'کدتخفیف واردشده معتبر نیست.',
+            'Coupon is not currently usable.' => 'این کدتخفیف در حال حاضر قابل استفاده نیست.',
+            'Coupon usage limit reached.' => 'ظرفیت استفاده از این کدتخفیف به پایان رسیده است.',
+            'Coupon minimum order amount not met.' => 'مبلغ سبد خرید برای استفاده از این کدتخفیف کافی نیست.',
+            'Coupon requires authenticated user.' => 'برای استفاده از این کدتخفیف ابتدا وارد حساب کاربری شوید.',
+            'Coupon is not allowed for this user.' => 'این کدتخفیف برای حساب کاربری شما قابل استفاده نیست.',
+            'Coupon per user usage limit reached.' => 'شما قبلاً از این کدتخفیف به سقف مجاز استفاده کرده‌اید.',
+            'Coupon has no eligible cart items.' => 'این کدتخفیف برای آیتم‌های موجود در سبد خرید شما قابل استفاده نیست.',
+            'Coupon discount amount is zero.' => 'این کدتخفیف مبلغ قابل کسر برای سبد خرید فعلی ندارد.',
+            'Cart is not editable.' => 'سبد خرید در وضعیت قابل ویرایش نیست.',
+            'Cart is empty.' => 'سبد خرید شما خالی است.',
+            default => 'امکان اعمال این کدتخفیف وجود ندارد.',
+        };
     }
 
     public function refreshCart(SyncCartItemsAction $syncCartItemsAction): void
@@ -339,6 +411,7 @@ class CartPage extends Component
             $this->checkoutError = match ($exception->getMessage()) {
                 'Cart is empty.' => 'سبد خرید شما خالی شده است. لطفا محصول جدیدی انتخاب کنید.',
                 'Cart is not editable.' => 'سبد خرید در وضعیت قابل پرداخت نیست.',
+                'Applied coupon is no longer valid.' => 'کدتخفیف اعمال‌شده دیگر معتبر نیست. لطفا سبد خرید را بررسی کرده و دوباره ادامه دهید.',
                 default => 'امکان ادامه پرداخت وجود ندارد. لطفا سبد خرید را بررسی کنید و دوباره تلاش کنید.',
             };
 
