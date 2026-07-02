@@ -148,6 +148,12 @@ return [
                 'icon' => 'icons.invoice-03',
                 'gate' => 'order.list',
             ],
+            [
+                'label' => 'کدهای تخفیف',
+                'route' => 'admin.coupons.index',
+                'icon' => 'icons.discount',
+                'gate' => 'coupon.list',
+            ],
         ],
     ],
 
