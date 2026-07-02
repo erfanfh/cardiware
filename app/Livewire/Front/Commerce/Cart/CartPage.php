@@ -16,6 +16,7 @@ use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Application\Promotion\Actions\Coupon\ApplyCouponToCartAction;
 use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
+use App\Application\Promotion\Exceptions\CouponMinimumOrderAmountNotMetException;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
@@ -265,6 +266,12 @@ class CartPage extends Component
 
     private function couponDomainExceptionMessage(DomainException $exception): string
     {
+        if ($exception instanceof CouponMinimumOrderAmountNotMetException) {
+            return 'حداقل مبلغ سبد خرید برای استفاده از این کدتخفیف '
+                . $this->money($exception->minimumOrderAmount)
+                . ' است.';
+        }
+
         return match ($exception->getMessage()) {
             'Coupon code is required.' => 'لطفاً کدتخفیف را وارد کنید.',
             'Coupon not found.' => 'کدتخفیف واردشده معتبر نیست.',

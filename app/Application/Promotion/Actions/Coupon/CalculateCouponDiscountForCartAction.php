@@ -3,6 +3,7 @@
 namespace App\Application\Promotion\Actions\Coupon;
 
 use App\Application\Promotion\DTOs\CouponDiscountResultDTO;
+use App\Application\Promotion\Exceptions\CouponMinimumOrderAmountNotMetException;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
@@ -90,7 +91,10 @@ class CalculateCouponDiscountForCartAction
             $coupon->minimum_order_amount !== null
             && $cartAmountAfterProductDiscount < (int)$coupon->minimum_order_amount
         ) {
-            throw new DomainException('Coupon minimum order amount not met.');
+            throw new CouponMinimumOrderAmountNotMetException(
+                minimumOrderAmount: (int)$coupon->minimum_order_amount,
+                currentAmount: $cartAmountAfterProductDiscount,
+            );
         }
 
         if ($coupon->isLimitedToSpecificUsers()) {
