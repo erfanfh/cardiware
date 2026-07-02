@@ -118,7 +118,6 @@ class UpdateCouponRequest extends FormRequest
             'product_ids' => [
                 Rule::requiredIf(fn() => $this->input('scope') === CouponScopeEnum::PRODUCTS->value),
                 'array',
-                'min:1',
             ],
 
             'product_ids.*' => [
