@@ -102,9 +102,9 @@ class PermissionSeeder extends Seeder
             ],
             'coupon' => [
                 'list' => 'لیست کدهای تخفیف',
-                'create' => 'ایجاد کد تخفیف',
-                'edit' => 'ویرایش کد تخفیف',
-                'delete' => 'حذف کد تخفیف',
+                'create' => 'ایجاد کدتخفیف',
+                'edit' => 'ویرایش کدتخفیف',
+                'delete' => 'حذف کدتخفیف',
             ],
         ];
 
