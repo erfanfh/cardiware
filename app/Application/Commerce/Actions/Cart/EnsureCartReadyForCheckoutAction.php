@@ -41,15 +41,21 @@ class EnsureCartReadyForCheckoutAction
             throw new DomainException('Applied coupon is no longer valid.');
         }
 
-        if (
-            $hadCoupon
+        $currentCouponCode = $cart->coupon_code;
+
+        $couponCodeChanged = $hadCoupon
+            && (string)$previousCouponCode !== (string)$currentCouponCode;
+
+        $couponAmountChanged = $hadCoupon
             && (
                 $previousCouponDiscountAmount !== (int)$cart->coupon_discount_amount
                 || $previousTotalAmount !== (int)$cart->total_amount
-            )
-        ) {
+            );
+
+        if ($couponCodeChanged || $couponAmountChanged) {
             throw new AppliedCouponChangedException(
-                couponCode: $cart->coupon_code ?: $previousCouponCode,
+                previousCouponCode: $previousCouponCode,
+                currentCouponCode: $currentCouponCode,
                 previousCouponDiscountAmount: $previousCouponDiscountAmount,
                 currentCouponDiscountAmount: (int)$cart->coupon_discount_amount,
                 previousTotalAmount: $previousTotalAmount,

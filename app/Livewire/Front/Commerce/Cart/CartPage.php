@@ -416,15 +416,36 @@ class CartPage extends Component
         } catch (AppliedCouponChangedException $exception) {
             $this->checkoutError = null;
 
-            $this->checkoutNotice =
-                'مبلغ سبد خرید شما به دلیل تغییر شرایط کدتخفیف'
-                . ($exception->couponCode ? ' «' . $exception->couponCode . '»' : '')
-                . ' به‌روزرسانی شد. مبلغ نهایی قبلی '
-                . $this->money($exception->previousTotalAmount)
-                . ' بود و مبلغ نهایی جدید '
-                . $this->money($exception->currentTotalAmount)
-                . ' است. لطفاً دوباره ادامه دهید.';
+            if ($exception->hasCodeChanged() && $exception->hasAmountChanged()) {
+                $this->checkoutNotice =
+                    'کدتخفیف اعمال‌شده از «'
+                    . $exception->previousCouponCode
+                    . '» به «'
+                    . $exception->currentCouponCode
+                    . '» تغییر کرده و مبلغ سبد خرید شما هم به‌روزرسانی شد. مبلغ نهایی قبلی '
+                    . $this->money($exception->previousTotalAmount)
+                    . ' بود و مبلغ نهایی جدید '
+                    . $this->money($exception->currentTotalAmount)
+                    . ' است. لطفاً دوباره ادامه دهید.';
+            } elseif ($exception->hasCodeChanged()) {
+                $this->checkoutNotice =
+                    'کدتخفیف اعمال‌شده از «'
+                    . $exception->previousCouponCode
+                    . '» به «'
+                    . $exception->currentCouponCode
+                    . '» تغییر کرده است. لطفاً دوباره ادامه دهید.';
+            } else {
+                $this->checkoutNotice =
+                    'مبلغ سبد خرید شما به دلیل تغییر شرایط کدتخفیف'
+                    . ($exception->currentCouponCode ? ' «' . $exception->currentCouponCode . '»' : '')
+                    . ' به‌روزرسانی شد. مبلغ نهایی قبلی '
+                    . $this->money($exception->previousTotalAmount)
+                    . ' بود و مبلغ نهایی جدید '
+                    . $this->money($exception->currentTotalAmount)
+                    . ' است. لطفاً دوباره ادامه دهید.';
+            }
 
+            $this->couponCode = $exception->currentCouponCode;
             $this->cartNeedsRefresh = false;
 
             $this->resetCartComputedProperties();
