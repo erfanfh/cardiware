@@ -35,6 +35,9 @@ class Cart extends Model
         'discount_amount' => 'integer',
         'total_amount' => 'integer',
         'synced_at' => 'datetime',
+        'coupon_eligible_amount' => 'integer',
+        'coupon_discount_amount' => 'integer',
+        'coupon_applied_at' => 'datetime',
     ];
 
     /**
