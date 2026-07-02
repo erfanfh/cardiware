@@ -10,6 +10,7 @@ use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
 use App\Application\Commerce\Actions\Checkout\CompleteFreeOrderAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Contracts\Purchasable;
+use App\Application\Commerce\Exceptions\AppliedCouponChangedException;
 use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
@@ -410,6 +411,26 @@ class CartPage extends Component
             $this->cartNeedsRefresh = false;
 
             $this->resetCartComputedProperties();
+
+            return null;
+        } catch (AppliedCouponChangedException $exception) {
+            $this->checkoutError = null;
+
+            $this->checkoutNotice =
+                'مبلغ سبد خرید شما به دلیل تغییر شرایط کدتخفیف'
+                . ($exception->couponCode ? ' «' . $exception->couponCode . '»' : '')
+                . ' به‌روزرسانی شد. مبلغ نهایی قبلی '
+                . $this->money($exception->previousTotalAmount)
+                . ' بود و مبلغ نهایی جدید '
+                . $this->money($exception->currentTotalAmount)
+                . ' است. لطفاً دوباره ادامه دهید.';
+
+            $this->cartNeedsRefresh = false;
+
+            $this->resetCartComputedProperties();
+
+            $this->dispatch('$refresh');
+            $this->dispatch('cart-updated');
 
             return null;
         } catch (DomainException $exception) {
