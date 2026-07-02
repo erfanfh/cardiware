@@ -41,6 +41,8 @@ class Order extends Model implements Payable
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'metadata' => 'array',
+        'coupon_eligible_amount' => 'integer',
+        'coupon_discount_amount' => 'integer',
     ];
 
     public function getRouteKeyName(): string
