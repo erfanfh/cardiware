@@ -6,6 +6,7 @@ use App\Application\Financial\Contracts\Payable;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Identity\Models\User;
+use App\Domain\Promotion\Models\Coupon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -146,5 +147,10 @@ class Order extends Model implements Payable
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }
