@@ -87,7 +87,7 @@
 
                             <button
                                 type="submit"
-                                class="inline-flex h-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50
+                                class="cursor-pointer inline-flex h-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50
                                 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
                                 wire:loading.attr="disabled"
                                 wire:target="applyCoupon"
@@ -128,7 +128,7 @@
                                 wire:click="removeCoupon"
                                 wire:loading.attr="disabled"
                                 wire:target="removeCoupon"
-                                class="shrink-0 text-xs font-extrabold text-rose-600 transition hover:text-rose-700 disabled:opacity-50"
+                                class="cursor-pointer shrink-0 text-xs font-extrabold text-rose-600 transition hover:text-rose-700 disabled:opacity-50"
                             >
                                 حذف
                             </button>
