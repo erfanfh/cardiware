@@ -12,7 +12,7 @@ class RateLimiterAction
      * @param int $decaySeconds
      * @return int|null
      */
-    public function execute(string $action, int $limit = 5, int $decaySeconds = 60): ?int
+    public function execute(string $action, int $limit = 3, int $decaySeconds = 180): ?int
     {
         $key = $action . '|' . request()->ip();
 
