@@ -16,7 +16,7 @@
 
             <x-admin.list.th width="150px">کاربران مجاز</x-admin.list.th>
 
-            <x-admin.list.th width="150px">مصرف</x-admin.list.th>
+            <x-admin.list.th width="180px">مصرف</x-admin.list.th>
 
             <x-admin.list.th width="150px">حداقل سفارش</x-admin.list.th>
 
@@ -63,8 +63,12 @@
                     $typeColor = $isPercentType ? 'blue' : 'green';
 
                     $usedCount = (int) ($coupon->used_count ?? 0);
+                    $activeReservationsCount = (int) ($coupon->active_reservations_count ?? 0);
                     $usageLimit = $coupon->usage_limit ? (int) $coupon->usage_limit : null;
-                    $remainingCount = $usageLimit ? max($usageLimit - $usedCount, 0) : null;
+                    $reservedAndUsedCount = $usedCount + $activeReservationsCount;
+                    $remainingCount = $usageLimit
+                        ? max($usageLimit - $reservedAndUsedCount, 0)
+                        : null;
                 @endphp
 
                 <x-admin.list.tr
@@ -167,7 +171,7 @@
                             </x-admin.badge>
 
                             <div class="text-xs leading-6 text-slate-600">
-                                <div class="font-bold text-slate-700">
+                                <div class="whitespace-nowrap font-bold text-slate-700">
                                     {{ $discountValue }}
                                 </div>
 
@@ -247,7 +251,27 @@
                                 </span>
                             </div>
 
+                            @if($activeReservationsCount > 0)
+                                <div class="whitespace-nowrap">
+                                    رزرو فعال:
+                                    <span class="font-bold text-amber-700">
+                                        {{ number_format($activeReservationsCount) }}
+                                    </span>
+                                </div>
+                            @else
+                                <div class="whitespace-nowrap text-slate-400">
+                                    رزرو فعال: 0
+                                </div>
+                            @endif
+
                             @if($usageLimit)
+                                <div class="whitespace-nowrap">
+                                    درگیر شده:
+                                    <span class="font-bold text-slate-800">
+                                        {{ number_format($reservedAndUsedCount) }}
+                                    </span>
+                                </div>
+
                                 <div class="whitespace-nowrap">
                                     سقف کل:
                                     <span class="font-bold text-slate-800">
@@ -256,8 +280,9 @@
                                 </div>
 
                                 <div class="whitespace-nowrap">
-                                    باقی‌مانده:
-                                    <span class="font-bold text-slate-800">
+                                    قابل استفاده:
+                                    <span
+                                        class="font-bold {{ $remainingCount > 0 ? 'text-emerald-700' : 'text-rose-700' }}">
                                         {{ number_format($remainingCount) }}
                                     </span>
                                 </div>

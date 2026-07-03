@@ -25,5 +25,9 @@ class SchedulerServiceProvider extends ServiceProvider
         $schedule->command("app:transfer-download-clicks-to-database --limit={$downloadClicksLimit}")
             ->cron("*/{$downloadClicksSchedule} * * * *")
             ->withoutOverlapping();
+
+        $schedule->command('coupons:expire-reservations')
+            ->everyFiveMinutes()
+            ->withoutOverlapping();
     }
 }

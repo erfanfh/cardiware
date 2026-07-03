@@ -16,6 +16,7 @@ use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
 use App\Application\Promotion\Actions\Coupon\ApplyCouponToCartAction;
+use App\Application\Promotion\Actions\Coupon\ReleaseCouponReservationForOrderAction;
 use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
 use App\Application\Promotion\Exceptions\CouponMinimumOrderAmountNotMetException;
 use App\Domain\Catalog\Models\Product;
@@ -386,6 +387,11 @@ class CartPage extends Component
             $redirectUrl = data_get($payment->request_payload, 'redirect_url');
 
             if (!$redirectUrl) {
+                app(ReleaseCouponReservationForOrderAction::class)->execute(
+                    order: $order,
+                    reason: 'payment_redirect_url_missing',
+                );
+
                 $this->checkoutError = 'امکان اتصال به درگاه پرداخت وجود ندارد. لطفا دوباره تلاش کنید.';
                 return null;
             }
@@ -461,6 +467,11 @@ class CartPage extends Component
                 'Cart is empty.' => 'سبد خرید شما خالی شده است. لطفا محصول جدیدی انتخاب کنید.',
                 'Cart is not editable.' => 'سبد خرید در وضعیت قابل پرداخت نیست.',
                 'Applied coupon is no longer valid.' => 'کدتخفیف اعمال‌شده دیگر معتبر نیست. لطفا سبد خرید را بررسی کرده و دوباره ادامه دهید.',
+
+                'Coupon reservation limit reached.' => 'ظرفیت استفاده از این کدتخفیف به پایان رسیده است.',
+                'Coupon per user reservation limit reached.' => 'شما قبلاً از این کدتخفیف استفاده کرده‌اید یا یک سفارش در حال پرداخت با همین کدتخفیف دارید.',
+                'Coupon reservation is not reusable.' => 'رزرو قبلی این کدتخفیف دیگر قابل استفاده نیست. لطفاً دوباره تلاش کنید.',
+
                 default => 'امکان ادامه پرداخت وجود ندارد. لطفا سبد خرید را بررسی کنید و دوباره تلاش کنید.',
             };
 

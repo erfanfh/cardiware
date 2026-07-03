@@ -190,17 +190,6 @@ class MyOrdersSection extends Component
         return $order->purchaseAccesses->isNotEmpty();
     }
 
-    public function retryPaymentUrl(Order $order): string
-    {
-        $payment = $order->latestPayment;
-
-        if ($payment) {
-            return route('payment.retry', ['paymentToken' => $payment->public_token]);
-        }
-
-        return '';
-    }
-
     public function invoiceUrl(Order $order): string
     {
         return '#';

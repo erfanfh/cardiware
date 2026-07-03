@@ -209,13 +209,6 @@
                                 <div class="mb-3 text-sm font-black text-slate-900 dark:text-white">عملیات</div>
 
                                 <div class="flex flex-col gap-2">
-                                    @if($this->canRetryPayment($order) and $this->retryPaymentUrl($order))
-                                        <a href="{{ $this->retryPaymentUrl($order) }}"
-                                           class="inline-flex h-11 items-center justify-center rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 dark:hover:bg-brand-400">
-                                            پرداخت سفارش
-                                        </a>
-                                    @endif
-
                                     @if($this->hasDownloads($order))
                                         <a href="{{ $this->downloadsUrl() }}"
                                            class="inline-flex h-11 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 px-4 text-sm font-extrabold text-brand-800 transition hover:bg-brand-100 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/15">

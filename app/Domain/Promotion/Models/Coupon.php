@@ -126,4 +126,9 @@ class Coupon extends Model
     {
         return !$this->applies_to_all_users;
     }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(CouponReservation::class);
+    }
 }

@@ -351,19 +351,6 @@
                                 <span>←</span>
                             </a>
                         @else
-                            @if(method_exists($order->status, 'canStartPayment') && $order->status->canStartPayment())
-                                <form method="POST"
-                                      action="{{ route('payment.retry', ['paymentToken' => $payment->public_token]) }}"
-                                      class="w-full sm:w-auto">
-                                    @csrf
-
-                                    <button type="submit"
-                                            class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700 sm:w-auto">
-                                        تلاش مجدد برای پرداخت
-                                    </button>
-                                </form>
-                            @endif
-
                             <a href="{{ route('cart.index') }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:bg-slate-800">
                                 بازگشت به سبد خرید

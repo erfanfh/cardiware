@@ -3,8 +3,10 @@
 namespace App\Application\Promotion\Actions\Coupon;
 
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Promotion\Enums\CouponReservationStatusEnum;
 use App\Domain\Promotion\Models\Coupon;
 use App\Domain\Promotion\Models\CouponRedemption;
+use App\Domain\Promotion\Models\CouponReservation;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -30,12 +32,24 @@ class RedeemCouponForOrderAction
                 return;
             }
 
+            $reservation = CouponReservation::query()
+                ->where('order_id', $order->id)
+                ->lockForUpdate()
+                ->first();
+
             $alreadyRedeemed = CouponRedemption::query()
                 ->where('coupon_id', $order->coupon_id)
                 ->where('order_id', $order->id)
                 ->exists();
 
             if ($alreadyRedeemed) {
+                if ($reservation && !$reservation->status->isRedeemed()) {
+                    $reservation->forceFill([
+                        'status' => CouponReservationStatusEnum::REDEEMED,
+                        'redeemed_at' => now(),
+                    ])->save();
+                }
+
                 return;
             }
 
@@ -60,12 +74,20 @@ class RedeemCouponForOrderAction
                 'redeemed_at' => now(),
                 'metadata' => [
                     'order_number' => $order->order_number,
+                    'reservation_id' => $reservation?->id,
                 ],
             ]);
 
             $coupon->forceFill([
                 'used_count' => (int)$coupon->used_count + 1,
             ])->save();
+
+            if ($reservation) {
+                $reservation->forceFill([
+                    'status' => CouponReservationStatusEnum::REDEEMED,
+                    'redeemed_at' => now(),
+                ])->save();
+            }
         });
     }
 }

@@ -5,6 +5,7 @@ namespace App\Application\Commerce\Actions\Order;
 use App\Application\Commerce\Actions\Cart\MarkCartAsCheckoutStartedAction;
 use App\Application\Commerce\Actions\Cart\MarkCartAsConvertedAction;
 use App\Application\Commerce\Actions\Cart\RecalculateCartTotalsAction;
+use App\Application\Promotion\Actions\Coupon\ReserveCouponForOrderAction;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\Order;
@@ -22,6 +23,7 @@ class CreateOrderFromCartAction
         private readonly ValidateCartItemsForCheckoutAction $validateCartItemsForCheckoutAction,
         private readonly GenerateOrderNumberAction          $generateOrderNumberAction,
         private readonly CreateOrderItemsFromCartAction     $createOrderItemsFromCartAction,
+        private readonly ReserveCouponForOrderAction        $reserveCouponForOrderAction,
     )
     {
     }
@@ -78,6 +80,8 @@ class CreateOrderFromCartAction
             $order->update([
                 'order_number' => $this->generateOrderNumberAction->execute($order),
             ]);
+
+            $this->reserveCouponForOrderAction->execute($order);
 
             $this->createOrderItemsFromCartAction->execute(
                 order: $order,

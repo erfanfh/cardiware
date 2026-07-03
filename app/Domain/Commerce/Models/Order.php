@@ -7,10 +7,12 @@ use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Identity\Models\User;
 use App\Domain\Promotion\Models\Coupon;
+use App\Domain\Promotion\Models\CouponReservation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -154,5 +156,10 @@ class Order extends Model implements Payable
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function couponReservation(): HasOne
+    {
+        return $this->hasOne(CouponReservation::class);
     }
 }

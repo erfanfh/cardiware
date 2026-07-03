@@ -6,6 +6,7 @@ use App\Application\Promotion\Actions\Coupon\CreateCouponAction;
 use App\Application\Promotion\Actions\Coupon\GetCouponFormDataAction;
 use App\Application\Promotion\Actions\Coupon\UpdateCouponAction;
 use App\Application\Promotion\Listings\CouponListing;
+use App\Domain\Promotion\Enums\CouponReservationStatusEnum;
 use App\Domain\Promotion\Enums\CouponScopeEnum;
 use App\Domain\Promotion\Enums\CouponStatusEnum;
 use App\Domain\Promotion\Enums\CouponTypeEnum;
@@ -28,6 +29,11 @@ class CouponController extends Controller
                     ->withCount([
                         'users',
                         'targets',
+                        'reservations as active_reservations_count' => function ($query) {
+                            $query
+                                ->where('status', CouponReservationStatusEnum::ACTIVE)
+                                ->where('expires_at', '>', now());
+                        },
                     ]),
                 $request->validated()
             )
