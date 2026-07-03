@@ -18,6 +18,12 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 class CalculateCouponDiscountForCartAction
 {
+    public function __construct(
+        private readonly AllocateCouponDiscountAcrossItemsAction $allocateCouponDiscountAcrossItemsAction,
+    )
+    {
+    }
+
     public function execute(Cart $cart, Coupon $coupon, ?User $user = null): CouponDiscountResultDTO
     {
         $cart->loadMissing([
@@ -34,11 +40,12 @@ class CalculateCouponDiscountForCartAction
 
         $this->validateCoupon($cart, $coupon, $user);
 
-        $eligibleAmount = $cart->items
+        $eligibleItems = $cart->items
             ->filter(fn(CartItem $item): bool => $this->isEligibleItem($item, $coupon))
-            ->sum(fn(CartItem $item): int => max(0, (int)$item->total_amount));
+            ->values();
 
-        $eligibleAmount = (int)$eligibleAmount;
+        $eligibleAmount = (int)$eligibleItems
+            ->sum(fn(CartItem $item): int => max(0, (int)$item->total_amount));
 
         if ($eligibleAmount <= 0) {
             throw new DomainException('Coupon has no eligible cart items.');
@@ -61,9 +68,16 @@ class CalculateCouponDiscountForCartAction
             throw new DomainException('Coupon discount amount is zero.');
         }
 
+        $itemDiscounts = $this->allocateCouponDiscountAcrossItemsAction->execute(
+            items: $eligibleItems,
+            discountAmount: $discountAmount,
+            eligibleAmountResolver: fn(CartItem $item): int => max(0, (int)$item->total_amount),
+        );
+
         return new CouponDiscountResultDTO(
             eligibleAmount: $eligibleAmount,
             discountAmount: $discountAmount,
+            itemDiscounts: $itemDiscounts,
         );
     }
 

@@ -40,7 +40,9 @@ class RecalculateCartItemTotalsAction
             'unit_price' => $price->finalPrice,
             'subtotal_amount' => $price->subtotalFor($quantity),
             'discount_amount' => $price->discountFor($quantity),
+            'coupon_discount_amount' => 0,
             'total_amount' => $price->totalFor($quantity),
+            'final_total_amount' => $price->totalFor($quantity),
             'snapshot' => $snapshot,
         ])->save();
 

@@ -12,7 +12,8 @@ use Throwable;
 class RemoveCouponFromCartAction
 {
     public function __construct(
-        private readonly RecalculateCartItemTotalsAction $recalculateCartItemTotalsAction,
+        private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
+        private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
     )
     {
     }
@@ -43,10 +44,16 @@ class RemoveCouponFromCartAction
                 }
             }
 
+            $this->applyCouponDiscountToCartItemsAction->execute(
+                cart: $cart,
+                itemDiscounts: [],
+            );
+
             $items = $cart->items()->get();
 
             $subtotalAmount = (int)$items->sum('subtotal_amount');
             $productDiscountAmount = (int)$items->sum('discount_amount');
+            $totalAmount = (int)$items->sum('final_total_amount');
 
             $cart->forceFill([
                 'coupon_id' => null,
@@ -57,7 +64,7 @@ class RemoveCouponFromCartAction
 
                 'subtotal_amount' => $subtotalAmount,
                 'discount_amount' => $productDiscountAmount,
-                'total_amount' => max(0, $subtotalAmount - $productDiscountAmount),
+                'total_amount' => max(0, $totalAmount),
             ])->save();
 
             return $cart->refresh();

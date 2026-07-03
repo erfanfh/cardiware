@@ -30,18 +30,34 @@ class CreateOrderItemFromCartItemAction
 
         $reportData = app(OrderItemReportDataFactory::class)->make($cartItem->purchasable);
 
+        $couponDiscountAmount = max(0, (int)$cartItem->coupon_discount_amount);
+        $totalAmount = max(0, (int)$cartItem->total_amount);
+
+        $finalTotalAmount = (int)$cartItem->final_total_amount;
+
+        if ($finalTotalAmount <= 0 && $totalAmount > 0) {
+            $finalTotalAmount = max(0, $totalAmount - $couponDiscountAmount);
+        }
+
         return OrderItem::query()->create([
             'order_id' => $order->id,
             'parent_order_item_id' => $parentOrderItemId,
+
             'purchasable_type' => $cartItem->purchasable_type,
             'purchasable_id' => $cartItem->purchasable_id,
+
             'product_id' => $reportData['product_id'],
             'store_id' => $reportData['store_id'],
+
             'quantity' => $cartItem->quantity,
             'unit_price' => $cartItem->unit_price,
+
             'subtotal_amount' => $cartItem->subtotal_amount,
             'discount_amount' => $cartItem->discount_amount,
-            'total_amount' => $cartItem->total_amount,
+            'coupon_discount_amount' => $couponDiscountAmount,
+            'total_amount' => $totalAmount,
+            'final_total_amount' => $finalTotalAmount,
+
             'snapshot' => $cartItem->snapshot,
             'metadata' => $cartItem->metadata,
         ]);

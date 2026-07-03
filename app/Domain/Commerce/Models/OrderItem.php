@@ -24,6 +24,8 @@ class OrderItem extends Model
         'subtotal_amount',
         'discount_amount',
         'total_amount',
+        'coupon_discount_amount',
+        'final_total_amount',
         'snapshot',
         'metadata',
     ];
@@ -36,6 +38,8 @@ class OrderItem extends Model
         'subtotal_amount' => 'integer',
         'discount_amount' => 'integer',
         'total_amount' => 'integer',
+        'coupon_discount_amount' => 'integer',
+        'final_total_amount' => 'integer',
         'snapshot' => 'array',
         'metadata' => 'array',
     ];

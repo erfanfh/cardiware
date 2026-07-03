@@ -2,6 +2,7 @@
 
 namespace App\Application\Commerce\Actions\Cart;
 
+use App\Application\Promotion\Actions\Coupon\ApplyCouponDiscountToCartItemsAction;
 use App\Application\Promotion\Actions\Coupon\CalculateCouponDiscountForCartAction;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
@@ -13,6 +14,7 @@ class RecalculateCartTotalsAction
     public function __construct(
         private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
         private readonly CalculateCouponDiscountForCartAction $calculateCouponDiscountForCartAction,
+        private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
     )
     {
     }
@@ -39,11 +41,6 @@ class RecalculateCartTotalsAction
             'user',
         ]);
 
-        $items = $cart->items;
-
-        $subtotalAmount = (int)$items->sum('subtotal_amount');
-        $productDiscountAmount = (int)$items->sum('discount_amount');
-
         $couponId = $cart->coupon_id;
         $couponCode = $cart->coupon_code;
         $couponEligibleAmount = 0;
@@ -59,6 +56,11 @@ class RecalculateCartTotalsAction
                         cart: $cart,
                         coupon: $coupon,
                         user: $cart->user,
+                    );
+
+                    $this->applyCouponDiscountToCartItemsAction->execute(
+                        cart: $cart,
+                        itemDiscounts: $result->itemDiscounts,
                     );
 
                     $couponId = $coupon->id;
@@ -82,12 +84,19 @@ class RecalculateCartTotalsAction
             }
         }
 
-        $discountAmount = $productDiscountAmount + (int)$couponDiscountAmount;
+        $items = $cart->items()->get();
+
+        $subtotalAmount = (int)$items->sum('subtotal_amount');
+        $productDiscountAmount = (int)$items->sum('discount_amount');
+        $allocatedCouponDiscountAmount = (int)$items->sum('coupon_discount_amount');
+
+        $discountAmount = $productDiscountAmount + $allocatedCouponDiscountAmount;
+        $totalAmount = (int)$items->sum('final_total_amount');
 
         $cart->forceFill([
             'subtotal_amount' => $subtotalAmount,
             'discount_amount' => $discountAmount,
-            'total_amount' => max(0, $subtotalAmount - $discountAmount),
+            'total_amount' => max(0, $totalAmount),
 
             'coupon_id' => $couponId,
             'coupon_code' => $couponCode,

@@ -16,6 +16,7 @@ class ApplyCouponToCartAction
     public function __construct(
         private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
         private readonly CalculateCouponDiscountForCartAction $calculateCouponDiscountForCartAction,
+        private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
     )
     {
     }
@@ -70,6 +71,7 @@ class ApplyCouponToCartAction
                 'items.purchasable.product',
                 'items.parent.purchasable',
                 'items.parent.purchasable.product',
+                'user',
             ]);
 
             $result = $this->calculateCouponDiscountForCartAction->execute(
@@ -78,23 +80,30 @@ class ApplyCouponToCartAction
                 user: $user,
             );
 
-            $items = $cart->items;
+            $this->applyCouponDiscountToCartItemsAction->execute(
+                cart: $cart,
+                itemDiscounts: $result->itemDiscounts,
+            );
+
+            $items = $cart->items()->get();
 
             $subtotalAmount = (int)$items->sum('subtotal_amount');
             $productDiscountAmount = (int)$items->sum('discount_amount');
-            $couponDiscountAmount = $result->discountAmount;
-            $discountAmount = $productDiscountAmount + $couponDiscountAmount;
+            $allocatedCouponDiscountAmount = (int)$items->sum('coupon_discount_amount');
+
+            $discountAmount = $productDiscountAmount + $allocatedCouponDiscountAmount;
+            $totalAmount = (int)$items->sum('final_total_amount');
 
             $cart->forceFill([
                 'coupon_id' => $coupon->id,
                 'coupon_code' => $coupon->code,
                 'coupon_eligible_amount' => $result->eligibleAmount,
-                'coupon_discount_amount' => $couponDiscountAmount,
+                'coupon_discount_amount' => $allocatedCouponDiscountAmount,
                 'coupon_applied_at' => now(),
 
                 'subtotal_amount' => $subtotalAmount,
                 'discount_amount' => $discountAmount,
-                'total_amount' => max(0, $subtotalAmount - $discountAmount),
+                'total_amount' => max(0, $totalAmount),
             ])->save();
 
             return $cart->refresh();
