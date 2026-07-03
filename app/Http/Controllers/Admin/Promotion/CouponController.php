@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Promotion;
 
 use App\Application\Promotion\Actions\Coupon\CreateCouponAction;
+use App\Application\Promotion\Actions\Coupon\DeleteCouponAction;
 use App\Application\Promotion\Actions\Coupon\GetCouponFormDataAction;
 use App\Application\Promotion\Actions\Coupon\UpdateCouponAction;
 use App\Application\Promotion\Listings\CouponListing;
@@ -16,6 +17,7 @@ use App\Http\Requests\Admin\Promotion\IndexCouponRequest;
 use App\Http\Requests\Admin\Promotion\UpdateCouponRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
 
@@ -117,5 +119,19 @@ class CouponController extends Controller
         return redirect()
             ->route('admin.coupons.edit', $coupon)
             ->with('success', 'کدتخفیف با موفقیت بروزرسانی شد.');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function destroy(Coupon $coupon): RedirectResponse
+    {
+        Gate::authorize('product.delete');
+
+        app(DeleteCouponAction::class)->execute($coupon);
+
+        return redirect()
+            ->route('admin.coupons.index')
+            ->with('success', 'کدتخفیف با موفقیت حذف شد.');
     }
 }

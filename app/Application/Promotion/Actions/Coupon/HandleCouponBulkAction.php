@@ -48,6 +48,7 @@ class HandleCouponBulkAction
 
     /**
      * @param list<int> $ids
+     * @throws Throwable
      */
     protected function delete(array $ids): int
     {
@@ -58,7 +59,7 @@ class HandleCouponBulkAction
         $count = $items->count();
 
         foreach ($items as $item) {
-            $item->delete();
+            app(DeleteCouponAction::class)->execute($item);
         }
 
         return $count;
