@@ -20,7 +20,7 @@
                 default => 'border-brand-200 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300',
             };
 
-        $messages = $ticket->visibleMessages()
+        $messages = $ticket->messages()
             ->with('user')
             ->oldest('created_at')
             ->oldest('id')

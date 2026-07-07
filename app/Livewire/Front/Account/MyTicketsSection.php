@@ -110,7 +110,7 @@ class MyTicketsSection extends Component
 
     public function latestMessagePreview(Ticket $ticket): string
     {
-        $message = $ticket->latestVisibleMessage;
+        $message = $ticket->latestMessage;
 
         if (!$message) {
             return 'هنوز پیامی برای این تیکت ثبت نشده است.';
@@ -124,7 +124,7 @@ class MyTicketsSection extends Component
 
     public function latestMessageSenderLabel(Ticket $ticket): string
     {
-        $message = $ticket->latestVisibleMessage;
+        $message = $ticket->latestMessage;
 
         if (!$message) {
             return 'بدون پیام';
@@ -144,7 +144,7 @@ class MyTicketsSection extends Component
 
     public function latestMessageSenderClass(Ticket $ticket): string
     {
-        $message = $ticket->latestVisibleMessage;
+        $message = $ticket->latestMessage;
 
         if (!$message) {
             return 'text-slate-400 dark:text-slate-500';
@@ -168,7 +168,7 @@ class MyTicketsSection extends Component
 
     public function isAnsweredBySupport(Ticket $ticket): bool
     {
-        $message = $ticket->latestVisibleMessage;
+        $message = $ticket->latestMessage;
 
         if (!$message instanceof TicketMessage) {
             return false;

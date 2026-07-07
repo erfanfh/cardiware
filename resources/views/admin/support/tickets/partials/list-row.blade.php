@@ -22,7 +22,7 @@
         default => 'border-slate-200 bg-slate-100 text-slate-700',
     };
 
-    $latestMessage = $ticket->latestVisibleMessage;
+    $latestMessage = $ticket->latestMessage;
 
     $latestSenderType = $latestMessage?->sender_type instanceof TicketMessageSenderTypeEnum
         ? $latestMessage?->sender_type

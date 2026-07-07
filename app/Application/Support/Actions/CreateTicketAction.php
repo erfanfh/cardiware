@@ -79,7 +79,6 @@ class CreateTicketAction
                 sender: $user,
                 senderType: TicketMessageSenderTypeEnum::USER,
                 body: $message,
-                isInternalNote: false,
                 enforceUserReplyLimits: false,
             );
 

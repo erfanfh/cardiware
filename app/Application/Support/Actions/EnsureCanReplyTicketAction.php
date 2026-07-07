@@ -41,7 +41,7 @@ class EnsureCanReplyTicketAction
 
     private function ensureMessageIsNotDuplicate(Ticket $ticket, User $user, string $body): void
     {
-        $latestMessage = $ticket->visibleMessages()
+        $latestMessage = $ticket->messages()
             ->latest('created_at')
             ->latest('id')
             ->first();
@@ -71,7 +71,6 @@ class EnsureCanReplyTicketAction
     {
         $recentRepliesCount = $ticket->messages()
             ->where('sender_type', TicketMessageSenderTypeEnum::USER->value)
-            ->where('is_internal_note', false)
             ->where('created_at', '>=', now()->subMinutes(self::REPLIES_WINDOW_MINUTES))
             ->count();
 

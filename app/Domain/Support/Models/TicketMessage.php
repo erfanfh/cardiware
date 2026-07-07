@@ -14,12 +14,10 @@ class TicketMessage extends Model
         'user_id',
         'sender_type',
         'body',
-        'is_internal_note',
     ];
 
     protected $casts = [
         'sender_type' => TicketMessageSenderTypeEnum::class,
-        'is_internal_note' => 'boolean',
     ];
 
     public function ticket(): BelongsTo
@@ -45,10 +43,5 @@ class TicketMessage extends Model
     public function isSystemMessage(): bool
     {
         return $this->sender_type === TicketMessageSenderTypeEnum::SYSTEM;
-    }
-
-    public function isVisibleToUser(): bool
-    {
-        return !$this->is_internal_note;
     }
 }

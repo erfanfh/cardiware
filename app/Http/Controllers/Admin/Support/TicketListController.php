@@ -27,9 +27,9 @@ class TicketListController extends Controller
                     'user',
                     'department',
                     'product',
-                    'latestVisibleMessage.user',
+                    'latestMessage.user',
                 ])->withCount([
-                    'visibleMessages as visible_messages_count',
+                    'messages as visible_messages_count',
                 ]),
                 $request->validated()
             )

@@ -20,7 +20,7 @@ class TicketShowController extends Controller
             'closedByUser',
         ]);
 
-        $messages = $ticket->visibleMessages()
+        $messages = $ticket->messages()
             ->with('user')
             ->oldest('created_at')
             ->oldest('id')

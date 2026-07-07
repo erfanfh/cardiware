@@ -14,10 +14,10 @@ class GetUserTicketsAction
             ->with([
                 'department',
                 'product',
-                'latestVisibleMessage.user',
+                'latestMessage.user',
             ])
             ->withCount([
-                'visibleMessages as visible_messages_count',
+                'messages as visible_messages_count',
             ])
             ->orderByDesc('last_message_at')
             ->orderByDesc('id')

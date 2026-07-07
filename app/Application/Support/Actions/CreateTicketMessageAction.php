@@ -27,7 +27,6 @@ class CreateTicketMessageAction
         ?User                       $sender,
         TicketMessageSenderTypeEnum $senderType,
         string                      $body,
-        bool                        $isInternalNote = false,
         bool                        $enforceUserReplyLimits = true,
     ): TicketMessage
     {
@@ -36,7 +35,6 @@ class CreateTicketMessageAction
             $sender,
             $senderType,
             $body,
-            $isInternalNote,
             $enforceUserReplyLimits,
         ) {
             $ticket->refresh();
@@ -51,7 +49,6 @@ class CreateTicketMessageAction
 
             if ($senderType === TicketMessageSenderTypeEnum::USER) {
                 $this->ensureUserOwnsTicket($ticket, $sender);
-                $isInternalNote = false;
 
                 if ($enforceUserReplyLimits) {
                     $this->ensureCanReplyTicketAction->execute(
@@ -62,21 +59,15 @@ class CreateTicketMessageAction
                 }
             }
 
-            if ($senderType === TicketMessageSenderTypeEnum::SYSTEM) {
-                $isInternalNote = false;
-            }
-
             $message = $ticket->messages()->create([
                 'user_id' => $sender?->id,
                 'sender_type' => $senderType,
                 'body' => trim($body),
-                'is_internal_note' => $isInternalNote,
             ]);
 
             $this->updateTicketActivity(
                 ticket: $ticket,
                 senderType: $senderType,
-                isInternalNote: $isInternalNote,
             );
 
             return $message->load([
@@ -96,13 +87,8 @@ class CreateTicketMessageAction
     private function updateTicketActivity(
         Ticket                      $ticket,
         TicketMessageSenderTypeEnum $senderType,
-        bool                        $isInternalNote,
     ): void
     {
-        if ($isInternalNote) {
-            return;
-        }
-
         $now = now();
 
         $updates = [

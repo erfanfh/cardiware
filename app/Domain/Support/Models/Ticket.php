@@ -61,22 +61,9 @@ class Ticket extends Model
         return $this->hasMany(TicketMessage::class);
     }
 
-    public function visibleMessages(): HasMany
-    {
-        return $this->messages()
-            ->where('is_internal_note', false);
-    }
-
     public function latestMessage(): HasOne
     {
         return $this->hasOne(TicketMessage::class)
-            ->latestOfMany();
-    }
-
-    public function latestVisibleMessage(): HasOne
-    {
-        return $this->hasOne(TicketMessage::class)
-            ->where('is_internal_note', false)
             ->latestOfMany();
     }
 
