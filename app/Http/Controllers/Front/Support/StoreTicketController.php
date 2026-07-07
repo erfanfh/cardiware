@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Support;
 use App\Application\Support\Actions\CreateTicketAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Support\StoreTicketRequest;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Throwable;
 
@@ -23,14 +24,25 @@ class StoreTicketController extends Controller
     {
         $data = $request->validated();
 
-        $this->createTicketAction->handle(
-            user: $request->user(),
-            title: $data['title'],
-            message: $data['message'],
-        );
+        try {
+            $ticket = $this->createTicketAction->handle(
+                user: $request->user(),
+                departmentId: (int)$data['department_id'],
+                productId: filled($data['product_id'] ?? null) ? (int)$data['product_id'] : null,
+                title: $data['title'],
+                message: $data['message'],
+            );
+        } catch (DomainException $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'department_id' => $exception->getMessage(),
+                ], 'createTicket');
+        }
 
         return redirect()
-            ->route('account.tickets')
+            ->route('account.tickets.show', $ticket)
             ->with('ticket_created', true);
     }
 }
