@@ -2,6 +2,7 @@
 
 namespace App\Domain\Support\Models;
 
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Identity\Models\User;
 use App\Domain\Support\Enums\TicketStatusEnum;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +16,8 @@ class Ticket extends Model
     protected $fillable = [
         'number',
         'user_id',
+        'department_id',
+        'product_id',
         'title',
         'status',
         'assigned_to_user_id',
@@ -75,6 +78,16 @@ class Ticket extends Model
         return $this->hasOne(TicketMessage::class)
             ->where('is_internal_note', false)
             ->latestOfMany();
+    }
+
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(TicketDepartment::class, 'department_id');
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     public function scopeForUser(Builder $query, User $user): Builder
