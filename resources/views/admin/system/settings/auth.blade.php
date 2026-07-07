@@ -1,6 +1,6 @@
 @extends('admin.layout')
 
-@section('title', 'تنظیمات درباره ما')
+@section('title', 'تنظیمات صفحه ورود / ثبت نام')
 
 @section('content')
     <x-admin.form action="{{ route('admin.settings.auth.store') }}" method="put">
@@ -45,6 +45,20 @@
                                     'path' => old('image.path', get_setting('auth', 'image')?->path),
                                 ]"
                         />
+                    </div>
+                </x-admin.metabox>
+
+                <x-admin.metabox title="اطلاعیه" :collapsible="false">
+                    <div class="grid grid-cols-1 gap-4">
+                        <x-admin.field
+                            label="متن اطلاعیه"
+                            hint="برای عدم نمایش باکس اطلاعیه، متنی وارد نکنید."
+                        >
+                            <x-admin.form.textarea
+                                name="announcement_text"
+                                value="{{ get_setting('auth', 'announcement_text') }}"
+                            />
+                        </x-admin.field>
                     </div>
                 </x-admin.metabox>
             </div>
