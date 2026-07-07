@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Support;
 
 use App\Application\Support\Actions\CreateTicketMessageAction;
+use App\Application\Support\Exceptions\TicketLimitExceededException;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use App\Domain\Support\Models\Ticket;
 use App\Http\Controllers\Controller;
@@ -35,7 +36,7 @@ class StoreTicketMessageController extends Controller
                 senderType: TicketMessageSenderTypeEnum::USER,
                 body: $request->validated('message'),
             );
-        } catch (DomainException $exception) {
+        } catch (TicketLimitExceededException|DomainException $exception) {
             return redirect()
                 ->back()
                 ->withInput()
