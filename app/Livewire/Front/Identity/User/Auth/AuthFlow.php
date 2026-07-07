@@ -236,11 +236,12 @@ class AuthFlow extends Component
             'username.regex' => 'شماره موبایل معتبر نیست',
         ]);
 
-        $result = null;
-
-        if (User::where('mobile', $this->username)->exists()) {
-            $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::LOGIN);
+        if (!User::where('mobile', $this->username)->exists()) {
+            $this->addError('not_found_mobile', 'کاربری با این شماره موبایل یافت نشد!');
+            return;
         }
+
+        $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::LOGIN);
 
         $this->otpType = OtpTypeEnum::LOGIN->value;
         $this->step = AuthFlowStepEnum::VERIFY_OTP_LOGIN;
@@ -341,11 +342,12 @@ class AuthFlow extends Component
             'username.regex' => 'شماره موبایل معتبر نیست',
         ]);
 
-        $result = null;
-
-        if (User::where('mobile', $this->username)->exists()) {
-            $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
+        if (!User::where('mobile', $this->username)->exists()) {
+            $this->addError('not_found_mobile', 'کاربری با این شماره موبایل یافت نشد!');
+            return;
         }
+
+        $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
 
         $this->otpType = OtpTypeEnum::RESET_PASSWORD->value;
         $this->step = AuthFlowStepEnum::FORGOT_PASSWORD;
