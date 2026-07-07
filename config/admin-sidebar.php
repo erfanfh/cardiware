@@ -69,6 +69,26 @@ return [
     ],
 
     [
+        'label' => 'پشتیبانی',
+        'icon' => 'icons.customer-support',
+        'children' => [
+            [
+                'label' => 'تیکت‌ها',
+                'route' => 'admin.tickets.index',
+                'icon' => 'icons.chat-question-01',
+                'gate' => 'ticket.list',
+                'badge' => 'open_tickets',
+            ],
+            [
+                'label' => 'دپارتمان‌ها',
+                'route' => 'admin.ticket-departments.index',
+                'icon' => 'icons.folder-library',
+                'gate' => 'ticket.manage-departments',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'پروژه‌ها',
         'route' => 'admin.projects.index',
         'icon' => 'icons.folder-management',
