@@ -50,7 +50,7 @@ class StoreTicketController extends Controller
         }
 
         return redirect()
-            ->route('account.tickets.show', $ticket)
+            ->route('account.tickets')
             ->with('ticket_created', true);
     }
 }
