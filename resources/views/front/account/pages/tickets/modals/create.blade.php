@@ -26,7 +26,6 @@
                 name="title"
                 type="text"
                 value="{{ old('title') }}"
-                placeholder="مثلاً مشکل در نصب مود"
                 class="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
             >
 
@@ -45,7 +44,7 @@
             <textarea
                 id="ticket-message"
                 name="message"
-                rows="7"
+                rows="5"
                 placeholder="لطفاً مشکل یا درخواست خود را کامل توضیح دهید..."
                 class="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
             >{{ old('message') }}</textarea>
