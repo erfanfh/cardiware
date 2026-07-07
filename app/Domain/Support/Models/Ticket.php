@@ -70,6 +70,13 @@ class Ticket extends Model
             ->latestOfMany();
     }
 
+    public function latestVisibleMessage(): HasOne
+    {
+        return $this->hasOne(TicketMessage::class)
+            ->where('is_internal_note', false)
+            ->latestOfMany();
+    }
+
     public function scopeForUser(Builder $query, User $user): Builder
     {
         return $query->where('user_id', $user->id);
