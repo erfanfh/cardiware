@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Ticket extends Model
 {
     protected $fillable = [
+        'number',
         'user_id',
         'title',
         'status',
@@ -31,6 +32,11 @@ class Ticket extends Model
         'last_support_message_at' => 'datetime',
         'closed_at' => 'datetime',
     ];
+
+    public function getRouteKeyName(): string
+    {
+        return 'number';
+    }
 
     public function user(): BelongsTo
     {
