@@ -38,7 +38,7 @@
         >
             @include('front.account.pages.tickets.partials.header')
 
-            @include('front.account.pages.tickets.partials.empty-state')
+            <livewire:front.account.my-tickets-section/>
         </section>
 
         @include('front.account.pages.tickets.modals.create')
