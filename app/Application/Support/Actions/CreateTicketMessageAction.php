@@ -47,7 +47,7 @@ class CreateTicketMessageAction
             $message = $ticket->messages()->create([
                 'user_id' => $sender?->id,
                 'sender_type' => $senderType,
-                'body' => $body,
+                'body' => trim($body),
                 'is_internal_note' => $isInternalNote,
             ]);
 
@@ -77,11 +77,11 @@ class CreateTicketMessageAction
         bool                        $isInternalNote,
     ): void
     {
-        $now = now();
-
         if ($isInternalNote) {
             return;
         }
+
+        $now = now();
 
         $updates = [
             'last_message_at' => $now,
