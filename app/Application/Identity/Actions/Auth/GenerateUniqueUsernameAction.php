@@ -9,7 +9,7 @@ class GenerateUniqueUsernameAction
 {
     private const PREFIX = 'user_';
 
-    private const RANDOM_LENGTH = 12;
+    private const RANDOM_LENGTH = 20;
 
     private const RESERVED_USERNAMES = [
         'admin',
