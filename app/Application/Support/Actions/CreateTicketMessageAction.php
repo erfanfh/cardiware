@@ -13,6 +13,12 @@ use Throwable;
 
 class CreateTicketMessageAction
 {
+    public function __construct(
+        private readonly EnsureCanReplyTicketAction $ensureCanReplyTicketAction,
+    )
+    {
+    }
+
     /**
      * @throws Throwable
      */
@@ -22,9 +28,17 @@ class CreateTicketMessageAction
         TicketMessageSenderTypeEnum $senderType,
         string                      $body,
         bool                        $isInternalNote = false,
+        bool                        $enforceUserReplyLimits = true,
     ): TicketMessage
     {
-        return DB::transaction(function () use ($ticket, $sender, $senderType, $body, $isInternalNote) {
+        return DB::transaction(function () use (
+            $ticket,
+            $sender,
+            $senderType,
+            $body,
+            $isInternalNote,
+            $enforceUserReplyLimits,
+        ) {
             $ticket->refresh();
 
             if (!$ticket->canReceiveReply()) {
@@ -38,6 +52,14 @@ class CreateTicketMessageAction
             if ($senderType === TicketMessageSenderTypeEnum::USER) {
                 $this->ensureUserOwnsTicket($ticket, $sender);
                 $isInternalNote = false;
+
+                if ($enforceUserReplyLimits) {
+                    $this->ensureCanReplyTicketAction->execute(
+                        ticket: $ticket,
+                        user: $sender,
+                        body: $body,
+                    );
+                }
             }
 
             if ($senderType === TicketMessageSenderTypeEnum::SYSTEM) {
