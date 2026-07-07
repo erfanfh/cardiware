@@ -18,6 +18,8 @@ class ShowTicketController extends Controller
 
         $ticket->load([
             'user',
+            'department',
+            'product',
         ]);
 
         return view('front.account.pages.tickets.show', [
