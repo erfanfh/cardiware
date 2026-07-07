@@ -19,10 +19,19 @@
                                     تیکت #{{ $ticket->number }}
                                 </span>
 
-                                <span
-                                    class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                                    {{ $this->messageCountLabel($ticket) }}
-                                </span>
+                                @if($ticket->department)
+                                    <span
+                                        class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
+                                        {{ $ticket->department->title }}
+                                    </span>
+                                @endif
+
+                                @if($ticket->product)
+                                    <span
+                                        class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[10px] font-extrabold text-brand-700 sm:text-[11px] dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                                        {{ $ticket->product->title }}
+                                    </span>
+                                @endif
 
                                 @if($this->isAnsweredBySupport($ticket))
                                     <span
