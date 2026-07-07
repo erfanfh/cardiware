@@ -106,6 +106,12 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش کدتخفیف',
                 'delete' => 'حذف کدتخفیف',
             ],
+            'ticket' => [
+                'list' => 'لیست تیکت‌ها',
+                'show' => 'مشاهده و پاسخ تیکت',
+                'change-status' => 'تغییر وضعیت تیکت',
+                'manage-departments' => 'مدیریت دپارتمان ها',
+            ],
         ];
 
         $permissionIds = [];
