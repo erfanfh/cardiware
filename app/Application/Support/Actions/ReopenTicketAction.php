@@ -7,7 +7,7 @@ use App\Domain\Support\Models\Ticket;
 
 class ReopenTicketAction
 {
-    public function handle(Ticket $ticket): Ticket
+    public function execute(Ticket $ticket): Ticket
     {
         if ($ticket->status !== TicketStatusEnum::CLOSED) {
             return $ticket;

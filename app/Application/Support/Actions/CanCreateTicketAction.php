@@ -6,7 +6,7 @@ use App\Domain\Identity\Models\User;
 
 class CanCreateTicketAction
 {
-    public function handle(?User $user): bool
+    public function execute(?User $user): bool
     {
         if (!$user) {
             return false;

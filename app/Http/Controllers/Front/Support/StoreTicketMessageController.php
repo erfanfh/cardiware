@@ -29,7 +29,7 @@ class StoreTicketMessageController extends Controller
         abort_unless($ticket->user_id === $user->id, 404);
 
         try {
-            $this->createTicketMessageAction->handle(
+            $this->createTicketMessageAction->execute(
                 ticket: $ticket,
                 sender: $user,
                 senderType: TicketMessageSenderTypeEnum::USER,

@@ -15,7 +15,7 @@ class StoreTicketRequest extends FormRequest
     public function authorize(): bool
     {
         return auth()->check()
-            && app(CanCreateTicketAction::class)->handle($this->user());
+            && app(CanCreateTicketAction::class)->execute($this->user());
     }
 
     public function rules(): array

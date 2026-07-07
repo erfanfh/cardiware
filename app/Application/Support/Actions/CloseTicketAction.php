@@ -8,7 +8,7 @@ use App\Domain\Support\Models\Ticket;
 
 class CloseTicketAction
 {
-    public function handle(Ticket $ticket, User $user): Ticket
+    public function execute(Ticket $ticket, User $user): Ticket
     {
         if ($ticket->status === TicketStatusEnum::CLOSED) {
             return $ticket;

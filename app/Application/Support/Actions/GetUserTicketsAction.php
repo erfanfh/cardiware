@@ -7,7 +7,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class GetUserTicketsAction
 {
-    public function handle(int $userId, int $perPage = 6): LengthAwarePaginator
+    public function execute(int $userId, int $perPage = 6): LengthAwarePaginator
     {
         return Ticket::query()
             ->where('user_id', $userId)

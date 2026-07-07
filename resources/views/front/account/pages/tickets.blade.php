@@ -3,7 +3,7 @@
 @section('page-content')
     @php
         $canCreateTicket = $canCreateTicket
-            ?? app(\App\Application\Support\Actions\CanCreateTicketAction::class)->handle($user);
+            ?? app(\App\Application\Support\Actions\CanCreateTicketAction::class)->execute($user);
     @endphp
 
     <div

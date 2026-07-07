@@ -23,7 +23,7 @@ class CreateTicketAction
     /**
      * @throws Throwable
      */
-    public function handle(
+    public function execute(
         User   $user,
         int    $departmentId,
         ?int   $productId,
@@ -71,7 +71,7 @@ class CreateTicketAction
                 'number' => $ticket->id + 1000,
             ]);
 
-            $this->createTicketMessageAction->handle(
+            $this->createTicketMessageAction->execute(
                 ticket: $ticket,
                 sender: $user,
                 senderType: TicketMessageSenderTypeEnum::USER,

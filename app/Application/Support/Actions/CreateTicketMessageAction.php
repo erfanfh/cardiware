@@ -16,7 +16,7 @@ class CreateTicketMessageAction
     /**
      * @throws Throwable
      */
-    public function handle(
+    public function execute(
         Ticket                      $ticket,
         ?User                       $sender,
         TicketMessageSenderTypeEnum $senderType,

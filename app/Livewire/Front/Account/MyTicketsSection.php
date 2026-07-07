@@ -27,7 +27,7 @@ class MyTicketsSection extends Component
             return new \Illuminate\Pagination\LengthAwarePaginator([], 0, $this->perPage);
         }
 
-        return app(GetUserTicketsAction::class)->handle(
+        return app(GetUserTicketsAction::class)->execute(
             userId: (int)auth()->id(),
             perPage: $this->perPage,
         );

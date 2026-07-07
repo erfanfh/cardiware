@@ -25,7 +25,7 @@ class StoreTicketController extends Controller
         $data = $request->validated();
 
         try {
-            $ticket = $this->createTicketAction->handle(
+            $ticket = $this->createTicketAction->execute(
                 user: $request->user(),
                 departmentId: (int)$data['department_id'],
                 productId: filled($data['product_id'] ?? null) ? (int)$data['product_id'] : null,
