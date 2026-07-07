@@ -32,14 +32,6 @@
                                         {{ $ticket->product->title }}
                                     </span>
                                 @endif
-
-                                @if($this->isAnsweredBySupport($ticket))
-                                    <span
-                                        class="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 sm:text-[11px] dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                                        پاسخ جدید
-                                    </span>
-                                @endif
                             </div>
 
                             <div class="mt-3 flex min-w-0 items-start gap-3">
