@@ -2,10 +2,13 @@
 
 namespace App\Application\Support\Actions;
 
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Identity\Models\User;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use App\Domain\Support\Enums\TicketStatusEnum;
 use App\Domain\Support\Models\Ticket;
+use App\Domain\Support\Models\TicketDepartment;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -20,12 +23,44 @@ class CreateTicketAction
     /**
      * @throws Throwable
      */
-    public function handle(User $user, string $title, string $message): Ticket
+    public function handle(
+        User   $user,
+        int    $departmentId,
+        ?int   $productId,
+        string $title,
+        string $message,
+    ): Ticket
     {
-        return DB::transaction(function () use ($user, $title, $message) {
+        return DB::transaction(function () use ($user, $departmentId, $productId, $title, $message) {
+            $department = TicketDepartment::query()
+                ->active()
+                ->find($departmentId);
+
+            if (!$department) {
+                throw new DomainException('دپارتمان انتخاب‌شده معتبر نیست.');
+            }
+
+            $product = null;
+
+            if ($department->requiresProduct()) {
+                if (!$productId) {
+                    throw new DomainException('برای این دپارتمان انتخاب محصول الزامی است.');
+                }
+
+                $product = Product::query()
+                    ->where('status', 'active')
+                    ->find($productId);
+
+                if (!$product) {
+                    throw new DomainException('محصول انتخاب‌شده معتبر نیست.');
+                }
+            }
+
             $ticket = Ticket::query()->create([
                 'user_id' => $user->id,
-                'title' => $title,
+                'department_id' => $department->id,
+                'product_id' => $department->requiresProduct() ? $product?->id : null,
+                'title' => trim($title),
                 'status' => TicketStatusEnum::OPEN,
                 'last_message_at' => null,
                 'last_user_message_at' => null,
@@ -45,6 +80,8 @@ class CreateTicketAction
 
             return $ticket->refresh()->load([
                 'user',
+                'department',
+                'product',
                 'latestMessage',
             ]);
         });
