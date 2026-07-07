@@ -12,6 +12,8 @@ class GetUserTicketsAction
         return Ticket::query()
             ->where('user_id', $userId)
             ->with([
+                'department',
+                'product',
                 'latestVisibleMessage.user',
             ])
             ->withCount([
