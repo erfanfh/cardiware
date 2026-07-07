@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Application\Support\Observers\TicketObserver;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Support\Models\Ticket;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Request;
@@ -47,5 +49,7 @@ class AppServiceProvider extends ServiceProvider
             'product_addon' => ProductAddon::class,
             'order' => Order::class,
         ]);
+
+        Ticket::observe(TicketObserver::class);
     }
 }
