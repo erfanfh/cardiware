@@ -66,7 +66,7 @@
             @foreach([
                 ['label' => 'دانلود فعال', 'value' => $user->purchase_accesses_count],
                 ['label' => 'سفارش‌ها', 'value' => $user->paid_orders_count],
-                ['label' => 'تیکت باز', 'value' => 0],
+                ['label' => 'تیکت باز', 'value' => $user->open_tickets_count],
                 ['label' => 'امتیاز', 'value' => 0],
             ] as $stat)
                 <div
