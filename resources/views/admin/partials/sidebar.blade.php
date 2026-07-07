@@ -5,6 +5,9 @@
         'pending_comments' => \App\Domain\Discussion\Models\Comment::query()
             ->where('status', \App\Domain\Discussion\Enums\CommentStatusEnum::PENDING)
             ->count(),
+        'open_tickets' => \App\Domain\Support\Models\Ticket::query()
+            ->where('status', \App\Domain\Support\Enums\TicketStatusEnum::OPEN)
+            ->count(),
     ];
 @endphp
 
