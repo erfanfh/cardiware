@@ -270,7 +270,7 @@ class AuthFlow extends Component
         $type = OtpTypeEnum::from($this->otpType);
         $result = app(SendOtpAction::class)->execute($this->username, $type);
 
-        if (!$result->status) {
+        if (!$result->sent) {
             $this->addError('otp_code', $result->message);
             return;
         }
