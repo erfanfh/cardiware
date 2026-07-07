@@ -168,7 +168,7 @@
 
             <div
                 x-ref="messagesBox"
-                class="relative h-[calc(100vh-18rem)] min-h-[520px] md:min-h-[700px] overflow-y-auto scroll-smooth px-3 py-5 sm:px-5"
+                class="relative h-auto max-h-[520px] md:max-h-[700px] overflow-y-auto scroll-smooth px-3 py-5 sm:px-5"
             >
                 @if(session('ticket_message_created'))
                     <div class="mb-4 flex justify-center">
