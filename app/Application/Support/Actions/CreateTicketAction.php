@@ -32,6 +32,10 @@ class CreateTicketAction
                 'last_support_message_at' => null,
             ]);
 
+            $ticket->update([
+                'number' => $ticket->id + 1000,
+            ]);
+
             $this->createTicketMessageAction->handle(
                 ticket: $ticket,
                 sender: $user,
