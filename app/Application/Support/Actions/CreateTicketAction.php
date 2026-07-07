@@ -15,7 +15,8 @@ use Throwable;
 class CreateTicketAction
 {
     public function __construct(
-        private readonly CreateTicketMessageAction $createTicketMessageAction,
+        private readonly CreateTicketMessageAction   $createTicketMessageAction,
+        private readonly EnsureCanCreateTicketAction $ensureCanCreateTicketAction,
     )
     {
     }
@@ -56,6 +57,8 @@ class CreateTicketAction
                 }
             }
 
+            $this->ensureCanCreateTicketAction->execute($user);
+
             $ticket = Ticket::query()->create([
                 'user_id' => $user->id,
                 'department_id' => $department->id,
@@ -76,6 +79,8 @@ class CreateTicketAction
                 sender: $user,
                 senderType: TicketMessageSenderTypeEnum::USER,
                 body: $message,
+                isInternalNote: false,
+                enforceUserReplyLimits: false,
             );
 
             return $ticket->refresh()->load([
