@@ -108,13 +108,6 @@ class MyTicketsSection extends Component
         return $this->dateTimeLabel($ticket->last_message_at ?? $ticket->created_at);
     }
 
-    public function messageCountLabel(Ticket $ticket): string
-    {
-        $count = (int)($ticket->visible_messages_count ?? 0);
-
-        return number_format($count) . ' پیام';
-    }
-
     public function latestMessagePreview(Ticket $ticket): string
     {
         $message = $ticket->latestVisibleMessage;
