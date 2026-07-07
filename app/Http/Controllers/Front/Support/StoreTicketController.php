@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Support;
 
 use App\Application\Support\Actions\CreateTicketAction;
+use App\Application\Support\Exceptions\TicketLimitExceededException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Support\StoreTicketRequest;
 use DomainException;
@@ -32,6 +33,13 @@ class StoreTicketController extends Controller
                 title: $data['title'],
                 message: $data['message'],
             );
+        } catch (TicketLimitExceededException $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'message' => $exception->getMessage(),
+                ], 'createTicket');
         } catch (DomainException $exception) {
             return redirect()
                 ->back()
