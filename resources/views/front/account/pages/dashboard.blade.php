@@ -34,7 +34,7 @@
                         'badge' => 'نیازمند پیگیری',
                         'title' => 'تیکت‌های فعال',
                         'desc' => 'در انتظار پاسخ یا پیگیری',
-                        'value' => 0,
+                        'value' => $user->open_tickets_count,
                         'action' => 'پیگیری',
                     ],
                     [

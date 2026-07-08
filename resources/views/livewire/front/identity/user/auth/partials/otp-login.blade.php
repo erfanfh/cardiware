@@ -1,13 +1,13 @@
 @extends('livewire.front.identity.user.auth.partials.layout')
 
 @section('auth-title', 'دریافت کد تایید')
-@section('auth-description', 'شماره موبایل یا ایمیل خود را وارد کنید')
+@section('auth-description', 'شماره موبایل خود را وارد کنید')
 
 @section('auth-form')
     <form wire:submit.prevent="sendOtp" class="space-y-4" novalidate>
         <div class="space-y-1.5">
             <label for="username" class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                شماره موبایل یا ایمیل
+                شماره موبایل
             </label>
 
             <input

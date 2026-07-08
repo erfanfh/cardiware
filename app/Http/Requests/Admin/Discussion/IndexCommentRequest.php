@@ -64,4 +64,21 @@ class IndexCommentRequest extends FormRequest
             'post_id.exists' => 'شناسه نوشته وارد شده معتبر نیست.',
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'created_at_from' => $this->normalizeDateToGregorian($this->input('created_at_from')),
+            'created_at_to' => $this->normalizeDateToGregorian($this->input('created_at_to')),
+        ]);
+    }
+
+    protected function normalizeDateToGregorian(mixed $value): mixed
+    {
+        if (!is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        return gregorian_date($value);
+    }
 }

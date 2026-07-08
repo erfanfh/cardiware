@@ -81,8 +81,35 @@
     </form>
 
     <div class="text-center"
-         x-data="{ seconds: 60, timer: null, start(){ clearInterval(this.timer); this.seconds=60; this.timer=setInterval(()=>{ this.seconds--; if(this.seconds<=0){ clearInterval(this.timer); }},1000);} }"
+         x-data="{
+            initialSeconds: 300,
+            seconds: 300,
+            timer: null,
+
+            start() {
+                clearInterval(this.timer);
+
+                this.seconds = this.initialSeconds;
+
+                this.timer = setInterval(() => {
+                    if (this.seconds <= 0) {
+                        clearInterval(this.timer);
+                        return;
+                    }
+
+                    this.seconds--;
+                }, 1000);
+            },
+
+            formattedTime() {
+                const minutes = Math.floor(this.seconds / 60);
+                const remainingSeconds = this.seconds % 60;
+
+                return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+            }
+         }"
          x-init="start()">
+
         <p class="mb-2 text-xs text-slate-500 dark:text-slate-400">
             کد دریافت نکرده‌اید؟
         </p>
@@ -92,8 +119,8 @@
                 @click="$wire.resendOtp(); start();"
                 class="inline-flex items-center justify-center gap-1.5 text-xs font-semibold transition-all"
                 :class="seconds > 0
-                    ? 'text-slate-400 cursor-not-allowed dark:text-slate-600'
-                    : 'text-brand-600 hover:text-brand-700 cursor-pointer dark:text-brand-400 dark:hover:text-brand-300'">
+                ? 'text-slate-400 cursor-not-allowed dark:text-slate-600'
+                : 'text-brand-600 hover:text-brand-700 cursor-pointer dark:text-brand-400 dark:hover:text-brand-300'">
 
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
@@ -102,8 +129,8 @@
             <span x-show="seconds === 0">ارسال مجدد کد</span>
 
             <span x-show="seconds > 0" class="inline-flex items-center gap-1">
-                <span x-text="seconds"></span>
-                ثانیه تا ارسال مجدد
+                <span x-text="formattedTime()"></span>
+                <span>تا ارسال مجدد</span>
             </span>
         </button>
     </div>

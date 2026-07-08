@@ -20,6 +20,8 @@
 
             <x-admin.list.th>بازدید‌ها</x-admin.list.th>
 
+            <x-admin.list.th>امتیاز سئو</x-admin.list.th>
+
             <x-admin.list.th
                 width="130px"
                 label="زمان ایجاد"
@@ -137,6 +139,10 @@
 
                     <x-admin.list.td>
                         <x-admin.badge size="md">{{ page_views($store) }}</x-admin.badge>
+                    </x-admin.list.td>
+
+                    <x-admin.list.td>
+                        <x-admin.seo.score-indicator :score="$store->seoAnalysis?->score"/>
                     </x-admin.list.td>
 
                     <x-admin.list.td muted>

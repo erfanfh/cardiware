@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Domain\Promotion\Enums;
+
+enum CouponStatusEnum: string
+{
+    case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::ACTIVE => 'فعال',
+            self::INACTIVE => 'غیرفعال',
+        };
+    }
+
+    public function isActive(): bool
+    {
+        return $this === self::ACTIVE;
+    }
+}

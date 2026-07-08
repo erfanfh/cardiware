@@ -59,12 +59,10 @@ class UserSearchController extends AdminSearchController
 
         $displayName = $model->display_name ?: trim($model->first_name . ' ' . $model->last_name);
 
-        if ($displayName === '') {
-            $displayName = $model->mobile ?: $model->email;
-        }
+        $mobile = $model->mobile;
 
         $email = $model->email ?: 'بدون ایمیل';
 
-        return "{$displayName} ({$email})";
+        return "{$displayName} ({$mobile} | {$email})";
     }
 }

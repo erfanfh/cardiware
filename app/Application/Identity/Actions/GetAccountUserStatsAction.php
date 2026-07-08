@@ -7,6 +7,7 @@ use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Support\Enums\TicketStatusEnum;
 use Illuminate\Support\Facades\Cache;
 
 final class GetAccountUserStatsAction
@@ -16,7 +17,9 @@ final class GetAccountUserStatsAction
      *
      * @return array{
      *     paid_orders_count: int,
-     *     purchase_accesses_count: int
+     *     purchase_accesses_count: int,
+     *     tickets_count: int,
+     *     open_tickets_count: int,
      * }
      */
     public function execute(User $user): array
@@ -36,7 +39,9 @@ final class GetAccountUserStatsAction
      *
      * @return array{
      *     paid_orders_count: int,
-     *     purchase_accesses_count: int
+     *     purchase_accesses_count: int,
+     *     tickets_count: int,
+     *     open_tickets_count: int,
      * }
      */
     private function query(User $user): array
@@ -48,6 +53,10 @@ final class GetAccountUserStatsAction
 
             'purchase_accesses_count' => $user->purchaseAccesses()
                 ->count(),
+
+            'tickets_count' => $user->tickets()->count(),
+
+            'open_tickets_count' => $user->tickets()->where('status', TicketStatusEnum::OPEN)->count(),
         ];
     }
 }

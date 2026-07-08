@@ -2,6 +2,7 @@
 
 namespace App\Application\Commerce\Actions\Cart;
 
+use App\Application\Commerce\Exceptions\AppliedCouponChangedException;
 use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Domain\Commerce\Models\Cart;
 use DomainException;
@@ -20,12 +21,46 @@ class EnsureCartReadyForCheckoutAction
      */
     public function execute(Cart $cart): Cart
     {
+        $cart = $cart->refresh();
+
+        $hadCoupon = filled($cart->coupon_id) || filled($cart->coupon_code);
+
+        $previousCouponCode = $cart->coupon_code;
+        $previousCouponDiscountAmount = (int)$cart->coupon_discount_amount;
+        $previousTotalAmount = (int)$cart->total_amount;
+
         $result = $this->syncCartItemsAction->execute($cart);
 
-        $cart = $result['cart'];
+        $cart = $result['cart']->refresh();
 
         if ((bool)($result['has_changes'] ?? false)) {
             throw new CartNeedsRefreshException($result);
+        }
+
+        if ($hadCoupon && blank($cart->coupon_id) && blank($cart->coupon_code)) {
+            throw new DomainException('Applied coupon is no longer valid.');
+        }
+
+        $currentCouponCode = $cart->coupon_code;
+
+        $couponCodeChanged = $hadCoupon
+            && (string)$previousCouponCode !== (string)$currentCouponCode;
+
+        $couponAmountChanged = $hadCoupon
+            && (
+                $previousCouponDiscountAmount !== (int)$cart->coupon_discount_amount
+                || $previousTotalAmount !== (int)$cart->total_amount
+            );
+
+        if ($couponCodeChanged || $couponAmountChanged) {
+            throw new AppliedCouponChangedException(
+                previousCouponCode: $previousCouponCode,
+                currentCouponCode: $currentCouponCode,
+                previousCouponDiscountAmount: $previousCouponDiscountAmount,
+                currentCouponDiscountAmount: (int)$cart->coupon_discount_amount,
+                previousTotalAmount: $previousTotalAmount,
+                currentTotalAmount: (int)$cart->total_amount,
+            );
         }
 
         if ($cart->items()->count() < 1) {

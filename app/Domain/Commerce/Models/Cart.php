@@ -4,6 +4,7 @@ namespace App\Domain\Commerce\Models;
 
 use App\Domain\Commerce\Enums\CartStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Promotion\Models\Coupon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,6 +21,11 @@ class Cart extends Model
         'discount_amount',
         'total_amount',
         'synced_at',
+        'coupon_id',
+        'coupon_code',
+        'coupon_eligible_amount',
+        'coupon_discount_amount',
+        'coupon_applied_at',
     ];
 
     protected $casts = [
@@ -29,6 +35,9 @@ class Cart extends Model
         'discount_amount' => 'integer',
         'total_amount' => 'integer',
         'synced_at' => 'datetime',
+        'coupon_eligible_amount' => 'integer',
+        'coupon_discount_amount' => 'integer',
+        'coupon_applied_at' => 'datetime',
     ];
 
     /**
@@ -85,5 +94,10 @@ class Cart extends Model
     public function isGuestCart(): bool
     {
         return $this->user_id === null && filled($this->session_id);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 }

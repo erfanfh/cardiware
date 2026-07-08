@@ -7,6 +7,7 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Support\Models\Ticket;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -117,5 +118,10 @@ class User extends Authenticatable
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

@@ -23,7 +23,7 @@
                     ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12'],
                     ['route' => 'account.downloads', 'label' => 'دانلودها', 'icon' => 'icons.cloud-download', 'badge' => $user->purchase_accesses_count, 'badgeColor' => 'emerald'],
                     ['route' => 'account.orders', 'label' => 'سفارش‌ها', 'icon' => 'icons.shopping-basket-03', 'badge' => $user->paid_orders_count, 'badgeColor' => 'brand'],
-                    ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02'],
+                    ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'badge' => $user->open_tickets_count, 'badgeColor' => 'cyan'],
                     ['route' => 'account.favorites', 'label' => 'علاقه‌مندی', 'icon' => 'icons.favourite'],
                     ['route' => 'account.information', 'label' => 'اطلاعات', 'icon' => 'icons.user-edit-01'],
                     ['route' => 'account.security', 'label' => 'امنیت', 'icon' => 'icons.lock-password'],
@@ -46,6 +46,8 @@
                         <span class="absolute left-2 top-2 rounded-full px-1.5 py-0.5 text-[10px] font-black
                             @if(($item['badgeColor'] ?? '') === 'emerald')
                                 bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300
+                            @elseif(($item['badgeColor'] ?? '') === 'cyan')
+                                bg-cyan-50 text-cyan-600 dark:bg-cyan-500/10 dark:text-cyan-300
                             @else
                                 bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-300
                             @endif

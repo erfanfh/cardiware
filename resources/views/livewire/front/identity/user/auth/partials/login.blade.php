@@ -91,5 +91,12 @@
                 ثبت نام
             </button>
         </div>
+
+        @if(get_setting('auth', 'announcement_text'))
+            <div
+                class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-xs leading-6 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+                {!! nl2br(htmlspecialchars(e(get_setting('auth', 'announcement_text')))) !!}
+            </div>
+        @endif
     </form>
 @endsection

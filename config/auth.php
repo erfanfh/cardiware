@@ -114,6 +114,7 @@ return [
 
     'otp' => [
         'length' => env('OTP_LENGTH', 6),
-        'expire' => env('OTP_AUTH_EXPIRATION_TIME', 5) //minute,
+        'resend_seconds' => env('RESEND_OTP_SECONDS', 300),
+        'expire_seconds' => env('EXPIRE_OTP_SECONDS', 360),
     ]
 ];

@@ -6,10 +6,13 @@ use App\Application\Financial\Contracts\Payable;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Identity\Models\User;
+use App\Domain\Promotion\Models\Coupon;
+use App\Domain\Promotion\Models\CouponReservation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
@@ -26,6 +29,10 @@ class Order extends Model implements Payable
         'paid_at',
         'cancelled_at',
         'metadata',
+        'coupon_id',
+        'coupon_code',
+        'coupon_eligible_amount',
+        'coupon_discount_amount',
     ];
 
     protected $casts = [
@@ -36,6 +43,8 @@ class Order extends Model implements Payable
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'metadata' => 'array',
+        'coupon_eligible_amount' => 'integer',
+        'coupon_discount_amount' => 'integer',
     ];
 
     public function getRouteKeyName(): string
@@ -142,5 +151,15 @@ class Order extends Model implements Payable
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
+    }
+
+    public function couponReservation(): HasOne
+    {
+        return $this->hasOne(CouponReservation::class);
     }
 }

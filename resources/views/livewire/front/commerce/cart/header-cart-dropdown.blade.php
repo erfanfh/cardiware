@@ -143,10 +143,10 @@
                                     </div>
 
                                     <div class="min-w-0 flex-1">
-                                        <div
-                                            class="line-clamp-1 text-sm font-extrabold text-slate-800 dark:text-slate-100">
+                                        <a href="{{ $item['url'] }}"
+                                           class="line-clamp-1 text-sm font-extrabold text-slate-800 dark:text-slate-100">
                                             {{ $item['title'] }}
-                                        </div>
+                                        </a>
 
                                         @if($item['subtitle'])
                                             <div
