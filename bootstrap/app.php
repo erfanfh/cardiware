@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: [],
+        api: __DIR__ . '/../routes/api.php',
         health: '/up',
         then: function () {
             require base_path('routes/admin.php');
