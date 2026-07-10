@@ -15,6 +15,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Features\SupportRedirects\Redirector;
 use Throwable;
 
 class AuthModal extends Component
@@ -74,7 +75,7 @@ class AuthModal extends Component
         RegisterUserAction          $registerUserAction,
         GetCurrentActiveCartAction  $getCurrentActiveCartAction,
         ClaimGuestCartForUserAction $claimGuestCartForUserAction,
-    ): ?RedirectResponse
+    ): RedirectResponse|Redirector|null
     {
         $this->authError = null;
 
