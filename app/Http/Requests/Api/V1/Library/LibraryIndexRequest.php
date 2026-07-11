@@ -27,4 +27,17 @@ class LibraryIndexRequest extends FormRequest
     {
         return (int)$this->validated('per_page', 20);
     }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function queryParameters(): array
+    {
+        return [
+            'per_page' => [
+                'description' => 'The number of library items returned per page. Maximum: 50.',
+                'example' => 20,
+            ],
+        ];
+    }
 }

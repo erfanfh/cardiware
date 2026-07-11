@@ -1,0 +1,4 @@
+{
+    "message": "The purchase access is inactive, unavailable, or expired.",
+    "code": "purchase_access_not_usable"
+}

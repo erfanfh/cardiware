@@ -1,0 +1,8 @@
+{
+    "message": "The provided data is invalid.",
+    "errors": {
+        "login": [
+            "The login field is required."
+        ]
+    }
+}

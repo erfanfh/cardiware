@@ -51,4 +51,27 @@ class LauncherBootstrapRequest extends FormRequest
             'channel' => $this->input('channel', 'stable'),
         ]);
     }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function queryParameters(): array
+    {
+        return [
+            'version' => [
+                'description' => 'The currently installed launcher version.',
+                'example' => '1.0.0',
+            ],
+
+            'platform' => [
+                'description' => 'The launcher operating system.',
+                'example' => 'windows',
+            ],
+
+            'channel' => [
+                'description' => 'The launcher release channel.',
+                'example' => 'stable',
+            ],
+        ];
+    }
 }

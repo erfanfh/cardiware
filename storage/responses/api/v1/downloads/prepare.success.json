@@ -1,0 +1,10 @@
+{
+    "message": "Download prepared successfully.",
+    "data": {
+        "download_id": 400,
+        "url": "https://files.moddingway.ir/downloads/fc26-part-1.zip",
+        "file_name": "fc26-part-1.zip",
+        "title": "Part 1",
+        "remaining_downloads": 6
+    }
+}
