@@ -5,14 +5,10 @@ namespace App\Domain\Commerce\Models;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
-use App\Domain\Commerce\Enums\PurchaseAccessDownloadStatusEnum;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Represents a download attempt for a purchase access.
- */
 class PurchaseAccessDownload extends Model
 {
     protected $fillable = [
@@ -61,21 +57,5 @@ class PurchaseAccessDownload extends Model
     public function productSaleItemFile(): BelongsTo
     {
         return $this->belongsTo(ProductSaleItemFile::class);
-    }
-
-    /**
-     * Determine whether the download attempt is completed.
-     */
-    public function isCompleted(): bool
-    {
-        return $this->status === PurchaseAccessDownloadStatusEnum::COMPLETED;
-    }
-
-    /**
-     * Determine whether the download attempt is failed.
-     */
-    public function isFailed(): bool
-    {
-        return $this->status === PurchaseAccessDownloadStatusEnum::FAILED;
     }
 }
