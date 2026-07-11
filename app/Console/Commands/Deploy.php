@@ -34,7 +34,12 @@ class Deploy extends Command
             '--class' => DatabaseSeeder::class,
             '--force' => true,
         ]);
+
+        $this->info('📚 Generating API documentation...');
+        $this->call('scribe:generate');
+
         $this->call('horizon:terminate');
+
         $this->info('✅ Deploy finalized.');
     }
 }
