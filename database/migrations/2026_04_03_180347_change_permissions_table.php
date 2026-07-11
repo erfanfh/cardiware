@@ -11,6 +11,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
+            $table->dropUnique(['title']);
+        });
+
+        Schema::table('permissions', function (Blueprint $table) {
             $table->dropColumn('title');
             $table->string('group')->after('id');
             $table->string('ability')->after('group');
@@ -24,7 +28,7 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->string('title')->after('id');
+            $table->string('title')->unique()->after('id');
             $table->dropColumn('group');
             $table->dropColumn('ability');
             $table->dropColumn('label');
