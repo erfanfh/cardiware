@@ -36,6 +36,8 @@ class AuthController extends Controller
             abilities: [
                 'windows-app',
                 'user:read',
+                'library:read',
+                'downloads:prepare',
             ],
             expiresAt: now()->addDays(30),
         );
