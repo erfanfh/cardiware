@@ -252,22 +252,141 @@
             </x-admin.metabox>
 
             <x-admin.metabox :collapsible="false" title="دپارتمان و محصول">
-                <div class="space-y-4 text-sm">
-                    <div>
-                        <div class="mb-1 text-xs font-bold text-slate-500">دپارتمان</div>
-                        <div class="font-black text-slate-800">
-                            {{ $ticket->department?->title ?? '—' }}
-                        </div>
-                    </div>
+                @php
+                    $departmentRequiresProductMap = $departments
+                        ->mapWithKeys(fn ($department) => [
+                            (string) $department->id => (bool) $department->requires_product,
+                        ])
+                        ->all();
+                @endphp
+
+                <form
+                    method="POST"
+                    action="{{ route('admin.tickets.department.update', $ticket) }}"
+                    class="space-y-4"
+                    x-data="{
+                        departmentId: @js((string) old('department_id', $ticket->department_id)),
+                        productId: @js((string) old('product_id', $ticket->product_id)),
+                        requiresProductMap: @js($departmentRequiresProductMap),
+
+                        get requiresProduct() {
+                            return this.requiresProductMap[this.departmentId] === true;
+                        }
+                    }"
+                    x-effect="
+                        if (! requiresProduct) {
+                            productId = '';
+                        }
+                    "
+                >
+                    @csrf
+                    @method('PATCH')
 
                     <div>
-                        <div class="mb-1 text-xs font-bold text-slate-500">محصول مرتبط</div>
-                        <a href="{{ $ticket->product?->url }}" target="_blank"
-                           class="font-black leading-7 text-slate-800">
-                            {{ $ticket->product?->title ?? '—' }}
-                        </a>
+                        <label
+                            for="department_id"
+                            class="mb-2 block text-xs font-bold text-slate-500"
+                        >
+                            دپارتمان
+                        </label>
+
+                        <select
+                            id="department_id"
+                            name="department_id"
+                            x-model="departmentId"
+                            required
+                            class="block h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100/60"
+                        >
+                            <option value="">
+                                انتخاب دپارتمان
+                            </option>
+
+                            @foreach($departments as $department)
+                                <option value="{{ $department->id }}">
+                                    {{ $department->title }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        @error('department_id')
+                        <div class="mt-2 text-xs font-bold text-rose-600">
+                            {{ $message }}
+                        </div>
+                        @enderror
                     </div>
-                </div>
+
+                    <div
+                        x-cloak
+                        x-show="requiresProduct"
+                        x-transition.opacity
+                    >
+                        <label
+                            for="product_id"
+                            class="mb-2 block text-xs font-bold text-slate-500"
+                        >
+                            محصول مرتبط
+                            <span class="text-rose-500">*</span>
+                        </label>
+
+                        <select
+                            id="product_id"
+                            name="product_id"
+                            x-model="productId"
+                            :disabled="! requiresProduct"
+                            :required="requiresProduct"
+                            class="block h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100/60"
+                        >
+                            <option value="">
+                                انتخاب محصول
+                            </option>
+
+                            @foreach($ticketProducts as $product)
+                                <option value="{{ $product->id }}">
+                                    {{ $product->title }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <div class="mt-2 text-xs font-bold leading-6 text-slate-400">
+                            دپارتمان انتخاب‌شده نیازمند تعیین محصول مرتبط است.
+                        </div>
+
+                        @error('product_id')
+                        <div class="mt-2 text-xs font-bold text-rose-600">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                    </div>
+
+                    @if($ticket->product)
+                        <div
+                            x-show="! requiresProduct"
+                            class="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                        >
+                            <div class="mb-1 text-xs font-bold text-slate-500">
+                                محصول فعلی
+                            </div>
+
+                            <a
+                                href="{{ $ticket->product->url }}"
+                                target="_blank"
+                                class="text-sm font-black leading-7 text-slate-800 transition hover:text-brand-600"
+                            >
+                                {{ $ticket->product->title }}
+                            </a>
+                        </div>
+                    @endif
+
+                    <div class="flex justify-end">
+                        <x-admin.form.button
+                            type="submit"
+                            variant="soft"
+                            size="sm"
+                        >
+                            ذخیره تغییرات
+                        </x-admin.form.button>
+                    </div>
+                </form>
             </x-admin.metabox>
         </aside>
     </div>

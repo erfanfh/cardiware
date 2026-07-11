@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Support\TicketListController;
 use App\Http\Controllers\Admin\Support\TicketReopenController;
 use App\Http\Controllers\Admin\Support\TicketReplyController;
 use App\Http\Controllers\Admin\Support\TicketShowController;
+use App\Http\Controllers\Admin\Support\UpdateTicketDepartmentController;
 
 Route::get('ticket-departments', TicketDepartmentController::class)->name('ticket-departments.index');
 
@@ -19,4 +20,5 @@ Route::prefix('tickets')->name('tickets.')->group(function () {
     Route::post('/{ticket}/reply', TicketReplyController::class)->name('reply');
     Route::post('/{ticket}/close', TicketCloseController::class)->name('close');
     Route::post('/{ticket}/reopen', TicketReopenController::class)->name('reopen');
+    Route::patch('/{ticket}/department', UpdateTicketDepartmentController::class)->name('department.update');
 });
