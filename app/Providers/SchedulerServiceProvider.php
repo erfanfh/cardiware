@@ -29,5 +29,10 @@ class SchedulerServiceProvider extends ServiceProvider
         $schedule->command('coupons:expire-reservations')
             ->everyFiveMinutes()
             ->withoutOverlapping();
+
+        $schedule->command('tickets:auto-close-inactive')
+            ->hourlyAt(10)
+            ->withoutOverlapping(30)
+            ->onOneServer();
     }
 }
