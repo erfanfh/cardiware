@@ -106,4 +106,39 @@ class PurchaseAccess extends Model
         return $this->hasMany(PurchaseAccessDownload::class)
             ->latest('id');
     }
+
+    /**
+     * Scope accesses that are currently usable.
+     */
+    public function scopeUsable(Builder $query): Builder
+    {
+        return $query
+            ->active()
+            ->where(function (Builder $query) {
+                $query
+                    ->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function (Builder $query) {
+                $query
+                    ->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
+    }
+
+    /**
+     * Determine whether this access can currently be used.
+     */
+    public function isUsable(): bool
+    {
+        if ($this->status !== PurchaseAccessStatusEnum::ACTIVE) {
+            return false;
+        }
+
+        if ($this->starts_at !== null && $this->starts_at->isFuture()) {
+            return false;
+        }
+
+        return !$this->isExpiredByDate();
+    }
 }
