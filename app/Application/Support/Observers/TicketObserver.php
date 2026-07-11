@@ -22,6 +22,11 @@ class TicketObserver
         }
     }
 
+    public function deleted(Ticket $ticket): void
+    {
+        $this->flushUserCache($ticket);
+    }
+
     private function flushUserCache(Ticket $ticket): void
     {
         $user = $ticket->user;
