@@ -6,7 +6,7 @@
     <a href="{{ $item['url'] }}"
        target="{{ $item['target'] }}"
        @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
-       class="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100 {{ $item['css_class'] }}">
+       class="flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-brand-500 hover:text-white transition dark:text-slate-300 dark:hover:bg-brand-600 dark:hover:text-white hover:[&_svg]:text-white [&_svg]:transition {{ $item['css_class'] }}">
         @if($item['icon'])
             <span class="text-base">{{ $item['icon'] }}</span>
         @endif
