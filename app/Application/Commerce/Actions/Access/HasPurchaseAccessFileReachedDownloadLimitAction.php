@@ -8,20 +8,27 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 class HasPurchaseAccessFileReachedDownloadLimitAction
 {
     public function __construct(
-        private readonly GetPurchaseAccessFileDownloadsCountAction $getPurchaseAccessFileDownloadsCountAction,
+        private readonly ResolvePurchaseAccessFileDownloadLimitAction $resolveDownloadLimitAction,
+        private readonly GetPurchaseAccessFileDownloadsCountAction    $getDownloadsCountAction,
     )
     {
     }
 
-    public function execute(PurchaseAccess $purchaseAccess, ProductSaleItemFile $file): bool
+    public function execute(
+        PurchaseAccess      $purchaseAccess,
+        ProductSaleItemFile $file,
+    ): bool
     {
-        $limit = $this->resolveDownloadLimit($purchaseAccess, $file);
+        $limit = $this->resolveDownloadLimitAction->execute(
+            purchaseAccess: $purchaseAccess,
+            file: $file,
+        );
 
         if ($limit === null) {
             return false;
         }
 
-        $downloadsCount = $this->getPurchaseAccessFileDownloadsCountAction->execute(
+        $downloadsCount = $this->getDownloadsCountAction->execute(
             purchaseAccess: $purchaseAccess,
             file: $file,
         );
@@ -29,32 +36,25 @@ class HasPurchaseAccessFileReachedDownloadLimitAction
         return $downloadsCount >= $limit;
     }
 
-    public function remaining(PurchaseAccess $purchaseAccess, ProductSaleItemFile $file): ?int
+    public function remaining(
+        PurchaseAccess      $purchaseAccess,
+        ProductSaleItemFile $file,
+    ): ?int
     {
-        $limit = $this->resolveDownloadLimit($purchaseAccess, $file);
+        $limit = $this->resolveDownloadLimitAction->execute(
+            purchaseAccess: $purchaseAccess,
+            file: $file,
+        );
 
         if ($limit === null) {
             return null;
         }
 
-        $downloadsCount = $this->getPurchaseAccessFileDownloadsCountAction->execute(
+        $downloadsCount = $this->getDownloadsCountAction->execute(
             purchaseAccess: $purchaseAccess,
             file: $file,
         );
 
         return max(0, $limit - $downloadsCount);
-    }
-
-    private function resolveDownloadLimit(PurchaseAccess $purchaseAccess, ProductSaleItemFile $file): ?int
-    {
-        $fileLimit = data_get($file, 'download_limit');
-
-        if ($fileLimit !== null) {
-            return (int)$fileLimit;
-        }
-
-        return $purchaseAccess->download_limit !== null
-            ? (int)$purchaseAccess->download_limit
-            : null;
     }
 }
