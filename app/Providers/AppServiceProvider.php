@@ -7,8 +7,8 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Order;
-use Illuminate\Cache\RateLimiting\Limit;
 use App\Domain\Support\Models\Ticket;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\RateLimiter;
@@ -51,6 +51,14 @@ class AppServiceProvider extends ServiceProvider
             'product_addon' => ProductAddon::class,
             'order' => Order::class,
         ]);
+
+        RateLimiter::for('api', function (\Illuminate\Http\Request $request): Limit {
+            $key = $request->user()
+                ? 'user:' . $request->user()->getAuthIdentifier()
+                : 'ip:' . $request->ip();
+
+            return Limit::perMinute(60)->by($key);
+        });
 
         RateLimiter::for('api-login', function (\Illuminate\Http\Request $request) {
             $login = (string)$request->input('login');
