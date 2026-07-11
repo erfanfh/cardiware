@@ -15,6 +15,7 @@ class PermissionSeeder extends Seeder
         $permissions = [
             'admin' => [
                 'display' => 'مشاهده پنل ادمین',
+                'api-docs' => 'مشاهده مستندات API',
             ],
             'post' => [
                 'list' => 'لیست نوشته ها',
