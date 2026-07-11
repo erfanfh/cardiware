@@ -22,4 +22,16 @@ enum PaymentGatewayEnum: string
             self::FREE => 'پرداخت رایگان',
         };
     }
+
+    /**
+     * Determine whether this gateway requires an external request.
+     */
+    public function isExternal(): bool
+    {
+        return in_array($this, [
+            self::ZIBAL,
+            self::ZARINPAL,
+            self::PAYPING,
+        ], true);
+    }
 }

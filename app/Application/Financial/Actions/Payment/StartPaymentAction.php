@@ -6,7 +6,9 @@ use App\Application\Financial\Contracts\Payable;
 use App\Application\Financial\DTOs\StartPaymentRequestDTO;
 use App\Application\Financial\Support\PaymentGatewayManager;
 use App\Domain\Financial\Enums\PaymentGatewayEnum;
+use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
+use DomainException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -39,25 +41,53 @@ class StartPaymentAction
         array              $metadata = [],
     ): Payment
     {
-        return DB::transaction(function () use ($payable, $gateway, $callbackUrl, $metadata) {
-            $payment = $this->createPaymentForPayableAction->execute(
-                payable: $payable,
-                gateway: $gateway,
-                requestPayload: [
-                    'callback_url' => $callbackUrl,
-                    'metadata' => $metadata,
-                ],
+        if (!$gateway->isExternal()) {
+            throw new DomainException(
+                "Gateway [{$gateway->value}] cannot be started as an external payment."
             );
+        }
 
-            $gatewayDriver = $this->paymentGatewayManager->get($gateway);
+        /*
+         * Create the payment in a short database transaction.
+         */
+        $payment = $this->createPaymentForPayableAction->execute(
+            payable: $payable,
+            gateway: $gateway,
+            requestPayload: [
+                'callback_url' => $callbackUrl,
+                'metadata' => $metadata,
+            ],
+        );
 
-            $result = $gatewayDriver->start(
-                new StartPaymentRequestDTO(
-                    payment: $payment,
-                    callbackUrl: $callbackUrl,
-                    metadata: $metadata,
-                ),
-            );
+        /*
+         * Important:
+         * External HTTP request must not run inside a database transaction.
+         */
+        $gatewayDriver = $this->paymentGatewayManager->get($gateway);
+
+        $result = $gatewayDriver->start(
+            new StartPaymentRequestDTO(
+                payment: $payment,
+                callbackUrl: $callbackUrl,
+                metadata: $metadata,
+            ),
+        );
+
+        /*
+         * Persist the gateway response in another short transaction.
+         */
+        return DB::transaction(function () use ($payment, $result): Payment {
+            $payment = Payment::query()
+                ->whereKey($payment->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            /*
+             * Another process may already have changed the payment.
+             */
+            if ($payment->status !== PaymentStatusEnum::INITIATED) {
+                return $payment;
+            }
 
             if (!$result->successful) {
                 return $this->markPaymentAsFailedAction->execute(
