@@ -27,5 +27,6 @@ return [
         'stores',
         'payment',
         'namad',
+        'docs',
     ],
 ];
