@@ -71,6 +71,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
+
+    /**
      * Role relationship
      *
      * @return BelongsTo
