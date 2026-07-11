@@ -179,6 +179,120 @@ function buildImageHtml({
     `;
 }
 
+function getImageSizeFromNode(imageNode) {
+    if (!imageNode) {
+        return 'md';
+    }
+
+    const wrapper = imageNode.closest?.('figure.content-media');
+
+    if (wrapper?.classList.contains('image-size-sm')) return 'sm';
+    if (wrapper?.classList.contains('image-size-md')) return 'md';
+    if (wrapper?.classList.contains('image-size-lg')) return 'lg';
+    if (wrapper?.classList.contains('image-size-full')) return 'full';
+
+    return normalizeSize(
+        imageNode.getAttribute('data-media-selected-size') || 'md'
+    );
+}
+
+function normalizeMediaImageSources(content = '') {
+    const html = String(content);
+
+    if (!html.includes('editor-media-image')) {
+        return html;
+    }
+
+    const template = document.createElement('template');
+    template.innerHTML = html;
+
+    template.content
+        .querySelectorAll('img.editor-media-image')
+        .forEach((imageNode) => {
+            const selectedSize = getImageSizeFromNode(imageNode);
+            const selectedVariant = getVariantBySize(selectedSize);
+
+            const variantUrl = imageNode.getAttribute(
+                `data-media-variant-${selectedVariant}`
+            );
+
+            if (variantUrl) {
+                imageNode.setAttribute('src', variantUrl);
+            }
+
+            imageNode.setAttribute(
+                'data-media-selected-size',
+                selectedSize
+            );
+
+            imageNode.setAttribute(
+                'data-media-selected-variant',
+                selectedVariant
+            );
+        });
+
+    return template.innerHTML;
+}
+
+function syncEditorToSource(editor, dispatchEvents = true) {
+    const sourceElement = editor?.getElement?.();
+
+    if (!sourceElement) {
+        return;
+    }
+
+    /*
+     * محتوای فعلی DOM ادیتور را داخل textarea اصلی قرار می‌دهد.
+     * رویداد GetContent نیز در همین مرحله اجرا می‌شود.
+     */
+    editor.save();
+
+    if (!dispatchEvents) {
+        return;
+    }
+
+    /*
+     * برای هماهنگی با Livewire، Alpine و listenerهای فرم.
+     */
+    sourceElement.dispatchEvent(new Event('input', {
+        bubbles: true,
+    }));
+
+    sourceElement.dispatchEvent(new Event('change', {
+        bubbles: true,
+    }));
+}
+
+function commitEditorChanges(editor) {
+    editor.nodeChanged();
+    editor.setDirty(true);
+    editor.dispatch('change');
+
+    syncEditorToSource(editor);
+}
+
+function syncEditorsBeforeSubmit(event) {
+    const form = event.target;
+
+    if (!(form instanceof HTMLFormElement)) {
+        return;
+    }
+
+    const editors = tinymce.get();
+
+    if (!Array.isArray(editors)) {
+        return;
+    }
+
+    editors.forEach((editor) => {
+        const sourceElement = editor.getElement?.();
+
+        if (sourceElement?.closest('form') === form) {
+            syncEditorToSource(editor);
+        }
+    });
+}
+
 function registerCustomButtons(editor, element) {
     const itemKey = element.dataset.editorKey;
 
@@ -245,18 +359,28 @@ function registerCustomButtons(editor, element) {
     editor.ui.registry.addButton('mediaImageRemove', {
         icon: 'remove',
         tooltip: 'حذف تصویر',
+
         onAction: () => {
             const node = getSelectedImageNode(editor);
 
-            if (node) {
-                const figure = editor.dom.getParent(node, 'figure');
+            if (!node) {
+                return;
+            }
+
+            editor.undoManager.transact(() => {
+                const figure = editor.dom.getParent(
+                    node,
+                    'figure'
+                );
 
                 if (figure) {
                     editor.dom.remove(figure);
                 } else {
                     editor.dom.remove(node);
                 }
-            }
+            });
+
+            commitEditorChanges(editor);
         },
     });
 
@@ -471,19 +595,63 @@ function setImageVariantAttributes(imageNode, variants = {}) {
 
 function updateImageVariantBySize(imageNode, size = 'md') {
     if (!imageNode) {
-        return;
+        return false;
     }
 
     const safeSize = normalizeSize(size);
     const variant = getVariantBySize(safeSize);
-    const variantUrl = imageNode.getAttribute(`data-media-variant-${variant}`);
 
-    if (variantUrl) {
-        imageNode.setAttribute('src', variantUrl);
+    const variantUrl = imageNode.getAttribute(
+        `data-media-variant-${variant}`
+    );
+
+    if (!variantUrl) {
+        return false;
     }
 
-    imageNode.setAttribute('data-media-selected-size', safeSize);
-    imageNode.setAttribute('data-media-selected-variant', variant);
+    imageNode.setAttribute('src', variantUrl);
+
+    imageNode.setAttribute(
+        'data-media-selected-size',
+        safeSize
+    );
+
+    imageNode.setAttribute(
+        'data-media-selected-variant',
+        variant
+    );
+
+    return true;
+}
+
+function applyImageSize(editor, imageNode, size = 'md') {
+    if (!imageNode) {
+        return false;
+    }
+
+    const target = getImageWrapper(editor, imageNode);
+    const safeSize = normalizeSize(size);
+
+    /*
+     * ابتدا مطمئن می‌شویم src واقعاً به Variant موردنظر تغییر کرده است.
+     */
+    const updated = updateImageVariantBySize(
+        imageNode,
+        safeSize
+    );
+
+    if (!updated) {
+        return false;
+    }
+
+    clearImageSizeClasses(editor, target);
+
+    editor.dom.addClass(
+        target,
+        `image-size-${safeSize}`
+    );
+
+    return true;
 }
 
 function setImageSize(editor, size = 'md') {
@@ -493,14 +661,23 @@ function setImageSize(editor, size = 'md') {
         return;
     }
 
-    const target = getImageWrapper(editor, imageNode);
-    const safeSize = normalizeSize(size);
+    let updated = false;
 
-    clearImageSizeClasses(editor, target);
+    editor.undoManager.transact(() => {
+        updated = applyImageSize(
+            editor,
+            imageNode,
+            size
+        );
+    });
 
-    editor.dom.addClass(target, `image-size-${safeSize}`);
-
-    updateImageVariantBySize(imageNode, safeSize);
+    if (updated) {
+        /*
+         * این بخش باعث می‌شود تغییر src فقط در DOM ادیتور
+         * باقی نماند و داخل textarea نیز ثبت شود.
+         */
+        commitEditorChanges(editor);
+    }
 }
 
 function getCurrentImageSize(editor, imageNode) {
@@ -552,24 +729,60 @@ function replaceSelectedImage(editor, {
         return;
     }
 
-    const currentSize = getCurrentImageSize(editor, imageNode);
-    const currentVariant = getVariantBySize(currentSize);
-    const nextSrc = getVariantUrl(variants, currentVariant, mediaPath);
+    const currentSize = getCurrentImageSize(
+        editor,
+        imageNode
+    );
 
-    imageNode.setAttribute('src', nextSrc);
-    imageNode.setAttribute('alt', mediaTitle || '');
-    imageNode.setAttribute('title', mediaTitle || '');
+    editor.undoManager.transact(() => {
+        imageNode.setAttribute(
+            'alt',
+            mediaTitle || ''
+        );
 
-    if (mediaId) {
-        imageNode.setAttribute('data-media-id', String(mediaId));
-    } else {
-        imageNode.removeAttribute('data-media-id');
-    }
+        imageNode.setAttribute(
+            'title',
+            mediaTitle || ''
+        );
 
-    clearImageVariantAttributes(imageNode);
-    setImageVariantAttributes(imageNode, variants);
+        if (mediaId) {
+            imageNode.setAttribute(
+                'data-media-id',
+                String(mediaId)
+            );
+        } else {
+            imageNode.removeAttribute('data-media-id');
+        }
 
-    updateImageVariantBySize(imageNode, currentSize);
+        clearImageVariantAttributes(imageNode);
+
+        setImageVariantAttributes(
+            imageNode,
+            variants
+        );
+
+        /*
+         * Variant متناظر با اندازه فعلی تصویر را قرار می‌دهیم.
+         */
+        const updated = applyImageSize(
+            editor,
+            imageNode,
+            currentSize
+        );
+
+        /*
+         * اگر Variant موردنظر وجود نداشت، از مسیر اصلی دریافتی
+         * Media Picker استفاده می‌کنیم.
+         */
+        if (!updated) {
+            imageNode.setAttribute(
+                'src',
+                mediaPath
+            );
+        }
+    });
+
+    commitEditorChanges(editor);
 }
 
 function buildEditorConfig(element) {
@@ -728,7 +941,7 @@ function handleMfipSelected(event) {
         title: mediaTitle,
         caption: '',
         mediaId,
-        size: 'md',
+        size: 'full',
         variants,
     });
 
@@ -737,18 +950,23 @@ function handleMfipSelected(event) {
     }
 
     editor.focus();
-    editor.insertContent(html);
+
+    editor.undoManager.transact(() => {
+        editor.insertContent(html);
+    });
+
+    commitEditorChanges(editor);
 }
 
 function normalizeEditorContentBeforeSave(content = '') {
-    return String(content).replaceAll(
+    return normalizeMediaImageSources(content).replaceAll(
         /<div class="editor-more-marker"[^>]*data-more-marker="true"[^>]*>[\s\S]*?<\/div>/g,
         '<!--more-->'
     );
 }
 
 function normalizeEditorContentForDisplay(content = '') {
-    return String(content).replaceAll(
+    return normalizeMediaImageSources(content).replaceAll(
         '<!--more-->',
         '<div class="editor-more-marker" data-more-marker="true" contenteditable="false">ادامه مطلب</div>'
     );
@@ -795,7 +1013,20 @@ document.addEventListener('DOMContentLoaded', () => {
     initEditors(document);
 });
 
-window.addEventListener('mfip-selected', handleMfipSelected);
+/*
+ * قبل از ارسال هر فرم، محتوای فعلی TinyMCE داخل textarea
+ * اصلی قرار می‌گیرد.
+ */
+document.addEventListener(
+    'submit',
+    syncEditorsBeforeSubmit,
+    true
+);
+
+window.addEventListener(
+    'mfip-selected',
+    handleMfipSelected
+);
 
 window.AdminEditor = {
     init: initEditors,
