@@ -85,4 +85,12 @@ class Wallet extends Model
     {
         return $this->hasMany(WalletTransaction::class);
     }
+
+    /**
+     * Get wallet balance holds.
+     */
+    public function holds(): HasMany
+    {
+        return $this->hasMany(WalletHold::class);
+    }
 }
