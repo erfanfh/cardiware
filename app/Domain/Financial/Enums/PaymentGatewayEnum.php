@@ -8,6 +8,7 @@ enum PaymentGatewayEnum: string
     case ZARINPAL = 'zarinpal';
     case PAYPING = 'payping';
 
+    case WALLET = 'wallet';
     case FREE = 'free';
 
     /**
@@ -19,6 +20,7 @@ enum PaymentGatewayEnum: string
             self::ZIBAL => 'زیبال',
             self::ZARINPAL => 'زرین پال',
             self::PAYPING => 'پی پینگ',
+            self::WALLET => 'کیف پول',
             self::FREE => 'پرداخت رایگان',
         };
     }
@@ -33,5 +35,13 @@ enum PaymentGatewayEnum: string
             self::ZARINPAL,
             self::PAYPING,
         ], true);
+    }
+
+    /**
+     * Determine whether this is an internal wallet payment.
+     */
+    public function isWallet(): bool
+    {
+        return $this === self::WALLET;
     }
 }

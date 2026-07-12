@@ -7,6 +7,7 @@ use App\Application\Commerce\Actions\Cart\EnsureCartReadyForCheckoutAction;
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Commerce\Actions\Cart\RemoveCartItemAction;
 use App\Application\Commerce\Actions\Cart\SyncCartItemsAction;
+use App\Application\Commerce\Actions\Checkout\CheckoutCartWithWalletAction;
 use App\Application\Commerce\Actions\Checkout\CompleteFreeOrderAction;
 use App\Application\Commerce\Actions\Order\CreateOrderFromCartAction;
 use App\Application\Commerce\Contracts\Purchasable;
@@ -15,6 +16,9 @@ use App\Application\Commerce\Exceptions\CartItemPriceChangedException;
 use App\Application\Commerce\Exceptions\CartNeedsRefreshException;
 use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Payment\StartPaymentAction;
+use App\Application\Financial\Exceptions\InsufficientWalletBalanceException;
+use App\Application\Financial\Exceptions\WalletIntegrityException;
+use App\Application\Financial\Exceptions\WalletUnavailableException;
 use App\Application\Promotion\Actions\Coupon\ApplyCouponToCartAction;
 use App\Application\Promotion\Actions\Coupon\ReleaseCouponReservationForOrderAction;
 use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
@@ -22,6 +26,7 @@ use App\Application\Promotion\Exceptions\CouponMinimumOrderAmountNotMetException
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
+use App\Domain\Financial\Models\Wallet;
 use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -130,9 +135,57 @@ class CartPage extends Component
     }
 
     #[Computed]
-    public function walletBalance(): int
+    public function walletAvailableBalance(): int
     {
-        return (int)(auth()->user()?->wallet?->balance ?? 0);
+        if (!auth()->check()) {
+            return 0;
+        }
+
+        $wallet = Wallet::query()
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$wallet) {
+            return 0;
+        }
+
+        /*
+         * Do not use total balance here.
+         * Held balance must not be spendable.
+         */
+        return (int)$wallet->available_balance;
+    }
+
+    #[Computed]
+    public function canPayFullyWithWallet(): bool
+    {
+        return $this->cartTotal > 0 && $this->walletAvailableBalance >= $this->cartTotal;
+    }
+
+    #[Computed]
+    public function walletShortage(): int
+    {
+        return max(0, $this->cartTotal - $this->walletAvailableBalance);
+    }
+
+    public function updatedPaymentMethod(string $paymentMethod): void
+    {
+        $this->checkoutError = null;
+        $this->checkoutNotice = null;
+
+        if (!in_array($paymentMethod, [
+            'gateway',
+            'wallet',
+        ], true)) {
+            $this->paymentMethod = 'gateway';
+
+            return;
+        }
+
+        if ($paymentMethod === 'wallet' && !$this->canPayFullyWithWallet) {
+            $this->paymentMethod = 'gateway';
+            $this->checkoutError = 'موجودی قابل استفاده کیف پول برای پرداخت کامل این سفارش کافی نیست.';
+        }
     }
 
     public function increaseQuantity(
@@ -324,11 +377,11 @@ class CartPage extends Component
     public function checkout(
         EnsureCartReadyForCheckoutAction $ensureCartReadyForCheckoutAction,
         CompleteFreeOrderAction          $completeFreeOrderAction,
+        CheckoutCartWithWalletAction     $checkoutCartWithWalletAction,
     ): RedirectResponse|Redirector|null
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
-        $this->paymentMethod = 'gateway';
 
         if (!auth()->check()) {
             $this->dispatch('open-modal', 'auth-modal');
@@ -340,24 +393,64 @@ class CartPage extends Component
             return null;
         }
 
+        if (!in_array($this->paymentMethod, [
+            'gateway',
+            'wallet',
+        ], true)) {
+            $this->paymentMethod = 'gateway';
+            $this->checkoutError = 'روش پرداخت انتخاب‌شده معتبر نیست.';
+            return null;
+        }
+
+        if ($this->paymentMethod === 'wallet' && !$this->canPayFullyWithWallet) {
+            $this->checkoutError = 'موجودی قابل استفاده کیف پول برای پرداخت کامل این سفارش کافی نیست.';
+            return null;
+        }
+
         try {
             $cart = $ensureCartReadyForCheckoutAction->execute($this->cart);
 
-            $order = app(CreateOrderFromCartAction::class)->execute(
-                cart: $cart,
-                metadata: [
-                    'source' => 'web',
-                    'ip' => request()->ip(),
-                    'user_agent' => request()->userAgent(),
-                ],
-            );
+            $metadata = [
+                'source' => 'web',
+                'ip' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+                'payment_method' => $this->paymentMethod,
+            ];
 
-            $this->cartNeedsRefresh = false;
+            /*
+             * Free order flow.
+             *
+             * Free orders do not use gateway or wallet balance.
+             */
+            if ((int)$cart->total_amount <= 0) {
+                $order = app(CreateOrderFromCartAction::class)->execute(
+                    cart: $cart,
+                    metadata: $metadata,
+                );
 
-            $this->resetCartComputedProperties();
-
-            if ((int)$order->total_amount <= 0) {
                 $payment = $completeFreeOrderAction->execute($order);
+
+                $this->cartNeedsRefresh = false;
+
+                $this->resetCartComputedProperties();
+
+                return redirect()->route('payment.result', [
+                    'paymentToken' => $payment->public_token,
+                ]);
+            }
+
+            /*
+             * Full wallet payment.
+             *
+             * Order creation, wallet debit and order completion happen
+             * inside one database transaction.
+             */
+            if ($this->paymentMethod === 'wallet') {
+                $payment = $checkoutCartWithWalletAction->execute(
+                    cart: $cart,
+                    user: auth()->user(),
+                    metadata: $metadata,
+                );
 
                 $this->cartNeedsRefresh = false;
                 $this->resetCartComputedProperties();
@@ -366,6 +459,17 @@ class CartPage extends Component
                     'paymentToken' => $payment->public_token,
                 ]);
             }
+
+            /*
+             * External gateway payment.
+             */
+            $order = app(CreateOrderFromCartAction::class)->execute(
+                cart: $cart,
+                metadata: $metadata,
+            );
+
+            $this->cartNeedsRefresh = false;
+            $this->resetCartComputedProperties();
 
             $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();
 
@@ -460,6 +564,31 @@ class CartPage extends Component
             $this->dispatch('cart-updated');
 
             return null;
+        } catch (InsufficientWalletBalanceException $exception) {
+            $this->checkoutNotice = null;
+            $this->cartNeedsRefresh = false;
+
+            $this->resetCartComputedProperties();
+
+            $this->checkoutError = 'موجودی قابل استفاده کیف پول برای پرداخت این سفارش کافی نیست.';
+
+            return null;
+        } catch (WalletUnavailableException $exception) {
+            $this->checkoutNotice = null;
+            $this->cartNeedsRefresh = false;
+
+            $this->checkoutError = 'کیف پول شما در حال حاضر برای پرداخت قابل استفاده نیست.';
+
+            return null;
+        } catch (WalletIntegrityException $exception) {
+            report($exception);
+
+            $this->checkoutNotice = null;
+            $this->cartNeedsRefresh = false;
+
+            $this->checkoutError = 'در بررسی اطلاعات کیف پول خطایی رخ داد. لطفاً با پشتیبانی تماس بگیرید.';
+
+            return null;
         } catch (DomainException $exception) {
             $this->checkoutNotice = null;
 
@@ -471,6 +600,10 @@ class CartPage extends Component
                 'Coupon reservation limit reached.' => 'ظرفیت استفاده از این کدتخفیف به پایان رسیده است.',
                 'Coupon per user reservation limit reached.' => 'شما قبلاً از این کدتخفیف استفاده کرده‌اید یا یک سفارش در حال پرداخت با همین کدتخفیف دارید.',
                 'Coupon reservation is not reusable.' => 'رزرو قبلی این کدتخفیف دیگر قابل استفاده نیست. لطفاً دوباره تلاش کنید.',
+
+                'The cart does not belong to this user.' => 'سبد خرید انتخاب‌شده متعلق به حساب کاربری شما نیست.',
+                'The order does not belong to this user.' => 'سفارش ایجادشده متعلق به حساب کاربری شما نیست.',
+                'Order cannot be paid in its current status.' => 'سفارش در وضعیت قابل پرداخت قرار ندارد.',
 
                 default => 'امکان ادامه پرداخت وجود ندارد. لطفا سبد خرید را بررسی کنید و دوباره تلاش کنید.',
             };
@@ -632,7 +765,10 @@ class CartPage extends Component
         unset($this->cartSubtotal);
         unset($this->cartDiscount);
         unset($this->cartTotal);
-        unset($this->walletBalance);
+
+        unset($this->walletAvailableBalance);
+        unset($this->canPayFullyWithWallet);
+        unset($this->walletShortage);
     }
 
     public function render(): View
