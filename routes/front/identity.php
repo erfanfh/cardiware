@@ -20,5 +20,6 @@ Route::prefix('account')->middleware('auth')->name('account.')->controller(Accou
     Route::get('tickets', [AccountController::class, 'tickets'])->name('tickets');
     Route::get('favorites', [AccountController::class, 'favorites'])->name('favorites');
     Route::get('security', [AccountController::class, 'security'])->name('security');
+    Route::get('wallet', [AccountController::class, 'wallet'])->name('wallet');
 });
 
