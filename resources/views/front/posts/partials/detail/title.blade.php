@@ -45,14 +45,29 @@
                 {{ $post->title }}
             </h1>
 
-            <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                <span>{{ jalali_date($post->published_at, 'd F Y') }}</span>
-                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                <span>{{ $post->author->display_name }}</span>
-                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                <span>{{ number_format(page_views($post)) }} بازدید</span>
-                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                <span>{{ $post->approved_comments_count }} دیدگاه</span>
+            <div
+                class="flex flex-wrap items-center gap-5 text-xs text-slate-500 dark:text-slate-400 [&_svg]:w-[14px] [&_svg]:h-[14px]">
+                <div class="flex gap-1 items-center">
+                    @include('icons.calendar-03')
+                    <span>
+                        {{ jalali_date($post->published_at, 'd F Y') }}
+                    </span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.user')
+                    <span>{{ $post->author->display_name }}</span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.view')
+                    <span>{{ number_format(page_views($post)) }} بازدید</span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.comment-01')
+                    <span>{{ $post->approved_comments_count }} دیدگاه</span>
+                </div>
 
                 <span class="mr-auto"></span>
 
