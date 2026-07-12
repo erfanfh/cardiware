@@ -3,7 +3,7 @@
 namespace App\Application\Financial\Actions\Payment;
 
 use App\Application\Commerce\Actions\Checkout\CompletePaidOrderPaymentAction;
-use App\Application\Financial\Actions\Wallet\CompletePaidWalletTopUpAction;
+use App\Application\Financial\Actions\Wallet\CompletePaidManualWalletTopUpAction;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
@@ -14,8 +14,8 @@ use Throwable;
 class CompletePaidPaymentAction
 {
     public function __construct(
-        private readonly CompletePaidOrderPaymentAction $completePaidOrderPaymentAction,
-        private readonly CompletePaidWalletTopUpAction  $completePaidWalletTopUpAction,
+        private readonly CompletePaidOrderPaymentAction      $completePaidOrderPaymentAction,
+        private readonly CompletePaidManualWalletTopUpAction $completePaidWalletTopUpAction,
     )
     {
     }

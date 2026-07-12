@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Front\Financial;
 
-use App\Application\Financial\Actions\Payment\CompletePaidPaymentAction;
+use App\Application\Financial\Actions\Payment\FinalizeVerifiedPaymentAction;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
 use App\Http\Controllers\Controller;
@@ -15,38 +16,37 @@ use Throwable;
 class PaymentResultController extends Controller
 {
     public function __invoke(
-        string                    $paymentToken,
-        CompletePaidPaymentAction $completePaidPaymentAction,
-    ): View
+        string                        $paymentToken,
+        FinalizeVerifiedPaymentAction $finalizeVerifiedPaymentAction): View
     {
         $payment = Payment::query()
             ->where('public_token', $paymentToken)
             ->with('payable')
             ->firstOrFail();
 
+        /*
+         * Ownership must be checked before running any side effect.
+         */
         $this->ensureCurrentUserOwnsPayable(
             $payment->payable,
         );
 
         /*
-         * Self-healing:
+         * Idempotent self-healing.
          *
-         * ممکن است پرداخت در درگاه موفق شده باشد، اما اجرای side effect
-         * مربوط به سفارش یا شارژ کیف پول در callback با خطای موقت مواجه
-         * شده باشد. از آنجا که تکمیل پرداخت‌ها idempotent است، اینجا یک‌بار
-         * دیگر تلاش می‌کنیم.
+         * This handles both:
+         *
+         * - successful Payment whose payable was not completed
+         * - failed Payment whose Hold or coupon was not released
          */
-        if ($payment->isPaid()) {
-            try {
-                $completePaidPaymentAction->execute($payment);
-            } catch (Throwable $exception) {
-                report($exception);
-            }
+        try {
+            $finalizeVerifiedPaymentAction->execute($payment);
+        } catch (Throwable $exception) {
+            report($exception);
         }
 
         /*
-         * پس از تلاش برای تکمیل عملیات، اطلاعات را دوباره از دیتابیس
-         * دریافت می‌کنیم تا وضعیت نهایی WalletTopUp یا Order نمایش داده شود.
+         * Reload the latest state after finalization.
          */
         $payment = Payment::query()
             ->whereKey($payment->id)
@@ -56,14 +56,12 @@ class PaymentResultController extends Controller
         $payable = $payment->payable;
 
         return match (true) {
-            $payable instanceof Order =>
-            $this->renderOrderResult(
+            $payable instanceof Order => $this->renderOrderResult(
                 payment: $payment,
                 order: $payable,
             ),
 
-            $payable instanceof WalletTopUp =>
-            $this->renderWalletTopUpResult(
+            $payable instanceof WalletTopUp => $this->renderWalletTopUpResult(
                 payment: $payment,
                 topUp: $payable,
             ),
@@ -73,7 +71,7 @@ class PaymentResultController extends Controller
     }
 
     /**
-     * Ensure the authenticated user owns the payment's payable model.
+     * Ensure the authenticated user owns the payment payable.
      */
     private function ensureCurrentUserOwnsPayable(
         ?Model $payable,
@@ -90,13 +88,8 @@ class PaymentResultController extends Controller
         }
 
         $ownsPayable = match (true) {
-            $payable instanceof Order =>
-                (int)$payable->user_id === $userId,
-
-            $payable instanceof WalletTopUp =>
-                (int)$payable->wallet()
-                    ->value('user_id') === $userId,
-
+            $payable instanceof Order => (int)$payable->user_id === $userId,
+            $payable instanceof WalletTopUp => (int)$payable->wallet()->value('user_id') === $userId,
             default => false,
         };
 
@@ -106,7 +99,7 @@ class PaymentResultController extends Controller
     }
 
     /**
-     * Render order payment result.
+     * Render an order payment receipt.
      */
     private function renderOrderResult(
         Payment $payment,
@@ -136,7 +129,10 @@ class PaymentResultController extends Controller
     }
 
     /**
-     * Render wallet top-up payment result.
+     * Render a wallet top-up result.
+     *
+     * A completed order-shortfall top-up eventually redirects to the
+     * regular order receipt by using its internal WALLET payment.
      */
     private function renderWalletTopUpResult(
         Payment     $payment,
@@ -146,26 +142,70 @@ class PaymentResultController extends Controller
         $topUp->load([
             'wallet',
             'creditedTransaction',
+
+            /*
+             * These relations only have values for top-ups created
+             * to complete an order payment.
+             */
+            'order',
+            'orderPayment',
+            'walletHold',
         ]);
 
-        $wallet = $topUp->wallet->refresh();
+        $wallet = $topUp->wallet;
+
+        if (!$wallet) {
+            abort(404);
+        }
+
+        $wallet->refresh();
+
+        /*
+         * Successful mixed payment:
+         *
+         * External Payment paid only the shortage.
+         * Internal WALLET Payment paid the complete Order.
+         *
+         * Therefore the user should see the normal order receipt using
+         * the internal payment, not a simple wallet top-up receipt.
+         */
+        if (
+            $topUp->isOrderPayment()
+            && $topUp->isCompleted()
+            && $topUp->order
+            && $topUp->orderPayment
+            && $topUp->order->isPaid()
+            && $topUp->orderPayment->isPaid()
+        ) {
+            return $this->renderOrderResult(
+                payment: $topUp->orderPayment,
+                order: $topUp->order,
+            );
+        }
 
         $isCredited = $payment->isPaid()
             && $topUp->isCompleted()
             && $topUp->credited_transaction_id !== null;
 
+        /*
+         * For an order shortfall, success requires both wallet credit
+         * and successful order payment.
+         */
+        $isCompletedOrderPayment = $topUp->isOrderPayment()
+            && $isCredited
+            && $topUp->order_payment_id !== null
+            && $topUp->order?->isPaid();
+
         $resultState = match (true) {
-            $isCredited =>
-            'success',
-
-            $payment->isPaid() =>
-            'processing',
-
-            $payment->status->isFailed() =>
-            'failed',
-
-            default =>
-            'pending',
+            $topUp->isManual() && $isCredited => 'success',
+            $isCompletedOrderPayment => 'success',
+            /*
+             * External payment is paid, but internal credit/order
+             * completion still needs recovery.
+             */
+            $payment->isPaid() => 'processing',
+            $this->isUnsuccessfulTerminalPayment($payment) => 'failed',
+            default => 'pending',
         };
 
         return view(
@@ -175,7 +215,28 @@ class PaymentResultController extends Controller
                 'topUp' => $topUp,
                 'wallet' => $wallet,
                 'resultState' => $resultState,
+
+                /*
+                 * These values allow the Blade to show better text for
+                 * shortfall payments later without changing this controller.
+                 */
+                'isOrderPaymentTopUp' => $topUp->isOrderPayment(),
+
+                'relatedOrder' => $topUp->order,
             ],
+        );
+    }
+
+    private function isUnsuccessfulTerminalPayment(Payment $payment): bool
+    {
+        return in_array(
+            $payment->status,
+            [
+                PaymentStatusEnum::FAILED,
+                PaymentStatusEnum::CANCELLED,
+                PaymentStatusEnum::EXPIRED,
+            ],
+            true,
         );
     }
 }

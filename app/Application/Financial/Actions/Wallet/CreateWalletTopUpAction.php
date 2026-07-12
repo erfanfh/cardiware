@@ -4,6 +4,7 @@ namespace App\Application\Financial\Actions\Wallet;
 
 use App\Application\Financial\Exceptions\WalletTopUpIdempotencyConflictException;
 use App\Application\Financial\Exceptions\WalletUnavailableException;
+use App\Domain\Financial\Enums\WalletTopUpPurposeEnum;
 use App\Domain\Financial\Enums\WalletTopUpStatusEnum;
 use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTopUp;
@@ -91,6 +92,7 @@ class CreateWalletTopUpAction
                 return WalletTopUp::query()->create([
                     'wallet_id' => $wallet->id,
                     'request_key' => $requestKey,
+                    'purpose' => WalletTopUpPurposeEnum::MANUAL,
                     'status' => WalletTopUpStatusEnum::PENDING_PAYMENT,
                     'amount' => $amount,
                     'withdrawable_amount' => $withdrawableAmount,
@@ -181,7 +183,8 @@ class CreateWalletTopUpAction
         }
 
         if (
-            (int)$topUp->wallet?->user_id !== (int)$user->id
+            !$topUp->purpose->isManual()
+            || (int)$topUp->wallet?->user_id !== (int)$user->id
             || (int)$topUp->amount !== $amount
         ) {
             throw new WalletTopUpIdempotencyConflictException(

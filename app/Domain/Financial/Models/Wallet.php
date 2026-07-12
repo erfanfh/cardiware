@@ -38,8 +38,7 @@ class Wallet extends Model
     protected function availableBalance(): Attribute
     {
         return Attribute::make(
-            get: fn(): int => (int)$this->balance
-                - (int)$this->held_balance,
+            get: fn(): int => (int)$this->balance - (int)$this->held_balance,
         );
     }
 

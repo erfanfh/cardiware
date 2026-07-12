@@ -5,6 +5,7 @@ namespace App\Domain\Commerce\Models;
 use App\Application\Financial\Contracts\Payable;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Financial\Models\Payment;
+use App\Domain\Financial\Models\WalletTopUp;
 use App\Domain\Identity\Models\User;
 use App\Domain\Promotion\Models\Coupon;
 use App\Domain\Promotion\Models\CouponReservation;
@@ -161,5 +162,13 @@ class Order extends Model implements Payable
     public function couponReservation(): HasOne
     {
         return $this->hasOne(CouponReservation::class);
+    }
+
+    /**
+     * Wallet top-ups created to complete this order payment.
+     */
+    public function walletTopUps(): HasMany
+    {
+        return $this->hasMany(WalletTopUp::class);
     }
 }

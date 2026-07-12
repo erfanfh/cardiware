@@ -195,40 +195,35 @@
                     </label>
 
                     @php
-                        $walletCanPay = $this->canPayFullyWithWallet;
-                        $walletAvailableBalance = $this->walletAvailableBalance;
+                        $walletMode = $this->walletPaymentMode;
+                        $walletCanBeSelected = $this->canUseWalletPayment;
                     @endphp
 
                     <label
                         class="rounded-2xl border p-4 transition sm:rounded-3xl
-                        dark:border-slate-800 dark:bg-slate-900/40
-
-                        {{ $walletCanPay ? 'cursor-pointer' : 'cursor-not-allowed opacity-70' }}"
-
+           {{ $walletCanBeSelected
+                ? 'cursor-pointer'
+                : 'cursor-not-allowed opacity-65' }}"
                         :class="$wire.paymentMethod === 'wallet'
-                        ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
+        ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
+        : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
                     >
                         <input
                             type="radio"
                             value="wallet"
                             wire:model.live="paymentMethod"
                             class="sr-only"
-                            @disabled(!$walletCanPay)
+                            @disabled(!$walletCanBeSelected)
                         >
 
                         <div class="flex items-start gap-3">
                             <div
                                 class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl"
                                 :class="$wire.paymentMethod === 'wallet'
-                                ? 'bg-brand-500 text-white dark:bg-brand-600'
-                                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
+                ? 'bg-brand-500 text-white dark:bg-brand-600'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
-                                <svg
-                                    class="h-5 w-5"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                >
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                     <path
                                         d="M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 0V5a2 2 0 0 1 2-2h9"
                                         stroke="currentColor"
@@ -245,31 +240,40 @@
                                 </svg>
                             </div>
 
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                        کیف پول
+                                        @if($walletMode === 'mixed')
+                                            کیف پول + درگاه
+                                        @else
+                                            کیف پول
+                                        @endif
                                     </div>
 
                                     <span
-                                        class="rounded-xl border border-slate-200 bg-white
-                                           px-2 py-1 text-[10px] font-extrabold
-                                           text-slate-500
-                                           dark:border-slate-700 dark:bg-slate-800
-                                           dark:text-slate-300"
+                                        class="rounded-xl border border-slate-200 bg-white px-2 py-1
+                           text-[10px] font-extrabold text-slate-500
+                           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                                        موجودی قابل استفاده:
-                                        {{ $this->money($walletAvailableBalance) }}
-                                    </span>
+                    موجودی قابل استفاده:
+                    {{ $this->money($this->walletAvailableBalance) }}
+                </span>
                                 </div>
 
-                                @if($walletCanPay)
+                                @if($walletMode === 'full')
+                                    <p class="mt-1 text-xs leading-6 text-emerald-700 dark:text-emerald-300">
+                                        کل مبلغ سفارش از کیف پول پرداخت می‌شود.
+                                    </p>
+                                @elseif($walletMode === 'mixed')
                                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                        کل مبلغ سفارش از موجودی کیف پول شما پرداخت می‌شود.
+                                        {{ $this->money($this->walletContribution) }}
+                                        از کیف پول و
+                                        {{ $this->money($this->walletShortage) }}
+                                        از درگاه پرداخت می‌شود.
                                     </p>
                                 @else
                                     <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300">
-                                        موجودی کیف پول برای پرداخت کامل این سفارش کافی نیست.
+                                        موجودی قابل استفاده‌ای در کیف پول وجود ندارد.
                                     </p>
                                 @endif
                             </div>
@@ -278,33 +282,47 @@
 
                 </div>
 
-                @if(!$this->canPayFullyWithWallet && $this->cartTotal > 0)
+                @if($paymentMethod === 'wallet' && $this->canUseWalletPayment)
                     <div
-                        class="mt-3 flex flex-col gap-3 rounded-2xl
-                       border border-amber-200 bg-amber-50 p-4
-                       sm:flex-row sm:items-center sm:justify-between
-                       dark:border-amber-900/40 dark:bg-amber-950/30"
+                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4
+                        dark:border-brand-900/40 dark:bg-brand-950/20"
                     >
-                        <div>
-                            <div class="text-xs font-extrabold text-amber-900 dark:text-amber-200">
-                                موجودی کیف پول کافی نیست
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="font-semibold text-slate-600 dark:text-slate-400">
+                                    سهم کیف پول
+                                </span>
+
+                                <strong class="font-extrabold text-slate-900 dark:text-slate-100">
+                                    {{ $this->money($this->walletContribution) }}
+                                </strong>
                             </div>
 
-                            <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300">
-                                برای پرداخت کامل با کیف پول،
-                                {{ $this->money($this->walletShortage) }}
-                                کسری موجودی دارید.
-                            </p>
-                        </div>
+                            @if($this->walletShortage > 0)
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="font-semibold text-slate-600 dark:text-slate-400">
+                                        مبلغ پرداخت در درگاه
+                                    </span>
 
-                        <a
-                            href="{{ route('account.wallet') }}"
-                            class="inline-flex h-10 shrink-0 items-center justify-center
-                           rounded-xl bg-amber-600 px-4 text-xs font-extrabold
-                           text-white transition hover:bg-amber-700"
-                        >
-                            شارژ کیف پول
-                        </a>
+                                    <strong class="font-extrabold text-brand-700 dark:text-brand-300">
+                                        {{ $this->money($this->walletShortage) }}
+                                    </strong>
+                                </div>
+                            @endif
+
+                            <div
+                                class="flex items-center justify-between gap-4 border-t
+                                border-brand-100 pt-2 dark:border-brand-900/40"
+                            >
+                                <span class="font-extrabold text-slate-700 dark:text-slate-300">
+                                    مبلغ کل سفارش
+                                </span>
+
+                                <strong class="font-black text-slate-900 dark:text-white">
+                                    {{ $this->money($this->cartTotal) }}
+                                </strong>
+                            </div>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -369,7 +387,17 @@
         dark:bg-brand-600 dark:hover:bg-brand-700 dark:shadow-none"
                 >
                     <span wire:loading.remove wire:target="checkout">
-                        {{ $paymentMethod === 'wallet' ? 'پرداخت با کیف پول' : 'پرداخت با درگاه' }}
+                        @if($paymentMethod === 'wallet')
+                            @if($this->walletPaymentMode === 'full')
+                                پرداخت با کیف پول
+                            @elseif($this->walletPaymentMode === 'mixed')
+                                تکمیل موجودی و پرداخت
+                            @else
+                                ادامه پرداخت
+                            @endif
+                        @else
+                            پرداخت با درگاه
+                        @endif
                     </span>
 
                     <span wire:loading wire:target="checkout">
