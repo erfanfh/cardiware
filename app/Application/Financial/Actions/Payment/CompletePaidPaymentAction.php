@@ -3,7 +3,7 @@
 namespace App\Application\Financial\Actions\Payment;
 
 use App\Application\Commerce\Actions\Checkout\CompletePaidOrderPaymentAction;
-use App\Application\Financial\Actions\Wallet\CompletePaidManualWalletTopUpAction;
+use App\Application\Financial\Actions\Wallet\CompletePaidWalletTopUpAction;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
@@ -14,8 +14,8 @@ use Throwable;
 class CompletePaidPaymentAction
 {
     public function __construct(
-        private readonly CompletePaidOrderPaymentAction      $completePaidOrderPaymentAction,
-        private readonly CompletePaidManualWalletTopUpAction $completePaidWalletTopUpAction,
+        private readonly CompletePaidOrderPaymentAction $completePaidOrderPaymentAction,
+        private readonly CompletePaidWalletTopUpAction  $completePaidWalletTopUpAction,
     )
     {
     }
@@ -37,20 +37,13 @@ class CompletePaidPaymentAction
             );
         }
 
-        $payable = $payment->payable;
-
         return match (true) {
-            $payable instanceof Order =>
-            $this->completePaidOrderPaymentAction->execute($payment),
+            $payment->payable instanceof Order => $this->completePaidOrderPaymentAction->execute($payment),
 
-            $payable instanceof WalletTopUp =>
-            $this->completePaidWalletTopUpAction->execute($payment),
+            $payment->payable instanceof WalletTopUp => $this->completePaidWalletTopUpAction->execute($payment),
 
             default => throw new DomainException(
-                sprintf(
-                    'No paid payment completer is registered for payable [%s].',
-                    $payment->payable_type,
-                )
+                'Unsupported paid payment payable.'
             ),
         };
     }
