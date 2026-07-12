@@ -111,7 +111,9 @@ class PermissionSeeder extends Seeder
                 'list' => 'لیست تیکت‌ها',
                 'show' => 'مشاهده و پاسخ تیکت',
                 'change-status' => 'تغییر وضعیت تیکت',
+                'change-department' => 'تغییر دپارتمان تیکت',
                 'manage-departments' => 'مدیریت دپارتمان ها',
+                'delete' => 'حذف تیکت',
             ],
         ];
 

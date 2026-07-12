@@ -5,13 +5,12 @@
             class="absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] dark:bg-brand-500/10"></div>
         <div class="absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
 
-        <nav class="text-xs text-slate-500 flex flex-wrap gap-2 dark:text-slate-400">
+        <nav
+            class="text-xs text-slate-500 flex flex-wrap items-center gap-1.5 dark:text-slate-400 [&_svg]:w-3 [&_svg]:h-3">
             <a href="{{ route('home') }}" class="hover:text-brand-700 font-bold transition dark:hover:text-brand-300">خانه</a>
-            <span>—</span>
+            @include('icons.arrow-left-01')
             <a href="{{ front_route('posts.list') }}"
                class="hover:text-brand-700 font-bold transition dark:hover:text-brand-300">نوشته‌ها</a>
-            <span>—</span>
-            <span class="text-slate-600 font-semibold dark:text-slate-300">{{ $post->title }}</span>
         </nav>
 
         <div class="mt-4 flex flex-col gap-4">
@@ -41,23 +40,33 @@
                 @endif
             </div>
 
-            <h1 class="text-xl sm:text-2xl font-black leading-tight text-slate-900 dark:text-white">
+            <h1 class="text-base sm:text-lg md:text-2xl font-black leading-tight text-slate-900 dark:text-white">
                 {{ $post->title }}
             </h1>
 
-            @php
-                $views = approximate_view(page_views($post));
-            @endphp
-            <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                <span>{{ jalali_date($post->published_at, 'd F Y') }}</span>
-                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                <span>{{ $post->author->display_name }}</span>
-                @if($views)
-                    <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                    <span>{{ $views }} بازدید</span>
-                @endif
-                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                <span>{{ $post->approved_comments_count }} دیدگاه</span>
+            <div
+                class="flex flex-wrap items-center gap-5 text-xs text-slate-500 dark:text-slate-400 [&_svg]:w-[14px] [&_svg]:h-[14px] mt-1">
+                <div class="flex gap-1 items-center">
+                    @include('icons.calendar-03')
+                    <span>
+                        {{ jalali_date($post->published_at, 'd F Y') }}
+                    </span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.user')
+                    <span>{{ $post->author->display_name }}</span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.view')
+                    <span>{{ number_format(page_views($post)) }} بازدید</span>
+                </div>
+
+                <div class="flex gap-1 items-center">
+                    @include('icons.comment-01')
+                    <span>{{ $post->approved_comments_count }} دیدگاه</span>
+                </div>
 
                 <span class="mr-auto"></span>
 

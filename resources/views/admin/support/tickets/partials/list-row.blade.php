@@ -106,9 +106,9 @@
                     مشاهده و پاسخ
                 </x-admin.list.action>
 
-                @if($status === TicketStatusEnum::CLOSED)
-                    <span class="text-slate-300">|</span>
+                <span class="text-slate-300">|</span>
 
+                @if($status === TicketStatusEnum::CLOSED)
                     <form method="POST" action="{{ route('admin.tickets.reopen', $ticket) }}" class="inline">
                         @csrf
 
@@ -117,8 +117,6 @@
                         </x-admin.list.action>
                     </form>
                 @else
-                    <span class="text-slate-300">|</span>
-
                     <form
                         method="POST"
                         action="{{ route('admin.tickets.close', $ticket) }}"
@@ -131,6 +129,24 @@
                         </x-admin.list.action>
                     </form>
                 @endif
+
+                <span class="text-slate-300">|</span>
+
+                <x-admin.form
+                    action="{{ route('admin.tickets.destroy', $ticket) }}"
+                    method="delete"
+                    class="js-confirm"
+                    data-confirm-title="حذف تیکت"
+                    data-confirm-text="آیا از حذف تیکت «{{ $ticket->title }}» مطمئن هستید؟ این عملیات قابل بازگشت نیست."
+                >
+                    <x-admin.list.action
+                        tag="button"
+                        type="submit"
+                        variant="danger"
+                    >
+                        حذف
+                    </x-admin.list.action>
+                </x-admin.form>
             </x-admin.list.row-actions>
         </div>
     </x-admin.list.td>
