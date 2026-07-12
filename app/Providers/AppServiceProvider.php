@@ -7,6 +7,7 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Financial\Models\WalletTopUp;
 use App\Domain\Support\Models\Ticket;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -50,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
             'product_sale_item' => ProductSaleItem::class,
             'product_addon' => ProductAddon::class,
             'order' => Order::class,
+            'wallet_top_up' => WalletTopUp::class,
         ]);
 
         RateLimiter::for('api', function (\Illuminate\Http\Request $request): Limit {
