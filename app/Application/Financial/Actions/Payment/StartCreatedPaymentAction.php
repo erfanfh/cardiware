@@ -7,6 +7,8 @@ use App\Application\Financial\Support\PaymentGatewayManager;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use DomainException;
+use Illuminate\Contracts\Cache\LockTimeoutException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -21,6 +23,8 @@ class StartCreatedPaymentAction
     }
 
     /**
+     * Start an already-created payment through an external gateway.
+     *
      * @param array<string, mixed> $metadata
      * @throws Throwable
      */
@@ -30,68 +34,96 @@ class StartCreatedPaymentAction
         array   $metadata = [],
     ): Payment
     {
-        $payment->refresh();
-
-        /*
-         * Idempotent retry after gateway request was already completed.
-         */
-        if ($payment->status !== PaymentStatusEnum::INITIATED) {
-            return $payment;
-        }
-
-        if (!$payment->gateway->isExternal()) {
-            throw new DomainException(
-                'Only external payments can be started through a gateway.'
-            );
-        }
-
-        /*
-         * External HTTP request is outside a database transaction.
-         */
-        $gatewayDriver = $this->paymentGatewayManager->get(
-            $payment->gateway,
+        $lock = Cache::lock(
+            name: 'payment:start:' . $payment->id,
+            seconds: 30,
         );
 
-        $result = $gatewayDriver->start(
-            new StartPaymentRequestDTO(
-                payment: $payment,
-                callbackUrl: $callbackUrl,
-                metadata: $metadata,
-            ),
-        );
+        try {
+            return $lock->block(
+                seconds: 5,
+                callback: function () use (
+                    $payment,
+                    $callbackUrl,
+                    $metadata,
+                ): Payment {
+                    $payment = Payment::query()
+                        ->findOrFail($payment->id);
 
-        return DB::transaction(function () use (
-            $payment,
-            $result,
-        ): Payment {
-            $payment = Payment::query()
-                ->whereKey($payment->id)
-                ->lockForUpdate()
-                ->firstOrFail();
+                    /*
+                     * اگر قبلاً شروع شده، همان Payment را برگردان.
+                     */
+                    if ($payment->status !== PaymentStatusEnum::INITIATED) {
+                        return $payment;
+                    }
 
-            if ($payment->status !== PaymentStatusEnum::INITIATED) {
-                return $payment;
-            }
+                    if (!$payment->gateway->isExternal()) {
+                        throw new DomainException(
+                            'Only external payments can be started through a gateway.'
+                        );
+                    }
 
-            if (!$result->successful) {
-                return $this->markPaymentAsFailedAction->execute(
-                    payment: $payment,
-                    gatewayStatus: $result->gatewayStatus,
-                    gatewayMessage: $result->gatewayMessage,
-                    payload: $result->rawResponse,
-                );
-            }
+                    /*
+                     * تماس HTTP خارج از transaction دیتابیس انجام می‌شود.
+                     */
+                    $gatewayDriver = $this->paymentGatewayManager->get(
+                        $payment->gateway,
+                    );
 
-            return $this->markPaymentAsPendingAction->execute(
-                payment: $payment,
-                gatewayReference: $result->gatewayReference,
-                gatewayStatus: $result->gatewayStatus,
-                gatewayMessage: $result->gatewayMessage,
-                requestPayload: [
-                    'redirect_url' => $result->redirectUrl,
-                    'gateway_response' => $result->rawResponse,
-                ],
+                    $result = $gatewayDriver->start(
+                        new StartPaymentRequestDTO(
+                            payment: $payment,
+                            callbackUrl: $callbackUrl,
+                            metadata: $metadata,
+                        ),
+                    );
+
+                    return DB::transaction(function () use (
+                        $payment,
+                        $result,
+                    ): Payment {
+                        $payment = Payment::query()
+                            ->whereKey($payment->id)
+                            ->lockForUpdate()
+                            ->firstOrFail();
+
+                        /*
+                         * ممکن است پردازش دیگری زودتر نتیجه را ثبت کرده باشد.
+                         */
+                        if ($payment->status !== PaymentStatusEnum::INITIATED) {
+                            return $payment;
+                        }
+
+                        if (!$result->successful) {
+                            return $this->markPaymentAsFailedAction->execute(
+                                payment: $payment,
+                                gatewayStatus: $result->gatewayStatus,
+                                gatewayMessage: $result->gatewayMessage,
+                                payload: $result->rawResponse,
+                            );
+                        }
+
+                        return $this->markPaymentAsPendingAction->execute(
+                            payment: $payment,
+                            gatewayReference: $result->gatewayReference,
+                            gatewayStatus: $result->gatewayStatus,
+                            gatewayMessage: $result->gatewayMessage,
+                            requestPayload: [
+                                'redirect_url' => $result->redirectUrl,
+                                'gateway_response' => $result->rawResponse,
+                            ],
+                        );
+                    }, 3);
+                },
             );
-        }, 3);
+        } catch (LockTimeoutException $exception) {
+            /*
+             * درخواست دیگری در حال شروع همین پرداخت است.
+             * بعد از آزادشدن قفل، آخرین وضعیت را برمی‌گردانیم.
+             */
+            return Payment::query()->findOrFail($payment->id);
+        } finally {
+            optional($lock)->release();
+        }
     }
 }

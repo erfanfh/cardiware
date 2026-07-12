@@ -258,20 +258,6 @@
             </article>
         </section>
 
-        {{-- Placeholder for next step --}}
-        <section
-            class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-6
-                   dark:border-slate-700 dark:bg-slate-900/50"
-        >
-            <div class="text-center">
-                <h2 class="text-sm font-black text-slate-800 dark:text-slate-200">
-                    شارژ کیف پول
-                </h2>
-
-                <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                    در مرحله بعد فرم شارژ کیف پول و انتخاب درگاه پرداخت در این بخش قرار می‌گیرد.
-                </p>
-            </div>
-        </section>
+        <livewire:front.account.wallet.top-up-form/>
     </div>
 @endsection

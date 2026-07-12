@@ -78,21 +78,35 @@ return [
     'wallet' => [
         'top_up' => [
             /*
-             * All amounts are stored in toman.
+             * مبالغ برحسب تومان هستند.
              */
             'minimum_amount' => 50_000,
             'maximum_amount' => 20_000_000,
 
             /*
-             * A top-up request can start payment within this period.
+             * مدت اعتبار درخواست شارژ.
              */
             'expires_after_minutes' => 30,
 
             /*
-             * For security, user-funded top-ups are not withdrawable
-             * by default.
+             * شارژ مستقیم فعلاً قابل برداشت نیست.
              */
             'is_withdrawable' => false,
+
+            /*
+             * فقط درگاه‌هایی که واقعاً در پروژه فعال هستند.
+             */
+            'gateways' => [
+                'zibal',
+            ],
+
+            /*
+             * محدودیت تعداد تلاش برای شروع شارژ.
+             */
+            'rate_limit' => [
+                'max_attempts' => 5,
+                'decay_seconds' => 60,
+            ],
         ],
     ],
 ];
