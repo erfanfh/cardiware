@@ -74,4 +74,25 @@ return [
             'timeout' => 20,
         ],
     ],
+
+    'wallet' => [
+        'top_up' => [
+            /*
+             * All amounts are stored in toman.
+             */
+            'minimum_amount' => 50_000,
+            'maximum_amount' => 20_000_000,
+
+            /*
+             * A top-up request can start payment within this period.
+             */
+            'expires_after_minutes' => 30,
+
+            /*
+             * For security, user-funded top-ups are not withdrawable
+             * by default.
+             */
+            'is_withdrawable' => false,
+        ],
+    ],
 ];
