@@ -45,17 +45,12 @@
                 {{ $post->title }}
             </h1>
 
-            @php
-                $views = approximate_view(page_views($post));
-            @endphp
             <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                 <span>{{ jalali_date($post->published_at, 'd F Y') }}</span>
                 <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
                 <span>{{ $post->author->display_name }}</span>
-                @if($views)
-                    <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                    <span>{{ $views }} بازدید</span>
-                @endif
+                <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
+                <span>{{ number_format(page_views($post)) }} بازدید</span>
                 <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
                 <span>{{ $post->approved_comments_count }} دیدگاه</span>
 
