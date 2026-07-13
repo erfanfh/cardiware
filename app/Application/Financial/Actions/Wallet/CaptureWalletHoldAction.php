@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Actions\Wallet;
 
-use App\Application\Financial\DTOs\DebitWalletData;
+use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\WalletHoldUnavailableException;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Financial\Support\WalletBalanceCalculator;
@@ -146,7 +146,7 @@ class CaptureWalletHoldAction
              * Reuse the existing debit fingerprint structure so direct
              * debits and hold captures share the same financial intent rules.
              */
-            $debitData = new DebitWalletData(
+            $debitData = new DebitWalletDTO(
                 wallet: $wallet,
                 type: $hold->type->transactionType(),
                 amount: (int)$hold->amount,

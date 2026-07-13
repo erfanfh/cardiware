@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Actions\Wallet;
 
-use App\Application\Financial\DTOs\DebitWalletData;
+use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\WalletUnavailableException;
 use App\Application\Financial\Support\WalletBalanceCalculator;
 use App\Application\Financial\Support\WalletTransactionFingerprint;
@@ -32,7 +32,7 @@ class DebitWalletAction
      * @throws Throwable
      */
     public function execute(
-        DebitWalletData $data,
+        DebitWalletDTO $data,
     ): WalletTransaction
     {
         $this->validate($data);
@@ -182,7 +182,7 @@ class DebitWalletAction
         }
     }
 
-    private function validate(DebitWalletData $data): void
+    private function validate(DebitWalletDTO $data): void
     {
         if (!$data->wallet->exists) {
             throw new InvalidArgumentException(

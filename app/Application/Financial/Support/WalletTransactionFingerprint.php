@@ -3,7 +3,7 @@
 namespace App\Application\Financial\Support;
 
 use App\Application\Financial\DTOs\CreditWalletData;
-use App\Application\Financial\DTOs\DebitWalletData;
+use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Domain\Financial\Enums\WalletTransactionDirectionEnum;
 use JsonException;
 
@@ -43,7 +43,7 @@ class WalletTransactionFingerprint
     /**
      * @throws JsonException
      */
-    public function forDebit(DebitWalletData $data): string
+    public function forDebit(DebitWalletDTO $data): string
     {
         return $this->make([
             'version' => 1,

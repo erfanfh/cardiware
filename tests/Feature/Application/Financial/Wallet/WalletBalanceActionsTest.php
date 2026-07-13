@@ -6,7 +6,7 @@ use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\DebitWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Financial\DTOs\CreditWalletData;
-use App\Application\Financial\DTOs\DebitWalletData;
+use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\InsufficientWalletBalanceException;
 use App\Application\Financial\Exceptions\InsufficientWithdrawableBalanceException;
 use App\Application\Financial\Exceptions\WalletIdempotencyConflictException;
@@ -185,7 +185,7 @@ class WalletBalanceActionsTest extends TestCase
         );
 
         $transaction = app(DebitWalletAction::class)->execute(
-            new DebitWalletData(
+            new DebitWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -233,7 +233,7 @@ class WalletBalanceActionsTest extends TestCase
         );
 
         app(DebitWalletAction::class)->execute(
-            new DebitWalletData(
+            new DebitWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::WITHDRAWAL,
                 amount: 100_000,
@@ -269,7 +269,7 @@ class WalletBalanceActionsTest extends TestCase
         );
 
         app(DebitWalletAction::class)->execute(
-            new DebitWalletData(
+            new DebitWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::ORDER_PAYMENT,
                 amount: 200_000,

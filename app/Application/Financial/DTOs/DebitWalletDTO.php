@@ -8,7 +8,7 @@ use App\Domain\Financial\Models\Wallet;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-final readonly class DebitWalletData
+final readonly class DebitWalletDTO
 {
     /**
      * @param array<string, mixed> $metadata

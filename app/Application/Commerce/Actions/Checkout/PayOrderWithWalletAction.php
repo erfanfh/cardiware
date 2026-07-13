@@ -6,7 +6,7 @@ use App\Application\Financial\Actions\Payment\CreatePaymentForPayableAction;
 use App\Application\Financial\Actions\Payment\MarkPaymentAsPaidAction;
 use App\Application\Financial\Actions\Wallet\DebitWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
-use App\Application\Financial\DTOs\DebitWalletData;
+use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Shared\Cache\Invalidators\OrderCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
@@ -154,7 +154,7 @@ class PayOrderWithWalletAction
              * - creates an immutable ledger transaction
              */
             $walletTransaction = $this->debitWalletAction->execute(
-                new DebitWalletData(
+                new DebitWalletDTO(
                     wallet: $wallet,
                     type: WalletTransactionTypeEnum::ORDER_PAYMENT,
                     amount: $amount,
