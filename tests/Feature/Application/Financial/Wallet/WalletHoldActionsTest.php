@@ -7,7 +7,7 @@ use App\Application\Financial\Actions\Wallet\CreateWalletHoldAction;
 use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Financial\Actions\Wallet\ReleaseWalletHoldAction;
-use App\Application\Financial\DTOs\CreateWalletHoldData;
+use App\Application\Financial\DTOs\CreateWalletHoldDTO;
 use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Exceptions\InsufficientWithdrawableBalanceException;
 use App\Application\Financial\Exceptions\WalletHoldIdempotencyConflictException;
@@ -29,7 +29,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         $hold = app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -93,7 +93,7 @@ class WalletHoldActionsTest extends TestCase
         );
 
         app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::WITHDRAWAL_REQUEST,
                 amount: 100_000,
@@ -107,7 +107,7 @@ class WalletHoldActionsTest extends TestCase
     {
         [$user, $wallet] = $this->createFundedWallet();
 
-        $data = new CreateWalletHoldData(
+        $data = new CreateWalletHoldDTO(
             wallet: $wallet,
             type: WalletHoldTypeEnum::ORDER_PAYMENT,
             amount: 300_000,
@@ -144,7 +144,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 200_000,
@@ -158,7 +158,7 @@ class WalletHoldActionsTest extends TestCase
         );
 
         app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -173,7 +173,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         $hold = app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -217,7 +217,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         $hold = app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -281,7 +281,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         $hold = app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,
@@ -318,7 +318,7 @@ class WalletHoldActionsTest extends TestCase
         [$user, $wallet] = $this->createFundedWallet();
 
         $hold = app(CreateWalletHoldAction::class)->execute(
-            new CreateWalletHoldData(
+            new CreateWalletHoldDTO(
                 wallet: $wallet,
                 type: WalletHoldTypeEnum::ORDER_PAYMENT,
                 amount: 300_000,

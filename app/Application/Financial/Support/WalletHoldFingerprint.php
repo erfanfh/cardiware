@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Support;
 
-use App\Application\Financial\DTOs\CreateWalletHoldData;
+use App\Application\Financial\DTOs\CreateWalletHoldDTO;
 use JsonException;
 
 class WalletHoldFingerprint
@@ -11,7 +11,7 @@ class WalletHoldFingerprint
      * @throws JsonException
      */
     public function forCreate(
-        CreateWalletHoldData $data,
+        CreateWalletHoldDTO $data,
     ): string
     {
         return $this->make([

@@ -6,7 +6,7 @@ use App\Application\Financial\Actions\Payment\CreatePaymentForPayableAction;
 use App\Application\Financial\Actions\Payment\StartCreatedPaymentAction;
 use App\Application\Financial\Actions\Wallet\CreateWalletHoldAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
-use App\Application\Financial\DTOs\CreateWalletHoldData;
+use App\Application\Financial\DTOs\CreateWalletHoldDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Financial\Exceptions\WalletTopUpIdempotencyConflictException;
 use App\Application\Financial\Exceptions\WalletUnavailableException;
@@ -241,7 +241,7 @@ class StartOrderWalletShortfallPaymentAction
              * does not exist yet.
              */
             $walletHold = $this->createWalletHoldAction->execute(
-                new CreateWalletHoldData(
+                new CreateWalletHoldDTO(
                     wallet: $wallet,
                     type: WalletHoldTypeEnum::ORDER_PAYMENT,
                     amount: $walletAmount,

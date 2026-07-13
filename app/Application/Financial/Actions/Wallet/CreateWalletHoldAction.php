@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Actions\Wallet;
 
-use App\Application\Financial\DTOs\CreateWalletHoldData;
+use App\Application\Financial\DTOs\CreateWalletHoldDTO;
 use App\Application\Financial\Exceptions\WalletUnavailableException;
 use App\Application\Financial\Support\WalletBalanceCalculator;
 use App\Application\Financial\Support\WalletHoldFingerprint;
@@ -32,7 +32,7 @@ class CreateWalletHoldAction
      * @throws Throwable
      */
     public function execute(
-        CreateWalletHoldData $data,
+        CreateWalletHoldDTO $data,
     ): WalletHold
     {
         $this->validate($data);
@@ -163,7 +163,7 @@ class CreateWalletHoldAction
     }
 
     private function validate(
-        CreateWalletHoldData $data,
+        CreateWalletHoldDTO $data,
     ): void
     {
         if (!$data->wallet->exists) {

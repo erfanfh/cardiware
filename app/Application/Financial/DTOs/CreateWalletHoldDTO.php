@@ -8,7 +8,7 @@ use App\Domain\Identity\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 
-final readonly class CreateWalletHoldData
+final readonly class CreateWalletHoldDTO
 {
     /**
      * @param array<string, mixed> $metadata
