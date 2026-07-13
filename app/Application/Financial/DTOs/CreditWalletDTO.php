@@ -7,7 +7,7 @@ use App\Domain\Financial\Models\Wallet;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
-final readonly class CreditWalletData
+final readonly class CreditWalletDTO
 {
     /**
      * @param array<string, mixed> $metadata

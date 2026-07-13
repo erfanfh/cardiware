@@ -5,7 +5,7 @@ namespace Tests\Feature\Application\Financial\Wallet;
 use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\DebitWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\InsufficientWalletBalanceException;
 use App\Application\Financial\Exceptions\InsufficientWithdrawableBalanceException;
@@ -27,7 +27,7 @@ class WalletBalanceActionsTest extends TestCase
         [$user, $wallet] = $this->createWallet();
 
         $transaction = app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,
@@ -66,7 +66,7 @@ class WalletBalanceActionsTest extends TestCase
         [$user, $wallet] = $this->createWallet();
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::BONUS,
                 amount: 200_000,
@@ -95,7 +95,7 @@ class WalletBalanceActionsTest extends TestCase
     {
         [$user, $wallet] = $this->createWallet();
 
-        $data = new CreditWalletData(
+        $data = new CreditWalletDTO(
             wallet: $wallet,
             type: WalletTransactionTypeEnum::TOP_UP,
             amount: 300_000,
@@ -130,7 +130,7 @@ class WalletBalanceActionsTest extends TestCase
         [$user, $wallet] = $this->createWallet();
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 300_000,
@@ -145,7 +145,7 @@ class WalletBalanceActionsTest extends TestCase
         );
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 400_000,
@@ -163,7 +163,7 @@ class WalletBalanceActionsTest extends TestCase
         $creditAction = app(CreditWalletAction::class);
 
         $creditAction->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,
@@ -174,7 +174,7 @@ class WalletBalanceActionsTest extends TestCase
         );
 
         $creditAction->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::BONUS,
                 amount: 200_000,
@@ -218,7 +218,7 @@ class WalletBalanceActionsTest extends TestCase
         [$user, $wallet] = $this->createWallet();
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::BONUS,
                 amount: 500_000,
@@ -249,7 +249,7 @@ class WalletBalanceActionsTest extends TestCase
         [$user, $wallet] = $this->createWallet();
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,

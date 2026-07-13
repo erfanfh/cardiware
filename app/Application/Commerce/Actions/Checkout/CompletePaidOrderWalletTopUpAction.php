@@ -4,7 +4,7 @@ namespace App\Application\Commerce\Actions\Checkout;
 
 use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\ReleaseWalletHoldAction;
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Models\Order;
@@ -166,7 +166,7 @@ class CompletePaidOrderWalletTopUpAction
              * This amount is deliberately non-withdrawable.
              */
             $creditTransaction = $this->creditWalletAction->execute(
-                new CreditWalletData(
+                new CreditWalletDTO(
                     wallet: $wallet,
                     type: WalletTransactionTypeEnum::TOP_UP,
                     amount: (int)$topUp->amount,

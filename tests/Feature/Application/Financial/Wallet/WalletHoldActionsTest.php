@@ -8,7 +8,7 @@ use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Financial\Actions\Wallet\ReleaseWalletHoldAction;
 use App\Application\Financial\DTOs\CreateWalletHoldData;
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Exceptions\InsufficientWithdrawableBalanceException;
 use App\Application\Financial\Exceptions\WalletHoldIdempotencyConflictException;
 use App\Application\Financial\Exceptions\WalletHoldUnavailableException;
@@ -78,7 +78,7 @@ class WalletHoldActionsTest extends TestCase
             ->execute($user);
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::BONUS,
                 amount: 500_000,
@@ -360,7 +360,7 @@ class WalletHoldActionsTest extends TestCase
         $creditAction = app(CreditWalletAction::class);
 
         $creditAction->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,
@@ -371,7 +371,7 @@ class WalletHoldActionsTest extends TestCase
         );
 
         $creditAction->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::BONUS,
                 amount: 200_000,

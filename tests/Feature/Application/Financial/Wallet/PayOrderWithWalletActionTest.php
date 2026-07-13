@@ -5,7 +5,7 @@ namespace Tests\Feature\Application\Commerce\Checkout;
 use App\Application\Commerce\Actions\Checkout\PayOrderWithWalletAction;
 use App\Application\Financial\Actions\Wallet\CreditWalletAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Exceptions\InsufficientWalletBalanceException;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Order;
@@ -36,7 +36,7 @@ class PayOrderWithWalletActionTest extends TestCase
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,
@@ -108,7 +108,7 @@ class PayOrderWithWalletActionTest extends TestCase
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 500_000,
@@ -155,7 +155,7 @@ class PayOrderWithWalletActionTest extends TestCase
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
 
         app(CreditWalletAction::class)->execute(
-            new CreditWalletData(
+            new CreditWalletDTO(
                 wallet: $wallet,
                 type: WalletTransactionTypeEnum::TOP_UP,
                 amount: 100_000,

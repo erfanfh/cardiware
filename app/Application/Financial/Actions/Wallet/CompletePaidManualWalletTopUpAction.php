@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Actions\Wallet;
 
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Financial\Enums\WalletTopUpStatusEnum;
@@ -100,7 +100,7 @@ class CompletePaidManualWalletTopUpAction
             }
 
             $transaction = $this->creditWalletAction->execute(
-                new CreditWalletData(
+                new CreditWalletDTO(
                     wallet: $topUp->wallet,
                     type: WalletTransactionTypeEnum::TOP_UP,
                     amount: (int)$topUp->amount,

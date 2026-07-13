@@ -2,7 +2,7 @@
 
 namespace App\Application\Financial\Actions\Wallet;
 
-use App\Application\Financial\DTOs\CreditWalletData;
+use App\Application\Financial\DTOs\CreditWalletDTO;
 use App\Application\Financial\Support\WalletBalanceCalculator;
 use App\Application\Financial\Support\WalletTransactionFingerprint;
 use App\Application\Financial\Support\WalletTransactionIdempotencyGuard;
@@ -31,7 +31,7 @@ class CreditWalletAction
      * @throws Throwable
      */
     public function execute(
-        CreditWalletData $data,
+        CreditWalletDTO $data,
     ): WalletTransaction
     {
         $this->validate($data);
@@ -166,7 +166,7 @@ class CreditWalletAction
         }
     }
 
-    private function validate(CreditWalletData $data): void
+    private function validate(CreditWalletDTO $data): void
     {
         if (!$data->wallet->exists) {
             throw new InvalidArgumentException(
