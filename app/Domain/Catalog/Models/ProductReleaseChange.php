@@ -14,6 +14,11 @@ class ProductReleaseChange extends Model
         'is_special',
     ];
 
+    protected $casts = [
+        'sort_order' => 'integer',
+        'is_special' => 'boolean',
+    ];
+
     public function release(): BelongsTo
     {
         return $this->belongsTo(ProductRelease::class, 'product_release_id');

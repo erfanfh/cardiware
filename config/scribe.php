@@ -189,6 +189,7 @@ return [
             'Launcher',
             'Authentication',
             'User',
+            'Catalog',
             'Library',
             'Downloads',
             '*',

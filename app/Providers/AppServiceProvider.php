@@ -69,6 +69,14 @@ class AppServiceProvider extends ServiceProvider
             ];
         });
 
+        RateLimiter::for('catalog', function (\Illuminate\Http\Request $request): Limit {
+            $key = $request->user()
+                ? 'user:' . $request->user()->getAuthIdentifier()
+                : 'ip:' . $request->ip();
+
+            return Limit::perMinute(120)->by('catalog:' . $key);
+        });
+
         Ticket::observe(TicketObserver::class);
     }
 }

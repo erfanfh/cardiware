@@ -1,0 +1,63 @@
+{
+    "data": [
+        {
+            "id": 20,
+            "title": "PGL 6",
+            "slug": "pgl-6",
+            "sku": "PGL6",
+            "excerpt": "Complete season patch",
+            "type": "digital",
+            "structure": "variable",
+            "cover": {
+                "id": 70,
+                "url": "https://moddingway.ir/storage/example.webp"
+            },
+            "pricing": {
+                "minimum_price": 419000,
+                "maximum_price": 479000,
+                "has_free_option": false,
+                "currency": "IRT"
+            },
+            "sale_items": [
+                {
+                    "id": 35,
+                    "sku": "PGL6-HALF",
+                    "title": "Half Season",
+                    "edition_key": "half",
+                    "version": "1.0.0",
+                    "status": "available",
+                    "is_available": true,
+                    "pricing": {
+                        "base_price": 479000,
+                        "final_price": 419000,
+                        "unit_discount_amount": 60000,
+                        "has_discount": true,
+                        "currency": "IRT"
+                    },
+                    "user_access": {
+                        "authenticated": true,
+                        "is_purchased": false,
+                        "has_usable_access": false,
+                        "purchase_access_id": null
+                    }
+                }
+            ],
+            "user_access": {
+                "authenticated": true,
+                "is_purchased": false,
+                "has_usable_access": false
+            }
+        }
+    ],
+    "links": {
+        "first": "https://moddingway.ir/api/v1/products?page=1",
+        "last": "https://moddingway.ir/api/v1/products?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "per_page": 20,
+        "total": 1
+    }
+}
