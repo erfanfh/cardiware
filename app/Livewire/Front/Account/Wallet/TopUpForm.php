@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Account\Wallet;
 
+use App\Application\Financial\Actions\Payment\ResolveDefaultPaymentGatewayAction;
 use App\Application\Financial\Actions\Wallet\CreateWalletTopUpAction;
 use App\Application\Financial\Actions\Wallet\StartWalletTopUpPaymentAction;
 use App\Domain\Financial\Enums\PaymentGatewayEnum;
@@ -10,8 +11,8 @@ use App\Domain\Identity\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Throwable;
 
@@ -19,15 +20,9 @@ class TopUpForm extends Component
 {
     public string $amount = '';
 
-    public string $gateway = '';
-
+    #[Locked]
     public string $requestKey = '';
 
-    /**
-     * مبالغ پیشنهادی برحسب تومان.
-     *
-     * @var array<int>
-     */
     public array $suggestedAmounts = [
         100_000,
         200_000,
@@ -38,47 +33,30 @@ class TopUpForm extends Component
     public function mount(): void
     {
         $this->requestKey = $this->generateRequestKey();
-
-        $this->gateway = $this->allowedGatewayValues()[0]
-            ?? '';
     }
 
-    /**
-     * انتخاب مبلغ پیشنهادی.
-     */
-    public function selectAmount(int $amount): void
-    {
-        $this->amount = (string)$amount;
-
-        $this->resetValidation('amount');
-    }
-
-    /**
-     * ایجاد درخواست شارژ و انتقال به درگاه.
-     */
     public function submit(
+        mixed                         $submittedAmount,
         CreateWalletTopUpAction       $createWalletTopUpAction,
         StartWalletTopUpPaymentAction $startWalletTopUpPaymentAction,
     )
     {
-        $this->amount = $this->normalizeAmount($this->amount);
+        $this->amount = $this->normalizeAmount(is_scalar($submittedAmount) ? (string)$submittedAmount : '');
 
         $validated = $this->validate();
 
         /** @var User $user */
         $user = auth()->user();
 
-        $this->ensureRateLimitIsNotExceeded($user);
+        $gateway = $this->defaultGateway();
 
-        $gateway = PaymentGatewayEnum::tryFrom(
-            $validated['gateway'],
-        );
-
-        if (!$gateway || !$gateway->isExternal()) {
+        if (!$gateway) {
             throw ValidationException::withMessages([
-                'gateway' => 'درگاه پرداخت انتخاب‌شده معتبر نیست.',
+                'form' => 'درگاه پیشفرض پرداخت به درستی تنظیم نشده است.',
             ]);
         }
+
+        $this->ensureRateLimitIsNotExceeded($user);
 
         try {
             $topUp = $createWalletTopUpAction->execute(
@@ -112,33 +90,23 @@ class TopUpForm extends Component
             );
 
             if ($payment->status === PaymentStatusEnum::FAILED) {
-                /*
-                 * Retry باید TopUp و Payment جدید بسازد.
-                 */
                 $this->requestKey = $this->generateRequestKey();
 
                 $this->addError(
-                    'gateway',
-                    $payment->gateway_message
-                        ?: 'اتصال به درگاه پرداخت انجام نشد. دوباره تلاش کنید.',
+                    'form',
+                    $payment->gateway_message ?: 'اتصال به درگاه پرداخت انجام نشد. دوباره تلاش کنید.',
                 );
 
                 return null;
             }
 
             if ($payment->status !== PaymentStatusEnum::PENDING) {
-                $this->addError(
-                    'gateway',
-                    'پرداخت در وضعیت قابل انتقال به درگاه قرار ندارد.',
-                );
+                $this->addError('form', 'پرداخت در وضعیت قابل انتقال به درگاه قرار ندارد.');
 
                 return null;
             }
 
-            $redirectUrl = data_get(
-                $payment->request_payload,
-                'redirect_url',
-            );
+            $redirectUrl = data_get($payment->request_payload, 'redirect_url');
 
             if (blank($redirectUrl)) {
                 report(new \RuntimeException(
@@ -146,8 +114,8 @@ class TopUpForm extends Component
                 ));
 
                 $this->addError(
-                    'gateway',
-                    'آدرس انتقال به درگاه دریافت نشد. لطفاً دوباره تلاش کنید.',
+                    'form',
+                    'آدرس انتقال به درگاه دریافت نشد. دوباره تلاش کنید.',
                 );
 
                 return null;
@@ -173,15 +141,8 @@ class TopUpForm extends Component
      */
     protected function rules(): array
     {
-        $minimumAmount = (int)config(
-            'financial.wallet.top_up.minimum_amount',
-            50_000,
-        );
-
-        $maximumAmount = (int)config(
-            'financial.wallet.top_up.maximum_amount',
-            20_000_000,
-        );
+        $minimumAmount = $this->minimumAmount();
+        $maximumAmount = $this->maximumAmount();
 
         return [
             'amount' => [
@@ -189,12 +150,6 @@ class TopUpForm extends Component
                 'integer',
                 'min:' . $minimumAmount,
                 'max:' . $maximumAmount,
-            ],
-
-            'gateway' => [
-                'required',
-                'string',
-                Rule::in($this->allowedGatewayValues()),
             ],
         ];
     }
@@ -209,40 +164,36 @@ class TopUpForm extends Component
             'amount.integer' => 'مبلغ شارژ باید یک عدد صحیح باشد.',
             'amount.min' => 'حداقل مبلغ شارژ :min تومان است.',
             'amount.max' => 'حداکثر مبلغ شارژ :max تومان است.',
-
-            'gateway.required' => 'درگاه پرداخت را انتخاب کنید.',
-            'gateway.in' => 'درگاه پرداخت انتخاب‌شده معتبر نیست.',
         ];
     }
 
     /**
-     * @return array<int, PaymentGatewayEnum>
+     * درگاه پیشفرض سیستم را برمی گرداند.
      */
-    public function allowedGateways(): array
+    private function defaultGateway(): ?PaymentGatewayEnum
     {
-        return collect(
-            config('financial.wallet.top_up.gateways', []),
-        )
-            ->map(
-                fn(mixed $gateway): ?PaymentGatewayEnum => is_string($gateway)
-                    ? PaymentGatewayEnum::tryFrom($gateway)
-                    : null
-            )
-            ->filter(
-                fn(?PaymentGatewayEnum $gateway): bool => $gateway?->isExternal() === true
-            )
-            ->values()
-            ->all();
+        $gateway = app(ResolveDefaultPaymentGatewayAction::class)->execute();
+
+        if (!$gateway || !$gateway->isExternal()) {
+            return null;
+        }
+
+        return $gateway;
     }
 
-    /**
-     * @return array<int, string>
-     */
-    private function allowedGatewayValues(): array
+    private function minimumAmount(): int
     {
-        return array_map(
-            fn(PaymentGatewayEnum $gateway): string => $gateway->value,
-            $this->allowedGateways(),
+        return (int)config(
+            'financial.wallet.top_up.minimum_amount',
+            50_000,
+        );
+    }
+
+    private function maximumAmount(): int
+    {
+        return (int)config(
+            'financial.wallet.top_up.maximum_amount',
+            20_000_000,
         );
     }
 
@@ -273,7 +224,12 @@ class TopUpForm extends Component
         ]);
 
         return str_replace(
-            [',', '٬', ' ', 'تومان'],
+            [
+                ',',
+                '٬',
+                ' ',
+                'تومان',
+            ],
             '',
             trim($amount),
         );
@@ -302,7 +258,7 @@ class TopUpForm extends Component
             $availableIn = RateLimiter::availableIn($key);
 
             throw ValidationException::withMessages([
-                'form' => "تعداد درخواست‌ها زیاد است. {$availableIn} ثانیه دیگر دوباره تلاش کنید.",
+                'form' => "تعداد درخواست ها زیاد است. {$availableIn} ثانیه دیگر دوباره تلاش کنید.",
             ]);
         }
 
@@ -322,17 +278,10 @@ class TopUpForm extends Component
         return view(
             'livewire.front.account.wallet.top-up-form',
             [
-                'gateways' => $this->allowedGateways(),
+                'minimumAmount' => $this->minimumAmount(),
+                'maximumAmount' => $this->maximumAmount(),
 
-                'minimumAmount' => (int)config(
-                    'financial.wallet.top_up.minimum_amount',
-                    50_000,
-                ),
-
-                'maximumAmount' => (int)config(
-                    'financial.wallet.top_up.maximum_amount',
-                    20_000_000,
-                ),
+                'gatewayAvailable' => $this->defaultGateway() !== null,
             ],
         );
     }
