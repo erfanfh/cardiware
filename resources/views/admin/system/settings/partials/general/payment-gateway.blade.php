@@ -2,6 +2,7 @@
     use App\Domain\Financial\Enums\PaymentGatewayEnum;
 
     $gateways = collect(PaymentGatewayEnum::cases())
+        ->filter(fn (PaymentGatewayEnum $gateway) => $gateway->isExternal())
         ->mapWithKeys(fn (PaymentGatewayEnum $gateway) => [
             $gateway->value => $gateway->label(),
         ])
