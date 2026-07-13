@@ -2,34 +2,187 @@
 
 @section('page-content')
     <div class="space-y-6">
-
-        {{-- Page header --}}
+        {{-- Main wallet balance --}}
         <section
-            class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
-                   dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20"
+            class="relative overflow-hidden rounded-3xl bg-slate-950 shadow-xl shadow-slate-950/10
+           dark:border dark:border-slate-800 dark:shadow-black/20"
         >
+            {{-- Decorative backgrounds --}}
             <div
-                class="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-brand-100/70
-                       dark:bg-brand-500/10"
+                class="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full
+               bg-brand-500/20 blur-3xl"
             ></div>
 
-            <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-lg font-black text-slate-900 dark:text-white">
-                        کیف پول
-                    </h1>
+            <div
+                class="pointer-events-none absolute -bottom-28 -right-20 h-72 w-72 rounded-full
+               bg-brand-400/10 blur-3xl"
+            ></div>
 
-                    <p class="mt-1 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                        موجودی، شارژها و تراکنش‌های کیف پول خود را از این بخش مدیریت کنید.
-                    </p>
+            <div
+                class="pointer-events-none absolute inset-0
+               bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_38%)]"
+            ></div>
+
+            <div
+                class="relative grid gap-8 p-6 sm:p-7
+               lg:grid-cols-[minmax(0,1fr)_minmax(300px,auto)]
+               lg:items-center lg:gap-12"
+            >
+                {{-- Balance information --}}
+                <div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl
+                           border border-white/10 bg-white/5 text-brand-300 [&_svg]:w-6 [&_svg]:h-6"
+                        >
+                            @include('icons.wallet-03')
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-bold text-slate-400">
+                                موجودی قابل استفاده
+                            </p>
+
+                            <p class="mt-1 text-xs text-slate-500">
+                                مبلغ در دسترس برای خرید و پرداخت
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex flex-wrap items-end gap-x-3 gap-y-2">
+                        <strong
+                            class="text-3xl font-black tracking-tight text-white
+                           sm:text-4xl lg:text-5xl"
+                            dir="ltr"
+                        >
+                            {{ number_format($wallet->available_balance) }}
+                        </strong>
+
+                        <span class="pb-1 text-sm font-bold text-slate-300 sm:text-base">
+                    تومان
+                </span>
+                    </div>
+
+                    @if ($wallet->held_balance > 0)
+                        <div
+                            class="mt-6 inline-flex max-w-full items-center gap-2 rounded-xl
+                           border border-amber-300/15 bg-amber-300/10 px-3 py-2"
+                        >
+                            <svg
+                                class="h-4 w-4 shrink-0 text-amber-300"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 6v6l4 2"
+                                />
+
+                                <circle cx="12" cy="12" r="8.25"></circle>
+                            </svg>
+
+                            <p class="text-xs leading-6 text-amber-100">
+                                مبلغ
+
+                                <span class="font-black" dir="ltr">
+                            {{ number_format($wallet->held_balance) }}
+                        </span>
+
+                                تومان از موجودی شما موقتا رزرو شده است.
+                            </p>
+                        </div>
+                    @endif
                 </div>
 
+                {{-- Wallet actions --}}
+                <div class="w-full lg:w-auto lg:min-w-[320px]">
+                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+
+                        {{-- Top-up button --}}
+                        <a
+                            href="#wallet-topup"
+                            class="group flex w-full items-center justify-center gap-2 rounded-2xl
+                           bg-brand-500 px-5 py-3.5 text-sm font-black text-white
+                           shadow-lg shadow-brand-500/20 transition
+                           hover:bg-brand-600 hover:shadow-brand-500/30
+                           focus:outline-none focus:ring-4 focus:ring-brand-500/20"
+                        >
+                            <svg
+                                class="h-5 w-5 transition-transform
+                               group-hover:-translate-y-0.5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M12 5v14M5 12h14"
+                                />
+                            </svg>
+
+                            افزایش موجودی
+                        </a>
+
+                        {{-- Transfer button --}}
+                        <a
+                            href="#wallet-transfer"
+                            class="group flex w-full items-center justify-center gap-2 rounded-2xl
+                           border border-white/10 bg-white/5 px-5 py-3.5
+                           text-sm font-black text-white transition
+                           hover:border-white/20 hover:bg-white/10
+                           focus:outline-none focus:ring-4 focus:ring-white/10"
+                        >
+                            <svg
+                                class="h-5 w-5 text-slate-300 transition-transform
+                               group-hover:-translate-x-0.5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M7.5 7.5h10.75m0 0-3.25-3.25M18.25 7.5 15 10.75"
+                                />
+
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M16.5 16.5H5.75m0 0L9 19.75M5.75 16.5 9 13.25"
+                                />
+                            </svg>
+
+                            انتقال پول
+                        </a>
+                    </div>
+
+                    <p class="mt-3 text-center text-xs leading-6 text-slate-500">
+                        افزایش موجودی یا انتقال اعتبار به کاربران دیگر
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        {{-- Held balance information --}}
+        @if ($wallet->held_balance > 0)
+            <section
+                class="flex items-start gap-3 rounded-2xl border border-amber-200
+               bg-amber-50 p-4
+               dark:border-amber-500/20 dark:bg-amber-500/10"
+            >
                 <div
-                    class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl
-                           bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-300"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl
+                   bg-amber-100 text-amber-600
+                   dark:bg-amber-500/15 dark:text-amber-300"
                 >
                     <svg
-                        class="h-6 w-6"
+                        class="h-5 w-5"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -38,225 +191,29 @@
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M3.75 7.5A2.25 2.25 0 0 1 6 5.25h11.25A2.25 2.25 0 0 1 19.5 7.5v9A2.25 2.25 0 0 1 17.25 18.75H6A2.25 2.25 0 0 1 3.75 16.5v-9Z"
+                            d="M12 9v3.75m9-1.5a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                         />
 
                         <path
                             stroke-linecap="round"
                             stroke-linejoin="round"
-                            d="M15 10.5h4.5v3H15a1.5 1.5 0 0 1 0-3Z"
-                        />
-
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M6 5.25V4.5A1.5 1.5 0 0 1 7.5 3h8.25"
+                            d="M12 16.5h.008v.008H12V16.5Z"
                         />
                     </svg>
                 </div>
-            </div>
-        </section>
 
-        {{-- Main balance --}}
-        <section
-            class="relative overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-lg
-                   dark:border dark:border-slate-800"
-        >
-            <div
-                class="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-brand-500/20 blur-2xl"
-            ></div>
+                <div>
+                    <p class="text-sm font-black text-amber-900 dark:text-amber-200">
+                        بخشی از موجودی شما رزرو شده است
+                    </p>
 
-            <div
-                class="absolute -bottom-20 -right-16 h-52 w-52 rounded-full bg-brand-400/10 blur-3xl"
-            ></div>
-
-            <div class="relative">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400">
-                            موجودی قابل استفاده
-                        </p>
-
-                        <div class="mt-3 flex items-end gap-2">
-                            <strong
-                                class="text-3xl font-black tracking-tight sm:text-4xl"
-                                dir="ltr"
-                            >
-                                {{ number_format($wallet->available_balance) }}
-                            </strong>
-
-                            <span class="pb-1 text-sm font-bold text-slate-300">
-                                تومان
-                            </span>
-                        </div>
-                    </div>
-
-                    <div
-                        class="flex h-14 w-14 items-center justify-center rounded-2xl
-                               border border-white/10 bg-white/5"
-                    >
-                        <svg
-                            class="h-7 w-7 text-brand-300"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 6v12m3-9.75c-.77-.79-1.91-1.25-3-1.25-1.66 0-3 1.01-3 2.25s1.34 2.25 3 2.25 3 1.01 3 2.25S13.66 16 12 16c-1.09 0-2.23-.46-3-1.25"
-                            />
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="mt-6 border-t border-white/10 pt-4">
-                    <p class="text-xs leading-6 text-slate-400">
-                        موجودی قابل استفاده، مبلغی است که در حال حاضر برای خرید یا عملیات مالی
-                        در دسترس شما قرار دارد.
+                    <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300/80">
+                        موجودی رزرو شده مربوط به پرداخت یا سفارش در حال پردازش است و پس از
+                        تعیین وضعیت نهایی، آزاد یا مصرف خواهد شد.
                     </p>
                 </div>
-            </div>
-        </section>
-
-        {{-- Wallet statistics --}}
-        <section class="grid gap-4 sm:grid-cols-3">
-
-            {{-- Total balance --}}
-            <article
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
-                       dark:border-slate-800 dark:bg-slate-900"
-            >
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            موجودی کل
-                        </p>
-
-                        <p
-                            class="mt-2 text-lg font-black text-slate-900 dark:text-white"
-                            dir="ltr"
-                        >
-                            {{ number_format($wallet->balance) }}
-                            <span class="text-xs font-bold text-slate-400">تومان</span>
-                        </p>
-                    </div>
-
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl
-                               bg-emerald-50 text-emerald-600
-                               dark:bg-emerald-500/10 dark:text-emerald-300"
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 4.5v15m5.25-7.5H6.75"
-                            />
-                        </svg>
-                    </div>
-                </div>
-            </article>
-
-            {{-- Withdrawable balance --}}
-            <article
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
-                       dark:border-slate-800 dark:bg-slate-900"
-            >
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            قابل برداشت
-                        </p>
-
-                        <p
-                            class="mt-2 text-lg font-black text-slate-900 dark:text-white"
-                            dir="ltr"
-                        >
-                            {{ number_format($wallet->available_withdrawable_balance) }}
-
-                            <span class="text-xs font-bold text-slate-400">
-                                تومان
-                            </span>
-                        </p>
-                    </div>
-
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl
-                               bg-blue-50 text-blue-600
-                               dark:bg-blue-500/10 dark:text-blue-300"
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 3v14.25m0 0 4.5-4.5M12 17.25l-4.5-4.5M5.25 21h13.5"
-                            />
-                        </svg>
-                    </div>
-                </div>
-            </article>
-
-            {{-- Held balance --}}
-            <article
-                class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
-                       dark:border-slate-800 dark:bg-slate-900"
-            >
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                            موجودی رزروشده
-                        </p>
-
-                        <p
-                            class="mt-2 text-lg font-black text-slate-900 dark:text-white"
-                            dir="ltr"
-                        >
-                            {{ number_format($wallet->held_balance) }}
-
-                            <span class="text-xs font-bold text-slate-400">
-                                تومان
-                            </span>
-                        </p>
-                    </div>
-
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-xl
-                               bg-amber-50 text-amber-600
-                               dark:bg-amber-500/10 dark:text-amber-300"
-                    >
-                        <svg
-                            class="h-5 w-5"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M12 6v6l4 2"
-                            />
-
-                            <circle cx="12" cy="12" r="8.25"></circle>
-                        </svg>
-                    </div>
-                </div>
-            </article>
-        </section>
+            </section>
+        @endif
 
         <livewire:front.account.wallet.top-up-form/>
 
