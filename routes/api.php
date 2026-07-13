@@ -8,5 +8,6 @@ Route::prefix('v1')
         require __DIR__ . '/api/v1/identity.php';
         require __DIR__ . '/api/v1/launcher.php';
         require __DIR__ . '/api/v1/library.php';
+        require __DIR__ . '/api/v1/catalog.php';
         require __DIR__ . '/api/v1/download.php';
     });

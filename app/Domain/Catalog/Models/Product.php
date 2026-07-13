@@ -7,6 +7,7 @@ use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Catalog\Scopes\ActiveProductScope;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Models\Store;
@@ -194,6 +195,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function informationEntries(): HasMany
     {
         return $this->hasMany(ProductInformationEntry::class);
+    }
+
+    public function purchaseAccesses(): HasMany
+    {
+        return $this->hasMany(PurchaseAccess::class);
     }
 
     public function commentsEnabled(): bool

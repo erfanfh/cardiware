@@ -1,0 +1,331 @@
+{
+    "data": {
+        "id": 20,
+        "title": "PGL 6",
+        "slug": "pgl-6",
+        "sku": "PGL6",
+        "excerpt": "A complete season patch featuring updated teams, players, kits, competitions, and gameplay improvements.",
+        "body": "<p>PGL 6 is a complete season patch designed to provide updated squads, competitions, kits, stadiums, and gameplay improvements.</p><p>Select the edition that best matches your needs.</p>",
+        "type": "digital",
+        "structure": "variable",
+        "web_url": "https://moddingway.ir/products/pgl-6",
+
+        "cover": {
+            "id": 70,
+            "url": "https://moddingway.ir/storage/media/products/pgl-6-cover.webp"
+        },
+
+        "store": {
+            "id": 4,
+            "title": "ModdingWay",
+            "slug": "moddingway",
+            "activity_field": "Game modifications and patches",
+            "picture_url": "https://moddingway.ir/storage/media/stores/moddingway.webp"
+        },
+
+        "pricing": {
+            "minimum_price": 419000,
+            "maximum_price": 479000,
+            "has_free_option": false,
+            "currency": "IRT"
+        },
+
+        "user_access": {
+            "authenticated": true,
+            "is_purchased": true,
+            "has_usable_access": true
+        },
+
+        "categories": [
+            {
+                "id": 10,
+                "title": "Football Games",
+                "slug": "football-games",
+                "path": "football-games"
+            },
+            {
+                "id": 12,
+                "title": "Patches",
+                "slug": "patches",
+                "path": "football-games/patches"
+            }
+        ],
+
+        "tags": [
+            {
+                "id": 30,
+                "title": "PES 2026",
+                "slug": "pes-2026",
+                "path": "pes-2026"
+            },
+            {
+                "id": 31,
+                "title": "Season Patch",
+                "slug": "season-patch",
+                "path": "season-patch"
+            }
+        ],
+
+        "image_gallery": [
+            {
+                "id": 101,
+                "title": "Updated teams and kits",
+                "url": "https://moddingway.ir/storage/media/products/pgl-6/gallery-1.webp",
+                "sort_order": 1,
+                "meta": {
+                    "alt": "PGL 6 updated teams and kits"
+                }
+            },
+            {
+                "id": 102,
+                "title": "Updated competitions",
+                "url": "https://moddingway.ir/storage/media/products/pgl-6/gallery-2.webp",
+                "sort_order": 2,
+                "meta": {
+                    "alt": "PGL 6 updated competitions"
+                }
+            }
+        ],
+
+        "video_gallery": [
+            {
+                "id": 110,
+                "title": "PGL 6 introduction",
+                "url": "https://moddingway.ir/storage/media/products/pgl-6/introduction.mp4",
+                "sort_order": 1,
+                "meta": {
+                    "thumbnail_url": "https://moddingway.ir/storage/media/products/pgl-6/video-thumbnail.webp"
+                }
+            }
+        ],
+
+        "requirements": [
+            {
+                "id": 201,
+                "title": "Operating System",
+                "value": "Windows 10 or Windows 11, 64-bit",
+                "sort_order": 1
+            },
+            {
+                "id": 202,
+                "title": "Memory",
+                "value": "8 GB RAM minimum",
+                "sort_order": 2
+            },
+            {
+                "id": 203,
+                "title": "Storage",
+                "value": "30 GB available space",
+                "sort_order": 3
+            },
+            {
+                "id": 204,
+                "title": "Base Game",
+                "value": "A supported installation of the base game is required",
+                "sort_order": 4
+            }
+        ],
+
+        "installation_steps": [
+            {
+                "id": 301,
+                "body": "<p>Download all required file parts using the ModdingWay Launcher.</p>",
+                "sort_order": 1
+            },
+            {
+                "id": 302,
+                "body": "<p>Select the base game installation directory.</p>",
+                "sort_order": 2
+            },
+            {
+                "id": 303,
+                "body": "<p>Start the installation and wait for file verification to complete.</p>",
+                "sort_order": 3
+            }
+        ],
+
+        "faqs": [
+            {
+                "id": 401,
+                "question": "Does this product require the original game?",
+                "answer": "<p>Yes. A supported installation of the original game is required.</p>",
+                "sort_order": 1
+            },
+            {
+                "id": 402,
+                "question": "Can I resume an interrupted download?",
+                "answer": "<p>Yes. Downloads managed by the launcher support pause and resume when the download server supports HTTP Range requests.</p>",
+                "sort_order": 2
+            }
+        ],
+
+        "releases": [
+            {
+                "id": 501,
+                "title": "Version 1.0.0",
+                "excerpt": "Initial release of the PGL 6 season patch.",
+                "released_at": "2026-07-01",
+                "changes": [
+                    {
+                        "id": 601,
+                        "title": "Updated teams and player squads",
+                        "is_special": true,
+                        "sort_order": 1
+                    },
+                    {
+                        "id": 602,
+                        "title": "Added new season kits",
+                        "is_special": false,
+                        "sort_order": 2
+                    },
+                    {
+                        "id": 603,
+                        "title": "Updated competitions and transfers",
+                        "is_special": false,
+                        "sort_order": 3
+                    }
+                ]
+            }
+        ],
+
+        "information": [
+            {
+                "field_id": 1,
+                "title": "Developer",
+                "value": "ModdingWay Team"
+            },
+            {
+                "field_id": 2,
+                "title": "Current Version",
+                "value": "1.0.0"
+            },
+            {
+                "field_id": 3,
+                "title": "Supported Language",
+                "value": "English"
+            }
+        ],
+
+        "attributes": [
+            {
+                "id": 701,
+                "attribute": {
+                    "id": 8,
+                    "title": "Edition"
+                },
+                "is_variation_defining": true,
+                "values": [
+                    {
+                        "id": 80,
+                        "title": "Half Season",
+                        "sort_order": 1
+                    },
+                    {
+                        "id": 81,
+                        "title": "Full Season",
+                        "sort_order": 2
+                    }
+                ]
+            }
+        ],
+
+        "sale_items": [
+            {
+                "id": 35,
+                "sku": "PGL6-HALF",
+                "status": "available",
+                "is_available": true,
+                "description": "Includes the first half of the season content.",
+                "download_limit": 10,
+                "download_expires_in_days": null,
+                "max_quantity_per_order": 1,
+
+                "pricing": {
+                    "base_price": 479000,
+                    "final_price": 419000,
+                    "unit_discount_amount": 60000,
+                    "has_discount": true,
+                    "discount_source_type": "product_sale_item_discount",
+                    "discount_source_id": 15,
+                    "discount_title": "Launch discount",
+                    "currency": "IRT"
+                },
+
+                "user_access": {
+                    "authenticated": true,
+                    "is_purchased": true,
+                    "has_usable_access": true,
+                    "purchase_access_id": 145
+                },
+
+                "attributes": [
+                    {
+                        "attribute_id": 8,
+                        "attribute_title": "Edition",
+                        "value_id": 80,
+                        "value_title": "Half Season"
+                    }
+                ],
+
+                "sort_order": 1
+            },
+            {
+                "id": 36,
+                "sku": "PGL6-FULL",
+                "status": "available",
+                "is_available": true,
+                "description": "Includes all available season content.",
+                "download_limit": 10,
+                "download_expires_in_days": null,
+                "max_quantity_per_order": 1,
+
+                "pricing": {
+                    "base_price": 479000,
+                    "final_price": 479000,
+                    "unit_discount_amount": 0,
+                    "has_discount": false,
+                    "discount_source_type": null,
+                    "discount_source_id": null,
+                    "discount_title": null,
+                    "currency": "IRT"
+                },
+
+                "user_access": {
+                    "authenticated": true,
+                    "is_purchased": false,
+                    "has_usable_access": false,
+                    "purchase_access_id": null
+                },
+
+                "attributes": [
+                    {
+                        "attribute_id": 8,
+                        "attribute_title": "Edition",
+                        "value_id": 81,
+                        "value_title": "Full Season"
+                    }
+                ],
+
+                "sort_order": 2
+            }
+        ],
+
+        "addons": [
+            {
+                "id": 901,
+                "title": "High Resolution Graphics Pack",
+                "description": "Optional high-resolution graphics package.",
+                "pricing": {
+                    "base_price": 90000,
+                    "final_price": 90000,
+                    "currency": "IRT"
+                },
+                "applies_to_all_sale_items": true,
+                "sort_order": 1,
+                "metadata": null
+            }
+        ],
+
+        "published_at": "2026-07-01T12:00:00.000000Z"
+    }
+}

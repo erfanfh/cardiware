@@ -20,6 +20,7 @@ class ProductMedia extends Model
 
     protected $casts = [
         'collection' => ProductMediaCollectionEnum::class,
+        'sort_order' => 'integer',
         'meta' => 'array',
     ];
 
@@ -32,4 +33,5 @@ class ProductMedia extends Model
     {
         return $this->belongsTo(MediaFile::class);
     }
+
 }

@@ -16,6 +16,11 @@ class ProductRelease extends Model
         'sort_order',
     ];
 
+    protected $casts = [
+        'released_at' => 'date',
+        'sort_order' => 'integer',
+    ];
+
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

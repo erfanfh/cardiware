@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ResolveOptionalSanctumUser;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'abilities' => CheckAbilities::class,
             'ability' => CheckForAnyAbility::class,
+            'auth.optional.sanctum' => ResolveOptionalSanctumUser::class,
         ]);
 
         $middleware->trustProxies(
