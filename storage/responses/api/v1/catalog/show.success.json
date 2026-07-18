@@ -8,6 +8,7 @@
         "body": "<p>PGL 6 is a complete season patch designed to provide updated squads, competitions, kits, stadiums, and gameplay improvements.</p><p>Select the edition that best matches your needs.</p>",
         "type": "digital",
         "structure": "variable",
+        "content_type": "patch",
         "web_url": "https://moddingway.ir/products/pgl-6",
 
         "cover": {

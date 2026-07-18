@@ -7,6 +7,7 @@
             "sku": "PGL6",
             "excerpt": "Complete season patch",
             "type": "digital",
+            "content_type": "game",
             "structure": "variable",
             "cover": {
                 "id": 70,

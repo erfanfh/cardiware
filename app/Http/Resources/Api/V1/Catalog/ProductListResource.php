@@ -20,6 +20,7 @@ class ProductListResource extends JsonResource
             'excerpt' => $this->excerpt,
 
             'type' => $this->type->value,
+            'content_type' => $this->content_type->value,
             'structure' => $this->structure->value,
 
             'cover' => $this->picture
