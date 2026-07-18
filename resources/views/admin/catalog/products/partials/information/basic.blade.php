@@ -13,7 +13,7 @@
     </div>
 
     <div class="grid grid-cols-12 gap-5">
-        <div class="col-span-12 md:col-span-6 xl:col-span-4">
+        <div class="col-span-12 md:col-span-6 xl:col-span-3">
             <x-admin.field label="نوع محصول">
                 <x-admin.form.select
                     name="type"
@@ -27,7 +27,21 @@
             </x-admin.field>
         </div>
 
-        <div class="col-span-12 md:col-span-6 xl:col-span-4">
+        <div class="col-span-12 md:col-span-6 xl:col-span-3">
+            <x-admin.field label="نوع محتوا">
+                <x-admin.form.select
+                    name="content_type"
+                    x-model="productContentType"
+                    :value="$currentContentType"
+                    :options="[
+                    '' => 'انتخاب کنید',
+                    ...$productContentTypes
+                    ]"
+                />
+            </x-admin.field>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 xl:col-span-3">
             <x-admin.field label="ساختار محصول">
                 <x-admin.form.select
                     name="structure"
@@ -41,7 +55,7 @@
             </x-admin.field>
         </div>
 
-        <div class="col-span-12 md:col-span-6 xl:col-span-4">
+        <div class="col-span-12 md:col-span-6 xl:col-span-3">
             <x-admin.field label="شناسه محصول">
                 <x-admin.form.input
                     name="sku"

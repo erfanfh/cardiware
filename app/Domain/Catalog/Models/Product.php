@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\Models;
 
+use App\Domain\Catalog\Enums\ProductContentTypeEnum;
 use App\Domain\Catalog\Enums\ProductMediaCollectionEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
@@ -36,6 +37,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'excerpt',
         'body',
         'type',
+        'content_type',
         'structure',
         'status',
         'picture_id',
@@ -45,6 +47,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     protected $casts = [
         'status' => ProductStatusEnum::class,
         'type' => ProductTypeEnum::class,
+        'content_type' => ProductContentTypeEnum::class,
         'structure' => ProductStructureEnum::class,
         'published_at' => 'datetime',
     ];

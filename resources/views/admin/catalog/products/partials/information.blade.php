@@ -1,4 +1,5 @@
 @php
+    use App\Domain\Catalog\Enums\ProductContentTypeEnum;
     use App\Domain\Catalog\Enums\ProductStructureEnum;
     use App\Domain\Catalog\Enums\ProductTypeEnum;
     use App\Domain\Catalog\Models\ProductAttribute;
@@ -9,9 +10,20 @@
     $simpleStructure = ProductStructureEnum::SIMPLE->value;
     $variableStructure = ProductStructureEnum::VARIABLE->value;
 
+    $productContentTypes = collect(ProductContentTypeEnum::cases())
+        ->mapWithKeys(fn (ProductContentTypeEnum $type) => [
+            $type->value => $type->label(),
+        ])
+        ->toArray();
+
     $currentType = old('type', isset($product)
         ? ($product->type instanceof \BackedEnum ? $product->type->value : $product->type)
         : $digitalType
+    );
+
+    $currentContentType = old('content_type', isset($product)
+        ? ($product->content_type instanceof \BackedEnum ? $product->content_type->value : $product->content_type)
+        : ''
     );
 
     $currentStructure = old('structure', isset($product)
@@ -220,6 +232,7 @@
         values: {
             type: @js($currentType),
             structure: @js($currentStructure),
+            content_type: @js($currentContentType),
         },
         enums: {
             types: {
@@ -229,6 +242,10 @@
             structures: {
                 simple: @js($simpleStructure),
                 variable: @js($variableStructure),
+            },
+            content_types: {
+                game: @js(ProductContentTypeEnum::GAME->value),
+                patch: @js(ProductContentTypeEnum::PATCH->value),
             },
         },
         attributes: {

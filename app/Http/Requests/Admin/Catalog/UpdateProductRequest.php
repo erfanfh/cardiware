@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Catalog;
 
+use App\Domain\Catalog\Enums\ProductContentTypeEnum;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
@@ -38,6 +39,7 @@ class UpdateProductRequest extends FormRequest
             ],
             'status' => ['required', Rule::enum(ProductStatusEnum::class)],
             'type' => ['required', Rule::enum(ProductTypeEnum::class)],
+            'content_type' => ['nullable', Rule::enum(ProductContentTypeEnum::class)],
             'structure' => ['required', Rule::enum(ProductStructureEnum::class)],
             'store_id' => ['required', 'integer', 'exists:stores,id'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],

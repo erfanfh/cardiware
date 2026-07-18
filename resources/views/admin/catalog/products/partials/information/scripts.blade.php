@@ -7,6 +7,7 @@
 
                     productType: config.values?.type ?? config.enums.types.digital,
                     productStructure: config.values?.structure ?? config.enums.structures.simple,
+                    productContentType: config.values?.content_type ?? '',
 
                     typeEnums: config.enums.types,
                     structureEnums: config.enums.structures,
