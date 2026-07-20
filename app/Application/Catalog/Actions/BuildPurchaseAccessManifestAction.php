@@ -222,7 +222,7 @@ class BuildPurchaseAccessManifestAction
         }
 
         foreach ($files as $file) {
-            if (blank($file->file_name)) {
+            if (blank($file->title)) {
                 throw new ProductManifestUnavailableException(
                     "File {$file->id} does not have a file name."
                 );
