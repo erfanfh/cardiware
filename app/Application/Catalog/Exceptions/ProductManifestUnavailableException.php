@@ -18,7 +18,7 @@ class ProductManifestUnavailableException extends RuntimeException
     {
         return response()->json(
             [
-                'message' => 'The product manifest is currently unavailable.',
+                'message' => $this->getMessage() ?: 'The product manifest is currently unavailable.',
                 'code' => 'product_manifest_unavailable',
             ],
             Response::HTTP_SERVICE_UNAVAILABLE
