@@ -6,6 +6,7 @@ use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
 use App\Domain\Financial\Models\Wallet;
+use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Support\Models\Ticket;
@@ -138,5 +139,21 @@ class User extends Authenticatable
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Wallet transfers sent by the user.
+     */
+    public function sentWalletTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'sender_user_id');
+    }
+
+    /**
+     * Wallet transfers received by the user.
+     */
+    public function receivedWalletTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'recipient_user_id');
     }
 }

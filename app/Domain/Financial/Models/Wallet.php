@@ -100,4 +100,20 @@ class Wallet extends Model
     {
         return $this->hasMany(WalletTopUp::class);
     }
+
+    /**
+     * Transfers sent from this wallet.
+     */
+    public function outgoingTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'sender_wallet_id');
+    }
+
+    /**
+     * Transfers received by this wallet.
+     */
+    public function incomingTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'recipient_wallet_id');
+    }
 }
