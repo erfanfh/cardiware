@@ -96,7 +96,39 @@
             <div class="mb-2 text-xs font-bold text-slate-700">اطلاعات فروش</div>
 
             <div class="grid grid-cols-12 gap-4">
-                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                    <x-admin.field label="عنوان آیتم فروش">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][title]`"
+                            x-model="item.title"
+                            placeholder="مثلا Full Season"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                    <x-admin.field label="کلید نسخه">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][edition_key]`"
+                            x-model="item.edition_key"
+                            class="direction-ltr"
+                            placeholder="full"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                    <x-admin.field label="نسخه فعلی">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][version]`"
+                            x-model="item.version"
+                            class="direction-ltr"
+                            placeholder="1.0.0"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-3">
                     <x-admin.field label="شناسه آیتم فروش">
                         <x-admin.form.input
                             x-bind:name="`sale_items[${i}][sku]`"
@@ -339,5 +371,9 @@
                 </template>
             </div>
         </div>
+
+        <x-admin.catalog.product-sale-item-manifest-fields
+            mode="variable"
+        />
     </div>
 </div>

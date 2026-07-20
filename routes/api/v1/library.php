@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\Library\LibraryController;
+use App\Http\Controllers\Api\V1\Library\LibraryManifestController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([
@@ -16,4 +17,8 @@ Route::middleware([
         Route::get('{purchaseAccess}', [LibraryController::class, 'show'])
             ->whereNumber('purchaseAccess')
             ->name('show');
+
+        Route::get('{purchaseAccess}/manifest', LibraryManifestController::class)
+            ->whereNumber('purchaseAccess')
+            ->name('manifest');
     });

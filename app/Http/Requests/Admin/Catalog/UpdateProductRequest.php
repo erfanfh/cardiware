@@ -98,6 +98,9 @@ class UpdateProductRequest extends FormRequest
             'sale_items' => ['nullable', 'array'],
             'sale_items.*.id' => ['nullable', 'integer', 'exists:product_sale_items,id'],
             'sale_items.*.sku' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.edition_key' => ['nullable', 'string', 'max:80'],
+            'sale_items.*.version' => ['nullable', 'string', 'max:50'],
             'sale_items.*.base_price' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.status' => [
                 'nullable',
@@ -107,6 +110,55 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.download_expires_in_days' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.description' => ['nullable', 'string'],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Launcher manifest
+            |--------------------------------------------------------------------------
+            */
+            'sale_items.*.manifest' => ['nullable', 'array'],
+            'sale_items.*.manifest.download_type' => [
+                'nullable',
+                Rule::in(['single_file', 'multiple_files', 'split_archive']),
+            ],
+            'sale_items.*.manifest.archive_format' => [
+                'nullable',
+                Rule::in(['7z', 'rar', 'zip']),
+            ],
+            'sale_items.*.manifest.assembled_file_name' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.manifest.install_directory' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.requires_administrator' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.main_executable_path' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.working_directory' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.launch_arguments' => ['nullable', 'string', 'max:2000'],
+            'sale_items.*.manifest.requires_sider' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.sider_executable_path' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.sider_working_directory' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.sider_arguments' => ['nullable', 'string', 'max:2000'],
+            'sale_items.*.manifest.run_sider_as_administrator' => ['nullable', 'boolean'],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Manifest capabilities
+            |--------------------------------------------------------------------------
+            */
+            'sale_items.*.manifest.capabilities' => ['nullable', 'array'],
+            'sale_items.*.manifest.capabilities.supports_install' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_launch' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_settings' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_profiles' => ['nullable', 'boolean'],
+
+            /*
+            |--------------------------------------------------------------------------
+            | Manifest install options
+            |--------------------------------------------------------------------------
+            */
+            'sale_items.*.manifest.install_options' => ['nullable', 'array'],
+            'sale_items.*.manifest.install_options.extract_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.install_options.delete_archives_after_install' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.install_options.ask_before_delete_archives' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.install_options.clean_temp_after_install' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.install_options.create_desktop_shortcut' => ['nullable', 'boolean'],
 
             'sale_items.*.discount' => ['nullable', 'array'],
             'sale_items.*.discount.id' => ['nullable', 'integer'],
@@ -158,12 +210,25 @@ class UpdateProductRequest extends FormRequest
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
             'sale_items.*.base_price' => 'قیمت پایه آیتم فروش',
+            'sale_items.*.title' => 'عنوان آیتم فروش',
+            'sale_items.*.edition_key' => 'کلید نسخه آیتم فروش',
+            'sale_items.*.version' => 'نسخه آیتم فروش',
             'sale_items.*.discount.discounted_price' => 'مبلغ با تخفیف',
             'sale_items.*.discount.starts_at' => 'تاریخ شروع تخفیف',
             'sale_items.*.discount.ends_at' => 'تاریخ پایان تخفیف',
             'sale_items.*.discount.show_special_box' => 'نمایش باکس تخفیف ویژه',
             'sale_items.*.discount.special_box_title' => 'عنوان باکس تخفیف ویژه',
             'sale_items.*.discount.special_box_description' => 'توضیحات باکس تخفیف ویژه',
+            'sale_items.*.manifest.download_type' => 'نوع دانلود',
+            'sale_items.*.manifest.archive_format' => 'فرمت آرشیو',
+            'sale_items.*.manifest.assembled_file_name' => 'نام آرشیو نهایی',
+            'sale_items.*.manifest.install_directory' => 'مسیر نصب',
+            'sale_items.*.manifest.main_executable_path' => 'مسیر فایل اجرایی',
+            'sale_items.*.manifest.working_directory' => 'پوشه اجرا',
+            'sale_items.*.manifest.launch_arguments' => 'آرگومان‌های اجرا',
+            'sale_items.*.manifest.sider_executable_path' => 'مسیر فایل اجرایی Sider',
+            'sale_items.*.manifest.sider_working_directory' => 'پوشه اجرای Sider',
+            'sale_items.*.manifest.sider_arguments' => 'آرگومان‌های Sider',
         ];
     }
 
@@ -223,10 +288,15 @@ class UpdateProductRequest extends FormRequest
     /**
      * @return array<int, array<string, mixed>>
      */
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function normalizeSaleItemsForValidation(): array
     {
         return collect($this->input('sale_items', []))
-            ->filter(fn($item) => is_array($item))
+            ->filter(
+                static fn(mixed $item): bool => is_array($item)
+            )
             ->map(function (array $item): array {
                 $discount = data_get($item, 'discount', []);
 
@@ -234,41 +304,143 @@ class UpdateProductRequest extends FormRequest
                     $discount = [];
                 }
 
+                $item['id'] = filled(data_get($item, 'id')) ? $this->normalizeIntegerInput(data_get($item, 'id')) : null;
+                $item['title'] = $this->normalizeNullableStringInput(data_get($item, 'title'), 255);
+                $item['edition_key'] = $this->normalizeNullableStringInput(data_get($item, 'edition_key'), 80);
+                $item['version'] = $this->normalizeNullableStringInput(data_get($item, 'version'), 50);
+                $item['sku'] = $this->normalizeNullableStringInput(data_get($item, 'sku'), 255);
+                $item['base_price'] = $this->normalizeIntegerInput(data_get($item, 'base_price')) ?? 0;
+                $item['download_limit'] = $this->normalizeIntegerInput(data_get($item, 'download_limit'));
+                $item['download_expires_in_days'] = $this->normalizeIntegerInput(data_get($item, 'download_expires_in_days'));
+                $item['max_quantity_per_order'] = $this->normalizeIntegerInput(data_get($item, 'max_quantity_per_order'));
+                $item['description'] = $this->normalizeNullableStringInput(data_get($item, 'description'));
+                $item['sort_order'] = $this->normalizeIntegerInput(data_get($item, 'sort_order')) ?? 0;
                 $item['discount'] = [
-                    'id' => filled(data_get($discount, 'id'))
-                        ? (int)data_get($discount, 'id')
-                        : null,
-
-                    'discounted_price' => $this->normalizeIntegerInput(
-                        data_get($discount, 'discounted_price')
-                    ),
-
-                    'starts_at' => $this->normalizeJalaliDateTimeInput(
-                        data_get($discount, 'starts_at')
-                    ),
-
-                    'ends_at' => $this->normalizeJalaliDateTimeInput(
-                        data_get($discount, 'ends_at')
-                    ),
-
-                    'show_special_box' => $this->normalizeBooleanInput(
-                        data_get($discount, 'show_special_box'),
-                        false
-                    ),
-
-                    'special_box_title' => filled(data_get($discount, 'special_box_title'))
-                        ? trim((string)data_get($discount, 'special_box_title'))
-                        : null,
-
-                    'special_box_description' => filled(data_get($discount, 'special_box_description'))
-                        ? trim((string)data_get($discount, 'special_box_description'))
-                        : null,
+                    'id' => filled(data_get($discount, 'id')) ? $this->normalizeIntegerInput(data_get($discount, 'id')) : null,
+                    'discounted_price' => $this->normalizeIntegerInput(data_get($discount, 'discounted_price')),
+                    'starts_at' => $this->normalizeJalaliDateTimeInput(data_get($discount, 'starts_at')),
+                    'ends_at' => $this->normalizeJalaliDateTimeInput(data_get($discount, 'ends_at')),
+                    'show_special_box' => $this->normalizeBooleanInput(data_get($discount, 'show_special_box'), false),
+                    'special_box_title' => $this->normalizeNullableStringInput(data_get($discount, 'special_box_title'), 255),
+                    'special_box_description' => $this->normalizeNullableStringInput(data_get($discount, 'special_box_description'), 1000),
                 ];
+                $item['manifest'] = $this->normalizeManifestInput(data_get($item, 'manifest'));
 
                 return $item;
             })
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function normalizeManifestInput(
+        mixed $value,
+    ): array
+    {
+        $manifest = is_array($value) ? $value : [];
+
+        $capabilities = data_get($manifest, 'capabilities', []);
+
+        if (!is_array($capabilities)) {
+            $capabilities = [];
+        }
+
+        $installOptions = data_get($manifest, 'install_options', []);
+
+        if (!is_array($installOptions)) {
+            $installOptions = [];
+        }
+
+        return [
+            /*
+             * Null or empty means automatic detection.
+             */
+            'download_type' => $this->normalizeDownloadTypeInput(data_get($manifest, 'download_type')),
+            'archive_format' => $this->normalizeArchiveFormatInput(data_get($manifest, 'archive_format')),
+            'assembled_file_name' => $this->normalizeNullableStringInput(data_get($manifest, 'assembled_file_name'), 255),
+            'install_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'install_directory'), 500),
+            'requires_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'requires_administrator'), false),
+            'main_executable_path' => $this->normalizeNullableStringInput(data_get($manifest, 'main_executable_path'), 500),
+            'working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'working_directory'), 500) ?? '.',
+            'launch_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'launch_arguments'), 2000),
+            'requires_sider' => $this->normalizeBooleanInput(data_get($manifest, 'requires_sider'), false),
+            'sider_executable_path' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_executable_path'), 500),
+            'sider_working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_working_directory'), 500),
+            'sider_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_arguments'), 2000),
+            'run_sider_as_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'run_sider_as_administrator'), false),
+            'capabilities' => [
+                'supports_install' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_install'), true),
+                'supports_launch' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_launch'), true),
+                'supports_settings' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_settings'), false),
+                'supports_profiles' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_profiles'), false),
+            ],
+            'install_options' => [
+                'extract_enabled' => $this->normalizeBooleanInput(data_get($installOptions, 'extract_enabled'), true),
+                'delete_archives_after_install' => $this->normalizeBooleanInput(data_get($installOptions, 'delete_archives_after_install'), true),
+                'ask_before_delete_archives' => $this->normalizeBooleanInput(data_get($installOptions, 'ask_before_delete_archives'), true),
+                'clean_temp_after_install' => $this->normalizeBooleanInput(data_get($installOptions, 'clean_temp_after_install'), true),
+                'create_desktop_shortcut' => $this->normalizeBooleanInput(data_get($installOptions, 'create_desktop_shortcut'), false),
+            ],
+        ];
+    }
+
+    private function normalizeDownloadTypeInput(mixed $value): ?string
+    {
+        $value = trim((string)$value);
+
+        return in_array(
+            $value,
+            [
+                'single_file',
+                'multiple_files',
+                'split_archive',
+            ],
+            true
+        ) ? $value : null;
+    }
+
+    private function normalizeArchiveFormatInput(mixed $value): ?string
+    {
+        $value = strtolower(trim((string)$value));
+
+        return in_array(
+            $value,
+            [
+                '7z',
+                'rar',
+                'zip',
+            ],
+            true
+        ) ? $value : null;
+    }
+
+    private function normalizeNullableStringInput(mixed $value, ?int $maxLength = null): ?string
+    {
+        if (!filled($value)) {
+            return null;
+        }
+
+        $value = preg_replace(
+            '/\s+/u',
+            ' ',
+            trim((string)$value)
+        );
+
+        if (!is_string($value) || $value === '') {
+            return null;
+        }
+
+        if ($maxLength !== null) {
+            $value = mb_substr(
+                $value,
+                0,
+                $maxLength
+            );
+        }
+
+        return $value;
     }
 
     private function normalizeIntegerInput(mixed $value): ?int

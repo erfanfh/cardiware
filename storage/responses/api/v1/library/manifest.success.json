@@ -1,0 +1,110 @@
+{
+    "data": {
+        "schema_version": 1,
+        "manifest_revision": 4,
+        "manifest_id": "1.4.9+4",
+        "product": {
+            "id": 20,
+            "slug": "pgl-6",
+            "title": "PES 2021 PGL Patch V6"
+        },
+        "access": {
+            "id": 145,
+            "is_usable": true,
+            "starts_at": null,
+            "expires_at": null
+        },
+        "sale_item": {
+            "id": 35,
+            "sku": "PGL6-FULL",
+            "title": "Full Season",
+            "edition_key": "full",
+            "version": "1.4.9"
+        },
+        "capabilities": {
+            "supports_install": true,
+            "supports_launch": true,
+            "supports_sider": false,
+            "supports_verify": true,
+            "supports_repair": false,
+            "supports_update": false,
+            "supports_settings": true,
+            "supports_profiles": false
+        },
+        "download": {
+            "type": "split_archive",
+            "assembly_strategy": "ordered",
+            "archive_format": "7z",
+            "assembled_file_name": "PGL_PATCH_V6.7z",
+            "validation_mode": "after_assembly",
+            "total_size_bytes": 16106127360,
+            "files": [
+                {
+                    "file_id": 81,
+                    "title": "Part 1",
+                    "file_name": "PGL_PATCH_V6.7z.001",
+                    "size_bytes": 5368709120,
+                    "sha256": "3a7bd3e2360a3d80f70b4f0a0f52e88d6f2f57fce8e33a9872187d841a0e9b67",
+                    "mime_type": "application/octet-stream",
+                    "part_number": 1,
+                    "archive_group": "main-package",
+                    "is_required": true,
+                    "sort_order": 1
+                },
+                {
+                    "file_id": 82,
+                    "title": "Part 2",
+                    "file_name": "PGL_PATCH_V6.7z.002",
+                    "size_bytes": 5368709120,
+                    "sha256": "c84d66e8af802c6467f17a30a34cc8ab067116ff927687985c1c2a8b3d8e9f10",
+                    "mime_type": "application/octet-stream",
+                    "part_number": 2,
+                    "archive_group": "main-package",
+                    "is_required": true,
+                    "sort_order": 2
+                },
+                {
+                    "file_id": 83,
+                    "title": "Part 3",
+                    "file_name": "PGL_PATCH_V6.7z.003",
+                    "size_bytes": 5368709120,
+                    "sha256": "214e2d4e7fe3b8a00a2ab14d8517e88c70db5c6d0012e7f93d09bc5f89ab21f4",
+                    "mime_type": "application/octet-stream",
+                    "part_number": 3,
+                    "archive_group": "main-package",
+                    "is_required": true,
+                    "sort_order": 3
+                }
+            ]
+        },
+        "installation": {
+            "install_directory": "InstalledProducts/PGL6",
+            "requires_administrator": false,
+            "extract_enabled": true,
+            "delete_archives_after_install": true,
+            "ask_before_delete_archives": true,
+            "clean_temp_after_install": true,
+            "create_desktop_shortcut": false,
+            "required_install_space_bytes": 48318382080,
+            "estimated_installed_size_bytes": 52613349376
+        },
+        "launch": {
+            "main_executable_path": "PES2021.exe",
+            "working_directory": ".",
+            "arguments": null,
+            "requires_sider": false,
+            "sider_executable_path": null,
+            "sider_working_directory": null,
+            "sider_arguments": null,
+            "run_sider_as_administrator": false
+        },
+        "runtime_notices": [
+            {
+                "type": "info",
+                "title": "Patch installation",
+                "message": "Select your PES 2021 installation directory before starting the installation."
+            }
+        ],
+        "metadata": []
+    }
+}

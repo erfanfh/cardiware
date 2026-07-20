@@ -116,6 +116,180 @@
                         return fallback;
                     },
 
+                    defaultSaleItemManifest() {
+                        return {
+                            /*
+                             * Empty means automatic detection by the backend.
+                             */
+                            download_type: '',
+
+                            archive_format: '',
+                            assembled_file_name: '',
+
+                            install_directory: '',
+                            requires_administrator: false,
+
+                            main_executable_path: '',
+                            working_directory: '.',
+                            launch_arguments: '',
+
+                            requires_sider: false,
+                            sider_executable_path: '',
+                            sider_working_directory: '',
+                            sider_arguments: '',
+                            run_sider_as_administrator: false,
+
+                            capabilities: {
+                                supports_install: true,
+                                supports_launch: true,
+                                supports_settings: false,
+                                supports_profiles: false,
+                            },
+
+                            install_options: {
+                                extract_enabled: true,
+                                delete_archives_after_install: true,
+                                ask_before_delete_archives: true,
+                                clean_temp_after_install: true,
+                                create_desktop_shortcut: false,
+                            },
+                        };
+                    },
+
+                    normalizeSaleItemManifest(manifest = {}) {
+                        const defaults = this.defaultSaleItemManifest();
+
+                        const source = manifest
+                        && typeof manifest === 'object'
+                        && !Array.isArray(manifest)
+                            ? manifest
+                            : {};
+
+                        const capabilities = source.capabilities
+                        && typeof source.capabilities === 'object'
+                        && !Array.isArray(source.capabilities)
+                            ? source.capabilities
+                            : {};
+
+                        const installOptions = source.install_options
+                        && typeof source.install_options === 'object'
+                        && !Array.isArray(source.install_options)
+                            ? source.install_options
+                            : {};
+
+                        const allowedDownloadTypes = [
+                            '',
+                            'single_file',
+                            'multiple_files',
+                            'split_archive',
+                        ];
+
+                        const downloadType = String(
+                            source.download_type ?? defaults.download_type
+                        );
+
+                        return {
+                            ...defaults,
+                            ...source,
+
+                            download_type: allowedDownloadTypes.includes(downloadType)
+                                ? downloadType
+                                : '',
+
+                            archive_format: source.archive_format ?? '',
+
+                            assembled_file_name: source.assembled_file_name ?? '',
+
+                            install_directory: source.install_directory ?? '',
+
+                            requires_administrator: this.normalizeBoolean(
+                                source.requires_administrator,
+                                false
+                            ),
+
+                            main_executable_path: source.main_executable_path ?? '',
+
+                            working_directory: source.working_directory ?? '.',
+
+                            launch_arguments: source.launch_arguments ?? '',
+
+                            requires_sider: this.normalizeBoolean(
+                                source.requires_sider,
+                                false
+                            ),
+
+                            sider_executable_path: source.sider_executable_path ?? '',
+
+                            sider_working_directory: source.sider_working_directory ?? '',
+
+                            sider_arguments: source.sider_arguments ?? '',
+
+                            run_sider_as_administrator:
+                                this.normalizeBoolean(
+                                    source.run_sider_as_administrator,
+                                    false
+                                ),
+
+                            capabilities: {
+                                supports_install:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_install,
+                                        true
+                                    ),
+
+                                supports_launch:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_launch,
+                                        true
+                                    ),
+
+                                supports_settings:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_settings,
+                                        false
+                                    ),
+
+                                supports_profiles:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_profiles,
+                                        false
+                                    ),
+                            },
+
+                            install_options: {
+                                extract_enabled:
+                                    this.normalizeBoolean(
+                                        installOptions.extract_enabled,
+                                        true
+                                    ),
+
+                                delete_archives_after_install:
+                                    this.normalizeBoolean(
+                                        installOptions.delete_archives_after_install,
+                                        true
+                                    ),
+
+                                ask_before_delete_archives:
+                                    this.normalizeBoolean(
+                                        installOptions.ask_before_delete_archives,
+                                        true
+                                    ),
+
+                                clean_temp_after_install:
+                                    this.normalizeBoolean(
+                                        installOptions.clean_temp_after_install,
+                                        true
+                                    ),
+
+                                create_desktop_shortcut:
+                                    this.normalizeBoolean(
+                                        installOptions.create_desktop_shortcut,
+                                        false
+                                    ),
+                            },
+                        };
+                    },
+
                     normalizeAssignedAttributes(items) {
                         return (items ?? []).map((item) => {
                             const attributeId = Number(item.attribute_id ?? item.id ?? 0);
@@ -258,10 +432,15 @@
 
                     normalizeSaleItems(items) {
                         return (items ?? []).map((item) => {
+                            const title = item.title ?? '';
+
                             return {
                                 __key: item.__key ?? this.makeKey('sale-item'),
                                 id: item.id ?? null,
                                 sku: item.sku ?? '',
+                                title,
+                                edition_key: item.edition_key ?? '',
+                                version: item.version ?? '1.0.0',
                                 base_price: item.base_price ?? '',
                                 status: item.status ?? 'available',
                                 download_limit: item.download_limit ?? '',
@@ -271,6 +450,19 @@
                                 attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
                                 discount: this.normalizeSaleItemDiscount(item.discount ?? {}),
                                 files: this.normalizeSaleItemFiles(item.files ?? []),
+                                manifest: this.normalizeSaleItemManifest(item.manifest ?? {}),
+                                /*
+                                 * Existing titles should not be overwritten
+                                 * automatically by variation labels.
+                                 */
+                                title_manually_changed: this.normalizeBoolean(
+                                    item.title_manually_changed,
+                                    String(title).trim().length > 0
+                                ),
+                                title_auto_generated: this.normalizeBoolean(
+                                    item.title_auto_generated,
+                                    false
+                                ),
                                 _open: this.normalizeBoolean(item._open, false),
                             };
                         });
@@ -375,21 +567,35 @@
                     },
 
                     addSaleItem(payload = {}) {
-                        this.saleItems.push({
+                        const saleItem = {
                             __key: this.makeKey('sale-item'),
                             id: payload.id ?? null,
                             sku: payload.sku ?? '',
+                            title: payload.title ?? '',
+                            edition_key: payload.edition_key ?? '',
+                            version: payload.version ?? '1.0.0',
                             base_price: payload.base_price ?? '',
                             status: payload.status ?? 'available',
                             download_limit: payload.download_limit ?? '',
                             download_expires_in_days: payload.download_expires_in_days ?? '',
                             max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
-                            attribute_values: payload.attribute_values ?? {},
+                            attribute_values: this.normalizeSaleItemAttributeValues(payload.attribute_values ?? {}),
                             discount: this.normalizeSaleItemDiscount(payload.discount ?? {}),
                             files: this.normalizeSaleItemFiles(payload.files ?? []),
+                            manifest: this.normalizeSaleItemManifest(payload.manifest ?? {}),
+                            title_manually_changed: this.normalizeBoolean(payload.title_manually_changed, false),
+                            title_auto_generated: this.normalizeBoolean(payload.title_auto_generated, false),
                             _open: true,
-                        });
+                        };
+
+                        this.saleItems.push(saleItem);
+
+                        /*
+                         * Generate a readable title when the sale item was
+                         * created from a variation combination.
+                         */
+                        this.syncSaleItemTitleFromCombination(saleItem);
                     },
 
                     syncSaleItemTitleFromCombination(item) {

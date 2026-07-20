@@ -123,11 +123,98 @@
 
     $customAttributeItems = old('custom_attributes', $customAttributeItems ?? []);
 
+    $manifestFormDefaults = [
+        /*
+         * Empty means automatic detection by the backend.
+         */
+        'download_type' => '',
+
+        'archive_format' => '',
+        'assembled_file_name' => '',
+
+        'install_directory' => '',
+        'requires_administrator' => false,
+
+        'main_executable_path' => '',
+        'working_directory' => '.',
+        'launch_arguments' => '',
+
+        'requires_sider' => false,
+        'sider_executable_path' => '',
+        'sider_working_directory' => '',
+        'sider_arguments' => '',
+        'run_sider_as_administrator' => false,
+
+        'capabilities' => [
+            'supports_install' => true,
+            'supports_launch' => true,
+            'supports_settings' => false,
+            'supports_profiles' => false,
+        ],
+
+        'install_options' => [
+            'extract_enabled' => true,
+            'delete_archives_after_install' => true,
+            'ask_before_delete_archives' => true,
+            'clean_temp_after_install' => true,
+            'create_desktop_shortcut' => false,
+        ],
+    ];
+
+    $makeSaleItemManifestFormData = static function ($saleItem) use (
+        $manifestFormDefaults
+    ): array {
+        $manifest = $saleItem->manifest;
+
+        if (!$manifest) {
+            return $manifestFormDefaults;
+        }
+
+        $downloadType = $manifest->download_type instanceof \BackedEnum
+            ? $manifest->download_type->value
+            : $manifest->download_type;
+
+        return array_replace_recursive(
+            $manifestFormDefaults,
+            [
+                'download_type' => $downloadType ?? '',
+
+                'archive_format' => $manifest->archive_format ?? '',
+
+                'assembled_file_name' => $manifest->assembled_file_name ?? '',
+
+                'install_directory' => $manifest->install_directory ?? '',
+
+                'requires_administrator' => (bool) $manifest->requires_administrator,
+
+                'main_executable_path' => $manifest->main_executable_path ?? '',
+
+                'working_directory' => $manifest->working_directory ?? '.',
+
+                'launch_arguments' => $manifest->launch_arguments ?? '',
+
+                'requires_sider' => (bool) $manifest->requires_sider,
+
+                'sider_executable_path' => $manifest->sider_executable_path ?? '',
+
+                'sider_working_directory' => $manifest->sider_working_directory ?? '',
+
+                'sider_arguments' => $manifest->sider_arguments ?? '',
+
+                'run_sider_as_administrator' => (bool) $manifest->run_sider_as_administrator,
+
+                'capabilities' => $manifest->resolvedCapabilities(),
+
+                'install_options' => $manifest->resolvedInstallOptions(),
+            ]
+        );
+    };
+
     $saleItems = !isset($product) ? [] : $product
         ->saleItems()
         ->with([
             'discount',
-
+            'manifest',
             'files' => fn ($query) => $query->orderBy('sort_order'),
 
             'attributeValues.globalValue.attribute',
@@ -135,7 +222,7 @@
         ])
         ->orderBy('sort_order')
         ->get()
-        ->map(function ($saleItem) {
+        ->map(function ($saleItem) use ($makeSaleItemManifestFormData) {
             $attributeValues = [];
 
             foreach ($saleItem->attributeValues as $selectedValue) {
@@ -157,6 +244,9 @@
             return [
                 'id' => $saleItem->id,
                 'sku' => $saleItem->sku,
+                'title' => $saleItem->title,
+                'edition_key' => $saleItem->edition_key,
+                'version' => $saleItem->version,
                 'base_price' => $saleItem->base_price,
                 'status' => $saleItem->status instanceof \BackedEnum
                     ? $saleItem->status->value
@@ -189,6 +279,9 @@
                     ])
                     ->values()
                     ->all(),
+                'manifest' => $makeSaleItemManifestFormData(
+                    $saleItem
+                ),
             ];
         })
         ->values()

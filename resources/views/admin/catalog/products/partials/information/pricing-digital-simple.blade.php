@@ -17,6 +17,50 @@
                 </span>
             </div>
 
+            <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                <x-admin.field label="عنوان آیتم فروش">
+                    <x-admin.form.input
+                        name="sale_items[0][title]"
+                        :value="old('sale_items.0.title', $simpleSaleItem['title'] ?? 'Standard')"
+                    />
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                <x-admin.field
+                    label="کلید نسخه"
+                    hint="در صورت خالی بودن خودکار ساخته می‌شود."
+                >
+                    <x-admin.form.input
+                        name="sale_items[0][edition_key]"
+                        :value="old('sale_items.0.edition_key', $simpleSaleItem['edition_key'] ?? 'standard')"
+                        class="direction-ltr"
+                        placeholder="standard"
+                    />
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                <x-admin.field label="نسخه فعلی">
+                    <x-admin.form.input
+                        name="sale_items[0][version]"
+                        :value="old('sale_items.0.version', $simpleSaleItem['version'] ?? '1.0.0')"
+                        class="direction-ltr"
+                        placeholder="1.0.0"
+                    />
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 xl:col-span-3">
+                <x-admin.field label="شناسه آیتم فروش">
+                    <x-admin.form.input
+                        name="sale_items[0][sku]"
+                        :value="old('sale_items.0.sku', $simpleSaleItem['sku'] ?? null)"
+                        class="direction-ltr"
+                    />
+                </x-admin.field>
+            </div>
+
             <div class="grid grid-cols-12 gap-4">
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
                     <x-admin.field label="قیمت پایه (تومان)">
@@ -41,8 +85,6 @@
                         />
                     </x-admin.field>
                 </div>
-
-                <div class="col-span-12 md:col-span-6 xl:col-span-4"></div>
 
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
                     <x-admin.field label="حداکثر تعداد در هر سفارش" hint="برای نامحدود، خالی بذارید.">
@@ -247,5 +289,13 @@
                 </template>
             </div>
         </div>
+
+        <x-admin.catalog.product-sale-item-manifest-fields
+            mode="simple"
+            :manifest="old(
+                'sale_items.0.manifest',
+                $simpleSaleItem['manifest'] ?? []
+            )"
+        />
     </div>
 </template>
