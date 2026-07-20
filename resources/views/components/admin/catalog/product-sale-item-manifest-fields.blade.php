@@ -67,30 +67,13 @@
 @endphp
 
 <div
-    class="border-t border-slate-100 px-4 py-4"
-
+    class="flex flex-col gap-4"
     @if($isSimple)
         x-data="{
             manifest: {{ \Illuminate\Support\Js::from($manifestState) }}
         }"
     @endif
 >
-    <div class="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-            <h4 class="text-sm font-bold text-slate-900">
-                تنظیمات لانچر
-            </h4>
-
-            <p class="mt-1 text-xs leading-6 text-slate-500">
-                تنظیمات دانلود، نصب و اجرای این آیتم در نرم‌افزار ویندوز را مشخص کنید.
-            </p>
-        </div>
-
-        <span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-bold text-indigo-700">
-            Manifest
-        </span>
-    </div>
-
     {{-- Download --}}
     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <div class="mb-3">
@@ -119,10 +102,7 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="نوع دانلود"
-                    hint="در حالت خودکار نیز Backend می‌تواند نوع دانلود را از فایل‌ها تشخیص دهد."
-                >
+                <x-admin.field label="نوع دانلود">
                     <select
                         x-model="{{ $state }}.download_type"
                         class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
@@ -165,10 +145,7 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="فرمت آرشیو"
-                    hint="اگر خالی باشد، از نام فایل تشخیص داده می‌شود."
-                >
+                <x-admin.field label="فرمت آرشیو">
                     <select
                         x-model="{{ $state }}.archive_format"
                         class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
@@ -200,14 +177,10 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="نام آرشیو نهایی"
-                    hint="مثال: PGL_PATCH_V6.7z"
-                >
+                <x-admin.field label="نام آرشیو نهایی">
                     <x-admin.form.input
                         x-model="{{ $state }}.assembled_file_name"
                         class="direction-ltr"
-                        placeholder="PGL_PATCH_V6.7z"
                     />
                 </x-admin.field>
             </div>
@@ -215,7 +188,7 @@
     </div>
 
     {{-- Installation --}}
-    <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <div class="mb-3">
             <div class="text-xs font-bold text-slate-800">
                 تنظیمات نصب
@@ -227,7 +200,7 @@
         </div>
 
         <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-8">
+            <div class="col-span-12">
                 @if($isSimple)
                     <input
                         type="hidden"
@@ -242,18 +215,16 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="مسیر نصب"
-                    hint="مسیر باید نسبت به پوشه اصلی محصولات لانچر باشد."
-                >
+                <x-admin.field label="مسیر نصب">
                     <x-admin.form.input
                         x-model="{{ $state }}.install_directory"
                         class="direction-ltr"
-                        placeholder="InstalledProducts/PGL6"
                     />
                 </x-admin.field>
             </div>
+        </div>
 
+        <div class="mt-4 grid grid-cols-12 gap-3">
             <div class="col-span-12 md:col-span-4">
                 @if($isSimple)
                     <input
@@ -288,9 +259,7 @@
                     </span>
                 </label>
             </div>
-        </div>
 
-        <div class="mt-4 grid grid-cols-12 gap-3">
             @php
                 $installOptionCheckboxes = [
                     'extract_enabled' => [
@@ -356,7 +325,7 @@
     </div>
 
     {{-- Launch --}}
-    <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <div class="mb-3">
             <div class="text-xs font-bold text-slate-800">
                 تنظیمات اجرا
@@ -383,14 +352,10 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="مسیر فایل اجرایی"
-                    hint="مثال: PES2021.exe یا Game/PES2021.exe"
-                >
+                <x-admin.field label="مسیر فایل اجرایی">
                     <x-admin.form.input
                         x-model="{{ $state }}.main_executable_path"
                         class="direction-ltr"
-                        placeholder="PES2021.exe"
                     />
                 </x-admin.field>
             </div>
@@ -410,10 +375,7 @@
                     >
                 @endif
 
-                <x-admin.field
-                    label="پوشه اجرای برنامه"
-                    hint="معمولا نقطه به معنی همان مسیر نصب است."
-                >
+                <x-admin.field label="پوشه اجرای برنامه">
                     <x-admin.form.input
                         x-model="{{ $state }}.working_directory"
                         class="direction-ltr"
@@ -441,7 +403,6 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.launch_arguments"
                         class="direction-ltr"
-                        placeholder="-windowed -language=en"
                     />
                 </x-admin.field>
             </div>
@@ -449,7 +410,7 @@
     </div>
 
     {{-- Sider --}}
-    <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         @if($isSimple)
             <input
                 type="hidden"
@@ -507,7 +468,6 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.sider_executable_path"
                         class="direction-ltr"
-                        placeholder="Sider/sider.exe"
                     />
                 </x-admin.field>
             </div>
@@ -531,7 +491,6 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.sider_working_directory"
                         class="direction-ltr"
-                        placeholder="Sider"
                     />
                 </x-admin.field>
             </div>
@@ -590,7 +549,7 @@
     </div>
 
     {{-- Capabilities --}}
-    <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
         <div class="mb-3">
             <div class="text-xs font-bold text-slate-800">
                 قابلیت‌های لانچر
@@ -659,11 +618,6 @@
                     </label>
                 </div>
             @endforeach
-        </div>
-
-        <div class="mt-3 rounded-xl border border-blue-200 bg-blue-50 px-3 py-2 text-[11px] leading-6 text-blue-700">
-            قابلیت‌های بررسی سلامت فایل، تعمیر و بروزرسانی در این نسخه غیرفعال هستند و پس از توسعه زیرساخت مربوطه اضافه
-            می‌شوند.
         </div>
     </div>
 </div>
