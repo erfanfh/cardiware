@@ -132,8 +132,14 @@ class PreparePurchaseAccessFileDownloadAction
                 ],
             ]);
 
+            $downloadedAt = now();
+
+            $lastDownloadedAt = $purchaseAccess->last_downloaded_at;
+
+            $shouldDecreaseDownload = $lastDownloadedAt === null || $lastDownloadedAt->lte($downloadedAt->copy()->subMinutes(15));
+
             $purchaseAccess->forceFill([
-                'last_downloaded_at' => now(),
+                'last_downloaded_at' => $downloadedAt,
             ])->save();
 
             return [
@@ -142,10 +148,12 @@ class PreparePurchaseAccessFileDownloadAction
                 'file_name' => $fileName,
                 'title' => $file->title,
 
-                'remaining_downloads' =>
-                    $remainingBeforeDownload === null
-                        ? null
-                        : max(0, $remainingBeforeDownload - 1),
+                'remaining_downloads' => $remainingBeforeDownload === null
+                    ? null
+                    : max(
+                        0,
+                        $remainingBeforeDownload - ($shouldDecreaseDownload ? 1 : 0)
+                    ),
             ];
         });
     }

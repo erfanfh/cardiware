@@ -10,11 +10,13 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemAttributeValue;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
+use Illuminate\Support\Str;
 
 class SyncProductSaleItemsAction
 {
     public function __construct(
         private readonly ProductInformationPayloadNormalizer $normalizer,
+        private readonly SyncProductSaleItemManifestAction   $syncManifestAction,
     )
     {
     }
@@ -36,7 +38,13 @@ class SyncProductSaleItemsAction
         }
 
         $saleItems = $this->resolveSubmittedSaleItems($product, $payload);
-        $existingSaleItems = $product->saleItems()->with(['files', 'attributeValues'])->get();
+        $existingSaleItems = $product->saleItems()
+            ->with([
+                'files',
+                'attributeValues',
+                'manifest',
+            ])
+            ->get();
 
         $keptSaleItemIds = [];
 
@@ -46,12 +54,26 @@ class SyncProductSaleItemsAction
             }
 
             $saleItem = $this->resolveSaleItem($existingSaleItems, $item);
+            $isNewSaleItem = !$saleItem->exists;
 
             $saleItem->fill([
                 'product_id' => $product->id,
                 'sku' => $this->normalizer->nullableString($item['sku'] ?? null),
+                'title' => $this->resolveSaleItemTitle(
+                    product: $product,
+                    item: $item,
+                    index: $index,
+                ),
+                'edition_key' => $this->resolveEditionKey(
+                    product: $product,
+                    item: $item,
+                    index: $index,
+                ),
+                'version' => $this->resolveVersion($item['version'] ?? null),
                 'base_price' => $this->normalizer->integer($item['base_price'] ?? 0),
-                'status' => $item['status'] ?? ProductSaleItemStatusEnum::AVAILABLE->value,
+                'status' => ProductSaleItemStatusEnum::tryFrom(
+                        (string)($item['status'] ?? '')
+                    )?->value ?? ProductSaleItemStatusEnum::AVAILABLE->value,
                 'download_limit' => $this->normalizer->nullableInteger($item['download_limit'] ?? null),
                 'download_expires_in_days' => $this->normalizer->nullableInteger($item['download_expires_in_days'] ?? null),
                 'max_quantity_per_order' => $this->normalizer->nullableInteger($item['max_quantity_per_order'] ?? null),
@@ -63,8 +85,24 @@ class SyncProductSaleItemsAction
 
             $keptSaleItemIds[] = $saleItem->id;
 
-            $this->syncFiles($saleItem, $item['files'] ?? []);
-            $this->syncAttributeValues($saleItem, $item['attribute_values'] ?? [], $customAttributeValueKeyMap);
+            $this->syncFiles($saleItem, is_array($item['files'] ?? null) ? $item['files'] : []);
+
+            if ($isNewSaleItem || array_key_exists('manifest', $item)) {
+                $this->syncManifestAction->execute(
+                    saleItem: $saleItem,
+                    data: is_array($item['manifest'] ?? null)
+                        ? $item['manifest']
+                        : [],
+                );
+            }
+
+            $this->syncAttributeValues(
+                $saleItem,
+                is_array($item['attribute_values'] ?? null)
+                    ? $item['attribute_values']
+                    : [],
+                $customAttributeValueKeyMap
+            );
         }
 
         $product
@@ -109,10 +147,14 @@ class SyncProductSaleItemsAction
 
         return !empty($item['id'])
             || !empty($item['sku'])
+            || !empty($item['title'])
+            || !empty($item['edition_key'])
+            || !empty($item['version'])
             || !empty($item['base_price'])
             || !empty($item['description'])
             || !empty($item['attribute_values'])
-            || !empty($item['files']);
+            || !empty($item['files'])
+            || !empty($item['manifest']);
     }
 
     /**
@@ -290,5 +332,98 @@ class SyncProductSaleItemsAction
         return $product->structure instanceof \BackedEnum
             ? $product->structure->value
             : $product->structure;
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function resolveSaleItemTitle(
+        Product $product,
+        array   $item,
+        int     $index,
+    ): string
+    {
+        $title = $this->normalizer->nullableString(
+            $item['title'] ?? null
+        );
+
+        if ($title !== null) {
+            return $title;
+        }
+
+        if (
+            $this->productStructureValue($product)
+            === ProductStructureEnum::SIMPLE->value
+        ) {
+            return 'Standard';
+        }
+
+        $sku = $this->normalizer->nullableString(
+            $item['sku'] ?? null
+        );
+
+        return $sku ?? 'Edition ' . ($index + 1);
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function resolveEditionKey(
+        Product $product,
+        array   $item,
+        int     $index,
+    ): string
+    {
+        $submittedKey = $this->normalizer->nullableString(
+            $item['edition_key'] ?? null
+        );
+
+        if ($submittedKey !== null) {
+            $normalizedKey = Str::slug(
+                $submittedKey,
+                '_'
+            );
+
+            if ($normalizedKey !== '') {
+                return mb_substr($normalizedKey, 0, 80);
+            }
+        }
+
+        if (
+            $this->productStructureValue($product)
+            === ProductStructureEnum::SIMPLE->value
+        ) {
+            return 'standard';
+        }
+
+        $source = $this->normalizer->nullableString(
+            $item['title'] ?? null
+        ) ?? $this->normalizer->nullableString(
+            $item['sku'] ?? null
+        );
+
+        $generatedKey = $source !== null
+            ? Str::slug($source, '_')
+            : '';
+
+        return $generatedKey !== ''
+            ? mb_substr($generatedKey, 0, 80)
+            : 'edition_' . ($index + 1);
+    }
+
+    private function resolveVersion(mixed $value): string
+    {
+        $version = trim((string)$value);
+
+        if (
+            preg_match(
+                '/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/',
+                $version
+            )
+        ) {
+            return mb_substr($version, 0, 50);
+        }
+
+        return '1.0.0';
     }
 }

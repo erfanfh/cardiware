@@ -85,7 +85,7 @@
     </div>
 
     <div
-        class="border-t border-slate-100 bg-white"
+        class="border-t border-slate-200 bg-white"
         x-show="item._open"
         x-cloak
     >
@@ -96,6 +96,35 @@
             <div class="mb-2 text-xs font-bold text-slate-700">اطلاعات فروش</div>
 
             <div class="grid grid-cols-12 gap-4">
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="عنوان آیتم فروش">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][title]`"
+                            x-model="item.title"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="کلید نسخه">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][edition_key]`"
+                            x-model="item.edition_key"
+                            class="direction-ltr"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                    <x-admin.field label="نسخه فعلی">
+                        <x-admin.form.input
+                            x-bind:name="`sale_items[${i}][version]`"
+                            x-model="item.version"
+                            class="direction-ltr"
+                        />
+                    </x-admin.field>
+                </div>
+
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
                     <x-admin.field label="شناسه آیتم فروش">
                         <x-admin.form.input
@@ -176,7 +205,7 @@
             </div>
         </div>
 
-        <div class="border-t border-slate-100 px-4 py-3">
+        <div class="border-t border-slate-200 px-4 py-3">
             <input
                 type="hidden"
                 x-bind:name="`sale_items[${i}][discount][id]`"
@@ -283,7 +312,7 @@
             </div>
         </div>
 
-        <div class="border-t border-slate-100 px-4 py-3">
+        <div class="border-t border-slate-200 px-4 py-3">
             <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
                 <div class="text-xs font-bold text-slate-700">فایل‌های دانلودی</div>
 
@@ -338,6 +367,22 @@
                     </div>
                 </template>
             </div>
+        </div>
+
+        <div class="border-t border-slate-200 px-4 py-3">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <h4 class="text-sm font-bold text-slate-900">تنظیمات لانچر</h4>
+                </div>
+
+                <span class="rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-bold text-indigo-700">
+                    Manifest
+                </span>
+            </div>
+
+            <x-admin.catalog.product-sale-item-manifest-fields
+                mode="variable"
+            />
         </div>
     </div>
 </div>

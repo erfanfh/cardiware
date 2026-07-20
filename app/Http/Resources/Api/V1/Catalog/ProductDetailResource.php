@@ -21,6 +21,7 @@ class ProductDetailResource extends JsonResource
             'body' => $this->body,
 
             'type' => $this->type->value,
+            'content_type' => $this->content_type->value,
             'structure' => $this->structure->value,
 
             'web_url' => $this->url,

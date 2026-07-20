@@ -24,6 +24,10 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     protected $fillable = [
         'product_id',
         'sku',
+        'title',
+        'edition_key',
+        'version',
+        'manifest_revision',
         'base_price',
         'status',
         'download_limit',
@@ -34,6 +38,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     ];
 
     protected $casts = [
+        'manifest_revision' => 'integer',
         'base_price' => 'integer',
         'download_limit' => 'integer',
         'download_expires_in_days' => 'integer',
@@ -203,5 +208,10 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function getReportStoreId(): ?int
     {
         return $this->product?->store_id;
+    }
+
+    public function manifest(): HasOne
+    {
+        return $this->hasOne(ProductSaleItemManifest::class);
     }
 }
