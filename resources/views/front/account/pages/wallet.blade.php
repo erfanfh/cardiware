@@ -230,7 +230,5 @@
         <livewire:front.account.wallet.top-up-form/>
 
         <livewire:front.account.wallet.transfer-form/>
-
-        <livewire:front.account.wallet.transactions-list/>
     </div>
 @endsection
