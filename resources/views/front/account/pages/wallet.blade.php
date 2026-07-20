@@ -4,6 +4,18 @@
     <div class="space-y-6">
         {{-- Main wallet balance --}}
         <section
+            x-data="{
+                availableBalance: {{ (int) $wallet->available_balance }},
+
+                formatAmount(value) {
+                    return new Intl.NumberFormat('en-US').format(value);
+                }
+            }"
+            x-on:wallet-balance-updated.window="
+                availableBalance = Number(
+                    $event.detail.availableBalance ?? availableBalance
+                );
+            "
             class="relative overflow-hidden rounded-3xl bg-slate-950 shadow-xl shadow-slate-950/10
            dark:border dark:border-slate-800 dark:shadow-black/20"
         >
@@ -51,9 +63,9 @@
 
                     <div class="mt-6 flex flex-wrap items-end gap-x-3 gap-y-2">
                         <strong
-                            class="text-3xl font-black tracking-tight text-white
-                           sm:text-4xl lg:text-5xl"
+                            class="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl"
                             dir="ltr"
+                            x-text="formatAmount(availableBalance)"
                         >
                             {{ number_format($wallet->available_balance) }}
                         </strong>
@@ -216,6 +228,8 @@
         @endif
 
         <livewire:front.account.wallet.top-up-form/>
+
+        <livewire:front.account.wallet.transfer-form/>
 
         <livewire:front.account.wallet.transactions-list/>
     </div>

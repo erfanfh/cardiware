@@ -91,7 +91,7 @@ return [
             /*
              * شارژ مستقیم فعلاً قابل برداشت نیست.
              */
-            'is_withdrawable' => false,
+            'is_withdrawable' => true,
 
             /*
              * فقط درگاه‌هایی که واقعاً در پروژه فعال هستند.
@@ -103,6 +103,24 @@ return [
             /*
              * محدودیت تعداد تلاش برای شروع شارژ.
              */
+            'rate_limit' => [
+                'max_attempts' => 5,
+                'decay_seconds' => 60,
+            ],
+        ],
+
+        'transfer' => [
+            'minimum_amount' => 10_000,
+
+            'maximum_amount' => 20_000_000,
+
+            'suggested_amounts' => [
+                100_000,
+                200_000,
+                500_000,
+                1_000_000,
+            ],
+
             'rate_limit' => [
                 'max_attempts' => 5,
                 'decay_seconds' => 60,
