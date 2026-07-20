@@ -59,6 +59,13 @@ class AccountController extends Controller
         return view('front.account.pages.favorites', compact('user'));
     }
 
+    public function transactions(): View
+    {
+        $user = $this->getHydratedUser();
+
+        return view('front.account.pages.transactions', compact('user'));
+    }
+
     public function information(): View
     {
         $user = $this->getHydratedUser();

@@ -17,7 +17,7 @@
             </span>
         </div>
 
-        <div class="relative grid grid-cols-4 gap-2 text-center">
+        <div class="relative grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
             @php
                 $items = [
                     ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12'],
@@ -25,6 +25,7 @@
                     ['route' => 'account.orders', 'label' => 'سفارش‌ها', 'icon' => 'icons.shopping-basket-03', 'badge' => $user->paid_orders_count, 'badgeColor' => 'brand'],
                     ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'badge' => $user->open_tickets_count, 'badgeColor' => 'cyan'],
                     ['route' => 'account.favorites', 'label' => 'علاقه‌مندی', 'icon' => 'icons.favourite'],
+                    ['route' => 'account.transactions', 'label' => 'تراکنش‌ها', 'icon' => 'icons.transaction'],
                     ['route' => 'account.information', 'label' => 'اطلاعات', 'icon' => 'icons.user-edit-01'],
                     ['route' => 'account.security', 'label' => 'امنیت', 'icon' => 'icons.lock-password'],
                 ];
