@@ -117,9 +117,9 @@
 
         {{-- Available balance --}}
         <div
-            class="mt-4 flex flex-col gap-2 rounded-xl border border-slate-200
+            class="mt-4 flex gap-2 rounded-xl border border-slate-200
                    bg-slate-50 px-3 py-2.5
-                   sm:flex-row sm:items-center sm:justify-between
+                   items-center justify-between
                    dark:border-slate-700 dark:bg-slate-950"
         >
             <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
