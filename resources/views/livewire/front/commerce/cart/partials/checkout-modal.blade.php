@@ -44,7 +44,10 @@
 
         </div>
 
-        <form wire:submit.prevent="checkout" class="max-h-[calc(92vh-73px)] overflow-y-auto p-4 sm:p-6">
+        <form
+            x-on:submit.prevent="submitCheckout"
+            class="max-h-[calc(92vh-73px)] overflow-y-auto p-4 sm:p-6"
+        >
             @if($checkoutError)
                 <div class="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 sm:mb-5 sm:rounded-3xl
         dark:border-red-900/40 dark:bg-red-950/30">
@@ -146,16 +149,17 @@
 
                     <label
                         class="cursor-pointer rounded-2xl border p-4 transition sm:rounded-3xl
-            dark:border-slate-800 dark:bg-slate-900/40 dark:hover:bg-slate-900/60"
-                        :class="$wire.paymentMethod === 'gateway'
-                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
+                            dark:border-slate-800 dark:bg-slate-900/40 dark:hover:bg-slate-900/60"
+                        :class="paymentMethod === 'gateway'
+                            ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
+                            : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
                     >
 
                         <input
                             type="radio"
                             value="gateway"
-                            wire:model.live="paymentMethod"
+                            x-model="paymentMethod"
+                            x-bind:disabled="checkoutSubmitting"
                             class="sr-only"
                         >
 
@@ -163,10 +167,10 @@
 
                             <div
                                 class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl
-                    dark:bg-slate-800 dark:text-slate-300"
-                                :class="$wire.paymentMethod === 'gateway'
-                        ? 'bg-brand-500 text-white dark:bg-brand-600'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
+                                    dark:bg-slate-800 dark:text-slate-300"
+                                :class="paymentMethod === 'gateway'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-600'
+                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                     <path
@@ -201,17 +205,24 @@
 
                     <label
                         class="rounded-2xl border p-4 transition sm:rounded-3xl
-           {{ $walletCanBeSelected
-                ? 'cursor-pointer'
-                : 'cursor-not-allowed opacity-65' }}"
-                        :class="$wire.paymentMethod === 'wallet'
-        ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-        : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
+                       {{ $walletCanBeSelected
+                            ? 'cursor-pointer'
+                            : 'cursor-not-allowed opacity-65' }}"
+                        x-bind:class="[
+                            paymentMethod === 'wallet'
+                                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
+                                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50',
+
+                            checkoutSubmitting
+                                ? 'pointer-events-none opacity-70'
+                                : ''
+                        ]"
                     >
                         <input
                             type="radio"
                             value="wallet"
-                            wire:model.live="paymentMethod"
+                            x-model="paymentMethod"
+                            x-bind:disabled="checkoutSubmitting"
                             class="sr-only"
                             @disabled(!$walletCanBeSelected)
                         >
@@ -219,9 +230,9 @@
                         <div class="flex items-start gap-3">
                             <div
                                 class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl"
-                                :class="$wire.paymentMethod === 'wallet'
-                ? 'bg-brand-500 text-white dark:bg-brand-600'
-                : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
+                                :class="paymentMethod === 'wallet'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-600'
+                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                     <path
@@ -252,40 +263,25 @@
 
                                     <span
                                         class="rounded-xl border border-slate-200 bg-white px-2 py-1
-                           text-[10px] font-extrabold text-slate-500
-                           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                           text-[10px] font-extrabold text-slate-500
+                                           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                    موجودی قابل استفاده:
-                    {{ $this->money($this->walletAvailableBalance) }}
-                </span>
+                                        موجودی قابل استفاده:
+                                        {{ $this->money($this->walletAvailableBalance) }}
+                                    </span>
                                 </div>
-
-                                @if($walletMode === 'full')
-                                    <p class="mt-1 text-xs leading-6 text-emerald-700 dark:text-emerald-300">
-                                        کل مبلغ سفارش از کیف پول پرداخت می‌شود.
-                                    </p>
-                                @elseif($walletMode === 'mixed')
-                                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                        {{ $this->money($this->walletContribution) }}
-                                        از کیف پول و
-                                        {{ $this->money($this->walletShortage) }}
-                                        از درگاه پرداخت می‌شود.
-                                    </p>
-                                @else
-                                    <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300">
-                                        موجودی قابل استفاده‌ای در کیف پول وجود ندارد.
-                                    </p>
-                                @endif
                             </div>
                         </div>
                     </label>
 
                 </div>
 
-                @if($paymentMethod === 'wallet' && $this->canUseWalletPayment)
+                @if($this->canUseWalletPayment)
                     <div
-                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4
-                        dark:border-brand-900/40 dark:bg-brand-950/20"
+                        x-cloak
+                        x-show="paymentMethod === 'wallet'"
+                        x-transition.opacity.duration.150ms
+                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900/40 dark:bg-brand-950/20"
                     >
                         <div class="space-y-2 text-xs">
                             <div class="flex items-center justify-between gap-4">
@@ -311,8 +307,7 @@
                             @endif
 
                             <div
-                                class="flex items-center justify-between gap-4 border-t
-                                border-brand-100 pt-2 dark:border-brand-900/40"
+                                class="flex items-center justify-between gap-4 border-t border-brand-100 pt-2 dark:border-brand-900/40"
                             >
                                 <span class="font-extrabold text-slate-700 dark:text-slate-300">
                                     مبلغ کل سفارش
@@ -381,13 +376,28 @@
 
                 <button
                     type="submit"
+                    x-bind:disabled="checkoutSubmitting"
                     wire:loading.attr="disabled"
                     wire:target="checkout"
-                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60
-        dark:bg-brand-600 dark:hover:bg-brand-700 dark:shadow-none"
+                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2
+                       rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white
+                       shadow-md shadow-brand-500/20 transition
+                       hover:bg-brand-600 active:bg-brand-700
+                       disabled:cursor-not-allowed disabled:opacity-60
+                       dark:bg-brand-600 dark:hover:bg-brand-700 dark:shadow-none"
                 >
-                    <span wire:loading.remove wire:target="checkout">
-                        @if($paymentMethod === 'wallet')
+                    <span
+                        x-show="!checkoutSubmitting"
+                        class="flex items-center gap-2"
+                    >
+                        <span x-show="paymentMethod === 'gateway'">
+                            پرداخت با درگاه
+                        </span>
+
+                        <span
+                            x-cloak
+                            x-show="paymentMethod === 'wallet'"
+                        >
                             @if($this->walletPaymentMode === 'full')
                                 پرداخت با کیف پول
                             @elseif($this->walletPaymentMode === 'mixed')
@@ -395,20 +405,23 @@
                             @else
                                 ادامه پرداخت
                             @endif
-                        @else
-                            پرداخت با درگاه
-                        @endif
-                    </span>
-
-                    <span wire:loading wire:target="checkout">
-                        در حال پردازش...
+                        </span>
                     </span>
 
                     <span
-                        wire:loading
-                        wire:target="checkout"
-                        class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
-                    ></span>
+                        x-cloak
+                        x-show="checkoutSubmitting"
+                        class="flex items-center gap-2"
+                    >
+                        <span>
+                            در حال پردازش...
+                        </span>
+
+                        <span
+                            class="h-4 w-4 animate-spin rounded-full
+                                   border-2 border-white/40 border-t-white"
+                        ></span>
+                    </span>
                 </button>
 
                 <button

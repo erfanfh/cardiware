@@ -1,4 +1,34 @@
-<div x-data="{ checkoutModalOpen: @js($openCheckoutOnLoad) }">
+<div
+    x-data="{
+        checkoutModalOpen: @js($openCheckoutOnLoad),
+
+        paymentMethod: @js($paymentMethod),
+
+        checkoutSubmitting: false,
+
+        async submitCheckout() {
+            if (this.checkoutSubmitting) {
+                return;
+            }
+
+            /*
+             * روش انتخاب شده در همین لحظه snapshot می‌شود
+             * و همراه همان درخواست checkout ارسال می‌شود.
+             */
+            const selectedPaymentMethod = this.paymentMethod;
+
+            this.checkoutSubmitting = true;
+
+            try {
+                await this.$wire.checkout(
+                    selectedPaymentMethod
+                );
+            } finally {
+                this.checkoutSubmitting = false;
+            }
+        }
+    }"
+>
     <main class="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6 lg:px-8 lg:py-8">
         <section class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
             <div class="min-w-0 lg:col-span-8">

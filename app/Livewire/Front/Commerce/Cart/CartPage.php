@@ -209,25 +209,6 @@ class CartPage extends Component
         return max(0, (int)$wallet->available_balance);
     }
 
-    public function updatedPaymentMethod(string $paymentMethod): void
-    {
-        $this->checkoutError = null;
-        $this->checkoutNotice = null;
-
-        if (!in_array($paymentMethod, [
-            'gateway',
-            'wallet',
-        ], true)) {
-            $this->paymentMethod = 'gateway';
-            return;
-        }
-
-        if ($paymentMethod === 'wallet' && !$this->canUseWalletPayment) {
-            $this->paymentMethod = 'gateway';
-            $this->checkoutError = 'موجودی قابل استفاده‌ای در کیف پول شما وجود ندارد.';
-        }
-    }
-
     public function increaseQuantity(
         int                          $cartItemId,
         AdjustCartItemQuantityAction $adjustCartItemQuantityAction
@@ -416,6 +397,7 @@ class CartPage extends Component
     }
 
     public function checkout(
+        mixed                                        $submittedPaymentMethod,
         EnsureCartReadyForCheckoutAction             $ensureCartReadyForCheckoutAction,
         CompleteFreeOrderAction                      $completeFreeOrderAction,
         CheckoutCartWithWalletAction                 $checkoutCartWithWalletAction,
@@ -435,12 +417,20 @@ class CartPage extends Component
             return null;
         }
 
-        if (!in_array($this->paymentMethod, [
-            'gateway',
-            'wallet',
-        ], true)) {
-            $this->paymentMethod = 'gateway';
+        $paymentMethod = $this->resolveSubmittedPaymentMethod(
+            $submittedPaymentMethod,
+        );
+
+        if (!$paymentMethod) {
             $this->checkoutError = 'روش پرداخت انتخاب‌شده معتبر نیست.';
+            return null;
+        }
+
+        $this->paymentMethod = $paymentMethod;
+
+        if ($paymentMethod === 'wallet' && !$this->canUseWalletPayment) {
+            $this->checkoutError = 'موجودی قابل استفاده‌ای در کیف پول شما وجود ندارد.';
+            $this->resetCartComputedProperties();
             return null;
         }
 
@@ -452,7 +442,7 @@ class CartPage extends Component
                 'source' => 'web',
                 'ip' => request()->ip(),
                 'user_agent' => request()->userAgent(),
-                'payment_method' => $this->paymentMethod,
+                'payment_method' => $paymentMethod,
             ];
 
             /*
@@ -480,7 +470,7 @@ class CartPage extends Component
              * - enough balance: full wallet payment
              * - partial balance: hold current balance and pay shortage
              */
-            if ($this->paymentMethod === 'wallet') {
+            if ($paymentMethod === 'wallet') {
                 $availableBalance = $this->resolveFreshWalletAvailableBalance();
 
                 if ($availableBalance <= 0) {
@@ -885,6 +875,21 @@ class CartPage extends Component
     private function rotateCheckoutRequestKey(): void
     {
         $this->checkoutRequestKey = (string)Str::uuid();
+    }
+
+    private function resolveSubmittedPaymentMethod(mixed $paymentMethod): ?string
+    {
+        if (!is_string($paymentMethod)) {
+            return null;
+        }
+
+        $paymentMethod = trim($paymentMethod);
+
+        if (!in_array($paymentMethod, ['gateway', 'wallet'], true)) {
+            return null;
+        }
+
+        return $paymentMethod;
     }
 
     public function render(): View
