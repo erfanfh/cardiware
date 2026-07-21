@@ -148,11 +148,10 @@
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
                     <label
-                        class="cursor-pointer rounded-2xl border p-4 transition sm:rounded-3xl
-                            dark:border-slate-800 dark:bg-slate-900/40 dark:hover:bg-slate-900/60"
+                        class="cursor-pointer rounded-2xl border p-4 transition sm:rounded-3xl"
                         :class="paymentMethod === 'gateway'
-                            ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-                            : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
+                            ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-500/70 dark:bg-brand-500/10 dark:ring-brand-500/15'
+                            : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-slate-600 dark:hover:bg-slate-800/80'"
                     >
 
                         <input
@@ -166,10 +165,9 @@
                         <div class="flex items-start gap-3">
 
                             <div
-                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl
-                                    dark:bg-slate-800 dark:text-slate-300"
+                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition"
                                 :class="paymentMethod === 'gateway'
-                                    ? 'bg-brand-500 text-white dark:bg-brand-600'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-500 dark:text-white'
                                     : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
@@ -184,7 +182,7 @@
 
                             <div class="min-w-0">
 
-                                <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
                                     درگاه پرداخت
                                 </div>
 
@@ -210,12 +208,10 @@
                             : 'cursor-not-allowed opacity-65' }}"
                         x-bind:class="[
                             paymentMethod === 'wallet'
-                                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-                                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50',
+                                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-500/70 dark:bg-brand-500/10 dark:ring-brand-500/15'
+                                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-slate-600 dark:hover:bg-slate-800/80',
 
-                            checkoutSubmitting
-                                ? 'pointer-events-none opacity-70'
-                                : ''
+                            checkoutSubmitting ? 'pointer-events-none opacity-70' : ''
                         ]"
                     >
                         <input
@@ -229,9 +225,9 @@
 
                         <div class="flex items-start gap-3">
                             <div
-                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl"
+                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition"
                                 :class="paymentMethod === 'wallet'
-                                    ? 'bg-brand-500 text-white dark:bg-brand-600'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-500 dark:text-white'
                                     : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
@@ -252,8 +248,8 @@
                             </div>
 
                             <div class="min-w-0 flex-1">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                                <div class="flex flex-col gap-2">
+                                    <div class="text-sm font-extrabold text-slate-900 dark:text-white">
                                         @if($walletMode === 'mixed')
                                             کیف پول + درگاه
                                         @else
@@ -261,14 +257,17 @@
                                         @endif
                                     </div>
 
-                                    <span
-                                        class="rounded-xl border border-slate-200 bg-white px-2 py-1
+                                    <div>
+                                        <span
+                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1
                                            text-[10px] font-extrabold text-slate-500
-                                           dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                                    >
-                                        موجودی قابل استفاده:
-                                        {{ $this->money($this->walletAvailableBalance) }}
-                                    </span>
+                                           dark:border-slate-700 dark:bg-slate-950/70
+                                           dark:text-slate-300"
+                                        >
+                                            موجودی قابل استفاده:
+                                            {{ $this->money($this->walletAvailableBalance) }}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -281,22 +280,22 @@
                         x-cloak
                         x-show="paymentMethod === 'wallet'"
                         x-transition.opacity.duration.150ms
-                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-900/40 dark:bg-brand-950/20"
+                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-500/30 dark:bg-brand-500/10"
                     >
                         <div class="space-y-2 text-xs">
                             <div class="flex items-center justify-between gap-4">
-                                <span class="font-semibold text-slate-600 dark:text-slate-400">
+                                <span class="font-semibold text-slate-600 dark:text-slate-300">
                                     سهم کیف پول
                                 </span>
 
-                                <strong class="font-extrabold text-slate-900 dark:text-slate-100">
+                                <strong class="font-extrabold text-slate-900 dark:text-white">
                                     {{ $this->money($this->walletContribution) }}
                                 </strong>
                             </div>
 
                             @if($this->walletShortage > 0)
                                 <div class="flex items-center justify-between gap-4">
-                                    <span class="font-semibold text-slate-600 dark:text-slate-400">
+                                    <span class="font-semibold text-slate-600 dark:text-slate-300">
                                         مبلغ پرداخت در درگاه
                                     </span>
 
@@ -307,9 +306,9 @@
                             @endif
 
                             <div
-                                class="flex items-center justify-between gap-4 border-t border-brand-100 pt-2 dark:border-brand-900/40"
+                                class="flex items-center justify-between gap-4 border-t border-brand-100 pt-2 dark:border-brand-500/20"
                             >
-                                <span class="font-extrabold text-slate-700 dark:text-slate-300">
+                                <span class="font-extrabold text-slate-700 dark:text-slate-200">
                                     مبلغ کل سفارش
                                 </span>
 
