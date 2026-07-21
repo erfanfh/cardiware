@@ -37,7 +37,7 @@ class UserController extends Controller
         Gate::authorize('user.list');
 
         $users = $userListing
-            ->handle(User::query(), $request->validated())
+            ->handle(User::query()->with(['wallet']), $request->validated())
             ->withCount('posts')
             ->paginate($userListing->perPage())
             ->withQueryString();
