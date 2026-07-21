@@ -40,4 +40,9 @@ return [
             )
         )
     ),
+
+    'download_session_ttl_minutes' => (int)env(
+        'LAUNCHER_DOWNLOAD_SESSION_TTL_MINUTES',
+        1440
+    ),
 ];
