@@ -1,8 +1,15 @@
 @php
+    use App\Domain\Financial\Enums\WalletStatusEnum;
     use App\Domain\Identity\Enums\UserStatusEnum;
+
     $statuses = [];
     foreach (UserStatusEnum::cases() as $status){
         $statuses[$status->value] = $status->label();
+    }
+
+    $walletStatuses = [];
+    foreach (WalletStatusEnum::cases() as $status){
+        $walletStatuses[$status->value] = $status->label();
     }
 @endphp
 
@@ -76,7 +83,7 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="نقش و وضعیت">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <x-admin.field required label="نقش">
                 <x-admin.form.select
                     name="role"
@@ -85,12 +92,20 @@
                     :value="old('role', $user->role_id ?? app(\App\Application\Identity\Actions\GetDefaultRoleAction::class)->execute()->id)"
                 />
             </x-admin.field>
-            <x-admin.field required label="وضعیت">
+            <x-admin.field required label="وضعیت کاربر">
                 <x-admin.form.select
                     name="status"
                     placeholder="انتخاب وضعیت"
                     :options="$statuses"
                     :value="old('status', $user->status->value ?? UserStatusEnum::ACTIVE->value)"
+                />
+            </x-admin.field>
+            <x-admin.field required label="وضعیت کیف پول">
+                <x-admin.form.select
+                    name="wallet_status"
+                    placeholder="انتخاب وضعیت کیف پول"
+                    :options="$walletStatuses"
+                    :value="old('wallet_status', $user->wallet->status->value ?? WalletStatusEnum::ACTIVE->value)"
                 />
             </x-admin.field>
         </div>

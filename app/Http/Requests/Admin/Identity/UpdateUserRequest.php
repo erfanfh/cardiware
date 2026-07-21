@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Identity;
 
+use App\Domain\Financial\Enums\WalletStatusEnum;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Rules\MobileRule;
 use App\Rules\ValidPassword;
@@ -100,6 +101,12 @@ class UpdateUserRequest extends FormRequest
                     UserStatusEnum::ACTIVE,
                     UserStatusEnum::INACTIVE,
                 ]),
+            ],
+
+            'wallet_status' => [
+                'nullable',
+                'sometimes',
+                Rule::enum(WalletStatusEnum::class),
             ],
 
             'avatar_id' => [
