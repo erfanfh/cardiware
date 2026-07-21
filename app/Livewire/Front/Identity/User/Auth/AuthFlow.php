@@ -229,6 +229,8 @@ class AuthFlow extends Component
      */
     public function sendOtp(): void
     {
+        $this->username = normalize_number(trim((string)$this->username));
+
         $this->validate([
             'username' => ['required', new MobileRule()],
         ], [
@@ -333,7 +335,7 @@ class AuthFlow extends Component
      */
     public function sendResetPasswordOtp(): void
     {
-        $this->username = normalize_number($this->username);
+        $this->username = normalize_number(trim($this->username));
 
         $this->validate([
             'username' => ['required', new MobileRule()],
@@ -366,7 +368,7 @@ class AuthFlow extends Component
      */
     public function forgotPassword(): RedirectResponse|Redirector|null
     {
-        $this->username = normalize_number($this->username);
+        $this->username = normalize_number(trim($this->username));
         $this->otp_code = normalize_number($this->otp_code);
 
         if ($this->rateLimit('request.forgot-password'))

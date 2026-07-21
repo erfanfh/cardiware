@@ -180,6 +180,7 @@ class UpdateUserRequest extends FormRequest
                 : null,
 
             'avatar_id' => $this->input('avatar.id'),
+            'mobile' => normalize_number(trim($this->input('mobile'))),
         ]);
     }
 }
