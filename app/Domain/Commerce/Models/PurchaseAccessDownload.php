@@ -17,6 +17,10 @@ class PurchaseAccessDownload extends Model
         'product_id',
         'product_sale_item_id',
         'product_sale_item_file_id',
+        'download_session_id',
+        'session_expires_at',
+        'last_prepared_at',
+        'prepare_count',
         'file_name',
         'file_disk',
         'file_path',
@@ -31,6 +35,9 @@ class PurchaseAccessDownload extends Model
         'product_id' => 'integer',
         'product_sale_item_id' => 'integer',
         'product_sale_item_file_id' => 'integer',
+        'session_expires_at' => 'datetime',
+        'last_prepared_at' => 'datetime',
+        'prepare_count' => 'integer',
         'metadata' => 'array',
     ];
 

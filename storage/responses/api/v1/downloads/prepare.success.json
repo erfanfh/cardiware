@@ -1,10 +1,14 @@
 {
     "message": "Download prepared successfully.",
     "data": {
-        "download_id": 400,
-        "url": "https://files.moddingway.ir/downloads/fc26-part-1.zip",
-        "file_name": "fc26-part-1.zip",
+        "download_id": 987,
+        "download_session_id": "c0429807-f641-47b5-a619-9c14ac858d97",
+        "session_expires_at": "2026-07-22T08:30:00.000000Z",
+        "reused_session": false,
+        "prepare_count": 1,
+        "url": "https://download.example.com/temporary-file-url",
+        "file_name": "PGL_PATCH_V6.7z.001",
         "title": "Part 1",
-        "remaining_downloads": 6
+        "remaining_downloads": 4
     }
 }

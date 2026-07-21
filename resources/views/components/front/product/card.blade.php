@@ -126,20 +126,6 @@
 
             <div
                 class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent opacity-80 transition group-hover:opacity-95"></div>
-
-            {{-- Top badges --}}
-            <div class="absolute inset-x-3 top-3 flex items-start justify-between gap-2">
-                <div class="flex min-w-0 flex-wrap gap-1.5">
-                    @foreach($categories as $category)
-                        <span
-                            class="max-w-[120px] truncate rounded-2xl border border-white/20 bg-white/90 px-2.5 py-1 text-[11px] font-black text-slate-700 backdrop-blur
-                            dark:bg-slate-900/60 dark:text-slate-200 dark:border-slate-700"
-                        >
-                            {{ $category->title }}
-                        </span>
-                    @endforeach
-                </div>
-            </div>
         </div>
 
         {{-- Body --}}
