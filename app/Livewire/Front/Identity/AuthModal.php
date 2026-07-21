@@ -79,6 +79,8 @@ class AuthModal extends Component
     {
         $this->authError = null;
 
+        $this->normalizeInputs();
+
         $this->validate(
             $this->rules(),
             $this->messages(),
@@ -127,7 +129,7 @@ class AuthModal extends Component
 
     private function register(RegisterUserAction $registerUserAction): User
     {
-        $mobile = normalize_number((string)$this->mobile);
+        $mobile = (string)$this->mobile;
         $email = mb_strtolower(trim((string)$this->email));
 
         if (User::query()->where('mobile', $mobile)->exists()) {
@@ -213,6 +215,15 @@ class AuthModal extends Component
             'email' => 'ایمیل',
             'password' => 'رمز عبور',
         ];
+    }
+
+    private function normalizeInputs(): void
+    {
+        if ($this->mode === 'register') {
+            $this->mobile = normalize_number(
+                trim((string)$this->mobile)
+            );
+        }
     }
 
     private function domainExceptionMessage(DomainException $exception): string
