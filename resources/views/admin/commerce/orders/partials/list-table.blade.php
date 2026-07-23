@@ -63,13 +63,19 @@
                 {{-- user --}}
                 <x-admin.list.td>
                     <a href="{{ route('admin.orders.edit', $order) }}">
-                        <div class="text-sm font-medium text-slate-800">
-                            {{ $order->user?->first_name . ' ' . $order->user?->last_name }}
-                        </div>
+                        @if($order->user)
+                            <div class="text-sm font-medium text-slate-800">
+                                {{ $order->user->first_name . ' ' . $order->user->last_name }}
+                            </div>
 
-                        <div class="text-xs text-slate-400">
-                            {{ $order->user?->email . ' | ' . $order->user?->mobile }}
-                        </div>
+                            <div class="text-xs text-slate-400">
+                                {{ ($order->user->email ? $order->user->email . ' | ' : '') . $order->user->mobile }}
+                            </div>
+                        @else
+                            <div class="text-xs italic text-slate-600">
+                                (کاربر حذف شده)
+                            </div>
+                        @endif
                     </a>
                 </x-admin.list.td>
 

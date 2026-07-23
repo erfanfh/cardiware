@@ -41,7 +41,7 @@ class OrderController
         Gate::authorize('order.edit');
 
         $order->load([
-            'user',
+            'user' => fn($query) => $query->withTrashed(),
             'latestPayment',
             'rootItems.children',
             'rootItems.purchasable',
