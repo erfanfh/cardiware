@@ -25,6 +25,8 @@ class CouponController extends Controller
 {
     public function index(IndexCouponRequest $request, CouponListing $couponListing): View
     {
+        Gate::authorize('coupon.list');
+
         $coupons = $couponListing
             ->handle(
                 Coupon::query()
@@ -76,6 +78,8 @@ class CouponController extends Controller
 
     public function create(): View
     {
+        Gate::authorize('coupon.create');
+
         return view('admin.promotion.coupons.create');
     }
 
@@ -84,6 +88,8 @@ class CouponController extends Controller
      */
     public function store(UpdateCouponRequest $request): RedirectResponse
     {
+        Gate::authorize('coupon.create');
+
         $coupon = app(CreateCouponAction::class)->execute(
             data: $request->validated(),
             creator: $request->user()
@@ -96,6 +102,8 @@ class CouponController extends Controller
 
     public function edit(Coupon $coupon): View
     {
+        Gate::authorize('coupon.edit');
+
         $coupon->load([
             'users',
             'targets',
@@ -111,6 +119,8 @@ class CouponController extends Controller
      */
     public function update(UpdateCouponRequest $request, Coupon $coupon): RedirectResponse
     {
+        Gate::authorize('coupon.edit');
+
         $coupon = app(UpdateCouponAction::class)->execute(
             coupon: $coupon,
             data: $request->validated()
@@ -126,7 +136,7 @@ class CouponController extends Controller
      */
     public function destroy(Coupon $coupon): RedirectResponse
     {
-        Gate::authorize('product.delete');
+        Gate::authorize('coupon.delete');
 
         app(DeleteCouponAction::class)->execute($coupon);
 
