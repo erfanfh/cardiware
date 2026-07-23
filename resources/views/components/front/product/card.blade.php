@@ -50,6 +50,8 @@
         && $maxPrice !== null
         && (int) $minPrice !== (int) $maxPrice;
 
+    $isFreeForDisplay = $minPrice !== null && (int) $minPrice === 0;
+
     $hasDiscountForDisplay = $displayPriceRow
         && $displayPriceRow['has_discount']
         && (int) $displayPriceRow['regular_price'] > (int) $displayPriceRow['final_price'];
@@ -185,14 +187,25 @@
                             @endif
 
                             <div
-                                class="whitespace-nowrap text-sm font-black {{ $hasDiscountForDisplay ? 'text-brand-600 dark:text-brand-400' : 'text-slate-950 dark:text-slate-100' }}"
+                                class="whitespace-nowrap text-sm font-black {{ $hasDiscountForDisplay || $isFreeForDisplay
+                                    ? 'text-brand-600 dark:text-brand-400'
+                                    : 'text-slate-950 dark:text-slate-100' }}"
                             >
-                                @if($isPriceRange)
-                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">از</span>
-                                @endif
+                                @if($isFreeForDisplay)
+                                    رایگان!
+                                @else
+                                    @if($isPriceRange)
+                                        <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                            از
+                                        </span>
+                                    @endif
 
-                                {{ number_format($minPrice) }}
-                                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                    {{ number_format($minPrice) }}
+
+                                    <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                        تومان
+                                    </span>
+                                @endif
                             </div>
                         @else
                             <span class="text-sm font-black text-slate-400 dark:text-slate-500">
