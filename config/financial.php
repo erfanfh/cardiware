@@ -73,6 +73,37 @@ return [
 
             'timeout' => 20,
         ],
+
+        'aqayepardakht' => [
+            /*
+            |--------------------------------------------------------------------------
+            | API URLs
+            |--------------------------------------------------------------------------
+            |
+            | نسخه دوم وب سرویس آقای پرداخت.
+            |
+            */
+
+            'create_url' => 'https://panel.aqayepardakht.ir/api/v2/create',
+
+            'verify_url' => 'https://panel.aqayepardakht.ir/api/v2/verify',
+
+            /*
+             * آدرس انتقال کاربر در حالت واقعی.
+             */
+            'start_url' => 'https://panel.aqayepardakht.ir/startpay',
+
+            /*
+             * آدرس انتقال کاربر در حالت sandbox.
+             */
+            'sandbox_start_url' => 'https://panel.aqayepardakht.ir/startpay/sandbox',
+
+            /*
+             * مبالغ سیستم و آقای پرداخت هر دو برحسب تومان هستند؛
+             * بنابراین نیازی به amount_multiplier نداریم.
+             */
+            'timeout' => 20,
+        ],
     ],
 
     'wallet' => [

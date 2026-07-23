@@ -7,6 +7,7 @@ enum PaymentGatewayEnum: string
     case ZIBAL = 'zibal';
     case ZARINPAL = 'zarinpal';
     case PAYPING = 'payping';
+    case AQAYEPARDAKHT = 'aqayepardakht';
 
     case WALLET = 'wallet';
     case FREE = 'free';
@@ -20,6 +21,7 @@ enum PaymentGatewayEnum: string
             self::ZIBAL => 'زیبال',
             self::ZARINPAL => 'زرین پال',
             self::PAYPING => 'پی پینگ',
+            self::AQAYEPARDAKHT => 'آقای پرداخت',
             self::WALLET => 'کیف پول',
             self::FREE => 'پرداخت رایگان',
         };
@@ -34,6 +36,7 @@ enum PaymentGatewayEnum: string
             self::ZIBAL,
             self::ZARINPAL,
             self::PAYPING,
+            self::AQAYEPARDAKHT,
         ], true);
     }
 

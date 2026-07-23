@@ -105,4 +105,31 @@
             </x-admin.field>
         </div>
     </x-admin.metabox>
+
+    <x-admin.metabox title="تنظیمات آقای پرداخت">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+            <x-admin.field
+                label="حالت محیط تست"
+            >
+                <x-admin.form.select
+                    name="aqayepardakht_sandbox"
+                    :options="[
+                        0 => 'خیر',
+                        1 => 'بله',
+                    ]"
+                    value="{{ get_setting('general', 'aqayepardakht_sandbox') }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field
+                class="lg:col-span-3"
+                label="پین"
+            >
+                <x-admin.form.input
+                    name="aqayepardakht_pin"
+                    value="{{ get_setting('general', 'aqayepardakht_pin') }}"
+                />
+            </x-admin.field>
+        </div>
+    </x-admin.metabox>
 </div>
