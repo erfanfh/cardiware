@@ -115,6 +115,12 @@ class PermissionSeeder extends Seeder
                 'manage-departments' => 'مدیریت دپارتمان ها',
                 'delete' => 'حذف تیکت',
             ],
+            'team-member' => [
+                'list' => 'لیست اعضای تیم',
+                'create' => 'ایجاد عضو تیم',
+                'edit' => 'ویرایش عضو تیم',
+                'delete' => 'حذف عضو تیم',
+            ],
         ];
 
         $permissionIds = [];

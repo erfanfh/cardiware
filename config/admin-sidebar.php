@@ -204,6 +204,26 @@ return [
     ],
 
     [
+        'label' => 'اعضای تیم',
+        'route' => 'admin.team-members.index',
+        'icon' => 'icons.user-multiple',
+        'children' => [
+            [
+                'label' => 'لیست اعضای تیم',
+                'route' => 'admin.team-members.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'team-member.list',
+            ],
+            [
+                'label' => 'ایجاد عضو تیم',
+                'route' => 'admin.team-members.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'team-member.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'فهرست ها',
         'icon' => 'icons.right-to-left-list-bullet',
         'children' => [
