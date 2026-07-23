@@ -73,5 +73,82 @@ return [
 
             'timeout' => 20,
         ],
+
+        'aqayepardakht' => [
+            /*
+            |--------------------------------------------------------------------------
+            | API URLs
+            |--------------------------------------------------------------------------
+            |
+            | نسخه دوم وب سرویس آقای پرداخت.
+            |
+            */
+
+            'create_url' => 'https://panel.aqayepardakht.ir/api/v2/create',
+
+            'verify_url' => 'https://panel.aqayepardakht.ir/api/v2/verify',
+
+            /*
+             * آدرس انتقال کاربر در حالت واقعی.
+             */
+            'start_url' => 'https://panel.aqayepardakht.ir/startpay',
+
+            /*
+             * آدرس انتقال کاربر در حالت sandbox.
+             */
+            'sandbox_start_url' => 'https://panel.aqayepardakht.ir/startpay/sandbox',
+
+            /*
+             * مبالغ سیستم و آقای پرداخت هر دو برحسب تومان هستند؛
+             * بنابراین نیازی به amount_multiplier نداریم.
+             */
+            'timeout' => 20,
+        ],
+    ],
+
+    'wallet' => [
+        'top_up' => [
+            /*
+             * مبالغ برحسب تومان هستند.
+             */
+            'minimum_amount' => 50_000,
+            'maximum_amount' => 20_000_000,
+
+            /*
+             * مدت اعتبار درخواست شارژ.
+             */
+            'expires_after_minutes' => 30,
+
+            /*
+             * شارژ مستقیم فعلاً قابل برداشت نیست.
+             */
+            'is_withdrawable' => true,
+
+            /*
+             * محدودیت تعداد تلاش برای شروع شارژ.
+             */
+            'rate_limit' => [
+                'max_attempts' => 5,
+                'decay_seconds' => 60,
+            ],
+        ],
+
+        'transfer' => [
+            'minimum_amount' => 10_000,
+
+            'maximum_amount' => 20_000_000,
+
+            'suggested_amounts' => [
+                100_000,
+                200_000,
+                500_000,
+                1_000_000,
+            ],
+
+            'rate_limit' => [
+                'max_attempts' => 5,
+                'decay_seconds' => 60,
+            ],
+        ],
     ],
 ];

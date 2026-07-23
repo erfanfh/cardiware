@@ -3,28 +3,22 @@
 namespace App\Application\Financial\Actions\Payment;
 
 use App\Application\Financial\Contracts\Payable;
-use App\Application\Financial\DTOs\StartPaymentRequestDTO;
-use App\Application\Financial\Support\PaymentGatewayManager;
 use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use App\Domain\Financial\Models\Payment;
+use DomainException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class StartPaymentAction
 {
     public function __construct(
         private readonly CreatePaymentForPayableAction $createPaymentForPayableAction,
-        private readonly MarkPaymentAsPendingAction    $markPaymentAsPendingAction,
-        private readonly MarkPaymentAsFailedAction     $markPaymentAsFailedAction,
-        private readonly PaymentGatewayManager         $paymentGatewayManager,
+        private readonly StartCreatedPaymentAction     $startCreatedPaymentAction,
     )
     {
     }
 
     /**
-     * Start a payment for a payable model.
-     *
      * @param Payable&Model $payable
      * @param PaymentGatewayEnum $gateway
      * @param string $callbackUrl
@@ -39,45 +33,25 @@ class StartPaymentAction
         array              $metadata = [],
     ): Payment
     {
-        return DB::transaction(function () use ($payable, $gateway, $callbackUrl, $metadata) {
-            $payment = $this->createPaymentForPayableAction->execute(
-                payable: $payable,
-                gateway: $gateway,
-                requestPayload: [
-                    'callback_url' => $callbackUrl,
-                    'metadata' => $metadata,
-                ],
+        if (!$gateway->isExternal()) {
+            throw new DomainException(
+                "Gateway [{$gateway->value}] cannot start an external payment."
             );
+        }
 
-            $gatewayDriver = $this->paymentGatewayManager->get($gateway);
+        $payment = $this->createPaymentForPayableAction->execute(
+            payable: $payable,
+            gateway: $gateway,
+            requestPayload: [
+                'callback_url' => $callbackUrl,
+                'metadata' => $metadata,
+            ],
+        );
 
-            $result = $gatewayDriver->start(
-                new StartPaymentRequestDTO(
-                    payment: $payment,
-                    callbackUrl: $callbackUrl,
-                    metadata: $metadata,
-                ),
-            );
-
-            if (!$result->successful) {
-                return $this->markPaymentAsFailedAction->execute(
-                    payment: $payment,
-                    gatewayStatus: $result->gatewayStatus,
-                    gatewayMessage: $result->gatewayMessage,
-                    payload: $result->rawResponse,
-                );
-            }
-
-            return $this->markPaymentAsPendingAction->execute(
-                payment: $payment,
-                gatewayReference: $result->gatewayReference,
-                gatewayStatus: $result->gatewayStatus,
-                gatewayMessage: $result->gatewayMessage,
-                requestPayload: [
-                    'redirect_url' => $result->redirectUrl,
-                    'gateway_response' => $result->rawResponse,
-                ],
-            );
-        });
+        return $this->startCreatedPaymentAction->execute(
+            payment: $payment,
+            callbackUrl: $callbackUrl,
+            metadata: $metadata,
+        );
     }
 }

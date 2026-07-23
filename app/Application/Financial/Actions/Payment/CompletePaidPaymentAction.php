@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Application\Financial\Actions\Payment;
+
+use App\Application\Commerce\Actions\Checkout\CompletePaidOrderPaymentAction;
+use App\Application\Financial\Actions\Wallet\CompletePaidWalletTopUpAction;
+use App\Domain\Commerce\Models\Order;
+use App\Domain\Financial\Models\Payment;
+use App\Domain\Financial\Models\WalletTopUp;
+use DomainException;
+use Illuminate\Database\Eloquent\Model;
+use Throwable;
+
+class CompletePaidPaymentAction
+{
+    public function __construct(
+        private readonly CompletePaidOrderPaymentAction $completePaidOrderPaymentAction,
+        private readonly CompletePaidWalletTopUpAction  $completePaidWalletTopUpAction,
+    )
+    {
+    }
+
+    /**
+     * @param Payment $payment
+     * @return Model
+     * @throws Throwable
+     */
+    public function execute(Payment $payment): Model
+    {
+        $payment = Payment::query()
+            ->with('payable')
+            ->findOrFail($payment->id);
+
+        if (!$payment->isPaid()) {
+            throw new DomainException(
+                'Only paid payments can be completed.'
+            );
+        }
+
+        return match (true) {
+            $payment->payable instanceof Order => $this->completePaidOrderPaymentAction->execute($payment),
+
+            $payment->payable instanceof WalletTopUp => $this->completePaidWalletTopUpAction->execute($payment),
+
+            default => throw new DomainException(
+                'Unsupported paid payment payable.'
+            ),
+        };
+    }
+}

@@ -5,6 +5,8 @@ namespace App\Domain\Identity\Models;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
+use App\Domain\Financial\Models\Wallet;
+use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Support\Models\Ticket;
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -66,6 +69,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'status' => UserStatusEnum::class,
         ];
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
     }
 
     /**
@@ -123,5 +134,26 @@ class User extends Authenticatable
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function wallet(): HasOne
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    /**
+     * Wallet transfers sent by the user.
+     */
+    public function sentWalletTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'sender_user_id');
+    }
+
+    /**
+     * Wallet transfers received by the user.
+     */
+    public function receivedWalletTransfers(): HasMany
+    {
+        return $this->hasMany(WalletTransfer::class, 'recipient_user_id');
     }
 }

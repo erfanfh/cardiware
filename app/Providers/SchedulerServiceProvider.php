@@ -26,6 +26,11 @@ class SchedulerServiceProvider extends ServiceProvider
             ->cron("*/{$downloadClicksSchedule} * * * *")
             ->withoutOverlapping();
 
+        $schedule->command('wallet-holds:expire')
+            ->everyMinute()
+            ->withoutOverlapping(5)
+            ->onOneServer();
+
         $schedule->command('coupons:expire-reservations')
             ->everyFiveMinutes()
             ->withoutOverlapping();

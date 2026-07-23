@@ -44,7 +44,10 @@
 
         </div>
 
-        <form wire:submit.prevent="checkout" class="max-h-[calc(92vh-73px)] overflow-y-auto p-4 sm:p-6">
+        <form
+            x-on:submit.prevent="submitCheckout"
+            class="max-h-[calc(92vh-73px)] overflow-y-auto p-4 sm:p-6"
+        >
             @if($checkoutError)
                 <div class="mb-4 rounded-2xl border border-red-200 bg-red-50 p-4 sm:mb-5 sm:rounded-3xl
         dark:border-red-900/40 dark:bg-red-950/30">
@@ -145,28 +148,27 @@
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
 
                     <label
-                        class="cursor-pointer rounded-2xl border p-4 transition sm:rounded-3xl
-            dark:border-slate-800 dark:bg-slate-900/40 dark:hover:bg-slate-900/60"
-                        :class="$wire.paymentMethod === 'gateway'
-                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-700 dark:bg-brand-950/30 dark:ring-brand-900/40'
-                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/30 dark:hover:bg-slate-900/50'"
+                        class="cursor-pointer rounded-2xl border p-4 transition sm:rounded-3xl"
+                        :class="paymentMethod === 'gateway'
+                            ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-500/70 dark:bg-brand-500/10 dark:ring-brand-500/15'
+                            : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-slate-600 dark:hover:bg-slate-800/80'"
                     >
 
                         <input
                             type="radio"
                             value="gateway"
-                            wire:model.live="paymentMethod"
+                            x-model="paymentMethod"
+                            x-bind:disabled="checkoutSubmitting"
                             class="sr-only"
                         >
 
                         <div class="flex items-start gap-3">
 
                             <div
-                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl
-                    dark:bg-slate-800 dark:text-slate-300"
-                                :class="$wire.paymentMethod === 'gateway'
-                        ? 'bg-brand-500 text-white dark:bg-brand-600'
-                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
+                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition"
+                                :class="paymentMethod === 'gateway'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-500 dark:text-white'
+                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                     <path
@@ -180,7 +182,7 @@
 
                             <div class="min-w-0">
 
-                                <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
                                     درگاه پرداخت
                                 </div>
 
@@ -194,22 +196,39 @@
 
                     </label>
 
+                    @php
+                        $walletMode = $this->walletPaymentMode;
+                        $walletCanBeSelected = $this->canUseWalletPayment;
+                    @endphp
+
                     <label
-                        class="cursor-not-allowed rounded-2xl border border-slate-200 bg-slate-50 p-4 opacity-60 sm:rounded-3xl
-            dark:border-slate-800 dark:bg-slate-900/20"
+                        class="rounded-2xl border p-4 transition sm:rounded-3xl
+                       {{ $walletCanBeSelected
+                            ? 'cursor-pointer'
+                            : 'cursor-not-allowed opacity-65' }}"
+                        x-bind:class="[
+                            paymentMethod === 'wallet'
+                                ? 'border-brand-200 bg-brand-50 ring-4 ring-brand-100 dark:border-brand-500/70 dark:bg-brand-500/10 dark:ring-brand-500/15'
+                                : 'border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-slate-600 dark:hover:bg-slate-800/80',
+
+                            checkoutSubmitting ? 'pointer-events-none opacity-70' : ''
+                        ]"
                     >
                         <input
                             type="radio"
                             value="wallet"
-                            disabled
+                            x-model="paymentMethod"
+                            x-bind:disabled="checkoutSubmitting"
                             class="sr-only"
+                            @disabled(!$walletCanBeSelected)
                         >
 
                         <div class="flex items-start gap-3">
-
                             <div
-                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-100 text-slate-400
-                    dark:bg-slate-800 dark:text-slate-500"
+                                class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl transition"
+                                :class="paymentMethod === 'wallet'
+                                    ? 'bg-brand-500 text-white dark:bg-brand-500 dark:text-white'
+                                    : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'"
                             >
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                     <path
@@ -218,37 +237,88 @@
                                         stroke-width="2"
                                         stroke-linecap="round"
                                     />
-                                    <path d="M17 13h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+
+                                    <path
+                                        d="M17 13h.01"
+                                        stroke="currentColor"
+                                        stroke-width="3"
+                                        stroke-linecap="round"
+                                    />
                                 </svg>
                             </div>
 
-                            <div class="min-w-0">
-
-                                <div class="flex flex-wrap items-center gap-2">
-
-                                    <div class="text-sm font-extrabold text-slate-700 dark:text-slate-200">
-                                        کیف پول
+                            <div class="min-w-0 flex-1">
+                                <div class="flex flex-col gap-2">
+                                    <div class="text-sm font-extrabold text-slate-900 dark:text-white">
+                                        @if($walletMode === 'mixed')
+                                            کیف پول + درگاه
+                                        @else
+                                            کیف پول
+                                        @endif
                                     </div>
 
-                                    <span
-                                        class="rounded-xl border border-slate-200 bg-white px-2 py-1 text-[10px] font-extrabold text-slate-500
-                            dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            موجودی: {{ $this->money($this->walletBalance) }}
-                        </span>
-
+                                    <div>
+                                        <span
+                                            class="rounded-xl border border-slate-200 bg-white px-2 py-1
+                                           text-[10px] font-extrabold text-slate-500
+                                           dark:border-slate-700 dark:bg-slate-950/70
+                                           dark:text-slate-300"
+                                        >
+                                            موجودی قابل استفاده:
+                                            {{ $this->money($this->walletAvailableBalance) }}
+                                        </span>
+                                    </div>
                                 </div>
-
-                                <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                    پرداخت با کیف پول فعلا غیرفعال است.
-                                </p>
-
                             </div>
-
                         </div>
-
                     </label>
 
                 </div>
+
+                @if($this->canUseWalletPayment)
+                    <div
+                        x-cloak
+                        x-show="paymentMethod === 'wallet'"
+                        x-transition.opacity.duration.150ms
+                        class="mt-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4 dark:border-brand-500/30 dark:bg-brand-500/10"
+                    >
+                        <div class="space-y-2 text-xs">
+                            <div class="flex items-center justify-between gap-4">
+                                <span class="font-semibold text-slate-600 dark:text-slate-300">
+                                    سهم کیف پول
+                                </span>
+
+                                <strong class="font-extrabold text-slate-900 dark:text-white">
+                                    {{ $this->money($this->walletContribution) }}
+                                </strong>
+                            </div>
+
+                            @if($this->walletShortage > 0)
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="font-semibold text-slate-600 dark:text-slate-300">
+                                        مبلغ پرداخت در درگاه
+                                    </span>
+
+                                    <strong class="font-extrabold text-brand-700 dark:text-brand-300">
+                                        {{ $this->money($this->walletShortage) }}
+                                    </strong>
+                                </div>
+                            @endif
+
+                            <div
+                                class="flex items-center justify-between gap-4 border-t border-brand-100 pt-2 dark:border-brand-500/20"
+                            >
+                                <span class="font-extrabold text-slate-700 dark:text-slate-200">
+                                    مبلغ کل سفارش
+                                </span>
+
+                                <strong class="font-black text-slate-900 dark:text-white">
+                                    {{ $this->money($this->cartTotal) }}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:rounded-3xl
@@ -305,24 +375,52 @@
 
                 <button
                     type="submit"
+                    x-bind:disabled="checkoutSubmitting"
                     wire:loading.attr="disabled"
                     wire:target="checkout"
-                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-60
-        dark:bg-brand-600 dark:hover:bg-brand-700 dark:shadow-none"
+                    class="inline-flex h-12 cursor-pointer items-center justify-center gap-2
+                       rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white
+                       shadow-md shadow-brand-500/20 transition
+                       hover:bg-brand-600 active:bg-brand-700
+                       disabled:cursor-not-allowed disabled:opacity-60
+                       dark:bg-brand-600 dark:hover:bg-brand-700 dark:shadow-none"
                 >
-                    <span wire:loading.remove wire:target="checkout">
-                        پرداخت با درگاه
-                    </span>
+                    <span
+                        x-show="!checkoutSubmitting"
+                        class="flex items-center gap-2"
+                    >
+                        <span x-show="paymentMethod === 'gateway'">
+                            پرداخت با درگاه
+                        </span>
 
-                    <span wire:loading wire:target="checkout">
-                        در حال پردازش...
+                        <span
+                            x-cloak
+                            x-show="paymentMethod === 'wallet'"
+                        >
+                            @if($this->walletPaymentMode === 'full')
+                                پرداخت با کیف پول
+                            @elseif($this->walletPaymentMode === 'mixed')
+                                تکمیل موجودی و پرداخت
+                            @else
+                                ادامه پرداخت
+                            @endif
+                        </span>
                     </span>
 
                     <span
-                        wire:loading
-                        wire:target="checkout"
-                        class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
-                    ></span>
+                        x-cloak
+                        x-show="checkoutSubmitting"
+                        class="flex items-center gap-2"
+                    >
+                        <span>
+                            در حال پردازش...
+                        </span>
+
+                        <span
+                            class="h-4 w-4 animate-spin rounded-full
+                                   border-2 border-white/40 border-t-white"
+                        ></span>
+                    </span>
                 </button>
 
                 <button

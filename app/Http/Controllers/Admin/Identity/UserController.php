@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Identity;
 
+use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
 use App\Application\Identity\Listings\UserListing;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
@@ -37,7 +38,7 @@ class UserController extends Controller
         Gate::authorize('user.list');
 
         $users = $userListing
-            ->handle(User::query(), $request->validated())
+            ->handle(User::query()->with(['wallet']), $request->validated())
             ->withCount('posts')
             ->paginate($userListing->perPage())
             ->withQueryString();
@@ -97,6 +98,9 @@ class UserController extends Controller
             status: $data['status'],
             username: $data['username'],
         );
+
+        $wallet = app(GetOrCreateWalletAction::class)->execute($user);
+        $wallet->update(['status' => $data['wallet_status']]);
 
         return redirect()->route('admin.users.index')
             ->with('success', "کاربر '{$user->display_name}' با موفقیت ایجاد شد.")
@@ -167,6 +171,9 @@ class UserController extends Controller
         unset($data['role']);
 
         $user->update($data);
+
+        $wallet = app(GetOrCreateWalletAction::class)->execute($user);
+        $wallet->update(['status' => $data['wallet_status']]);
 
         app(UserCacheInvalidator::class)->flushForUser($user);
 

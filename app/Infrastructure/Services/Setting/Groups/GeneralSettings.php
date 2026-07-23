@@ -43,6 +43,8 @@ class GeneralSettings extends BaseSettings
         'zarinpal_sandbox',
         'payping_sandbox',
         'payping_token',
+        'aqayepardakht_pin',
+        'aqayepardakht_sandbox',
 
         'goftino_code',
     ];
@@ -52,5 +54,6 @@ class GeneralSettings extends BaseSettings
         'zibal_sandbox' => BooleanCast::class,
         'zarinpal_sandbox' => BooleanCast::class,
         'payping_sandbox' => BooleanCast::class,
+        'aqayepardakht_sandbox' => BooleanCast::class,
     ];
 }

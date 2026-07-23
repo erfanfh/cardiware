@@ -7,6 +7,7 @@
             ['route' => 'account.orders', 'label' => 'سفارش‌های من', 'icon' => 'icons.shopping-basket-03', 'end' => $user->paid_orders_count],
             ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
             ['route' => 'account.favorites', 'label' => 'علاقه‌مندی‌ها', 'icon' => 'icons.favourite', 'end' => 0],
+            ['route' => 'account.transactions', 'label' => 'تراکنش‌ها', 'icon' => 'icons.transaction', 'end' => 'arrow'],
             ['route' => 'account.information', 'label' => 'اطلاعات حساب', 'icon' => 'icons.user-edit-01', 'end' => 'arrow'],
             ['route' => 'account.security', 'label' => 'تنظیمات امنیت', 'icon' => 'icons.lock-password', 'end' => 'arrow'],
         ];
