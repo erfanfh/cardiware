@@ -1,4 +1,75 @@
-<div>
+<div
+    x-data="{
+        errorObserver: null,
+        errorScrollTimer: null,
+
+        init() {
+            this.errorObserver = new MutationObserver(() => {
+                this.scheduleErrorScroll();
+            });
+
+            this.errorObserver.observe(this.$el, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+            });
+
+            this.$nextTick(() => {
+                this.scrollToErrors();
+            });
+        },
+
+        destroy() {
+            if (this.errorObserver) {
+                this.errorObserver.disconnect();
+            }
+
+            clearTimeout(this.errorScrollTimer);
+        },
+
+        scheduleErrorScroll() {
+            clearTimeout(this.errorScrollTimer);
+
+            this.errorScrollTimer = setTimeout(() => {
+                this.$nextTick(() => {
+                    this.scrollToErrors();
+                });
+            }, 100);
+        },
+
+        scrollToErrors() {
+            const errorBox = this.$el.querySelector(
+                '[data-auth-flow-errors]'
+            );
+
+            if (!errorBox) {
+                return;
+            }
+
+            const rect = errorBox.getBoundingClientRect();
+
+            const isVisible =
+                rect.top >= 80 &&
+                rect.top <= window.innerHeight - 80;
+
+            if (isVisible) {
+                return;
+            }
+
+            errorBox.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+                inline: 'nearest',
+            });
+
+            setTimeout(() => {
+                errorBox.focus({
+                    preventScroll: true,
+                });
+            }, 400);
+        },
+    }"
+>
     <div
         wire:loading.class="pointer-events-none opacity-60"
         wire:target="startAuthFlow,loginWithPassword,requestLoginOtp,requestPasswordResetOtp,verifyLoginOtp,register,resetPassword,resendOtp"
@@ -37,7 +108,12 @@
 
         @if($errors->any())
             <div
-                class="mb-6 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4 text-sm text-red-700 dark:border-red-500/20 dark:from-red-500/10 dark:to-orange-500/10 dark:text-red-300">
+                data-auth-flow-errors
+                tabindex="-1"
+                role="alert"
+                aria-live="assertive"
+                class="mb-6 scroll-mt-24 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4 text-sm text-red-700 outline-none dark:border-red-500/20 dark:from-red-500/10 dark:to-orange-500/10 dark:text-red-300"
+            >
                 <div class="mb-3 flex items-center gap-2 font-bold">
                     <svg
                         class="h-5 w-5 shrink-0"
