@@ -16,6 +16,7 @@ use App\Application\Identity\DTOs\ResetUserPasswordWithOtpDTO;
 use App\Application\Identity\DTOs\SendOtpResultDTO;
 use App\Application\Identity\Exceptions\AccountUnavailableException;
 use App\Application\Identity\Exceptions\AuthRateLimitExceededException;
+use App\Application\Identity\Exceptions\EmailAlreadyRegisteredException;
 use App\Application\Identity\Exceptions\InvalidCredentialsException;
 use App\Application\Identity\Exceptions\InvalidMobileException;
 use App\Application\Identity\Exceptions\InvalidOtpException;
@@ -25,10 +26,13 @@ use App\Application\Identity\Exceptions\OtpRequestInProgressException;
 use App\Application\Identity\Exceptions\RegistrationRoleNotFoundException;
 use App\Application\Identity\Exceptions\UserNotFoundException;
 use App\Domain\Identity\Enums\AuthFlowStepEnum;
+use App\Domain\Identity\Models\User;
 use App\Rules\MobileRule;
 use App\Rules\ValidPassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
@@ -63,7 +67,7 @@ final class AuthFlow extends Component
 
     public string $lastName = '';
 
-    public string $email = '';
+    public ?string $email = null;
 
     /**
      * Unix timestamp مربوط به زمان فعال شدن ارسال مجدد.
@@ -336,9 +340,12 @@ final class AuthFlow extends Component
     {
         $this->normalizeOtpCode();
 
-        $this->email = trim($this->email);
         $this->firstName = trim($this->firstName);
         $this->lastName = trim($this->lastName);
+
+        $this->email = filled($this->email)
+            ? Str::lower(trim($this->email))
+            : null;
 
         $this->validate([
             'firstName' => [
@@ -353,8 +360,10 @@ final class AuthFlow extends Component
             ],
             'email' => [
                 'nullable',
-                'email',
+                'string',
+                'email:rfc',
                 'max:255',
+                Rule::unique(User::class, 'email'),
             ],
             'password' => [
                 'required',
@@ -375,6 +384,8 @@ final class AuthFlow extends Component
             'lastName.required' => 'نام خانوادگی خود را وارد کنید.',
 
             'email.email' => 'ایمیل وارد شده صحیح نیست.',
+            'email.max' => 'ایمیل نمی‌تواند بیشتر از ۲۵۵ کاراکتر باشد.',
+            'email.unique' => 'این ایمیل قبلا در سیستم ثبت شده است.',
 
             'password.required' => 'رمز عبور را وارد کنید.',
 
@@ -402,12 +413,17 @@ final class AuthFlow extends Component
         InvalidMobileException|
         InvalidOtpException|
         MobileAlreadyRegisteredException|
+        EmailAlreadyRegisteredException|
         AccountUnavailableException|
         RegistrationRoleNotFoundException|
         AuthRateLimitExceededException $exception
         ) {
+            $field = $exception instanceof EmailAlreadyRegisteredException
+                ? 'email'
+                : 'registration';
+
             $this->addError(
-                'registration',
+                $field,
                 $exception->getMessage()
             );
 

@@ -156,7 +156,7 @@
             </div>
 
             <div class="relative flex justify-center">
-                <span class="bg-white px-3 text-[0.7rem] text-slate-400 dark:bg-slate-950 dark:text-slate-500">
+                <span class="bg-white px-3 text-[0.7rem] text-slate-400 dark:bg-slate-900 dark:text-slate-500">
                     یا
                 </span>
             </div>

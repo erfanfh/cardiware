@@ -5,6 +5,8 @@ namespace App\Application\Identity\Actions\Auth;
 use App\Application\Identity\Actions\Role\ResolveRegistrationRoleAction;
 use App\Application\Identity\Actions\User\CreateUserAction;
 use App\Application\Identity\DTOs\RegisterUserDTO;
+use App\Application\Identity\Exceptions\EmailAlreadyRegisteredException;
+use App\Application\Identity\Exceptions\MobileAlreadyRegisteredException;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\QueryException;
 use RuntimeException;
@@ -59,6 +61,18 @@ final class RegisterUserAction
                     username: $username,
                 );
             } catch (QueryException $exception) {
+                if ($this->isDuplicateEmailException($exception)) {
+                    throw new EmailAlreadyRegisteredException(
+                        'این ایمیل قبلا در سیستم ثبت شده است.'
+                    );
+                }
+
+                if ($this->isDuplicateMobileException($exception)) {
+                    throw new MobileAlreadyRegisteredException(
+                        'این شماره موبایل قبلا در سیستم ثبت شده است.'
+                    );
+                }
+
                 if (!$this->isDuplicateUsernameException($exception)) {
                     throw $exception;
                 }
@@ -74,13 +88,29 @@ final class RegisterUserAction
         QueryException $exception,
     ): bool
     {
-        $message = strtolower(
-            $exception->getMessage()
-        );
-
         return str_contains(
-            $message,
+            strtolower($exception->getMessage()),
             'users_username_unique'
+        );
+    }
+
+    private function isDuplicateEmailException(
+        QueryException $exception,
+    ): bool
+    {
+        return str_contains(
+            strtolower($exception->getMessage()),
+            'users_email_unique'
+        );
+    }
+
+    private function isDuplicateMobileException(
+        QueryException $exception,
+    ): bool
+    {
+        return str_contains(
+            strtolower($exception->getMessage()),
+            'users_mobile_unique'
         );
     }
 }
