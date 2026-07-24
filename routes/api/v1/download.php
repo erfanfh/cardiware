@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware([
     'auth:sanctum',
+    'user.active',
     'abilities:downloads:prepare',
 ])
     ->group(function () {
