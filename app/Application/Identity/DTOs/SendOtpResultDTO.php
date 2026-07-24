@@ -2,12 +2,14 @@
 
 namespace App\Application\Identity\DTOs;
 
-class SendOtpResultDTO
+final readonly class SendOtpResultDTO
 {
     public function __construct(
         public bool   $sent,
-        public bool   $alreadySent = false,
-        public string $message = '',
+        public bool   $alreadySent,
+        public string $message,
+        public int    $retryAfterSeconds = 0,
+        public int    $expiresAfterSeconds = 0,
     )
     {
     }

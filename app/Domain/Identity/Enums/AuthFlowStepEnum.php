@@ -4,10 +4,13 @@ namespace App\Domain\Identity\Enums;
 
 enum AuthFlowStepEnum: string
 {
-    case LOGIN = 'login';
+    case ENTER_MOBILE = 'enter_mobile';
+
+    case LOGIN_PASSWORD = 'login_password';
+
+    case VERIFY_LOGIN_OTP = 'verify_login_otp';
+
     case REGISTER = 'register';
-    case OTP_LOGIN = 'otp_login';
-    case VERIFY_OTP_LOGIN = 'verify_otp_login';
-    case ENTER_USERNAME = 'enter_username';
-    case FORGOT_PASSWORD = 'forgot_password';
+
+    case RESET_PASSWORD = 'reset_password';
 }
