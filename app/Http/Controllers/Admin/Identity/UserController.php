@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Identity;
 
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Identity\Actions\Auth\RegisterUserAction;
+use App\Application\Identity\DTOs\RegisterUserDTO;
 use App\Application\Identity\Listings\UserListing;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Identity\Enums\UserStatusEnum;
@@ -88,15 +89,17 @@ class UserController extends Controller
         $data = $request->validated();
 
         $user = $registerUserAction->execute(
-            firstName: $data['first_name'],
-            lastName: $data['last_name'],
-            displayName: $data['display_name'],
-            mobile: $data['mobile'],
-            email: $data['email'],
-            password: $data['password'],
-            roleId: $data['role'],
-            status: $data['status'],
-            username: $data['username'],
+            new RegisterUserDTO(
+                firstName: $data['first_name'],
+                lastName: $data['last_name'],
+                mobile: $data['mobile'],
+                password: $data['password'],
+                displayName: $data['display_name'],
+                email: $data['email'],
+                username: $data['username'],
+                roleId: $data['role'],
+                status: UserStatusEnum::from($data['status']),
+            )
         );
 
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
