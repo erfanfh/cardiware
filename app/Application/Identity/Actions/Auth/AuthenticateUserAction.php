@@ -18,5 +18,9 @@ final class AuthenticateUserAction
         );
 
         request()->session()->regenerate();
+
+        if (function_exists('handle_successful_login')) {
+            handle_successful_login();
+        }
     }
 }
