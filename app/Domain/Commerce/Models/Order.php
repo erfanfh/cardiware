@@ -27,6 +27,7 @@ class Order extends Model implements Payable
         'subtotal_amount',
         'discount_amount',
         'total_amount',
+        'description',
         'paid_at',
         'cancelled_at',
         'metadata',

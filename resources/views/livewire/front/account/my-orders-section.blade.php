@@ -146,6 +146,17 @@
                                     @endforelse
                                 </div>
                             </div>
+
+                            @if($order->description)
+                                <div
+                                    class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-800/80">
+                                    <div class="mb-3 text-sm font-black text-slate-900 dark:text-white">توضیحات</div>
+
+                                    <div class="text-[0.8rem] text-slate-700 dark:text-gray-100">
+                                        {!! nl2br(htmlspecialchars(e($order->description))) !!}
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         <aside class="min-w-0 space-y-3">

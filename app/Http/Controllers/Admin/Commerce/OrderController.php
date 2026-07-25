@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Commerce;
 
+use App\Application\Commerce\Actions\Order\UpdateOrderDescriptionAction;
 use App\Application\Commerce\Actions\Order\UpdateOrderStatusAction;
 use App\Application\Commerce\Listings\OrderListing;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Order;
 use App\Http\Requests\Admin\Commerce\IndexOrderRequest;
-use App\Http\Requests\Admin\Commerce\UpdateOrderRequest;
+use App\Http\Requests\Admin\Commerce\UpdateOrderDescriptionRequest;
+use App\Http\Requests\Admin\Commerce\UpdateOrderStatusRequest;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
@@ -61,9 +63,9 @@ class OrderController
     }
 
     public function update(
-        UpdateOrderRequest      $request,
-        Order                   $order,
-        UpdateOrderStatusAction $updateOrderStatusAction,
+        UpdateOrderStatusRequest $request,
+        Order                    $order,
+        UpdateOrderStatusAction  $updateOrderStatusAction,
     ): RedirectResponse
     {
         Gate::authorize('order.edit');
@@ -93,5 +95,23 @@ class OrderController
                 ->withInput()
                 ->with('error', 'خطایی در به‌روزرسانی وضعیت سفارش رخ داد. لطفا دوباره تلاش کنید.');
         }
+    }
+
+    public function updateDescription(
+        UpdateOrderDescriptionRequest $request,
+        Order                         $order,
+        UpdateOrderDescriptionAction  $updateOrderDescriptionAction,
+    ): RedirectResponse
+    {
+        Gate::authorize('order.edit');
+
+        $updateOrderDescriptionAction->execute(
+            order: $order,
+            description: $request->description,
+        );
+
+        return redirect()
+            ->route('admin.orders.edit', $order)
+            ->with('success', 'وضعیت سفارش با موفقیت به‌روزرسانی شد.');
     }
 }

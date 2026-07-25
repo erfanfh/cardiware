@@ -28,8 +28,8 @@
         default => 'border-slate-200 bg-slate-50 text-slate-700',
     };
 
-    $gateway = $latestPayment?->gateway;
-    $paymentStatus = $latestPayment?->status;
+    $gateway = $latestPayment?->gateway?->label() ?? '—';
+    $paymentStatus = $latestPayment?->status?->label() ?? '—';
     $paymentTrackingCode = $latestPayment?->tracking_code ?? '—';
 
     $orderDate = $order->created_at ? jalali_date($order->created_at) : '—';
@@ -172,14 +172,14 @@
                             <div
                                 class="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                 <span class="text-xs font-bold text-slate-500">درگاه</span>
-                                <span class="text-sm font-extrabold text-slate-900">{{ $gateway->label() }}</span>
+                                <span class="text-sm font-extrabold text-slate-900">{{ $gateway }}</span>
                             </div>
 
                             <div
                                 class="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                 <span class="text-xs font-bold text-slate-500">وضعیت پرداخت</span>
                                 <span
-                                    class="text-sm font-extrabold text-slate-900">{{ $paymentStatus->label() }}</span>
+                                    class="text-sm font-extrabold text-slate-900">{{ $paymentStatus }}</span>
                             </div>
 
                             <div
@@ -202,49 +202,83 @@
                 </div>
             </div>
 
-            {{-- Status Update --}}
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                <div class="mb-5">
-                    <h2 class="text-base font-black text-slate-900">تغییر وضعیت سفارش</h2>
-                    <p class="mt-1 text-sm leading-7 text-slate-500">
-                        با تغییر وضعیت، دسترسی‌های خرید به‌صورت خودکار همگام‌سازی می‌شوند. برای مثال با پرداخت‌شده
-                        شدن سفارش، دسترسی محصولات فعال می‌شود.
-                    </p>
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
+                <div class="xl:col-span-7">
+                    {{-- Status Update --}}
+                    <div class="bg-white h-full rounded-2xl border border-slate-200 shadow-sm p-5">
+                        <div class="mb-5">
+                            <h2 class="text-base font-black text-slate-900">تغییر وضعیت سفارش</h2>
+                            <p class="mt-1 text-sm leading-7 text-slate-500">
+                                با تغییر وضعیت، دسترسی‌های خرید به‌صورت خودکار همگام‌سازی می‌شوند. برای مثال با
+                                پرداخت‌شده
+                                شدن سفارش، دسترسی محصولات فعال می‌شود.
+                            </p>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.orders.update', $order) }}"
+                              class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end">
+                            @csrf
+                            @method('PUT')
+
+                            <div class="lg:col-span-5">
+                                <label for="status" class="mb-2 block text-xs font-extrabold text-slate-600">
+                                    وضعیت سفارش
+                                </label>
+
+                                <select id="status"
+                                        name="status"
+                                        class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
+                                    @foreach($statuses as $value => $label)
+                                        <option
+                                            value="{{ $value }}" @selected(old('status', $order->status->value) === $value)>
+                                            {{ $label }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('status')
+                                <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div class="lg:col-span-7">
+                                <button type="submit"
+                                        class="cursor-pointer inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:bg-slate-800 lg:w-auto">
+                                    ذخیره وضعیت سفارش
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
-                <form method="POST" action="{{ route('admin.orders.update', $order) }}"
-                      class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end">
-                    @csrf
-                    @method('PUT')
+                <div class="xl:col-span-5">
+                    {{-- Description --}}
+                    <div class="bg-white h-full rounded-2xl border border-slate-200 shadow-sm p-5">
+                        <div class="mb-5">
+                            <h2 class="text-base font-black text-slate-900">توضیحات سفارش</h2>
+                            <p class="mt-1 text-sm leading-7 text-slate-500">
+                                یادداشت ها و توضیحات سفارش
+                            </p>
+                        </div>
 
-                    <div class="lg:col-span-5">
-                        <label for="status" class="mb-2 block text-xs font-extrabold text-slate-600">
-                            وضعیت سفارش
-                        </label>
+                        <form method="POST" action="{{ route('admin.orders.update.description', $order) }}">
+                            @csrf
+                            @method('PUT')
 
-                        <select id="status"
-                                name="status"
-                                class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
-                            @foreach($statuses as $value => $label)
-                                <option
-                                    value="{{ $value }}" @selected(old('status', $order->status->value) === $value)>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
+                            <x-admin.form.textarea
+                                name="description"
+                                :value="old('description', $order->description)"
+                            />
 
-                        @error('status')
-                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
-                        @enderror
+                            <div class="flex flex-row-reverse">
+                                <button type="submit"
+                                        class="cursor-pointer inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:bg-slate-800 lg:w-auto">
+                                    ذخیره توضیحات
+                                </button>
+                            </div>
+                        </form>
                     </div>
-
-                    <div class="lg:col-span-7">
-                        <button type="submit"
-                                class="cursor-pointer inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:bg-slate-800 lg:w-auto">
-                            ذخیره وضعیت سفارش
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
 
             {{-- Items --}}
