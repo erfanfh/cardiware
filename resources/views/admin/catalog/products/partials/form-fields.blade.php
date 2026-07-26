@@ -225,4 +225,12 @@
     >
         @include('admin.catalog.products.partials.releases')
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="اعضای تیم"
+        storageKey="team-members"
+        class="overflow-visible"
+    >
+        @include('admin.catalog.products.partials.team-members')
+    </x-admin.metabox>
 </x-admin.page>

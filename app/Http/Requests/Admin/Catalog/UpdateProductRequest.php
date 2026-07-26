@@ -194,6 +194,8 @@ class UpdateProductRequest extends FormRequest
             'seo' => ['nullable', 'array'],
 
             'display_setting' => ['nullable', 'array'],
+
+            'team_members' => ['nullable', 'array'],
         ];
     }
 

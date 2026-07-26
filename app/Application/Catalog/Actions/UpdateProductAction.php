@@ -27,6 +27,7 @@ class UpdateProductAction
         protected SyncProductRequirementsAction       $syncProductRequirementsAction,
         protected SyncProductInstallationStepsAction  $syncProductInstallationStepsAction,
         protected SyncProductFaqsAction               $syncProductFaqsAction,
+        protected SyncProductTeamMembersAction        $syncProductTeamMembersAction,
         protected SyncProductReleasesAction           $syncProductReleasesAction,
         protected SyncProductInformationAction        $syncProductInformationAction,
         protected SyncProductAddonsAction             $syncProductAddonsAction,
@@ -63,6 +64,7 @@ class UpdateProductAction
                 $productData['requirements'],
                 $productData['installation_step_body'],
                 $productData['faqs'],
+                $productData['team_members'],
                 $productData['releases'],
                 $productData['attributes'],
                 $productData['custom_attributes'],
@@ -91,6 +93,7 @@ class UpdateProductAction
             $this->syncProductRequirementsAction->execute($product, $data['requirements'] ?? []);
             $this->syncProductInstallationStepsAction->execute($product, $data['installation_step_body'] ?? '');
             $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);
+            $this->syncProductTeamMembersAction->execute($product, $data['team_members'] ?? []);
             $this->syncProductReleasesAction->execute($product, $data['releases'] ?? []);
             $this->syncProductInformationAction->execute($product, $data);
             $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
