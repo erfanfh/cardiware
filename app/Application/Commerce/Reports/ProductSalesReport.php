@@ -2,6 +2,8 @@
 
 namespace App\Application\Commerce\Reports;
 
+use App\Domain\Catalog\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
@@ -243,14 +245,18 @@ class ProductSalesReport
                 COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
                 COALESCE(SUM(order_items.total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
-                COUNT(DISTINCT order_items.product_id) as products_count,
                 COUNT(order_items.id) as items_count
             ')
             ->first();
 
+        $productsCount = Product::query()
+            ->where('store_id', $storeId)
+            ->where('status', ProductStatusEnum::ACTIVE)
+            ->count();
+
         return $this->formatSummaryRow($summary, [
             'store_id' => $storeId,
-            'products_count' => (int)$summary->products_count,
+            'products_count' => $productsCount,
         ]);
     }
 
