@@ -160,7 +160,9 @@
                             size="md"
                             class="whitespace-nowrap"
                         >
-                            {{ $storeTitle }}
+                            <a href="{{ route('stores.detail', $product->store) }}" target="_blank">
+                                {{ $storeTitle }}
+                            </a>
                         </x-admin.badge>
                     </x-admin.list.td>
 
