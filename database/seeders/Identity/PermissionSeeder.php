@@ -96,6 +96,7 @@ class PermissionSeeder extends Seeder
                 'projects' => 'تنظیمات صفحه پروژه ها',
                 'posts' => 'تنظیمات صفحه نوشته ها',
                 'products' => 'تنظیمات صفحه محصولات',
+                'ticket' => 'تنظیمات تیکت',
             ],
             'order' => [
                 'list' => 'لیست سفارش ها',

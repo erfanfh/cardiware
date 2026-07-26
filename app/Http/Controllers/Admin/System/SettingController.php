@@ -357,6 +357,32 @@ class SettingController extends Controller
     }
 
     /**
+     * @return View
+     */
+    public function ticket(): View
+    {
+        Gate::authorize('setting.ticket');
+
+        return view('admin.system.settings.ticket');
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     */
+    public function storeTicket(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.ticket');
+
+        $this->storeSettings($request, 'ticket');
+
+        return redirect()
+            ->route('admin.settings.ticket')
+            ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
      * @param Request $request
      * @param string $group
      * @return void

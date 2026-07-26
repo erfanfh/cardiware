@@ -275,6 +275,12 @@ return [
                 'gate' => 'setting.footer',
             ],
             [
+                'label' => 'تیکت‌ها',
+                'route' => 'admin.settings.ticket',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.ticket',
+            ],
+            [
                 'label' => 'صفحه اصلی',
                 'route' => 'admin.settings.home',
                 'icon' => 'icons.settings-02',
