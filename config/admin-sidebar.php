@@ -71,6 +71,7 @@ return [
     [
         'label' => 'پشتیبانی',
         'icon' => 'icons.customer-support',
+        'badge' => 'open_tickets',
         'children' => [
             [
                 'label' => 'تیکت‌ها',
@@ -105,6 +106,31 @@ return [
                 'icon' => 'icons.plus-sign',
                 'gate' => 'project.create',
             ]
+        ],
+    ],
+
+    [
+        'label' => 'فروشگاه',
+        'icon' => 'icons.store-01',
+        'children' => [
+            [
+                'label' => 'سفارش ها',
+                'route' => 'admin.orders.index',
+                'icon' => 'icons.invoice-03',
+                'gate' => 'order.list',
+            ],
+            [
+                'label' => 'کدهای تخفیف',
+                'route' => 'admin.coupons.index',
+                'icon' => 'icons.discount',
+                'gate' => 'coupon.list',
+            ],
+            [
+                'label' => 'فروشنده ها',
+                'route' => 'admin.stores.index',
+                'icon' => 'icons.user-multiple-02',
+                'gate' => 'store.list',
+            ],
         ],
     ],
 
@@ -148,31 +174,6 @@ return [
                 'route' => 'admin.products.information.index',
                 'icon' => 'icons.sliders-horizontal',
                 'gate' => 'product.information',
-            ],
-        ],
-    ],
-
-    [
-        'label' => 'فروشگاه',
-        'icon' => 'icons.store-01',
-        'children' => [
-            [
-                'label' => 'فروشنده ها',
-                'route' => 'admin.stores.index',
-                'icon' => 'icons.user-multiple-02',
-                'gate' => 'store.list',
-            ],
-            [
-                'label' => 'سفارش ها',
-                'route' => 'admin.orders.index',
-                'icon' => 'icons.invoice-03',
-                'gate' => 'order.list',
-            ],
-            [
-                'label' => 'کدهای تخفیف',
-                'route' => 'admin.coupons.index',
-                'icon' => 'icons.discount',
-                'gate' => 'coupon.list',
             ],
         ],
     ],
