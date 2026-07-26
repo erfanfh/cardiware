@@ -12,10 +12,6 @@ class CanCreateTicketAction
             return false;
         }
 
-        if ($user->purchaseAccesses()->count() === 0) {
-            return false;
-        }
-
         return true;
     }
 }
