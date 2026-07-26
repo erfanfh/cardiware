@@ -60,9 +60,86 @@
     >
         @csrf
 
+        @php
+            $tips = get_setting('ticket', 'ticket_submission_tips');
+        @endphp
+        @if(count($tips) > 0)
+            <div
+                class="relative overflow-hidden rounded-3xl border border-sky-200/80 bg-gradient-to-br from-sky-50 via-white to-indigo-50/70 p-4 shadow-sm dark:border-sky-500/20 dark:from-sky-500/10 dark:via-slate-900 dark:to-indigo-500/10 sm:p-5"
+            >
+                {{-- Decorative background --}}
+                <div
+                    class="pointer-events-none absolute -left-10 -top-12 h-32 w-32 rounded-full bg-sky-300/20 blur-3xl dark:bg-sky-400/10"
+                ></div>
+
+                <div
+                    class="pointer-events-none absolute -bottom-14 -right-8 h-32 w-32 rounded-full bg-indigo-300/20 blur-3xl dark:bg-indigo-400/10"
+                ></div>
+
+                <div class="relative">
+                    <div class="flex items-start gap-3">
+                        <div
+                            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-700 ring-1 ring-inset ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/20"
+                        >
+                            <svg
+                                class="h-5 w-5"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M12 8v4m0 4h.01M10.29 3.86 2.82 16.5A2 2 0 0 0 4.54 19.5h14.92a2 2 0 0 0 1.72-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <h3 class="text-sm font-black text-slate-800 dark:text-white">
+                                پیش از ارسال تیکت توجه کنید
+                            </h3>
+
+                            <p class="mt-1 text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
+                                رعایت نکات زیر باعث می‌شود درخواست شما سریع‌تر و دقیق‌تر بررسی شود.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex flex-col gap-2">
+                        @foreach($tips as $tip)
+                            <div
+                                class="flex items-center gap-2.5 rounded-2xl border border-white/80 bg-white/70 px-3 py-2.5 shadow-sm backdrop-blur-sm dark:border-white/5 dark:bg-white/[0.04]"
+                            >
+                                <div
+                                    class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300"
+                                >
+                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                                        <path
+                                            d="m5 12 4 4L19 6"
+                                            stroke="currentColor"
+                                            stroke-width="2.2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                </div>
+
+                                <p class="min-w-0 text-xs font-bold leading-6 text-slate-600 dark:text-slate-300">
+                                    {{ $tip['text'] }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
         <div class="grid grid-cols-2 gap-5 max-md:grid-cols-1">
             <div>
-                <label for="ticket-title" class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
+                <label for="ticket-title"
+                       class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
                     عنوان تیکت
                 </label>
 
@@ -119,7 +196,8 @@
             </div>
         </div>
         <div x-show="requiresProduct()" x-collapse>
-            <label for="ticket-product-id" class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
+            <label for="ticket-product-id"
+                   class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
                 محصول مرتبط
             </label>
 
@@ -133,7 +211,8 @@
                 <option value="">انتخاب محصول</option>
 
                 @foreach($ticketProducts as $product)
-                    <option value="{{ $product->id }}" @selected((string) old('product_id') === (string) $product->id)>
+                    <option
+                        value="{{ $product->id }}" @selected((string) old('product_id') === (string) $product->id)>
                         {{ $product->title }}
                     </option>
                 @endforeach
@@ -155,7 +234,8 @@
         </div>
 
         <div>
-            <label for="ticket-message" class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
+            <label for="ticket-message"
+                   class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
                 متن پیام
             </label>
 

@@ -2,414 +2,729 @@
 
 namespace App\Livewire\Front\Identity\User\Auth;
 
+use App\Application\Identity\Actions\Auth\LoginUserWithOtpAction;
+use App\Application\Identity\Actions\Auth\LoginUserWithPasswordAction;
 use App\Application\Identity\Actions\Auth\RedirectLoggedInUserAction;
-use App\Application\Identity\Actions\Auth\RegisterUserAction;
-use App\Application\Identity\Actions\Auth\SendOtpAction;
-use App\Application\System\RateLimiterAction;
+use App\Application\Identity\Actions\Auth\RegisterUserWithOtpAction;
+use App\Application\Identity\Actions\Auth\RequestLoginOtpAction;
+use App\Application\Identity\Actions\Auth\RequestPasswordResetOtpAction;
+use App\Application\Identity\Actions\Auth\RequestRegistrationOtpAction;
+use App\Application\Identity\Actions\Auth\ResetUserPasswordWithOtpAction;
+use App\Application\Identity\Actions\Auth\StartAuthFlowAction;
+use App\Application\Identity\DTOs\RegisterUserWithOtpDTO;
+use App\Application\Identity\DTOs\ResetUserPasswordWithOtpDTO;
+use App\Application\Identity\DTOs\SendOtpResultDTO;
+use App\Application\Identity\Exceptions\AccountUnavailableException;
+use App\Application\Identity\Exceptions\AuthRateLimitExceededException;
+use App\Application\Identity\Exceptions\EmailAlreadyRegisteredException;
+use App\Application\Identity\Exceptions\InvalidCredentialsException;
+use App\Application\Identity\Exceptions\InvalidMobileException;
+use App\Application\Identity\Exceptions\InvalidOtpException;
+use App\Application\Identity\Exceptions\MobileAlreadyRegisteredException;
+use App\Application\Identity\Exceptions\OtpDeliveryFailedException;
+use App\Application\Identity\Exceptions\OtpRequestInProgressException;
+use App\Application\Identity\Exceptions\RegistrationRoleNotFoundException;
+use App\Application\Identity\Exceptions\UserNotFoundException;
 use App\Domain\Identity\Enums\AuthFlowStepEnum;
-use App\Domain\Identity\Enums\OtpTypeEnum;
-use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
 use App\Rules\MobileRule;
 use App\Rules\ValidPassword;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Random\RandomException;
 
-
-class AuthFlow extends Component
+final class AuthFlow extends Component
 {
+    #[Locked]
     public AuthFlowStepEnum $step;
 
-    public string $username = '';
+    /**
+     * فقط در صفحه اول توسط کاربر ویرایش می‌شود.
+     */
     public string $mobile = '';
-    public string $email = '';
-    public ?string $first_name = null;
-    public ?string $last_name = null;
-    public ?string $password = null;
-    public ?string $password_confirmation = null;
 
-    public ?string $otp_code = null;
+    /**
+     * شماره تاییدشده و نرمال‌شده در Flow.
+     *
+     * تمام Actionهای بعدی باید از این property استفاده کنند،
+     * نه مقدار قابل ویرایش mobile.
+     */
+    #[Locked]
+    public string $resolvedMobile = '';
 
-    public ?string $otpType = null;
+    public string $password = '';
+
+    public string $passwordConfirmation = '';
+
+    public string $otpCode = '';
+
+    public string $firstName = '';
+
+    public string $lastName = '';
+
+    public ?string $email = null;
+
+    /**
+     * Unix timestamp مربوط به زمان فعال شدن ارسال مجدد.
+     */
+    #[Locked]
+    public int $otpResendAvailableAt = 0;
+
+    /**
+     * Unix timestamp مربوط به انقضای OTP فعلی.
+     */
+    #[Locked]
+    public int $otpExpiresAt = 0;
 
     public function mount(): void
     {
-        $this->step = AuthFlowStepEnum::LOGIN;
+        $this->step = AuthFlowStepEnum::ENTER_MOBILE;
     }
 
-    /**
-     * @return View
-     */
     public function render(): View
     {
-        return view('livewire.front.identity.user.auth.auth-flow');
-    }
-
-    public function updatedUsername(): void
-    {
-        $this->resetErrorBag('username');
-    }
-
-    public function goToRegister(): void
-    {
-        $this->resetValidation();
-        $this->reset([
-            'username',
-            'mobile',
-            'email',
-            'first_name',
-            'last_name',
-            'password',
-            'password_confirmation',
-        ]);
-
-        $this->step = AuthFlowStepEnum::REGISTER;
-    }
-
-    public function goToLogin(): void
-    {
-        $this->resetValidation();
-        $this->reset([
-            'username',
-            'mobile',
-            'email',
-            'first_name',
-            'last_name',
-            'password',
-            'password_confirmation',
-        ]);
-
-        $this->step = AuthFlowStepEnum::LOGIN;
+        return view(
+            'livewire.front.identity.user.auth.auth-flow'
+        );
     }
 
     /**
-     * @return void
+     * حذف خطای همان فیلد هنگام تغییر مقدار.
      */
-    public function goToOtpLogin(): void
+    public function updated(string $property): void
     {
-        $this->resetValidation();
-        $this->reset(['otp_code']);
-
-        $this->step = AuthFlowStepEnum::OTP_LOGIN;
+        $this->resetErrorBag($property);
     }
 
     /**
-     * @return void
+     * صفحه اول:
+     * تشخیص ورود یا ثبت‌نام براساس شماره موبایل.
+     *
+     * @throws RandomException
      */
-    public function goToEnterUsername(): void
+    public function startAuthFlow(
+        StartAuthFlowAction $startAuthFlowAction,
+    ): void
     {
         $this->resetValidation();
-        $this->resetErrorBag();
 
-        $this->step = AuthFlowStepEnum::ENTER_USERNAME;
-    }
-
-    /**
-     * @return RedirectResponse|Redirector|null
-     */
-    public function login(): RedirectResponse|Redirector|null
-    {
-        if ($this->rateLimit('request.login'))
-            return null;
-
-        $this->username = normalize_number($this->username);
+        $this->mobile = normalize_number(
+            trim($this->mobile)
+        );
 
         $this->validate([
-            'username' => ['required', 'regex:/^(09\d{9}|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/'],
-            'password' => ['required'],
+            'mobile' => [
+                'required',
+                new MobileRule(),
+            ],
         ], [
-            'username.required' => 'شماره موبایل یا ایمیل را وارد کنید',
-            'username.regex' => 'شماره موبایل یا ایمیل اشتباه می باشد',
-            'password.required' => 'رمز عبور را وارد کنید',
+            'mobile.required' => 'شماره موبایل را وارد کنید.',
         ]);
 
-        $loginField = filter_var($this->username, FILTER_VALIDATE_EMAIL)
-            ? 'email'
-            : 'mobile';
+        try {
+            $result = $startAuthFlowAction->execute(
+                $this->mobile
+            );
+        } catch (
+        InvalidMobileException|
+        AccountUnavailableException|
+        AuthRateLimitExceededException|
+        OtpDeliveryFailedException|
+        OtpRequestInProgressException|
+        MobileAlreadyRegisteredException $exception
+        ) {
+            $this->addError(
+                'mobile',
+                $exception->getMessage()
+            );
 
-        if (Auth::attempt([
-            $loginField => $this->username,
-            'password' => $this->password
-        ])) {
-            request()->session()->regenerate();
-            return (new RedirectLoggedInUserAction())->execute();
+            return;
         }
 
-        $this->addError('password', 'اطلاعات وارد شده صحیح نمی‌باشد');
-        return null;
+        $this->mobile = $result->mobile;
+        $this->resolvedMobile = $result->mobile;
+        $this->step = $result->nextStep;
+
+        $this->resetSensitiveFields();
+
+        if ($result->otpResult) {
+            $this->applyOtpResult(
+                result: $result->otpResult,
+                nextStep: AuthFlowStepEnum::REGISTER,
+            );
+        }
     }
 
     /**
-     * @return RedirectResponse|Redirector|null
+     * ورود با رمز عبور.
      */
-    public function verifyOtp(): RedirectResponse|Redirector|null
+    public function loginWithPassword(
+        LoginUserWithPasswordAction $loginUserWithPasswordAction,
+        RedirectLoggedInUserAction  $redirectLoggedInUserAction,
+    ): RedirectResponse|Redirector|null
     {
-        $this->username = normalize_number($this->username);
+        $this->resetErrorBag('password');
 
         $this->validate([
-            'otp_code' => 'required',
+            'password' => [
+                'required',
+                'string',
+            ],
         ], [
-            'otp_code.required' => 'کد تایید را وارد کنید',
+            'password.required' => 'رمز عبور را وارد کنید.',
         ]);
 
-        if (!$this->validateOtp($this->username, $this->otp_code, OtpTypeEnum::LOGIN)) {
+        try {
+            $loginUserWithPasswordAction->execute(
+                mobile: $this->resolvedMobile,
+                password: $this->password,
+            );
+        } catch (
+        InvalidMobileException|
+        InvalidCredentialsException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        AuthRateLimitExceededException $exception
+        ) {
+            $this->addError(
+                'password',
+                $exception->getMessage()
+            );
+
             return null;
         }
 
-        $user = User::where('mobile', $this->username)->first();
+        $this->resetSensitiveFields();
 
-        if (!$user) {
-            $this->addError('invalid_information', 'اطلاعات وارد شده صحیح نمی باشد');
-            return null;
-        }
-
-        $user->update(['password' => Hash::make($this->password)]);
-
-        Auth::login($user);
-        request()->session()->regenerate();
-
-        return app(RedirectLoggedInUserAction::class)->execute();
+        return $redirectLoggedInUserAction->execute();
     }
 
     /**
-     * @return RedirectResponse|Redirector|null
+     * ارسال OTP ورود و انتقال به صفحه تایید.
+     *
+     * @throws RandomException
      */
-    public function register(): RedirectResponse|Redirector|null
+    public function requestLoginOtp(
+        RequestLoginOtpAction $requestLoginOtpAction,
+    ): void
     {
-        if ($this->rateLimit('request.register'))
+        $this->resetValidation();
+
+        try {
+            $result = $requestLoginOtpAction->execute(
+                $this->resolvedMobile
+            );
+        } catch (
+        InvalidMobileException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        AuthRateLimitExceededException|
+        OtpRequestInProgressException $exception
+        ) {
+            $this->addError(
+                'password',
+                $exception->getMessage()
+            );
+
+            return;
+        }
+
+        if (!$this->otpRequestSucceeded($result)) {
+            return;
+        }
+
+        $this->password = '';
+        $this->otpCode = '';
+
+        $this->applyOtpResult(
+            result: $result,
+            nextStep: AuthFlowStepEnum::VERIFY_LOGIN_OTP,
+        );
+    }
+
+    /**
+     * ارسال OTP فراموشی رمز و انتقال به صفحه تغییر رمز.
+     *
+     * @throws RandomException
+     */
+    public function requestPasswordResetOtp(
+        RequestPasswordResetOtpAction $requestPasswordResetOtpAction,
+    ): void
+    {
+        $this->resetValidation();
+
+        try {
+            $result = $requestPasswordResetOtpAction->execute(
+                $this->resolvedMobile
+            );
+        } catch (
+        InvalidMobileException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        AuthRateLimitExceededException|
+        OtpRequestInProgressException $exception
+        ) {
+            $this->addError(
+                'password',
+                $exception->getMessage()
+            );
+
+            return;
+        }
+
+        if (!$this->otpRequestSucceeded($result)) {
+            return;
+        }
+
+        $this->reset([
+            'password',
+            'passwordConfirmation',
+            'otpCode',
+        ]);
+
+        $this->applyOtpResult(
+            result: $result,
+            nextStep: AuthFlowStepEnum::RESET_PASSWORD,
+        );
+    }
+
+    /**
+     * ورود نهایی با OTP.
+     */
+    public function verifyLoginOtp(
+        LoginUserWithOtpAction     $loginUserWithOtpAction,
+        RedirectLoggedInUserAction $redirectLoggedInUserAction,
+    ): RedirectResponse|Redirector|null
+    {
+        $this->normalizeOtpCode();
+
+        $this->validateOtpCode();
+
+        try {
+            $loginUserWithOtpAction->execute(
+                mobile: $this->resolvedMobile,
+                otpCode: $this->otpCode,
+            );
+        } catch (
+        InvalidMobileException|
+        InvalidOtpException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        AuthRateLimitExceededException $exception
+        ) {
+            $this->addError(
+                'otpCode',
+                $exception->getMessage()
+            );
+
             return null;
+        }
+
+        $this->resetSensitiveFields();
+
+        return $redirectLoggedInUserAction->execute();
+    }
+
+    /**
+     * ثبت‌نام نهایی با اطلاعات کاربر و OTP.
+     */
+    public function register(
+        RegisterUserWithOtpAction  $registerUserWithOtpAction,
+        RedirectLoggedInUserAction $redirectLoggedInUserAction,
+    ): RedirectResponse|Redirector|null
+    {
+        $this->normalizeOtpCode();
+
+        $this->firstName = trim($this->firstName);
+        $this->lastName = trim($this->lastName);
+
+        $this->email = filled($this->email)
+            ? Str::lower(trim($this->email))
+            : null;
 
         $this->validate([
-            'mobile' => 'required|regex:/^09\d{9}$/',
-            'email' => 'nullable|email',
-            'first_name' => 'required',
-            'last_name' => 'required',
+            'firstName' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+            'lastName' => [
+                'required',
+                'string',
+                'max:100',
+            ],
+            'email' => [
+                'nullable',
+                'string',
+                'email:rfc',
+                'max:255',
+                Rule::unique(User::class, 'email'),
+            ],
             'password' => [
                 'required',
                 'string',
                 new ValidPassword(),
-                'confirmed',
             ],
-            'password_confirmation' => 'required',
+            'passwordConfirmation' => [
+                'required',
+                'string',
+                'same:password',
+            ],
+            'otpCode' => [
+                'required',
+                'digits:' . $this->otpLength(),
+            ],
         ], [
-            'mobile.required' => 'شماره موبایل خود را وارد کنید',
-            'mobile.regex' => 'شماره موبایل خود را به طور صحیح وارد کنید',
-            'email.email' => 'ایمیل خود را به طور صحیح وارد کنید',
-            'first_name.required' => 'نام خود را وارد کنید',
-            'last_name.required' => 'نام خانوادگی خود را وارد کنید',
-            'password.required' => 'رمز عبور را وارد کنید',
-            'password.min' => 'حداقل طول رمز عبور 8 حرف می باشد',
-            'password.string' => 'فرمت رمز عبور اشتباه می باشد',
-            'password.confirmed' => 'رمزعبور و تکرار رمزعبور مطابقت ندارد',
-            'password_confirmation.required' => 'تکرار رمز عبور را وارد کنید',
+            'firstName.required' => 'نام خود را وارد کنید.',
+            'lastName.required' => 'نام خانوادگی خود را وارد کنید.',
+
+            'email.email' => 'ایمیل وارد شده صحیح نیست.',
+            'email.max' => 'ایمیل نمی‌تواند بیشتر از ۲۵۵ کاراکتر باشد.',
+            'email.unique' => 'این ایمیل قبلا در سیستم ثبت شده است.',
+
+            'password.required' => 'رمز عبور را وارد کنید.',
+
+            'passwordConfirmation.required' => 'تکرار رمز عبور را وارد کنید.',
+            'passwordConfirmation.same' => 'رمز عبور و تکرار آن مطابقت ندارند.',
+
+            'otpCode.required' => 'کد تایید را وارد کنید.',
+            'otpCode.digits' => 'کد تایید وارد شده معتبر نیست.',
         ]);
 
-        $user = app(RegisterUserAction::class)->execute(
-            firstName: $this->first_name,
-            lastName: $this->last_name,
-            displayName: $this->first_name . ' ' . $this->last_name,
-            mobile: $this->mobile,
-            email: $this->email,
-            password: $this->password
-        );
+        try {
+            $registerUserWithOtpAction->execute(
+                new RegisterUserWithOtpDTO(
+                    mobile: $this->resolvedMobile,
+                    otpCode: $this->otpCode,
+                    firstName: $this->firstName,
+                    lastName: $this->lastName,
+                    email: filled($this->email)
+                        ? $this->email
+                        : null,
+                    password: $this->password,
+                )
+            );
+        } catch (
+        InvalidMobileException|
+        InvalidOtpException|
+        MobileAlreadyRegisteredException|
+        EmailAlreadyRegisteredException|
+        AccountUnavailableException|
+        RegistrationRoleNotFoundException|
+        AuthRateLimitExceededException $exception
+        ) {
+            $field = $exception instanceof EmailAlreadyRegisteredException
+                ? 'email'
+                : 'registration';
 
-        Auth::login($user);
-        request()->session()->regenerate();
+            $this->addError(
+                $field,
+                $exception->getMessage()
+            );
 
-        return app(RedirectLoggedInUserAction::class)->execute();
+            return null;
+        }
+
+        $this->resetSensitiveFields();
+
+        return $redirectLoggedInUserAction->execute();
     }
 
     /**
-     * @throws RandomException
+     * تغییر رمز با OTP.
      */
-    public function sendOtp(): void
+    public function resetPassword(
+        ResetUserPasswordWithOtpAction $resetUserPasswordWithOtpAction,
+        RedirectLoggedInUserAction     $redirectLoggedInUserAction,
+    ): RedirectResponse|Redirector|null
     {
-        $this->username = normalize_number(trim((string)$this->username));
+        $this->normalizeOtpCode();
 
         $this->validate([
-            'username' => ['required', new MobileRule()],
+            'password' => [
+                'required',
+                'string',
+                new ValidPassword(),
+            ],
+            'passwordConfirmation' => [
+                'required',
+                'string',
+                'same:password',
+            ],
+            'otpCode' => [
+                'required',
+                'digits:' . $this->otpLength(),
+            ],
         ], [
-            'username.required' => 'شماره موبایل را وارد کنید',
-            'username.regex' => 'شماره موبایل معتبر نیست',
+            'password.required' => 'رمز عبور جدید را وارد کنید.',
+
+            'passwordConfirmation.required' => 'تکرار رمز عبور را وارد کنید.',
+            'passwordConfirmation.same' => 'رمز عبور و تکرار آن مطابقت ندارند.',
+
+            'otpCode.required' => 'کد تایید را وارد کنید.',
+            'otpCode.digits' => 'کد تایید وارد شده معتبر نیست.',
         ]);
 
-        if (!User::where('mobile', $this->username)->exists()) {
-            $this->addError('not_found_mobile', 'کاربری با این شماره موبایل یافت نشد!');
-            return;
+        try {
+            $resetUserPasswordWithOtpAction->execute(
+                new ResetUserPasswordWithOtpDTO(
+                    mobile: $this->resolvedMobile,
+                    otpCode: $this->otpCode,
+                    password: $this->password,
+                )
+            );
+        } catch (
+        InvalidMobileException|
+        InvalidOtpException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        AuthRateLimitExceededException $exception
+        ) {
+            $this->addError(
+                'resetPassword',
+                $exception->getMessage()
+            );
+
+            return null;
         }
 
-        $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::LOGIN);
+        $this->resetSensitiveFields();
 
-        $this->otpType = OtpTypeEnum::LOGIN->value;
-        $this->step = AuthFlowStepEnum::VERIFY_OTP_LOGIN;
-
-        $message = 'کد تایید با موفقیت ارسال شد';
-
-        if ($result?->alreadySent) {
-            $message = $result->message;
-        }
-
-        session()->flash('success', $message);
+        return $redirectLoggedInUserAction->execute();
     }
 
     /**
-     * @return void
+     * ارسال مجدد OTP براساس مرحله فعلی.
+     *
+     * نوع OTP از سمت سرور و براساس step انتخاب می‌شود؛
+     * بنابراین نیازی به property قابل تغییر otpType نداریم.
+     *
      * @throws RandomException
      */
-    public function resendOtp(): void
+    public function resendOtp(
+        RequestLoginOtpAction         $requestLoginOtpAction,
+        RequestRegistrationOtpAction  $requestRegistrationOtpAction,
+        RequestPasswordResetOtpAction $requestPasswordResetOtpAction,
+    ): void
     {
-        $this->resetErrorBag();
+        $this->resetErrorBag('otpCode');
 
-        if (!$this->username || !$this->otpType) {
-            $this->addError('otp_code', 'شماره موبایل معتبر نیست');
+        try {
+            $result = match ($this->step) {
+                AuthFlowStepEnum::VERIFY_LOGIN_OTP =>
+                $requestLoginOtpAction->execute(
+                    $this->resolvedMobile
+                ),
+
+                AuthFlowStepEnum::REGISTER =>
+                $requestRegistrationOtpAction->execute(
+                    $this->resolvedMobile
+                ),
+
+                AuthFlowStepEnum::RESET_PASSWORD =>
+                $requestPasswordResetOtpAction->execute(
+                    $this->resolvedMobile
+                ),
+
+                default => null,
+            };
+        } catch (
+        InvalidMobileException|
+        AccountUnavailableException|
+        UserNotFoundException|
+        MobileAlreadyRegisteredException|
+        AuthRateLimitExceededException|
+        OtpRequestInProgressException $exception
+        ) {
+            $this->addError(
+                'otpCode',
+                $exception->getMessage()
+            );
+
             return;
         }
 
-        $type = OtpTypeEnum::from($this->otpType);
-        $result = app(SendOtpAction::class)->execute($this->username, $type);
+        if (!$result) {
+            $this->addError(
+                'otpCode',
+                'امکان ارسال کد در این مرحله وجود ندارد.'
+            );
 
-        if (!$result->sent) {
-            $this->addError('otp_code', $result->message);
             return;
         }
 
-        session()->flash('success', $result->message);
+        if (!$this->otpRequestSucceeded($result)) {
+            return;
+        }
+
+        $this->otpCode = '';
+
+        $this->syncOtpTiming($result);
+
+        session()->flash(
+            'success',
+            $result->message
+        );
     }
 
     /**
-     * @param string $username
-     * @param string|int $code
-     * @param OtpTypeEnum $type
-     * @return bool
+     * بازگشت به صفحه ورود با رمز.
      */
-    private function validateOtp(string $username, string|int $code, OtpTypeEnum $type): bool
+    public function goToPasswordLogin(): void
     {
-        $this->resetErrorBag();
+        if (blank($this->resolvedMobile)) {
+            $this->goToEnterMobile();
 
-        $otp = Otp::where('key', $username)
-            ->where('type', $type)
-            ->latest()
-            ->first();
-
-        if (!$otp || $otp->code != $code || $otp->expired_at < now() || $otp->is_used) {
-            $this->addError('otp_code', 'کد تایید صحیح نمی باشد');
-            return false;
+            return;
         }
 
-        $otp->update([
-            'expired_at' => now(),
-            'is_used' => true,
+        $this->resetValidation();
+
+        $this->reset([
+            'password',
+            'passwordConfirmation',
+            'otpCode',
+            'firstName',
+            'lastName',
+            'email',
         ]);
 
-        return true;
+        $this->clearOtpTiming();
+
+        $this->step = AuthFlowStepEnum::LOGIN_PASSWORD;
     }
 
     /**
-     * @param string $action
-     * @return bool
+     * ویرایش شماره موبایل و شروع مجدد Flow.
      */
-    private function rateLimit(string $action): bool
+    public function goToEnterMobile(): void
     {
-        $this->resetErrorBag();
+        $mobile = $this->resolvedMobile ?: $this->mobile;
 
-        $seconds = ((new RateLimiterAction())->execute($action));
+        $this->resetValidation();
 
-        if ($seconds) {
-            $this->addError(
-                'password',
-                "تعداد تلاش‌ بیش از حد مجاز است. لطفاً $seconds ثانیه دیگر تلاش کنید."
-            );
+        $this->reset([
+            'password',
+            'passwordConfirmation',
+            'otpCode',
+            'firstName',
+            'lastName',
+            'email',
+        ]);
+
+        $this->mobile = $mobile;
+        $this->resolvedMobile = '';
+
+        $this->clearOtpTiming();
+
+        $this->step = AuthFlowStepEnum::ENTER_MOBILE;
+    }
+
+    private function otpRequestSucceeded(
+        SendOtpResultDTO $result,
+    ): bool
+    {
+        if ($result->sent || $result->alreadySent) {
             return true;
         }
+
+        $this->addError(
+            'otpCode',
+            $result->message
+        );
 
         return false;
     }
 
-    /**
-     * @throws RandomException
-     */
-    public function sendResetPasswordOtp(): void
+    private function applyOtpResult(
+        SendOtpResultDTO $result,
+        AuthFlowStepEnum $nextStep,
+    ): void
     {
-        $this->username = normalize_number(trim($this->username));
+        $this->syncOtpTiming($result);
 
-        $this->validate([
-            'username' => ['required', new MobileRule()],
-        ], [
-            'username.required' => 'شماره موبایل را وارد کنید',
-            'username.regex' => 'شماره موبایل معتبر نیست',
-        ]);
+        $this->step = $nextStep;
 
-        if (!User::where('mobile', $this->username)->exists()) {
-            $this->addError('not_found_mobile', 'کاربری با این شماره موبایل یافت نشد!');
-            return;
-        }
-
-        $result = app(SendOtpAction::class)->execute($this->username, OtpTypeEnum::RESET_PASSWORD);
-
-        $this->otpType = OtpTypeEnum::RESET_PASSWORD->value;
-        $this->step = AuthFlowStepEnum::FORGOT_PASSWORD;
-
-        if ($result?->alreadySent) {
-            $message = $result->message;
-        } else {
-            $message = 'کد تایید ارسال شد';
-        }
-
-        session()->flash('success', $message);
+        session()->flash(
+            'success',
+            $result->message
+        );
     }
 
-    /**
-     * @return RedirectResponse|Redirector|null
-     */
-    public function forgotPassword(): RedirectResponse|Redirector|null
+    private function syncOtpTiming(
+        SendOtpResultDTO $result,
+    ): void
     {
-        $this->username = normalize_number(trim($this->username));
-        $this->otp_code = normalize_number($this->otp_code);
+        $this->otpResendAvailableAt = now()
+            ->addSeconds(
+                max(0, $result->retryAfterSeconds)
+            )
+            ->timestamp;
 
-        if ($this->rateLimit('request.forgot-password'))
-            return null;
+        $this->otpExpiresAt = now()
+            ->addSeconds(
+                max(0, $result->expiresAfterSeconds)
+            )
+            ->timestamp;
 
+        $this->dispatch(
+            'otp-timing-updated',
+            resendAvailableAt: $this->otpResendAvailableAt,
+            expiresAt: $this->otpExpiresAt,
+        );
+    }
+
+    private function clearOtpTiming(): void
+    {
+        $this->otpResendAvailableAt = 0;
+        $this->otpExpiresAt = 0;
+    }
+
+    private function normalizeOtpCode(): void
+    {
+        $this->otpCode = normalize_number(
+            trim($this->otpCode)
+        );
+    }
+
+    private function validateOtpCode(): void
+    {
         $this->validate([
-            'username' => ['required', new MobileRule()],
-            'otp_code' => ['required'],
-            'password' => [
+            'otpCode' => [
                 'required',
-                'string',
-                new ValidPassword(),
-                'confirmed',
+                'digits:' . $this->otpLength(),
             ],
-            'password_confirmation' => ['required'],
         ], [
-            'username.required' => 'شماره موبایل را وارد کنید',
-            'username.regex' => 'شماره موبایل اشتباه می باشد',
-            'otp_code.required' => 'کد تایید را وارد کنید',
-            'password.required' => 'رمز عبور را وارد کنید',
-            'password_confirmation.required' => 'تکرار رمز عبور را وارد کنید',
-            'password.min' => 'حداقل طول رمز عبور :min حرف می باشد',
-            'password.string' => 'فرمت رمز عبور اشتباه می باشد',
-            'password.confirmed' => 'رمزعبور و تکرار رمزعبور مطابقت ندارد',
+            'otpCode.required' => 'کد تایید را وارد کنید.',
+            'otpCode.digits' => 'کد تایید وارد شده معتبر نیست.',
         ]);
+    }
 
-        if (!$this->validateOtp($this->username, $this->otp_code, OtpTypeEnum::RESET_PASSWORD))
-            return null;
+    private function otpLength(): int
+    {
+        return min(
+            8,
+            max(
+                4,
+                (int)config(
+                    'auth-flow.otp.length',
+                    6
+                )
+            )
+        );
+    }
 
-        $user = User::where('mobile', $this->username)->orWhere('email', $this->username)->first();
-
-        if (!$user) {
-            $this->addError('invalid_information', 'اطلاعات وارد شده صحیح نمی باشد');
-            return null;
-        }
-
-        $user->update(['password' => Hash::make($this->password)]);
-
-        Auth::login($user);
-        request()->session()->regenerate();
-
-        return (new RedirectLoggedInUserAction())->execute();
+    private function resetSensitiveFields(): void
+    {
+        $this->reset([
+            'password',
+            'passwordConfirmation',
+            'otpCode',
+        ]);
     }
 }

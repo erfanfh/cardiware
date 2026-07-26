@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests\Admin\Commerce;
 
-use App\Domain\Commerce\Enums\OrderStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateOrderRequest extends FormRequest
+class UpdateOrderDescriptionRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,14 +14,14 @@ class UpdateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::enum(OrderStatusEnum::class)],
+            'description' => ['nullable', 'string'],
         ];
     }
 
     public function attributes(): array
     {
         return [
-            'status' => 'وضعیت سفارش',
+            'description' => 'توضیحات',
         ];
     }
 }

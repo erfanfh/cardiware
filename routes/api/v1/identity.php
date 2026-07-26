@@ -12,10 +12,16 @@ Route::prefix('auth')
             ->name('login');
 
         Route::post('logout', [AuthController::class, 'logout'])
-            ->middleware('auth:sanctum')
+            ->middleware([
+                'auth:sanctum',
+                'user.active',
+            ])
             ->name('logout');
     });
 
 Route::get('me', MeController::class)
-    ->middleware('auth:sanctum')
+    ->middleware([
+        'auth:sanctum',
+        'user.active',
+    ])
     ->name('me');

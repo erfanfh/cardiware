@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsureAuthenticatedUserIsActive;
 use App\Http\Middleware\ResolveOptionalSanctumUser;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
+            'user.active' => EnsureAuthenticatedUserIsActive::class,
             'abilities' => CheckAbilities::class,
             'ability' => CheckForAnyAbility::class,
             'auth.optional.sanctum' => ResolveOptionalSanctumUser::class,
@@ -32,6 +34,11 @@ return Application::configure(basePath: dirname(__DIR__))
             | Request::HEADER_X_FORWARDED_HOST
             | Request::HEADER_X_FORWARDED_PORT
             | Request::HEADER_X_FORWARDED_PROTO
+        );
+
+        $middleware->appendToGroup(
+            'web',
+            EnsureAuthenticatedUserIsActive::class
         );
     })
     ->withSchedule(function (Schedule $schedule): void {

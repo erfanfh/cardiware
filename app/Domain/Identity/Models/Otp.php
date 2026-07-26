@@ -10,15 +10,25 @@ class Otp extends Model
 {
     protected $fillable = [
         'expired_at',
+        'resend_available_at',
         'code',
+        'code_hash',
+        'attempts',
         'key',
         'key_type',
         'type',
         'is_used',
     ];
 
-    protected $casts = [
-        'type' => OtpTypeEnum::class,
-        'key_type' => OtpKeyTypeEnum::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'type' => OtpTypeEnum::class,
+            'key_type' => OtpKeyTypeEnum::class,
+            'expired_at' => 'immutable_datetime',
+            'resend_available_at' => 'immutable_datetime',
+            'is_used' => 'boolean',
+            'attempts' => 'integer',
+        ];
+    }
 }
