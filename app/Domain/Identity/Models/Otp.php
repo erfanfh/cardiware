@@ -11,7 +11,6 @@ class Otp extends Model
     protected $fillable = [
         'expired_at',
         'resend_available_at',
-        'code',
         'code_hash',
         'attempts',
         'key',
