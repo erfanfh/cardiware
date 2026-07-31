@@ -36,6 +36,7 @@ final class GetProductDetailAction
                 'store.picture.primaryVariant',
                 'store.picture.variants',
                 'updateProgress',
+                'activeMedals.picture.primaryVariant',
             ])
         );
     }
