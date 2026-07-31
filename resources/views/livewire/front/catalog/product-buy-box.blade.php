@@ -623,20 +623,78 @@
                     :disabled="!selectedSaleItemId || isSubmitting"
                     @click="submit(true)"
                 >
-        <span x-show="!isSubmitting" x-cloak>
-            افزودن به سبد خرید
-        </span>
+                    <span x-show="!isSubmitting" x-cloak>
+                        افزودن به سبد خرید
+                    </span>
 
                     <span
                         x-show="isSubmitting"
                         x-cloak
                         class="inline-flex items-center gap-2"
                     >
-            <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-            <span>در حال افزودن...</span>
-        </span>
+                        <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
+                        <span>در حال افزودن...</span>
+                    </span>
                 </button>
             </div>
+
+            @if(!empty($actionLinks))
+                <div class="mt-3 space-y-2 border-t border-slate-200 pt-3 dark:border-slate-700">
+                    @foreach($actionLinks as $link)
+                        <a
+                            href="{{ $link['url'] }}"
+                            @if($link['open_in_new_tab'])
+                                target="_blank"
+                            rel="noopener noreferrer"
+                            @endif
+                            class="group flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-right shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50/60 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-200 focus:ring-offset-2 focus:ring-offset-white dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/30 dark:hover:bg-brand-950/20 dark:focus:ring-brand-500/30 dark:focus:ring-offset-slate-900"
+                            @if($link['open_in_new_tab'])
+                                aria-label="{{ $link['title'] }}؛ باز شدن در تب جدید"
+                            @endif
+                        >
+                            <span
+                                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-500 transition group-hover:bg-white group-hover:text-brand-600 group-hover:shadow-sm dark:bg-slate-800 dark:text-slate-400 dark:group-hover:bg-slate-800 dark:group-hover:text-brand-300">
+                                <svg
+                                    class="size-4.5"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M13.5 6H18m0 0v4.5M18 6l-7.5 7.5M10.5 6H6.75A2.25 2.25 0 0 0 4.5 8.25v9A2.25 2.25 0 0 0 6.75 19.5h9A2.25 2.25 0 0 0 18 17.25V13.5"
+                                    />
+                                </svg>
+                            </span>
+
+                            <span class="min-w-0 flex-1">
+                                <span
+                                    class="block break-words text-sm font-extrabold text-slate-800 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
+                                    {{ $link['title'] }}
+                                </span>
+                            </span>
+
+                            <svg
+                                class="size-4 shrink-0 text-slate-400 transition duration-200 group-hover:-translate-x-1 group-hover:text-brand-600 dark:text-slate-500 dark:group-hover:text-brand-300"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="m15 18-6-6 6-6"
+                                />
+                            </svg>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
         </div>
 
         {{-- Modal --}}

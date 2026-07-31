@@ -197,30 +197,18 @@ class UpdateProductRequest extends FormRequest
 
             'team_members' => ['nullable', 'array'],
 
-            'update_progress' => [
-                'nullable',
-                'array',
-            ],
+            'update_progress' => ['nullable', 'array'],
+            'update_progress.is_visible' => ['nullable', 'boolean'],
+            'update_progress.progress_percentage' => ['nullable', 'integer'],
+            'update_progress.started_at' => ['nullable', 'date'],
+            'update_progress.release_at' => ['nullable', 'date'],
 
-            'update_progress.is_visible' => [
-                'nullable',
-                'boolean',
-            ],
-
-            'update_progress.progress_percentage' => [
-                'nullable',
-                'integer',
-            ],
-
-            'update_progress.started_at' => [
-                'nullable',
-                'date',
-            ],
-
-            'update_progress.release_at' => [
-                'nullable',
-                'date',
-            ],
+            'action_links' => ['nullable', 'array'],
+            'action_links.*' => ['array'],
+            'action_links.*.id' => ['nullable', 'integer'],
+            'action_links.*.title' => ['nullable', 'string', 'max:120'],
+            'action_links.*.url' => ['nullable', 'string', 'max:2048'],
+            'action_links.*.open_in_new_tab' => ['nullable', 'boolean'],
         ];
     }
 

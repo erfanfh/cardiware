@@ -215,6 +215,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         return $this->hasOne(ProductUpdateProgress::class);
     }
 
+    public function actionLinks(): HasMany
+    {
+        return $this->hasMany(ProductActionLink::class)->orderBy('sort_order');
+    }
+
     public function commentsEnabled(): bool
     {
         return true;

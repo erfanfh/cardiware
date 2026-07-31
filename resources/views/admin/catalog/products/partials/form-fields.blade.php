@@ -237,4 +237,11 @@
     >
         @include('admin.catalog.products.partials.team-members')
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="دکمه‌های تکمیلی (بعد از افزودن به سبد خرید)"
+        storageKey="product-action-links"
+    >
+        @include('admin.catalog.products.partials.action-links')
+    </x-admin.metabox>
 </x-admin.page>

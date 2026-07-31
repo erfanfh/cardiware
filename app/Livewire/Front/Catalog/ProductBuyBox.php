@@ -33,6 +33,8 @@ class ProductBuyBox extends Component
      */
     public array $purchaseState = [];
 
+    public array $actionLinks = [];
+
     public bool $hasAvailableSaleItems = false;
 
     public function mount(
@@ -50,6 +52,22 @@ class ProductBuyBox extends Component
         $this->hasAvailableSaleItems = $buyBoxData['hasAvailableSaleItems'];
 
         $this->purchaseState = $getProductCartStateAction->execute($product);
+
+        $this->actionLinks = $product->actionLinks()
+            ->get([
+                'id',
+                'title',
+                'url',
+                'open_in_new_tab',
+            ])
+            ->map(fn($link) => [
+                'id' => $link->id,
+                'title' => $link->title,
+                'url' => $link->url,
+                'open_in_new_tab' => $link->open_in_new_tab,
+            ])
+            ->values()
+            ->all();
     }
 
     /**
