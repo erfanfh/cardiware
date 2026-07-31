@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\Catalog\Observers\ProductSaleItemFileObserver;
 use App\Application\Catalog\Observers\ProductSaleItemManifestObserver;
 use App\Application\Catalog\Observers\ProductSaleItemObserver;
+use App\Application\Identity\Observers\UserObserver;
 use App\Application\Support\Observers\TicketObserver;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
@@ -13,6 +14,7 @@ use App\Domain\Catalog\Models\ProductSaleItemFile;
 use App\Domain\Catalog\Models\ProductSaleItemManifest;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\WalletTopUp;
+use App\Domain\Identity\Models\User;
 use App\Domain\Support\Models\Ticket;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -88,5 +90,6 @@ class AppServiceProvider extends ServiceProvider
         ProductSaleItem::observe(ProductSaleItemObserver::class);
         ProductSaleItemManifest::observe(ProductSaleItemManifestObserver::class);
         ProductSaleItemFile::observe(ProductSaleItemFileObserver::class);
+        User::observe(UserObserver::class);
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
@@ -210,7 +211,9 @@ class UserController extends Controller
 
         app(UserCacheInvalidator::class)->flushForUser($user);
 
-        $user->delete();
+        DB::transaction(function () use ($user): void {
+            $user->delete();
+        });
 
         return redirect()
             ->route('admin.users.index')
