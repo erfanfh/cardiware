@@ -79,41 +79,6 @@
             <!-- Search (with live results dropdown) -->
             <div
                 class="order-3 w-full px-0 md:order-none md:w-auto md:flex-1 md:px-2"
-                x-data="{
-                      q: '',
-                      open: false,
-                      loading: false,
-
-                      // Demo results (بعداً از API میاد)
-                      all: [
-                        { type: 'محصول', title: 'پچ لیگ ایران برای FC26', meta: 'FC/PC • 1.3GB', href: '#' },
-                        { type: 'مطلب', title: 'آموزش نصب پچ لیگ ایران روی FC26', meta: '۵ دقیقه مطالعه', href: '#' },
-                        { type: 'محصول', title: 'PES Graphic Pack 2026', meta: 'PES/PC • 820MB', href: '#' },
-                        { type: 'مطلب', title: 'رفع ارورهای رایج نصب مودها', meta: 'راهنما', href: '#' },
-                        { type: 'محصول', title: 'آپدیت نقل‌وانتقالات FC26', meta: 'فایل • 120MB', href: '#' },
-                      ],
-
-                      get results() {
-                        if (!this.q || this.q.trim().length < 2) return [];
-                        const s = this.q.trim().toLowerCase();
-                        return this.all.filter(i => i.title.toLowerCase().includes(s)).slice(0, 6);
-                      },
-
-                      onInput() {
-                        this.open = true;
-                        this.loading = true;
-
-                        // دمو: شبیه‌سازی سرچ آنلاین
-                        clearTimeout(this._t);
-                        this._t = setTimeout(() => {
-                          this.loading = false;
-                        }, 250);
-                      },
-
-                      closeSoon() {
-                        setTimeout(() => (this.open = false), 120);
-                      }
-                    }"
             >
                 <label class="relative block" @keydown.escape.window="open=false">
                     <form action="{{ front_route('search') }}" method="get">
