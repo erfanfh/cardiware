@@ -36,6 +36,7 @@ class UpdateProductAction
         protected SyncProductSaleItemDiscountsAction  $syncProductSaleItemDiscountsAction,
         protected SyncProductUpdateProgressAction     $syncProductUpdateProgressAction,
         protected SyncProductActionLinksAction        $syncProductActionLinksAction,
+        protected SyncProductMedalAssignmentsAction   $syncProductMedalAssignmentsAction,
         protected SyncSeoMetaAction                   $syncSeoMetaAction,
         protected StoreSeoAnalysisAction              $storeSeoAnalysisAction,
         protected ProductCacheInvalidator             $productCacheInvalidator,
@@ -77,6 +78,7 @@ class UpdateProductAction
                 $productData['display_setting'],
                 $productData['update_progress'],
                 $productData['action_links'],
+                $productData['medal_assignments'],
             );
 
             $product->update($productData);
@@ -106,6 +108,7 @@ class UpdateProductAction
             $this->syncProductUpdateProgressAction->execute($product, $data['update_progress'] ?? []);
             $this->syncProductActionLinksAction->execute($product, $data['action_links'] ?? []);
             $this->syncProductSaleItemDiscountsAction->execute($product, $data['sale_items'] ?? []);
+            $this->syncProductMedalAssignmentsAction->execute($product, $data['medal_assignments'] ?? []);
 
             $this->syncSeoMetaAction->execute($product, $data['seo'] ?? []);
             $this->storeSeoAnalysisAction->execute($product, app(BuildProductSeoAnalysisInputAction::class));

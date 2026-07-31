@@ -244,4 +244,12 @@
     >
         @include('admin.catalog.products.partials.action-links')
     </x-admin.metabox>
+
+    <x-admin.metabox
+        title="مدال‌های محصول"
+        storageKey="product-medals"
+        class="overflow-visible"
+    >
+        @include('admin.catalog.products.partials.product-medals')
+    </x-admin.metabox>
 </x-admin.page>

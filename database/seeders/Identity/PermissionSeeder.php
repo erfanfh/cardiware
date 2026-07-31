@@ -50,6 +50,7 @@ class PermissionSeeder extends Seeder
                 'tag' => 'مدیریت برچسب های محصولات',
                 'attribute' => 'مدیریت ویژگی های محصولات',
                 'information' => 'مدیریت فیلدهای اطلاعات محصولات',
+                'medal' => 'مدیریت مدال‌های محصولات',
             ],
             'tag' => [
                 'manage' => 'مدیریت برچسب ها',

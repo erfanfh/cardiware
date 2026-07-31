@@ -209,6 +209,11 @@ class UpdateProductRequest extends FormRequest
             'action_links.*.title' => ['nullable', 'string', 'max:120'],
             'action_links.*.url' => ['nullable', 'string', 'max:2048'],
             'action_links.*.open_in_new_tab' => ['nullable', 'boolean'],
+
+            'medal_assignments' => ['nullable', 'array'],
+            'medal_assignments.*' => ['array'],
+            'medal_assignments.*.id' => ['nullable', 'integer', Rule::exists('product_medal_assignments', 'id')],
+            'medal_assignments.*.product_medal_id' => ['required', 'integer', 'distinct', Rule::exists('product_medals', 'id')],
         ];
     }
 

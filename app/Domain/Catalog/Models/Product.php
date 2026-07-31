@@ -20,6 +20,7 @@ use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -218,6 +219,39 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function actionLinks(): HasMany
     {
         return $this->hasMany(ProductActionLink::class)->orderBy('sort_order');
+    }
+
+    public function medalAssignments(): HasMany
+    {
+        return $this->hasMany(
+            ProductMedalAssignment::class,
+            'product_id'
+        )
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function medals(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ProductMedal::class,
+            'product_medal_assignments',
+            'product_id',
+            'product_medal_id'
+        )
+            ->using(ProductMedalAssignment::class)
+            ->withPivot([
+                'id',
+                'sort_order',
+            ])
+            ->withTimestamps()
+            ->orderByPivot('sort_order')
+            ->orderByPivot('id');
+    }
+
+    public function activeMedals(): BelongsToMany
+    {
+        return $this->medals()->where('product_medals.is_active', true);
     }
 
     public function commentsEnabled(): bool

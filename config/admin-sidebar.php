@@ -175,6 +175,12 @@ return [
                 'icon' => 'icons.sliders-horizontal',
                 'gate' => 'product.information',
             ],
+            [
+                'label' => 'مدال‌ها',
+                'route' => 'admin.products.medals.index',
+                'icon' => 'icons.medal-06',
+                'gate' => 'product.medal',
+            ],
         ],
     ],
 
