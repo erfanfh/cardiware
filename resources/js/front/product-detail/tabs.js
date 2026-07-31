@@ -13,6 +13,7 @@ export default function productTabs() {
             {id: 'installation-steps', label: 'راهنمای نصب'},
             {id: 'faqs', label: 'سوالات متداول'},
             {id: 'releases', label: 'تغییرات'},
+            {id: 'team-members', label: 'اعضای تیم'},
             {id: 'comments', label: 'دیدگاه‌ها'},
         ],
 
