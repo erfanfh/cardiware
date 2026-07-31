@@ -35,6 +35,7 @@ final class GetProductDetailAction
                 'informationEntries.field',
                 'store.picture.primaryVariant',
                 'store.picture.variants',
+                'updateProgress',
             ])
         );
     }

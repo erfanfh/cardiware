@@ -34,6 +34,7 @@ class UpdateProductAction
         protected SyncProductInformationEntriesAction $syncProductInformationEntriesAction,
         protected SyncProductSettingAction            $syncProductSettingAction,
         protected SyncProductSaleItemDiscountsAction  $syncProductSaleItemDiscountsAction,
+        protected SyncProductUpdateProgressAction     $syncProductUpdateProgressAction,
         protected SyncSeoMetaAction                   $syncSeoMetaAction,
         protected StoreSeoAnalysisAction              $storeSeoAnalysisAction,
         protected ProductCacheInvalidator             $productCacheInvalidator,
@@ -73,6 +74,7 @@ class UpdateProductAction
                 $productData['information_fields'],
                 $productData['seo'],
                 $productData['display_setting'],
+                $productData['update_progress'],
             );
 
             $product->update($productData);
@@ -99,6 +101,7 @@ class UpdateProductAction
             $this->syncProductAddonsAction->execute($product, $data['addons'] ?? []);
             $this->syncProductInformationEntriesAction->execute($product, $data['information_fields'] ?? []);
             $this->syncProductSettingAction->execute($product, $data['display_setting'] ?? []);
+            $this->syncProductUpdateProgressAction->execute($product, $data['update_progress'] ?? []);
             $this->syncProductSaleItemDiscountsAction->execute($product, $data['sale_items'] ?? []);
 
             $this->syncSeoMetaAction->execute($product, $data['seo'] ?? []);

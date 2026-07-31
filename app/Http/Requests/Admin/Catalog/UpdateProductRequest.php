@@ -196,6 +196,31 @@ class UpdateProductRequest extends FormRequest
             'display_setting' => ['nullable', 'array'],
 
             'team_members' => ['nullable', 'array'],
+
+            'update_progress' => [
+                'nullable',
+                'array',
+            ],
+
+            'update_progress.is_visible' => [
+                'nullable',
+                'boolean',
+            ],
+
+            'update_progress.progress_percentage' => [
+                'nullable',
+                'integer',
+            ],
+
+            'update_progress.started_at' => [
+                'nullable',
+                'date',
+            ],
+
+            'update_progress.release_at' => [
+                'nullable',
+                'date',
+            ],
         ];
     }
 
@@ -284,6 +309,12 @@ class UpdateProductRequest extends FormRequest
             'published_at' => $this->input('published_at')
                 ? gregorian_date($this->input('published_at'))
                 : date('Y-m-d H:i:s'),
+            'update_progress.started_at' => $this->input('update_progress.started_at')
+                ? gregorian_date($this->input('update_progress.started_at'))
+                : null,
+            'update_progress.release_at' => $this->input('update_progress.release_at')
+                ? gregorian_date($this->input('update_progress.release_at'))
+                : null,
         ]);
     }
 

@@ -136,6 +136,10 @@
             </x-admin.field>
         </x-admin.metabox>
 
+        <x-admin.metabox title="پیشرفت آپدیت محصول">
+            @include('admin.catalog.products.partials.update-progress')
+        </x-admin.metabox>
+
         <x-admin.metabox title="فیلدهای اطلاعات">
             @include('admin.catalog.products.partials.information-fields')
         </x-admin.metabox>

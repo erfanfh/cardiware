@@ -27,7 +27,7 @@
             <div data-smart-sidebar-column class="min-w-0 lg:col-span-3">
                 <aside data-smart-sidebar-box class="space-y-6">
                     <livewire:front.catalog.product-buy-box :product="$product"/>
-                    {{-- @include('front.catalog.products.partials.detail.sidebar.update-progress') --}}
+                    @include('front.catalog.products.partials.detail.sidebar.update-progress')
                     @include('front.catalog.products.partials.detail.sidebar.product-information')
                     @include('front.catalog.products.partials.detail.sidebar.store')
                     @include('front.catalog.products.partials.detail.sidebar.tags')

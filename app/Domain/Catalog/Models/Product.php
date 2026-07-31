@@ -210,6 +210,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         return $this->hasMany(PurchaseAccess::class);
     }
 
+    public function updateProgress(): HasOne
+    {
+        return $this->hasOne(ProductUpdateProgress::class);
+    }
+
     public function commentsEnabled(): bool
     {
         return true;
