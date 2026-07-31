@@ -19,6 +19,7 @@ class ProductSaleItemManifest extends Model
         'supports_update' => false,
         'supports_settings' => false,
         'supports_profiles' => false,
+        'supports_mod_manager' => false,
     ];
 
     public const DEFAULT_INSTALL_OPTIONS = [
@@ -40,7 +41,11 @@ class ProductSaleItemManifest extends Model
         'assembled_file_name',
         'validation_mode',
         'install_directory',
+        'install_folder_name',
         'requires_administrator',
+        'has_option_file',
+        'option_file_folder_name',
+        'package_root_mode',
         'main_executable_path',
         'working_directory',
         'launch_arguments',
@@ -61,6 +66,7 @@ class ProductSaleItemManifest extends Model
         'assembly_strategy' => ProductManifestAssemblyStrategyEnum::class,
         'validation_mode' => ProductManifestValidationModeEnum::class,
         'requires_administrator' => 'boolean',
+        'has_option_file' => 'boolean',
         'requires_sider' => 'boolean',
         'run_sider_as_administrator' => 'boolean',
         'capabilities' => 'array',

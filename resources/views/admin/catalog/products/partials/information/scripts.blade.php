@@ -32,6 +32,10 @@
 
                         this.saleItems = this.normalizeSaleItems(config.saleItems ?? []);
 
+                        if (this.saleItems.length === 0) {
+                            this.saleItems = this.normalizeSaleItems([{}]);
+                        }
+
                         this.simpleFiles = this.normalizeSaleItemFiles(config.simpleFiles ?? []);
 
                         this.productAddons = this.normalizeProductAddons(config.addons ?? []);
@@ -127,6 +131,8 @@
                             assembled_file_name: '',
 
                             install_directory: '',
+                            install_folder_name: '',
+                            has_option_file: false,
                             requires_administrator: false,
 
                             main_executable_path: '',
@@ -144,6 +150,8 @@
                                 supports_launch: true,
                                 supports_settings: false,
                                 supports_profiles: false,
+                                supports_update: false,
+                                supports_mod_manager: false,
                             },
 
                             install_options: {
@@ -201,6 +209,8 @@
                             assembled_file_name: source.assembled_file_name ?? '',
 
                             install_directory: source.install_directory ?? '',
+                            install_folder_name: source.install_folder_name ?? '',
+                            has_option_file: this.normalizeBoolean(source.has_option_file, false),
 
                             requires_administrator: this.normalizeBoolean(
                                 source.requires_administrator,
@@ -252,6 +262,18 @@
                                 supports_profiles:
                                     this.normalizeBoolean(
                                         capabilities.supports_profiles,
+                                        false
+                                    ),
+
+                                supports_update:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_update,
+                                        false
+                                    ),
+
+                                supports_mod_manager:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_mod_manager,
                                         false
                                     ),
                             },
@@ -447,10 +469,18 @@
                                 download_expires_in_days: item.download_expires_in_days ?? '',
                                 max_quantity_per_order: item.max_quantity_per_order ?? '',
                                 description: item.description ?? '',
+                                launcher_enabled: this.normalizeBoolean(item.launcher_enabled, false),
+                                launcher_title: item.launcher_title ?? '',
+                                launcher_excerpt: item.launcher_excerpt ?? '',
+                                launcher_cover_media_id: item.launcher_cover_media_id ?? '',
+                                launcher_sort_order: item.launcher_sort_order ?? 0,
                                 attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
                                 discount: this.normalizeSaleItemDiscount(item.discount ?? {}),
                                 files: this.normalizeSaleItemFiles(item.files ?? []),
                                 manifest: this.normalizeSaleItemManifest(item.manifest ?? {}),
+                                launcher_updates: this.normalizeLauncherUpdates(item.launcher_updates ?? []),
+                                launcher_mod_groups: this.normalizeLauncherModGroups(item.launcher_mod_groups ?? []),
+                                launcher_mods: this.normalizeLauncherMods(item.launcher_mods ?? []),
                                 /*
                                  * Existing titles should not be overwritten
                                  * automatically by variation labels.
@@ -497,10 +527,98 @@
                                 __key: file.__key ?? this.makeKey('sale-item-file'),
                                 id: file.id ?? null,
                                 title: file.title ?? '',
+                                file_name: file.file_name ?? '',
                                 url: file.url ?? '',
+                                size_bytes: file.size_bytes ?? '',
+                                sha256: file.sha256 ?? '',
+                                mime_type: file.mime_type ?? 'application/octet-stream',
+                                part_number: file.part_number ?? '',
+                                archive_group: file.archive_group ?? '',
+                                is_required: this.normalizeBoolean(file.is_required, true),
+                                is_active: this.normalizeBoolean(file.is_active, true),
                                 sort_order: file.sort_order ?? 0,
                             };
                         });
+                    },
+
+                    normalizeLauncherPackageFiles(files) {
+                        return (files ?? []).map((file) => ({
+                            __key: file.__key ?? this.makeKey('launcher-package-file'),
+                            id: file.id ?? null,
+                            title: file.title ?? '',
+                            file_name: file.file_name ?? '',
+                            url: file.url ?? '',
+                            size_bytes: file.size_bytes ?? '',
+                            sha256: file.sha256 ?? '',
+                            part_number: file.part_number ?? '',
+                            is_required: this.normalizeBoolean(file.is_required, true),
+                        }));
+                    },
+
+                    normalizeLauncherUpdates(items) {
+                        return (items ?? []).map((item) => ({
+                            __key: item.__key ?? this.makeKey('launcher-update'),
+                            id: item.id ?? null,
+                            version: item.version ?? '',
+                            title: item.title ?? '',
+                            description: item.description ?? '',
+                            changelog: item.changelog ?? '',
+                            is_enabled: this.normalizeBoolean(item.is_enabled, false),
+                            is_mandatory: this.normalizeBoolean(item.is_mandatory, false),
+                            has_option_file: this.normalizeBoolean(item.has_option_file, false),
+                            published_at: item.published_at ?? '',
+                            files: this.normalizeLauncherPackageFiles(item.files ?? []),
+                        }));
+                    },
+
+                    normalizeLauncherModGroups(items) {
+                        return (items ?? []).map((item) => ({
+                            __key: item.__key ?? this.makeKey('launcher-mod-group'),
+                            id: item.id ?? null,
+                            key: item.key ?? '',
+                            title: item.title ?? '',
+                            is_exclusive: this.normalizeBoolean(item.is_exclusive, false),
+                        }));
+                    },
+
+                    normalizeLauncherMods(items) {
+                        return (items ?? []).map((item) => ({
+                            __key: item.__key ?? this.makeKey('launcher-mod'),
+                            id: item.id ?? null,
+                            name: item.name ?? '',
+                            slug: item.slug ?? '',
+                            version: item.version ?? '',
+                            group_key: item.group_key ?? '',
+                            short_description: item.short_description ?? '',
+                            description: item.description ?? '',
+                            image_media_id: item.image_media_id ?? '',
+                            size_bytes: item.size_bytes ?? '',
+                            priority: item.priority ?? 0,
+                            is_enabled: this.normalizeBoolean(item.is_enabled, false),
+                            is_required: this.normalizeBoolean(item.is_required, false),
+                            compatible_base_versions_text: item.compatible_base_versions_text
+                                ?? (item.compatible_base_versions ?? []).join(','),
+                            compatible_update_versions_text: item.compatible_update_versions_text
+                                ?? (item.compatible_update_versions ?? []).join(','),
+                            published_at: item.published_at ?? '',
+                            files: this.normalizeLauncherPackageFiles(item.files ?? []),
+                        }));
+                    },
+
+                    addLauncherUpdate(item) {
+                        item.launcher_updates.push(this.normalizeLauncherUpdates([{}])[0]);
+                    },
+
+                    addLauncherModGroup(item) {
+                        item.launcher_mod_groups.push(this.normalizeLauncherModGroups([{}])[0]);
+                    },
+
+                    addLauncherMod(item) {
+                        item.launcher_mods.push(this.normalizeLauncherMods([{}])[0]);
+                    },
+
+                    addLauncherPackageFile(owner) {
+                        owner.files.push(this.normalizeLauncherPackageFiles([{}])[0]);
                     },
 
                     get saleItemVariationAttributes() {
@@ -580,10 +698,18 @@
                             download_expires_in_days: payload.download_expires_in_days ?? '',
                             max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
+                            launcher_enabled: this.normalizeBoolean(payload.launcher_enabled, false),
+                            launcher_title: payload.launcher_title ?? '',
+                            launcher_excerpt: payload.launcher_excerpt ?? '',
+                            launcher_cover_media_id: payload.launcher_cover_media_id ?? '',
+                            launcher_sort_order: payload.launcher_sort_order ?? 0,
                             attribute_values: this.normalizeSaleItemAttributeValues(payload.attribute_values ?? {}),
                             discount: this.normalizeSaleItemDiscount(payload.discount ?? {}),
                             files: this.normalizeSaleItemFiles(payload.files ?? []),
                             manifest: this.normalizeSaleItemManifest(payload.manifest ?? {}),
+                            launcher_updates: this.normalizeLauncherUpdates(payload.launcher_updates ?? []),
+                            launcher_mod_groups: this.normalizeLauncherModGroups(payload.launcher_mod_groups ?? []),
+                            launcher_mods: this.normalizeLauncherMods(payload.launcher_mods ?? []),
                             title_manually_changed: this.normalizeBoolean(payload.title_manually_changed, false),
                             title_auto_generated: this.normalizeBoolean(payload.title_auto_generated, false),
                             _open: true,
@@ -622,7 +748,15 @@
                             __key: this.makeKey('sale-item-file'),
                             id: null,
                             title: '',
+                            file_name: '',
                             url: '',
+                            size_bytes: '',
+                            sha256: '',
+                            mime_type: 'application/octet-stream',
+                            part_number: '',
+                            archive_group: '',
+                            is_required: true,
+                            is_active: true,
                             sort_order: item.files.length,
                         });
                     },

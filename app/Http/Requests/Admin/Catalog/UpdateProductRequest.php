@@ -110,6 +110,11 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.download_expires_in_days' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.description' => ['nullable', 'string'],
+            'sale_items.*.launcher_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.launcher_excerpt' => ['nullable', 'string', 'max:2000'],
+            'sale_items.*.launcher_cover_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'sale_items.*.launcher_sort_order' => ['nullable', 'integer', 'min:0'],
 
             /*
             |--------------------------------------------------------------------------
@@ -123,11 +128,17 @@ class UpdateProductRequest extends FormRequest
             ],
             'sale_items.*.manifest.archive_format' => [
                 'nullable',
-                Rule::in(['7z', 'rar', 'zip']),
+                Rule::in(['7z']),
             ],
             'sale_items.*.manifest.assembled_file_name' => ['nullable', 'string', 'max:255'],
             'sale_items.*.manifest.install_directory' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.install_folder_name' => [
+                'nullable', 'string', 'max:150',
+                'not_regex:/[\\\\\/:*?"<>|]/',
+                'not_in:.,..',
+            ],
             'sale_items.*.manifest.requires_administrator' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.has_option_file' => ['nullable', 'boolean'],
             'sale_items.*.manifest.main_executable_path' => ['nullable', 'string', 'max:500'],
             'sale_items.*.manifest.working_directory' => ['nullable', 'string', 'max:500'],
             'sale_items.*.manifest.launch_arguments' => ['nullable', 'string', 'max:2000'],
@@ -147,6 +158,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.capabilities.supports_launch' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_settings' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_profiles' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_update' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_mod_manager' => ['nullable', 'boolean'],
 
             /*
             |--------------------------------------------------------------------------
@@ -176,7 +189,74 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.files.*.id' => ['nullable', 'integer', 'exists:product_sale_item_files,id'],
             'sale_items.*.files.*.title' => ['nullable', 'string', 'max:255'],
             'sale_items.*.files.*.url' => ['nullable', 'url', 'max:2048'],
+            'sale_items.*.files.*.file_name' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.files.*.size_bytes' => ['nullable', 'integer', 'min:1'],
+            'sale_items.*.files.*.sha256' => ['nullable', 'regex:/^[a-fA-F0-9]{64}$/'],
+            'sale_items.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.files.*.part_number' => ['nullable', 'integer', 'min:1'],
+            'sale_items.*.files.*.archive_group' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.files.*.is_required' => ['nullable', 'boolean'],
+            'sale_items.*.files.*.is_active' => ['nullable', 'boolean'],
             'sale_items.*.files.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'sale_items.*.launcher_updates' => ['nullable', 'array'],
+            'sale_items.*.launcher_updates.*.id' => ['nullable', 'integer'],
+            'sale_items.*.launcher_updates.*.version' => ['required_with:sale_items.*.launcher_updates', 'string', 'max:50'],
+            'sale_items.*.launcher_updates.*.title' => ['required_with:sale_items.*.launcher_updates', 'string', 'max:255'],
+            'sale_items.*.launcher_updates.*.description' => ['nullable', 'string'],
+            'sale_items.*.launcher_updates.*.changelog' => ['nullable', 'string'],
+            'sale_items.*.launcher_updates.*.is_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_updates.*.is_mandatory' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_updates.*.has_option_file' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_updates.*.published_at' => ['nullable', 'date'],
+            'sale_items.*.launcher_updates.*.files' => ['nullable', 'array'],
+            'sale_items.*.launcher_updates.*.files.*.id' => ['nullable', 'integer'],
+            'sale_items.*.launcher_updates.*.files.*.title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.launcher_updates.*.files.*.file_name' => ['required_with:sale_items.*.launcher_updates.*.files', 'string', 'max:255', 'not_regex:/[\\\\\/]/', 'regex:/\.7z(?:\.\d{3})?$/i'],
+            'sale_items.*.launcher_updates.*.files.*.url' => ['required_with:sale_items.*.launcher_updates.*.files', 'url:https', 'max:2048'],
+            'sale_items.*.launcher_updates.*.files.*.size_bytes' => ['required_with:sale_items.*.launcher_updates.*.files', 'integer', 'min:1'],
+            'sale_items.*.launcher_updates.*.files.*.sha256' => ['required_with:sale_items.*.launcher_updates.*.files', 'regex:/^[a-fA-F0-9]{64}$/'],
+            'sale_items.*.launcher_updates.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.launcher_updates.*.files.*.part_number' => ['nullable', 'integer', 'min:1'],
+            'sale_items.*.launcher_updates.*.files.*.is_required' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_updates.*.files.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
+            'sale_items.*.launcher_mod_groups' => ['nullable', 'array'],
+            'sale_items.*.launcher_mod_groups.*.id' => ['nullable', 'integer'],
+            'sale_items.*.launcher_mod_groups.*.key' => ['required_with:sale_items.*.launcher_mod_groups', 'alpha_dash', 'max:100'],
+            'sale_items.*.launcher_mod_groups.*.title' => ['required_with:sale_items.*.launcher_mod_groups', 'string', 'max:255'],
+            'sale_items.*.launcher_mod_groups.*.is_exclusive' => ['nullable', 'boolean'],
+
+            'sale_items.*.launcher_mods' => ['nullable', 'array'],
+            'sale_items.*.launcher_mods.*.id' => ['nullable', 'integer'],
+            'sale_items.*.launcher_mods.*.name' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:255'],
+            'sale_items.*.launcher_mods.*.slug' => ['required_with:sale_items.*.launcher_mods', 'alpha_dash', 'max:255'],
+            'sale_items.*.launcher_mods.*.version' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:50'],
+            'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
+            'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],
+            'sale_items.*.launcher_mods.*.description' => ['nullable', 'string'],
+            'sale_items.*.launcher_mods.*.image_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'sale_items.*.launcher_mods.*.priority' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.launcher_mods.*.is_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_mods.*.is_required' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_mods.*.compatible_base_versions' => ['nullable', 'array'],
+            'sale_items.*.launcher_mods.*.compatible_base_versions.*' => ['string', 'max:50'],
+            'sale_items.*.launcher_mods.*.compatible_update_versions' => ['nullable', 'array'],
+            'sale_items.*.launcher_mods.*.compatible_update_versions.*' => ['string', 'max:50'],
+            'sale_items.*.launcher_mods.*.compatible_base_versions_text' => ['nullable', 'string', 'max:1000'],
+            'sale_items.*.launcher_mods.*.compatible_update_versions_text' => ['nullable', 'string', 'max:1000'],
+            'sale_items.*.launcher_mods.*.published_at' => ['nullable', 'date'],
+            'sale_items.*.launcher_mods.*.files' => ['nullable', 'array'],
+            'sale_items.*.launcher_mods.*.files.*.id' => ['nullable', 'integer'],
+            'sale_items.*.launcher_mods.*.files.*.title' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.launcher_mods.*.files.*.file_name' => ['required_with:sale_items.*.launcher_mods.*.files', 'string', 'max:255', 'not_regex:/[\\\\\/]/', 'regex:/\.7z(?:\.\d{3})?$/i'],
+            'sale_items.*.launcher_mods.*.files.*.url' => ['required_with:sale_items.*.launcher_mods.*.files', 'url:https', 'max:2048'],
+            'sale_items.*.launcher_mods.*.files.*.size_bytes' => ['required_with:sale_items.*.launcher_mods.*.files', 'integer', 'min:1'],
+            'sale_items.*.launcher_mods.*.files.*.sha256' => ['required_with:sale_items.*.launcher_mods.*.files', 'regex:/^[a-fA-F0-9]{64}$/'],
+            'sale_items.*.launcher_mods.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.launcher_mods.*.files.*.part_number' => ['nullable', 'integer', 'min:1'],
+            'sale_items.*.launcher_mods.*.files.*.is_required' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_mods.*.files.*.sort_order' => ['nullable', 'integer', 'min:0'],
 
             'addons' => ['nullable', 'array'],
 
@@ -197,6 +277,157 @@ class UpdateProductRequest extends FormRequest
 
             'team_members' => ['nullable', 'array'],
         ];
+    }
+
+    /**
+     * Launcher publication is intentionally stricter than normal website
+     * products: the Windows client must never receive an incomplete package.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator): void {
+            foreach ((array)$this->input('sale_items', []) as $index => $item) {
+                if (!filter_var($item['launcher_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                    continue;
+                }
+
+                $prefix = "sale_items.{$index}";
+                $manifest = (array)($item['manifest'] ?? []);
+                $files = array_values(array_filter(
+                    (array)($item['files'] ?? []),
+                    static fn(mixed $file): bool =>
+                        is_array($file)
+                        && filter_var($file['is_active'] ?? true, FILTER_VALIDATE_BOOLEAN)
+                ));
+
+                if (blank($item['launcher_title'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.launcher_title",
+                        'عنوان محصول در لانچر الزامی است.'
+                    );
+                }
+
+                if (blank($item['version'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.version",
+                        'نسخه محصول برای انتشار در لانچر الزامی است.'
+                    );
+                }
+
+                if (blank($manifest['install_folder_name'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.install_folder_name",
+                        'نام پوشه نصب لانچر الزامی است.'
+                    );
+                }
+
+                if ($files === []) {
+                    $validator->errors()->add(
+                        "{$prefix}.files",
+                        'حداقل یک فایل فعال 7z برای لانچر وارد کنید.'
+                    );
+                }
+
+                foreach ($files as $fileIndex => $file) {
+                    foreach (['file_name', 'url', 'size_bytes', 'sha256'] as $field) {
+                        if (blank($file[$field] ?? null)) {
+                            $validator->errors()->add(
+                                "{$prefix}.files.{$fileIndex}.{$field}",
+                                'این مشخصه فایل برای انتشار در لانچر الزامی است.'
+                            );
+                        }
+                    }
+
+                    if (filled($file['file_name'] ?? null)
+                        && preg_match('/\.7z(?:\.\d{3})?$/i', (string)$file['file_name']) !== 1) {
+                        $validator->errors()->add(
+                            "{$prefix}.files.{$fileIndex}.file_name",
+                            'نام فایل باید با .7z یا شماره پارت مانند .7z.001 پایان یابد.'
+                        );
+                    }
+
+                    if (filled($file['file_name'] ?? null)
+                        && basename(str_replace('\\', '/', (string)$file['file_name']))
+                            !== (string)$file['file_name']) {
+                        $validator->errors()->add(
+                            "{$prefix}.files.{$fileIndex}.file_name",
+                            'نام فایل نباید شامل مسیر پوشه باشد.'
+                        );
+                    }
+
+                    if (filled($file['url'] ?? null)
+                        && strtolower((string)parse_url((string)$file['url'], PHP_URL_SCHEME)) !== 'https') {
+                        $validator->errors()->add(
+                            "{$prefix}.files.{$fileIndex}.url",
+                            'URL فایل لانچر باید HTTPS باشد.'
+                        );
+                    }
+                }
+
+                if (filter_var(
+                    data_get($manifest, 'capabilities.supports_launch', true),
+                    FILTER_VALIDATE_BOOLEAN
+                ) && blank($manifest['main_executable_path'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.main_executable_path",
+                        'مسیر فایل اجرایی محصول الزامی است.'
+                    );
+                }
+
+                if (filter_var($manifest['requires_sider'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                    && blank($manifest['sider_executable_path'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.sider_executable_path",
+                        'وقتی اجرای Sider فعال است، مسیر فایل اجرایی آن الزامی است.'
+                    );
+                }
+
+                foreach ([
+                    'main_executable_path',
+                    'working_directory',
+                    'sider_executable_path',
+                    'sider_working_directory',
+                ] as $pathField) {
+                    $path = $manifest[$pathField] ?? null;
+
+                    if (filled($path) && !$this->isSafeRelativeWindowsPath((string)$path)) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.{$pathField}",
+                            'مسیر باید نسبی و داخل پوشه محصول باشد.'
+                        );
+                    }
+                }
+
+                foreach (['launcher_updates' => 'آپدیت', 'launcher_mods' => 'ماد'] as $collection => $label) {
+                    foreach ((array)($item[$collection] ?? []) as $contentIndex => $content) {
+                        if (is_array($content)
+                            && filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                            && empty($content['files'])) {
+                            $validator->errors()->add(
+                                "{$prefix}.{$collection}.{$contentIndex}.files",
+                                "برای {$label} فعال حداقل یک فایل 7z لازم است."
+                            );
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private function isSafeRelativeWindowsPath(string $path): bool
+    {
+        $normalized = str_replace('\\', '/', trim($path));
+
+        if ($normalized === '' || $normalized === '.') {
+            return true;
+        }
+
+        if (str_starts_with($normalized, '/')
+            || preg_match('/^[a-zA-Z]:/', $normalized) === 1) {
+            return false;
+        }
+
+        return !in_array('..', explode('/', $normalized), true);
     }
 
     /**
@@ -316,6 +547,11 @@ class UpdateProductRequest extends FormRequest
                 $item['download_expires_in_days'] = $this->normalizeIntegerInput(data_get($item, 'download_expires_in_days'));
                 $item['max_quantity_per_order'] = $this->normalizeIntegerInput(data_get($item, 'max_quantity_per_order'));
                 $item['description'] = $this->normalizeNullableStringInput(data_get($item, 'description'));
+                $item['launcher_enabled'] = $this->normalizeBooleanInput(data_get($item, 'launcher_enabled'), false);
+                $item['launcher_title'] = $this->normalizeNullableStringInput(data_get($item, 'launcher_title'), 255);
+                $item['launcher_excerpt'] = $this->normalizeNullableStringInput(data_get($item, 'launcher_excerpt'), 2000);
+                $item['launcher_cover_media_id'] = $this->normalizeIntegerInput(data_get($item, 'launcher_cover_media_id'));
+                $item['launcher_sort_order'] = $this->normalizeIntegerInput(data_get($item, 'launcher_sort_order')) ?? 0;
                 $item['sort_order'] = $this->normalizeIntegerInput(data_get($item, 'sort_order')) ?? 0;
                 $item['discount'] = [
                     'id' => filled(data_get($discount, 'id')) ? $this->normalizeIntegerInput(data_get($discount, 'id')) : null,
@@ -327,6 +563,19 @@ class UpdateProductRequest extends FormRequest
                     'special_box_description' => $this->normalizeNullableStringInput(data_get($discount, 'special_box_description'), 1000),
                 ];
                 $item['manifest'] = $this->normalizeManifestInput(data_get($item, 'manifest'));
+                $item['launcher_mods'] = collect(data_get($item, 'launcher_mods', []))
+                    ->filter(fn($mod) => is_array($mod))
+                    ->map(function (array $mod): array {
+                        $mod['compatible_base_versions'] = $this->versionList(
+                            $mod['compatible_base_versions_text'] ?? $mod['compatible_base_versions'] ?? []
+                        );
+                        $mod['compatible_update_versions'] = $this->versionList(
+                            $mod['compatible_update_versions_text'] ?? $mod['compatible_update_versions'] ?? []
+                        );
+                        return $mod;
+                    })
+                    ->values()
+                    ->all();
 
                 return $item;
             })
@@ -363,7 +612,9 @@ class UpdateProductRequest extends FormRequest
             'archive_format' => $this->normalizeArchiveFormatInput(data_get($manifest, 'archive_format')),
             'assembled_file_name' => $this->normalizeNullableStringInput(data_get($manifest, 'assembled_file_name'), 255),
             'install_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'install_directory'), 500),
+            'install_folder_name' => $this->normalizeNullableStringInput(data_get($manifest, 'install_folder_name'), 150),
             'requires_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'requires_administrator'), false),
+            'has_option_file' => $this->normalizeBooleanInput(data_get($manifest, 'has_option_file'), false),
             'main_executable_path' => $this->normalizeNullableStringInput(data_get($manifest, 'main_executable_path'), 500),
             'working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'working_directory'), 500) ?? '.',
             'launch_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'launch_arguments'), 2000),
@@ -377,6 +628,8 @@ class UpdateProductRequest extends FormRequest
                 'supports_launch' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_launch'), true),
                 'supports_settings' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_settings'), false),
                 'supports_profiles' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_profiles'), false),
+                'supports_update' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_update'), false),
+                'supports_mod_manager' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_mod_manager'), false),
             ],
             'install_options' => [
                 'extract_enabled' => $this->normalizeBooleanInput(data_get($installOptions, 'extract_enabled'), true),
@@ -403,6 +656,20 @@ class UpdateProductRequest extends FormRequest
         ) ? $value : null;
     }
 
+    private function versionList(mixed $value): array
+    {
+        $values = is_array($value)
+            ? $value
+            : preg_split('/[\s,،]+/u', (string)$value, -1, PREG_SPLIT_NO_EMPTY);
+
+        return collect($values)
+            ->map(fn($version) => trim((string)$version))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+    }
+
     private function normalizeArchiveFormatInput(mixed $value): ?string
     {
         $value = strtolower(trim((string)$value));
@@ -411,8 +678,6 @@ class UpdateProductRequest extends FormRequest
             $value,
             [
                 '7z',
-                'rar',
-                'zip',
             ],
             true
         ) ? $value : null;

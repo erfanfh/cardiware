@@ -1,0 +1,47 @@
+{
+  "data": {
+    "schema_version": 1,
+    "manifest_revision": 3,
+    "manifest_id": "6.0.0+3",
+    "sale_item": {
+      "id": 42,
+      "title": "PGL 6 — فصل ۲۰۲۶/۲۰۲۷",
+      "edition_key": "full-season",
+      "version": "6.0.0"
+    },
+    "download": {
+      "type": "split_archive",
+      "assembly_strategy": "ordered",
+      "archive_format": "7z",
+      "assembled_file_name": "pgl6.7z",
+      "validation_mode": "per_file",
+      "total_size_bytes": 46170898432,
+      "files": [
+        {
+          "file_id": 81,
+          "file_name": "pgl6.7z.001",
+          "size_bytes": 4294967296,
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "part_number": 1,
+          "is_required": true,
+          "order": 0
+        }
+      ]
+    },
+    "installation": {
+      "install_folder_name": "PGLV6 S2026-2027",
+      "merge_mode": "merge_to_product_root",
+      "option_file": {
+        "enabled": true,
+        "folder_name": "OPTION FILE",
+        "target": "windows_documents"
+      },
+      "ask_before_delete_archives": true
+    },
+    "launch": {
+      "main_executable_path": "PES2021.exe",
+      "requires_sider": true,
+      "sider_executable_path": "sider.exe"
+    }
+  }
+}

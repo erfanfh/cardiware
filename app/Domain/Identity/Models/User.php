@@ -9,6 +9,7 @@ use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Support\Models\Ticket;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -129,6 +130,11 @@ class User extends Authenticatable
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function launcherDevices(): HasMany
+    {
+        return $this->hasMany(LauncherDevice::class);
     }
 
     public function tickets(): HasMany

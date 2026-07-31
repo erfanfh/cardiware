@@ -74,11 +74,9 @@ class SyncProductSaleItemManifestAction
                         ? ProductManifestAssemblyStrategyEnum::ORDERED->value
                         : ProductManifestAssemblyStrategyEnum::INDEPENDENT->value,
 
-                'archive_format' => $this->resolveArchiveFormat(
-                    data: $data,
-                    saleItem: $saleItem,
-                    downloadType: $downloadType,
-                ),
+                'archive_format' => $saleItem->files->isNotEmpty()
+                    ? '7z'
+                    : null,
 
                 'assembled_file_name' =>
                     $this->resolveAssembledFileName(
@@ -87,15 +85,19 @@ class SyncProductSaleItemManifestAction
                         downloadType: $downloadType,
                     ),
 
-                /*
-                 * SHA-256 is not available yet, so verification
-                 * must remain disabled.
-                 */
-                'validation_mode' =>
-                    ProductManifestValidationModeEnum::NONE->value,
+                'validation_mode' => $saleItem->files->isNotEmpty()
+                    && $saleItem->files->every(
+                        fn(ProductSaleItemFile $file): bool =>
+                            preg_match('/^[a-fA-F0-9]{64}$/', (string)$file->sha256) === 1
+                    )
+                    ? ProductManifestValidationModeEnum::PER_FILE->value
+                    : ProductManifestValidationModeEnum::NONE->value,
 
                 'install_directory' => $this->nullableString(
                     Arr::get($data, 'install_directory')
+                ),
+                'install_folder_name' => $this->nullableString(
+                    Arr::get($data, 'install_folder_name')
                 ),
 
                 'requires_administrator' => $this->toBoolean(
@@ -105,6 +107,11 @@ class SyncProductSaleItemManifestAction
                         false
                     )
                 ),
+                'has_option_file' => $this->toBoolean(
+                    Arr::get($data, 'has_option_file', false)
+                ),
+                'option_file_folder_name' => 'OPTION FILE',
+                'package_root_mode' => 'merge_to_product_root',
 
                 'main_executable_path' =>
                     $mainExecutablePath,
@@ -186,9 +193,9 @@ class SyncProductSaleItemManifestAction
 
         $fileNames = $saleItem->files
             ->map(
-                fn(ProductSaleItemFile $file): ?string => $this->resolveFileNameFromUrl(
-                    $file->url
-                )
+                fn(ProductSaleItemFile $file): ?string =>
+                    $this->nullableString($file->file_name)
+                    ?: $this->resolveFileNameFromUrl($file->url)
             )
             ->filter();
 
@@ -230,7 +237,7 @@ class SyncProductSaleItemManifestAction
         if (
             in_array(
                 $submittedFormat,
-                ['7z', 'rar', 'zip'],
+                ['7z'],
                 true
             )
         ) {
@@ -257,7 +264,7 @@ class SyncProductSaleItemManifestAction
 
         return in_array(
             $extension,
-            ['7z', 'rar', 'zip'],
+            ['7z'],
             true
         )
             ? $extension
@@ -296,9 +303,8 @@ class SyncProductSaleItemManifestAction
             return null;
         }
 
-        $fileName = $this->resolveFileNameFromUrl(
-            $firstFile->url
-        );
+        $fileName = $this->nullableString($firstFile->file_name)
+            ?: $this->resolveFileNameFromUrl($firstFile->url);
 
         if ($fileName === null) {
             return null;
@@ -342,13 +348,14 @@ class SyncProductSaleItemManifestAction
             'supports_launch' => $supportsLaunch,
             'supports_sider' => $supportsSider,
 
-            /*
-             * These capabilities require checksums or concepts
-             * that are not implemented yet.
-             */
-            'supports_verify' => false,
+            'supports_verify' => $hasFiles,
             'supports_repair' => false,
-            'supports_update' => false,
+            'supports_update' => $this->toBoolean(
+                $value['supports_update'] ?? false
+            ),
+            'supports_mod_manager' => $this->toBoolean(
+                $value['supports_mod_manager'] ?? false
+            ),
 
             'supports_settings' => $this->toBoolean(
                 $value['supports_settings'] ?? false

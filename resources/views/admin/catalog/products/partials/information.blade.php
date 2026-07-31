@@ -133,7 +133,9 @@
         'assembled_file_name' => '',
 
         'install_directory' => '',
+        'install_folder_name' => '',
         'requires_administrator' => false,
+        'has_option_file' => false,
 
         'main_executable_path' => '',
         'working_directory' => '.',
@@ -150,6 +152,8 @@
             'supports_launch' => true,
             'supports_settings' => false,
             'supports_profiles' => false,
+            'supports_update' => false,
+            'supports_mod_manager' => false,
         ],
 
         'install_options' => [
@@ -184,6 +188,8 @@
                 'assembled_file_name' => $manifest->assembled_file_name ?? '',
 
                 'install_directory' => $manifest->install_directory ?? '',
+                'install_folder_name' => $manifest->install_folder_name ?? '',
+                'has_option_file' => (bool) $manifest->has_option_file,
 
                 'requires_administrator' => (bool) $manifest->requires_administrator,
 
@@ -216,6 +222,10 @@
             'discount',
             'manifest',
             'files' => fn ($query) => $query->orderBy('sort_order'),
+            'launcherUpdates.files',
+            'launcherModGroups',
+            'launcherMods.files',
+            'launcherMods.group',
 
             'attributeValues.globalValue.attribute',
             'attributeValues.customValue.customAttribute',
@@ -255,6 +265,11 @@
                 'download_expires_in_days' => $saleItem->download_expires_in_days,
                 'max_quantity_per_order' => $saleItem->max_quantity_per_order,
                 'description' => $saleItem->description,
+                'launcher_enabled' => (bool) $saleItem->launcher_enabled,
+                'launcher_title' => $saleItem->launcher_title,
+                'launcher_excerpt' => $saleItem->launcher_excerpt,
+                'launcher_cover_media_id' => $saleItem->launcher_cover_media_id,
+                'launcher_sort_order' => (int) $saleItem->launcher_sort_order,
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,
                 'discount' => [
@@ -274,7 +289,15 @@
                     ->map(fn ($file) => [
                         'id' => $file->id,
                         'title' => $file->title,
+                        'file_name' => $file->file_name,
                         'url' => $file->url,
+                        'size_bytes' => $file->size_bytes,
+                        'sha256' => $file->sha256,
+                        'mime_type' => $file->mime_type,
+                        'part_number' => $file->part_number,
+                        'archive_group' => $file->archive_group,
+                        'is_required' => (bool) $file->is_required,
+                        'is_active' => (bool) $file->is_active,
                         'sort_order' => (int) $file->sort_order,
                     ])
                     ->values()
@@ -282,6 +305,60 @@
                 'manifest' => $makeSaleItemManifestFormData(
                     $saleItem
                 ),
+                'launcher_updates' => $saleItem->launcherUpdates->map(fn ($update) => [
+                    'id' => $update->id,
+                    'version' => $update->version,
+                    'title' => $update->title,
+                    'description' => $update->description,
+                    'changelog' => $update->changelog,
+                    'is_enabled' => (bool) $update->is_enabled,
+                    'is_mandatory' => (bool) $update->is_mandatory,
+                    'has_option_file' => (bool) $update->has_option_file,
+                    'published_at' => $update->published_at?->format('Y-m-d H:i:s'),
+                    'files' => $update->files->map(fn ($file) => [
+                        'id' => $file->id,
+                        'title' => $file->title,
+                        'file_name' => $file->file_name,
+                        'url' => $file->url,
+                        'size_bytes' => $file->size_bytes,
+                        'sha256' => $file->sha256,
+                        'part_number' => $file->part_number,
+                        'is_required' => (bool) $file->is_required,
+                    ])->values()->all(),
+                ])->values()->all(),
+                'launcher_mod_groups' => $saleItem->launcherModGroups->map(fn ($group) => [
+                    'id' => $group->id,
+                    'key' => $group->key,
+                    'title' => $group->title,
+                    'is_exclusive' => (bool) $group->is_exclusive,
+                ])->values()->all(),
+                'launcher_mods' => $saleItem->launcherMods->map(fn ($mod) => [
+                    'id' => $mod->id,
+                    'name' => $mod->name,
+                    'slug' => $mod->slug,
+                    'version' => $mod->version,
+                    'group_key' => $mod->group?->key,
+                    'short_description' => $mod->short_description,
+                    'description' => $mod->description,
+                    'image_media_id' => $mod->image_media_id,
+                    'size_bytes' => $mod->size_bytes,
+                    'priority' => $mod->priority,
+                    'is_enabled' => (bool) $mod->is_enabled,
+                    'is_required' => (bool) $mod->is_required,
+                    'compatible_base_versions_text' => implode(',', $mod->compatible_base_versions ?? []),
+                    'compatible_update_versions_text' => implode(',', $mod->compatible_update_versions ?? []),
+                    'published_at' => $mod->published_at?->format('Y-m-d H:i:s'),
+                    'files' => $mod->files->map(fn ($file) => [
+                        'id' => $file->id,
+                        'title' => $file->title,
+                        'file_name' => $file->file_name,
+                        'url' => $file->url,
+                        'size_bytes' => $file->size_bytes,
+                        'sha256' => $file->sha256,
+                        'part_number' => $file->part_number,
+                        'is_required' => (bool) $file->is_required,
+                    ])->values()->all(),
+                ])->values()->all(),
             ];
         })
         ->values()

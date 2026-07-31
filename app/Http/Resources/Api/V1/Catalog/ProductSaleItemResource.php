@@ -16,6 +16,10 @@ class ProductSaleItemResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
+            'title' => $this->title,
+            'edition_key' => $this->edition_key,
+            'version' => $this->version,
+            'launcher_enabled' => $this->launcher_enabled,
 
             'status' => $this->status->value,
             'is_available' => $this->isPurchasable(),

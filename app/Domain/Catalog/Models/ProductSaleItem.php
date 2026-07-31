@@ -8,6 +8,10 @@ use App\Application\Commerce\Contracts\Purchasable;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Launcher\Models\LauncherMod;
+use App\Domain\Launcher\Models\LauncherModGroup;
+use App\Domain\Launcher\Models\LauncherUpdate;
+use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -28,6 +32,11 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'edition_key',
         'version',
         'manifest_revision',
+        'launcher_enabled',
+        'launcher_title',
+        'launcher_excerpt',
+        'launcher_cover_media_id',
+        'launcher_sort_order',
         'base_price',
         'status',
         'download_limit',
@@ -39,6 +48,9 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
 
     protected $casts = [
         'manifest_revision' => 'integer',
+        'launcher_enabled' => 'boolean',
+        'launcher_cover_media_id' => 'integer',
+        'launcher_sort_order' => 'integer',
         'base_price' => 'integer',
         'download_limit' => 'integer',
         'download_expires_in_days' => 'integer',
@@ -213,5 +225,25 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function manifest(): HasOne
     {
         return $this->hasOne(ProductSaleItemManifest::class);
+    }
+
+    public function launcherUpdates(): HasMany
+    {
+        return $this->hasMany(LauncherUpdate::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function launcherModGroups(): HasMany
+    {
+        return $this->hasMany(LauncherModGroup::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function launcherMods(): HasMany
+    {
+        return $this->hasMany(LauncherMod::class)->orderBy('priority')->orderBy('id');
+    }
+
+    public function launcherCover(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'launcher_cover_media_id');
     }
 }

@@ -16,7 +16,17 @@ class LoginRequest extends FormRequest
         return [
             'login' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'max:255'],
-            'device_name' => ['nullable', 'string', 'max:255'],
+            'device' => ['required', 'array'],
+            'device.id' => ['required', 'uuid'],
+            'device.name' => ['required', 'string', 'max:255'],
+            'device.fingerprint_hash' => ['required', 'regex:/^[a-f0-9]{64}$/'],
+            'device.platform' => ['required', 'in:windows'],
+            'device.app_version' => [
+                'required',
+                'string',
+                'max:30',
+                'regex:/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/',
+            ],
         ];
     }
 
@@ -25,7 +35,9 @@ class LoginRequest extends FormRequest
         return [
             'login' => 'ایمیل یا موبایل',
             'password' => 'رمز عبور',
-            'device_name' => 'نام دستگاه',
+            'device' => 'دستگاه',
+            'device.id' => 'شناسه دستگاه',
+            'device.name' => 'نام دستگاه',
         ];
     }
 
@@ -45,9 +57,15 @@ class LoginRequest extends FormRequest
                 'example' => 'StrongPassword123!',
             ],
 
-            'device_name' => [
-                'description' => 'A human-readable name identifying the Windows device.',
-                'example' => 'My Desktop PC',
+            'device' => [
+                'description' => 'Stable Windows launcher device identity.',
+                'example' => [
+                    'id' => '7e02c735-794f-4c63-ae2e-98dbf5d1d4ab',
+                    'name' => 'My Desktop PC',
+                    'fingerprint_hash' => null,
+                    'platform' => 'windows',
+                    'app_version' => '1.0.0',
+                ],
             ],
         ];
     }

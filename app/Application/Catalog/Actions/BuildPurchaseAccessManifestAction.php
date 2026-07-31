@@ -20,12 +20,13 @@ class BuildPurchaseAccessManifestAction
     {
         $purchaseAccess->loadMissing([
             'product:id,title,slug',
-            'productSaleItem:id,product_id,sku,title,edition_key,version,manifest_revision',
+            'productSaleItem:id,product_id,sku,title,edition_key,version,manifest_revision,launcher_title,launcher_excerpt',
             'productSaleItem.manifest',
             'productSaleItem.files' => function (
                 HasMany $relation,
             ): void {
                 $relation
+                    ->where('is_active', true)
                     ->orderBy('sort_order')
                     ->orderBy('id');
             },
@@ -96,7 +97,8 @@ class BuildPurchaseAccessManifestAction
             'sale_item' => [
                 'id' => $saleItem->id,
                 'sku' => $saleItem->sku,
-                'title' => $saleItem->title,
+                'title' => $saleItem->launcher_title ?: $saleItem->title,
+                'excerpt' => $saleItem->launcher_excerpt,
                 'edition_key' => $saleItem->edition_key,
                 'version' => $saleItem->version,
             ],
@@ -120,7 +122,14 @@ class BuildPurchaseAccessManifestAction
 
                             'title' => $file->title,
 
-                            'file_name' => $file->title ?? "file-{$file->id}",
+                            'file_name' => $file->file_name
+                                ?: ($file->title ?? "file-{$file->id}"),
+                            'size_bytes' => $file->size_bytes,
+                            'sha256' => strtolower((string)$file->sha256),
+                            'mime_type' => $file->mime_type,
+                            'part_number' => $file->part_number,
+                            'archive_group' => $file->archive_group,
+                            'is_required' => $file->is_required,
 
                             /*
                              * sort_order is the actual download and
@@ -134,8 +143,15 @@ class BuildPurchaseAccessManifestAction
             ],
 
             'installation' => [
-                'install_directory' => $manifest->install_directory,
+                'install_folder_name' => $manifest->install_folder_name
+                    ?: $manifest->install_directory,
                 'requires_administrator' => $manifest->requires_administrator,
+                'merge_mode' => $manifest->package_root_mode,
+                'option_file' => [
+                    'enabled' => $manifest->has_option_file,
+                    'folder_name' => $manifest->option_file_folder_name ?: 'OPTION FILE',
+                    'target' => 'windows_documents',
+                ],
                 ...$installOptions,
             ],
 
@@ -209,6 +225,14 @@ class BuildPurchaseAccessManifestAction
             );
         }
 
+        if ($capabilities['supports_install']
+            && blank($manifest->install_folder_name)
+            && blank($manifest->install_directory)) {
+            throw new ProductManifestUnavailableException(
+                'Install is enabled, but the install folder name is missing.'
+            );
+        }
+
         if ($capabilities['supports_launch'] && blank($manifest->main_executable_path)) {
             throw new ProductManifestUnavailableException(
                 'Launch is enabled, but the main executable path is missing.'
@@ -222,7 +246,7 @@ class BuildPurchaseAccessManifestAction
         }
 
         foreach ($files as $file) {
-            if (blank($file->title)) {
+            if (blank($file->file_name)) {
                 throw new ProductManifestUnavailableException(
                     "File {$file->id} does not have a file name."
                 );
@@ -248,6 +272,12 @@ class BuildPurchaseAccessManifestAction
         if (blank($manifest->archive_format)) {
             throw new ProductManifestUnavailableException(
                 'Split archive format has not been configured.'
+            );
+        }
+
+        if (strtolower((string)$manifest->archive_format) !== '7z') {
+            throw new ProductManifestUnavailableException(
+                'MW Launcher only accepts 7z packages.'
             );
         }
 

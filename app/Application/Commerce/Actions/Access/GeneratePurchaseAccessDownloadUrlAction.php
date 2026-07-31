@@ -15,6 +15,7 @@ class GeneratePurchaseAccessDownloadUrlAction
         PurchaseAccess      $purchaseAccess,
         ProductSaleItemFile $file,
         int                 $expiresInMinutes = 10,
+        bool                $alreadyRecorded = false,
     ): string
     {
         return URL::temporarySignedRoute(
@@ -23,6 +24,7 @@ class GeneratePurchaseAccessDownloadUrlAction
             parameters: [
                 'purchaseAccess' => $purchaseAccess->id,
                 'file' => $file->id,
+                'prepared' => $alreadyRecorded ? 1 : 0,
             ],
         );
     }

@@ -56,6 +56,10 @@ class PreparePurchaseAccessFileDownloadAction
                 ->withoutGlobalScope(ActivePurchaseAccessScope::class)
                 ->whereKey($purchaseAccessId)
                 ->where('user_id', $user->getKey())
+                ->whereHas(
+                    'productSaleItem',
+                    fn($query) => $query->where('launcher_enabled', true)
+                )
                 ->lockForUpdate()
                 ->firstOrFail();
 
@@ -69,6 +73,7 @@ class PreparePurchaseAccessFileDownloadAction
                     'product_sale_item_id',
                     $purchaseAccess->product_sale_item_id
                 )
+                ->where('is_active', true)
                 ->first();
 
             if (!$file) {
@@ -183,6 +188,8 @@ class PreparePurchaseAccessFileDownloadAction
             'url' => $downloadUrl,
             'file_name' => $fileName,
             'title' => $file->title,
+            'size_bytes' => $file->size_bytes,
+            'sha256' => strtolower((string)$file->sha256),
             'remaining_downloads' =>
                 $remainingBeforeDownload === null
                     ? null
@@ -231,6 +238,8 @@ class PreparePurchaseAccessFileDownloadAction
             'url' => $downloadUrl,
             'file_name' => $download->file_name ?: $this->resolveFileName($file),
             'title' => $file->title,
+            'size_bytes' => $file->size_bytes,
+            'sha256' => strtolower((string)$file->sha256),
             /*
              * The current remaining count is returned without
              * subtracting another download.
@@ -246,7 +255,8 @@ class PreparePurchaseAccessFileDownloadAction
     {
         $downloadUrl = $this->generateDownloadUrlAction->execute(
             $purchaseAccess,
-            $file
+            $file,
+            alreadyRecorded: true,
         );
 
         if ($downloadUrl === '' || filter_var($downloadUrl, FILTER_VALIDATE_URL) === false) {
@@ -255,7 +265,7 @@ class PreparePurchaseAccessFileDownloadAction
 
         $scheme = strtolower((string)parse_url($downloadUrl, PHP_URL_SCHEME));
 
-        if (!in_array($scheme, ['http', 'https'], true)) {
+        if ($scheme !== 'https') {
             throw new PurchaseAccessFileUnavailableException();
         }
 
