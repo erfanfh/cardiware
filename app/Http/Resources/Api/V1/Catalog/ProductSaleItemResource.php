@@ -35,6 +35,19 @@ class ProductSaleItemResource extends JsonResource
                 'currency' => 'IRT',
             ],
 
+            'support' => [
+                'enabled' => false,
+                'url' => null,
+            ],
+
+            'cpu_compatibility' => [
+                'enabled' => false,
+                'default_mode' => 'off',
+                'apply_to_game' => false,
+                'apply_to_sider' => false,
+                'allow_user_override' => false,
+            ],
+
             'user_access' => [
                 'authenticated' => (bool)$this->getAttribute('viewer_authenticated'),
                 'is_purchased' => $this->getAttribute('is_purchased'),

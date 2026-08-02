@@ -14,7 +14,7 @@ class LauncherCatalogItemResource extends JsonResource
         $access = $this->purchaseAccesses
             ->first(fn($item): bool => $item->isUsable());
         $isFree = $price->finalPrice === 0;
-        $cover = $this->launcherCover ?? $this->product?->picture;
+        $cover = $this->product?->picture;
 
         return [
             'id' => $this->id,

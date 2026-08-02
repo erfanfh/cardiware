@@ -45,7 +45,7 @@ class LauncherContentController extends Controller
                 ],
             ]);
 
-        return response()->json(['data' => $updates]);
+        return response()->json(['data' => $updates->isEmpty() ? new \stdClass() : $updates]);
     }
 
     public function mods(Request $request, int $purchaseAccess): JsonResponse
@@ -94,7 +94,7 @@ class LauncherContentController extends Controller
                 ];
             });
 
-        return response()->json(['data' => $mods]);
+        return response()->json(['data' => $mods->isEmpty() ? new \stdClass() : $mods]);
     }
 
     private function access(Request $request, int $id): PurchaseAccess

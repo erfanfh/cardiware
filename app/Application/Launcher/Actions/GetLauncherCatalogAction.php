@@ -19,12 +19,10 @@ class GetLauncherCatalogAction
             ->where('status', ProductSaleItemStatusEnum::AVAILABLE->value)
             ->whereHas(
                 'product',
-                fn(Builder $query): Builder =>
-                    $query->where('status', ProductStatusEnum::ACTIVE->value)
+                fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
                 'product.picture',
-                'launcherCover',
                 'discount',
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {
                     $relation->withoutGlobalScopes()
@@ -37,8 +35,7 @@ class GetLauncherCatalogAction
                     $query->where('launcher_title', 'like', "%{$search}%")
                         ->orWhere('title', 'like', "%{$search}%")
                         ->orWhere('sku', 'like', "%{$search}%")
-                        ->orWhereHas('product', fn(Builder $product): Builder =>
-                            $product->where('title', 'like', "%{$search}%"));
+                        ->orWhereHas('product', fn(Builder $product): Builder => $product->where('title', 'like', "%{$search}%"));
                 });
             })
             ->orderBy('launcher_sort_order')
@@ -53,12 +50,10 @@ class GetLauncherCatalogAction
             ->where('launcher_enabled', true)
             ->whereHas(
                 'product',
-                fn(Builder $query): Builder =>
-                    $query->where('status', ProductStatusEnum::ACTIVE->value)
+                fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
                 'product.picture',
-                'launcherCover',
                 'discount',
                 'manifest',
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {

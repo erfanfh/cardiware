@@ -11,7 +11,6 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModGroup;
 use App\Domain\Launcher\Models\LauncherUpdate;
-use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -35,7 +34,6 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'launcher_enabled',
         'launcher_title',
         'launcher_excerpt',
-        'launcher_cover_media_id',
         'launcher_sort_order',
         'base_price',
         'status',
@@ -49,7 +47,6 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     protected $casts = [
         'manifest_revision' => 'integer',
         'launcher_enabled' => 'boolean',
-        'launcher_cover_media_id' => 'integer',
         'launcher_sort_order' => 'integer',
         'base_price' => 'integer',
         'download_limit' => 'integer',
@@ -240,10 +237,5 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function launcherMods(): HasMany
     {
         return $this->hasMany(LauncherMod::class)->orderBy('priority')->orderBy('id');
-    }
-
-    public function launcherCover(): BelongsTo
-    {
-        return $this->belongsTo(MediaFile::class, 'launcher_cover_media_id');
     }
 }

@@ -57,7 +57,7 @@ class SyncProductSaleItemManifestAction
             [],
             [
                 'schema_version' => max(
-                    1,
+                    2,
                     min(
                         65535,
                         $this->integer(
@@ -86,10 +86,9 @@ class SyncProductSaleItemManifestAction
                     ),
 
                 'validation_mode' => $saleItem->files->isNotEmpty()
-                    && $saleItem->files->every(
-                        fn(ProductSaleItemFile $file): bool =>
-                            preg_match('/^[a-fA-F0-9]{64}$/', (string)$file->sha256) === 1
-                    )
+                && $saleItem->files->every(
+                    fn(ProductSaleItemFile $file): bool => preg_match('/^[a-fA-F0-9]{64}$/', (string)$file->sha256) === 1
+                )
                     ? ProductManifestValidationModeEnum::PER_FILE->value
                     : ProductManifestValidationModeEnum::NONE->value,
 
@@ -193,8 +192,7 @@ class SyncProductSaleItemManifestAction
 
         $fileNames = $saleItem->files
             ->map(
-                fn(ProductSaleItemFile $file): ?string =>
-                    $this->nullableString($file->file_name)
+                fn(ProductSaleItemFile $file): ?string => $this->nullableString($file->file_name)
                     ?: $this->resolveFileNameFromUrl($file->url)
             )
             ->filter();
