@@ -53,6 +53,12 @@
                     {{ $this->comment->display_name }}
                 </div>
 
+                @foreach($this->authorBadges as $badge)
+                    <x-front.discussion.comment-author-badge
+                        :badge="$badge"
+                    />
+                @endforeach
+
                 <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 
                 <span class="shrink-0 text-xs text-slate-500 dark:text-slate-400">
@@ -100,6 +106,12 @@
                         <div class="max-w-full truncate text-sm font-black text-slate-900 dark:text-slate-100">
                             {{ $this->comment->display_name }}
                         </div>
+
+                        @foreach($this->authorBadges as $badge)
+                            <x-front.discussion.comment-author-badge
+                                :badge="$badge"
+                            />
+                        @endforeach
 
                         <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 

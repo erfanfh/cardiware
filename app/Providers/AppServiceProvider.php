@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\Catalog\Observers\ProductSaleItemFileObserver;
 use App\Application\Catalog\Observers\ProductSaleItemManifestObserver;
 use App\Application\Catalog\Observers\ProductSaleItemObserver;
+use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Identity\Observers\UserObserver;
 use App\Application\Support\Observers\TicketObserver;
 use App\Domain\Catalog\Models\Product;
@@ -37,6 +38,11 @@ class AppServiceProvider extends ServiceProvider
         ) {
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        $this->app->scoped(
+            ResolveCommentAuthorBadgesAction::class,
+            fn() => new ResolveCommentAuthorBadgesAction()
+        );
     }
 
     /**

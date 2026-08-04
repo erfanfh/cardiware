@@ -8,8 +8,12 @@ use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Catalog\Scopes\ActiveProductScope;
+use App\Domain\Commerce\Enums\PurchaseAccessStatusEnum;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Discussion\Contracts\CommentableContract;
+use App\Domain\Discussion\Contracts\HasDiscussionOwner;
+use App\Domain\Discussion\Contracts\HasVerifiedDiscussionBuyer;
+use App\Domain\Discussion\Enums\CommentAuthorBadge;
 use App\Domain\Discussion\Traits\HasComments;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
@@ -18,6 +22,7 @@ use App\Domain\System\Interfaces\PageViewableInterface;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Traits\HasTaxonomyTerms;
 use App\Infrastructure\Traits\HasExcerpt;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,7 +31,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Product extends Model implements PageViewableInterface, CommentableContract
+class Product extends Model implements PageViewableInterface, CommentableContract, HasDiscussionOwner, HasVerifiedDiscussionBuyer
 {
     use SoftDeletes, HasTaxonomyTerms, HasComments, HasSeoMeta, HasExcerpt;
 
@@ -267,5 +272,33 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function requiresCommentRating(): bool
     {
         return true;
+    }
+
+    public function discussionOwnerUserId(): ?int
+    {
+        return null;
+    }
+
+    public function discussionOwnerBadge(): CommentAuthorBadge
+    {
+        return CommentAuthorBadge::PRODUCT_SELLER;
+    }
+
+    public function hasVerifiedDiscussionPurchase(int $userId): bool
+    {
+        return PurchaseAccess::query()
+            ->where('user_id', $userId)
+            ->whereIn('status', [
+                PurchaseAccessStatusEnum::ACTIVE->value,
+                PurchaseAccessStatusEnum::EXPIRED->value,
+            ])
+            ->whereHas(
+                'productSaleItem',
+                fn(Builder $query) => $query->where(
+                    'product_id',
+                    $this->getKey()
+                )
+            )
+            ->exists();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
+use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Application\Discussion\Support\PendingCommentSessionStore;
 use App\Domain\Discussion\Models\Comment;
@@ -215,7 +216,10 @@ class CommentItem extends Component
     {
         return Comment::query()
             ->visibleForFrontend($this->guestPendingCommentIds)
-            ->with(['user.avatar'])
+            ->with([
+                'user.avatar.primaryVariant',
+                'user.role',
+            ])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
     }
@@ -231,7 +235,10 @@ class CommentItem extends Component
             ->forCommentable($this->commentable)
             ->visibleForFrontend($this->guestPendingCommentIds)
             ->where('parent_id', $this->commentId)
-            ->with(['user.avatar'])
+            ->with([
+                'user.avatar.primaryVariant',
+                'user.role',
+            ])
             ->withCount('approvedReplies')
             ->oldestFirst()
             ->get();
@@ -268,6 +275,15 @@ class CommentItem extends Component
     public function hasVisibleReplies(): bool
     {
         return $this->visibleRepliesCount > 0;
+    }
+
+    #[Computed]
+    public function authorBadges(): array
+    {
+        return app(ResolveCommentAuthorBadgesAction::class)->execute(
+            comment: $this->comment,
+            commentable: $this->commentable,
+        );
     }
 
     public function isPendingVisibleToCurrentViewer(): bool

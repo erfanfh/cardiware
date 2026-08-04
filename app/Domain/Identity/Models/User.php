@@ -5,6 +5,8 @@ namespace App\Domain\Identity\Models;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
+use App\Domain\Discussion\Contracts\HasDiscussionOwner;
+use App\Domain\Discussion\Enums\CommentAuthorBadge;
 use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
@@ -21,7 +23,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasDiscussionOwner
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, SoftDeletes, HasApiTokens;
@@ -155,5 +157,20 @@ class User extends Authenticatable
     public function receivedWalletTransfers(): HasMany
     {
         return $this->hasMany(WalletTransfer::class, 'recipient_user_id');
+    }
+
+    public function isDiscussionAdmin(): bool
+    {
+        return (bool)$this->role?->is_super_admin;
+    }
+
+    public function discussionOwnerUserId(): ?int
+    {
+        return $this->user_id ? (int)$this->user_id : null;
+    }
+
+    public function discussionOwnerBadge(): CommentAuthorBadge
+    {
+        return CommentAuthorBadge::POST_AUTHOR;
     }
 }

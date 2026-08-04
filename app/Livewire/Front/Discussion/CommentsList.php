@@ -38,7 +38,7 @@ class CommentsList extends Component
     {
         $this->commentable = $commentable;
         $this->commentableId = (int)$commentable->getKey();
-        $this->commentableType = $commentable::class;
+        $this->commentableType = $commentable->getMorphClass();
     }
 
     public function openComments(): void
