@@ -45,7 +45,7 @@ class LauncherContentController extends Controller
                 ],
             ]);
 
-        return response()->json(['data' => $updates->isEmpty() ? new \stdClass() : $updates]);
+        return response()->json(['data' => $updates->isEmpty() ? [] : $updates]);
     }
 
     public function mods(Request $request, int $purchaseAccess): JsonResponse

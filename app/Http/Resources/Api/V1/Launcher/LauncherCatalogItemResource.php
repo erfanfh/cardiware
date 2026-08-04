@@ -14,7 +14,6 @@ class LauncherCatalogItemResource extends JsonResource
         $access = $this->purchaseAccesses
             ->first(fn($item): bool => $item->isUsable());
         $isFree = $price->finalPrice === 0;
-        $cover = $this->product?->picture;
 
         return [
             'id' => $this->id,
@@ -23,7 +22,7 @@ class LauncherCatalogItemResource extends JsonResource
             'excerpt' => $this->launcher_excerpt ?: $this->description,
             'version' => $this->version,
             'edition_key' => $this->edition_key,
-            'cover_url' => $cover?->url,
+            'hero_url' => $this->product?->picture?->url,
             'is_free' => $isFree,
             'ownership' => [
                 'owned' => $access !== null,
@@ -39,6 +38,10 @@ class LauncherCatalogItemResource extends JsonResource
                 $this->relationLoaded('manifest') && $this->manifest !== null,
                 fn() => $this->manifest->resolvedCapabilities(),
             ),
+            'support' => [
+                'enabled' => false,
+                'url' => null,
+            ],
         ];
     }
 }
