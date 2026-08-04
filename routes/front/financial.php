@@ -4,7 +4,7 @@ use App\Http\Controllers\Front\Financial\PaymentCallbackController;
 use App\Http\Controllers\Front\Financial\PaymentResultController;
 
 Route::get('/payment/{gateway}/callback', PaymentCallbackController::class)
-    ->middleware('throttle:30,1')
+    ->middleware('throttle:payment-callback')
     ->name('payment.callback');
 
 Route::get('/payment/result/{paymentToken}', PaymentResultController::class)

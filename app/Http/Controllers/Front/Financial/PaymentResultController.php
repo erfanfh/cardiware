@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Financial;
 
 use App\Application\Financial\Actions\Payment\FinalizeVerifiedPaymentAction;
+use App\Application\Financial\Actions\Payment\VerifyPaymentAction;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
@@ -17,7 +18,9 @@ class PaymentResultController extends Controller
 {
     public function __invoke(
         string                        $paymentToken,
-        FinalizeVerifiedPaymentAction $finalizeVerifiedPaymentAction): View
+        VerifyPaymentAction           $verifyPaymentAction,
+        FinalizeVerifiedPaymentAction $finalizeVerifiedPaymentAction,
+    ): View
     {
         $payment = Payment::query()
             ->where('public_token', $paymentToken)
@@ -30,6 +33,29 @@ class PaymentResultController extends Controller
         $this->ensureCurrentUserOwnsPayable(
             $payment->payable,
         );
+
+        /*
+         * Immediate self-healing verification.
+         *
+         * No scheduler is involved.
+         * If the callback verification had a timeout or temporary failure,
+         * the authenticated result page retries it immediately.
+         */
+        if (
+            $payment->canBeVerified()
+            && $payment->gateway->isExternal()
+        ) {
+            try {
+                $payment = $verifyPaymentAction->execute(
+                    payment: $payment,
+                    callbackPayload: $payment->callback_payload ?? [],
+                );
+            } catch (Throwable $exception) {
+                report($exception);
+
+                $payment->refresh();
+            }
+        }
 
         /*
          * Idempotent self-healing.

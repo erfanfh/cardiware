@@ -7,8 +7,8 @@ use App\Application\Financial\Actions\Payment\VerifyPaymentAction;
 use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class PaymentCallbackController extends Controller
@@ -18,7 +18,7 @@ class PaymentCallbackController extends Controller
         Request                       $request,
         VerifyPaymentAction           $verifyPaymentAction,
         FinalizeVerifiedPaymentAction $finalizeVerifiedPaymentAction,
-    ): RedirectResponse
+    ): Response
     {
         $gatewayEnum = PaymentGatewayEnum::tryFrom($gateway);
 
@@ -100,9 +100,17 @@ class PaymentCallbackController extends Controller
             $payment->refresh();
         }
 
-        return redirect()->route('payment.result', [
+        $resultUrl = route('payment.result', [
             'paymentToken' => $payment->public_token,
         ]);
+
+        return response()->view(
+            'front.financial.payments.callback',
+            [
+                'resultUrl' => $resultUrl,
+            ],
+            200,
+        );
     }
 
     private function resolveGatewayReference(Request $request): ?string

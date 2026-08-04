@@ -3,9 +3,12 @@
 namespace App\Application\Financial\Actions\Payment;
 
 use App\Application\Financial\DTOs\VerifyPaymentRequestDTO;
+use App\Application\Financial\DTOs\VerifyPaymentResultDTO;
 use App\Application\Financial\Support\PaymentGatewayManager;
+use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use DomainException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -31,8 +34,38 @@ class VerifyPaymentAction
     ): Payment
     {
         /*
-         * First, persist the callback and validate the current state
-         * in a short transaction.
+         * Browser callback and Zibal server callback may arrive
+         * at exactly the same time.
+         *
+         * This lock serializes the complete external verification flow.
+         */
+        return Cache::lock(
+            name: "financial:payment:verify:{$payment->getKey()}",
+            seconds: 60,
+        )->block(
+            seconds: 25,
+            callback: fn(): Payment => $this->executeWithinLock(
+                payment: $payment,
+                callbackPayload: $callbackPayload,
+            ),
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $callbackPayload
+     *
+     * @throws Throwable
+     */
+    private function executeWithinLock(
+        Payment $payment,
+        array   $callbackPayload,
+    ): Payment
+    {
+        /*
+         * Reload state after acquiring the distributed lock.
+         *
+         * Another callback may already have completed the payment
+         * while this request was waiting for the lock.
          */
         $payment = DB::transaction(function () use (
             $payment,
@@ -69,8 +102,8 @@ class VerifyPaymentAction
         }
 
         /*
-         * Important:
-         * The gateway HTTP request runs outside the database transaction.
+         * External HTTP call runs outside the database transaction
+         * but remains protected by the payment-specific cache lock.
          */
         $gatewayDriver = $this->paymentGatewayManager->get($payment->gateway);
 
@@ -81,9 +114,6 @@ class VerifyPaymentAction
             ),
         );
 
-        /*
-         * Apply the verification result atomically.
-         */
         return DB::transaction(function () use (
             $payment,
             $result,
@@ -93,37 +123,60 @@ class VerifyPaymentAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            /*
-             * Another callback may already have completed the payment.
-             */
             if ($payment->isPaid()) {
                 return $payment;
             }
 
-            /*
-             * Prevent an old concurrent verification response from
-             * overwriting a newer terminal payment state.
-             */
             if (!$payment->canBeVerified()) {
                 return $payment;
             }
 
-            if (!$result->successful) {
-                return $this->markPaymentAsFailedAction->execute(
+            if ($result->successful) {
+                return $this->markPaymentAsPaidAction->execute(
                     payment: $payment,
+                    gatewayTransactionId: $result->gatewayTransactionId,
                     gatewayStatus: $result->gatewayStatus,
                     gatewayMessage: $result->gatewayMessage,
-                    payload: $result->rawResponse,
+                    verifyPayload: $result->rawResponse,
                 );
             }
 
-            return $this->markPaymentAsPaidAction->execute(
+            /*
+             * Timeout, connection failure, HTTP errors, unknown gateway
+             * result and paid-unverified transactions stay PENDING.
+             */
+            if ($result->shouldRemainPending()) {
+                return $this->keepPaymentPending(
+                    payment: $payment,
+                    result: $result,
+                );
+            }
+
+            /*
+             * Only definitive gateway failures reach this branch.
+             */
+            return $this->markPaymentAsFailedAction->execute(
                 payment: $payment,
-                gatewayTransactionId: $result->gatewayTransactionId,
                 gatewayStatus: $result->gatewayStatus,
                 gatewayMessage: $result->gatewayMessage,
-                verifyPayload: $result->rawResponse,
+                payload: $result->rawResponse,
             );
         });
+    }
+
+    private function keepPaymentPending(
+        Payment                $payment,
+        VerifyPaymentResultDTO $result,
+    ): Payment
+    {
+        $payment->forceFill([
+            'status' => PaymentStatusEnum::PENDING,
+            'gateway_status' => $result->gatewayStatus,
+            'gateway_message' => $result->gatewayMessage,
+            'verify_payload' => $result->rawResponse,
+            'failed_at' => null,
+        ])->save();
+
+        return $payment->refresh();
     }
 }

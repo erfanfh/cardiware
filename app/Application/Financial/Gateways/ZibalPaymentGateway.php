@@ -95,29 +95,61 @@ class ZibalPaymentGateway implements PaymentGateway
 
     public function verify(VerifyPaymentRequestDTO $request): VerifyPaymentResultDTO
     {
-        $trackId = data_get($request->callbackPayload, 'trackId')
-            ?? $request->payment->gateway_reference;
+        $storedTrackId = $request->payment->gateway_reference;
+
+        $callbackTrackId = data_get($request->callbackPayload, 'trackId');
+
+        $trackId = $callbackTrackId ?: $storedTrackId;
 
         $payload = [
             'merchant' => $this->merchant(),
             'trackId' => $trackId,
         ];
 
-        try {
-            if (!$trackId) {
-                return new VerifyPaymentResultDTO(
-                    successful: false,
-                    gatewayTransactionId: null,
-                    gatewayStatus: 'missing_track_id',
-                    gatewayMessage: 'Zibal trackId is missing.',
-                    rawResponse: [
-                        'request' => $payload,
-                        'callback_payload' => $request->callbackPayload,
-                    ],
-                );
-            }
+        if (blank($trackId)) {
+            return new VerifyPaymentResultDTO(
+                successful: false,
+                gatewayTransactionId: null,
+                gatewayStatus: 'missing_track_id',
+                gatewayMessage: 'Zibal trackId is missing.',
+                rawResponse: [
+                    'request' => $payload,
+                    'callback_payload' => $request->callbackPayload,
+                ],
+                terminal: false,
+            );
+        }
 
-            $response = Http::timeout($this->timeout())
+        /*
+         * Prevent verifying one local Payment using another trackId.
+         */
+        if (
+            filled($storedTrackId)
+            && filled($callbackTrackId)
+            && (string)$storedTrackId !== (string)$callbackTrackId
+        ) {
+            return new VerifyPaymentResultDTO(
+                successful: false,
+                gatewayTransactionId: null,
+                gatewayStatus: 'track_id_mismatch',
+                gatewayMessage: 'Callback trackId does not match the stored payment trackId.',
+                rawResponse: [
+                    'stored_track_id' => $storedTrackId,
+                    'callback_track_id' => $callbackTrackId,
+                    'callback_payload' => $request->callbackPayload,
+                ],
+                terminal: false,
+            );
+        }
+
+        try {
+            $response = Http::connectTimeout(5)
+                ->timeout($this->timeout())
+                ->retry(
+                    times: 2,
+                    sleepMilliseconds: 300,
+                    throw: false,
+                )
                 ->acceptJson()
                 ->asJson()
                 ->post($this->verifyUrl(), $payload);
@@ -127,64 +159,169 @@ class ZibalPaymentGateway implements PaymentGateway
             $result = (int)data_get($data, 'result');
             $status = data_get($data, 'status');
 
-            /**
-             * Zibal verify success usually returns result = 100.
-             * Some SDK examples also show status = 1 for successful paid payment.
-             */
-            $successful = $response->successful()
-                && $result === 100
-                && ((int)$status === 1 || $status === null);
+            $rawResponse = [
+                'request' => $payload,
+                'response' => $data,
+                'callback_payload' => $request->callbackPayload,
+                'http_status' => $response->status(),
+            ];
 
-            if (!$successful) {
+            /*
+             * Temporary HTTP or gateway communication problem.
+             *
+             * Never mark the Payment as FAILED because the bank payment
+             * may already have been completed.
+             */
+            if (!$response->successful()) {
                 return new VerifyPaymentResultDTO(
                     successful: false,
-                    gatewayTransactionId: data_get($data, 'refNumber')
-                    ?? data_get($data, 'transactionId')
-                    ?? null,
-                    gatewayStatus: (string)($status ?? $result),
-                    gatewayMessage: data_get($data, 'message')
-                    ?? data_get($data, 'statusMessage')
-                    ?? 'Zibal payment verification failed.',
-                    rawResponse: [
-                        'request' => $payload,
-                        'response' => $data,
-                        'callback_payload' => $request->callbackPayload,
-                        'http_status' => $response->status(),
-                    ],
+                    gatewayTransactionId: null,
+                    gatewayStatus: 'temporary_http_error',
+                    gatewayMessage: 'Zibal verification returned a temporary HTTP error.',
+                    rawResponse: $rawResponse,
+                    terminal: false,
                 );
             }
 
+            /*
+             * Successful verification.
+             *
+             * Some versions of the response may not include status.
+             */
+            if ($result === 100 && ($status === null || (int)$status === 1)) {
+                $responseAmount = data_get($data, 'amount');
+
+                if (
+                    $responseAmount !== null
+                    && (int)$responseAmount !== $this->toRial($request->payment->amount)
+                ) {
+                    return new VerifyPaymentResultDTO(
+                        successful: false,
+                        gatewayTransactionId: null,
+                        gatewayStatus: 'amount_mismatch',
+                        gatewayMessage: 'Zibal verified amount does not match the local payment amount.',
+                        rawResponse: $rawResponse,
+                        terminal: false,
+                    );
+                }
+
+                $responseOrderId = data_get($data, 'orderId');
+
+                if (
+                    filled($responseOrderId)
+                    && (string)$responseOrderId !== (string)$request->payment->tracking_code
+                ) {
+                    return new VerifyPaymentResultDTO(
+                        successful: false,
+                        gatewayTransactionId: null,
+                        gatewayStatus: 'order_id_mismatch',
+                        gatewayMessage: 'Zibal orderId does not match the local payment tracking code.',
+                        rawResponse: $rawResponse,
+                        terminal: false,
+                    );
+                }
+
+                return new VerifyPaymentResultDTO(
+                    successful: true,
+                    gatewayTransactionId: (string)(
+                        data_get($data, 'refNumber')
+                        ?? data_get($data, 'transactionId')
+                        ?? $trackId
+                    ),
+                    gatewayStatus: '100',
+                    gatewayMessage: data_get($data, 'message')
+                    ?? data_get($data, 'statusMessage')
+                    ?? 'Zibal payment verified successfully.',
+                    rawResponse: $rawResponse,
+                );
+            }
+
+            /*
+             * The transaction has already been verified.
+             *
+             * This is an idempotent success, not a payment failure.
+             * It commonly happens when browser and server callbacks
+             * arrive concurrently.
+             */
+            if ($result === 201) {
+                return new VerifyPaymentResultDTO(
+                    successful: true,
+                    gatewayTransactionId: (string)(
+                        data_get($data, 'refNumber')
+                        ?? data_get($data, 'transactionId')
+                        ?? $request->payment->gateway_transaction_id
+                        ?? $trackId
+                    ),
+                    gatewayStatus: '201',
+                    gatewayMessage: data_get($data, 'message')
+                    ?? data_get($data, 'statusMessage')
+                    ?? 'Zibal payment was already verified.',
+                    rawResponse: $rawResponse,
+                );
+            }
+
+            /*
+             * Zibal explicitly says the transaction was unpaid or failed.
+             */
+            if ($result === 202) {
+                return new VerifyPaymentResultDTO(
+                    successful: false,
+                    gatewayTransactionId: null,
+                    gatewayStatus: '202',
+                    gatewayMessage: data_get($data, 'message')
+                    ?? data_get($data, 'statusMessage')
+                    ?? 'Zibal transaction was unpaid or unsuccessful.',
+                    rawResponse: $rawResponse,
+                    terminal: true,
+                );
+            }
+
+            /*
+             * Paid but not verified.
+             */
+            if ((int)$status === 2) {
+                return new VerifyPaymentResultDTO(
+                    successful: false,
+                    gatewayTransactionId: null,
+                    gatewayStatus: 'paid_unverified',
+                    gatewayMessage: 'Zibal transaction is paid but has not been verified yet.',
+                    rawResponse: $rawResponse,
+                    terminal: false,
+                );
+            }
+
+            /*
+             * Unknown result codes must not convert a possibly successful
+             * bank transaction into a terminal local failure.
+             */
             return new VerifyPaymentResultDTO(
-                successful: true,
-                gatewayTransactionId: (string)(
-                    data_get($data, 'refNumber')
-                    ?? data_get($data, 'transactionId')
-                    ?? $trackId
-                ),
-                gatewayStatus: (string)($status ?? $result),
+                successful: false,
+                gatewayTransactionId: null,
+                gatewayStatus: (string)($result ?: 'unknown'),
                 gatewayMessage: data_get($data, 'message')
                 ?? data_get($data, 'statusMessage')
-                ?? 'Zibal payment verified successfully.',
-                rawResponse: [
-                    'request' => $payload,
-                    'response' => $data,
-                    'callback_payload' => $request->callbackPayload,
-                    'http_status' => $response->status(),
-                ],
+                ?? 'Zibal verification result is currently indeterminate.',
+                rawResponse: $rawResponse,
+                terminal: false,
             );
         } catch (Throwable $exception) {
             report($exception);
 
+            /*
+             * A timeout or network exception says nothing definitive
+             * about the actual bank transaction.
+             */
             return new VerifyPaymentResultDTO(
                 successful: false,
                 gatewayTransactionId: null,
-                gatewayStatus: 'exception',
-                gatewayMessage: 'Zibal payment verification exception.',
+                gatewayStatus: 'verification_exception',
+                gatewayMessage: 'Zibal verification could not be completed.',
                 rawResponse: [
                     'request' => $payload,
                     'callback_payload' => $request->callbackPayload,
                     'exception' => $exception->getMessage(),
                 ],
+                terminal: false,
             );
         }
     }

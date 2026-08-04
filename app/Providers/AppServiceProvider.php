@@ -86,6 +86,31 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(120)->by('catalog:' . $key);
         });
 
+        RateLimiter::for(
+            'payment-callback',
+            function (\Illuminate\Http\Request $request): Limit {
+                $reference = $request->input('trackId')
+                    ?? $request->input('track_id')
+                    ?? $request->input('Authority')
+                    ?? $request->input('authority')
+                    ?? $request->input('refId')
+                    ?? $request->input('RefId')
+                    ?? $request->input('referenceId')
+                    ?? $request->input('reference_id')
+                    ?? $request->input('code')
+                    ?? $request->input('Code');
+
+                $gateway = (string)$request->route('gateway');
+
+                $key = filled($reference)
+                    ? "{$gateway}:{$reference}"
+                    : "missing-reference:{$request->ip()}";
+
+                return Limit::perMinute(10)
+                    ->by("payment-callback:{$key}");
+            },
+        );
+
         Ticket::observe(TicketObserver::class);
         ProductSaleItem::observe(ProductSaleItemObserver::class);
         ProductSaleItemManifest::observe(ProductSaleItemManifestObserver::class);
