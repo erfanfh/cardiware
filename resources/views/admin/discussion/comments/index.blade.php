@@ -13,6 +13,12 @@
                 $comment->id => $comment->status?->value,
             ])
             ->all();
+
+        $commentPinnedStates = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => (bool) $comment->is_pinned,
+            ])
+            ->all();
     @endphp
 
     <div
@@ -22,6 +28,7 @@
                 bulkActionUrl: @js(route('admin.comments.bulk-action')),
                 csrfToken: @js(csrf_token()),
                 initialStatuses: @js($commentStatuses),
+                initialPins: @js($commentPinnedStates),
             })
         }"
         class="space-y-4"

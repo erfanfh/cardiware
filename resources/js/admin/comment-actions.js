@@ -4,6 +4,7 @@ document.addEventListener('alpine:init', () => {
             bulkActionUrl = '',
             csrfToken = '',
             initialStatuses = {},
+            initialPins = {},
         }
     ) => ({
         bulkActionUrl,
@@ -11,12 +12,46 @@ document.addEventListener('alpine:init', () => {
         processingIds: [],
         hiddenIds: [],
 
+        rowStatuses: Object.fromEntries(
+            Object.entries(initialStatuses).map(
+                ([id, status]) => [
+                    Number(id),
+                    status || 'unknown',
+                ]
+            )
+        ),
+
+        rowPins: Object.fromEntries(
+            Object.entries(initialPins).map(
+                ([id, isPinned]) => [
+                    Number(id),
+                    Boolean(isPinned),
+                ]
+            )
+        ),
+
         isProcessing(id) {
             return this.processingIds.includes(Number(id));
         },
 
         isHidden(id) {
             return this.hiddenIds.includes(Number(id));
+        },
+
+        isPinned(id) {
+            return Boolean(this.rowPins[Number(id)]);
+        },
+
+        setPinned(id, isPinned) {
+            this.rowPins[Number(id)] = Boolean(isPinned);
+        },
+
+        rowStatus(id) {
+            return this.rowStatuses[Number(id)] || 'unknown';
+        },
+
+        setRowStatus(id, status) {
+            this.rowStatuses[Number(id)] = status || 'unknown';
         },
 
         async confirmAndRun(id, action, message) {
@@ -57,9 +92,55 @@ document.addEventListener('alpine:init', () => {
                 this.notifySuccess(data.message || 'عملیات با موفقیت انجام شد.');
             } catch (error) {
                 console.error(error);
+
                 this.notifyError(error.message || 'خطایی رخ داد.');
             } finally {
-                this.processingIds = this.processingIds.filter((item) => item !== id);
+                this.processingIds = this.processingIds.filter(
+                    (item) => item !== id
+                );
+            }
+        },
+
+        async togglePin(id, url) {
+            id = Number(id);
+
+            if (this.isProcessing(id) || !url) {
+                return;
+            }
+
+            this.processingIds.push(id);
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                    },
+                });
+
+                const data = await this.parseJsonResponse(response);
+
+                if (!response.ok || !data?.ok) {
+                    throw new Error(
+                        data?.message ||
+                        data?.errors?.comment?.[0] ||
+                        'تغییر وضعیت پین با خطا مواجه شد.'
+                    );
+                }
+
+                this.setPinned(id, data.comment?.is_pinned);
+
+                this.notifySuccess(data.message || 'وضعیت پین دیدگاه تغییر کرد.');
+            } catch (error) {
+                console.error(error);
+
+                this.notifyError(error.message || 'تغییر وضعیت پین با خطا مواجه شد.');
+            } finally {
+                this.processingIds = this.processingIds.filter(
+                    (item) => item !== id
+                );
             }
         },
 
@@ -68,6 +149,8 @@ document.addEventListener('alpine:init', () => {
 
             if (action === 'delete') {
                 this.hiddenIds.push(id);
+                this.setPinned(id, false);
+
                 return;
             }
 
@@ -92,6 +175,13 @@ document.addEventListener('alpine:init', () => {
             const row = document.querySelector(`[data-comment-row="${id}"]`);
 
             this.setRowStatus(id, status);
+
+            /*
+             * دیدگاه Pending یا Rejected نباید پین باقی بماند.
+             */
+            if (status !== 'approved') {
+                this.setPinned(id, false);
+            }
 
             if (!row) {
                 return;
@@ -159,18 +249,6 @@ document.addEventListener('alpine:init', () => {
             }
 
             alert(message);
-        },
-
-        rowStatuses: Object.fromEntries(
-            Object.entries(initialStatuses).map(([id, status]) => [Number(id), status || 'unknown'])
-        ),
-
-        rowStatus(id) {
-            return this.rowStatuses[Number(id)] || 'unknown';
-        },
-
-        setRowStatus(id, status) {
-            this.rowStatuses[Number(id)] = status || 'unknown';
         },
 
         replyBadgeClass(id) {

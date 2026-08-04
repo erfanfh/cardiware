@@ -117,6 +117,7 @@ class CommentsList extends Component
             ->forCommentable($this->commentable)
             ->visibleForFrontend($this->guestPendingCommentIds)
             ->root()
+            ->pinnedFirst()
             ->with('user.avatar')
             ->withCount('approvedReplies')
             ->when(

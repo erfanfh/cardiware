@@ -35,6 +35,9 @@ class Comment extends Model
         'likes_count',
         'dislikes_count',
         'score',
+        'is_pinned',
+        'pinned_at',
+        'pinned_by',
     ];
 
     protected $casts = [
@@ -44,16 +47,27 @@ class Comment extends Model
         'likes_count' => 'integer',
         'dislikes_count' => 'integer',
         'score' => 'integer',
+        'is_pinned' => 'boolean',
+        'pinned_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
+        static::saving(function (Comment $comment): void {
+            if ($comment->isReply() || !$comment->isApproved()) {
+                $comment->clearPinAttributes();
+            }
+        });
+        static::deleting(function (Comment $comment): void {
+            if (!$comment->is_pinned) {
+                return;
+            }
+            $comment
+                ->clearPinAttributes()
+                ->saveQuietly();
+        });
         static::created(fn(Comment $comment) => $comment->flushCommentableCache());
         static::updated(function (Comment $comment): void {
-            /*
-             * تغییر لایک، دیسلایک و score نباید Cache تعداد
-             * دیدگاه‌های تاییدشده را پاک کند.
-             */
             if ($comment->wasChanged([
                 'commentable_type',
                 'commentable_id',
@@ -308,5 +322,41 @@ class Comment extends Model
         }
 
         return in_array((int)$this->id, $guestPendingCommentIds, true);
+    }
+
+    /**
+     * @return BelongsTo<User, self>
+     */
+    public function pinnedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pinned_by');
+    }
+
+    public function scopePinnedFirst(Builder $query): Builder
+    {
+        return $query
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('pinned_at');
+    }
+
+    public function isPinned(): bool
+    {
+        return (bool)$this->is_pinned;
+    }
+
+    public function canBePinned(): bool
+    {
+        return $this->isRoot() && $this->isApproved() && !$this->isDeleted();
+    }
+
+    public function clearPinAttributes(): static
+    {
+        $this->forceFill([
+            'is_pinned' => false,
+            'pinned_at' => null,
+            'pinned_by' => null,
+        ]);
+
+        return $this;
     }
 }

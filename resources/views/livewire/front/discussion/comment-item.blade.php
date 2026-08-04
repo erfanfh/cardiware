@@ -59,6 +59,10 @@
                     />
                 @endforeach
 
+                @if($this->comment->is_pinned)
+                    <x-front.discussion.comment-pinned-badge/>
+                @endif
+
                 <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 
                 <span class="shrink-0 text-xs text-slate-500 dark:text-slate-400">
@@ -112,6 +116,10 @@
                                 :badge="$badge"
                             />
                         @endforeach
+
+                        @if($this->comment->is_pinned)
+                            <x-front.discussion.comment-pinned-badge/>
+                        @endif
 
                         <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 

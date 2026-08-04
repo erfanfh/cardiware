@@ -205,6 +205,20 @@
                                 </div>
                             @endif
 
+                            <div
+                                x-show="isPinned({{ $comment->id }})"
+                                x-cloak
+                                class="mb-2"
+                            >
+                                <span
+                                    class="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-bold text-amber-700 [&_svg]:h-3.5 [&_svg]:w-3.5"
+                                >
+                                    @include('icons.pin')
+
+                                    دیدگاه پین شده
+                                </span>
+                            </div>
+
                             <div class="text-sm leading-7 text-slate-700">
                                 {!! nl2br(htmlspecialchars(e($comment->content))) !!}
                             </div>
@@ -284,6 +298,38 @@
                                         </x-admin.list.action>
                                     </div>
                                 </template>
+
+                                @if($comment->isRoot())
+                                    <template
+                                        x-if="rowStatus({{ $comment->id }}) === 'approved'"
+                                    >
+                                        <div class="inline-flex items-center gap-2">
+                                            <span class="text-slate-300">|</span>
+
+                                            <button
+                                                type="button"
+                                                x-on:click="togglePin(
+                                                    {{ $comment->id }},
+                                                    @js(route('admin.comments.toggle-pin', $comment))
+                                                )"
+                                                x-bind:disabled="isProcessing({{ $comment->id }})"
+                                                x-bind:class="{
+                                                    'text-amber-600 hover:text-amber-700': isPinned({{ $comment->id }}),
+                                                    'text-slate-600 hover:text-brand-600': !isPinned({{ $comment->id }})
+                                                }"
+                                                class="cursor-pointer text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                <span
+                                                    x-text="
+                                                        isPinned({{ $comment->id }})
+                                                            ? 'برداشتن پین'
+                                                            : 'پین کردن'
+                                                    "
+                                                ></span>
+                                            </button>
+                                        </div>
+                                    </template>
+                                @endif
 
                                 <span class="text-slate-300">|</span>
 
