@@ -166,7 +166,7 @@
 
         <div
             class="tinymce-content mt-3 break-words text-sm leading-8 text-slate-700 dark:text-slate-300 dark:prose-invert">
-            {!! $this->comment->safe_content !!}
+            {!! $this->renderedContent !!}
         </div>
 
         @if($allowReplySubmission)

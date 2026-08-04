@@ -3,6 +3,7 @@
 namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Actions\CreateCommentAction;
+use App\Application\Discussion\Actions\LinkifyCommentContentAction;
 use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Application\Discussion\Support\PendingCommentSessionStore;
@@ -283,6 +284,14 @@ class CommentItem extends Component
         return app(ResolveCommentAuthorBadgesAction::class)->execute(
             comment: $this->comment,
             commentable: $this->commentable,
+        );
+    }
+
+    #[Computed]
+    public function renderedContent(): string
+    {
+        return app(LinkifyCommentContentAction::class)->execute(
+            $this->comment->safe_content
         );
     }
 
