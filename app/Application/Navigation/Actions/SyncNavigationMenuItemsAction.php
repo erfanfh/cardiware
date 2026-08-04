@@ -38,9 +38,11 @@ class SyncNavigationMenuItemsAction
                 parentId: null,
                 depth: 0,
             );
-        });
 
-        $this->navigationCacheInvalidator->flushForMenu($menu);
+            DB::afterCommit(function () use ($menu) {
+                $this->navigationCacheInvalidator->flushForMenu($menu);
+            });
+        });
     }
 
     /**
