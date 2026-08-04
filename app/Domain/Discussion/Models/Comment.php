@@ -49,7 +49,20 @@ class Comment extends Model
     protected static function booted(): void
     {
         static::created(fn(Comment $comment) => $comment->flushCommentableCache());
-        static::updated(fn(Comment $comment) => $comment->flushCommentableCache());
+        static::updated(function (Comment $comment): void {
+            /*
+             * تغییر لایک، دیسلایک و score نباید Cache تعداد
+             * دیدگاه‌های تاییدشده را پاک کند.
+             */
+            if ($comment->wasChanged([
+                'commentable_type',
+                'commentable_id',
+                'status',
+                'approved_at',
+            ])) {
+                $comment->flushCommentableCache();
+            }
+        });
         static::deleted(fn(Comment $comment) => $comment->flushCommentableCache());
         static::restored(fn(Comment $comment) => $comment->flushCommentableCache());
         static::forceDeleted(fn(Comment $comment) => $comment->flushCommentableCache());

@@ -5,17 +5,25 @@ namespace App\Livewire\Front\Discussion;
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\Actions\LinkifyCommentContentAction;
 use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
+use App\Application\Discussion\Actions\ToggleCommentReactionAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
+use App\Application\Discussion\Support\CommentReactionIdentityResolver;
 use App\Application\Discussion\Support\PendingCommentSessionStore;
+use App\Domain\Discussion\Enums\CommentReactionTypeEnum;
 use App\Domain\Discussion\Models\Comment;
+use App\Domain\Discussion\Models\CommentReaction;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use ValueError;
 
 class CommentItem extends Component
 {
@@ -217,12 +225,27 @@ class CommentItem extends Component
     {
         return Comment::query()
             ->visibleForFrontend($this->guestPendingCommentIds)
+            ->addSelect([
+                'viewer_reaction_type' => $this->viewerReactionSubquery(),
+            ])
             ->with([
                 'user.avatar.primaryVariant',
                 'user.role',
             ])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
+    }
+
+    #[Computed]
+    public function viewerReactionType(): ?string
+    {
+        $value = $this->comment->getAttribute(
+            'viewer_reaction_type'
+        );
+
+        return filled($value)
+            ? (string)$value
+            : null;
     }
 
     #[Computed]
@@ -327,6 +350,104 @@ class CommentItem extends Component
         }
 
         return $colors[$index % count($colors)];
+    }
+
+    public function toggleReaction(
+        string                          $type,
+        ToggleCommentReactionAction     $toggleCommentReactionAction,
+        CommentReactionIdentityResolver $identityResolver,
+    ): void
+    {
+        try {
+            $reactionType = CommentReactionTypeEnum::from($type);
+        } catch (ValueError) {
+            return;
+        }
+
+        $rateLimitKey = implode(':', [
+            'discussion-comment-reaction',
+            $this->commentId,
+            $identityResolver->rateLimitIdentity(),
+        ]);
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 20)) {
+            $this->dispatch(
+                'notify',
+                type: 'warning',
+                message: 'تعداد درخواست‌های شما بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.',
+            );
+
+            return;
+        }
+
+        RateLimiter::hit(
+            key: $rateLimitKey,
+            decaySeconds: 60,
+        );
+
+        try {
+            $toggleCommentReactionAction->execute(
+                commentId: $this->commentId,
+                requestedType: $reactionType,
+                identity: $identityResolver->resolve(),
+            );
+
+            /*
+             * Cache داخلی Computed Propertyهای همین کامپوننت پاک می‌شود
+             * تا شمارنده‌ها و واکنش فعال دوباره خوانده شوند.
+             */
+            unset($this->comment);
+            unset($this->viewerReactionType);
+
+            $this->dispatch(
+                'discussion-comment-reaction-updated',
+                commentableType: $this->commentableType,
+                commentableId: $this->commentableId,
+                commentId: $this->commentId,
+            );
+        } catch (ModelNotFoundException) {
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                message: 'این دیدگاه قابل لایک یا دیسلایک نیست.',
+            );
+        } catch (\Throwable $throwable) {
+            report($throwable);
+
+            $this->dispatch(
+                'notify',
+                type: 'error',
+                message: 'ثبت واکنش با خطا مواجه شد. دوباره تلاش کنید.',
+            );
+        }
+    }
+
+    private function viewerReactionSubquery(): Builder
+    {
+        $identity = app(
+            CommentReactionIdentityResolver::class
+        )->resolve();
+
+        return CommentReaction::query()
+            ->select('type')
+            ->whereColumn(
+                'comment_reactions.comment_id',
+                'comments.id'
+            )
+            ->when(
+                $identity->isAuthenticated(),
+                fn(Builder $query) => $query->where(
+                    'user_id',
+                    $identity->userId
+                ),
+                fn(Builder $query) => $query
+                    ->whereNull('user_id')
+                    ->where(
+                        'ip_hash',
+                        $identity->ipHash
+                    )
+            )
+            ->limit(1);
     }
 
     protected function rules(): array

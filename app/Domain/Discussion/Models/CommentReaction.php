@@ -20,21 +20,11 @@ class CommentReaction extends Model
         'type' => CommentReactionTypeEnum::class,
     ];
 
-    /**
-     * Get the related comment.
-     *
-     * @return BelongsTo
-     */
     public function comment(): BelongsTo
     {
         return $this->belongsTo(Comment::class);
     }
 
-    /**
-     * Get the authenticated user who submitted the reaction.
-     *
-     * @return BelongsTo
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

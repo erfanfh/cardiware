@@ -139,6 +139,30 @@ class ProductCommentsList extends Component
             ->paginate(5);
     }
 
+    #[On('discussion-comment-reaction-updated')]
+    public function handleCommentReactionUpdated(
+        string $commentableType,
+        int    $commentableId,
+    ): void
+    {
+        if (
+            $commentableType !== $this->commentable->getMorphClass() ||
+            $commentableId !== (int)$this->commentable->getKey()
+        ) {
+            $this->skipRender();
+
+            return;
+        }
+
+        /*
+         * در حالت محبوب‌ترین باید ترتیب دیدگاه‌ها با score جدید
+         * دوباره محاسبه شود.
+         */
+        if ($this->sort !== 'top') {
+            $this->skipRender();
+        }
+    }
+
     public function render(): View
     {
         return view('livewire.front.discussion.product-comments-list');

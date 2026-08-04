@@ -169,6 +169,95 @@
             {!! $this->renderedContent !!}
         </div>
 
+        @if($this->comment->isApproved())
+            <div class="mt-3 flex w-full justify-end">
+                <div
+                    wire:loading.class="pointer-events-none opacity-60"
+                    wire:target="toggleReaction"
+                    class="inline-flex items-center gap-0.5 rounded-xl p-0.5 transition
+                   dark:border dark:border-slate-700 dark:bg-slate-800/70 dark:shadow-sm dark:shadow-black/10"
+                >
+                    <button
+                        type="button"
+                        wire:click="toggleReaction('like')"
+                        wire:loading.attr="disabled"
+                        wire:target="toggleReaction"
+                        aria-label="پسندیدن دیدگاه"
+                        aria-pressed="{{ $this->viewerReactionType === 'like' ? 'true' : 'false' }}"
+                        title="پسندیدن دیدگاه"
+                        @class([
+                            'inline-flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition active:scale-95 disabled:cursor-wait',
+
+                            'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
+                                => $this->viewerReactionType === 'like',
+
+                            'text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-emerald-400'
+                                => $this->viewerReactionType !== 'like',
+                        ])
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            class="h-4 w-4 shrink-0"
+                        >
+                            <path
+                                d="M7.5 10.5v9m0-9L11 3.8c.45-.85 1.5-1.15 2.33-.67.63.37.96 1.1.83 1.82l-.7 3.8H19a2 2 0 0 1 1.95 2.43l-1.5 6.75a2 2 0 0 1-1.95 1.57H7.5m0-9H4.75A1.75 1.75 0 0 0 3 12.25v5.5c0 .97.78 1.75 1.75 1.75H7.5"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+
+                        @if($this->comment->likes_count > 0)
+                            <span class="leading-none">
+                        {{ $this->comment->likes_count }}
+                    </span>
+                        @endif
+                    </button>
+
+                    <button
+                        type="button"
+                        wire:click="toggleReaction('dislike')"
+                        wire:loading.attr="disabled"
+                        wire:target="toggleReaction"
+                        aria-label="نپسندیدن دیدگاه"
+                        aria-pressed="{{ $this->viewerReactionType === 'dislike' ? 'true' : 'false' }}"
+                        title="نپسندیدن دیدگاه"
+                        @class([
+                            'inline-flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition active:scale-95 disabled:cursor-wait',
+
+                            'bg-rose-500 text-white shadow-sm shadow-rose-500/20'
+                                => $this->viewerReactionType === 'dislike',
+
+                            'text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-rose-400'
+                                => $this->viewerReactionType !== 'dislike',
+                        ])
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            class="h-4 w-4 shrink-0"
+                        >
+                            <path
+                                d="M7.5 13.5v-9m0 9L11 20.2c.45.85 1.5 1.15 2.33.67.63-.37.96-1.1.83-1.82l-.7-3.8H19a2 2 0 0 0 1.95-2.43l-1.5-6.75A2 2 0 0 0 17.5 4.5h-10m0 9H4.75A1.75 1.75 0 0 1 3 11.75v-5.5C3 5.28 3.78 4.5 4.75 4.5H7.5"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
+                        </svg>
+
+                        @if($this->comment->dislikes_count > 0)
+                            <span class="leading-none">
+                        {{ $this->comment->dislikes_count }}
+                    </span>
+                        @endif
+                    </button>
+                </div>
+            </div>
+        @endif
+
         @if($allowReplySubmission)
             <button
                 @click="openReplyForm()"
