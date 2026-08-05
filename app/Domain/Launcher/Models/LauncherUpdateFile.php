@@ -21,7 +21,7 @@ class LauncherUpdateFile extends Model
         'sort_order' => 'integer',
     ];
 
-    public function update(): BelongsTo
+    public function launcherUpdate(): BelongsTo
     {
         return $this->belongsTo(LauncherUpdate::class, 'launcher_update_id');
     }

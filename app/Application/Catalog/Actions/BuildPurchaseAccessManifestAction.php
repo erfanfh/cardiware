@@ -166,16 +166,16 @@ class BuildPurchaseAccessManifestAction
                 'run_sider_as_administrator' => $manifest->run_sider_as_administrator,
                 'cpu_compatibility' => [
                     'enabled' => false,
-                    'default_mode' => 'auto',
-                    'apply_to_game' => true,
-                    'apply_to_sider' => $manifest->requires_sider,
-                    'allow_user_override' => true,
+                    'default_mode' => 'off',
+                    'apply_to_game' => false,
+                    'apply_to_sider' => false,
+                    'allow_user_override' => false,
                 ],
             ],
 
             'runtime_notices' => $manifest->runtime_notices ?? [],
 
-            'metadata' => $manifest->metadata ?? new \stdClass(),
+            'metadata' => $manifest->metadata ?: new \stdClass(),
         ];
     }
 

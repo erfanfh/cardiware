@@ -113,7 +113,8 @@ class SyncLauncherSaleItemContentAction
 
     private function files(
         Collection $existing, array $items, string $model, string $foreignKey, int $foreignId
-    ): void {
+    ): void
+    {
         $kept = [];
         foreach (array_values($items) as $index => $data) {
             if (!is_array($data) || blank($data['url'] ?? null) || blank($data['file_name'] ?? null)) continue;
