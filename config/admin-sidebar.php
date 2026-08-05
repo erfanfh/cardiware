@@ -114,6 +114,12 @@ return [
         'icon' => 'icons.store-01',
         'children' => [
             [
+                'label' => 'تحلیل فروش و درآمد',
+                'route' => 'admin.analytics.index',
+                'icon' => 'icons.chart-03',
+                'gate' => 'analytics.view',
+            ],
+            [
                 'label' => 'سفارش ها',
                 'route' => 'admin.orders.index',
                 'icon' => 'icons.invoice-03',

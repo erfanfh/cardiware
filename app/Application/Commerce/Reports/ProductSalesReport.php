@@ -31,8 +31,10 @@ class ProductSalesReport
             ->selectRaw('
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -60,8 +62,10 @@ class ProductSalesReport
             ->selectRaw('
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -90,8 +94,10 @@ class ProductSalesReport
             ->selectRaw('
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -123,8 +129,10 @@ class ProductSalesReport
                 order_items.purchasable_type,
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -154,8 +162,10 @@ class ProductSalesReport
                 order_items.product_id,
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ');
@@ -196,8 +206,10 @@ class ProductSalesReport
                 order_items.product_id,
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ');
@@ -220,8 +232,10 @@ class ProductSalesReport
                 order_items.product_id,
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ');
@@ -242,8 +256,10 @@ class ProductSalesReport
             ->selectRaw('
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -278,8 +294,10 @@ class ProductSalesReport
                 order_items.product_id,
                 COALESCE(SUM(order_items.quantity), 0) as sold_quantity,
                 COALESCE(SUM(order_items.subtotal_amount), 0) as gross_amount,
-                COALESCE(SUM(order_items.discount_amount), 0) as discount_amount,
-                COALESCE(SUM(order_items.total_amount), 0) as net_amount,
+                COALESCE(SUM(order_items.discount_amount), 0) as product_discount_amount,
+                COALESCE(SUM(order_items.coupon_discount_amount), 0) as coupon_discount_amount,
+                COALESCE(SUM(order_items.discount_amount + order_items.coupon_discount_amount), 0) as discount_amount,
+                COALESCE(SUM(order_items.final_total_amount), 0) as net_amount,
                 COUNT(DISTINCT orders.id) as orders_count,
                 COUNT(order_items.id) as items_count
             ')
@@ -306,11 +324,12 @@ class ProductSalesReport
         return OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->whereIn('orders.status', $statusValues)
+            ->whereNotNull('orders.paid_at')
             ->when($from, function (Builder $query) use ($from) {
-                $query->where('orders.created_at', '>=', $from);
+                $query->where('orders.paid_at', '>=', $from);
             })
             ->when($to, function (Builder $query) use ($to) {
-                $query->where('orders.created_at', '<=', $to);
+                $query->where('orders.paid_at', '<=', $to);
             });
     }
 
@@ -319,6 +338,8 @@ class ProductSalesReport
         return array_merge($extra, [
             'sold_quantity' => (int)$row->sold_quantity,
             'gross_amount' => (int)$row->gross_amount,
+            'product_discount_amount' => (int)($row->product_discount_amount ?? 0),
+            'coupon_discount_amount' => (int)($row->coupon_discount_amount ?? 0),
             'discount_amount' => (int)$row->discount_amount,
             'net_amount' => (int)$row->net_amount,
             'orders_count' => (int)$row->orders_count,
