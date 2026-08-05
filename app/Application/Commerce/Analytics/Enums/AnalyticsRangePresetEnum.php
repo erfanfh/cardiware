@@ -11,6 +11,7 @@ enum AnalyticsRangePresetEnum: string
     case CURRENT_MONTH = 'current_month';
     case PREVIOUS_MONTH = 'previous_month';
     case CURRENT_YEAR = 'current_year';
+    case CUSTOM = 'custom';
 
     public function cacheTtlSeconds(): int
     {
@@ -22,6 +23,7 @@ enum AnalyticsRangePresetEnum: string
             self::CURRENT_MONTH => 300,
             self::PREVIOUS_MONTH => 1800,
             self::CURRENT_YEAR => 600,
+            self::CUSTOM => 300,
         };
     }
 
@@ -35,6 +37,7 @@ enum AnalyticsRangePresetEnum: string
             self::CURRENT_MONTH => 'ماه جاری',
             self::PREVIOUS_MONTH => 'ماه قبل',
             self::CURRENT_YEAR => 'سال جاری',
+            self::CUSTOM => 'بازه سفارشی',
         };
     }
 }

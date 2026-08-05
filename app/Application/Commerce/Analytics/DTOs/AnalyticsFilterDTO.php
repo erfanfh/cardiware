@@ -3,15 +3,18 @@
 namespace App\Application\Commerce\Analytics\DTOs;
 
 use App\Application\Commerce\Analytics\Enums\AnalyticsComparisonEnum;
+use App\Application\Commerce\Analytics\Enums\AnalyticsGranularityEnum;
 use App\Application\Commerce\Analytics\Enums\AnalyticsRangePresetEnum;
 
 final readonly class AnalyticsFilterDTO
 {
     public function __construct(
         public AnalyticsRangePresetEnum $preset,
-        public AnalyticsDateRangeDTO    $range,
-        public AnalyticsComparisonEnum  $comparison,
-        public ?AnalyticsDateRangeDTO   $comparisonRange,
+        public AnalyticsDateRangeDTO $range,
+        public AnalyticsComparisonEnum $comparison,
+        public ?AnalyticsDateRangeDTO $comparisonRange,
+        public AnalyticsGranularityEnum $requestedGranularity,
+        public AnalyticsGranularityEnum $granularity,
     ) {
     }
 
@@ -22,6 +25,8 @@ final readonly class AnalyticsFilterDTO
             'range' => $this->range->cachePayload(),
             'comparison' => $this->comparison->value,
             'comparison_range' => $this->comparisonRange?->cachePayload(),
+            'requested_granularity' => $this->requestedGranularity->value,
+            'granularity' => $this->granularity->value,
         ]));
     }
 }

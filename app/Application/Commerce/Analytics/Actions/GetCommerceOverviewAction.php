@@ -6,6 +6,7 @@ use App\Application\Commerce\Analytics\DTOs\AnalyticsDateRangeDTO;
 use App\Application\Commerce\Analytics\DTOs\AnalyticsFilterDTO;
 use App\Application\Commerce\Analytics\DTOs\AnalyticsMetricDTO;
 use App\Application\Commerce\Analytics\DTOs\CommerceOverviewDTO;
+use App\Application\Commerce\Analytics\Enums\AnalyticsGranularityEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
@@ -15,6 +16,7 @@ use App\Domain\Financial\Enums\PaymentGatewayEnum;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Enums\WalletTopUpPurposeEnum;
 use App\Domain\Financial\Models\WalletTopUp;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -45,10 +47,25 @@ class GetCommerceOverviewAction
             ? $this->summary($filter->comparisonRange)
             : null;
 
+        $currentTrend = $this->salesTrend(
+            range: $filter->range,
+            granularity: $filter->granularity,
+        );
+
+        $comparisonTrend = $filter->comparisonRange
+            ? $this->salesTrend(
+                range: $filter->comparisonRange,
+                granularity: $filter->granularity,
+            )
+            : null;
+
         return new CommerceOverviewDTO(
             filter: $filter,
             metrics: $this->buildMetrics($current, $previous),
-            salesTrend: $this->salesTrend($filter->range),
+            salesTrend: $this->mergeSalesTrendComparison(
+                current: $currentTrend,
+                comparison: $comparisonTrend,
+            ),
             gatewayPerformance: $this->gatewayPerformance($filter->range),
             topProducts: $this->topProducts($filter->range),
             generatedAt: now()->toImmutable(),
@@ -57,7 +74,7 @@ class GetCommerceOverviewAction
 
     private function cacheKey(AnalyticsFilterDTO $filter): string
     {
-        return 'commerce-analytics:overview:v1:' . $filter->cacheKey();
+        return 'commerce-analytics:overview:v2:' . $filter->cacheKey();
     }
 
     /**
@@ -192,43 +209,297 @@ class GetCommerceOverviewAction
     /**
      * @return Collection<int, array<string, mixed>>
      */
-    private function salesTrend(AnalyticsDateRangeDTO $range): Collection
-    {
-        $rows = DB::table('orders')
-            ->where('status', OrderStatusEnum::PAID->value)
-            ->whereNotNull('paid_at')
-            ->whereBetween('paid_at', [$range->from, $range->to])
-            ->groupByRaw('DATE(paid_at)')
-            ->orderByRaw('DATE(paid_at)')
-            ->selectRaw('DATE(paid_at) as bucket')
-            ->selectRaw('COUNT(*) as orders_count')
-            ->selectRaw('COALESCE(SUM(subtotal_amount), 0) as gross_sales')
-            ->selectRaw('COALESCE(SUM(discount_amount), 0) as discount_amount')
-            ->selectRaw('COALESCE(SUM(total_amount), 0) as net_sales')
-            ->get()
-            ->keyBy('bucket');
+    private function salesTrend(
+        AnalyticsDateRangeDTO $range,
+        AnalyticsGranularityEnum $granularity,
+    ): Collection {
+        $buckets = $this->trendBuckets($range, $granularity);
 
+        if ($buckets->isEmpty()) {
+            return collect();
+        }
+
+        $sourceRows = $this->trendSourceRows($range, $granularity);
+        $bucketLookup = $this->trendBucketLookup($buckets, $granularity);
+
+        $result = $buckets
+            ->map(static fn(array $bucket): array => [
+                'date' => $bucket['from']->toISOString(),
+                'label' => $bucket['label'],
+                'period_label' => $bucket['period_label'],
+                'orders_count' => 0,
+                'gross_sales' => 0,
+                'discount_amount' => 0,
+                'net_sales' => 0,
+            ])
+            ->values();
+
+        foreach ($sourceRows as $row) {
+            $index = $bucketLookup->get((string)$row->bucket);
+
+            if ($index === null) {
+                continue;
+            }
+
+            $current = $result->get($index);
+
+            $current['orders_count'] += (int)$row->orders_count;
+            $current['gross_sales'] += (int)$row->gross_sales;
+            $current['discount_amount'] += (int)$row->discount_amount;
+            $current['net_sales'] += (int)$row->net_sales;
+
+            $result->put($index, $current);
+        }
+
+        return $result->values();
+    }
+
+    /**
+     * @param Collection<int, array<string, mixed>> $current
+     * @param Collection<int, array<string, mixed>>|null $comparison
+     * @return Collection<int, array<string, mixed>>
+     */
+    private function mergeSalesTrendComparison(
+        Collection $current,
+        ?Collection $comparison,
+    ): Collection {
+        return $current
+            ->values()
+            ->map(function (array $row, int $index) use ($comparison): array {
+                $comparisonRow = $comparison?->values()->get($index);
+
+                return [
+                    ...$row,
+                    'comparison_label' => $comparisonRow['period_label'] ?? null,
+                    'comparison_orders_count' => $comparisonRow['orders_count'] ?? null,
+                    'comparison_gross_sales' => $comparisonRow['gross_sales'] ?? null,
+                    'comparison_discount_amount' => $comparisonRow['discount_amount'] ?? null,
+                    'comparison_net_sales' => $comparisonRow['net_sales'] ?? null,
+                ];
+            });
+    }
+
+    /**
+     * @return Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}>
+     */
+    private function trendBuckets(
+        AnalyticsDateRangeDTO $range,
+        AnalyticsGranularityEnum $granularity,
+    ): Collection {
+        return match ($granularity) {
+            AnalyticsGranularityEnum::HOUR => $this->hourlyTrendBuckets($range),
+            AnalyticsGranularityEnum::DAY => $this->dailyTrendBuckets($range),
+            AnalyticsGranularityEnum::WEEK => $this->weeklyTrendBuckets($range),
+            AnalyticsGranularityEnum::MONTH => $this->monthlyTrendBuckets($range),
+            AnalyticsGranularityEnum::AUTO => collect(),
+        };
+    }
+
+    /**
+     * @return Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}>
+     */
+    private function hourlyTrendBuckets(AnalyticsDateRangeDTO $range): Collection
+    {
+        $cursor = $range->from->startOfHour();
+        $lastHour = $range->to->startOfHour();
+        $multipleDays = !$range->from->startOfDay()->equalTo($range->to->startOfDay());
+        $result = collect();
+
+        while ($cursor->lessThanOrEqualTo($lastHour)) {
+            $to = $cursor->endOfHour()->lessThan($range->to)
+                ? $cursor->endOfHour()
+                : $range->to;
+
+            $jalali = Jalalian::fromCarbon($cursor->toMutable());
+
+            $result->push([
+                'from' => $cursor,
+                'to' => $to,
+                'label' => $multipleDays
+                    ? $jalali->format('m/d') . ' ' . $cursor->format('H')
+                    : $cursor->format('H:i'),
+                'period_label' => $jalali->format('Y/m/d') . ' ساعت ' . $cursor->format('H:00'),
+            ]);
+
+            $cursor = $cursor->addHour();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}>
+     */
+    private function dailyTrendBuckets(AnalyticsDateRangeDTO $range): Collection
+    {
         $cursor = $range->from->startOfDay();
         $lastDay = $range->to->startOfDay();
+        $showYear = $range->from->diffInDays($range->to) > 180;
         $result = collect();
 
         while ($cursor->lessThanOrEqualTo($lastDay)) {
-            $key = $cursor->format('Y-m-d');
-            $row = $rows->get($key);
+            $to = $cursor->endOfDay()->lessThan($range->to)
+                ? $cursor->endOfDay()
+                : $range->to;
+            $jalali = Jalalian::fromCarbon($cursor->toMutable());
 
             $result->push([
-                'date' => $key,
-                'label' => Jalalian::fromCarbon($cursor->toMutable())->format('m/d'),
-                'orders_count' => (int)($row->orders_count ?? 0),
-                'gross_sales' => (int)($row->gross_sales ?? 0),
-                'discount_amount' => (int)($row->discount_amount ?? 0),
-                'net_sales' => (int)($row->net_sales ?? 0),
+                'from' => $cursor,
+                'to' => $to,
+                'label' => $jalali->format($showYear ? 'Y/m/d' : 'm/d'),
+                'period_label' => $jalali->format('Y/m/d'),
             ]);
 
             $cursor = $cursor->addDay();
         }
 
         return $result;
+    }
+
+    /**
+     * @return Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}>
+     */
+    private function weeklyTrendBuckets(AnalyticsDateRangeDTO $range): Collection
+    {
+        $cursor = $range->from->startOfDay();
+        $result = collect();
+
+        while ($cursor->lessThanOrEqualTo($range->to)) {
+            $from = $cursor->lessThan($range->from) ? $range->from : $cursor;
+            $candidateTo = $cursor->addDays(6)->endOfDay();
+            $to = $candidateTo->lessThan($range->to) ? $candidateTo : $range->to;
+
+            $fromJalali = Jalalian::fromCarbon($from->toMutable());
+            $toJalali = Jalalian::fromCarbon($to->toMutable());
+
+            $result->push([
+                'from' => $from,
+                'to' => $to,
+                'label' => $fromJalali->format('m/d') . ' تا ' . $toJalali->format('m/d'),
+                'period_label' => $fromJalali->format('Y/m/d') . ' تا ' . $toJalali->format('Y/m/d'),
+            ]);
+
+            $cursor = $cursor->addDays(7);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}>
+     */
+    private function monthlyTrendBuckets(AnalyticsDateRangeDTO $range): Collection
+    {
+        $cursor = $this->jalaliMonthStart($range->from);
+        $result = collect();
+
+        while ($cursor->lessThanOrEqualTo($range->to)) {
+            $nextMonth = $this->jalaliNextMonthStart($cursor);
+            $from = $cursor->lessThan($range->from) ? $range->from : $cursor;
+            $candidateTo = $nextMonth->subSecond();
+            $to = $candidateTo->lessThan($range->to) ? $candidateTo : $range->to;
+            $jalali = Jalalian::fromCarbon($cursor->toMutable());
+
+            $result->push([
+                'from' => $from,
+                'to' => $to,
+                'label' => $jalali->format('Y/m'),
+                'period_label' => $jalali->format('Y/m'),
+            ]);
+
+            $cursor = $nextMonth;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return Collection<int, object>
+     */
+    private function trendSourceRows(
+        AnalyticsDateRangeDTO $range,
+        AnalyticsGranularityEnum $granularity,
+    ): Collection {
+        $bucketExpression = $granularity === AnalyticsGranularityEnum::HOUR
+            ? "DATE_FORMAT(paid_at, '%Y-%m-%d %H:00:00')"
+            : 'DATE(paid_at)';
+
+        return DB::table('orders')
+            ->where('status', OrderStatusEnum::PAID->value)
+            ->whereNotNull('paid_at')
+            ->whereBetween('paid_at', [$range->from, $range->to])
+            ->groupByRaw($bucketExpression)
+            ->orderByRaw($bucketExpression)
+            ->selectRaw($bucketExpression . ' as bucket')
+            ->selectRaw('COUNT(*) as orders_count')
+            ->selectRaw('COALESCE(SUM(subtotal_amount), 0) as gross_sales')
+            ->selectRaw('COALESCE(SUM(discount_amount), 0) as discount_amount')
+            ->selectRaw('COALESCE(SUM(total_amount), 0) as net_sales')
+            ->get();
+    }
+
+    /**
+     * @param Collection<int, array{from: CarbonImmutable, to: CarbonImmutable, label: string, period_label: string}> $buckets
+     * @return Collection<string, int>
+     */
+    private function trendBucketLookup(
+        Collection $buckets,
+        AnalyticsGranularityEnum $granularity,
+    ): Collection {
+        $lookup = collect();
+        $hourly = $granularity === AnalyticsGranularityEnum::HOUR;
+
+        foreach ($buckets as $index => $bucket) {
+            $cursor = $hourly
+                ? $bucket['from']->startOfHour()
+                : $bucket['from']->startOfDay();
+            $last = $hourly
+                ? $bucket['to']->startOfHour()
+                : $bucket['to']->startOfDay();
+
+            while ($cursor->lessThanOrEqualTo($last)) {
+                $lookup->put(
+                    $hourly
+                        ? $cursor->format('Y-m-d H:00:00')
+                        : $cursor->format('Y-m-d'),
+                    $index,
+                );
+
+                $cursor = $hourly
+                    ? $cursor->addHour()
+                    : $cursor->addDay();
+            }
+        }
+
+        return $lookup;
+    }
+
+    private function jalaliMonthStart(CarbonImmutable $date): CarbonImmutable
+    {
+        return Jalalian::fromCarbon($date->toMutable())
+            ->getFirstDayOfMonth()
+            ->toCarbon()
+            ->startOfDay()
+            ->toImmutable();
+    }
+
+    private function jalaliNextMonthStart(CarbonImmutable $date): CarbonImmutable
+    {
+        $jalali = Jalalian::fromCarbon($date->toMutable());
+        $year = (int)$jalali->format('Y');
+        $month = (int)$jalali->format('m');
+
+        if ($month === 12) {
+            $year++;
+            $month = 1;
+        } else {
+            $month++;
+        }
+
+        return (new Jalalian($year, $month, 1))
+            ->toCarbon()
+            ->startOfDay()
+            ->toImmutable();
     }
 
     /**
@@ -355,7 +626,7 @@ class GetCommerceOverviewAction
                 'product_id' => $productId,
                 'title' => $products->get($productId)
                     ?? $snapshotTitles->get($productId)
-                        ?? 'محصول حذف شده',
+                    ?? 'محصول حذف شده',
                 'gross_sales' => (int)$row->gross_sales,
                 'discount_amount' => (int)$row->discount_amount,
                 'net_sales' => (int)$row->net_sales,

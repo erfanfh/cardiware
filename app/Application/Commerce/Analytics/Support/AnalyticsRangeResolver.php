@@ -5,18 +5,29 @@ namespace App\Application\Commerce\Analytics\Support;
 use App\Application\Commerce\Analytics\DTOs\AnalyticsDateRangeDTO;
 use App\Application\Commerce\Analytics\DTOs\AnalyticsFilterDTO;
 use App\Application\Commerce\Analytics\Enums\AnalyticsComparisonEnum;
+use App\Application\Commerce\Analytics\Enums\AnalyticsGranularityEnum;
 use App\Application\Commerce\Analytics\Enums\AnalyticsRangePresetEnum;
 use Carbon\CarbonImmutable;
+use InvalidArgumentException;
 use Morilog\Jalali\Jalalian;
+use Throwable;
 
 class AnalyticsRangeResolver
 {
+    private const MAX_CUSTOM_RANGE_DAYS = 1096;
+
     public function resolveFilter(
         AnalyticsRangePresetEnum $preset,
-        AnalyticsComparisonEnum  $comparison,
-    ): AnalyticsFilterDTO
-    {
-        $range = $this->resolveRange($preset);
+        AnalyticsComparisonEnum $comparison,
+        AnalyticsGranularityEnum $granularity = AnalyticsGranularityEnum::AUTO,
+        ?string $customFrom = null,
+        ?string $customTo = null,
+    ): AnalyticsFilterDTO {
+        $range = $preset === AnalyticsRangePresetEnum::CUSTOM
+            ? $this->resolveCustomRange((string)$customFrom, (string)$customTo)
+            : $this->resolveRange($preset);
+
+        $resolvedGranularity = $granularity->resolveFor($range);
 
         return new AnalyticsFilterDTO(
             preset: $preset,
@@ -25,14 +36,19 @@ class AnalyticsRangeResolver
             comparisonRange: $comparison === AnalyticsComparisonEnum::PREVIOUS_PERIOD
                 ? $this->previousPeriod($range)
                 : null,
+            requestedGranularity: $granularity,
+            granularity: $resolvedGranularity,
         );
     }
 
     public function resolveRange(
         AnalyticsRangePresetEnum $preset,
-        ?CarbonImmutable         $now = null,
-    ): AnalyticsDateRangeDTO
-    {
+        ?CarbonImmutable $now = null,
+    ): AnalyticsDateRangeDTO {
+        if ($preset === AnalyticsRangePresetEnum::CUSTOM) {
+            throw new InvalidArgumentException('برای بازه سفارشی باید تاریخ شروع و پایان مشخص شود.');
+        }
+
         $now ??= now()->toImmutable();
         $today = $now->startOfDay();
 
@@ -65,6 +81,9 @@ class AnalyticsRangeResolver
                 $this->jalaliYearStart($now),
                 $now,
             ],
+            AnalyticsRangePresetEnum::CUSTOM => throw new InvalidArgumentException(
+                'برای بازه سفارشی باید تاریخ شروع و پایان مشخص شود.',
+            ),
         };
 
         return new AnalyticsDateRangeDTO(
@@ -74,13 +93,38 @@ class AnalyticsRangeResolver
         );
     }
 
-    public function previousPeriod(
-        AnalyticsDateRangeDTO $range,
-    ): AnalyticsDateRangeDTO
+    public function resolveCustomRange(string $from, string $to): AnalyticsDateRangeDTO
+    {
+        $fromDate = $this->parseJalaliDate($from, 'تاریخ شروع');
+        $toDate = $this->parseJalaliDate($to, 'تاریخ پایان');
+
+        if ($toDate->lessThan($fromDate)) {
+            throw new InvalidArgumentException('تاریخ پایان نمیتواند قبل از تاریخ شروع باشد.');
+        }
+
+        $days = (int)floor($fromDate->diffInDays($toDate));
+
+        if ($days > self::MAX_CUSTOM_RANGE_DAYS) {
+            throw new InvalidArgumentException('حداکثر بازه سفارشی قابل گزارش سه سال است.');
+        }
+
+        return new AnalyticsDateRangeDTO(
+            from: $fromDate->startOfDay(),
+            to: $toDate->endOfDay(),
+            label: 'بازه سفارشی',
+        );
+    }
+
+    public function formatJalaliDate(CarbonImmutable $date): string
+    {
+        return Jalalian::fromCarbon($date->toMutable())->format('Y/m/d');
+    }
+
+    public function previousPeriod(AnalyticsDateRangeDTO $range): AnalyticsDateRangeDTO
     {
         $durationInSeconds = max(
             1,
-            $range->from->diffInSeconds($range->to) + 1,
+            (int)floor($range->from->diffInSeconds($range->to)) + 1,
         );
 
         $to = $range->from->subSecond();
@@ -91,6 +135,53 @@ class AnalyticsRangeResolver
             to: $to,
             label: 'دوره قبل',
         );
+    }
+
+    private function parseJalaliDate(string $value, string $fieldLabel): CarbonImmutable
+    {
+        $normalized = trim($this->normalizeDigits($value));
+
+        if (!preg_match('/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/', $normalized, $matches)) {
+            throw new InvalidArgumentException($fieldLabel . ' باید با فرمت ۱۴۰۵/۰۵/۱۴ وارد شود.');
+        }
+
+        try {
+            return (new Jalalian(
+                (int)$matches[1],
+                (int)$matches[2],
+                (int)$matches[3],
+            ))
+                ->toCarbon()
+                ->toImmutable();
+        } catch (Throwable) {
+            throw new InvalidArgumentException($fieldLabel . ' معتبر نیست.');
+        }
+    }
+
+    private function normalizeDigits(string $value): string
+    {
+        return strtr($value, [
+            '۰' => '0',
+            '۱' => '1',
+            '۲' => '2',
+            '۳' => '3',
+            '۴' => '4',
+            '۵' => '5',
+            '۶' => '6',
+            '۷' => '7',
+            '۸' => '8',
+            '۹' => '9',
+            '٠' => '0',
+            '١' => '1',
+            '٢' => '2',
+            '٣' => '3',
+            '٤' => '4',
+            '٥' => '5',
+            '٦' => '6',
+            '٧' => '7',
+            '٨' => '8',
+            '٩' => '9',
+        ]);
     }
 
     private function jalaliMonthStart(CarbonImmutable $date): CarbonImmutable
