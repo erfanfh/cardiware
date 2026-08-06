@@ -85,6 +85,17 @@
                                     ویرایش
                                 </x-admin.list.action>
 
+                                @can('analytics.view')
+                                    <span class="text-slate-300">|</span>
+
+                                    <x-admin.list.action
+                                        tag="a"
+                                        href="{{ route('admin.stores.analytics', $store) }}"
+                                    >
+                                        گزارش فروش
+                                    </x-admin.list.action>
+                                @endcan
+
                                 <span class="text-slate-300">|</span>
 
                                 <x-admin.form
