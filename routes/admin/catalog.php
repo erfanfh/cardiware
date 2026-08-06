@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Catalog\ProductAnalyticsController;
 use App\Http\Controllers\Admin\Catalog\ProductAttributeController;
 use App\Http\Controllers\Admin\Catalog\ProductBulkActionController;
 use App\Http\Controllers\Admin\Catalog\ProductController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Admin\Catalog\ProductSearchController;
 Route::resource('products', ProductController::class)->except(['show']);
 
 Route::prefix('products')->name('products.')->group(function () {
+    Route::get('{product}/analytics', ProductAnalyticsController::class)->name('analytics');
     Route::get('attributes', ProductAttributeController::class)->name('attributes.index');
     Route::get('information', ProductInformationController::class)->name('information.index');
     Route::get('medals', ProductMedalController::class)->name('medals.index');
