@@ -1,8 +1,10 @@
-export default function productTabs() {
+export default function productTabs(commentsCount = 0) {
     return {
         activeSection: 'product-content',
         activeIndex: 0,
         isSticky: false,
+
+        commentsCount: Number(commentsCount) || 0,
 
         headerBase: 130,
         adminBar: 41,
@@ -30,12 +32,31 @@ export default function productTabs() {
         },
 
         get availableSections() {
-            return this.sections.filter(s => document.getElementById(s.id));
+            return this.sections.filter(section => {
+                return document.getElementById(section.id);
+            });
+        },
+
+        formatCommentsCount(count) {
+            const value = Number(count) || 0;
+
+            if (value < 1000) {
+                return new Intl.NumberFormat('fa-IR').format(value);
+            }
+
+            const compactValue = value / 1000;
+
+            return `${new Intl.NumberFormat('fa-IR', {
+                maximumFractionDigits: 1,
+            }).format(compactValue)}K`;
         },
 
         scrollTo(id) {
             const el = document.getElementById(id);
-            if (!el) return;
+
+            if (!el) {
+                return;
+            }
 
             const top = el.getBoundingClientRect().top + window.scrollY;
 
@@ -50,7 +71,7 @@ export default function productTabs() {
 
         updateIndex() {
             const index = this.availableSections.findIndex(
-                s => s.id === this.activeSection
+                section => section.id === this.activeSection
             );
 
             this.activeIndex = index >= 0 ? index : 0;
@@ -58,7 +79,7 @@ export default function productTabs() {
 
         observeSections() {
             const observer = new IntersectionObserver(
-                (entries) => {
+                entries => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             this.activeSection = entry.target.id;
@@ -73,21 +94,29 @@ export default function productTabs() {
                 }
             );
 
-            this.sections.forEach(s => {
-                const el = document.getElementById(s.id);
-                if (el) observer.observe(el);
+            this.sections.forEach(section => {
+                const el = document.getElementById(section.id);
+
+                if (el) {
+                    observer.observe(el);
+                }
             });
         },
 
         initSticky() {
             const el = this.$refs.stickyAnchor;
-            if (!el) return;
+
+            if (!el) {
+                return;
+            }
 
             const observer = new IntersectionObserver(
                 ([entry]) => {
                     this.isSticky = !entry.isIntersecting;
                 },
-                {threshold: 1}
+                {
+                    threshold: 1,
+                }
             );
 
             observer.observe(el);

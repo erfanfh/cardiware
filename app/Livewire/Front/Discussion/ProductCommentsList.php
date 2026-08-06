@@ -2,15 +2,12 @@
 
 namespace App\Livewire\Front\Discussion;
 
+use App\Application\Discussion\Actions\GetApprovedCommentsCountAction;
 use App\Application\Discussion\Support\PendingCommentSessionStore;
-use App\Application\Shared\Cache\CacheKey;
-use App\Application\Shared\Cache\CacheTag;
-use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -91,22 +88,7 @@ class ProductCommentsList extends Component
     #[Computed]
     public function totalComments(): int
     {
-        $commentable = $this->commentable;
-
-        return Cache::tags([
-            CacheTag::COMMENTS,
-            CacheTag::commentable($commentable->getMorphClass(), $commentable->getKey()),
-        ])->remember(
-            CacheKey::commentableApprovedCommentsCount(
-                $commentable->getMorphClass(),
-                $commentable->getKey()
-            ),
-            CacheTtl::medium(),
-            fn() => Comment::query()
-                ->forCommentable($commentable)
-                ->approved()
-                ->count()
-        );
+        return app(GetApprovedCommentsCountAction::class)->execute($this->commentable);
     }
 
     #[Computed]

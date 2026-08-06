@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Catalog;
 use App\Application\Catalog\Actions\GetProductDetailAction;
 use App\Application\Catalog\Actions\GetProductDetailStatsAction;
 use App\Application\Catalog\Actions\GetRelatedProductsAction;
+use App\Application\Discussion\Actions\GetApprovedCommentsCountAction;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
@@ -47,6 +48,8 @@ class ProductDetailController extends Controller
 
         $relatedProducts = $getRelatedProductsAction->execute($product);
 
+        $commentsCount = app(GetApprovedCommentsCountAction::class)->execute($product);
+
         $storeViewAction->execute($product);
 
         return view('front.catalog.products.detail', [
@@ -55,6 +58,7 @@ class ProductDetailController extends Controller
             'storeSoldQuantity' => $stats['store_sold_quantity'],
             'relatedProducts' => $relatedProducts,
             'storeProducts' => $stats['store_products_count'],
+            'commentsCount' => $commentsCount,
         ]);
     }
 

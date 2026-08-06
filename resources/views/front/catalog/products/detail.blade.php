@@ -3,7 +3,7 @@
 @section('content')
     <main
         class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8"
-        x-data="productTabs()"
+        x-data="productTabs(@js($commentsCount ?? 0))"
         x-init="init()"
         :style="`--header-offset: ${headerOffset}px`"
     >
