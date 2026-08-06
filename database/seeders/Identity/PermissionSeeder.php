@@ -103,6 +103,9 @@ class PermissionSeeder extends Seeder
                 'list' => 'لیست سفارش ها',
                 'edit' => 'ویرایش سفارش',
             ],
+            'purchase-access' => [
+                'reset-downloads' => 'ریست محدودیت دانلود خرید کاربران',
+            ],
             'analytics' => [
                 'view' => 'مشاهده تحلیل فروش و درآمد',
             ],

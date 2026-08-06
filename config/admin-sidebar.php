@@ -132,6 +132,12 @@ return [
                 'gate' => 'store.list',
             ],
             [
+                'label' => 'بازسازی دانلودها',
+                'route' => 'admin.purchase-download-resets.index',
+                'icon' => 'icons.arrow-reload-horizontal',
+                'gate' => 'purchase-access.reset-downloads',
+            ],
+            [
                 'label' => 'تحلیل فروش و درآمد',
                 'route' => 'admin.analytics.index',
                 'icon' => 'icons.chart-03',
