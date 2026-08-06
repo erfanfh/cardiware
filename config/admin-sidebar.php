@@ -237,6 +237,13 @@ return [
     ],
 
     [
+        'label' => 'گزارش‌ها',
+        'route' => 'admin.reports.index',
+        'icon' => 'icons.chart-03',
+        'gate' => 'report.view',
+    ],
+
+    [
         'label' => 'فهرست ها',
         'icon' => 'icons.right-to-left-list-bullet',
         'children' => [

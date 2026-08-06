@@ -25,4 +25,5 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/promotion.php';
         require __DIR__ . '/admin/support.php';
         require __DIR__ . '/admin/organization.php';
+        require __DIR__ . '/admin/report.php';
     });

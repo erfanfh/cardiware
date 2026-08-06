@@ -106,6 +106,9 @@ class PermissionSeeder extends Seeder
             'analytics' => [
                 'view' => 'مشاهده تحلیل فروش و درآمد',
             ],
+            'report' => [
+                'view' => 'مشاهده گزارش‌های عمومی سامانه',
+            ],
             'coupon' => [
                 'list' => 'لیست کدهای تخفیف',
                 'create' => 'ایجاد کدتخفیف',
