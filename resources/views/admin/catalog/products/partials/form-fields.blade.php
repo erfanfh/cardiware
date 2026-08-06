@@ -4,6 +4,7 @@
     use App\Domain\Marketplace\Models\Store;
 
     $isEdit = isset($product) && $product;
+    $quickUrl = $isEdit ? route('products.detail.quick', $product->id) : null;
 
     $statuses = [];
     foreach (ProductStatusEnum::cases() as $status){
@@ -26,6 +27,94 @@
 
 <x-admin.page columns="2">
     <x-slot:sidebar>
+        @if($isEdit && filled($quickUrl))
+            <x-admin.metabox title="لینک کوتاه">
+                <div
+                    x-data="{
+                    copied: false,
+                    timer: null,
+
+                    async copyLink() {
+                        const input = this.$refs.shortLink;
+                        const value = input.value;
+
+                        try {
+                            await navigator.clipboard.writeText(value);
+                        } catch (error) {
+                            input.focus();
+                            input.select();
+                            document.execCommand('copy');
+                            window.getSelection()?.removeAllRanges();
+                        }
+
+                        this.copied = true;
+
+                        clearTimeout(this.timer);
+
+                        this.timer = setTimeout(() => {
+                            this.copied = false;
+                        }, 1800);
+                    }
+                }"
+                    class="space-y-3"
+                >
+                    <div
+                        class="flex overflow-hidden rounded-xl border border-slate-200 bg-slate-50
+                           transition focus-within:border-brand-400 focus-within:ring-4
+                           focus-within:ring-brand-500/10"
+                    >
+                        <input
+                            x-ref="shortLink"
+                            type="text"
+                            readonly
+                            dir="ltr"
+                            value="{{ $quickUrl }}"
+                            class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2.5
+                               text-left text-sm text-slate-700 outline-none ring-0
+                               focus:border-0 focus:ring-0"
+                            aria-label="لینک کوتاه نوشته"
+                        >
+
+                        <button
+                            type="button"
+                            x-on:click="copyLink"
+                            class="flex shrink-0 items-center gap-1.5 border-r border-slate-200
+                               bg-white px-3 text-xs font-bold text-slate-600 transition cursor-pointer
+                               hover:bg-brand-50 hover:text-brand-700"
+                        >
+                            <svg
+                                x-show="!copied"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                class="h-4 w-4"
+                            >
+                                <rect x="8" y="8" width="11" height="11" rx="2"></rect>
+                                <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path>
+                            </svg>
+
+                            <svg
+                                x-show="copied"
+                                x-cloak
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                class="h-4 w-4"
+                            >
+                                <path d="m5 12 4 4L19 6"></path>
+                            </svg>
+
+                            <span x-text="copied ? 'کپی شد' : 'کپی'"></span>
+                        </button>
+                    </div>
+                </div>
+            </x-admin.metabox>
+        @endif
+        
         <x-admin.metabox title="انتشار">
             <div class="grid grid-cols-12 gap-5">
                 <x-admin.field

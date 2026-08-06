@@ -3,6 +3,7 @@
 use App\Http\Controllers\Front\Content\AuthorController;
 use App\Http\Controllers\Front\Content\ContentController;
 use App\Http\Controllers\Front\Content\PostListController;
+use App\Http\Controllers\Front\Content\QuickPostDetailController;
 use App\Http\Middleware\ForceTrailingSlash;
 
 Route::middleware(ForceTrailingSlash::class)->group(function () {
@@ -23,3 +24,5 @@ Route::middleware(ForceTrailingSlash::class)->group(function () {
     //=== Last route ===//
     Route::get('/{slug}', ContentController::class)->where('slug', '[^/]+')->name('contents.detail');
 });
+
+Route::get('q/p/{id}', QuickPostDetailController::class)->name('posts.detail.quick');

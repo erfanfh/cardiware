@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\Catalog\ProductDetailController;
 use App\Http\Controllers\Front\Catalog\ProductListController;
+use App\Http\Controllers\Front\Catalog\QuickProductDetailController;
 use App\Http\Middleware\ForceTrailingSlash;
 
 Route::middleware(ForceTrailingSlash::class)
@@ -16,3 +17,5 @@ Route::middleware(ForceTrailingSlash::class)
 
         Route::get('/{productSlug}', ProductDetailController::class)->name('detail');
     });
+
+Route::get('q/pr/{id}', QuickProductDetailController::class)->name('products.detail.quick');

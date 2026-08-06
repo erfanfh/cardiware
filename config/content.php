@@ -28,5 +28,6 @@ return [
         'payment',
         'namad',
         'docs',
+        'q',
     ],
 ];
