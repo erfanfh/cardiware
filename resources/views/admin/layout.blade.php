@@ -32,6 +32,7 @@
             @yield('content')
 
             @livewire('admin.media.media-picker', ['mode' => 'singleton'], key('singleton-media-picker'))
+            @livewire('admin.icon.icon-picker', key('singleton-icon-picker'))
         </main>
     </div>
 

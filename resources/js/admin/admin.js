@@ -8,6 +8,7 @@ import './repeater.js'
 import './colorpicker.js'
 import './async-select.js'
 import './editor.js'
+import './icon-picker.js'
 
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('Sidebar');

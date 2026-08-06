@@ -1,5 +1,6 @@
 @import './sidebar.css';
 @import './media-picker.css';
+@import './icon-picker.css';
 @import './async-select.css';
 
 [x-cloak] {

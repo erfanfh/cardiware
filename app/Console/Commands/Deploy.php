@@ -24,7 +24,7 @@ class Deploy extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
         $this->info('🚀 Running post-deploy commands...');
 
@@ -35,11 +35,20 @@ class Deploy extends Command
             '--force' => true,
         ]);
 
+        $this->info('🎨 Syncing icon library...');
+
+        if ($this->call('icons:import') !== self::SUCCESS) {
+            $this->error('Icon library sync failed.');
+            return self::FAILURE;
+        }
+
         $this->info('📚 Generating API documentation...');
         $this->call('scribe:generate');
 
         $this->call('horizon:terminate');
 
         $this->info('✅ Deploy finalized.');
+
+        return self::SUCCESS;
     }
 }
