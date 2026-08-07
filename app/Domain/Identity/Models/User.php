@@ -16,6 +16,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -136,6 +137,16 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function favoriteProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            \App\Domain\Catalog\Models\Product::class,
+            'product_favorites',
+            'user_id',
+            'product_id'
+        )->withTimestamps();
     }
 
     public function wallet(): HasOne

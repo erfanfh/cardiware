@@ -15,6 +15,7 @@ use App\Domain\Discussion\Contracts\HasDiscussionOwner;
 use App\Domain\Discussion\Contracts\HasVerifiedDiscussionBuyer;
 use App\Domain\Discussion\Enums\CommentAuthorBadge;
 use App\Domain\Discussion\Traits\HasComments;
+use App\Domain\Identity\Models\User;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Seo\Traits\HasSeoMeta;
@@ -214,6 +215,16 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function favoritedByUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'product_favorites',
+            'product_id',
+            'user_id'
+        )->withTimestamps();
     }
 
     public function updateProgress(): HasOne

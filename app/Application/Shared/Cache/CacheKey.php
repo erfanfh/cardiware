@@ -203,6 +203,11 @@ final class CacheKey
         return "account:user:{$userId}:stats";
     }
 
+    public static function userFavoriteProductIds(int|string $userId): string
+    {
+        return "account:user:{$userId}:favorite-product-ids";
+    }
+
     public static function userAvatar(int|string $userId): string
     {
         return "user:{$userId}:avatar";

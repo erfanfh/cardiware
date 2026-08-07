@@ -2,6 +2,7 @@
 
 namespace App\Application\Identity\Actions;
 
+use App\Application\Identity\Actions\Favorites\GetUserFavoriteProductIdsAction;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
@@ -12,12 +13,19 @@ use Illuminate\Support\Facades\Cache;
 
 final class GetAccountUserStatsAction
 {
+    public function __construct(
+        private readonly GetUserFavoriteProductIdsAction $getUserFavoriteProductIdsAction,
+    )
+    {
+    }
+
     /**
      * Get cached account stats for the given user.
      *
      * @return array{
      *     paid_orders_count: int,
      *     purchase_accesses_count: int,
+     *     favorite_products_count: int,
      *     tickets_count: int,
      *     open_tickets_count: int,
      * }
@@ -40,6 +48,7 @@ final class GetAccountUserStatsAction
      * @return array{
      *     paid_orders_count: int,
      *     purchase_accesses_count: int,
+     *     favorite_products_count: int,
      *     tickets_count: int,
      *     open_tickets_count: int,
      * }
@@ -52,6 +61,10 @@ final class GetAccountUserStatsAction
                 ->count(),
 
             'purchase_accesses_count' => $user->purchaseAccesses()
+                ->count(),
+
+            'favorite_products_count' => $this->getUserFavoriteProductIdsAction
+                ->execute($user)
                 ->count(),
 
             'tickets_count' => $user->tickets()->count(),

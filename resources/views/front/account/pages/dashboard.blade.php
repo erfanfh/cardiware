@@ -44,7 +44,7 @@
                         'badge' => 'ذخیره‌شده',
                         'title' => 'علاقه‌مندی‌ها',
                         'desc' => 'محصولات ذخیره‌شده برای بعد',
-                        'value' => 0,
+                        'value' => $user->favorite_products_count,
                         'action' => 'مشاهده',
                     ],
                 ];

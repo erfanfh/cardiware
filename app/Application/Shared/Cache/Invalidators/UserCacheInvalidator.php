@@ -32,4 +32,13 @@ class UserCacheInvalidator
             CacheTag::user($userId),
         ])->flush();
     }
+
+    public function flushAccountForUser(User|int|string $user): void
+    {
+        $userId = $user instanceof User ? $user->id : $user;
+
+        Cache::tags([
+            CacheTag::user($userId),
+        ])->flush();
+    }
 }

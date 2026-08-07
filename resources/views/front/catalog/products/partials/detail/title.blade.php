@@ -47,7 +47,12 @@
             class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent"
         ></div>
 
-        <div class="absolute left-3 top-3 sm:left-4 sm:top-4">
+        <div class="absolute left-3 top-3 flex items-center gap-2 sm:left-4 sm:top-4" dir="ltr">
+            <livewire:front.catalog.product-favorite-button
+                :product="$product"
+                :key="'product-favorite-button-' . $product->id"
+            />
+
             <button
                 x-data
                 x-on:click="$dispatch('open-modal', 'product-share-{{ $product->id }}')"
