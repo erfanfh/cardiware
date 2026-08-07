@@ -256,9 +256,25 @@ window.mwIconPickerField = function (options = {}) {
         ...sharedPickerState(options),
         selectedId: initialIcon?.id ?? null,
         selectedTitle: initialIcon?.title ?? '',
+        livewireModel: options.livewireModel ?? null,
+        livewireIdModel: options.livewireIdModel ?? null,
 
         init() {
+            this.syncLivewire(this.livewireIdModel, this.selectedId);
+            this.syncLivewire(this.livewireModel, this.selectedTitle);
             this.initPreview();
+        },
+
+        syncLivewire(model, value) {
+            if (!model) {
+                return;
+            }
+
+            try {
+                this.$wire?.set(model, value, false);
+            } catch (error) {
+                console.error('Unable to sync icon picker with Livewire.', error);
+            }
         },
 
         getSelectedId() {
@@ -267,6 +283,7 @@ window.mwIconPickerField = function (options = {}) {
 
         setSelectedId(id) {
             this.selectedId = normalizeId(id);
+            this.syncLivewire(this.livewireIdModel, this.selectedId);
         },
 
         getSelectedTitle() {
@@ -275,6 +292,7 @@ window.mwIconPickerField = function (options = {}) {
 
         setSelectedTitle(title) {
             this.selectedTitle = normalizeTitle(title);
+            this.syncLivewire(this.livewireModel, this.selectedTitle);
         },
     };
 };

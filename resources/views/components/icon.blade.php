@@ -1,20 +1,23 @@
 @props([
     'name' => null,
+    'svg' => null,
     'fallback' => null,
 ])
 
 @php
-    $svg = app(\App\Application\Icon\Actions\ResolveIconSvgAction::class)->execute($name);
+    $resolvedSvg = filled($svg)
+        ? $svg
+        : app(\App\Application\Icon\Actions\ResolveIconSvgAction::class)->execute($name);
 @endphp
 
-@if($svg)
+@if($resolvedSvg)
     <span
         {{ $attributes->merge([
             'class' => 'inline-flex shrink-0 items-center justify-center leading-none [&_svg]:h-full [&_svg]:w-full'
         ]) }}
         aria-hidden="true"
     >
-        {!! $svg !!}
+        {!! $resolvedSvg !!}
     </span>
 @elseif(filled($fallback))
     <span {{ $attributes }}>{{ $fallback }}</span>

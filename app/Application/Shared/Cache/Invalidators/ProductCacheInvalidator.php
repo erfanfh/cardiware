@@ -30,6 +30,13 @@ class ProductCacheInvalidator
         $this->flushProductRelatedCaches($product);
     }
 
+    public function flushProductDetails(): void
+    {
+        Cache::tags([
+            CacheTag::PRODUCT_DETAIL,
+        ])->flush();
+    }
+
     protected function flushProductRelatedCaches(Product $product): void
     {
         $this->flushProductSeoCaches($product);

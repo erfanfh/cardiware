@@ -34,7 +34,11 @@
                 class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
                 <div
                     class="flex min-w-0 items-center gap-1.5 text-xs font-extrabold text-slate-500 dark:text-slate-400">
-                    @include('icons.menu-01')
+                    @if($info->field->icon)
+                        {!! $info->field->icon->svg !!}
+                    @else
+                        @include('icons.menu-01')
+                    @endif
                     <span class="line-clamp-1">{{ $info->field->title }}</span>
                 </div>
 

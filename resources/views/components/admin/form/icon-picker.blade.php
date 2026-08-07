@@ -4,6 +4,8 @@
     'idName' => null,
     'value' => null,
     'idValue' => null,
+    'livewireModel' => null,
+    'livewireIdModel' => null,
     'placeholder' => 'یک آیکون انتخاب کنید',
     'hint' => 'برای مشاهده کتابخانه آیکون‌ها کلیک کنید.',
     'compact' => false,
@@ -39,9 +41,21 @@
 
     $lookupUrl = route('admin.icons.lookup');
     $itemKey = 'icon-field-' . md5(($name ?? 'icon') . '-' . uniqid('', true));
+
+    $livewireKey = ($livewireModel || $livewireIdModel)
+        ? 'icon-picker-' . md5(implode('|', [
+            (string) $livewireModel,
+            (string) $livewireIdModel,
+            (string) ($selectedId ?? 'null'),
+            (string) ($selectedTitle ?? ''),
+        ]))
+        : null;
 @endphp
 
 <div
+    @if($livewireKey)
+        wire:key="{{ $livewireKey }}"
+    @endif
     @if($isRepeater)
         x-data="mwRepeaterIconPicker({
             item: it,
@@ -58,6 +72,8 @@
                 svg: @js($initialSvg),
             },
             lookupUrl: @js($lookupUrl),
+            livewireModel: @js($livewireModel),
+            livewireIdModel: @js($livewireIdModel),
         })"
     @endif
     x-on:mwip-selected.window="applySelection($event.detail)"

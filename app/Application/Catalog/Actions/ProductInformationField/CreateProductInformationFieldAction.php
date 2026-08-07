@@ -16,6 +16,7 @@ class CreateProductInformationFieldAction
         return DB::transaction(function () use ($data) {
             return ProductInformationField::query()->create([
                 'title' => trim($data['title']),
+                'icon_id' => $data['iconId'] ?? null,
             ]);
         });
     }

@@ -32,7 +32,7 @@ final class GetProductDetailAction
                 'installationSteps',
                 'faqs',
                 'releases.releaseChanges',
-                'informationEntries.field',
+                'informationEntries.field.icon',
                 'store.picture.primaryVariant',
                 'store.picture.variants',
                 'updateProgress',

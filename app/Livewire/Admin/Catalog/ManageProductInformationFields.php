@@ -34,6 +34,10 @@ class ManageProductInformationFields extends Component
 
     public string $title = '';
 
+    public ?int $iconId = null;
+
+    public string $icon = '';
+
     public ?int $highlightedId = null;
 
     protected $queryString = [
@@ -56,6 +60,16 @@ class ManageProductInformationFields extends Component
                 Rule::unique('product_information_fields', 'title')
                     ->ignore($this->editingId),
             ],
+            'iconId' => [
+                'nullable',
+                'integer',
+                Rule::exists('icons', 'id'),
+            ],
+            'icon' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
         ];
     }
 
@@ -65,6 +79,7 @@ class ManageProductInformationFields extends Component
             'title.required' => 'عنوان فیلد اطلاعات محصول الزامی است.',
             'title.max' => 'عنوان فیلد اطلاعات محصول نباید بیشتر از ۲۵۵ کاراکتر باشد.',
             'title.unique' => 'فیلد اطلاعات محصول دیگری با این عنوان وجود دارد.',
+            'iconId.exists' => 'آیکون انتخاب شده معتبر نیست.',
         ];
     }
 
@@ -144,10 +159,14 @@ class ManageProductInformationFields extends Component
     {
         Gate::authorize('product.information');
 
-        $field = ProductInformationField::query()->findOrFail($id);
+        $field = ProductInformationField::query()
+            ->with('icon:id,full_name')
+            ->findOrFail($id);
 
         $this->editingId = $field->id;
         $this->title = $field->title;
+        $this->iconId = $field->icon_id;
+        $this->icon = $field->icon?->full_name ?? '';
 
         $this->resetValidation();
 
@@ -165,6 +184,8 @@ class ManageProductInformationFields extends Component
     {
         $this->editingId = null;
         $this->title = '';
+        $this->iconId = null;
+        $this->icon = '';
 
         $this->resetValidation();
     }
@@ -303,6 +324,7 @@ class ManageProductInformationFields extends Component
     protected function getFieldsQuery(): Builder
     {
         return ProductInformationField::query()
+            ->with(['icon:id,full_name,svg'])
             ->withCount(['entries'])
             ->when($this->search !== '', function (Builder $query): void {
                 $query->where('title', 'like', '%' . trim($this->search) . '%');
