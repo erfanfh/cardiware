@@ -50,6 +50,8 @@ class RemoveProductFromCartAction
 
             $rootItem->delete();
 
+            $cart->refresh();
+
             $this->recalculateCartTotalsAction->execute($cart);
         });
     }
