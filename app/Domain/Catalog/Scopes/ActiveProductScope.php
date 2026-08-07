@@ -20,6 +20,8 @@ class ActiveProductScope implements Scope
             return;
         }
 
-        $builder->where('status', ProductStatusEnum::ACTIVE);
+        $builder
+            ->where('status', ProductStatusEnum::ACTIVE)
+            ->where('published_at', '<=', now());
     }
 }
