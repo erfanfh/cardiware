@@ -114,7 +114,7 @@
                 </div>
             </x-admin.metabox>
         @endif
-        
+
         <x-admin.metabox title="انتشار">
             <div class="grid grid-cols-12 gap-5">
                 <x-admin.field
@@ -210,19 +210,35 @@
         </x-admin.metabox>
 
         <x-admin.metabox title="تنظیمات نمایشی">
-            <x-admin.field
-                class="col-span-12"
-                label="نمایش تعداد فروش"
-            >
-                <x-admin.form.select
-                    name="display_setting[show_sales_count]"
-                    :options="[
+            <div class="flex flex-col gap-4">
+                <x-admin.field
+                    class="col-span-12"
+                    label="نمایش تعداد فروش"
+                >
+                    <x-admin.form.select
+                        name="display_setting[show_sales_count]"
+                        :options="[
                         '0' => 'خیر',
                         '1' => 'بله',
                     ]"
-                    :value="old('display_setting.show_sales_count', $product?->displaySetting?->show_sales_count)"
-                />
-            </x-admin.field>
+                        :value="old('display_setting.show_sales_count', $product?->displaySetting?->show_sales_count)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
+                    label="نمایش میانگین امتیاز"
+                >
+                    <x-admin.form.select
+                        name="display_setting[show_average_rating]"
+                        :options="[
+                        '0' => 'خیر',
+                        '1' => 'بله',
+                    ]"
+                        :value="old('display_setting.show_average_rating', $product?->displaySetting?->show_average_rating)"
+                    />
+                </x-admin.field>
+            </div>
         </x-admin.metabox>
 
         <x-admin.metabox title="پیشرفت آپدیت محصول">

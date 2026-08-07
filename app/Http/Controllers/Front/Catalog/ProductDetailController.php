@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Catalog;
 use App\Application\Catalog\Actions\GetProductDetailAction;
 use App\Application\Catalog\Actions\GetProductDetailStatsAction;
 use App\Application\Catalog\Actions\GetRelatedProductsAction;
+use App\Application\Discussion\Actions\CalculateCommentableAverageRatingAction;
 use App\Application\Discussion\Actions\GetApprovedCommentsCountAction;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
@@ -44,6 +45,12 @@ class ProductDetailController extends Controller
 
         $product = $getProductDetailAction->execute($resolvedSlug->model);
 
+        if ($product->displaySetting->show_average_rating) {
+            $averageRating = app(CalculateCommentableAverageRatingAction::class)->execute($product);
+        } else {
+            $averageRating = null;
+        }
+
         $stats = $getProductDetailStatsAction->execute($product);
 
         $relatedProducts = $getRelatedProductsAction->execute($product);
@@ -59,6 +66,7 @@ class ProductDetailController extends Controller
             'relatedProducts' => $relatedProducts,
             'storeProducts' => $stats['store_products_count'],
             'commentsCount' => $commentsCount,
+            'averageRating' => $averageRating,
         ]);
     }
 

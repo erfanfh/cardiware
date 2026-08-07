@@ -10,6 +10,7 @@ class ProductDisplaySetting extends Model
     protected $fillable = [
         'product_id',
         'show_sales_count',
+        'show_average_rating',
     ];
 
     public function product(): BelongsTo

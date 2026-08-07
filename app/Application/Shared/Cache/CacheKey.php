@@ -188,6 +188,11 @@ final class CacheKey
         return "commentable:{$type}:{$id}:approved_comments_count";
     }
 
+    public static function commentableAverageRating(string $type, int|string $id): string
+    {
+        return "commentable:{$type}:{$id}:average_rating";
+    }
+
     public static function dashboardYesterdayTopPosts(string $date, int $limit): string
     {
         return "dashboard:yesterday-top-posts:{$date}:limit:{$limit}";
