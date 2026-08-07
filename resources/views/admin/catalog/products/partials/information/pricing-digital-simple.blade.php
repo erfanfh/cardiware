@@ -275,6 +275,42 @@
                             />
                         </div>
 
+                        <div class="xl:w-3/12">
+                            <x-admin.form.input
+                                x-bind:name="`sale_items[0][files][${fileIndex}][file_name]`"
+                                x-model="file.file_name"
+                                class="direction-ltr"
+                                placeholder="product.7z یا product.7z.001"
+                            />
+                        </div>
+
+                        <div class="xl:w-2/12">
+                            <x-admin.form.input type="number" min="1"
+                                x-bind:name="`sale_items[0][files][${fileIndex}][size_bytes]`"
+                                x-model="file.size_bytes"
+                                placeholder="حجم (Byte)"
+                            />
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <x-admin.form.input
+                                x-bind:name="`sale_items[0][files][${fileIndex}][sha256]`"
+                                x-model="file.sha256"
+                                class="direction-ltr"
+                                placeholder="SHA-256"
+                            />
+                        </div>
+
+                        <div class="xl:w-24">
+                            <x-admin.form.input type="number" min="1"
+                                x-bind:name="`sale_items[0][files][${fileIndex}][part_number]`"
+                                x-model="file.part_number"
+                                placeholder="پارت"
+                            />
+                        </div>
+                        <input type="hidden" x-bind:name="`sale_items[0][files][${fileIndex}][is_required]`" value="1">
+                        <input type="hidden" x-bind:name="`sale_items[0][files][${fileIndex}][is_active]`" value="1">
+
                         <button
                             type="button"
                             class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
@@ -305,6 +341,9 @@
                 $simpleSaleItem['manifest'] ?? []
             )"
             />
+            <div class="mt-4">
+                <x-admin.catalog.launcher-content-fields mode="simple"/>
+            </div>
         </div>
     </div>
 </template>

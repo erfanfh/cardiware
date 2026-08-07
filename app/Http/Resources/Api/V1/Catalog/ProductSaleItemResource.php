@@ -16,6 +16,10 @@ class ProductSaleItemResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
+            'title' => $this->title,
+            'edition_key' => $this->edition_key,
+            'version' => $this->version,
+            'launcher_enabled' => $this->launcher_enabled,
 
             'status' => $this->status->value,
             'is_available' => $this->isPurchasable(),
@@ -29,6 +33,19 @@ class ProductSaleItemResource extends JsonResource
             'pricing' => [
                 ...$price->toSnapshot(),
                 'currency' => 'IRT',
+            ],
+
+            'support' => [
+                'enabled' => false,
+                'url' => null,
+            ],
+
+            'cpu_compatibility' => [
+                'enabled' => false,
+                'default_mode' => 'off',
+                'apply_to_game' => false,
+                'apply_to_sider' => false,
+                'allow_user_override' => false,
             ],
 
             'user_access' => [

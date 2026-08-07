@@ -10,6 +10,9 @@ use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use App\Domain\Launcher\Models\LauncherCheckoutSession;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
@@ -20,7 +23,8 @@ class PaymentResultController extends Controller
         string                        $paymentToken,
         VerifyPaymentAction           $verifyPaymentAction,
         FinalizeVerifiedPaymentAction $finalizeVerifiedPaymentAction,
-    ): View
+        Request                       $request,
+    ): View|RedirectResponse
     {
         $payment = Payment::query()
             ->where('public_token', $paymentToken)
@@ -81,6 +85,14 @@ class PaymentResultController extends Controller
 
         $payable = $payment->payable;
 
+        if ($payable instanceof Order && $payable->isPaid()) {
+            $launcherRedirect = $this->launcherRedirect($request, $payable);
+
+            if ($launcherRedirect instanceof RedirectResponse) {
+                return $launcherRedirect;
+            }
+        }
+
         return match (true) {
             $payable instanceof Order => $this->renderOrderResult(
                 payment: $payment,
@@ -94,6 +106,42 @@ class PaymentResultController extends Controller
 
             default => abort(404),
         };
+    }
+
+    private function launcherRedirect(
+        Request $request,
+        Order $order,
+    ): ?RedirectResponse {
+        $state = $request->session()->pull('launcher_checkout_state');
+
+        if (!is_string($state) || $state === '') {
+            return null;
+        }
+
+        $checkout = LauncherCheckoutSession::query()
+            ->where('state_hash', hash('sha256', $state))
+            ->where('user_id', $order->user_id)
+            ->whereNull('consumed_at')
+            ->first();
+
+        if (!$checkout || $checkout->expires_at->isPast()) {
+            return null;
+        }
+
+        $ownsSaleItem = $order->items()
+            ->where('purchasable_type', 'product_sale_item')
+            ->where('purchasable_id', $checkout->product_sale_item_id)
+            ->exists();
+
+        if (!$ownsSaleItem) {
+            return null;
+        }
+
+        $checkout->forceFill(['order_id' => $order->getKey()])->save();
+
+        return redirect()->away(
+            'mwlauncher://purchase-complete?state=' . rawurlencode($state)
+        );
     }
 
     /**

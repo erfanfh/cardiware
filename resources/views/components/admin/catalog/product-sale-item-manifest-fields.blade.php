@@ -12,7 +12,9 @@
         'assembled_file_name' => null,
 
         'install_directory' => null,
+        'install_folder_name' => null,
         'requires_administrator' => false,
+        'has_option_file' => false,
 
         'main_executable_path' => null,
         'working_directory' => '.',
@@ -29,6 +31,8 @@
             'supports_launch' => true,
             'supports_settings' => false,
             'supports_profiles' => false,
+            'supports_update' => false,
+            'supports_mod_manager' => false,
         ],
 
         'install_options' => [
@@ -152,8 +156,6 @@
                     >
                         <option value="">تشخیص خودکار</option>
                         <option value="7z">7z</option>
-                        <option value="rar">RAR</option>
-                        <option value="zip">ZIP</option>
                     </select>
                 </x-admin.field>
             </div>
@@ -204,23 +206,27 @@
                 @if($isSimple)
                     <input
                         type="hidden"
-                        name="{{ $staticName('install_directory') }}"
-                        x-bind:value="{{ $state }}.install_directory"
+                        name="{{ $staticName('install_folder_name') }}"
+                        x-bind:value="{{ $state }}.install_folder_name"
                     >
                 @else
                     <input
                         type="hidden"
-                        x-bind:name="{{ $dynamicName('install_directory') }}"
-                        x-bind:value="{{ $state }}.install_directory"
+                        x-bind:name="{{ $dynamicName('install_folder_name') }}"
+                        x-bind:value="{{ $state }}.install_folder_name"
                     >
                 @endif
 
-                <x-admin.field label="مسیر نصب">
+                <x-admin.field label="نام پوشه محصول در MW Launcher">
                     <x-admin.form.input
-                        x-model="{{ $state }}.install_directory"
+                        x-model="{{ $state }}.install_folder_name"
                         class="direction-ltr"
+                        placeholder="PGLV6 S2026-2027"
                     />
                 </x-admin.field>
+                <p class="mt-1 text-[11px] text-slate-500">
+                    لانچر این پوشه را داخل مسیر اصلی انتخاب‌شده توسط کاربر می‌سازد.
+                </p>
             </div>
         </div>
 
@@ -255,6 +261,30 @@
 
                         <span class="mt-1 block text-[11px] leading-5 text-slate-500">
                             نصب با سطح دسترسی مدیر اجرا شود.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="col-span-12 md:col-span-4">
+                @if($isSimple)
+                    <input type="hidden"
+                           name="{{ $staticName('has_option_file') }}"
+                           x-bind:value="{{ $state }}.has_option_file ? 1 : 0">
+                @else
+                    <input type="hidden"
+                           x-bind:name="{{ $dynamicName('has_option_file') }}"
+                           x-bind:value="{{ $state }}.has_option_file ? 1 : 0">
+                @endif
+
+                <label class="flex h-full min-h-20 cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
+                    <input type="checkbox"
+                           x-model="{{ $state }}.has_option_file"
+                           class="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500">
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">دارای OPTION FILE</span>
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            محتوای OPTION FILE در Documents ادغام و جایگزین می‌شود.
                         </span>
                     </span>
                 </label>
@@ -578,6 +608,14 @@
                     'supports_profiles' => [
                         'title' => 'پروفایل‌ها',
                         'description' => 'امکان مدیریت پروفایل برای محصول فعال باشد.',
+                    ],
+                    'supports_update' => [
+                        'title' => 'آپدیت محصول',
+                        'description' => 'آپدیت‌های فعال همین نسخه در لانچر نمایش داده شوند.',
+                    ],
+                    'supports_mod_manager' => [
+                        'title' => 'مادمنیجر',
+                        'description' => 'مادهای همین نسخه فروش در لانچر مدیریت شوند.',
                     ],
                 ];
             @endphp

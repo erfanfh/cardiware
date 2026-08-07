@@ -4,10 +4,17 @@ use App\Http\Controllers\Front\HomeController;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
 
 Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
+        Route::get(
+            '/launcher/checkout/{checkoutSession}/{state}',
+            LauncherCheckoutEntryController::class
+        )
+            ->middleware(['auth', 'signed', 'throttle:30,1'])
+            ->name('launcher.checkout.entry');
         require __DIR__ . '/front/identity.php';
         require __DIR__ . '/front/project.php';
         require __DIR__ . '/front/search.php';

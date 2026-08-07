@@ -23,20 +23,28 @@ class GetUserLibraryAction
         $purchaseAccesses = PurchaseAccess::query()
             ->where('user_id', $user->getKey())
             ->usable()
+            ->whereHas(
+                'productSaleItem',
+                fn($query) => $query->where('launcher_enabled', true)
+            )
             ->with([
                 'product:id,title,slug,picture_id',
 
-                'productSaleItem:id,product_id,sku,description',
+                'productSaleItem:id,product_id,sku,title,edition_key,version,description,launcher_enabled,launcher_title,launcher_excerpt',
 
                 'productSaleItem.files' => function (
                     HasMany $relation,
                 ): void {
                     $relation
+                        ->where('is_active', true)
                         ->select([
                             'id',
                             'product_sale_item_id',
                             'title',
                             'sort_order',
+                            'file_name',
+                            'size_bytes',
+                            'sha256',
                         ])
                         ->orderBy('sort_order')
                         ->orderBy('id');

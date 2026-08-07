@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Domain\Launcher\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class LauncherModFile extends Model
+{
+    protected $fillable = [
+        'launcher_mod_id', 'title', 'file_name', 'url', 'size_bytes',
+        'sha256', 'mime_type', 'part_number', 'is_required', 'sort_order',
+    ];
+
+    protected $hidden = ['url'];
+
+    protected $casts = [
+        'size_bytes' => 'integer',
+        'part_number' => 'integer',
+        'is_required' => 'boolean',
+        'sort_order' => 'integer',
+    ];
+
+    public function mod(): BelongsTo
+    {
+        return $this->belongsTo(LauncherMod::class, 'launcher_mod_id');
+    }
+}

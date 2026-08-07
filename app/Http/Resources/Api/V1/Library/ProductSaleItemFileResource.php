@@ -12,6 +12,9 @@ class ProductSaleItemFileResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'file_name' => $this->file_name,
+            'size_bytes' => $this->size_bytes,
+            'sha256' => strtolower((string)$this->sha256),
             'sort_order' => $this->sort_order,
 
             'download_limit' => $this->getAttribute(

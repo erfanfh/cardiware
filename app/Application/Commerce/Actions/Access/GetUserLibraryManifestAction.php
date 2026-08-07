@@ -25,6 +25,10 @@ class GetUserLibraryManifestAction
             ->withoutGlobalScope(ActivePurchaseAccessScope::class)
             ->whereKey($purchaseAccessId)
             ->where('user_id', $user->getKey())
+            ->whereHas(
+                'productSaleItem',
+                fn($query) => $query->where('launcher_enabled', true)
+            )
             ->firstOrFail();
 
         if (!$purchaseAccess->isUsable()) {

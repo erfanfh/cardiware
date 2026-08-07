@@ -37,7 +37,12 @@ class LibraryItemResource extends JsonResource
                 fn(): array => [
                     'id' => $this->productSaleItem->id,
                     'sku' => $this->productSaleItem->sku,
-                    'description' => $this->productSaleItem->description,
+                    'title' => $this->productSaleItem->launcher_title
+                        ?: $this->productSaleItem->title,
+                    'edition_key' => $this->productSaleItem->edition_key,
+                    'version' => $this->productSaleItem->version,
+                    'description' => $this->productSaleItem->launcher_excerpt
+                        ?: $this->productSaleItem->description,
                 ]
             ),
 

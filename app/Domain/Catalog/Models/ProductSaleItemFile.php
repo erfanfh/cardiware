@@ -15,11 +15,25 @@ class ProductSaleItemFile extends Model
     protected $fillable = [
         'product_sale_item_id',
         'title',
+        'file_name',
         'url',
+        'size_bytes',
+        'sha256',
+        'mime_type',
+        'part_number',
+        'archive_group',
+        'is_required',
+        'is_active',
         'sort_order',
     ];
 
+    protected $hidden = ['url'];
+
     protected $casts = [
+        'size_bytes' => 'integer',
+        'part_number' => 'integer',
+        'is_required' => 'boolean',
+        'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
 

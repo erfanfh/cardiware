@@ -3,6 +3,7 @@
 namespace App\Application\Catalog\Actions\ProductInformation;
 
 use App\Application\Catalog\Support\ProductInformation\ProductInformationPayloadNormalizer;
+use App\Application\Launcher\Actions\SyncLauncherSaleItemContentAction;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -17,6 +18,7 @@ class SyncProductSaleItemsAction
     public function __construct(
         private readonly ProductInformationPayloadNormalizer $normalizer,
         private readonly SyncProductSaleItemManifestAction   $syncManifestAction,
+        private readonly SyncLauncherSaleItemContentAction   $syncLauncherContentAction,
     )
     {
     }
@@ -70,6 +72,10 @@ class SyncProductSaleItemsAction
                     index: $index,
                 ),
                 'version' => $this->resolveVersion($item['version'] ?? null),
+                'launcher_enabled' => (bool)($item['launcher_enabled'] ?? false),
+                'launcher_title' => $this->normalizer->nullableString($item['launcher_title'] ?? null),
+                'launcher_excerpt' => $this->normalizer->nullableString($item['launcher_excerpt'] ?? null),
+                'launcher_sort_order' => $this->normalizer->integer($item['launcher_sort_order'] ?? $index),
                 'base_price' => $this->normalizer->integer($item['base_price'] ?? 0),
                 'status' => ProductSaleItemStatusEnum::tryFrom(
                         (string)($item['status'] ?? '')
@@ -95,6 +101,8 @@ class SyncProductSaleItemsAction
                         : [],
                 );
             }
+
+            $this->syncLauncherContentAction->execute($saleItem, $item);
 
             $this->syncAttributeValues(
                 $saleItem,
@@ -203,7 +211,16 @@ class SyncProductSaleItemsAction
             $file->fill([
                 'product_sale_item_id' => $saleItem->id,
                 'title' => $this->normalizer->nullableString($fileItem['title'] ?? null),
+                'file_name' => $this->normalizer->nullableString($fileItem['file_name'] ?? null),
                 'url' => $url,
+                'size_bytes' => $this->normalizer->nullableInteger($fileItem['size_bytes'] ?? null),
+                'sha256' => filled($fileItem['sha256'] ?? null)
+                    ? strtolower(trim((string)$fileItem['sha256'])) : null,
+                'mime_type' => $this->normalizer->nullableString($fileItem['mime_type'] ?? null),
+                'part_number' => $this->normalizer->nullableInteger($fileItem['part_number'] ?? null),
+                'archive_group' => $this->normalizer->nullableString($fileItem['archive_group'] ?? null),
+                'is_required' => (bool)($fileItem['is_required'] ?? true),
+                'is_active' => (bool)($fileItem['is_active'] ?? true),
                 'sort_order' => $this->normalizer->integer($fileItem['sort_order'] ?? $index),
             ]);
 

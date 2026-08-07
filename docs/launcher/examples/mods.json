@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "id": 15,
+      "name": "Gameplay V2",
+      "slug": "gameplay-v2",
+      "short_description": "گیم‌پلی سریع‌تر با واکنش بهتر بازیکنان",
+      "version": "2.0.0",
+      "image_url": "https://cdn.example.com/images/gameplay-v2.jpg",
+      "priority": 1,
+      "group": {
+        "key": "gameplay",
+        "title": "گیم‌پلی",
+        "is_exclusive": true
+      },
+      "compatibility": {
+        "base_versions": ["6.0.0"],
+        "update_versions": ["6.0.1"],
+        "is_compatible": true
+      },
+      "package": {
+        "archive_format": "7z",
+        "merge_mode": "merge_to_product_root",
+        "files": [
+          {
+            "file_id": 39,
+            "file_name": "gameplay-v2.7z",
+            "size_bytes": 125829120,
+            "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+          }
+        ]
+      }
+    }
+  ]
+}
