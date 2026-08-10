@@ -334,13 +334,13 @@
 
             <div class="space-y-2">
                 <template x-for="(file, fileIndex) in item.files" :key="file.__key">
-                    <div class="flex flex-col gap-2 rounded-xl border border-slate-200 p-2 xl:flex-row xl:items-center">
+                    <div class="grid grid-cols-12 items-end gap-2 rounded-xl border border-slate-200 p-2">
                         <input type="hidden" x-bind:name="`sale_items[${i}][files][${fileIndex}][id]`"
                                x-model="file.id">
                         <input type="hidden" x-bind:name="`sale_items[${i}][files][${fileIndex}][sort_order]`"
                                x-bind:value="fileIndex">
 
-                        <div class="xl:w-4/12">
+                        <div class="col-span-12 md:col-span-6 xl:col-span-3">
                             <x-admin.form.input
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][title]`"
                                 x-model="file.title"
@@ -348,7 +348,7 @@
                             />
                         </div>
 
-                        <div class="min-w-0 flex-1">
+                        <div class="col-span-12 md:col-span-6 xl:col-span-5">
                             <x-admin.form.input
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][url]`"
                                 x-model="file.url"
@@ -357,7 +357,7 @@
                             />
                         </div>
 
-                        <div class="xl:w-3/12">
+                        <div class="col-span-12 md:col-span-6 xl:col-span-4">
                             <x-admin.form.input
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][file_name]`"
                                 x-model="file.file_name"
@@ -366,7 +366,7 @@
                             />
                         </div>
 
-                        <div class="xl:w-2/12">
+                        <div class="col-span-6 md:col-span-3 xl:col-span-3">
                             <x-admin.form.input type="number" min="1"
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][size_bytes]`"
                                 x-model="file.size_bytes"
@@ -374,7 +374,7 @@
                             />
                         </div>
 
-                        <div class="min-w-0 flex-1">
+                        <div class="col-span-12 md:col-span-6 xl:col-span-5">
                             <x-admin.form.input
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][sha256]`"
                                 x-model="file.sha256"
@@ -383,7 +383,7 @@
                             />
                         </div>
 
-                        <div class="xl:w-24">
+                        <div class="col-span-6 md:col-span-3 xl:col-span-2">
                             <x-admin.form.input type="number" min="1"
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][part_number]`"
                                 x-model="file.part_number"
@@ -395,7 +395,7 @@
 
                         <button
                             type="button"
-                            class="inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 xl:w-24"
+                            class="col-span-12 inline-flex h-10 cursor-pointer items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-semibold text-rose-600 transition hover:bg-rose-100 hover:text-rose-700 md:col-span-3 xl:col-span-2"
                             @click="removeSaleItemFile(item, fileIndex)"
                         >
                             حذف

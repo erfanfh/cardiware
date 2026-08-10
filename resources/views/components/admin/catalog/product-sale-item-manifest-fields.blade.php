@@ -116,26 +116,12 @@
                 @endif
 
                 <x-admin.field label="نوع دانلود">
-                    <select
-                        x-model="{{ $state }}.download_type"
-                        class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
-                    >
-                        <option value="">
-                            تشخیص خودکار
-                        </option>
-
-                        <option value="single_file">
-                            تک فایل
-                        </option>
-
-                        <option value="multiple_files">
-                            چند فایل مستقل
-                        </option>
-
-                        <option value="split_archive">
-                            آرشیو چندقسمتی
-                        </option>
-                    </select>
+                    <x-admin.form.select x-model="{{ $state }}.download_type">
+                        <option value="">تشخیص خودکار</option>
+                        <option value="single_file">تک فایل</option>
+                        <option value="multiple_files">چند فایل مستقل</option>
+                        <option value="split_archive">آرشیو چندقسمتی</option>
+                    </x-admin.form.select>
                 </x-admin.field>
             </div>
 
@@ -159,13 +145,10 @@
                 @endif
 
                 <x-admin.field label="فرمت آرشیو">
-                    <select
-                        x-model="{{ $state }}.archive_format"
-                        class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
-                    >
+                    <x-admin.form.select x-model="{{ $state }}.archive_format">
                         <option value="">تشخیص خودکار</option>
                         <option value="7z">7z</option>
-                    </select>
+                    </x-admin.form.select>
                 </x-admin.field>
             </div>
 
@@ -260,7 +243,7 @@
                     <input
                         type="checkbox"
                         x-model="{{ $state }}.requires_administrator"
-                        class="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        class="h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
 
                     <span>
@@ -289,7 +272,7 @@
                 <label class="flex h-full min-h-20 cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
                     <input type="checkbox"
                            x-model="{{ $state }}.has_option_file"
-                           class="h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500">
+                           class="h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500">
                     <span>
                         <span class="block text-xs font-bold text-slate-800">دارای OPTION FILE</span>
                         <span class="mt-1 block text-[11px] leading-5 text-slate-500">
@@ -345,7 +328,7 @@
                         <input
                             type="checkbox"
                             x-model="{{ $state }}.install_options.{{ $key }}"
-                            class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                            class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                         >
 
                         <span>
@@ -497,7 +480,7 @@
                                 {{ $state }}.cpu_compatibility.apply_to_sider = false;
                             }
                         "
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
 
                     <span>
@@ -521,7 +504,7 @@
                         type="checkbox"
                         x-model="{{ $state }}.requires_sider"
                         x-bind:disabled="!{{ $state }}.capabilities.supports_sider"
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
                     >
 
                     <span>
@@ -638,7 +621,7 @@
                     <input
                         type="checkbox"
                         x-model="{{ $state }}.run_sider_as_administrator"
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
 
                     <span>
@@ -706,7 +689,7 @@
             <input
                 type="checkbox"
                 x-model="{{ $state }}.cpu_compatibility.enabled"
-                class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
             >
 
             <span>
@@ -726,13 +709,10 @@
         >
             <div class="col-span-12 md:col-span-6">
                 <x-admin.field label="حالت پیش‌فرض">
-                    <select
-                        x-model="{{ $state }}.cpu_compatibility.default_mode"
-                        class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
-                    >
+                    <x-admin.form.select x-model="{{ $state }}.cpu_compatibility.default_mode">
                         <option value="off">Off</option>
                         <option value="auto">Auto</option>
-                    </select>
+                    </x-admin.form.select>
                 </x-admin.field>
             </div>
 
@@ -741,7 +721,7 @@
                     <input
                         type="checkbox"
                         x-model="{{ $state }}.cpu_compatibility.allow_user_override"
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
                     <span>
                         <span class="block text-xs font-bold text-slate-800">اجازه تغییر توسط کاربر</span>
@@ -757,7 +737,7 @@
                     <input
                         type="checkbox"
                         x-model="{{ $state }}.cpu_compatibility.apply_to_game"
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
                     <span>
                         <span class="block text-xs font-bold text-slate-800">اعمال روی بازی</span>
@@ -777,7 +757,7 @@
                         type="checkbox"
                         x-model="{{ $state }}.cpu_compatibility.apply_to_sider"
                         x-bind:disabled="!{{ $state }}.capabilities.supports_sider"
-                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
                     >
                     <span>
                         <span class="block text-xs font-bold text-slate-800">اعمال روی Sider</span>
@@ -853,7 +833,7 @@
                         <input
                             type="checkbox"
                             x-model="{{ $state }}.capabilities.{{ $key }}"
-                            class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                            class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                         >
 
                         <span>
