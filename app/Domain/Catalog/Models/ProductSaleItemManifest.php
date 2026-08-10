@@ -22,6 +22,14 @@ class ProductSaleItemManifest extends Model
         'supports_mod_manager' => false,
     ];
 
+    public const DEFAULT_CPU_COMPATIBILITY = [
+        'enabled' => false,
+        'default_mode' => 'off',
+        'apply_to_game' => false,
+        'apply_to_sider' => false,
+        'allow_user_override' => false,
+    ];
+
     public const DEFAULT_INSTALL_OPTIONS = [
         'extract_enabled' => true,
         'delete_archives_after_install' => true,
@@ -54,6 +62,7 @@ class ProductSaleItemManifest extends Model
         'sider_working_directory',
         'sider_arguments',
         'run_sider_as_administrator',
+        'cpu_compatibility',
         'capabilities',
         'install_options',
         'runtime_notices',
@@ -69,6 +78,7 @@ class ProductSaleItemManifest extends Model
         'has_option_file' => 'boolean',
         'requires_sider' => 'boolean',
         'run_sider_as_administrator' => 'boolean',
+        'cpu_compatibility' => 'array',
         'capabilities' => 'array',
         'install_options' => 'array',
         'runtime_notices' => 'array',
@@ -85,7 +95,24 @@ class ProductSaleItemManifest extends Model
      */
     public function resolvedCapabilities(): array
     {
-        return array_replace(self::DEFAULT_CAPABILITIES, $this->capabilities ?? []);
+        $capabilities = array_replace(
+            self::DEFAULT_CAPABILITIES,
+            $this->capabilities ?? []
+        );
+
+        if ($this->requires_sider) {
+            $capabilities['supports_sider'] = true;
+        }
+
+        return $capabilities;
+    }
+
+    /**
+     * @return array{enabled: bool, default_mode: string, apply_to_game: bool, apply_to_sider: bool, allow_user_override: bool}
+     */
+    public function resolvedCpuCompatibility(): array
+    {
+        return array_replace(self::DEFAULT_CPU_COMPATIBILITY, $this->cpu_compatibility ?? []);
     }
 
     /**

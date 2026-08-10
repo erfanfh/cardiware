@@ -82,6 +82,27 @@ Catalog برای هر نسخه فروش مالکیت و action مناسب را �
 Manifest شامل شناسه فایل‌ها، حجم، SHA-256، ترتیب پارت‌ها، نام پوشه نصب،
 OPTION FILE و تنظیمات اجرای بازی/Sider است؛ URL واقعی فایل را شامل نمی‌شود.
 
+تنظیمات Sider و CPU Compatibility برای هر `sale_item` مستقل ذخیره می‌شوند.
+`supports_sider` نشان می‌دهد این نسخه از Sider پشتیبانی می‌کند و مستقل از
+`requires_sider` است؛ فقط در صورت اجباری بودن اجرای Sider مقدار
+`requires_sider=true` می‌شود. وقتی Sider فعال است، هر دو مقدار
+`sider_executable_path` و `sider_working_directory` باید ثبت شده باشند.
+
+برای پچ‌های PES که مشکل تعداد هسته فقط در پردازش Sider وجود دارد، بخش
+`launch.cpu_compatibility` به صورت زیر تنظیم می‌شود:
+
+```json
+{
+  "enabled": true,
+  "default_mode": "auto",
+  "apply_to_game": false,
+  "apply_to_sider": true,
+  "allow_user_override": true
+}
+```
+
+تغییر Manifest همان `sale_item` باعث افزایش `manifest_revision` می‌شود.
+
 برای هر فایل پایه:
 
 `POST /library/{accessId}/files/{fileId}/download`

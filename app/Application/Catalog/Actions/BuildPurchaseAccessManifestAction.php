@@ -57,6 +57,7 @@ class BuildPurchaseAccessManifestAction
 
         $capabilities = $manifest->resolvedCapabilities();
         $installOptions = $manifest->resolvedInstallOptions();
+        $cpuCompatibility = $manifest->resolvedCpuCompatibility();
 
         $files = $this->sortFiles(
             $saleItem->files,
@@ -164,13 +165,7 @@ class BuildPurchaseAccessManifestAction
                 'sider_working_directory' => $manifest->sider_working_directory,
                 'sider_arguments' => $manifest->sider_arguments,
                 'run_sider_as_administrator' => $manifest->run_sider_as_administrator,
-                'cpu_compatibility' => [
-                    'enabled' => false,
-                    'default_mode' => 'off',
-                    'apply_to_game' => false,
-                    'apply_to_sider' => false,
-                    'allow_user_override' => false,
-                ],
+                'cpu_compatibility' => $cpuCompatibility,
             ],
 
             'runtime_notices' => $manifest->runtime_notices ?? [],
@@ -246,10 +241,18 @@ class BuildPurchaseAccessManifestAction
             );
         }
 
-        if ($manifest->requires_sider && blank($manifest->sider_executable_path)) {
-            throw new ProductManifestUnavailableException(
-                'Sider is required, but its executable path is missing.'
-            );
+        if ($capabilities['supports_sider']) {
+            if (blank($manifest->sider_executable_path)) {
+                throw new ProductManifestUnavailableException(
+                    'Sider is supported, but its executable path is missing.'
+                );
+            }
+
+            if (blank($manifest->sider_working_directory)) {
+                throw new ProductManifestUnavailableException(
+                    'Sider is supported, but its working directory is missing.'
+                );
+            }
         }
 
         foreach ($files as $file) {

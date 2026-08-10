@@ -45,12 +45,15 @@ class SyncProductSaleItemManifestAction
             Arr::get($data, 'sider_executable_path')
         );
 
+        $supportsSider = $this->toBoolean(
+            Arr::get($data, 'capabilities.supports_sider', $requiresSider)
+        ) || $requiresSider;
+
         $capabilities = $this->normalizeCapabilities(
             value: Arr::get($data, 'capabilities'),
             hasFiles: $saleItem->files->isNotEmpty(),
             mainExecutablePath: $mainExecutablePath,
-            requiresSider: $requiresSider,
-            siderExecutablePath: $siderExecutablePath,
+            supportsSider: $supportsSider,
         );
 
         $saleItem->manifest()->updateOrCreate(
@@ -123,8 +126,7 @@ class SyncProductSaleItemManifestAction
                     Arr::get($data, 'launch_arguments')
                 ),
 
-                'requires_sider' => $requiresSider
-                    && $siderExecutablePath !== null,
+                'requires_sider' => $requiresSider,
 
                 'sider_executable_path' =>
                     $siderExecutablePath,
@@ -149,6 +151,11 @@ class SyncProductSaleItemManifestAction
                             'run_sider_as_administrator',
                             false
                         )
+                    ),
+
+                'cpu_compatibility' =>
+                    $this->normalizeCpuCompatibility(
+                        Arr::get($data, 'cpu_compatibility')
                     ),
 
                 'capabilities' => $capabilities,
@@ -322,8 +329,7 @@ class SyncProductSaleItemManifestAction
         mixed   $value,
         bool    $hasFiles,
         ?string $mainExecutablePath,
-        bool    $requiresSider,
-        ?string $siderExecutablePath,
+        bool    $supportsSider,
     ): array
     {
         $value = is_array($value) ? $value : [];
@@ -337,9 +343,6 @@ class SyncProductSaleItemManifestAction
             && $this->toBoolean(
                 $value['supports_launch'] ?? true
             );
-
-        $supportsSider = $requiresSider
-            && $siderExecutablePath !== null;
 
         return [
             'supports_install' => $supportsInstall,
@@ -362,6 +365,28 @@ class SyncProductSaleItemManifestAction
             'supports_profiles' => $this->toBoolean(
                 $value['supports_profiles'] ?? false
             ),
+        ];
+    }
+
+    /**
+     * @return array{enabled: bool, default_mode: string, apply_to_game: bool, apply_to_sider: bool, allow_user_override: bool}
+     */
+    private function normalizeCpuCompatibility(mixed $value): array
+    {
+        $value = is_array($value) ? $value : [];
+
+        $defaultMode = strtolower(trim((string)($value['default_mode'] ?? 'off')));
+
+        if (!in_array($defaultMode, ['off', 'auto'], true)) {
+            $defaultMode = 'off';
+        }
+
+        return [
+            'enabled' => $this->toBoolean($value['enabled'] ?? false),
+            'default_mode' => $defaultMode,
+            'apply_to_game' => $this->toBoolean($value['apply_to_game'] ?? false),
+            'apply_to_sider' => $this->toBoolean($value['apply_to_sider'] ?? false),
+            'allow_user_override' => $this->toBoolean($value['allow_user_override'] ?? false),
         ];
     }
 

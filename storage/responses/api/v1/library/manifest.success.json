@@ -1,8 +1,8 @@
 {
     "data": {
-        "schema_version": 1,
-        "manifest_revision": 4,
-        "manifest_id": "1.4.9+4",
+        "schema_version": 2,
+        "manifest_revision": 5,
+        "manifest_id": "1.4.9+5",
         "product": {
             "id": 20,
             "slug": "pgl-6",
@@ -24,7 +24,7 @@
         "capabilities": {
             "supports_install": true,
             "supports_launch": true,
-            "supports_sider": false,
+            "supports_sider": true,
             "supports_verify": true,
             "supports_repair": false,
             "supports_update": false,
@@ -92,11 +92,18 @@
             "main_executable_path": "PES2021.exe",
             "working_directory": ".",
             "arguments": null,
-            "requires_sider": false,
-            "sider_executable_path": null,
-            "sider_working_directory": null,
+            "requires_sider": true,
+            "sider_executable_path": "sider.exe",
+            "sider_working_directory": ".",
             "sider_arguments": null,
-            "run_sider_as_administrator": false
+            "run_sider_as_administrator": false,
+            "cpu_compatibility": {
+                "enabled": true,
+                "default_mode": "auto",
+                "apply_to_game": false,
+                "apply_to_sider": true,
+                "allow_user_override": true
+            }
         },
         "runtime_notices": [
             {

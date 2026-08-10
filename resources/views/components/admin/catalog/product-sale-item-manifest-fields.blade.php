@@ -22,13 +22,22 @@
 
         'requires_sider' => false,
         'sider_executable_path' => null,
-        'sider_working_directory' => null,
+        'sider_working_directory' => '.',
         'sider_arguments' => null,
         'run_sider_as_administrator' => false,
+
+        'cpu_compatibility' => [
+            'enabled' => false,
+            'default_mode' => 'off',
+            'apply_to_game' => false,
+            'apply_to_sider' => false,
+            'allow_user_override' => false,
+        ],
 
         'capabilities' => [
             'supports_install' => true,
             'supports_launch' => true,
+            'supports_sider' => false,
             'supports_settings' => false,
             'supports_profiles' => false,
             'supports_update' => false,
@@ -441,7 +450,22 @@
 
     {{-- Sider --}}
     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div class="mb-3">
+            <div class="text-xs font-bold text-slate-800">
+                تنظیمات Sider
+            </div>
+
+            <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                پشتیبانی از Sider و اجباری بودن اجرای آن برای هر نسخه فروش مستقل است.
+            </div>
+        </div>
+
         @if($isSimple)
+            <input
+                type="hidden"
+                name="{{ $staticName('capabilities.supports_sider') }}"
+                x-bind:value="{{ $state }}.capabilities.supports_sider ? 1 : 0"
+            >
             <input
                 type="hidden"
                 name="{{ $staticName('requires_sider') }}"
@@ -450,33 +474,72 @@
         @else
             <input
                 type="hidden"
+                x-bind:name="{{ $dynamicName('capabilities.supports_sider') }}"
+                x-bind:value="{{ $state }}.capabilities.supports_sider ? 1 : 0"
+            >
+            <input
+                type="hidden"
                 x-bind:name="{{ $dynamicName('requires_sider') }}"
                 x-bind:value="{{ $state }}.requires_sider ? 1 : 0"
             >
         @endif
 
-        <label
-            class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
-            <input
-                type="checkbox"
-                x-model="{{ $state }}.requires_sider"
-                class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
-            >
+        <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-12 md:col-span-6">
+                <label
+                    class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.capabilities.supports_sider"
+                        x-on:change="
+                            if (!{{ $state }}.capabilities.supports_sider) {
+                                {{ $state }}.requires_sider = false;
+                                {{ $state }}.cpu_compatibility.apply_to_sider = false;
+                            }
+                        "
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                    >
 
-            <span>
-                <span class="block text-xs font-bold text-slate-800">
-                    اجرای محصول نیازمند Sider است
-                </span>
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            پشتیبانی از Sider
+                        </span>
 
-                <span class="mt-1 block text-[11px] leading-5 text-slate-500">
-                    در صورت فعال بودن، لانچر ابتدا Sider و سپس فایل اصلی محصول را اجرا می‌کند.
-                </span>
-            </span>
-        </label>
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            لانچر می‌تواند Sider این نسخه را اجرا کند. این گزینه به معنی اجباری بودن Sider نیست.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label
+                    class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200"
+                    x-bind:class="!{{ $state }}.capabilities.supports_sider ? 'opacity-60' : ''"
+                >
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.requires_sider"
+                        x-bind:disabled="!{{ $state }}.capabilities.supports_sider"
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+                    >
+
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            اجرای Sider اجباری است
+                        </span>
+
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            فقط وقتی فعال کنید که محصول بدون اجرای Sider نباید توسط لانچر اجرا شود.
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
 
         <div
             class="mt-4 grid grid-cols-12 gap-4"
-            x-show="{{ $state }}.requires_sider"
+            x-show="{{ $state }}.capabilities.supports_sider || {{ $state }}.requires_sider"
             x-cloak
         >
             <div class="col-span-12 md:col-span-6">
@@ -498,8 +561,12 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.sider_executable_path"
                         class="direction-ltr"
+                        placeholder="sider.exe"
                     />
                 </x-admin.field>
+                <p class="mt-1 text-[11px] text-slate-500">
+                    وقتی Sider برای این نسخه فعال است، این مسیر الزامی است.
+                </p>
             </div>
 
             <div class="col-span-12 md:col-span-6">
@@ -521,8 +588,12 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.sider_working_directory"
                         class="direction-ltr"
+                        placeholder="."
                     />
                 </x-admin.field>
+                <p class="mt-1 text-[11px] text-slate-500">
+                    این مقدار نیز برای Sider فعال الزامی است؛ معمولا مقدار آن <span class="direction-ltr">.</span> است.
+                </p>
             </div>
 
             <div class="col-span-12">
@@ -570,8 +641,149 @@
                         class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
                     >
 
-                    <span class="text-xs font-bold text-slate-800">
-                        اجرای Sider با دسترسی Administrator
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            اجرای Sider با دسترسی Administrator
+                        </span>
+                        <span class="mt-1 block text-[11px] leading-5 text-amber-700">
+                            ترجیحا غیرفعال بماند تا لانچر بتواند CPU Affinity را روی پردازش Sider اعمال کند.
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    {{-- CPU Compatibility --}}
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div class="mb-3">
+            <div class="text-xs font-bold text-slate-800">
+                CPU Compatibility
+            </div>
+
+            <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                تنظیمات سازگاری پردازنده برای همین نسخه فروش. برای پچ‌های PES می‌توانید آن را فقط روی Sider اعمال کنید.
+            </div>
+        </div>
+
+        @foreach([
+            'enabled',
+            'apply_to_game',
+            'apply_to_sider',
+            'allow_user_override',
+        ] as $cpuBooleanField)
+            @if($isSimple)
+                <input
+                    type="hidden"
+                    name="{{ $staticName("cpu_compatibility.{$cpuBooleanField}") }}"
+                    x-bind:value="{{ $state }}.cpu_compatibility.{{ $cpuBooleanField }} ? 1 : 0"
+                >
+            @else
+                <input
+                    type="hidden"
+                    x-bind:name="{{ $dynamicName("cpu_compatibility.{$cpuBooleanField}") }}"
+                    x-bind:value="{{ $state }}.cpu_compatibility.{{ $cpuBooleanField }} ? 1 : 0"
+                >
+            @endif
+        @endforeach
+
+        @if($isSimple)
+            <input
+                type="hidden"
+                name="{{ $staticName('cpu_compatibility.default_mode') }}"
+                x-bind:value="{{ $state }}.cpu_compatibility.default_mode"
+            >
+        @else
+            <input
+                type="hidden"
+                x-bind:name="{{ $dynamicName('cpu_compatibility.default_mode') }}"
+                x-bind:value="{{ $state }}.cpu_compatibility.default_mode"
+            >
+        @endif
+
+        <label
+            class="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
+            <input
+                type="checkbox"
+                x-model="{{ $state }}.cpu_compatibility.enabled"
+                class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+            >
+
+            <span>
+                <span class="block text-xs font-bold text-slate-800">
+                    فعال‌سازی CPU Compatibility
+                </span>
+                <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                    در صورت فعال بودن، لانچر بر اساس تنظیمات زیر سازگاری CPU را اعمال می‌کند.
+                </span>
+            </span>
+        </label>
+
+        <div
+            class="mt-4 grid grid-cols-12 gap-3"
+            x-show="{{ $state }}.cpu_compatibility.enabled"
+            x-cloak
+        >
+            <div class="col-span-12 md:col-span-6">
+                <x-admin.field label="حالت پیش‌فرض">
+                    <select
+                        x-model="{{ $state }}.cpu_compatibility.default_mode"
+                        class="h-10 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-orange-300 focus:ring-2 focus:ring-orange-200"
+                    >
+                        <option value="off">Off</option>
+                        <option value="auto">Auto</option>
+                    </select>
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.cpu_compatibility.allow_user_override"
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                    >
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">اجازه تغییر توسط کاربر</span>
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            کاربر بتواند حالت سازگاری را در لانچر تغییر دهد.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.cpu_compatibility.apply_to_game"
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                    >
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">اعمال روی بازی</span>
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            برای پچ‌هایی که خود بازی مشکل CPU ندارد، این گزینه باید غیرفعال باشد.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label
+                    class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3"
+                    x-bind:class="!{{ $state }}.capabilities.supports_sider ? 'opacity-60' : ''"
+                >
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.cpu_compatibility.apply_to_sider"
+                        x-bind:disabled="!{{ $state }}.capabilities.supports_sider"
+                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+                    >
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">اعمال روی Sider</span>
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            برای مشکل تعداد هسته هنگام اجرای Sider این گزینه را فعال کنید.
+                        </span>
                     </span>
                 </label>
             </div>

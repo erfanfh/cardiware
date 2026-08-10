@@ -143,13 +143,22 @@
 
         'requires_sider' => false,
         'sider_executable_path' => '',
-        'sider_working_directory' => '',
+        'sider_working_directory' => '.',
         'sider_arguments' => '',
         'run_sider_as_administrator' => false,
+
+        'cpu_compatibility' => [
+            'enabled' => false,
+            'default_mode' => 'off',
+            'apply_to_game' => false,
+            'apply_to_sider' => false,
+            'allow_user_override' => false,
+        ],
 
         'capabilities' => [
             'supports_install' => true,
             'supports_launch' => true,
+            'supports_sider' => false,
             'supports_settings' => false,
             'supports_profiles' => false,
             'supports_update' => false,
@@ -203,11 +212,13 @@
 
                 'sider_executable_path' => $manifest->sider_executable_path ?? '',
 
-                'sider_working_directory' => $manifest->sider_working_directory ?? '',
+                'sider_working_directory' => $manifest->sider_working_directory ?? '.',
 
                 'sider_arguments' => $manifest->sider_arguments ?? '',
 
                 'run_sider_as_administrator' => (bool) $manifest->run_sider_as_administrator,
+
+                'cpu_compatibility' => $manifest->resolvedCpuCompatibility(),
 
                 'capabilities' => $manifest->resolvedCapabilities(),
 

@@ -1,8 +1,8 @@
 {
     "data": {
         "schema_version": 2,
-        "manifest_revision": 3,
-        "manifest_id": "6.0.0+3",
+        "manifest_revision": 4,
+        "manifest_id": "6.0.0+4",
         "sale_item": {
             "id": 42,
             "title": "PGL 6 — فصل ۲۰۲۶/۲۰۲۷",
@@ -41,7 +41,21 @@
         "launch": {
             "main_executable_path": "PES2021.exe",
             "requires_sider": true,
-            "sider_executable_path": "sider.exe"
+            "sider_executable_path": "sider.exe",
+            "sider_working_directory": ".",
+            "run_sider_as_administrator": false,
+            "cpu_compatibility": {
+                "enabled": true,
+                "default_mode": "auto",
+                "apply_to_game": false,
+                "apply_to_sider": true,
+                "allow_user_override": true
+            }
+        },
+        "capabilities": {
+            "supports_install": true,
+            "supports_launch": true,
+            "supports_sider": true
         }
     }
 }

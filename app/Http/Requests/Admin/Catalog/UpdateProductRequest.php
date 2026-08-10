@@ -150,12 +150,28 @@ class UpdateProductRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
+            | CPU compatibility
+            |--------------------------------------------------------------------------
+            */
+            'sale_items.*.manifest.cpu_compatibility' => ['nullable', 'array'],
+            'sale_items.*.manifest.cpu_compatibility.enabled' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.cpu_compatibility.default_mode' => [
+                'nullable',
+                Rule::in(['off', 'auto']),
+            ],
+            'sale_items.*.manifest.cpu_compatibility.apply_to_game' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.cpu_compatibility.apply_to_sider' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.cpu_compatibility.allow_user_override' => ['nullable', 'boolean'],
+
+            /*
+            |--------------------------------------------------------------------------
             | Manifest capabilities
             |--------------------------------------------------------------------------
             */
             'sale_items.*.manifest.capabilities' => ['nullable', 'array'],
             'sale_items.*.manifest.capabilities.supports_install' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_launch' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_sider' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_settings' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_profiles' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_update' => ['nullable', 'boolean'],
@@ -391,11 +407,56 @@ class UpdateProductRequest extends FormRequest
                     );
                 }
 
-                if (filter_var($manifest['requires_sider'] ?? false, FILTER_VALIDATE_BOOLEAN)
-                    && blank($manifest['sider_executable_path'] ?? null)) {
+                $requiresSider = filter_var(
+                    $manifest['requires_sider'] ?? false,
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                $supportsSider = filter_var(
+                    data_get($manifest, 'capabilities.supports_sider', $requiresSider),
+                    FILTER_VALIDATE_BOOLEAN
+                ) || $requiresSider;
+
+                if ($supportsSider && blank($manifest['sider_executable_path'] ?? null)) {
                     $validator->errors()->add(
                         "{$prefix}.manifest.sider_executable_path",
-                        'وقتی اجرای Sider فعال است، مسیر فایل اجرایی آن الزامی است.'
+                        'وقتی Sider برای این نسخه فعال است، مسیر فایل اجرایی آن الزامی است.'
+                    );
+                }
+
+                if ($supportsSider && blank($manifest['sider_working_directory'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.sider_working_directory",
+                        'وقتی Sider برای این نسخه فعال است، پوشه اجرای آن الزامی است.'
+                    );
+                }
+
+                $cpuCompatibilityEnabled = filter_var(
+                    data_get($manifest, 'cpu_compatibility.enabled', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                $applyCpuToGame = filter_var(
+                    data_get($manifest, 'cpu_compatibility.apply_to_game', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                $applyCpuToSider = filter_var(
+                    data_get($manifest, 'cpu_compatibility.apply_to_sider', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                if ($cpuCompatibilityEnabled && !$applyCpuToGame && !$applyCpuToSider) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.cpu_compatibility.enabled",
+                        'برای CPU Compatibility حداقل یکی از مقصدهای بازی یا Sider باید فعال باشد.'
+                    );
+                }
+
+                if ($cpuCompatibilityEnabled && $applyCpuToSider && !$supportsSider) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.cpu_compatibility.apply_to_sider",
+                        'برای اعمال CPU Compatibility روی Sider باید پشتیبانی از Sider فعال باشد.'
                     );
                 }
 
@@ -479,6 +540,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.sider_executable_path' => 'مسیر فایل اجرایی Sider',
             'sale_items.*.manifest.sider_working_directory' => 'پوشه اجرای Sider',
             'sale_items.*.manifest.sider_arguments' => 'آرگومان‌های Sider',
+            'sale_items.*.manifest.cpu_compatibility.default_mode' => 'حالت پیش‌فرض CPU Compatibility',
         ];
     }
 
@@ -629,6 +691,22 @@ class UpdateProductRequest extends FormRequest
             $installOptions = [];
         }
 
+        $cpuCompatibility = data_get($manifest, 'cpu_compatibility', []);
+
+        if (!is_array($cpuCompatibility)) {
+            $cpuCompatibility = [];
+        }
+
+        $requiresSider = $this->normalizeBooleanInput(
+            data_get($manifest, 'requires_sider'),
+            false
+        );
+
+        $supportsSider = $this->normalizeBooleanInput(
+            data_get($capabilities, 'supports_sider'),
+            $requiresSider
+        ) || $requiresSider;
+
         return [
             /*
              * Null or empty means automatic detection.
@@ -643,14 +721,24 @@ class UpdateProductRequest extends FormRequest
             'main_executable_path' => $this->normalizeNullableStringInput(data_get($manifest, 'main_executable_path'), 500),
             'working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'working_directory'), 500) ?? '.',
             'launch_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'launch_arguments'), 2000),
-            'requires_sider' => $this->normalizeBooleanInput(data_get($manifest, 'requires_sider'), false),
+            'requires_sider' => $requiresSider,
             'sider_executable_path' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_executable_path'), 500),
-            'sider_working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_working_directory'), 500),
+            'sider_working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_working_directory'), 500) ?? '.',
             'sider_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_arguments'), 2000),
             'run_sider_as_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'run_sider_as_administrator'), false),
+            'cpu_compatibility' => [
+                'enabled' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'enabled'), false),
+                'default_mode' => $this->normalizeCpuCompatibilityModeInput(
+                    data_get($cpuCompatibility, 'default_mode')
+                ),
+                'apply_to_game' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'apply_to_game'), false),
+                'apply_to_sider' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'apply_to_sider'), false),
+                'allow_user_override' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'allow_user_override'), false),
+            ],
             'capabilities' => [
                 'supports_install' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_install'), true),
                 'supports_launch' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_launch'), true),
+                'supports_sider' => $supportsSider,
                 'supports_settings' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_settings'), false),
                 'supports_profiles' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_profiles'), false),
                 'supports_update' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_update'), false),
@@ -664,6 +752,15 @@ class UpdateProductRequest extends FormRequest
                 'create_desktop_shortcut' => $this->normalizeBooleanInput(data_get($installOptions, 'create_desktop_shortcut'), false),
             ],
         ];
+    }
+
+    private function normalizeCpuCompatibilityModeInput(mixed $value): string
+    {
+        $value = strtolower(trim((string)$value));
+
+        return in_array($value, ['off', 'auto'], true)
+            ? $value
+            : 'off';
     }
 
     private function normalizeDownloadTypeInput(mixed $value): ?string

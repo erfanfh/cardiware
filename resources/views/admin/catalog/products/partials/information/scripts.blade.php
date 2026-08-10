@@ -141,13 +141,22 @@
 
                             requires_sider: false,
                             sider_executable_path: '',
-                            sider_working_directory: '',
+                            sider_working_directory: '.',
                             sider_arguments: '',
                             run_sider_as_administrator: false,
+
+                            cpu_compatibility: {
+                                enabled: false,
+                                default_mode: 'off',
+                                apply_to_game: false,
+                                apply_to_sider: false,
+                                allow_user_override: false,
+                            },
 
                             capabilities: {
                                 supports_install: true,
                                 supports_launch: true,
+                                supports_sider: false,
                                 supports_settings: false,
                                 supports_profiles: false,
                                 supports_update: false,
@@ -183,6 +192,12 @@
                         && typeof source.install_options === 'object'
                         && !Array.isArray(source.install_options)
                             ? source.install_options
+                            : {};
+
+                        const cpuCompatibility = source.cpu_compatibility
+                        && typeof source.cpu_compatibility === 'object'
+                        && !Array.isArray(source.cpu_compatibility)
+                            ? source.cpu_compatibility
                             : {};
 
                         const allowedDownloadTypes = [
@@ -230,7 +245,7 @@
 
                             sider_executable_path: source.sider_executable_path ?? '',
 
-                            sider_working_directory: source.sider_working_directory ?? '',
+                            sider_working_directory: source.sider_working_directory ?? '.',
 
                             sider_arguments: source.sider_arguments ?? '',
 
@@ -239,6 +254,30 @@
                                     source.run_sider_as_administrator,
                                     false
                                 ),
+
+                            cpu_compatibility: {
+                                enabled: this.normalizeBoolean(
+                                    cpuCompatibility.enabled,
+                                    false
+                                ),
+                                default_mode: ['off', 'auto'].includes(
+                                    String(cpuCompatibility.default_mode ?? 'off')
+                                )
+                                    ? String(cpuCompatibility.default_mode ?? 'off')
+                                    : 'off',
+                                apply_to_game: this.normalizeBoolean(
+                                    cpuCompatibility.apply_to_game,
+                                    false
+                                ),
+                                apply_to_sider: this.normalizeBoolean(
+                                    cpuCompatibility.apply_to_sider,
+                                    false
+                                ),
+                                allow_user_override: this.normalizeBoolean(
+                                    cpuCompatibility.allow_user_override,
+                                    false
+                                ),
+                            },
 
                             capabilities: {
                                 supports_install:
@@ -252,6 +291,12 @@
                                         capabilities.supports_launch,
                                         true
                                     ),
+
+                                supports_sider:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_sider,
+                                        this.normalizeBoolean(source.requires_sider, false)
+                                    ) || this.normalizeBoolean(source.requires_sider, false),
 
                                 supports_settings:
                                     this.normalizeBoolean(
