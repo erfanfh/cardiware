@@ -22,7 +22,8 @@ class GetLauncherCatalogAction
                 fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
-                'product.picture',
+                'product',
+                'launcherHero.primaryVariant',
                 'discount',
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {
                     $relation->withoutGlobalScopes()
@@ -53,7 +54,8 @@ class GetLauncherCatalogAction
                 fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
-                'product.picture',
+                'product',
+                'launcherHero.primaryVariant',
                 'discount',
                 'manifest',
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {

@@ -11,6 +11,7 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModGroup;
 use App\Domain\Launcher\Models\LauncherUpdate;
+use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,6 +35,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'launcher_enabled',
         'launcher_title',
         'launcher_excerpt',
+        'launcher_cover_media_id',
         'launcher_sort_order',
         'base_price',
         'status',
@@ -64,6 +66,16 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get the Hero image used specifically for this sale item in MW Launcher.
+     *
+     * The legacy database column name is intentionally kept for now.
+     */
+    public function launcherHero(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'launcher_cover_media_id');
     }
 
     /**

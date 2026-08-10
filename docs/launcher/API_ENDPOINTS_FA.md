@@ -46,6 +46,12 @@ X-Launcher-Version: 1.0.0
 Catalog برای هر نسخه فروش مالکیت و action مناسب را برمی‌گرداند:
 `can_buy`، `can_claim` و `can_install`.
 
+تصویر نمایشی هر آیتم لانچر فقط با فیلد `hero_url` برگردانده می‌شود. این تصویر
+مستقیماً از Media انتخاب‌شده برای همان `sale_item` خوانده می‌شود و هیچ fallbackای
+به تصویر اصلی Product یا نسخه فروش دیگری ندارد. اگر Hero برای آن نسخه انتخاب نشده
+باشد مقدار `hero_url` برابر `null` است. فیلدهای `cover` و `cover_url` جزو قرارداد
+لانچر نیستند.
+
 ## خرید و محصول رایگان
 
 - `POST /launcher/sale-items/{id}/claim`

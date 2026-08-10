@@ -226,6 +226,7 @@
             'launcherModGroups',
             'launcherMods.files',
             'launcherMods.group',
+            'launcherHero.primaryVariant',
 
             'attributeValues.globalValue.attribute',
             'attributeValues.customValue.customAttribute',
@@ -268,6 +269,10 @@
                 'launcher_enabled' => (bool) $saleItem->launcher_enabled,
                 'launcher_title' => $saleItem->launcher_title,
                 'launcher_excerpt' => $saleItem->launcher_excerpt,
+                'launcher_hero' => [
+                    'id' => $saleItem->launcher_cover_media_id,
+                    'path' => $saleItem->launcherHero?->url,
+                ],
                 'launcher_sort_order' => (int) $saleItem->launcher_sort_order,
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,

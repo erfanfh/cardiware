@@ -75,6 +75,7 @@ class SyncProductSaleItemsAction
                 'launcher_enabled' => (bool)($item['launcher_enabled'] ?? false),
                 'launcher_title' => $this->normalizer->nullableString($item['launcher_title'] ?? null),
                 'launcher_excerpt' => $this->normalizer->nullableString($item['launcher_excerpt'] ?? null),
+                'launcher_cover_media_id' => $this->normalizer->nullableInteger($item['launcher_cover_media_id'] ?? null),
                 'launcher_sort_order' => $this->normalizer->integer($item['launcher_sort_order'] ?? $index),
                 'base_price' => $this->normalizer->integer($item['base_price'] ?? 0),
                 'status' => ProductSaleItemStatusEnum::tryFrom(

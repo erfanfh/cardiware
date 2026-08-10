@@ -472,6 +472,10 @@
                                 launcher_enabled: this.normalizeBoolean(item.launcher_enabled, false),
                                 launcher_title: item.launcher_title ?? '',
                                 launcher_excerpt: item.launcher_excerpt ?? '',
+                                launcher_hero: {
+                                    id: item.launcher_hero?.id ?? null,
+                                    path: item.launcher_hero?.path ?? null,
+                                },
                                 launcher_sort_order: item.launcher_sort_order ?? 0,
                                 attribute_values: this.normalizeSaleItemAttributeValues(item.attribute_values ?? {}),
                                 discount: this.normalizeSaleItemDiscount(item.discount ?? {}),
@@ -700,6 +704,10 @@
                             launcher_enabled: this.normalizeBoolean(payload.launcher_enabled, false),
                             launcher_title: payload.launcher_title ?? '',
                             launcher_excerpt: payload.launcher_excerpt ?? '',
+                            launcher_hero: {
+                                id: payload.launcher_hero?.id ?? null,
+                                path: payload.launcher_hero?.path ?? null,
+                            },
                             launcher_sort_order: payload.launcher_sort_order ?? 0,
                             attribute_values: this.normalizeSaleItemAttributeValues(payload.attribute_values ?? {}),
                             discount: this.normalizeSaleItemDiscount(payload.discount ?? {}),

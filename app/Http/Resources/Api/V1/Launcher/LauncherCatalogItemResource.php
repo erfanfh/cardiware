@@ -22,7 +22,7 @@ class LauncherCatalogItemResource extends JsonResource
             'excerpt' => $this->launcher_excerpt ?: $this->description,
             'version' => $this->version,
             'edition_key' => $this->edition_key,
-            'hero_url' => $this->product?->picture?->url,
+            'hero_url' => $this->launcherHero?->url,
             'is_free' => $isFree,
             'ownership' => [
                 'owned' => $access !== null,
