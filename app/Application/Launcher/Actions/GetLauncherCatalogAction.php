@@ -22,7 +22,7 @@ class GetLauncherCatalogAction
                 fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
-                'product',
+                'product.picture.primaryVariant',
                 'launcherHero.primaryVariant',
                 'discount',
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {
@@ -54,7 +54,7 @@ class GetLauncherCatalogAction
                 fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
             )
             ->with([
-                'product',
+                'product.picture.primaryVariant',
                 'launcherHero.primaryVariant',
                 'discount',
                 'manifest',
