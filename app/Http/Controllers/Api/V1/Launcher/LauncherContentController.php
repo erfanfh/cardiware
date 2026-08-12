@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api\V1\Launcher;
 
+use App\Application\Launcher\Actions\GetLauncherModsAction;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
-use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -68,53 +68,16 @@ class LauncherContentController extends Controller
         ]);
     }
 
-    public function mods(Request $request, int $purchaseAccess): JsonResponse
-    {
+    public function mods(
+        Request $request,
+        int $purchaseAccess,
+        GetLauncherModsAction $action,
+    ): JsonResponse {
         $access = $this->access($request, $purchaseAccess);
-        $baseVersion = $access->productSaleItem()->value('version');
 
-        $mods = LauncherMod::query()
-            ->where('product_sale_item_id', $access->product_sale_item_id)
-            ->published()
-            ->with(['group', 'image', 'files'])
-            ->orderBy('priority')
-            ->orderBy('id')
-            ->get()
-            ->map(function (LauncherMod $mod) use ($baseVersion): array {
-                $baseVersions = $mod->compatible_base_versions ?? [];
-                $isCompatible = $baseVersions === []
-                    || in_array($baseVersion, $baseVersions, true);
-
-                return [
-                    'id' => $mod->id,
-                    'name' => $mod->name,
-                    'slug' => $mod->slug,
-                    'short_description' => $mod->short_description,
-                    'description' => $mod->description,
-                    'version' => $mod->version,
-                    'image_url' => $mod->image?->url,
-                    'size_bytes' => $mod->size_bytes ?: (int)$mod->files->sum('size_bytes'),
-                    'priority' => $mod->priority,
-                    'is_required' => $mod->is_required,
-                    'group' => $mod->group ? [
-                        'key' => $mod->group->key,
-                        'title' => $mod->group->title,
-                        'is_exclusive' => $mod->group->is_exclusive,
-                    ] : null,
-                    'compatibility' => [
-                        'base_versions' => $baseVersions,
-                        'update_versions' => $mod->compatible_update_versions ?? [],
-                        'is_compatible' => $isCompatible,
-                    ],
-                    'package' => [
-                        'archive_format' => '7z',
-                        'merge_mode' => 'merge_to_product_root',
-                        'files' => $mod->files->map(fn($file): array => $this->file($file))->values(),
-                    ],
-                ];
-            });
-
-        return response()->json(['data' => $mods->isEmpty() ? new \stdClass() : $mods]);
+        return response()->json([
+            'data' => $action->execute($access),
+        ]);
     }
 
     private function access(Request $request, int $id): PurchaseAccess

@@ -9,6 +9,7 @@ use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Catalog\Models\ProductSaleItemManifest;
 use App\Domain\Marketplace\Models\Store;
+use App\Domain\Media\Models\MediaFile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -605,6 +606,43 @@ class UpdateProductRequest extends FormRequest
                                 "{$prefix}.launcher_updates.{$contentIndex}.files",
                                 'وقتی OPTION FILE برای آپدیت فعال است، بسته آپدیت باید حداقل یک فایل 7z داشته باشد.'
                             );
+                        }
+
+                        if ($collection === 'launcher_mods'
+                            && filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                            $imageMediaId = filled($content['image_media_id'] ?? null)
+                                ? (int) $content['image_media_id']
+                                : null;
+
+                            if ($imageMediaId === null) {
+                                $validator->errors()->add(
+                                    "{$prefix}.launcher_mods.{$contentIndex}.image_media_id",
+                                    'برای ماد منتشرشده انتخاب تصویر مستطیلی الزامی است.'
+                                );
+                            } else {
+                                $image = MediaFile::query()
+                                    ->with('primaryVariant')
+                                    ->find($imageMediaId);
+                                $variant = $image?->primaryVariant;
+
+                                if (
+                                    $image === null
+                                    || $image->url === null
+                                    || $variant === null
+                                    || (int) $variant->width <= 0
+                                    || (int) $variant->height <= 0
+                                ) {
+                                    $validator->errors()->add(
+                                        "{$prefix}.launcher_mods.{$contentIndex}.image_media_id",
+                                        'تصویر ماد باید عمومی، پردازش‌شده و دارای ابعاد معتبر باشد.'
+                                    );
+                                } elseif ((int) $variant->width <= (int) $variant->height) {
+                                    $validator->errors()->add(
+                                        "{$prefix}.launcher_mods.{$contentIndex}.image_media_id",
+                                        'تصویر ماد باید مستطیلی افقی باشد (عرض بیشتر از ارتفاع).'
+                                    );
+                                }
+                            }
                         }
                     }
                 }

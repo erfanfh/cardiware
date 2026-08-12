@@ -652,7 +652,7 @@
                                 />
                             </x-admin.field>
 
-                            <x-admin.field label="شناسه تصویر" class="col-span-12 md:col-span-3">
+                            <x-admin.field label="تصویر مستطیلی (Media ID)" hint="برای ماد منتشرشده، تصویر باید افقی باشد؛ عرض بیشتر از ارتفاع." class="col-span-12 md:col-span-3">
                                 <x-admin.form.input
                                     type="number"
                                     min="1"
