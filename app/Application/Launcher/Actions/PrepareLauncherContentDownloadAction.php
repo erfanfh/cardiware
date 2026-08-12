@@ -3,8 +3,8 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
-use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
 use App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException;
+use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Identity\Models\User;
@@ -16,11 +16,19 @@ use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PrepareLauncherContentDownloadAction
 {
+    public function __construct(
+        private readonly RemoteDownloadFileMetadataResolver $metadataResolver,
+        private readonly GenerateTemporaryLauncherDownloadUrlAction $generateTemporaryDownloadUrlAction,
+    ) {
+    }
+
+    /**
+     * @return array{download_session_id:string,session_expires_at:string,url:string,file_name:string,size_bytes:int,sha256:string}
+     */
     public function execute(
         User $user,
         LauncherDevice $device,
@@ -30,17 +38,38 @@ class PrepareLauncherContentDownloadAction
         int $fileId,
         string $sessionId,
     ): array {
+        [$accessSnapshot, $contentSnapshot, $fileSnapshot] = $this->resolveAccessContentAndFile(
+            user: $user,
+            accessId: $accessId,
+            contentType: $contentType,
+            contentId: $contentId,
+            fileId: $fileId,
+        );
+
+        $sourceUrl = (string)$fileSnapshot->url;
+        $metadata = $this->metadataResolver->resolve(
+            sourceType: $contentType,
+            file: $fileSnapshot,
+            url: $sourceUrl,
+        );
+
         return DB::transaction(function () use (
-            $user, $device, $accessId, $contentType, $contentId, $fileId, $sessionId
+            $user,
+            $device,
+            $accessSnapshot,
+            $contentSnapshot,
+            $fileSnapshot,
+            $sourceUrl,
+            $metadata,
+            $contentType,
+            $contentId,
+            $fileId,
+            $sessionId,
         ): array {
             $access = PurchaseAccess::query()
                 ->withoutGlobalScope(ActivePurchaseAccessScope::class)
-                ->whereKey($accessId)
+                ->whereKey($accessSnapshot->getKey())
                 ->where('user_id', $user->getKey())
-                ->whereHas(
-                    'productSaleItem',
-                    fn($query) => $query->where('launcher_enabled', true)
-                )
                 ->lockForUpdate()
                 ->firstOrFail();
 
@@ -48,22 +77,29 @@ class PrepareLauncherContentDownloadAction
                 throw new PurchaseAccessIsNotUsableException();
             }
 
-            [$content, $file] = $this->resolve(
-                $access->product_sale_item_id,
-                $contentType,
-                $contentId,
-                $fileId,
+            [$content, $file] = $this->resolveContentAndFile(
+                saleItemId: (int)$access->product_sale_item_id,
+                type: $contentType,
+                contentId: $contentId,
+                fileId: $fileId,
             );
+
+            if (
+                $content->getKey() !== $contentSnapshot->getKey()
+                || $file->getKey() !== $fileSnapshot->getKey()
+                || !hash_equals($sourceUrl, (string)$file->url)
+            ) {
+                throw new NotFoundHttpException('فایل محتوای لانچر پیدا نشد.');
+            }
 
             $download = LauncherDownloadSession::query()
                 ->where('purchase_access_id', $access->getKey())
                 ->where('launcher_device_id', $device->getKey())
                 ->where('content_type', $contentType)
+                ->where('content_id', $contentId)
                 ->where('file_id', $fileId)
                 ->where('download_session_id', $sessionId)
                 ->first();
-
-            $reused = $download !== null;
 
             if ($download && $download->session_expires_at->isPast()) {
                 throw new PurchaseAccessDownloadSessionExpiredException();
@@ -86,43 +122,66 @@ class PrepareLauncherContentDownloadAction
             } else {
                 $download->forceFill([
                     'last_prepared_at' => now(),
-                    'prepare_count' => $download->prepare_count + 1,
+                    'prepare_count' => max(1, (int)$download->prepare_count) + 1,
                 ])->save();
             }
 
-            if ($file instanceof LauncherUpdateFile && !$file->hasValidIntegrityMetadata()) {
-                throw new PurchaseAccessFileUnavailableException();
-            }
-
-            $this->validateSourceUrl($file->url);
-
-            $url = URL::temporarySignedRoute(
-                'downloads.launcher-content.file',
-                now()->addMinutes(max(1, (int)config('launcher.download_url_ttl_minutes', 10))),
-                [
-                    'purchaseAccess' => $access->getKey(),
-                    'contentType' => $contentType,
-                    'content' => $content->getKey(),
-                    'file' => $file->getKey(),
-                ],
-            );
-
             return [
-                'download_id' => $download->getKey(),
-                'download_session_id' => $download->download_session_id,
+                'download_session_id' => (string)$download->download_session_id,
                 'session_expires_at' => $download->session_expires_at->toISOString(),
-                'reused_session' => $reused,
-                'prepare_count' => $download->prepare_count,
-                'url' => $url,
-                'file_name' => $file->file_name,
-                'title' => $file->title,
-                'size_bytes' => $file->size_bytes,
-                'sha256' => strtolower($file->sha256),
+                'url' => $this->generateTemporaryDownloadUrlAction->execute(
+                    purchaseAccessId: $access->getKey(),
+                    contentType: $contentType,
+                    contentId: $content->getKey(),
+                    fileId: $file->getKey(),
+                    downloadSessionId: (string)$download->download_session_id,
+                    expiresAt: $download->session_expires_at,
+                ),
+                'file_name' => $this->resolveFileName($file),
+                'size_bytes' => $metadata['size_bytes'],
+                'sha256' => $metadata['sha256'],
             ];
         });
     }
 
-    private function resolve(
+    /**
+     * @return array{0:PurchaseAccess,1:Model,2:Model}
+     */
+    private function resolveAccessContentAndFile(
+        User $user,
+        int $accessId,
+        string $contentType,
+        int $contentId,
+        int $fileId,
+    ): array {
+        $access = PurchaseAccess::query()
+            ->withoutGlobalScope(ActivePurchaseAccessScope::class)
+            ->whereKey($accessId)
+            ->where('user_id', $user->getKey())
+            ->whereHas(
+                'productSaleItem',
+                fn($query) => $query->where('launcher_enabled', true)
+            )
+            ->firstOrFail();
+
+        if (!$access->isUsable()) {
+            throw new PurchaseAccessIsNotUsableException();
+        }
+
+        [$content, $file] = $this->resolveContentAndFile(
+            saleItemId: (int)$access->product_sale_item_id,
+            type: $contentType,
+            contentId: $contentId,
+            fileId: $fileId,
+        );
+
+        return [$access, $content, $file];
+    }
+
+    /**
+     * @return array{0:Model,1:Model}
+     */
+    private function resolveContentAndFile(
         int $saleItemId,
         string $type,
         int $contentId,
@@ -134,6 +193,7 @@ class PrepareLauncherContentDownloadAction
                 ->where('product_sale_item_id', $saleItemId)
                 ->published()
                 ->first();
+
             $file = $content
                 ? LauncherUpdateFile::query()
                     ->whereKey($fileId)
@@ -146,6 +206,7 @@ class PrepareLauncherContentDownloadAction
                 ->where('product_sale_item_id', $saleItemId)
                 ->published()
                 ->first();
+
             $file = $content
                 ? LauncherModFile::query()
                     ->whereKey($fileId)
@@ -163,18 +224,19 @@ class PrepareLauncherContentDownloadAction
         return [$content, $file];
     }
 
-    private function validateSourceUrl(string $url): void
+    private function resolveFileName(Model $file): string
     {
-        if (filter_var($url, FILTER_VALIDATE_URL) === false
-            || strtolower((string)parse_url($url, PHP_URL_SCHEME)) !== 'https') {
-            throw new PurchaseAccessFileUnavailableException();
+        $explicit = trim((string)($file->getAttribute('file_name') ?? ''));
+
+        if ($explicit !== '') {
+            return $explicit;
         }
 
-        $allowed = config('launcher.allowed_download_hosts', []);
-        $host = strtolower((string)parse_url($url, PHP_URL_HOST));
+        $path = (string)parse_url((string)$file->getAttribute('url'), PHP_URL_PATH);
+        $fromUrl = basename(rawurldecode($path));
 
-        if ($allowed !== [] && !in_array($host, array_map('strtolower', $allowed), true)) {
-            throw new PurchaseAccessFileUnavailableException();
-        }
+        return $fromUrl !== '' && $fromUrl !== '.' && $fromUrl !== '/'
+            ? $fromUrl
+            : 'download.bin';
     }
 }

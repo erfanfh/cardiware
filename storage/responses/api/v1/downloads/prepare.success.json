@@ -1,14 +1,11 @@
 {
     "message": "Download prepared successfully.",
     "data": {
-        "download_id": 987,
         "download_session_id": "c0429807-f641-47b5-a619-9c14ac858d97",
-        "session_expires_at": "2026-07-22T08:30:00.000000Z",
-        "reused_session": false,
-        "prepare_count": 1,
-        "url": "https://download.example.com/temporary-file-url",
-        "file_name": "PGL_PATCH_V6.7z.001",
-        "title": "Part 1",
-        "remaining_downloads": 4
+        "session_expires_at": "2026-08-13T13:00:00.000000Z",
+        "url": "https://moddingway.ir/launcher-downloads/145/product/81/files/91/c0429807-f641-47b5-a619-9c14ac858d97?expires=...&signature=...",
+        "file_name": "part01.7z",
+        "size_bytes": 123456,
+        "sha256": "3a7bd3e2360a3d80f70b4f0a0f52e88d6f2f57fce8e33a9872187d841a0e9b67"
     }
 }

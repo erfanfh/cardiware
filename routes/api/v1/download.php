@@ -20,12 +20,22 @@ Route::middleware([
             ->name('library.files.download');
 
         Route::post(
-            'library/{purchaseAccess}/{contentType}/{content}/files/{file}/download',
+            'library/{purchaseAccess}/update/{updateId}/files/{file}/download',
             PrepareLauncherContentDownloadController::class
         )
+            ->defaults('contentType', 'update')
             ->whereNumber('purchaseAccess')
-            ->whereIn('contentType', ['update', 'mod'])
-            ->whereNumber('content')
+            ->whereNumber('updateId')
             ->whereNumber('file')
-            ->name('library.content.files.download');
+            ->name('library.updates.files.download');
+
+        Route::post(
+            'library/{purchaseAccess}/mods/{modId}/files/{file}/download',
+            PrepareLauncherContentDownloadController::class
+        )
+            ->defaults('contentType', 'mod')
+            ->whereNumber('purchaseAccess')
+            ->whereNumber('modId')
+            ->whereNumber('file')
+            ->name('library.mods.files.download');
     });

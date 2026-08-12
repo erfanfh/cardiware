@@ -48,4 +48,19 @@ return [
         'LAUNCHER_DOWNLOAD_SESSION_TTL_MINUTES',
         1440
     ),
+
+    /*
+     * Integrity metadata is calculated by streaming the real remote file.
+     * Cache the verified result so large archives are not re-hashed for every
+     * prepare request. Setting this to 0 forces verification on every request.
+     */
+    'download_integrity_cache_ttl_minutes' => (int)env(
+        'LAUNCHER_DOWNLOAD_INTEGRITY_CACHE_TTL_MINUTES',
+        10080
+    ),
+
+    'remote_download_connect_timeout_seconds' => (int)env(
+        'LAUNCHER_REMOTE_DOWNLOAD_CONNECT_TIMEOUT_SECONDS',
+        15
+    ),
 ];
