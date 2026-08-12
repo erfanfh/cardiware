@@ -40,8 +40,8 @@ class LauncherCatalogItemResource extends JsonResource
                 fn() => $this->manifest->resolvedCapabilities(),
             ),
             'support' => [
-                'enabled' => false,
-                'url' => null,
+                'enabled' => (bool)$this->launcher_support_enabled,
+                'url' => $this->launcher_support_enabled ? $this->launcher_support_url : null,
             ],
         ];
     }

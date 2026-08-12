@@ -115,6 +115,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_excerpt' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_cover_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'sale_items.*.launcher_sort_order' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.launcher_support_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_support_url' => ['nullable', 'string', 'url:https', 'max:2048'],
 
             /*
             |--------------------------------------------------------------------------
@@ -321,6 +323,28 @@ class UpdateProductRequest extends FormRequest
     {
         $validator->after(function ($validator): void {
             foreach ((array)$this->input('sale_items', []) as $index => $item) {
+                $prefix = "sale_items.{$index}";
+
+                if (
+                    filter_var(
+                        $item['launcher_support_enabled'] ?? false,
+                        FILTER_VALIDATE_BOOLEAN
+                    )
+                    && blank($item['launcher_support_url'] ?? null)
+                ) {
+                    $validator->errors()->add(
+                        "{$prefix}.launcher_support_url",
+                        'آدرس صفحه پشتیبانی هنگام فعال بودن پشتیبانی آنلاین الزامی است.'
+                    );
+                }
+
+                if (!filter_var(
+                    $item['launcher_enabled'] ?? false,
+                    FILTER_VALIDATE_BOOLEAN
+                )) {
+                    continue;
+                }
+
                 if (!filter_var($item['launcher_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                     continue;
                 }
@@ -413,9 +437,9 @@ class UpdateProductRequest extends FormRequest
                 );
 
                 $supportsSider = filter_var(
-                    data_get($manifest, 'capabilities.supports_sider', $requiresSider),
-                    FILTER_VALIDATE_BOOLEAN
-                ) || $requiresSider;
+                        data_get($manifest, 'capabilities.supports_sider', $requiresSider),
+                        FILTER_VALIDATE_BOOLEAN
+                    ) || $requiresSider;
 
                 if ($supportsSider && blank($manifest['sider_executable_path'] ?? null)) {
                     $validator->errors()->add(
@@ -664,6 +688,16 @@ class UpdateProductRequest extends FormRequest
                     ->values()
                     ->all();
 
+                $item['launcher_support_enabled'] = $this->normalizeBooleanInput(
+                    data_get($item, 'launcher_support_enabled'),
+                    false
+                );
+
+                $item['launcher_support_url'] = $this->normalizeNullableStringInput(
+                    data_get($item, 'launcher_support_url'),
+                    2048
+                );
+
                 return $item;
             })
             ->values()
@@ -703,9 +737,9 @@ class UpdateProductRequest extends FormRequest
         );
 
         $supportsSider = $this->normalizeBooleanInput(
-            data_get($capabilities, 'supports_sider'),
-            $requiresSider
-        ) || $requiresSider;
+                data_get($capabilities, 'supports_sider'),
+                $requiresSider
+            ) || $requiresSider;
 
         return [
             /*

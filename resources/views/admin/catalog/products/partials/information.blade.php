@@ -285,6 +285,8 @@
                     'path' => $saleItem->launcherHero?->url,
                 ],
                 'launcher_sort_order' => (int) $saleItem->launcher_sort_order,
+                'launcher_support_enabled' => (bool) $saleItem->launcher_support_enabled,
+                'launcher_support_url' => $saleItem->launcher_support_url,
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,
                 'discount' => [

@@ -8,7 +8,8 @@
 <div class="space-y-4" x-show="{{ $item }}">
     {{-- Publish in launcher --}}
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
+        <div
+            class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
             <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-2">
                     <h4 class="text-sm font-bold text-slate-900">انتشار در MW Launcher</h4>
@@ -63,6 +64,48 @@
                     />
                 </x-admin.field>
 
+                <div class="col-span-12 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div class="min-w-0">
+                            <div class="text-sm font-bold text-slate-900">
+                                فعال بودن پشتیبانی آنلاین
+                            </div>
+
+                            <div class="mt-1 text-xs leading-6 text-slate-500">
+                                در صورت فعال بودن، لانچر لینک مستقیم صفحه پشتیبانی همین Sale Item را دریافت میکند.
+                            </div>
+                        </div>
+
+                        <div class="shrink-0">
+                            <x-admin.form.switch
+                                x-bind:name="`sale_items[{{ $indexToken }}][launcher_support_enabled]`"
+                                x-model="{{ $item }}.launcher_support_enabled"
+                            />
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4"
+                        x-show="{{ $item }}.launcher_support_enabled"
+                        x-cloak
+                    >
+                        <x-admin.field
+                            label="آدرس کامل صفحه پشتیبانی"
+                            hint="آدرس باید کامل و با https:// شروع شود."
+                        >
+                            <x-admin.form.input
+                                type="url"
+                                dir="ltr"
+                                x-bind:name="`sale_items[{{ $indexToken }}][launcher_support_url]`"
+                                x-model="{{ $item }}.launcher_support_url"
+                                x-bind:required="{{ $item }}.launcher_support_enabled"
+                                placeholder="https://moddingway.ir/..."
+                                class="text-left"
+                            />
+                        </x-admin.field>
+                    </div>
+                </div>
+
                 <div
                     class="col-span-12"
                     x-on:mfip-selected.window="
@@ -93,7 +136,8 @@
                             >
                                 <template x-if="{{ $item }}.launcher_hero?.path">
                                     <div class="flex flex-col gap-4 md:flex-row md:items-center">
-                                        <div class="h-32 w-full shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 md:w-56">
+                                        <div
+                                            class="h-32 w-full shrink-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 md:w-56">
                                             <img
                                                 :src="{{ $item }}.launcher_hero.path"
                                                 alt=""
@@ -104,8 +148,10 @@
 
                                         <div class="min-w-0 flex-1">
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <div class="text-sm font-bold text-slate-900">تصویر Hero انتخاب شده</div>
-                                                <span class="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">آماده</span>
+                                                <div class="text-sm font-bold text-slate-900">تصویر Hero انتخاب شده
+                                                </div>
+                                                <span
+                                                    class="rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-bold text-emerald-700">آماده</span>
                                             </div>
 
                                             <div
@@ -113,7 +159,8 @@
                                                 x-text="{{ $item }}.launcher_hero.path"
                                             ></div>
 
-                                            <div class="mt-3 inline-flex h-9 cursor-pointer items-center justify-center rounded-3xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
+                                            <div
+                                                class="mt-3 inline-flex h-9 cursor-pointer items-center justify-center rounded-3xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50">
                                                 تغییر تصویر
                                             </div>
                                         </div>
@@ -121,15 +168,19 @@
                                 </template>
 
                                 <template x-if="!{{ $item }}.launcher_hero?.path">
-                                    <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-7 text-center transition hover:border-orange-300 hover:bg-orange-50/30">
-                                        <div class="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg text-slate-400 shadow-sm">
+                                    <div
+                                        class="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-7 text-center transition hover:border-orange-300 hover:bg-orange-50/30">
+                                        <div
+                                            class="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-lg text-slate-400 shadow-sm">
                                             ✦
                                         </div>
-                                        <div class="mt-3 text-sm font-bold text-slate-800">تصویر Hero انتخاب نشده است</div>
+                                        <div class="mt-3 text-sm font-bold text-slate-800">تصویر Hero انتخاب نشده است
+                                        </div>
                                         <div class="mx-auto mt-1 max-w-xl text-xs leading-6 text-slate-500">
                                             برای انتخاب یا آپلود تصویر از کتابخانه رسانه کلیک کنید.
                                         </div>
-                                        <div class="mt-3 inline-flex h-9 cursor-pointer items-center justify-center rounded-3xl bg-slate-900 px-4 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800">
+                                        <div
+                                            class="mt-3 inline-flex h-9 cursor-pointer items-center justify-center rounded-3xl bg-slate-900 px-4 text-xs font-bold text-white shadow-sm transition hover:bg-slate-800">
                                             انتخاب تصویر
                                         </div>
                                     </div>
@@ -171,10 +222,13 @@
 
     {{-- Updates --}}
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
+        <div
+            class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
             <div>
                 <div class="text-sm font-bold text-slate-900">آپدیت‌های محصول</div>
-                <div class="mt-1 text-xs leading-5 text-slate-500">نسخه‌های قابل دریافت بعد از نصب Base را برای همین Sale Item مدیریت کنید.</div>
+                <div class="mt-1 text-xs leading-5 text-slate-500">نسخه‌های قابل دریافت بعد از نصب Base را برای همین
+                    Sale Item مدیریت کنید.
+                </div>
             </div>
 
             <x-admin.form.button
@@ -191,19 +245,25 @@
 
         <div class="space-y-3 p-4">
             <template x-if="{{ $item }}.launcher_updates.length === 0">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+                <div
+                    class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
                     هنوز آپدیتی برای این نسخه تعریف نشده است.
                 </div>
             </template>
 
             <template x-for="(update, updateIndex) in {{ $item }}.launcher_updates" :key="update.__key">
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-3">
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-3">
                         <div class="flex min-w-0 items-center gap-2">
-                            <span class="flex h-7 min-w-7 items-center justify-center rounded-full bg-orange-50 px-2 text-[11px] font-bold text-orange-700" x-text="updateIndex + 1"></span>
+                            <span
+                                class="flex h-7 min-w-7 items-center justify-center rounded-full bg-orange-50 px-2 text-[11px] font-bold text-orange-700"
+                                x-text="updateIndex + 1"></span>
                             <div class="min-w-0">
-                                <div class="truncate text-xs font-bold text-slate-800" x-text="update.title || 'آپدیت بدون عنوان'"></div>
-                                <div class="mt-0.5 text-[11px] text-slate-500" x-text="update.version ? ('نسخه ' + update.version) : 'نسخه مشخص نشده'"></div>
+                                <div class="truncate text-xs font-bold text-slate-800"
+                                     x-text="update.title || 'آپدیت بدون عنوان'"></div>
+                                <div class="mt-0.5 text-[11px] text-slate-500"
+                                     x-text="update.version ? ('نسخه ' + update.version) : 'نسخه مشخص نشده'"></div>
                             </div>
                         </div>
 
@@ -278,10 +338,12 @@
                                 'has_option_file' => ['title' => 'دارای OPTION FILE', 'description' => 'این آپدیت شامل فایل Option است.'],
                             ] as $field => $option)
                                 <div class="col-span-12 md:col-span-4">
-                                    <div class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                                    <div
+                                        class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
                                         <div class="min-w-0">
                                             <div class="text-xs font-bold text-slate-800">{{ $option['title'] }}</div>
-                                            <div class="mt-1 text-[11px] leading-5 text-slate-500">{{ $option['description'] }}</div>
+                                            <div
+                                                class="mt-1 text-[11px] leading-5 text-slate-500">{{ $option['description'] }}</div>
                                         </div>
 
                                         <x-admin.form.switch
@@ -294,10 +356,12 @@
                         </div>
 
                         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-3 py-2.5">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-3 py-2.5">
                                 <div>
                                     <div class="text-xs font-bold text-slate-800">فایل‌های آپدیت</div>
-                                    <div class="mt-0.5 text-[11px] text-slate-500">URL، حجم و Hash فایل‌های این آپدیت.</div>
+                                    <div class="mt-0.5 text-[11px] text-slate-500">URL، حجم و Hash فایل‌های این آپدیت.
+                                    </div>
                                 </div>
 
                                 <x-admin.form.button
@@ -313,13 +377,15 @@
 
                             <div class="space-y-2 p-3">
                                 <template x-if="update.files.length === 0">
-                                    <div class="rounded-xl border border-dashed border-slate-300 px-3 py-4 text-center text-[11px] text-slate-500">
+                                    <div
+                                        class="rounded-xl border border-dashed border-slate-300 px-3 py-4 text-center text-[11px] text-slate-500">
                                         فایلی اضافه نشده است.
                                     </div>
                                 </template>
 
                                 <template x-for="(file, fileIndex) in update.files" :key="file.__key">
-                                    <div class="grid grid-cols-12 items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                                    <div
+                                        class="grid grid-cols-12 items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
                                         <input
                                             type="hidden"
                                             x-bind:name="`sale_items[{{ $indexToken }}][launcher_updates][${updateIndex}][files][${fileIndex}][id]`"
@@ -386,10 +452,13 @@
 
     {{-- Mod groups --}}
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
+        <div
+            class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
             <div>
                 <div class="text-sm font-bold text-slate-900">گروه‌های ماد</div>
-                <div class="mt-1 text-xs leading-5 text-slate-500">مادها را برای نمایش و انتخاب بهتر داخل لانچر گروه‌بندی کنید.</div>
+                <div class="mt-1 text-xs leading-5 text-slate-500">مادها را برای نمایش و انتخاب بهتر داخل لانچر
+                    گروه‌بندی کنید.
+                </div>
             </div>
 
             <x-admin.form.button
@@ -405,7 +474,8 @@
 
         <div class="space-y-3 p-4">
             <template x-if="{{ $item }}.launcher_mod_groups.length === 0">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+                <div
+                    class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
                     هنوز گروه مادی تعریف نشده است.
                 </div>
             </template>
@@ -436,7 +506,8 @@
                     </x-admin.field>
 
                     <div class="col-span-12 md:col-span-3">
-                        <div class="flex h-10 items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-3">
+                        <div
+                            class="flex h-10 items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-3">
                             <span class="text-xs font-bold text-slate-700">انتخاب انحصاری</span>
                             <x-admin.form.switch
                                 x-bind:name="`sale_items[{{ $indexToken }}][launcher_mod_groups][${groupIndex}][is_exclusive]`"
@@ -464,10 +535,13 @@
 
     {{-- Mod manager --}}
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
+        <div
+            class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-4 py-3">
             <div>
                 <div class="text-sm font-bold text-slate-900">مادمنیجر</div>
-                <div class="mt-1 text-xs leading-5 text-slate-500">مادهای قابل نصب و مدیریت برای همین نسخه فروش را تعریف کنید.</div>
+                <div class="mt-1 text-xs leading-5 text-slate-500">مادهای قابل نصب و مدیریت برای همین نسخه فروش را تعریف
+                    کنید.
+                </div>
             </div>
 
             <x-admin.form.button
@@ -483,19 +557,25 @@
 
         <div class="space-y-3 p-4">
             <template x-if="{{ $item }}.launcher_mods.length === 0">
-                <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
+                <div
+                    class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-xs text-slate-500">
                     هنوز مادی برای این نسخه تعریف نشده است.
                 </div>
             </template>
 
             <template x-for="(mod, modIndex) in {{ $item }}.launcher_mods" :key="mod.__key">
                 <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-3">
+                    <div
+                        class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-3 py-3">
                         <div class="flex min-w-0 items-center gap-2">
-                            <span class="flex h-7 min-w-7 items-center justify-center rounded-full bg-orange-50 px-2 text-[11px] font-bold text-orange-700" x-text="modIndex + 1"></span>
+                            <span
+                                class="flex h-7 min-w-7 items-center justify-center rounded-full bg-orange-50 px-2 text-[11px] font-bold text-orange-700"
+                                x-text="modIndex + 1"></span>
                             <div class="min-w-0">
-                                <div class="truncate text-xs font-bold text-slate-800" x-text="mod.name || 'ماد بدون نام'"></div>
-                                <div class="direction-ltr mt-0.5 truncate text-left text-[11px] text-slate-500" x-text="mod.slug || 'slug تنظیم نشده'"></div>
+                                <div class="truncate text-xs font-bold text-slate-800"
+                                     x-text="mod.name || 'ماد بدون نام'"></div>
+                                <div class="direction-ltr mt-0.5 truncate text-left text-[11px] text-slate-500"
+                                     x-text="mod.slug || 'slug تنظیم نشده'"></div>
                             </div>
                         </div>
 
@@ -582,7 +662,8 @@
                                 />
                             </x-admin.field>
 
-                            <x-admin.field label="نسخه‌های Base سازگار" hint="با کاما جدا کنید." class="col-span-12 md:col-span-3">
+                            <x-admin.field label="نسخه‌های Base سازگار" hint="با کاما جدا کنید."
+                                           class="col-span-12 md:col-span-3">
                                 <x-admin.form.input
                                     class="direction-ltr"
                                     placeholder="1.0.0,1.1.0"
@@ -591,7 +672,8 @@
                                 />
                             </x-admin.field>
 
-                            <x-admin.field label="نسخه‌های Update سازگار" hint="با کاما جدا کنید." class="col-span-12 md:col-span-3">
+                            <x-admin.field label="نسخه‌های Update سازگار" hint="با کاما جدا کنید."
+                                           class="col-span-12 md:col-span-3">
                                 <x-admin.form.input
                                     class="direction-ltr"
                                     placeholder="1.0.1,1.0.2"
@@ -625,10 +707,12 @@
                                 'is_required' => ['title' => 'ماد اجباری', 'description' => 'کاربر امکان غیرفعال کردن این ماد را نداشته باشد.'],
                             ] as $field => $option)
                                 <div class="col-span-12 md:col-span-6">
-                                    <div class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
+                                    <div
+                                        class="flex h-full items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3">
                                         <div class="min-w-0">
                                             <div class="text-xs font-bold text-slate-800">{{ $option['title'] }}</div>
-                                            <div class="mt-1 text-[11px] leading-5 text-slate-500">{{ $option['description'] }}</div>
+                                            <div
+                                                class="mt-1 text-[11px] leading-5 text-slate-500">{{ $option['description'] }}</div>
                                         </div>
 
                                         <x-admin.form.switch
@@ -641,10 +725,12 @@
                         </div>
 
                         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-3 py-2.5">
+                            <div
+                                class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-3 py-2.5">
                                 <div>
                                     <div class="text-xs font-bold text-slate-800">فایل‌های ماد</div>
-                                    <div class="mt-0.5 text-[11px] text-slate-500">فایل‌های دانلودی مربوط به این ماد.</div>
+                                    <div class="mt-0.5 text-[11px] text-slate-500">فایل‌های دانلودی مربوط به این ماد.
+                                    </div>
                                 </div>
 
                                 <x-admin.form.button
@@ -660,13 +746,15 @@
 
                             <div class="space-y-2 p-3">
                                 <template x-if="mod.files.length === 0">
-                                    <div class="rounded-xl border border-dashed border-slate-300 px-3 py-4 text-center text-[11px] text-slate-500">
+                                    <div
+                                        class="rounded-xl border border-dashed border-slate-300 px-3 py-4 text-center text-[11px] text-slate-500">
                                         فایلی اضافه نشده است.
                                     </div>
                                 </template>
 
                                 <template x-for="(file, fileIndex) in mod.files" :key="file.__key">
-                                    <div class="grid grid-cols-12 items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                                    <div
+                                        class="grid grid-cols-12 items-end gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
                                         <input
                                             type="hidden"
                                             x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][files][${fileIndex}][id]`"
