@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api\V1\Launcher;
 
 use App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -11,9 +12,25 @@ class LauncherCatalogItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         $price = app(ResolvePurchasablePriceAction::class)->execute($this->resource);
-        $access = $this->purchaseAccesses
-            ->first(fn($item): bool => $item->isUsable());
         $isFree = $price->finalPrice === 0;
+
+        $saleItemAccesses = $this->purchaseAccesses
+            ->filter(
+                fn(PurchaseAccess $access): bool =>
+                    (int)$access->product_sale_item_id === (int)$this->id
+            )
+            ->values();
+
+        /** @var PurchaseAccess|null $ownedAccess */
+        $ownedAccess = $saleItemAccesses->first();
+
+        /** @var PurchaseAccess|null $usableAccess */
+        $usableAccess = $saleItemAccesses
+            ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
+
+        $owned = $ownedAccess instanceof PurchaseAccess;
+        $canInstall = $usableAccess instanceof PurchaseAccess;
+        $resolvedAccess = $usableAccess ?? $ownedAccess;
 
         return [
             'id' => $this->id,
@@ -26,13 +43,13 @@ class LauncherCatalogItemResource extends JsonResource
             'card_image_url' => $this->product?->picture?->url,
             'is_free' => $isFree,
             'ownership' => [
-                'owned' => $access !== null,
-                'access_id' => $access?->id,
+                'owned' => $owned,
+                'access_id' => $resolvedAccess?->id,
             ],
             'actions' => [
-                'can_buy' => !$isFree && $access === null,
-                'can_claim' => $isFree && $access === null,
-                'can_install' => $access !== null,
+                'can_buy' => !$isFree && !$owned,
+                'can_claim' => $isFree && !$owned,
+                'can_install' => $canInstall,
             ],
             'web_url' => $this->product?->url,
             'capabilities' => $this->when(

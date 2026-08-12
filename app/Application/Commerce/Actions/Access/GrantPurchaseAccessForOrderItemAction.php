@@ -23,6 +23,7 @@ class GrantPurchaseAccessForOrderItemAction
         }
 
         $existingAccess = PurchaseAccess::query()
+            ->withoutGlobalScopes()
             ->where('order_item_id', $orderItem->id)
             ->first();
 

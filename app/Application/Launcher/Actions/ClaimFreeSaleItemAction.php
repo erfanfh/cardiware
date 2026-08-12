@@ -31,16 +31,22 @@ class ClaimFreeSaleItemAction
                 ->with('product')
                 ->firstOrFail();
 
-            $existing = PurchaseAccess::query()
+            $existingAccesses = PurchaseAccess::query()
                 ->withoutGlobalScopes()
                 ->where('user_id', $user->getKey())
                 ->where('product_sale_item_id', $saleItem->getKey())
                 ->latest('id')
-                ->get()
+                ->get();
+
+            $usableAccess = $existingAccesses
                 ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
 
-            if ($existing instanceof PurchaseAccess) {
-                return $existing;
+            if ($usableAccess instanceof PurchaseAccess) {
+                return $usableAccess;
+            }
+
+            if ($existingAccesses->isNotEmpty()) {
+                throw LauncherCommerceException::alreadyOwned();
             }
 
             if (!$saleItem->isPurchasableAvailable()

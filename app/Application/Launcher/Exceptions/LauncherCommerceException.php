@@ -11,6 +11,15 @@ class LauncherCommerceException extends ApiException
         return new self('این نسخه رایگان نیست.', 'not_free', 409);
     }
 
+    public static function alreadyOwned(): self
+    {
+        return new self(
+            'این نسخه فروش قبلاً برای حساب شما ثبت شده است.',
+            'sale_item_already_owned',
+            409,
+        );
+    }
+
     public static function checkoutExpired(): self
     {
         return new self('نشست خرید منقضی یا قبلاً مصرف شده است.', 'checkout_session_invalid', 409);

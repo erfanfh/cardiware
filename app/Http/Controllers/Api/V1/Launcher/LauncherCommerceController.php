@@ -53,12 +53,11 @@ class LauncherCommerceController extends Controller
             ->where('user_id', $request->user()->getKey())
             ->where('product_sale_item_id', $saleItem)
             ->latest('id')
-            ->get()
-            ->first(fn(PurchaseAccess $item): bool => $item->isUsable());
+            ->first();
 
         if ($existingAccess instanceof PurchaseAccess) {
             return response()->json([
-                'message' => 'این محصول قبلاً در کتابخانه شما فعال شده است.',
+                'message' => 'این نسخه فروش قبلاً برای حساب شما ثبت شده است.',
                 'data' => ['purchase_access_id' => $existingAccess->getKey()],
             ]);
         }
