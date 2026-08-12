@@ -304,7 +304,8 @@
                         <div class="xl:w-24">
                             <x-admin.form.input type="number" min="1"
                                 x-bind:name="`sale_items[0][files][${fileIndex}][part_number]`"
-                                x-model="file.part_number"
+                                x-bind:value="fileIndex + 1"
+                                readonly
                                 placeholder="پارت"
                             />
                         </div>

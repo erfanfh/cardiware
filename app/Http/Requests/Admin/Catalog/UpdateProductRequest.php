@@ -208,7 +208,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.files.*.id' => ['nullable', 'integer', 'exists:product_sale_item_files,id'],
             'sale_items.*.files.*.title' => ['nullable', 'string', 'max:255'],
             'sale_items.*.files.*.url' => ['nullable', 'url', 'max:2048'],
-            'sale_items.*.files.*.file_name' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.files.*.file_name' => ['nullable', 'string', 'max:255', 'not_regex:/[\\\\\/]/'],
             'sale_items.*.files.*.size_bytes' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.files.*.sha256' => ['nullable', 'regex:/^[a-fA-F0-9]{64}$/'],
             'sale_items.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
@@ -422,6 +422,49 @@ class UpdateProductRequest extends FormRequest
                     }
                 }
 
+                if ($this->isSplitArchivePayload($manifest, $files) && $files !== []) {
+                    $partNumbers = [];
+
+                    foreach ($files as $fileIndex => $file) {
+                        $partNumber = filter_var(
+                            $file['part_number'] ?? null,
+                            FILTER_VALIDATE_INT,
+                            ['options' => ['min_range' => 1]]
+                        );
+
+                        if ($partNumber === false) {
+                            $validator->errors()->add(
+                                "{$prefix}.files.{$fileIndex}.part_number",
+                                'شماره پارت برای آرشیو چندقسمتی الزامی است و باید از ۱ شروع شود.'
+                            );
+                        } else {
+                            $partNumbers[] = (int)$partNumber;
+                        }
+
+                        if (!filter_var(
+                            $file['is_required'] ?? true,
+                            FILTER_VALIDATE_BOOLEAN
+                        )) {
+                            $validator->errors()->add(
+                                "{$prefix}.files.{$fileIndex}.is_required",
+                                'تمام پارت‌های آرشیو چندقسمتی برای نصب ضروری هستند.'
+                            );
+                        }
+                    }
+
+                    if (count($partNumbers) === count($files)) {
+                        sort($partNumbers, SORT_NUMERIC);
+                        $expectedPartNumbers = range(1, count($files));
+
+                        if ($partNumbers !== $expectedPartNumbers) {
+                            $validator->errors()->add(
+                                "{$prefix}.files",
+                                'شماره پارت‌ها باید بدون تکرار و به‌صورت پیوسته از ۱ تا تعداد فایل‌ها باشند.'
+                            );
+                        }
+                    }
+                }
+
                 if (filter_var(
                         data_get($manifest, 'capabilities.supports_launch', true),
                         FILTER_VALIDATE_BOOLEAN
@@ -515,6 +558,41 @@ class UpdateProductRequest extends FormRequest
                 }
             }
         });
+    }
+
+    /**
+     * Determine whether the submitted base package is a split archive.
+     * Explicit manifest configuration wins; otherwise multipart 7z names
+     * are used for the same automatic detection as the manifest sync action.
+     *
+     * @param array<string, mixed> $manifest
+     * @param array<int, mixed> $files
+     */
+    private function isSplitArchivePayload(array $manifest, array $files): bool
+    {
+        $downloadType = trim((string)($manifest['download_type'] ?? ''));
+
+        if ($downloadType !== '') {
+            return $downloadType === 'split_archive';
+        }
+
+        foreach ($files as $file) {
+            if (!is_array($file)) {
+                continue;
+            }
+
+            $fileName = basename(str_replace(
+                '\\',
+                '/',
+                trim((string)($file['file_name'] ?? ''))
+            ));
+
+            if (preg_match('/\.7z\.\d{3,}$/i', $fileName) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isSafeRelativeWindowsPath(string $path): bool

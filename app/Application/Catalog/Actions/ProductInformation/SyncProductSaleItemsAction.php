@@ -4,6 +4,7 @@ namespace App\Application\Catalog\Actions\ProductInformation;
 
 use App\Application\Catalog\Support\ProductInformation\ProductInformationPayloadNormalizer;
 use App\Application\Launcher\Actions\SyncLauncherSaleItemContentAction;
+use App\Domain\Catalog\Enums\ProductManifestDownloadTypeEnum;
 use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -94,7 +95,11 @@ class SyncProductSaleItemsAction
 
             $keptSaleItemIds[] = $saleItem->id;
 
-            $this->syncFiles($saleItem, is_array($item['files'] ?? null) ? $item['files'] : []);
+            $this->syncFiles(
+                saleItem: $saleItem,
+                files: is_array($item['files'] ?? null) ? $item['files'] : [],
+                splitArchive: $this->isSplitArchivePayload($item),
+            );
 
             if ($isNewSaleItem || array_key_exists('manifest', $item)) {
                 $this->syncManifestAction->execute(
@@ -197,12 +202,18 @@ class SyncProductSaleItemsAction
      * @param array $files
      * @return void
      */
-    private function syncFiles(ProductSaleItem $saleItem, array $files): void
-    {
+    private function syncFiles(
+        ProductSaleItem $saleItem,
+        array $files,
+        bool $splitArchive = false,
+    ): void {
         $existingFiles = $saleItem->files()->get();
         $keptFileIds = [];
+        $files = $splitArchive
+            ? $this->normalizeSplitArchiveFiles($files)
+            : array_values($files);
 
-        foreach (array_values($files) as $index => $fileItem) {
+        foreach ($files as $index => $fileItem) {
             $url = trim((string)($fileItem['url'] ?? ''));
 
             if ($url === '') {
@@ -210,11 +221,18 @@ class SyncProductSaleItemsAction
             }
 
             $file = $this->resolveFile($existingFiles, $fileItem);
+            $fileName = $this->normalizer->nullableString(
+                $fileItem['file_name'] ?? null
+            );
+
+            if ($fileName !== null) {
+                $fileName = basename(str_replace('\\', '/', $fileName));
+            }
 
             $file->fill([
                 'product_sale_item_id' => $saleItem->id,
                 'title' => $this->normalizer->nullableString($fileItem['title'] ?? null),
-                'file_name' => $this->normalizer->nullableString($fileItem['file_name'] ?? null),
+                'file_name' => $fileName,
                 'url' => $url,
                 'size_bytes' => $this->normalizer->nullableInteger($fileItem['size_bytes'] ?? null),
                 'sha256' => filled($fileItem['sha256'] ?? null)
@@ -222,9 +240,13 @@ class SyncProductSaleItemsAction
                 'mime_type' => $this->normalizer->nullableString($fileItem['mime_type'] ?? null),
                 'part_number' => $this->normalizer->nullableInteger($fileItem['part_number'] ?? null),
                 'archive_group' => $this->normalizer->nullableString($fileItem['archive_group'] ?? null),
-                'is_required' => (bool)($fileItem['is_required'] ?? true),
+                'is_required' => $splitArchive
+                    ? true
+                    : (bool)($fileItem['is_required'] ?? true),
                 'is_active' => (bool)($fileItem['is_active'] ?? true),
-                'sort_order' => $this->normalizer->integer($fileItem['sort_order'] ?? $index),
+                'sort_order' => $splitArchive
+                    ? $index
+                    : $this->normalizer->integer($fileItem['sort_order'] ?? $index),
             ]);
 
             $file->save();
@@ -236,6 +258,80 @@ class SyncProductSaleItemsAction
             ->files()
             ->when(!empty($keptFileIds), fn($query) => $query->whereNotIn('id', $keptFileIds))
             ->delete();
+    }
+
+    /**
+     * Normalize multipart files into their actual archive order and make
+     * part numbers contiguous and one-based even when this action is called
+     * outside the admin form request.
+     *
+     * @param array<int, mixed> $files
+     * @return array<int, array<string, mixed>>
+     */
+    private function normalizeSplitArchiveFiles(array $files): array
+    {
+        return collect(array_values($files))
+            ->filter(static fn(mixed $file): bool => is_array($file))
+            ->map(function (array $file, int $index): array {
+                $partNumber = $this->normalizer->nullableInteger(
+                    $file['part_number'] ?? null
+                );
+
+                return [
+                    'payload' => $file,
+                    'part_number' => $partNumber !== null && $partNumber > 0
+                        ? $partNumber
+                        : PHP_INT_MAX,
+                    'original_index' => $index,
+                ];
+            })
+            ->sort(static fn(array $left, array $right): int => [
+                $left['part_number'],
+                $left['original_index'],
+            ] <=> [
+                $right['part_number'],
+                $right['original_index'],
+            ])
+            ->values()
+            ->map(static function (array $entry, int $index): array {
+                $file = $entry['payload'];
+                $file['part_number'] = $index + 1;
+                $file['sort_order'] = $index;
+                $file['is_required'] = true;
+
+                return $file;
+            })
+            ->all();
+    }
+
+    /**
+     * @param array<string, mixed> $item
+     */
+    private function isSplitArchivePayload(array $item): bool
+    {
+        $downloadType = trim((string)data_get($item, 'manifest.download_type', ''));
+
+        if ($downloadType !== '') {
+            return $downloadType === ProductManifestDownloadTypeEnum::SPLIT_ARCHIVE->value;
+        }
+
+        foreach ((array)($item['files'] ?? []) as $file) {
+            if (!is_array($file)) {
+                continue;
+            }
+
+            $fileName = basename(str_replace(
+                '\\',
+                '/',
+                trim((string)($file['file_name'] ?? ''))
+            ));
+
+            if (preg_match('/\.7z\.\d{3,}$/i', $fileName) === 1) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

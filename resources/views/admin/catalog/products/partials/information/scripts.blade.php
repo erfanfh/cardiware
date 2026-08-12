@@ -572,7 +572,7 @@
                     },
 
                     normalizeSaleItemFiles(files) {
-                        return (files ?? []).map((file) => {
+                        return (files ?? []).map((file, index) => {
                             return {
                                 __key: file.__key ?? this.makeKey('sale-item-file'),
                                 id: file.id ?? null,
@@ -582,11 +582,11 @@
                                 size_bytes: file.size_bytes ?? '',
                                 sha256: file.sha256 ?? '',
                                 mime_type: file.mime_type ?? 'application/octet-stream',
-                                part_number: file.part_number ?? '',
+                                part_number: index + 1,
                                 archive_group: file.archive_group ?? '',
-                                is_required: this.normalizeBoolean(file.is_required, true),
+                                is_required: true,
                                 is_active: this.normalizeBoolean(file.is_active, true),
-                                sort_order: file.sort_order ?? 0,
+                                sort_order: index,
                             };
                         });
                     },
@@ -808,7 +808,7 @@
                             size_bytes: '',
                             sha256: '',
                             mime_type: 'application/octet-stream',
-                            part_number: '',
+                            part_number: item.files.length + 1,
                             archive_group: '',
                             is_required: true,
                             is_active: true,
@@ -818,6 +818,15 @@
 
                     removeSaleItemFile(item, fileIndex) {
                         item.files.splice(fileIndex, 1);
+                        this.reindexSaleItemFiles(item.files);
+                    },
+
+                    reindexSaleItemFiles(files) {
+                        (files ?? []).forEach((file, index) => {
+                            file.part_number = index + 1;
+                            file.sort_order = index;
+                            file.is_required = true;
+                        });
                     },
 
                     saleItemHeading(item, index) {
@@ -932,13 +941,22 @@
                             __key: this.makeKey('simple-file'),
                             id: null,
                             title: '',
+                            file_name: '',
                             url: '',
+                            size_bytes: '',
+                            sha256: '',
+                            mime_type: 'application/octet-stream',
+                            part_number: this.simpleFiles.length + 1,
+                            archive_group: '',
+                            is_required: true,
+                            is_active: true,
                             sort_order: this.simpleFiles.length,
                         });
                     },
 
                     removeSimpleFile(fileIndex) {
                         this.simpleFiles.splice(fileIndex, 1);
+                        this.reindexSaleItemFiles(this.simpleFiles);
                     },
 
                     normalizeProductAddons(items) {

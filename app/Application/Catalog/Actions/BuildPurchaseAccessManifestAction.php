@@ -70,11 +70,18 @@ class BuildPurchaseAccessManifestAction
             capabilities: $capabilities,
         );
 
-        $totalSizeBytes = $files->every(
-            static fn(ProductSaleItemFile $file): bool => $file->size_bytes !== null
-        )
-            ? (int)$files->sum('size_bytes')
-            : null;
+        $isSplitArchive = $manifest->download_type
+            === ProductManifestDownloadTypeEnum::SPLIT_ARCHIVE;
+
+        $totalSizeBytes = $isSplitArchive
+            ? (int)$files->sum(
+                static fn(ProductSaleItemFile $file): int => (int)$file->size_bytes
+            )
+            : ($files->every(
+                static fn(ProductSaleItemFile $file): bool => $file->size_bytes !== null
+            )
+                ? (int)$files->sum('size_bytes')
+                : null);
 
         return [
             'schema_version' => $manifest->schema_version,
@@ -123,18 +130,19 @@ class BuildPurchaseAccessManifestAction
 
                             'title' => $file->title,
 
-                            'file_name' => $file->file_name
-                                ?: ($file->title ?? "file-{$file->id}"),
+                            'file_name' => $this->fileName($file),
                             'size_bytes' => $file->size_bytes,
                             'sha256' => strtolower((string)$file->sha256),
                             'mime_type' => $file->mime_type,
                             'part_number' => $file->part_number,
                             'archive_group' => $file->archive_group,
-                            'is_required' => $file->is_required,
+                            'is_required' => $isSplitArchive
+                                ? true
+                                : (bool)$file->is_required,
 
                             /*
-                             * sort_order is the actual download and
-                             * split archive assembly order.
+                             * sort_order is normalized to the split part
+                             * sequence when multipart files are saved.
                              */
                             'order' => $file->sort_order,
                         ]
@@ -279,6 +287,12 @@ class BuildPurchaseAccessManifestAction
             return;
         }
 
+        if ($files->isEmpty()) {
+            throw new ProductManifestUnavailableException(
+                'Split archive package does not have any active parts.'
+            );
+        }
+
         if (blank($manifest->archive_format)) {
             throw new ProductManifestUnavailableException(
                 'Split archive format has not been configured.'
@@ -297,21 +311,43 @@ class BuildPurchaseAccessManifestAction
             );
         }
 
+        foreach ($files as $file) {
+            if ($file->size_bytes === null || (int)$file->size_bytes <= 0) {
+                throw new ProductManifestUnavailableException(
+                    "Split archive file {$file->id} does not have a valid size."
+                );
+            }
+        }
+
         $partNumbers = $files
             ->pluck('part_number')
-            ->filter()
+            ->map(static fn(mixed $partNumber): ?int => $partNumber !== null
+                ? (int)$partNumber
+                : null)
             ->values();
 
-        if ($partNumbers->count() !== $files->count()) {
+        if ($partNumbers->contains(null)) {
             throw new ProductManifestUnavailableException(
                 'Every split archive file must have a part number.'
             );
         }
 
-        if ($partNumbers->unique()->count() !== $files->count()) {
+        $expectedPartNumbers = collect(range(1, $files->count()));
+
+        if ($partNumbers->all() !== $expectedPartNumbers->all()) {
             throw new ProductManifestUnavailableException(
-                'Split archive part numbers must be unique.'
+                'Split archive part numbers must be unique and contiguous, starting from 1.'
             );
         }
+    }
+
+    private function fileName(ProductSaleItemFile $file): string
+    {
+        $fileName = trim((string)(
+            $file->file_name
+            ?: ($file->title ?? "file-{$file->id}")
+        ));
+
+        return basename(str_replace('\\', '/', $fileName));
     }
 }
