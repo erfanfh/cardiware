@@ -7,6 +7,7 @@ use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
+use App\Domain\Catalog\Models\ProductSaleItemManifest;
 use App\Domain\Marketplace\Models\Store;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -159,7 +160,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.cpu_compatibility.enabled' => ['nullable', 'boolean'],
             'sale_items.*.manifest.cpu_compatibility.default_mode' => [
                 'nullable',
-                Rule::in(['off', 'auto']),
+                Rule::in(ProductSaleItemManifest::CPU_COMPATIBILITY_MODES),
             ],
             'sale_items.*.manifest.cpu_compatibility.apply_to_game' => ['nullable', 'boolean'],
             'sale_items.*.manifest.cpu_compatibility.apply_to_sider' => ['nullable', 'boolean'],
@@ -792,9 +793,13 @@ class UpdateProductRequest extends FormRequest
     {
         $value = strtolower(trim((string)$value));
 
-        return in_array($value, ['off', 'auto'], true)
+        return in_array(
+            $value,
+            ProductSaleItemManifest::CPU_COMPATIBILITY_MODES,
+            true
+        )
             ? $value
-            : 'off';
+            : ProductSaleItemManifest::DEFAULT_CPU_COMPATIBILITY['default_mode'];
     }
 
     private function normalizeDownloadTypeInput(mixed $value): ?string

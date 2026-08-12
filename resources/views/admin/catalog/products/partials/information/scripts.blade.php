@@ -260,7 +260,7 @@
                                     cpuCompatibility.enabled,
                                     false
                                 ),
-                                default_mode: ['off', 'auto'].includes(
+                                default_mode: ['off', 'auto', 'manual'].includes(
                                     String(cpuCompatibility.default_mode ?? 'off')
                                 )
                                     ? String(cpuCompatibility.default_mode ?? 'off')

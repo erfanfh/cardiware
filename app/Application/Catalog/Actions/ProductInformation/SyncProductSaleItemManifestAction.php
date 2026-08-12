@@ -6,6 +6,7 @@ use App\Domain\Catalog\Enums\ProductManifestAssemblyStrategyEnum;
 use App\Domain\Catalog\Enums\ProductManifestDownloadTypeEnum;
 use App\Domain\Catalog\Enums\ProductManifestValidationModeEnum;
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Catalog\Models\ProductSaleItemManifest;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
 use Illuminate\Support\Arr;
 
@@ -377,8 +378,12 @@ class SyncProductSaleItemManifestAction
 
         $defaultMode = strtolower(trim((string)($value['default_mode'] ?? 'off')));
 
-        if (!in_array($defaultMode, ['off', 'auto'], true)) {
-            $defaultMode = 'off';
+        if (!in_array(
+            $defaultMode,
+            ProductSaleItemManifest::CPU_COMPATIBILITY_MODES,
+            true
+        )) {
+            $defaultMode = ProductSaleItemManifest::DEFAULT_CPU_COMPATIBILITY['default_mode'];
         }
 
         return [

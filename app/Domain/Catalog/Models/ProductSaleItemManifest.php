@@ -10,6 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductSaleItemManifest extends Model
 {
+    public const CPU_COMPATIBILITY_MODES = [
+        'off',
+        'auto',
+        'manual',
+    ];
+
     public const DEFAULT_CAPABILITIES = [
         'supports_install' => true,
         'supports_launch' => true,
@@ -112,7 +118,20 @@ class ProductSaleItemManifest extends Model
      */
     public function resolvedCpuCompatibility(): array
     {
-        return array_replace(self::DEFAULT_CPU_COMPATIBILITY, $this->cpu_compatibility ?? []);
+        $cpuCompatibility = array_replace(
+            self::DEFAULT_CPU_COMPATIBILITY,
+            $this->cpu_compatibility ?? []
+        );
+
+        $defaultMode = strtolower(trim((string) $cpuCompatibility['default_mode']));
+
+        $cpuCompatibility['default_mode'] = in_array(
+            $defaultMode,
+            self::CPU_COMPATIBILITY_MODES,
+            true
+        ) ? $defaultMode : self::DEFAULT_CPU_COMPATIBILITY['default_mode'];
+
+        return $cpuCompatibility;
     }
 
     /**

@@ -101,6 +101,8 @@ OPTION FILE و تنظیمات اجرای بازی/Sider است؛ URL واقعی 
 }
 ```
 
+مقادیر مجاز `default_mode` فقط `off`، `auto` و `manual` هستند.
+
 تغییر Manifest همان `sale_item` باعث افزایش `manifest_revision` می‌شود.
 
 برای هر فایل پایه:

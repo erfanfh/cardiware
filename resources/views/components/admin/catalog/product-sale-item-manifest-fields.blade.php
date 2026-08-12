@@ -712,6 +712,7 @@
                     <x-admin.form.select x-model="{{ $state }}.cpu_compatibility.default_mode">
                         <option value="off">Off</option>
                         <option value="auto">Auto</option>
+                        <option value="manual">Manual</option>
                     </x-admin.form.select>
                 </x-admin.field>
             </div>
