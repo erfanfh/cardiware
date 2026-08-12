@@ -48,6 +48,14 @@ class User extends Authenticatable implements HasDiscussionOwner
         'mobile_verified_at',
         'email_verified_at',
         'avatar_id',
+        'first_device_public_key',
+        'first_device_fingerprint',
+        'second_device_public_key',
+        'second_device_fingerprint',
+        'active_device_slot',
+        'device_transfer_used',
+        'first_activated_at',
+        'transferred_at',
     ];
 
     /**
@@ -58,6 +66,10 @@ class User extends Authenticatable implements HasDiscussionOwner
     protected $hidden = [
         'password',
         'remember_token',
+        'first_device_public_key',
+        'first_device_fingerprint',
+        'second_device_public_key',
+        'second_device_fingerprint',
     ];
 
     /**
@@ -72,6 +84,10 @@ class User extends Authenticatable implements HasDiscussionOwner
             'mobile_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatusEnum::class,
+            'active_device_slot' => 'integer',
+            'device_transfer_used' => 'boolean',
+            'first_activated_at' => 'datetime',
+            'transferred_at' => 'datetime',
         ];
     }
 

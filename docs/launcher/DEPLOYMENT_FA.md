@@ -14,7 +14,8 @@ php artisan optimize:clear
 ## ۲. تنظیم `.env`
 
 ```dotenv
-LAUNCHER_MAX_ACTIVE_DEVICES=2
+LAUNCHER_OFFLINE_LICENSE_DAYS=7
+LAUNCHER_DEVICE_PROOF_CLOCK_SKEW_SECONDS=300
 LAUNCHER_TOKEN_TTL_DAYS=30
 LAUNCHER_CHECKOUT_SESSION_TTL_MINUTES=15
 LAUNCHER_LATEST_VERSION=1.0.0
@@ -35,10 +36,14 @@ LAUNCHER_ALLOWED_DOWNLOAD_HOSTS=cdn.example.com,files.example.com
 ```bash
 php artisan migrate --pretend
 php artisan migrate
+php artisan db:seed --class=Database\\Seeders\\Identity\\PermissionSeeder
 ```
 
 مهاجرت جدید جداول device، checkout، download session، update، mod و mod group
 را ایجاد و فیلدهای لانچر را به نسخه فروش، فایل و manifest اضافه می‌کند.
+
+پس از Seed، برای مدیران غیر از مدیرکل مجوز «مشاهده و Reset دستگاه‌های لانچر کاربران»
+را از صفحه نقش‌ها فعال کنید. مدیرکل به‌صورت خودکار به این بخش دسترسی دارد.
 
 ## ۴. کنترل ساخت و تست
 
@@ -58,16 +63,18 @@ php artisan queue:restart
 
 ## ۵. تست پذیرش ضروری
 
-1. ورود با دستگاه اول و دوم موفق و دستگاه سوم با 409 رد شود.
-2. لغو دستگاه، token همان دستگاه را فوراً نامعتبر کند.
-3. محصول بدون تیک لانچر در Catalog دیده نشود.
-4. Half Season و Full Season به‌عنوان دو sale item مستقل دیده شوند.
-5. claim محصول رایگان با retry و UUID یکسان، فقط یک دسترسی بسازد.
-6. خرید مرورگری پس از پرداخت deep link را باز کند و consume موفق شود.
-7. Manifest هیچ URL اصلی دانلودی نداشته باشد.
-8. retry دانلود با `download_session_id` یکسان سهمیه را دوباره کم نکند.
-9. SHA-256 خراب در لانچر مانع استخراج شود.
-10. آپدیت و ماد فقط برای مالک همان sale item قابل دریافت باشند.
+1. ورود دستگاه اول موفق شود؛ دستگاه دوم OTP بخواهد و پس از تأیید، دستگاه اول باطل شود.
+2. انتقال دیگری به دستگاه سوم با کد `device_limit_reached` و وضعیت 409 رد شود.
+3. حذف دستگاه توسط کاربر با `device_self_service_disabled` رد و Reset پشتیبانی آزمایش شود.
+4. پس از یک ورود آنلاین، قطع اینترنت تا ۷ روز مجاز و بعد از آن رد شود.
+5. محصول بدون تیک لانچر در Catalog دیده نشود.
+6. Half Season و Full Season به‌عنوان دو sale item مستقل دیده شوند.
+7. claim محصول رایگان با retry و UUID یکسان، فقط یک دسترسی بسازد.
+8. خرید مرورگری پس از پرداخت deep link را باز کند و consume موفق شود.
+9. Manifest هیچ URL اصلی دانلودی نداشته باشد.
+10. retry دانلود با `download_session_id` یکسان سهمیه را دوباره کم نکند.
+11. SHA-256 خراب در لانچر مانع استخراج شود.
+12. آپدیت و ماد فقط برای مالک همان sale item قابل دریافت باشند.
 11. OPTION FILE پایه و آپدیت در Documents ادغام شود.
 12. Sider در محصولی که تیک آن فعال است پیش از بازی اجرا شود.
 

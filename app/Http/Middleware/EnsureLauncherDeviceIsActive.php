@@ -31,6 +31,24 @@ class EnsureLauncherDeviceIsActive
             throw new DeviceRevokedException();
         }
 
+        $activeSlot = (int)($request->user()->active_device_slot ?: 0);
+        if ($activeSlot === 0 || (int)$device->device_slot !== $activeSlot) {
+            $token->delete();
+            throw new DeviceRevokedException();
+        }
+
+        $activePublicKey = $activeSlot === 2
+            ? $request->user()->second_device_public_key
+            : $request->user()->first_device_public_key;
+        $decodedKey = base64_decode((string)$activePublicKey, true);
+        if (
+            $decodedKey === false
+            || !hash_equals(hash('sha256', $decodedKey), (string)$device->public_key_fingerprint)
+        ) {
+            $token->delete();
+            throw new DeviceRevokedException();
+        }
+
         $device->forceFill([
             'last_seen_at' => now(),
             'last_ip' => $request->ip(),

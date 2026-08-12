@@ -106,6 +106,9 @@ class PermissionSeeder extends Seeder
             'purchase-access' => [
                 'reset-downloads' => 'ریست محدودیت دانلود خرید کاربران',
             ],
+            'launcher-device' => [
+                'manage' => 'مشاهده و Reset دستگاه‌های لانچر کاربران',
+            ],
             'analytics' => [
                 'view' => 'مشاهده تحلیل فروش و درآمد',
             ],

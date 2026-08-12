@@ -138,6 +138,12 @@ return [
                 'gate' => 'purchase-access.reset-downloads',
             ],
             [
+                'label' => 'دستگاه‌های لانچر',
+                'route' => 'admin.launcher-devices.index',
+                'icon' => 'icons.computer-check',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
                 'label' => 'تحلیل فروش و درآمد',
                 'route' => 'admin.analytics.index',
                 'icon' => 'icons.chart-03',

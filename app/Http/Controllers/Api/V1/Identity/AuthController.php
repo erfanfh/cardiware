@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Application\Launcher\Exceptions\DeviceLimitReachedException;
 use App\Application\Launcher\Exceptions\DeviceFingerprintMismatchException;
+use App\Application\Launcher\Exceptions\DeviceTransferRequiredException;
+use App\Application\Launcher\Actions\Security\VerifyDeviceProofAction;
+use App\Application\Identity\Actions\Auth\ConsumeOtpAction;
+use App\Application\Identity\Actions\Otp\RequestOtpAction;
+use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Launcher\Models\LauncherDevice;
 use Illuminate\Support\Facades\DB;
 
@@ -32,7 +37,12 @@ class AuthController extends Controller
      * @responseFile status=200 scenario="Login successful" storage/responses/api/v1/auth/login.success.json
      * @responseFile status=422 scenario="Invalid credentials or validation failed" storage/responses/api/v1/errors/validation.json
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function login(
+        LoginRequest $request,
+        VerifyDeviceProofAction $verifyDeviceProof,
+        RequestOtpAction $requestOtp,
+        ConsumeOtpAction $consumeOtp,
+    ): JsonResponse
     {
         $data = $request->validated();
 
@@ -49,108 +59,56 @@ class AuthController extends Controller
         }
 
         $deviceData = $data['device'];
-        $maximum = max(1, (int)config('launcher.max_active_devices_per_user', 2));
+        $verifyDeviceProof->execute($deviceData);
 
-        [$device, $token] = DB::transaction(function () use (
-            $user,
-            $deviceData,
-            $maximum,
-            $request,
-        ): array {
-            /*
-             * Lock the account row so concurrent first-time logins from
-             * different PCs cannot bypass the active-device limit.
-             */
-            User::query()
-                ->whereKey($user->getKey())
-                ->lockForUpdate()
-                ->firstOrFail();
+        $activeSlot = (int)($user->active_device_slot ?: 0);
+        $activeKeyFingerprint = $this->publicKeyFingerprintForSlot($user, $activeSlot);
+        $isFirstActivation = $activeSlot === 0 || blank($activeKeyFingerprint);
+        $isActiveDevice = !$isFirstActivation && hash_equals(
+            (string)$activeKeyFingerprint,
+            (string)$deviceData['public_key_fingerprint']
+        );
 
-            $device = LauncherDevice::query()
-                ->where('user_id', $user->getKey())
-                ->where('device_id', $deviceData['id'])
-                ->lockForUpdate()
-                ->first();
-
-            if (!$device instanceof LauncherDevice) {
-                $activeDevices = LauncherDevice::query()
-                    ->where('user_id', $user->getKey())
-                    ->whereNull('revoked_at')
-                    ->lockForUpdate()
-                    ->get();
-
-                if ($activeDevices->count() >= $maximum) {
-                    throw new DeviceLimitReachedException(
-                        maximum: $maximum,
-                        devices: $activeDevices->map(fn(LauncherDevice $item): array => [
-                            'id' => $item->device_id,
-                            'name' => $item->name,
-                            'last_seen_at' => $item->last_seen_at?->toISOString(),
-                        ])->all(),
-                    );
-                }
-
-                $device = LauncherDevice::query()->create([
-                    'user_id' => $user->getKey(),
-                    'device_id' => $deviceData['id'],
-                    'name' => $deviceData['name'],
-                    'fingerprint_hash' => $deviceData['fingerprint_hash'] ?? null,
-                    'platform' => $deviceData['platform'],
-                    'app_version' => $deviceData['app_version'],
-                    'last_ip' => $request->ip(),
-                    'last_seen_at' => now(),
-                ]);
-            } elseif (
-                filled($device->fingerprint_hash)
-                && !hash_equals(
-                    (string)$device->fingerprint_hash,
-                    (string)$deviceData['fingerprint_hash']
-                )
-            ) {
+        if ($isActiveDevice) {
+            $registeredHardware = $activeSlot === 2
+                ? $user->second_device_fingerprint
+                : $user->first_device_fingerprint;
+            if ($registeredHardware !== null && !hash_equals($registeredHardware, (string)$deviceData['fingerprint_hash'])) {
                 throw new DeviceFingerprintMismatchException();
-            } elseif (!$device->isActive()) {
-                $activeCount = LauncherDevice::query()
-                    ->where('user_id', $user->getKey())
-                    ->whereNull('revoked_at')
-                    ->lockForUpdate()
-                    ->count();
+            }
+        }
 
-                if ($activeCount >= $maximum) {
-                    throw new DeviceLimitReachedException($maximum, []);
-                }
+        $isTransfer = !$isFirstActivation && !$isActiveDevice;
+        if ($isTransfer && $user->device_transfer_used) {
+            throw new DeviceLimitReachedException(1, []);
+        }
+
+        if ($isTransfer && empty($data['device_transfer_code'])) {
+            if (blank($user->mobile)) {
+                throw ValidationException::withMessages([
+                    'device_transfer_code' => 'برای انتقال دستگاه باید شماره موبایل حساب توسط پشتیبانی ثبت شود.',
+                ]);
             }
 
-            $device->forceFill([
-                'name' => $deviceData['name'],
-                'fingerprint_hash' => $deviceData['fingerprint_hash'] ?? null,
-                'platform' => $deviceData['platform'],
-                'app_version' => $deviceData['app_version'],
-                'last_ip' => $request->ip(),
-                'last_seen_at' => now(),
-                'revoked_at' => null,
-            ])->save();
+            $otp = $requestOtp->execute($user->mobile, OtpTypeEnum::DEVICE_TRANSFER);
+            throw new DeviceTransferRequiredException($otp->sent, $otp->retryAfterSeconds);
+        }
 
-            $device->tokens()->delete();
+        $complete = fn(): array => $this->completeDeviceLogin(
+            $user->getKey(),
+            $deviceData,
+            $request->ip(),
+            $isTransfer,
+        );
 
-            $token = $user->createToken(
-                name: 'MW Launcher — ' . $device->name,
-                abilities: [
-                    'windows-app',
-                    'user:read',
-                    'library:read',
-                    'downloads:prepare',
-                ],
-                expiresAt: now()->addDays(
-                    max(1, (int)config('launcher.token_ttl_days', 30))
-                ),
-            );
-
-            $token->accessToken->forceFill([
-                'launcher_device_id' => $device->getKey(),
-            ])->save();
-
-            return [$device, $token];
-        });
+        [$device, $token, $freshUser] = $isTransfer
+            ? $consumeOtp->execute(
+                $user->mobile,
+                (string)$data['device_transfer_code'],
+                OtpTypeEnum::DEVICE_TRANSFER,
+                fn() => $complete(),
+            )
+            : $complete();
 
         return response()->json([
             'message' => 'Login completed successfully.',
@@ -158,14 +116,109 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
                 'access_token' => $token->plainTextToken,
                 'expires_at' => $token->accessToken->expires_at?->toISOString(),
-                'user' => UserResource::make($user),
+                'user' => UserResource::make($freshUser),
                 'device' => [
                     'id' => $device->device_id,
                     'name' => $device->name,
                     'last_seen_at' => $device->last_seen_at?->toISOString(),
+                    'slot' => $device->device_slot,
                 ],
             ],
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $deviceData
+     * @return array{0: LauncherDevice, 1: mixed, 2: User}
+     */
+    private function completeDeviceLogin(
+        int $userId,
+        array $deviceData,
+        ?string $ip,
+        bool $transfer,
+    ): array {
+        return DB::transaction(function () use ($userId, $deviceData, $ip, $transfer): array {
+            $user = User::query()->whereKey($userId)->lockForUpdate()->firstOrFail();
+            $slot = (int)($user->active_device_slot ?: 0);
+            $activeFingerprint = $this->publicKeyFingerprintForSlot($user, $slot);
+            $incomingFingerprint = (string)$deviceData['public_key_fingerprint'];
+
+            if ($slot === 0 || blank($activeFingerprint)) {
+                $slot = 1;
+                $user->forceFill([
+                    'first_device_public_key' => $deviceData['public_key'],
+                    'first_device_fingerprint' => $deviceData['fingerprint_hash'],
+                    'active_device_slot' => 1,
+                    'device_transfer_used' => false,
+                    'first_activated_at' => now(),
+                    'transferred_at' => null,
+                ])->save();
+            } elseif (!hash_equals((string)$activeFingerprint, $incomingFingerprint)) {
+                if (!$transfer || $user->device_transfer_used) {
+                    throw new DeviceLimitReachedException(1, []);
+                }
+
+                $slot = 2;
+                $user->forceFill([
+                    'second_device_public_key' => $deviceData['public_key'],
+                    'second_device_fingerprint' => $deviceData['fingerprint_hash'],
+                    'active_device_slot' => 2,
+                    'device_transfer_used' => true,
+                    'transferred_at' => now(),
+                ])->save();
+            }
+
+            $oldDevices = LauncherDevice::query()
+                ->where('user_id', $userId)
+                ->whereNull('revoked_at')
+                ->lockForUpdate()
+                ->get();
+            foreach ($oldDevices as $oldDevice) {
+                if ((string)$oldDevice->public_key_fingerprint !== $incomingFingerprint) {
+                    $oldDevice->forceFill(['revoked_at' => now()])->save();
+                    $oldDevice->tokens()->delete();
+                }
+            }
+
+            $device = LauncherDevice::query()->updateOrCreate(
+                ['user_id' => $userId, 'device_id' => $deviceData['id']],
+                [
+                    'name' => $deviceData['name'],
+                    'fingerprint_hash' => $deviceData['fingerprint_hash'],
+                    'public_key' => $deviceData['public_key'],
+                    'public_key_fingerprint' => $incomingFingerprint,
+                    'device_slot' => $slot,
+                    'platform' => $deviceData['platform'],
+                    'app_version' => $deviceData['app_version'],
+                    'last_ip' => $ip,
+                    'last_seen_at' => now(),
+                    'revoked_at' => null,
+                ]
+            );
+            $device->tokens()->delete();
+
+            $token = $user->createToken(
+                name: 'MW Launcher — ' . $device->name,
+                abilities: ['windows-app', 'user:read', 'library:read', 'downloads:prepare'],
+                expiresAt: now()->addDays(max(1, (int)config('launcher.token_ttl_days', 30))),
+            );
+            $token->accessToken->forceFill(['launcher_device_id' => $device->getKey()])->save();
+
+            return [$device, $token, $user];
+        });
+    }
+
+    private function publicKeyFingerprintForSlot(User $user, int $slot): ?string
+    {
+        $encoded = $slot === 2
+            ? $user->second_device_public_key
+            : $user->first_device_public_key;
+        if (blank($encoded)) {
+            return null;
+        }
+
+        $der = base64_decode((string)$encoded, true);
+        return $der === false ? null : hash('sha256', $der);
     }
 
     /**

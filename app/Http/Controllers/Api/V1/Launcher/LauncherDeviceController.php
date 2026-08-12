@@ -6,6 +6,7 @@ use App\Domain\Launcher\Models\LauncherDevice;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Application\Launcher\Exceptions\DeviceSelfServiceDisabledException;
 
 class LauncherDeviceController extends Controller
 {
@@ -32,14 +33,6 @@ class LauncherDeviceController extends Controller
 
     public function destroy(Request $request, string $deviceId): JsonResponse
     {
-        $device = LauncherDevice::query()
-            ->where('user_id', $request->user()->getKey())
-            ->where('device_id', $deviceId)
-            ->firstOrFail();
-
-        $device->forceFill(['revoked_at' => now()])->save();
-        $device->tokens()->delete();
-
-        return response()->json(['message' => 'دسترسی دستگاه لغو شد.']);
+        throw new DeviceSelfServiceDisabledException();
     }
 }

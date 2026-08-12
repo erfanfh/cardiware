@@ -15,6 +15,10 @@ class LauncherDevice extends Model
         'device_id',
         'name',
         'fingerprint_hash',
+        'public_key',
+        'public_key_fingerprint',
+        'device_slot',
+        'offline_license_expires_at',
         'platform',
         'app_version',
         'last_ip',
@@ -22,11 +26,13 @@ class LauncherDevice extends Model
         'revoked_at',
     ];
 
-    protected $hidden = ['fingerprint_hash'];
+    protected $hidden = ['fingerprint_hash', 'public_key'];
 
     protected $casts = [
         'last_seen_at' => 'datetime',
         'revoked_at' => 'datetime',
+        'device_slot' => 'integer',
+        'offline_license_expires_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

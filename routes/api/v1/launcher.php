@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Launcher\LauncherCatalogController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherDeviceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCommerceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherContentController;
+use App\Http\Controllers\Api\V1\Launcher\OfflineLicenseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('launcher/bootstrap', LauncherBootstrapController::class)
@@ -22,6 +23,8 @@ Route::middleware([
         Route::delete('devices/{deviceId}', [LauncherDeviceController::class, 'destroy'])
             ->whereUuid('deviceId')
             ->name('launcher.devices.destroy');
+        Route::post('launcher/offline-license', OfflineLicenseController::class)
+            ->name('launcher.offline-license');
 
         Route::prefix('launcher')->name('launcher.')->group(function (): void {
             Route::get('catalog', [LauncherCatalogController::class, 'index'])
