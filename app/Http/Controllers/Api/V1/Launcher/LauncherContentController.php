@@ -20,32 +20,56 @@ class LauncherContentController extends Controller
             ->where('product_sale_item_id', $access->product_sale_item_id)
             ->published()
             ->with('files')
-            ->orderBy('sort_order')
-            ->orderBy('id')
             ->get()
-            ->map(fn(LauncherUpdate $update): array => [
-                'id' => $update->id,
-                'version' => $update->version,
-                'title' => $update->title,
-                'description' => $update->description,
-                'changelog' => $update->changelog,
-                'is_mandatory' => $update->is_mandatory,
-                'has_option_file' => $update->has_option_file,
-                'option_file' => [
-                    'enabled' => $update->has_option_file,
-                    'folder_name' => 'OPTION FILE',
-                    'target' => 'windows_documents',
-                ],
-                'published_at' => $update->published_at?->toISOString(),
-                'package' => [
-                    'archive_format' => $update->archive_format,
-                    'merge_mode' => 'merge_to_product_root',
-                    'total_size_bytes' => (int)$update->files->sum('size_bytes'),
-                    'files' => $update->files->map(fn($file): array => $this->file($file))->values(),
-                ],
-            ]);
+            ->filter(fn(LauncherUpdate $update): bool => $update->hasDownloadablePackage())
+            ->sort(function (LauncherUpdate $left, LauncherUpdate $right): int {
+                $publishedAtComparison = ($left->published_at?->getTimestamp() ?? 0)
+                    <=> ($right->published_at?->getTimestamp() ?? 0);
 
-        return response()->json(['data' => $updates->isEmpty() ? [] : $updates]);
+                if ($publishedAtComparison !== 0) {
+                    return $publishedAtComparison;
+                }
+
+                $versionComparison = version_compare($left->version, $right->version);
+
+                return $versionComparison !== 0
+                    ? $versionComparison
+                    : $left->getKey() <=> $right->getKey();
+            })
+            ->values()
+            ->map(function (LauncherUpdate $update): array {
+                $files = $update->files->values();
+
+                return [
+                    'id' => $update->id,
+                    'version' => $update->version,
+                    'title' => $update->title,
+                    'description' => $update->description,
+                    'changelog' => $update->changelog,
+                    'is_mandatory' => $update->is_mandatory,
+                    'has_option_file' => $update->has_option_file,
+                    'option_file' => [
+                        'enabled' => $update->has_option_file,
+                        'folder_name' => 'OPTION FILE',
+                        'target' => 'windows_documents',
+                    ],
+                    'published_at' => $update->published_at?->toISOString(),
+                    'package' => [
+                        'archive_format' => $update->archive_format,
+                        'merge_mode' => 'merge_to_product_root',
+                        'total_size_bytes' => (int)$files->sum(
+                            static fn($file): int => (int)$file->size_bytes
+                        ),
+                        'files' => $files
+                            ->map(fn($file): array => $this->file($file))
+                            ->values(),
+                    ],
+                ];
+            });
+
+        return response()->json([
+            'data' => $updates->all(),
+        ]);
     }
 
     public function mods(Request $request, int $purchaseAccess): JsonResponse
@@ -120,8 +144,8 @@ class LauncherContentController extends Controller
             'file_id' => $file->id,
             'file_name' => $file->file_name,
             'title' => $file->title,
-            'size_bytes' => $file->size_bytes,
-            'sha256' => strtolower($file->sha256),
+            'size_bytes' => (int)$file->size_bytes,
+            'sha256' => strtolower((string)$file->sha256),
             'mime_type' => $file->mime_type,
             'part_number' => $file->part_number,
             'is_required' => $file->is_required,

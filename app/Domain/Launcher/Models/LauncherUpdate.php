@@ -40,4 +40,12 @@ class LauncherUpdate extends Model
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }
+
+    public function hasDownloadablePackage(): bool
+    {
+        return $this->files->isNotEmpty()
+            && $this->files->every(
+                static fn(LauncherUpdateFile $file): bool => $file->hasValidIntegrityMetadata()
+            );
+    }
 }

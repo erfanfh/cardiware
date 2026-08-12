@@ -90,6 +90,10 @@ class PrepareLauncherContentDownloadAction
                 ])->save();
             }
 
+            if ($file instanceof LauncherUpdateFile && !$file->hasValidIntegrityMetadata()) {
+                throw new PurchaseAccessFileUnavailableException();
+            }
+
             $this->validateSourceUrl($file->url);
 
             $url = URL::temporarySignedRoute(

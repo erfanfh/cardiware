@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Library\LibraryController;
 use App\Http\Controllers\Api\V1\Library\LibraryManifestController;
+use App\Http\Controllers\Api\V1\Launcher\LauncherContentController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware([
@@ -23,4 +24,8 @@ Route::middleware([
         Route::get('{purchaseAccess}/manifest', LibraryManifestController::class)
             ->whereNumber('purchaseAccess')
             ->name('manifest');
+
+        Route::get('{purchaseAccess}/updates', [LauncherContentController::class, 'updates'])
+            ->whereNumber('purchaseAccess')
+            ->name('updates');
     });

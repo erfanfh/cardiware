@@ -25,4 +25,10 @@ class LauncherUpdateFile extends Model
     {
         return $this->belongsTo(LauncherUpdate::class, 'launcher_update_id');
     }
+
+    public function hasValidIntegrityMetadata(): bool
+    {
+        return (int)$this->size_bytes > 0
+            && preg_match('/^[a-f0-9]{64}$/i', trim((string)$this->sha256)) === 1;
+    }
 }
