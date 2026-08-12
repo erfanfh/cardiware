@@ -3,6 +3,7 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherModGroup;
@@ -96,6 +97,13 @@ class SyncLauncherSaleItemContentAction
                 'short_description' => $data['short_description'] ?? null,
                 'description' => $data['description'] ?? null,
                 'version' => trim((string)$data['version']),
+                'install_target' => in_array(
+                    $data['install_target'] ?? null,
+                    LauncherModInstallTargetEnum::values(),
+                    true
+                )
+                    ? $data['install_target']
+                    : LauncherModInstallTargetEnum::PRODUCT_ROOT->value,
                 'image_media_id' => filled($data['image_media_id'] ?? null) ? (int)$data['image_media_id'] : null,
                 'size_bytes' => filled($data['size_bytes'] ?? null) ? (int)$data['size_bytes'] : null,
                 'priority' => (int)($data['priority'] ?? $index),

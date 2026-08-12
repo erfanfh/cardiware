@@ -3,6 +3,7 @@
 namespace App\Domain\Launcher\Models;
 
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -13,12 +14,13 @@ class LauncherMod extends Model
 {
     protected $fillable = [
         'product_sale_item_id', 'launcher_mod_group_id', 'name', 'slug',
-        'short_description', 'description', 'version', 'image_media_id',
+        'short_description', 'description', 'version', 'install_target', 'image_media_id',
         'size_bytes', 'priority', 'is_enabled', 'is_required',
         'compatible_base_versions', 'compatible_update_versions', 'published_at',
     ];
 
     protected $casts = [
+        'install_target' => LauncherModInstallTargetEnum::class,
         'size_bytes' => 'integer',
         'priority' => 'integer',
         'is_enabled' => 'boolean',

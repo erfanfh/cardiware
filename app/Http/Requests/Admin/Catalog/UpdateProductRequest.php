@@ -8,6 +8,7 @@ use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Catalog\Models\ProductSaleItemManifest;
+use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Foundation\Http\FormRequest;
@@ -15,6 +16,16 @@ use Illuminate\Validation\Rule;
 
 class UpdateProductRequest extends FormRequest
 {
+    private const IRAN_PLAYER_STRENGTH_GROUP_KEY = 'iran_player_strength';
+
+    private const IRAN_PLAYER_STRENGTH_GROUP_TITLE = 'سطح قدرت بازیکنان ایران';
+
+    private const IRAN_PLAYER_STRENGTH_MOD_NAMES = [
+        'سطح عادی',
+        'سطح پیشرفته',
+        'سطح حرفه‌ای',
+    ];
+
     public function authorize(): bool
     {
         return true;
@@ -252,6 +263,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_mods.*.name' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:255'],
             'sale_items.*.launcher_mods.*.slug' => ['required_with:sale_items.*.launcher_mods', 'alpha_dash', 'max:255'],
             'sale_items.*.launcher_mods.*.version' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:50'],
+            'sale_items.*.launcher_mods.*.install_target' => ['required_with:sale_items.*.launcher_mods', Rule::enum(LauncherModInstallTargetEnum::class)],
             'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
             'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_mods.*.description' => ['nullable', 'string'],
@@ -583,6 +595,8 @@ class UpdateProductRequest extends FormRequest
                     }
                 }
 
+                $this->validateLauncherModConfiguration($validator, $item, $prefix);
+
                 foreach (['launcher_updates' => 'آپدیت', 'launcher_mods' => 'ماد'] as $collection => $label) {
                     foreach ((array)($item[$collection] ?? []) as $contentIndex => $content) {
                         if (!is_array($content)) {
@@ -648,6 +662,116 @@ class UpdateProductRequest extends FormRequest
                 }
             }
         });
+    }
+
+    /**
+     * Validate Mod Manager group rules and version compatibility references.
+     */
+    private function validateLauncherModConfiguration(mixed $validator, array $item, string $prefix): void
+    {
+        $groups = collect((array)($item['launcher_mod_groups'] ?? []))
+            ->filter(static fn(mixed $group): bool => is_array($group) && filled($group['key'] ?? null))
+            ->keyBy(static fn(array $group): string => trim((string)$group['key']));
+
+        $mods = collect((array)($item['launcher_mods'] ?? []))
+            ->filter(static fn(mixed $mod): bool => is_array($mod));
+
+        $baseVersion = trim((string)($item['version'] ?? ''));
+        $actualUpdateVersions = collect((array)($item['launcher_updates'] ?? []))
+            ->filter(static fn(mixed $update): bool => is_array($update))
+            ->map(static fn(array $update): string => trim((string)($update['version'] ?? '')))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        foreach ($mods->values() as $modIndex => $mod) {
+            $groupKey = trim((string)($mod['group_key'] ?? ''));
+
+            if ($groupKey !== '' && !$groups->has($groupKey)) {
+                $validator->errors()->add(
+                    "{$prefix}.launcher_mods.{$modIndex}.group_key",
+                    'گروه انتخاب‌شده برای این ماد در همین Sale Item وجود ندارد.'
+                );
+            }
+
+            $baseVersions = $this->versionList($mod['compatible_base_versions'] ?? []);
+            $updateVersions = $this->versionList($mod['compatible_update_versions'] ?? []);
+
+            if (filter_var($mod['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN) && $baseVersions === []) {
+                $validator->errors()->add(
+                    "{$prefix}.launcher_mods.{$modIndex}.compatible_base_versions_text",
+                    'برای ماد منتشرشده حداقل یک نسخه پایه سازگار باید مشخص شود.'
+                );
+            }
+
+            foreach ($baseVersions as $version) {
+                if ($baseVersion === '' || $version !== $baseVersion) {
+                    $validator->errors()->add(
+                        "{$prefix}.launcher_mods.{$modIndex}.compatible_base_versions_text",
+                        "نسخه پایه {$version} متعلق به این Sale Item نیست."
+                    );
+                }
+            }
+
+            foreach ($updateVersions as $version) {
+                if (!in_array($version, $actualUpdateVersions, true)) {
+                    $validator->errors()->add(
+                        "{$prefix}.launcher_mods.{$modIndex}.compatible_update_versions_text",
+                        "آپدیت {$version} برای این Sale Item ثبت نشده است."
+                    );
+                }
+            }
+        }
+
+        $iranGroup = $groups->get(self::IRAN_PLAYER_STRENGTH_GROUP_KEY);
+
+        if (!is_array($iranGroup)) {
+            return;
+        }
+
+        if (trim((string)($iranGroup['title'] ?? '')) !== self::IRAN_PLAYER_STRENGTH_GROUP_TITLE) {
+            $validator->errors()->add(
+                "{$prefix}.launcher_mod_groups",
+                'عنوان گروه iran_player_strength باید «'.self::IRAN_PLAYER_STRENGTH_GROUP_TITLE.'» باشد.'
+            );
+        }
+
+        if (!filter_var($iranGroup['is_exclusive'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            $validator->errors()->add(
+                "{$prefix}.launcher_mod_groups",
+                'گروه iran_player_strength باید انحصاری (is_exclusive=true) باشد.'
+            );
+        }
+
+        $iranMods = $mods
+            ->filter(static fn(array $mod): bool => trim((string)($mod['group_key'] ?? '')) === self::IRAN_PLAYER_STRENGTH_GROUP_KEY)
+            ->values();
+
+        $registeredNames = $iranMods
+            ->map(static fn(array $mod): string => trim((string)($mod['name'] ?? '')))
+            ->filter()
+            ->sort()
+            ->values()
+            ->all();
+
+        $expectedNames = collect(self::IRAN_PLAYER_STRENGTH_MOD_NAMES)->sort()->values()->all();
+
+        if ($registeredNames !== $expectedNames) {
+            $validator->errors()->add(
+                "{$prefix}.launcher_mods",
+                'گروه iran_player_strength باید دقیقا شامل سه ماد «سطح عادی»، «سطح پیشرفته» و «سطح حرفه‌ای» باشد.'
+            );
+        }
+
+        foreach ($iranMods as $modIndex => $mod) {
+            if (($mod['install_target'] ?? null) !== LauncherModInstallTargetEnum::WINDOWS_DOCUMENTS->value) {
+                $validator->errors()->add(
+                    "{$prefix}.launcher_mods.{$modIndex}.install_target",
+                    'مادهای گروه سطح قدرت بازیکنان ایران باید در windows_documents نصب شوند.'
+                );
+            }
+        }
     }
 
     /**
@@ -846,6 +970,9 @@ class UpdateProductRequest extends FormRequest
                 $item['launcher_mods'] = collect(data_get($item, 'launcher_mods', []))
                     ->filter(fn($mod) => is_array($mod))
                     ->map(function (array $mod): array {
+                        $mod['install_target'] = $this->normalizeLauncherModInstallTarget(
+                            $mod['install_target'] ?? null
+                        );
                         $mod['compatible_base_versions'] = $this->versionList(
                             $mod['compatible_base_versions_text'] ?? $mod['compatible_base_versions'] ?? []
                         );
@@ -955,6 +1082,15 @@ class UpdateProductRequest extends FormRequest
                 'create_desktop_shortcut' => $this->normalizeBooleanInput(data_get($installOptions, 'create_desktop_shortcut'), false),
             ],
         ];
+    }
+
+    private function normalizeLauncherModInstallTarget(mixed $value): string
+    {
+        $value = strtolower(trim((string) $value));
+
+        return in_array($value, LauncherModInstallTargetEnum::values(), true)
+            ? $value
+            : LauncherModInstallTargetEnum::PRODUCT_ROOT->value;
     }
 
     private function normalizeCpuCompatibilityModeInput(mixed $value): string

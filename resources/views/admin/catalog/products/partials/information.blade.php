@@ -354,6 +354,7 @@
                     'name' => $mod->name,
                     'slug' => $mod->slug,
                     'version' => $mod->version,
+                    'install_target' => $mod->install_target?->value ?? 'product_root',
                     'group_key' => $mod->group?->key,
                     'short_description' => $mod->short_description,
                     'description' => $mod->description,

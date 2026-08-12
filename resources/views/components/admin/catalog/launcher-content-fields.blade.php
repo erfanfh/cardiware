@@ -461,15 +461,27 @@
                 </div>
             </div>
 
-            <x-admin.form.button
-                type="button"
-                variant="secondary"
-                size="sm"
-                class="cursor-pointer"
-                @click="addLauncherModGroup({{ $item }})"
-            >
-                + افزودن گروه
-            </x-admin.form.button>
+            <div class="flex flex-wrap items-center gap-2">
+                <x-admin.form.button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    class="cursor-pointer"
+                    @click="addIranPlayerStrengthPreset({{ $item }})"
+                >
+                    + قالب سطوح بازیکنان ایران
+                </x-admin.form.button>
+
+                <x-admin.form.button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    class="cursor-pointer"
+                    @click="addLauncherModGroup({{ $item }})"
+                >
+                    + افزودن گروه
+                </x-admin.form.button>
+            </div>
         </div>
 
         <div class="space-y-3 p-4">
@@ -624,6 +636,20 @@
                                 />
                             </x-admin.field>
 
+                            <x-admin.field
+                                label="مقصد نصب"
+                                hint="ماد معمولی: product_root — ماد Option File: windows_documents"
+                                class="col-span-12 md:col-span-3"
+                            >
+                                <x-admin.form.select
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][install_target]`"
+                                    x-model="mod.install_target"
+                                >
+                                    <option value="product_root">ریشه محصول (product_root)</option>
+                                    <option value="windows_documents">Documents ویندوز (windows_documents)</option>
+                                </x-admin.form.select>
+                            </x-admin.field>
+
                             <x-admin.field label="کلید گروه" class="col-span-6 md:col-span-2">
                                 <x-admin.form.input
                                     class="direction-ltr"
@@ -729,7 +755,8 @@
                                 class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/70 px-3 py-2.5">
                                 <div>
                                     <div class="text-xs font-bold text-slate-800">فایل‌های ماد</div>
-                                    <div class="mt-0.5 text-[11px] text-slate-500">فایل‌های دانلودی مربوط به این ماد.
+                                    <div class="mt-0.5 text-[11px] leading-5 text-slate-500">
+                                        فایل‌های دانلودی ماد. نام فایل فقط باید basename باشد (مثل gameplay-v1.7z) و مسیرهای enable/disable داخل خود آرشیو قرار می‌گیرند.
                                     </div>
                                 </div>
 

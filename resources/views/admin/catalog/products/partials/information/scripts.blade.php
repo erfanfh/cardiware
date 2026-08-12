@@ -638,6 +638,9 @@
                             name: item.name ?? '',
                             slug: item.slug ?? '',
                             version: item.version ?? '',
+                            install_target: ['product_root', 'windows_documents'].includes(item.install_target)
+                                ? item.install_target
+                                : 'product_root',
                             group_key: item.group_key ?? '',
                             short_description: item.short_description ?? '',
                             description: item.description ?? '',
@@ -661,6 +664,62 @@
 
                     addLauncherModGroup(item) {
                         item.launcher_mod_groups.push(this.normalizeLauncherModGroups([{}])[0]);
+                    },
+
+                    addIranPlayerStrengthPreset(item) {
+                        const groupKey = 'iran_player_strength';
+                        let group = item.launcher_mod_groups.find((entry) => entry.key === groupKey);
+
+                        if (!group) {
+                            group = this.normalizeLauncherModGroups([{
+                                key: groupKey,
+                                title: 'سطح قدرت بازیکنان ایران',
+                                is_exclusive: true,
+                            }])[0];
+                            item.launcher_mod_groups.push(group);
+                        } else {
+                            group.title = 'سطح قدرت بازیکنان ایران';
+                            group.is_exclusive = true;
+                        }
+
+                        const baseVersion = String(item.version ?? '').trim();
+                        const updateVersions = (item.launcher_updates ?? [])
+                            .map((update) => String(update.version ?? '').trim())
+                            .filter((version, index, versions) => version && versions.indexOf(version) === index);
+
+                        [
+                            ['سطح عادی', 'iran-player-strength-normal', 10],
+                            ['سطح پیشرفته', 'iran-player-strength-advanced', 20],
+                            ['سطح حرفه‌ای', 'iran-player-strength-professional', 30],
+                        ].forEach(([name, slug, priority]) => {
+                            let mod = item.launcher_mods.find((entry) => {
+                                return entry.group_key === groupKey && entry.name === name;
+                            });
+
+                            if (!mod) {
+                                mod = this.normalizeLauncherMods([{
+                                    name,
+                                    slug,
+                                    group_key: groupKey,
+                                    install_target: 'windows_documents',
+                                    priority,
+                                    compatible_base_versions_text: baseVersion,
+                                    compatible_update_versions_text: updateVersions.join(','),
+                                }])[0];
+                                item.launcher_mods.push(mod);
+                            } else {
+                                mod.group_key = groupKey;
+                                mod.install_target = 'windows_documents';
+
+                                if (!String(mod.compatible_base_versions_text ?? '').trim()) {
+                                    mod.compatible_base_versions_text = baseVersion;
+                                }
+
+                                if (!String(mod.compatible_update_versions_text ?? '').trim()) {
+                                    mod.compatible_update_versions_text = updateVersions.join(',');
+                                }
+                            }
+                        });
                     },
 
                     addLauncherMod(item) {
