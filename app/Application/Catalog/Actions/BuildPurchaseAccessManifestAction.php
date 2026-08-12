@@ -68,6 +68,7 @@ class BuildPurchaseAccessManifestAction
             files: $files,
             manifest: $manifest,
             capabilities: $capabilities,
+            installOptions: $installOptions,
         );
 
         $isSplitArchive = $manifest->download_type
@@ -156,11 +157,7 @@ class BuildPurchaseAccessManifestAction
                     ?: $manifest->install_directory,
                 'requires_administrator' => $manifest->requires_administrator,
                 'merge_mode' => $manifest->package_root_mode,
-                'option_file' => [
-                    'enabled' => $manifest->has_option_file,
-                    'folder_name' => $manifest->option_file_folder_name ?: 'OPTION FILE',
-                    'target' => 'windows_documents',
-                ],
+                'option_file' => $manifest->resolvedOptionFile(),
                 ...$installOptions,
             ],
 
@@ -222,11 +219,13 @@ class BuildPurchaseAccessManifestAction
     /**
      * @param Collection<int, ProductSaleItemFile> $files
      * @param array<string, bool> $capabilities
+     * @param array<string, bool|int|null> $installOptions
      */
     private function validateManifest(
         Collection $files,
         mixed      $manifest,
         array      $capabilities,
+        array      $installOptions,
     ): void
     {
         if ($capabilities['supports_install'] && $files->isEmpty()) {
@@ -241,6 +240,26 @@ class BuildPurchaseAccessManifestAction
             throw new ProductManifestUnavailableException(
                 'Install is enabled, but the install folder name is missing.'
             );
+        }
+
+        if ($manifest->has_option_file) {
+            if (!$capabilities['supports_install']) {
+                throw new ProductManifestUnavailableException(
+                    'OPTION FILE is enabled, but installation support is disabled.'
+                );
+            }
+
+            if ($files->isEmpty()) {
+                throw new ProductManifestUnavailableException(
+                    'OPTION FILE is enabled, but the base package has no files.'
+                );
+            }
+
+            if (!(bool) ($installOptions['extract_enabled'] ?? false)) {
+                throw new ProductManifestUnavailableException(
+                    'OPTION FILE requires package extraction to be enabled.'
+                );
+            }
         }
 
         if ($capabilities['supports_launch'] && blank($manifest->main_executable_path)) {

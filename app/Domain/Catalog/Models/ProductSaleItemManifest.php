@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductSaleItemManifest extends Model
 {
+    public const OPTION_FILE_FOLDER_NAME = 'OPTION FILE';
+
+    public const OPTION_FILE_TARGET = 'windows_documents';
+
     public const CPU_COMPATIBILITY_MODES = [
         'off',
         'auto',
@@ -132,6 +136,22 @@ class ProductSaleItemManifest extends Model
         ) ? $defaultMode : self::DEFAULT_CPU_COMPATIBILITY['default_mode'];
 
         return $cpuCompatibility;
+    }
+
+    /**
+     * OPTION FILE is a package contract, not a free-form path.
+     * When enabled, the launcher must find this folder at the extracted
+     * package root before installation can continue.
+     *
+     * @return array{enabled: bool, folder_name: string, target: string}
+     */
+    public function resolvedOptionFile(): array
+    {
+        return [
+            'enabled' => (bool) $this->has_option_file,
+            'folder_name' => self::OPTION_FILE_FOLDER_NAME,
+            'target' => self::OPTION_FILE_TARGET,
+        ];
     }
 
     /**

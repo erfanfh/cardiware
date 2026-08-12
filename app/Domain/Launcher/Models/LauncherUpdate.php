@@ -3,6 +3,7 @@
 namespace App\Domain\Launcher\Models;
 
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Catalog\Models\ProductSaleItemManifest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,6 +40,18 @@ class LauncherUpdate extends Model
         return $query->where('is_enabled', true)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    /**
+     * @return array{enabled: bool, folder_name: string, target: string}
+     */
+    public function resolvedOptionFile(): array
+    {
+        return [
+            'enabled' => (bool) $this->has_option_file,
+            'folder_name' => ProductSaleItemManifest::OPTION_FILE_FOLDER_NAME,
+            'target' => ProductSaleItemManifest::OPTION_FILE_TARGET,
+        ];
     }
 
     public function hasDownloadablePackage(): bool

@@ -113,7 +113,7 @@ class SyncProductSaleItemManifestAction
                 'has_option_file' => $this->toBoolean(
                     Arr::get($data, 'has_option_file', false)
                 ),
-                'option_file_folder_name' => 'OPTION FILE',
+                'option_file_folder_name' => ProductSaleItemManifest::OPTION_FILE_FOLDER_NAME,
                 'package_root_mode' => 'merge_to_product_root',
 
                 'main_executable_path' =>

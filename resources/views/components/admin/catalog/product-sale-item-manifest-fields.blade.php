@@ -276,7 +276,7 @@
                     <span>
                         <span class="block text-xs font-bold text-slate-800">دارای OPTION FILE</span>
                         <span class="mt-1 block text-[11px] leading-5 text-slate-500">
-                            محتوای OPTION FILE در Documents ادغام و جایگزین می‌شود.
+                            پوشه <span dir="ltr" class="font-semibold">OPTION FILE</span> باید بعد از استخراج در ریشه بسته وجود داشته باشد و در Windows Documents ادغام می‌شود.
                         </span>
                     </span>
                 </label>

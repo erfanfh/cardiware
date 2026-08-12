@@ -48,11 +48,7 @@ class LauncherContentController extends Controller
                     'changelog' => $update->changelog,
                     'is_mandatory' => $update->is_mandatory,
                     'has_option_file' => $update->has_option_file,
-                    'option_file' => [
-                        'enabled' => $update->has_option_file,
-                        'folder_name' => 'OPTION FILE',
-                        'target' => 'windows_documents',
-                    ],
+                    'option_file' => $update->resolvedOptionFile(),
                     'published_at' => $update->published_at?->toISOString(),
                     'package' => [
                         'archive_format' => $update->archive_format,

@@ -335,7 +335,7 @@
                             @foreach([
                                 'is_enabled' => ['title' => 'فعال', 'description' => 'این آپدیت در لانچر منتشر شود.'],
                                 'is_mandatory' => ['title' => 'اجباری', 'description' => 'کاربر قبل از ادامه باید این آپدیت را نصب کند.'],
-                                'has_option_file' => ['title' => 'دارای OPTION FILE', 'description' => 'این آپدیت شامل فایل Option است.'],
+                                'has_option_file' => ['title' => 'دارای OPTION FILE', 'description' => 'مستقل از بسته پایه؛ پوشه OPTION FILE باید بعد از استخراج این آپدیت وجود داشته باشد.'],
                             ] as $field => $option)
                                 <div class="col-span-12 md:col-span-4">
                                     <div

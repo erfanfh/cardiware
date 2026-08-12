@@ -465,6 +465,44 @@ class UpdateProductRequest extends FormRequest
                     }
                 }
 
+                $hasOptionFile = filter_var(
+                    data_get($manifest, 'has_option_file', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                if ($hasOptionFile) {
+                    $supportsInstall = filter_var(
+                        data_get($manifest, 'capabilities.supports_install', true),
+                        FILTER_VALIDATE_BOOLEAN
+                    );
+
+                    $extractEnabled = filter_var(
+                        data_get($manifest, 'install_options.extract_enabled', true),
+                        FILTER_VALIDATE_BOOLEAN
+                    );
+
+                    if (!$supportsInstall) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.has_option_file",
+                            'برای استفاده از OPTION FILE باید قابلیت نصب محصول فعال باشد.'
+                        );
+                    }
+
+                    if (!$extractEnabled) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.install_options.extract_enabled",
+                            'برای استفاده از OPTION FILE باید استخراج فایل‌ها فعال باشد.'
+                        );
+                    }
+
+                    if ($files === []) {
+                        $validator->errors()->add(
+                            "{$prefix}.files",
+                            'وقتی OPTION FILE فعال است، بسته پایه باید حداقل یک فایل 7z داشته باشد.'
+                        );
+                    }
+                }
+
                 if (filter_var(
                         data_get($manifest, 'capabilities.supports_launch', true),
                         FILTER_VALIDATE_BOOLEAN
@@ -546,12 +584,26 @@ class UpdateProductRequest extends FormRequest
 
                 foreach (['launcher_updates' => 'آپدیت', 'launcher_mods' => 'ماد'] as $collection => $label) {
                     foreach ((array)($item[$collection] ?? []) as $contentIndex => $content) {
-                        if (is_array($content)
-                            && filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
-                            && empty($content['files'])) {
+                        if (!is_array($content)) {
+                            continue;
+                        }
+
+                        $contentFiles = (array) ($content['files'] ?? []);
+
+                        if (filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                            && $contentFiles === []) {
                             $validator->errors()->add(
                                 "{$prefix}.{$collection}.{$contentIndex}.files",
                                 "برای {$label} فعال حداقل یک فایل 7z لازم است."
+                            );
+                        }
+
+                        if ($collection === 'launcher_updates'
+                            && filter_var($content['has_option_file'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                            && $contentFiles === []) {
+                            $validator->errors()->add(
+                                "{$prefix}.launcher_updates.{$contentIndex}.files",
+                                'وقتی OPTION FILE برای آپدیت فعال است، بسته آپدیت باید حداقل یک فایل 7z داشته باشد.'
                             );
                         }
                     }
