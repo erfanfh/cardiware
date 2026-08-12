@@ -257,7 +257,8 @@ class SyncProductSaleItemsAction
         $saleItem
             ->files()
             ->when(!empty($keptFileIds), fn($query) => $query->whereNotIn('id', $keptFileIds))
-            ->delete();
+            ->get()
+            ->each(static fn(ProductSaleItemFile $file) => $file->delete());
     }
 
     /**

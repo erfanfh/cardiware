@@ -65,7 +65,16 @@ class RemoteDownloadFileMetadataResolver
             $updates['mime_type'] = $metadata['mime_type'];
         }
 
-        $file->forceFill($updates)->saveQuietly();
+        $file->forceFill($updates);
+
+        if ($file->isDirty(array_keys($updates))) {
+            /*
+             * Do not save quietly here. A real size/SHA change is part of the
+             * launcher contract and must bump the owning sale item's
+             * manifest_revision through the registered file observer.
+             */
+            $file->save();
+        }
 
         return $this->metadataFromIntegrity($integrity);
     }

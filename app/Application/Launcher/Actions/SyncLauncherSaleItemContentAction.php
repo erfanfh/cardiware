@@ -52,7 +52,9 @@ class SyncLauncherSaleItemContentAction
             $kept[] = $update->id;
         }
         $saleItem->launcherUpdates()
-            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))->delete();
+            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))
+            ->get()
+            ->each(static fn(LauncherUpdate $update) => $update->delete());
     }
 
     private function groups(ProductSaleItem $saleItem, array $items): void
@@ -72,7 +74,9 @@ class SyncLauncherSaleItemContentAction
             $kept[] = $group->id;
         }
         $saleItem->launcherModGroups()
-            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))->delete();
+            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))
+            ->get()
+            ->each(static fn(LauncherModGroup $group) => $group->delete());
     }
 
     private function mods(ProductSaleItem $saleItem, array $items): void
@@ -108,7 +112,9 @@ class SyncLauncherSaleItemContentAction
             $kept[] = $mod->id;
         }
         $saleItem->launcherMods()
-            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))->delete();
+            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))
+            ->get()
+            ->each(static fn(LauncherMod $mod) => $mod->delete());
     }
 
     private function files(
@@ -134,7 +140,9 @@ class SyncLauncherSaleItemContentAction
             $kept[] = $file->id;
         }
         $model::query()->where($foreignKey, $foreignId)
-            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))->delete();
+            ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))
+            ->get()
+            ->each(static fn($file) => $file->delete());
     }
 
     private function resolve(Collection $existing, array $data, string $model): mixed

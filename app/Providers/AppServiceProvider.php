@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Application\Catalog\Observers\LauncherContentManifestRevisionObserver;
 use App\Application\Catalog\Observers\ProductSaleItemFileObserver;
 use App\Application\Catalog\Observers\ProductSaleItemManifestObserver;
 use App\Application\Catalog\Observers\ProductSaleItemObserver;
@@ -13,6 +14,11 @@ use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
 use App\Domain\Catalog\Models\ProductSaleItemManifest;
+use App\Domain\Launcher\Models\LauncherMod;
+use App\Domain\Launcher\Models\LauncherModFile;
+use App\Domain\Launcher\Models\LauncherModGroup;
+use App\Domain\Launcher\Models\LauncherUpdate;
+use App\Domain\Launcher\Models\LauncherUpdateFile;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Financial\Models\WalletTopUp;
 use App\Domain\Identity\Models\User;
@@ -121,6 +127,13 @@ class AppServiceProvider extends ServiceProvider
         ProductSaleItem::observe(ProductSaleItemObserver::class);
         ProductSaleItemManifest::observe(ProductSaleItemManifestObserver::class);
         ProductSaleItemFile::observe(ProductSaleItemFileObserver::class);
+
+        LauncherUpdate::observe(LauncherContentManifestRevisionObserver::class);
+        LauncherUpdateFile::observe(LauncherContentManifestRevisionObserver::class);
+        LauncherModGroup::observe(LauncherContentManifestRevisionObserver::class);
+        LauncherMod::observe(LauncherContentManifestRevisionObserver::class);
+        LauncherModFile::observe(LauncherContentManifestRevisionObserver::class);
+
         User::observe(UserObserver::class);
     }
 }
