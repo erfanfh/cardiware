@@ -84,6 +84,9 @@ class PermissionSeeder extends Seeder
             'navigation-menu' => [
                 'manage' => 'مدیریت فهرست ها',
             ],
+            'redirect' => [
+                'manage' => 'مدیریت ریدایرکت ها',
+            ],
             'setting' => [
                 'general' => 'تنظیمات عمومی',
                 'seo' => 'تنظیمات سئو',

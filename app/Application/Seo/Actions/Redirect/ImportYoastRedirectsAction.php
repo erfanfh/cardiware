@@ -2,10 +2,9 @@
 
 namespace App\Application\Seo\Actions\Redirect;
 
-use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\Invalidators\SeoRedirectCacheInvalidator;
 use App\Domain\Seo\Enums\RedirectStatusCodeEnum;
 use App\Domain\Seo\Models\Redirect;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -15,6 +14,7 @@ class ImportYoastRedirectsAction
 {
     public function __construct(
         private readonly NormalizeRedirectPathAction $normalizeRedirectPathAction,
+        private readonly SeoRedirectCacheInvalidator $cacheInvalidator,
     )
     {
     }
@@ -103,7 +103,7 @@ class ImportYoastRedirectsAction
             }
         });
 
-        Cache::forever(CacheKey::seoRedirectsVersion(), now()->timestamp);
+        $this->cacheInvalidator->invalidate();
 
         return $stats;
     }

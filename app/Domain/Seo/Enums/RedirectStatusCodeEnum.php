@@ -10,6 +10,17 @@ enum RedirectStatusCodeEnum: int
     case PermanentRedirect = 308;
     case Gone = 410;
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::MovedPermanently => 'انتقال دائمی',
+            self::Found => 'انتقال موقت',
+            self::TemporaryRedirect => 'ریدایرکت موقت',
+            self::PermanentRedirect => 'ریدایرکت دائمی',
+            self::Gone => 'حذف شده (Gone)',
+        };
+    }
+
     public function isRedirect(): bool
     {
         return in_array($this, [

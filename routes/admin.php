@@ -15,6 +15,7 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/taxonomy.php';
         require __DIR__ . '/admin/project.php';
         require __DIR__ . '/admin/system.php';
+        require __DIR__ . '/admin/seo.php';
         require __DIR__ . '/admin/discussion.php';
         require __DIR__ . '/admin/layout.php';
         require __DIR__ . '/admin/slug.php';

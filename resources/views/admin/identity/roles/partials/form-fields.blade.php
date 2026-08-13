@@ -25,6 +25,7 @@
         'page-layout' => 'مدیریت چیدمان',
         'comment' => 'دیدگاه‌ها',
         'navigation-menu' => 'فهرست‌ها',
+        'redirect' => 'ریدایرکت ها',
         'product' => 'محصولات',
         'order' => 'سفارش‌ها',
         'purchase-access' => 'دسترسی خرید و دانلود',

@@ -315,6 +315,12 @@ return [
                 'gate' => 'setting.seo',
             ],
             [
+                'label' => 'ریدایرکت ها',
+                'route' => 'admin.redirects.index',
+                'icon' => 'icons.link-square-02',
+                'gate' => 'redirect.manage',
+            ],
+            [
                 'label' => 'هدر (سربرگ)',
                 'route' => 'admin.settings.header',
                 'icon' => 'icons.settings-02',
