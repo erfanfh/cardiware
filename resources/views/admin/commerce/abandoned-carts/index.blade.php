@@ -8,20 +8,16 @@
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h1 class="text-lg font-black text-slate-900">سبدهای خرید رها شده</h1>
-                    <p class="mt-1 max-w-3xl text-sm leading-7 text-slate-500">
-                        در این صفحه سبدهای <span class="font-bold text-slate-700">ACTIVE</span> دارای آیتم نمایش داده
-                        می‌شوند؛
-                        یعنی سبدهایی که هنوز وارد مرحله Checkout و پرداخت نشده‌اند. برای سبد رها شده وضعیت جدیدی در
-                        دیتابیس ایجاد نمی‌شود.
-                    </p>
                 </div>
 
                 <div class="grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-2">
-                    <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-800">
+                    <div
+                        class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-800">
                         مهمان:
                         <span class="font-black">حذف بعد از {{ $guestRetentionDays }} روز</span>
                     </div>
-                    <div class="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-xs leading-6 text-indigo-800">
+                    <div
+                        class="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3 text-xs leading-6 text-indigo-800">
                         عضو:
                         <span class="font-black">حذف بعد از {{ $userRetentionMonths }} ماه</span>
                     </div>
@@ -55,7 +51,8 @@
 
             <div class="rounded-3xl border border-rose-200 bg-rose-50 p-4 shadow-sm">
                 <div class="text-xs font-bold text-rose-500">آماده پاکسازی</div>
-                <div class="mt-2 text-2xl font-black text-rose-700">{{ number_format($stats['ready_for_cleanup']) }}</div>
+                <div
+                    class="mt-2 text-2xl font-black text-rose-700">{{ number_format($stats['ready_for_cleanup']) }}</div>
                 <div class="mt-1 text-[10px] leading-5 text-rose-500">
                     {{ number_format($stats['guest_ready_for_cleanup']) }} مهمان
                     / {{ number_format($stats['user_ready_for_cleanup']) }} عضو
@@ -64,15 +61,15 @@
         </div>
 
         <x-admin.metabox
-                title="تنظیمات پاکسازی خودکار"
-                :collapsible="false"
-                class="!overflow-visible"
+            title="تنظیمات پاکسازی خودکار"
+            :collapsible="false"
+            class="!overflow-visible"
         >
             <div class="grid grid-cols-1 gap-5 xl:grid-cols-12 xl:items-end">
                 <div class="xl:col-span-7">
                     <x-admin.form
-                            method="put"
-                            action="{{ route('admin.abandoned-carts.settings.update') }}"
+                        method="put"
+                        action="{{ route('admin.abandoned-carts.settings.update') }}"
                     >
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5 xl:items-end">
                             <div class="xl:col-span-2">
@@ -84,13 +81,13 @@
                                 <div class="flex items-center gap-2">
                                     <div class="min-w-0 flex-1">
                                         <x-admin.form.input
-                                                id="guest_retention_days"
-                                                type="number"
-                                                name="guest_retention_days"
-                                                :value="old('guest_retention_days', $guestRetentionDays)"
-                                                min="1"
-                                                max="365"
-                                                required
+                                            id="guest_retention_days"
+                                            type="number"
+                                            name="guest_retention_days"
+                                            :value="old('guest_retention_days', $guestRetentionDays)"
+                                            min="1"
+                                            max="365"
+                                            required
                                         />
                                     </div>
                                     <span class="shrink-0 text-sm font-bold text-slate-500">روز</span>
@@ -110,13 +107,13 @@
                                 <div class="flex items-center gap-2">
                                     <div class="min-w-0 flex-1">
                                         <x-admin.form.input
-                                                id="user_retention_months"
-                                                type="number"
-                                                name="user_retention_months"
-                                                :value="old('user_retention_months', $userRetentionMonths)"
-                                                min="1"
-                                                max="120"
-                                                required
+                                            id="user_retention_months"
+                                            type="number"
+                                            name="user_retention_months"
+                                            :value="old('user_retention_months', $userRetentionMonths)"
+                                            min="1"
+                                            max="120"
+                                            required
                                         />
                                     </div>
                                     <span class="shrink-0 text-sm font-bold text-slate-500">ماه</span>
@@ -141,9 +138,9 @@
 
                 <div class="xl:col-span-2 xl:text-left">
                     <x-admin.form
-                            method="post"
-                            action="{{ route('admin.abandoned-carts.cleanup') }}"
-                            x-on:submit.prevent="if (confirm('سبدهای ACTIVE قدیمی بر اساس بازه مهمان و عضو پاک شوند؟')) $el.submit()"
+                        method="post"
+                        action="{{ route('admin.abandoned-carts.cleanup') }}"
+                        x-on:submit.prevent="if (confirm('سبدهای ACTIVE قدیمی بر اساس بازه مهمان و عضو پاک شوند؟')) $el.submit()"
                     >
                         <x-admin.form.button type="submit" variant="danger"
                                              class="w-full cursor-pointer justify-center">
