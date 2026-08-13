@@ -76,6 +76,15 @@ class UpdateProductRequest extends FormRequest
             'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
             'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
 
+            'video_gallery_items' => ['nullable', 'array'],
+            'video_gallery_items.*' => ['array'],
+            'video_gallery_items.*.id' => ['nullable', 'integer'],
+            'video_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
+            'video_gallery_items.*.video_url' => ['nullable', 'url:http,https', 'max:2048'],
+            'video_gallery_items.*.cover' => ['nullable', 'array'],
+            'video_gallery_items.*.cover.id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'video_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
             'requirements' => ['nullable', 'array'],
             'requirements.*' => ['array'],
 
@@ -606,7 +615,7 @@ class UpdateProductRequest extends FormRequest
                             continue;
                         }
 
-                        $contentFiles = (array) ($content['files'] ?? []);
+                        $contentFiles = (array)($content['files'] ?? []);
 
                         if (filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
                             && $contentFiles === []) {
@@ -628,7 +637,7 @@ class UpdateProductRequest extends FormRequest
                         if ($collection === 'launcher_mods'
                             && filter_var($content['is_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
                             $imageMediaId = filled($content['image_media_id'] ?? null)
-                                ? (int) $content['image_media_id']
+                                ? (int)$content['image_media_id']
                                 : null;
 
                             if ($imageMediaId === null) {
@@ -646,14 +655,14 @@ class UpdateProductRequest extends FormRequest
                                     $image === null
                                     || $image->url === null
                                     || $variant === null
-                                    || (int) $variant->width <= 0
-                                    || (int) $variant->height <= 0
+                                    || (int)$variant->width <= 0
+                                    || (int)$variant->height <= 0
                                 ) {
                                     $validator->errors()->add(
                                         "{$prefix}.launcher_mods.{$contentIndex}.image_media_id",
                                         'تصویر ماد باید عمومی، پردازش‌شده و دارای ابعاد معتبر باشد.'
                                     );
-                                } elseif ((int) $variant->width <= (int) $variant->height) {
+                                } elseif ((int)$variant->width <= (int)$variant->height) {
                                     $validator->errors()->add(
                                         "{$prefix}.launcher_mods.{$contentIndex}.image_media_id",
                                         'تصویر ماد باید مستطیلی افقی باشد (عرض بیشتر از ارتفاع).'
@@ -736,7 +745,7 @@ class UpdateProductRequest extends FormRequest
         if (trim((string)($iranGroup['title'] ?? '')) !== self::IRAN_PLAYER_STRENGTH_GROUP_TITLE) {
             $validator->errors()->add(
                 "{$prefix}.launcher_mod_groups",
-                'عنوان گروه iran_player_strength باید «'.self::IRAN_PLAYER_STRENGTH_GROUP_TITLE.'» باشد.'
+                'عنوان گروه iran_player_strength باید «' . self::IRAN_PLAYER_STRENGTH_GROUP_TITLE . '» باشد.'
             );
         }
 
@@ -840,6 +849,9 @@ class UpdateProductRequest extends FormRequest
             'store_id' => 'فروشنده',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'video_gallery_items.*.title' => 'عنوان ویدیو',
+            'video_gallery_items.*.video_url' => 'لینک ویدیو',
+            'video_gallery_items.*.cover.id' => 'کاور ویدیو',
             'sale_items.*.base_price' => 'قیمت پایه آیتم فروش',
             'sale_items.*.title' => 'عنوان آیتم فروش',
             'sale_items.*.edition_key' => 'کلید نسخه آیتم فروش',
@@ -873,6 +885,12 @@ class UpdateProductRequest extends FormRequest
             'status.enum' => 'وضعیت انتخاب‌شده معتبر نیست.',
             'store_id.required' => 'انتخاب فروشنده الزامی است.',
             'store_id.exists' => 'فروشنده انتخاب‌شده معتبر نیست.',
+            'video_gallery_items.*.title.required' => 'عنوان ویدیو الزامی است.',
+            'video_gallery_items.*.video_url.required' => 'لینک ویدیو الزامی است.',
+            'video_gallery_items.*.video_url.url' => 'لینک ویدیو باید یک آدرس معتبر http یا https باشد.',
+            'video_gallery_items.*.cover.required' => 'انتخاب کاور برای ویدیو الزامی است.',
+            'video_gallery_items.*.cover.id.required' => 'انتخاب کاور برای ویدیو الزامی است.',
+            'video_gallery_items.*.cover.id.exists' => 'کاور انتخاب‌شده معتبر نیست.',
         ];
     }
 
@@ -1105,7 +1123,7 @@ class UpdateProductRequest extends FormRequest
 
     private function normalizeLauncherModInstallTarget(mixed $value): string
     {
-        $value = strtolower(trim((string) $value));
+        $value = strtolower(trim((string)$value));
 
         return in_array($value, LauncherModInstallTargetEnum::values(), true)
             ? $value

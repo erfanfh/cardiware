@@ -26,6 +26,8 @@ final class GetProductDetailAction
                 'picture.variants',
                 'imageGallery.mediaFile.primaryVariant',
                 'imageGallery.mediaFile.variants',
+                'videoGallery.mediaFile.primaryVariant',
+                'videoGallery.mediaFile.variants',
                 'teamMembers.teamMember.picture.primaryVariant',
                 'teamMembers.teamMember.picture.variants',
                 'requirements',

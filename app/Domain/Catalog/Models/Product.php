@@ -149,6 +149,30 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
             ->all();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getVideoGalleryForForm(): array
+    {
+        return $this->videoGallery()
+            ->with('mediaFile')
+            ->get()
+            ->map(function (ProductMedia $videoGallery) {
+                return [
+                    'id' => $videoGallery->id,
+                    'title' => $videoGallery->title,
+                    'video_url' => data_get($videoGallery->meta, 'video_url'),
+                    'cover' => [
+                        'id' => $videoGallery->media_file_id,
+                        'path' => $videoGallery->mediaFile?->url,
+                    ],
+                    'sort_order' => $videoGallery->sort_order,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     public function requirements(): HasMany
     {
         return $this->hasMany(ProductRequirement::class)->orderBy('sort_order');

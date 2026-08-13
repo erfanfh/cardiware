@@ -19,6 +19,7 @@
                 @include('front.catalog.products.partials.detail.installation-steps')
                 @include('front.catalog.products.partials.detail.faqs')
                 @include('front.catalog.products.partials.detail.releases')
+                @include('front.catalog.products.partials.detail.video-gallery')
                 @include('front.catalog.products.partials.detail.team-members')
                 @include('front.catalog.products.partials.detail.comments')
                 @include('front.catalog.products.partials.detail.related-products')

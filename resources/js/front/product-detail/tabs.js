@@ -15,6 +15,7 @@ export default function productTabs(commentsCount = 0) {
             {id: 'installation-steps', label: 'راهنمای نصب'},
             {id: 'faqs', label: 'سوالات متداول'},
             {id: 'releases', label: 'تغییرات'},
+            {id: 'video-gallery', label: 'ویدیوها'},
             {id: 'team-members', label: 'اعضای تیم'},
             {id: 'comments', label: 'دیدگاه‌ها'},
         ],

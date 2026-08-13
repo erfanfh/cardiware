@@ -24,6 +24,7 @@ class UpdateProductAction
         protected SyncModelProductTagsAction          $syncModelProductTagsAction,
         protected SyncModelProductCategoriesAction    $syncModelProductCategoriesAction,
         protected SyncProductImageGalleryAction       $syncProductImageGalleryAction,
+        protected SyncProductVideoGalleryAction       $syncProductVideoGalleryAction,
         protected SyncProductRequirementsAction       $syncProductRequirementsAction,
         protected SyncProductInstallationStepsAction  $syncProductInstallationStepsAction,
         protected SyncProductFaqsAction               $syncProductFaqsAction,
@@ -64,6 +65,7 @@ class UpdateProductAction
                 $productData['tags'],
                 $productData['category_ids'],
                 $productData['image_gallery_items'],
+                $productData['video_gallery_items'],
                 $productData['requirements'],
                 $productData['installation_step_body'],
                 $productData['faqs'],
@@ -96,6 +98,7 @@ class UpdateProductAction
             $this->syncModelProductTagsAction->execute($product, $data['tags'] ?? []);
             $this->syncModelProductCategoriesAction->execute($product, $data['category_ids'] ?? []);
             $this->syncProductImageGalleryAction->execute($product, $data['image_gallery_items'] ?? []);
+            $this->syncProductVideoGalleryAction->execute($product, $data['video_gallery_items'] ?? []);
             $this->syncProductRequirementsAction->execute($product, $data['requirements'] ?? []);
             $this->syncProductInstallationStepsAction->execute($product, $data['installation_step_body'] ?? '');
             $this->syncProductFaqsAction->execute($product, $data['faqs'] ?? []);

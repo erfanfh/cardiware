@@ -336,6 +336,13 @@
     </x-admin.metabox>
 
     <x-admin.metabox
+        title="گالری ویدیویی"
+        storageKey="video-gallery"
+    >
+        @include('admin.catalog.products.partials.video-gallery')
+    </x-admin.metabox>
+
+    <x-admin.metabox
         title="اعضای تیم"
         storageKey="team-members"
         class="overflow-visible"
