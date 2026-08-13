@@ -199,6 +199,30 @@ class Post extends Model implements PageViewableInterface, CommentableContract
             ->all();
     }
 
+    /**
+     * @return array
+     */
+    public function getVideoGalleryForForm(): array
+    {
+        return $this->videoGallery()
+            ->with('mediaFile')
+            ->get()
+            ->map(function (PostMedia $videoGallery) {
+                return [
+                    'id' => $videoGallery->id,
+                    'title' => $videoGallery->title,
+                    'video_url' => data_get($videoGallery->meta, 'video_url'),
+                    'cover' => [
+                        'id' => $videoGallery->media_file_id,
+                        'path' => $videoGallery->mediaFile?->url,
+                    ],
+                    'sort_order' => $videoGallery->sort_order,
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
     public function commentsEnabled(): bool
     {
         return true;

@@ -297,6 +297,13 @@
         @include('admin.content.posts.partials.image-gallery')
     </x-admin.metabox>
 
+    <x-admin.metabox
+        title="گالری ویدیویی"
+        storageKey="post-video-gallery"
+    >
+        @include('admin.content.posts.partials.video-gallery')
+    </x-admin.metabox>
+
     @foreach(\App\Domain\Content\Enums\PostInformationBoxTypeEnum::cases() as $postInformationBox)
         @php
             $informationBoxes = $post?->informationBoxes?->keyBy(fn ($box) => $box->type->value) ?? collect();

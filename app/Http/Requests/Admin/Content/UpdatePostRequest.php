@@ -74,6 +74,15 @@ class UpdatePostRequest extends FormRequest
             'image_gallery_items.*.image.id' => ['nullable', 'exists:media_files,id'],
             'image_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
 
+            'video_gallery_items' => ['nullable', 'array'],
+            'video_gallery_items.*' => ['array'],
+            'video_gallery_items.*.id' => ['nullable', 'integer'],
+            'video_gallery_items.*.title' => ['nullable', 'string', 'max:255'],
+            'video_gallery_items.*.video_url' => ['nullable', 'url', 'max:2048'],
+            'video_gallery_items.*.cover' => ['nullable', 'array'],
+            'video_gallery_items.*.cover.id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'video_gallery_items.*.sort_order' => ['nullable', 'integer', 'min:0'],
+
             'seo' => ['nullable', 'array'],
 
             'information_boxes' => ['nullable', 'array'],
@@ -92,6 +101,9 @@ class UpdatePostRequest extends FormRequest
             'status' => 'وضعیت',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'video_gallery_items.*.title' => 'عنوان ویدیو',
+            'video_gallery_items.*.video_url' => 'لینک ویدیو',
+            'video_gallery_items.*.cover.id' => 'کاور ویدیو',
         ];
     }
 
@@ -109,6 +121,9 @@ class UpdatePostRequest extends FormRequest
             'download_sections.*.entries.array' => 'ساختار آیتم‌های سکشن دانلود نامعتبر است.',
             'download_sections.*.entries.*.type.enum' => 'نوع آیتم دانلود نامعتبر است.',
             'download_sections.*.entries.*.title.max' => 'عنوان آیتم دانلود نمی‌تواند بیشتر از 255 کاراکتر باشد.',
+
+            'video_gallery_items.*.video_url.url' => 'لینک ویدیو باید یک آدرس معتبر باشد.',
+            'video_gallery_items.*.cover.id.exists' => 'کاور انتخاب‌شده معتبر نیست.',
         ];
     }
 

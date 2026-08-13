@@ -27,6 +27,7 @@ class UpdatePostAction
         protected ContentSlugCacheInvalidator    $contentSlugCacheInvalidator,
         protected SyncDownloadSectionsAction     $syncDownloadSectionsAction,
         protected SyncPostImageGalleryAction     $syncPostImageGalleryAction,
+        protected SyncPostVideoGalleryAction     $syncPostVideoGalleryAction,
         protected SyncSeoMetaAction              $syncSeoMetaAction,
         protected StoreSeoAnalysisAction         $storeSeoAnalysisAction,
         protected PostCacheInvalidator           $postCacheInvalidator,
@@ -56,6 +57,7 @@ class UpdatePostAction
                 $postData['slug'],
                 $postData['download_sections'],
                 $postData['image_gallery_items'],
+                $postData['video_gallery_items'],
                 $postData['seo'],
                 $postData['information_boxes'],
             );
@@ -77,6 +79,7 @@ class UpdatePostAction
             $this->syncPostFeaturesAction->execute($post, $data);
             $this->syncDownloadSectionsAction->execute($post, $data['download_sections'] ?? []);
             $this->syncPostImageGalleryAction->execute($post, $data['image_gallery_items'] ?? []);
+            $this->syncPostVideoGalleryAction->execute($post, $data['video_gallery_items'] ?? []);
             $this->syncPostInformationBoxesAction->execute($post, $data['information_boxes'] ?? []);
 
             $this->syncSeoMetaAction->execute($post, $data['seo'] ?? []);
