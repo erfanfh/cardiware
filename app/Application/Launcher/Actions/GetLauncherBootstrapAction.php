@@ -2,7 +2,9 @@
 
 namespace App\Application\Launcher\Actions;
 
+use App\Domain\Launcher\Models\LauncherRelease;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 use RuntimeException;
 
 class GetLauncherBootstrapAction
@@ -26,8 +28,24 @@ class GetLauncherBootstrapAction
             );
         }
 
-        $latestVersion = (string)$configuration['latest_version'];
-        $minimumSupportedVersion = (string)$configuration['minimum_supported_version'];
+        $publishedReleases = Schema::hasTable('launcher_releases')
+            ? LauncherRelease::query()
+                ->published()
+                ->where('platform', $platform)
+                ->where('channel', $channel)
+                ->get()
+                ->sort(static fn(LauncherRelease $left, LauncherRelease $right): int =>
+                    version_compare($left->version, $right->version))
+                ->values()
+            : collect();
+
+        /** @var LauncherRelease|null $release */
+        $release = $publishedReleases->last();
+
+        $latestVersion = $release?->version
+            ?: (string)$configuration['latest_version'];
+        $minimumSupportedVersion = $release?->minimum_supported_version
+            ?: (string)$configuration['minimum_supported_version'];
 
         $updateAvailable = version_compare(
             $currentVersion,
@@ -41,7 +59,14 @@ class GetLauncherBootstrapAction
             '<'
         );
 
-        $forceUpdate = (bool)config('launcher.force_update', false)
+        $mandatoryReleasePending = $publishedReleases->contains(
+            static fn(LauncherRelease $candidate): bool =>
+                $candidate->is_mandatory
+                && version_compare($currentVersion, $candidate->version, '<')
+        );
+
+        $forceUpdate = ((bool)config('launcher.force_update', false) && $updateAvailable)
+            || $mandatoryReleasePending
             || $minimumVersionNotSatisfied;
 
         $maintenanceEnabled = (bool)config(
@@ -67,7 +92,17 @@ class GetLauncherBootstrapAction
                     : null,
             ],
 
-            'download_url' => $configuration['download_url'] ?? null,
+            'download_url' => $release?->download_url
+                ?: ($configuration['download_url'] ?? null),
+            'file_name' => $release?->file_name
+                ?: ($configuration['file_name'] ?? null),
+            'file_size_bytes' => $release?->size_bytes
+                ?: ($configuration['file_size_bytes'] ?? null),
+            'sha256' => $release?->sha256
+                ?: ($configuration['sha256'] ?? null),
+            'release_notes' => $release?->release_notes
+                ?: ($configuration['release_notes'] ?? null),
+            'release_published_at' => $release?->published_at?->toISOString(),
 
             'server_time' => Carbon::now()->toISOString(),
         ];

@@ -38,4 +38,15 @@ Route::middleware([
             ->whereNumber('modId')
             ->whereNumber('file')
             ->name('library.mods.files.download');
+
+        // Compatibility for launcher builds that used the old singular path.
+        Route::post(
+            'library/{purchaseAccess}/mod/{modId}/files/{file}/download',
+            PrepareLauncherContentDownloadController::class
+        )
+            ->defaults('contentType', 'mod')
+            ->whereNumber('purchaseAccess')
+            ->whereNumber('modId')
+            ->whereNumber('file')
+            ->name('library.mod.files.download.legacy');
     });

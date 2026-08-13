@@ -13,7 +13,7 @@ class LauncherUpdate extends Model
 {
     protected $fillable = [
         'product_sale_item_id', 'version', 'title', 'description', 'changelog',
-        'is_enabled', 'is_mandatory', 'has_option_file', 'archive_format',
+        'is_enabled', 'is_mandatory', 'has_option_file', 'archive_format', 'archive_password',
         'published_at', 'sort_order',
     ];
 
@@ -23,6 +23,7 @@ class LauncherUpdate extends Model
         'has_option_file' => 'boolean',
         'published_at' => 'datetime',
         'sort_order' => 'integer',
+        'archive_password' => 'encrypted',
     ];
 
     public function saleItem(): BelongsTo

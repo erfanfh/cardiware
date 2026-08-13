@@ -130,6 +130,7 @@
         'download_type' => '',
 
         'archive_format' => '',
+        'archive_password' => '',
         'assembled_file_name' => '',
 
         'install_directory' => '',
@@ -193,6 +194,7 @@
                 'download_type' => $downloadType ?? '',
 
                 'archive_format' => $manifest->archive_format ?? '',
+                'archive_password' => $manifest->archive_password ?? '',
 
                 'assembled_file_name' => $manifest->assembled_file_name ?? '',
 
@@ -237,6 +239,7 @@
             'launcherModGroups',
             'launcherMods.files',
             'launcherMods.group',
+            'launcherMods.image.primaryVariant',
             'launcherHero.primaryVariant',
 
             'attributeValues.globalValue.attribute',
@@ -328,6 +331,7 @@
                     'title' => $update->title,
                     'description' => $update->description,
                     'changelog' => $update->changelog,
+                    'archive_password' => $update->archive_password ?? '',
                     'is_enabled' => (bool) $update->is_enabled,
                     'is_mandatory' => (bool) $update->is_mandatory,
                     'has_option_file' => (bool) $update->has_option_file,
@@ -358,7 +362,12 @@
                     'group_key' => $mod->group?->key,
                     'short_description' => $mod->short_description,
                     'description' => $mod->description,
+                    'archive_password' => $mod->archive_password ?? '',
                     'image_media_id' => $mod->image_media_id,
+                    'image' => [
+                        'id' => $mod->image_media_id,
+                        'path' => $mod->image?->url,
+                    ],
                     'size_bytes' => $mod->size_bytes,
                     'priority' => $mod->priority,
                     'is_enabled' => (bool) $mod->is_enabled,

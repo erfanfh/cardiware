@@ -52,6 +52,7 @@ class LauncherContentController extends Controller
                     'published_at' => $update->published_at?->toISOString(),
                     'package' => [
                         'archive_format' => $update->archive_format,
+                        'archive_password' => $update->archive_password,
                         'merge_mode' => 'merge_to_product_root',
                         'total_size_bytes' => (int)$files->sum(
                             static fn($file): int => (int)$file->size_bytes

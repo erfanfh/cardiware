@@ -9,6 +9,7 @@
     $defaults = [
         'download_type' => '',
         'archive_format' => null,
+        'archive_password' => null,
         'assembled_file_name' => null,
 
         'install_directory' => null,
@@ -175,6 +176,34 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.assembled_file_name"
                         class="direction-ltr"
+                    />
+                </x-admin.field>
+            </div>
+            <div class="col-span-12 md:col-span-6 xl:col-span-4">
+                @if($isSimple)
+                    <input
+                        type="hidden"
+                        name="{{ $staticName('archive_password') }}"
+                        x-bind:value="{{ $state }}.archive_password"
+                    >
+                @else
+                    <input
+                        type="hidden"
+                        x-bind:name="{{ $dynamicName('archive_password') }}"
+                        x-bind:value="{{ $state }}.archive_password"
+                    >
+                @endif
+
+                <x-admin.field
+                    label="رمز دستی بسته پایه"
+                    hint="همان رمز AES-256 فایل 7z است. در بسته چندپارچه برای تمام پارت‌ها یک رمز وارد کنید."
+                >
+                    <x-admin.form.input
+                        type="password"
+                        autocomplete="new-password"
+                        x-model="{{ $state }}.archive_password"
+                        class="direction-ltr"
+                        placeholder="بدون رمز"
                     />
                 </x-admin.field>
             </div>

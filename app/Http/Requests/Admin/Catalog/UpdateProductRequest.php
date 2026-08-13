@@ -18,7 +18,7 @@ class UpdateProductRequest extends FormRequest
 {
     private const IRAN_PLAYER_STRENGTH_GROUP_KEY = 'iran_player_strength';
 
-    private const IRAN_PLAYER_STRENGTH_GROUP_TITLE = 'سطح قدرت بازیکنان ایران';
+    private const IRAN_PLAYER_STRENGTH_GROUP_TITLE = 'سطح قدرت بازیکنان';
 
     private const IRAN_PLAYER_STRENGTH_MOD_NAMES = [
         'سطح عادی',
@@ -145,6 +145,7 @@ class UpdateProductRequest extends FormRequest
                 'nullable',
                 Rule::in(['7z']),
             ],
+            'sale_items.*.manifest.archive_password' => ['nullable', 'string', 'max:512'],
             'sale_items.*.manifest.assembled_file_name' => ['nullable', 'string', 'max:255'],
             'sale_items.*.manifest.install_directory' => ['nullable', 'string', 'max:500'],
             'sale_items.*.manifest.install_folder_name' => [
@@ -236,6 +237,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_updates.*.title' => ['required_with:sale_items.*.launcher_updates', 'string', 'max:255'],
             'sale_items.*.launcher_updates.*.description' => ['nullable', 'string'],
             'sale_items.*.launcher_updates.*.changelog' => ['nullable', 'string'],
+            'sale_items.*.launcher_updates.*.archive_password' => ['nullable', 'string', 'max:512'],
             'sale_items.*.launcher_updates.*.is_enabled' => ['nullable', 'boolean'],
             'sale_items.*.launcher_updates.*.is_mandatory' => ['nullable', 'boolean'],
             'sale_items.*.launcher_updates.*.has_option_file' => ['nullable', 'boolean'],
@@ -267,6 +269,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
             'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_mods.*.description' => ['nullable', 'string'],
+            'sale_items.*.launcher_mods.*.archive_password' => ['nullable', 'string', 'max:512'],
             'sale_items.*.launcher_mods.*.image_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'sale_items.*.launcher_mods.*.priority' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.launcher_mods.*.is_enabled' => ['nullable', 'boolean'],
@@ -768,7 +771,7 @@ class UpdateProductRequest extends FormRequest
             if (($mod['install_target'] ?? null) !== LauncherModInstallTargetEnum::WINDOWS_DOCUMENTS->value) {
                 $validator->errors()->add(
                     "{$prefix}.launcher_mods.{$modIndex}.install_target",
-                    'مادهای گروه سطح قدرت بازیکنان ایران باید در windows_documents نصب شوند.'
+                    'مادهای گروه سطح قدرت بازیکنان باید در windows_documents نصب شوند.'
                 );
             }
         }
@@ -967,9 +970,24 @@ class UpdateProductRequest extends FormRequest
                     'special_box_description' => $this->normalizeNullableStringInput(data_get($discount, 'special_box_description'), 1000),
                 ];
                 $item['manifest'] = $this->normalizeManifestInput(data_get($item, 'manifest'));
+                if (array_key_exists('launcher_updates', $item)) {
+                    $item['launcher_updates'] = collect(data_get($item, 'launcher_updates', []))
+                        ->filter(fn($update) => is_array($update))
+                        ->map(function (array $update): array {
+                            $update['archive_password'] = $this->normalizeArchivePasswordInput(
+                                $update['archive_password'] ?? null
+                            );
+                            return $update;
+                        })
+                        ->values()
+                        ->all();
+                }
                 $item['launcher_mods'] = collect(data_get($item, 'launcher_mods', []))
                     ->filter(fn($mod) => is_array($mod))
                     ->map(function (array $mod): array {
+                        $mod['archive_password'] = $this->normalizeArchivePasswordInput(
+                            $mod['archive_password'] ?? null
+                        );
                         $mod['install_target'] = $this->normalizeLauncherModInstallTarget(
                             $mod['install_target'] ?? null
                         );
@@ -1043,6 +1061,7 @@ class UpdateProductRequest extends FormRequest
              */
             'download_type' => $this->normalizeDownloadTypeInput(data_get($manifest, 'download_type')),
             'archive_format' => $this->normalizeArchiveFormatInput(data_get($manifest, 'archive_format')),
+            'archive_password' => $this->normalizeArchivePasswordInput(data_get($manifest, 'archive_password')),
             'assembled_file_name' => $this->normalizeNullableStringInput(data_get($manifest, 'assembled_file_name'), 255),
             'install_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'install_directory'), 500),
             'install_folder_name' => $this->normalizeNullableStringInput(data_get($manifest, 'install_folder_name'), 150),
@@ -1173,6 +1192,16 @@ class UpdateProductRequest extends FormRequest
         }
 
         return $value;
+    }
+
+    private function normalizeArchivePasswordInput(mixed $value): ?string
+    {
+        if (!is_string($value) || $value === '') {
+            return null;
+        }
+
+        // فاصله‌های داخل رمز بخشی از خود رمز هستند و نباید مانند متن عادی فشرده شوند.
+        return mb_substr($value, 0, 512);
     }
 
     private function normalizeIntegerInput(mixed $value): ?int

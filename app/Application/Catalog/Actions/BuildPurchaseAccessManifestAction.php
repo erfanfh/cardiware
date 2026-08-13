@@ -116,6 +116,7 @@ class BuildPurchaseAccessManifestAction
                 'type' => $manifest->download_type->value,
                 'assembly_strategy' => $manifest->assembly_strategy->value,
                 'archive_format' => $manifest->archive_format,
+                'archive_password' => $manifest->archive_password,
                 'assembled_file_name' => $manifest->assembled_file_name,
                 'validation_mode' => $manifest->validation_mode->value,
                 'total_size_bytes' => $totalSizeBytes,

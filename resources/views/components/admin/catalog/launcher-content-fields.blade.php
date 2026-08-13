@@ -329,6 +329,21 @@
                                     x-model="update.changelog"
                                 />
                             </x-admin.field>
+
+                            <x-admin.field
+                                label="رمز دستی فایل 7z آپدیت"
+                                hint="همان رمز آرشیو است و برای همه پارت‌ها باید یکسان باشد."
+                                class="col-span-12 md:col-span-6"
+                            >
+                                <x-admin.form.input
+                                    type="password"
+                                    autocomplete="new-password"
+                                    class="direction-ltr"
+                                    placeholder="بدون رمز"
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_updates][${updateIndex}][archive_password]`"
+                                    x-model="update.archive_password"
+                                />
+                            </x-admin.field>
                         </div>
 
                         <div class="mt-4 grid grid-cols-12 gap-3">
@@ -678,14 +693,61 @@
                                 />
                             </x-admin.field>
 
-                            <x-admin.field label="تصویر مستطیلی (Media ID)" hint="برای ماد منتشرشده، تصویر باید افقی باشد؛ عرض بیشتر از ارتفاع." class="col-span-12 md:col-span-3">
-                                <x-admin.form.input
-                                    type="number"
-                                    min="1"
-                                    placeholder="Media ID"
-                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][image_media_id]`"
-                                    x-model="mod.image_media_id"
-                                />
+                            <x-admin.field label="تصویر مستطیلی ماد" hint="تصویر افقی 16:9 مانند 1280×720 انتخاب کنید." class="col-span-12 md:col-span-4">
+                                <div
+                                    class="rounded-xl border border-slate-200 bg-white p-2"
+                                    x-on:mfip-selected.window="
+                                        if ($event.detail.itemKey !== `launcher-mod-image-${mod.__key}`) return;
+                                        mod.image = {
+                                            id: $event.detail.mediaId ?? null,
+                                            path: $event.detail.mediaPath ?? null,
+                                        };
+                                        mod.image_media_id = mod.image.id;
+                                    "
+                                    x-on:mfip-cleared.window="
+                                        if ($event.detail.itemKey !== `launcher-mod-image-${mod.__key}`) return;
+                                        mod.image = { id: null, path: null };
+                                        mod.image_media_id = null;
+                                    "
+                                >
+                                    <button
+                                        type="button"
+                                        class="block w-full cursor-pointer text-right"
+                                        @click="$dispatch('mfip-open-requested', {
+                                            itemKey: `launcher-mod-image-${mod.__key}`,
+                                            selectedMediaFileId: mod.image?.id ?? null,
+                                            selectedMediaPath: mod.image?.path ?? null
+                                        })"
+                                    >
+                                        <template x-if="mod.image?.path">
+                                            <div class="flex items-center gap-3">
+                                                <img :src="mod.image.path" alt="" class="h-20 w-36 rounded-lg object-cover">
+                                                <div>
+                                                    <div class="text-xs font-bold text-emerald-700">تصویر انتخاب شده</div>
+                                                    <div class="mt-2 text-[11px] text-slate-500">برای تغییر تصویر کلیک کنید</div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!mod.image?.path">
+                                            <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-7 text-center text-xs font-bold text-slate-600">
+                                                انتخاب یا آپلود تصویر ماد
+                                            </div>
+                                        </template>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="mt-2 cursor-pointer text-[11px] font-bold text-rose-600"
+                                        x-show="mod.image?.id"
+                                        @click="mod.image = { id: null, path: null }; mod.image_media_id = null"
+                                    >
+                                        حذف تصویر
+                                    </button>
+                                    <input
+                                        type="hidden"
+                                        x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][image_media_id]`"
+                                        x-model="mod.image.id"
+                                    >
+                                </div>
                             </x-admin.field>
 
                             <x-admin.field label="نسخه‌های Base سازگار" hint="با کاما جدا کنید."
@@ -723,6 +785,21 @@
                                     placeholder="توضیحات کامل ماد"
                                     x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][description]`"
                                     x-model="mod.description"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field
+                                label="رمز دستی فایل 7z ماد"
+                                hint="همان رمز آرشیو است و برای همه پارت‌ها باید یکسان باشد."
+                                class="col-span-12 md:col-span-5"
+                            >
+                                <x-admin.form.input
+                                    type="password"
+                                    autocomplete="new-password"
+                                    class="direction-ltr"
+                                    placeholder="بدون رمز"
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][archive_password]`"
+                                    x-model="mod.archive_password"
                                 />
                             </x-admin.field>
                         </div>

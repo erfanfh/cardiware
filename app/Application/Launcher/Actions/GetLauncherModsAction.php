@@ -162,6 +162,7 @@ class GetLauncherModsAction
             ],
             'package' => [
                 'archive_format' => '7z',
+                'archive_password' => $mod->archive_password,
                 'merge_mode' => 'merge_to_product_root',
                 'install_target' => ($mod->install_target ?? LauncherModInstallTargetEnum::PRODUCT_ROOT)->value,
                 'total_size_bytes' => $totalSizeBytes,

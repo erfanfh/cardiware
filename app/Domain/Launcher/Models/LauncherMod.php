@@ -14,13 +14,14 @@ class LauncherMod extends Model
 {
     protected $fillable = [
         'product_sale_item_id', 'launcher_mod_group_id', 'name', 'slug',
-        'short_description', 'description', 'version', 'install_target', 'image_media_id',
+        'short_description', 'description', 'version', 'archive_password', 'install_target', 'image_media_id',
         'size_bytes', 'priority', 'is_enabled', 'is_required',
         'compatible_base_versions', 'compatible_update_versions', 'published_at',
     ];
 
     protected $casts = [
         'install_target' => LauncherModInstallTargetEnum::class,
+        'archive_password' => 'encrypted',
         'size_bytes' => 'integer',
         'priority' => 'integer',
         'is_enabled' => 'boolean',

@@ -11,6 +11,14 @@ Route::prefix('auth')
             ->middleware('throttle:api-login')
             ->name('login');
 
+        Route::post('otp/request', [AuthController::class, 'requestLoginOtp'])
+            ->middleware('throttle:api-login')
+            ->name('otp.request');
+
+        Route::post('otp/verify', [AuthController::class, 'loginWithOtp'])
+            ->middleware('throttle:api-login')
+            ->name('otp.verify');
+
         Route::post('logout', [AuthController::class, 'logout'])
             ->middleware([
                 'auth:sanctum',
