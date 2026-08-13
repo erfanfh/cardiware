@@ -401,7 +401,7 @@
                                 <div class="relative z-10 flex items-start gap-3">
                                     <input
                                         type="checkbox"
-                                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400 disabled:cursor-not-allowed disabled:opacity-60"
+                                        class="mt-1 h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-400 disabled:cursor-not-allowed disabled:opacity-60 accent-brand-500"
                                         :checked="isAddonSelected(addon.id)"
                                         :disabled="isSubmitting"
                                         @change="toggleAddon(addon.id)"
