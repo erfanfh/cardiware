@@ -11,7 +11,6 @@ use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Project\Models\Project;
 use Illuminate\Support\Facades\Cache;
-use RuntimeException;
 
 class ProjectSeoResolver implements SeoResolverInterface
 {
@@ -23,17 +22,13 @@ class ProjectSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('projects.detail')
-            && $context->request->route('project') instanceof Project;
+        return $context->routeIs('projects.detail');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
     {
-        $project = $context->request->route('project');
-
-        if (!$project instanceof Project) {
-            throw new RuntimeException('Resolved content is not a project.');
-        }
+        $slug = $context->request->route('projectSlug');
+        $project = Project::where('slug', $slug)->firstOrFail();
 
         return Cache::tags([
             CacheTag::SEO,

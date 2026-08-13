@@ -10,5 +10,5 @@ Route::controller(ProjectController::class)->middleware(ForceTrailingSlash::clas
 
     Route::get('/', 'list')->name('list');
 
-    Route::get('{project}', 'detail')->name('detail');
+    Route::get('{projectSlug}', 'detail')->name('detail');
 });

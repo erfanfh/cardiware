@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Front\Project;
 
 use App\Application\Project\Actions\GetProjectDetailAction;
 use App\Application\Project\Actions\GetProjectListPageDataAction;
+use App\Application\Slug\Actions\ResolveSlugAction;
+use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Project\Models\Project;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,14 +25,31 @@ class ProjectController extends Controller
     }
 
     /**
-     * Project detail
-     *
-     * @param Project $project
-     * @return View
+     * Project detail.
      */
-    public function detail(Project $project): View
+    public function detail(
+        string                 $projectSlug,
+        ResolveSlugAction      $resolveSlugAction,
+        GetProjectDetailAction $getProjectDetailAction,
+    ): View|RedirectResponse
     {
-        $project = app(GetProjectDetailAction::class)->execute($project);
+        $resolvedSlug = $resolveSlugAction->execute(
+            new ResolveSlugDTO(
+                scope: SlugScopeEnum::PROJECT,
+                value: $projectSlug,
+            )
+        );
+
+        if (!$resolvedSlug->found) {
+            abort(404);
+        }
+
+        if ($resolvedSlug->shouldRedirect && filled($resolvedSlug->redirectTo)) {
+            return redirect()->to($resolvedSlug->redirectTo, 301);
+        }
+
+        /** @var Project $project */
+        $project = $getProjectDetailAction->execute($resolvedSlug->model);
 
         $this->storeViewAction->execute($project);
 
