@@ -265,6 +265,15 @@ class PageLayoutSeeder extends Seeder
                                         'sort_order' => 2,
                                     ],
                                     [
+                                        'key' => 'video_gallery',
+                                        'type' => 'video_gallery',
+                                        'title' => 'گالری ویدیویی',
+                                        'description' => 'نمایش گالری ویدیویی نوشته',
+                                        'is_active' => true,
+                                        'sort_order' => 3,
+                                        'insert_after' => 'image_gallery',
+                                    ],
+                                    [
                                         'key' => 'related_contents',
                                         'type' => 'related_contents',
                                         'title' => 'نوشته‌های مرتبط',
@@ -447,11 +456,31 @@ class PageLayoutSeeder extends Seeder
                 ->first();
 
             if (!$element) {
+                $targetAreaId = $defaultArea->id;
+                $sortOrder = $elementData['sort_order'];
+
+                if (filled($elementData['insert_after'] ?? null)) {
+                    $referenceElement = PageLayoutElement::query()
+                        ->where('key', $elementData['insert_after'])
+                        ->whereIn('page_layout_area_id', $layoutAreaIds)
+                        ->first();
+
+                    if ($referenceElement) {
+                        $targetAreaId = $referenceElement->page_layout_area_id;
+                        $sortOrder = $referenceElement->sort_order + 1;
+
+                        PageLayoutElement::query()
+                            ->where('page_layout_area_id', $targetAreaId)
+                            ->where('sort_order', '>=', $sortOrder)
+                            ->increment('sort_order');
+                    }
+                }
+
                 $element = new PageLayoutElement([
-                    'page_layout_area_id' => $defaultArea->id,
+                    'page_layout_area_id' => $targetAreaId,
                     'key' => $elementData['key'],
                     'is_active' => $elementData['is_active'],
-                    'sort_order' => $elementData['sort_order'],
+                    'sort_order' => $sortOrder,
                 ]);
             }
 

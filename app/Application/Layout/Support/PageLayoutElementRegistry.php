@@ -235,6 +235,14 @@ class PageLayoutElementRegistry
                     'post_content_main',
                 ],
             ],
+            'video_gallery' => [
+                'type' => 'video_gallery',
+                'type_label' => 'گالری ویدیویی',
+                'type_color' => 'rose',
+                'allowed_areas' => [
+                    'post_content_main',
+                ],
+            ],
             'related_contents' => [
                 'type' => 'related_contents',
                 'type_label' => 'نوشته‌های مرتبط',

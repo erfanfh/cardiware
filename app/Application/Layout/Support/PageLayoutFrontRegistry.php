@@ -67,6 +67,9 @@ class PageLayoutFrontRegistry
             'image_gallery' => [
                 'view' => 'front.posts.partials.detail.image-gallery',
             ],
+            'video_gallery' => [
+                'view' => 'front.posts.partials.detail.video',
+            ],
             'related_contents' => [
                 'view' => 'front.posts.partials.detail.related-posts',
             ],

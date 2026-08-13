@@ -57,6 +57,8 @@ class GetPostDetailDataAction
             'tags:id,title,path',
             'imageGallery.mediaFile.primaryVariant',
             'imageGallery.mediaFile.variants',
+            'videoGallery.mediaFile.primaryVariant',
+            'videoGallery.mediaFile.variants',
             'downloadSections.entries',
             'informationBoxes',
         ]);
