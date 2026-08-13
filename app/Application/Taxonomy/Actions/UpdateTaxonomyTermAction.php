@@ -55,7 +55,7 @@ class UpdateTaxonomyTermAction
                 )
             );
 
-            $this->taxonomySlugCacheInvalidator->forgetForTerm($term);
+            $this->taxonomySlugCacheInvalidator->forgetForTermAndDescendants($term);
 
             return $term;
         });
