@@ -50,6 +50,11 @@ export default function productBuyBox(config) {
         offerExpired: false,
         offerUrgencyText: '',
 
+        mainBuyBoxVisible: true,
+        mainBuyBoxObserver: null,
+        stickyBuyBarFallbackHandler: null,
+        stickyBuyBarResizeHandler: null,
+
         playSaleItemSelectAnimation(id) {
             const itemId = Number(id);
 
@@ -93,11 +98,17 @@ export default function productBuyBox(config) {
 
             this.$nextTick(() => {
                 this.startSpecialOfferTimer();
+                this.initStickyBuyBar();
 
                 this.$watch('selectedSaleItemId', () => {
                     this.startSpecialOfferTimer();
                 });
             });
+        },
+
+        destroy() {
+            this.stopSpecialOfferTimer();
+            this.destroyStickyBuyBar();
         },
 
         get shouldShowSaleItemSelector() {
@@ -134,6 +145,150 @@ export default function productBuyBox(config) {
             }, 0);
 
             return saleItemPrice + addonsPrice;
+        },
+
+        get shouldShowStickyBuyBar() {
+            return Boolean(this.hasAvailableSaleItems && !this.mainBuyBoxVisible);
+        },
+
+        get stickyBuyActionLabel() {
+            return this.inCart ? 'مشاهده و ویرایش خرید' : 'افزودن به سبد خرید';
+        },
+
+        get stickyPriceCaption() {
+            if (this.inCart || this.selectedAddonIds.length > 0 || Number(this.quantity) > 1) {
+                return 'مبلغ انتخاب فعلی';
+            }
+
+            return this.shouldShowSaleItemSelector ? 'مبلغ نسخه انتخاب شده' : 'مبلغ محصول';
+        },
+
+        initStickyBuyBar() {
+            const buyBox = this.$refs.mainBuyBox;
+
+            if (!buyBox) {
+                return;
+            }
+
+            const updateVisibility = (isVisible) => {
+                const normalizedVisibility = Boolean(isVisible);
+
+                if (this.mainBuyBoxVisible === normalizedVisibility) {
+                    return;
+                }
+
+                this.mainBuyBoxVisible = normalizedVisibility;
+
+                this.$nextTick(() => {
+                    this.notifyStickyBuyBarVisibility();
+                });
+            };
+
+            if ('IntersectionObserver' in window) {
+                this.mainBuyBoxObserver = new IntersectionObserver((entries) => {
+                    const entry = entries[0];
+
+                    updateVisibility(Boolean(entry?.isIntersecting));
+                }, {
+                    root: null,
+                    threshold: 0,
+                });
+
+                this.mainBuyBoxObserver.observe(buyBox);
+            } else {
+                this.stickyBuyBarFallbackHandler = () => {
+                    const rect = buyBox.getBoundingClientRect();
+                    const isVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+
+                    updateVisibility(isVisible);
+                };
+
+                window.addEventListener('scroll', this.stickyBuyBarFallbackHandler, {passive: true});
+                window.addEventListener('resize', this.stickyBuyBarFallbackHandler);
+
+                this.stickyBuyBarFallbackHandler();
+            }
+
+            this.stickyBuyBarResizeHandler = () => {
+                if (!this.shouldShowStickyBuyBar) {
+                    return;
+                }
+
+                this.$nextTick(() => {
+                    this.notifyStickyBuyBarVisibility();
+                });
+            };
+
+            window.addEventListener('resize', this.stickyBuyBarResizeHandler);
+
+            // Ensure dependent floating UI receives the initial state too.
+            this.$nextTick(() => {
+                this.notifyStickyBuyBarVisibility();
+            });
+        },
+
+        destroyStickyBuyBar() {
+            if (this.mainBuyBoxObserver) {
+                this.mainBuyBoxObserver.disconnect();
+                this.mainBuyBoxObserver = null;
+            }
+
+            if (this.stickyBuyBarFallbackHandler) {
+                window.removeEventListener('scroll', this.stickyBuyBarFallbackHandler);
+                window.removeEventListener('resize', this.stickyBuyBarFallbackHandler);
+                this.stickyBuyBarFallbackHandler = null;
+            }
+
+            if (this.stickyBuyBarResizeHandler) {
+                window.removeEventListener('resize', this.stickyBuyBarResizeHandler);
+                this.stickyBuyBarResizeHandler = null;
+            }
+
+            window.dispatchEvent(new CustomEvent('product-sticky-buy-bar-visibility', {
+                detail: {
+                    visible: false,
+                    height: 0,
+                },
+            }));
+        },
+
+        notifyStickyBuyBarVisibility() {
+            const visible = this.shouldShowStickyBuyBar;
+            const stickyBar = document.querySelector(`[data-product-sticky-buy-bar="${this.productId}"]`);
+            const height = visible && stickyBar
+                ? Math.ceil(stickyBar.getBoundingClientRect().height)
+                : 0;
+
+            window.dispatchEvent(new CustomEvent('product-sticky-buy-bar-visibility', {
+                detail: {
+                    visible,
+                    height,
+                },
+            }));
+        },
+
+        scrollToMainBuyBox() {
+            const buyBox = this.$refs.mainBuyBox;
+
+            if (!buyBox) {
+                return;
+            }
+
+            const inheritedHeaderOffset = Number.parseFloat(
+                window.getComputedStyle(buyBox).getPropertyValue('--header-offset')
+            );
+            const headerOffset = Number.isFinite(inheritedHeaderOffset) ? inheritedHeaderOffset : 130;
+            const targetTop = window.scrollY + buyBox.getBoundingClientRect().top - headerOffset - 16;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            window.scrollTo({
+                top: Math.max(0, targetTop),
+                behavior: prefersReducedMotion ? 'auto' : 'smooth',
+            });
+
+            window.setTimeout(() => {
+                buyBox.focus({preventScroll: true});
+            }, prefersReducedMotion ? 0 : 420);
         },
 
         get canIncreaseQuantity() {

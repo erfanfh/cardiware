@@ -11,7 +11,13 @@
         x-on:product-buy-box-sync-started.window="startExternalSync()"
         x-on:product-buy-box-state-refreshed.window="handleExternalPurchaseStateRefreshed($event)"
     >
-        <div class="relative" :class="isSyncingFromExternalCart ? 'pointer-events-none opacity-75' : ''">
+        <div
+            id="product-main-buy-box"
+            x-ref="mainBuyBox"
+            tabindex="-1"
+            class="relative outline-none"
+            :class="isSyncingFromExternalCart ? 'pointer-events-none opacity-75' : ''"
+        >
             <div
                 x-show="isSyncingFromExternalCart"
                 x-cloak
@@ -696,6 +702,8 @@
                 </div>
             @endif
         </div>
+
+        @include('livewire.front.catalog.partials.product-sticky-buy-bar')
 
         {{-- Modal --}}
         <x-front.modal
