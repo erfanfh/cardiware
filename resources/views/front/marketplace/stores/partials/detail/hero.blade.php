@@ -42,15 +42,15 @@ dark:border-slate-700 dark:bg-slate-900">
                             <div class="min-w-0 flex-1 text-center sm:pb-2 sm:text-right">
                                 <div class="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                                     <span
-                                        class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[11px] font-extrabold text-brand-800
-                                        dark:border-brand-900/40 dark:bg-brand-900/20 dark:text-brand-300">
+                                        class="rounded-xl border border-emerald-300 bg-emerald-100 px-2 py-1 text-[11px] font-extrabold text-emerald-800
+                                        dark:border-emerald-500/50 dark:bg-emerald-700 dark:text-emerald-200">
                                         فروشنده تاییدشده
                                     </span>
 
                                     @if($store->products->count() >= 3)
                                         <span
-                                            class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-extrabold text-emerald-700
-                                            dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300">
+                                            class="rounded-xl border border-blue-300 bg-blue-100 px-2 py-1 text-[11px] font-extrabold text-blue-800
+                                            dark:border-blue-500/50 dark:bg-blue-700 dark:text-blue-200">
                                             فعال در مودینگ وی
                                         </span>
                                     @endif
