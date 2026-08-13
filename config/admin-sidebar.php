@@ -120,6 +120,12 @@ return [
                 'gate' => 'order.list',
             ],
             [
+                'label' => 'سبدهای رها شده',
+                'route' => 'admin.abandoned-carts.index',
+                'icon' => 'icons.shopping-cart-02',
+                'gate' => 'cart.abandoned',
+            ],
+            [
                 'label' => 'کدهای تخفیف',
                 'route' => 'admin.coupons.index',
                 'icon' => 'icons.discount',

@@ -1,11 +1,20 @@
 <?php
 
+use App\Http\Controllers\Admin\Commerce\AbandonedCartController;
 use App\Http\Controllers\Admin\Commerce\AnalyticsController;
 use App\Http\Controllers\Admin\Commerce\OrderController;
 use App\Http\Controllers\Admin\Commerce\PurchaseDownloadResetController;
 use App\Http\Controllers\Admin\Commerce\PurchaseDownloadResetUserSearchController;
 
 Route::get('analytics', AnalyticsController::class)->name('analytics.index');
+
+Route::prefix('abandoned-carts')
+    ->name('abandoned-carts.')
+    ->group(function () {
+        Route::get('/', [AbandonedCartController::class, 'index'])->name('index');
+        Route::put('/settings', [AbandonedCartController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/cleanup', [AbandonedCartController::class, 'cleanupNow'])->name('cleanup');
+    });
 
 Route::prefix('purchase-download-resets')
     ->name('purchase-download-resets.')

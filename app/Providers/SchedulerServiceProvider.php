@@ -39,5 +39,10 @@ class SchedulerServiceProvider extends ServiceProvider
             ->hourlyAt(10)
             ->withoutOverlapping(30)
             ->onOneServer();
+
+        $schedule->command('carts:cleanup-stale')
+            ->dailyAt('03:30')
+            ->withoutOverlapping(120)
+            ->onOneServer();
     }
 }

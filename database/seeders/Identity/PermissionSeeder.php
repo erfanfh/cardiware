@@ -106,6 +106,9 @@ class PermissionSeeder extends Seeder
                 'list' => 'لیست سفارش ها',
                 'edit' => 'ویرایش سفارش',
             ],
+            'cart' => [
+                'abandoned' => 'مدیریت سبدهای خرید رها شده',
+            ],
             'purchase-access' => [
                 'reset-downloads' => 'ریست محدودیت دانلود خرید کاربران',
             ],
