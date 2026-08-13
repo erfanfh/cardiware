@@ -107,7 +107,7 @@ class GetPostDetailDataAction
                         'tags:id,title,path'
                     ])
                     ->latest('published_at')
-                    ->take(3)
+                    ->take(10)
                     ->get();
             }
         );

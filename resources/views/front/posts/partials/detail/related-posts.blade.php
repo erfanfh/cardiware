@@ -1,89 +1,145 @@
-@if(count($relatedPosts) > 0)
-    <x-front.cart>
-        <x-front.cart-title
-            title="نوشته‌های مرتبط"
-            iconName="arrow-reload-horizontal"
-        />
+@if($relatedPosts->isNotEmpty())
+    @php
+        $relatedSliderPosts = $relatedPosts->take(6);
+        $relatedCompactPosts = $relatedPosts->skip(6)->take(4);
+    @endphp
 
-        <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            @if(isset($relatedPosts[0]))
-                <a href="{{ front_route('contents.detail', $relatedPosts[0]) }}"
-                   class="h-56 rounded-2xl border border-slate-200 bg-slate-900 overflow-hidden shadow-sm hover:shadow-lg transition group dark:border-slate-700 dark:shadow-black/20 dark:hover:shadow-black/30">
-                    <div class="relative h-full">
-                        <x-front.responsive-image
-                            :media="$relatedPosts[0]->picture"
-                            :fallback="$relatedPosts[0]->picture?->url"
-                            :alt="$relatedPosts[0]->title"
-                            :title="$relatedPosts[0]->title"
-                            variant="medium_large"
-                            class="h-full w-full object-cover opacity-80"
-                            wrapper-class="absolute inset-0 transition-transform duration-300 group-hover:scale-[1.02]"
-                            :lazy="true"
-                            :async="true"
-                            sizes="(max-width: 1024px) 100vw, 50vw"
-                        />
+    <x-front.cart id="related-posts" class="overflow-hidden">
+        <div class="flex items-start justify-between gap-4">
+            <x-front.cart-title
+                title="نوشته‌های مرتبط"
+                subtitle="مطالبی که احتمالا برای شما کاربردی هستند"
+                iconName="arrow-reload-horizontal"
+                class="!mb-0"
+            />
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-transparent"></div>
+            @if($relatedSliderPosts->count() > 1)
+                <div class="hidden shrink-0 items-center gap-2 sm:flex">
+                    <button
+                        type="button"
+                        class="mwRelatedPostsPrev inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
+                        aria-label="نوشته‌های قبلی"
+                    >
+                        @include('icons.arrow-right-01')
+                    </button>
 
-                        <div class="absolute top-3 right-3 inline-flex items-center gap-2">
-                            @foreach($relatedPosts[0]->tags as $tag)
-                                <span
-                                    class="text-[11px] font-extrabold text-slate-900 bg-white/90 px-2 py-1 rounded-xl dark:bg-slate-950/90 dark:text-slate-100">
-                            {{ $tag->title }}
-                        </span>
-                            @endforeach
-                            @foreach($relatedPosts[0]->categories as $category)
-                                <span
-                                    class="text-[11px] font-extrabold text-white bg-black/40 ring-1 ring-white/15 px-2 py-1 rounded-xl">
-                            {{ $category->title }}
-                        </span>
-                            @endforeach
-                        </div>
-                        <div class="absolute bottom-3 right-3 left-3">
-                            <div class="text-white font-extrabold text-base leading-7 line-clamp-2">
-                                {{ $relatedPosts[0]->title }}
-                            </div>
-                        </div>
-                    </div>
-                </a>
+                    <button
+                        type="button"
+                        class="mwRelatedPostsNext inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
+                        aria-label="نوشته‌های بعدی"
+                    >
+                        @include('icons.arrow-left-01')
+                    </button>
+                </div>
             @endif
-
-            <div class="flex flex-col justify-between gap-3">
-                @foreach($relatedPosts->skip(1)->all() as $post)
-                    <a href="{{ front_route('contents.detail', $post) }}"
-                       class="flex gap-3 rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
-                        <x-front.responsive-image
-                            :media="$post->picture"
-                            :fallback="$post->picture?->url"
-                            :alt="$post->title"
-                            :title="$post->title"
-                            variant="thumbnail"
-                            class="h-16 w-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700"
-                            wrapper-class="h-16 w-16 shrink-0 rounded-2xl"
-                            :lazy="true"
-                            :async="true"
-                            sizes="64px"
-                        />
-
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                @foreach($post->categories as $category)
-                                    <span
-                                        class="text-[11px] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                    {{ $category->title }}
-                                </span>
-                                @endforeach
-                            </div>
-                            <div class="mt-2 text-sm font-extrabold leading-6 truncate dark:text-slate-100">
-                                {{ $post->title }}
-                            </div>
-                            <div class="mt-1 text-xs text-slate-500 truncate dark:text-slate-400">
-                                {{ $post->excerpt() }}
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
-            </div>
         </div>
+
+        <div class="mt-5">
+            <div class="swiper mwRelatedPosts !overflow-visible sm:!overflow-hidden">
+                <div class="swiper-wrapper">
+                    @foreach($relatedSliderPosts as $relatedPost)
+                        <div class="swiper-slide !h-auto">
+                            <a
+                                href="{{ front_route('contents.detail', $relatedPost) }}"
+                                class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 dark:hover:border-brand-500/30 dark:hover:shadow-black/20"
+                            >
+                                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                    <x-front.responsive-image
+                                        :media="$relatedPost->picture"
+                                        :fallback="$relatedPost->picture?->url"
+                                        :alt="$relatedPost->title"
+                                        :title="$relatedPost->title"
+                                        variant="medium_large"
+                                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                                        wrapper-class="absolute inset-0"
+                                        :lazy="true"
+                                        :async="true"
+                                        sizes="(max-width: 640px) 82vw, (max-width: 1024px) 45vw, 260px"
+                                    />
+
+                                    @if($relatedPost->categories->isNotEmpty())
+                                        <div class="absolute right-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-1.5">
+                                            @foreach($relatedPost->categories->take(2) as $category)
+                                                <span class="rounded-xl bg-black/55 px-2.5 py-1 text-[10px] font-extrabold text-white ring-1 ring-white/15 backdrop-blur-sm">
+                                                    {{ $category->title }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="flex flex-1 flex-col p-4">
+                                    <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                                        <span>{{ jalali_date($relatedPost->published_at, 'd F Y') }}</span>
+                                        @if($relatedPost->tags->isNotEmpty())
+                                            <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                                            <span class="truncate">{{ $relatedPost->tags->first()->title }}</span>
+                                        @endif
+                                    </div>
+
+                                    <h3 class="mt-2.5 line-clamp-2 text-sm font-extrabold leading-6 text-slate-900 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
+                                        {{ $relatedPost->title }}
+                                    </h3>
+
+                                    <p class="mt-2 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
+                                        {{ $relatedPost->excerpt() }}
+                                    </p>
+
+                                    <div class="mt-auto flex items-center gap-1.5 pt-4 text-xs font-extrabold text-brand-700 dark:text-brand-300 [&_svg]:h-3.5 [&_svg]:w-3.5">
+                                        مشاهده نوشته
+                                        @include('icons.arrow-left-02')
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            @if($relatedSliderPosts->count() > 1)
+                <div class="mwRelatedPostsPagination mt-4 flex items-center justify-center gap-1.5 [&_.swiper-pagination-bullet-active]:!w-6 [&_.swiper-pagination-bullet-active]:!bg-brand-500 dark:[&_.swiper-pagination-bullet-active]:!bg-brand-400"></div>
+            @endif
+        </div>
+
+        @if($relatedCompactPosts->isNotEmpty())
+            <div class="mt-5 border-t border-slate-100 pt-5 dark:border-slate-800">
+                <div class="mb-3 flex items-center justify-between gap-3">
+                    <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                        مطالب مرتبط بیشتر
+                    </h3>
+                    <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500">
+                        {{ $relatedCompactPosts->count() }} نوشته دیگر
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-x-5 sm:grid-cols-2">
+                    @foreach($relatedCompactPosts as $relatedPost)
+                        <a
+                            href="{{ front_route('contents.detail', $relatedPost) }}"
+                            class="group flex min-w-0 items-start gap-3 border-b border-slate-100 py-3 last:border-b-0 sm:[&:nth-last-child(-n+2)]:border-b-0 dark:border-slate-800"
+                        >
+                            <span class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500 transition group-hover:scale-125"></span>
+
+                            <div class="min-w-0 flex-1">
+                                <div class="line-clamp-2 text-sm font-bold leading-6 text-slate-700 transition group-hover:text-brand-700 dark:text-slate-300 dark:group-hover:text-brand-300">
+                                    {{ $relatedPost->title }}
+                                </div>
+                                <div class="mt-1 flex items-center gap-2 text-[11px] text-slate-400 dark:text-slate-500">
+                                    <span>{{ jalali_date($relatedPost->published_at, 'd F Y') }}</span>
+                                    @if($relatedPost->categories->isNotEmpty())
+                                        <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
+                                        <span class="truncate">{{ $relatedPost->categories->first()->title }}</span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <span class="mt-1 shrink-0 text-slate-300 transition group-hover:-translate-x-0.5 group-hover:text-brand-600 dark:text-slate-600 dark:group-hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">
+                                @include('icons.arrow-left-01')
+                            </span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </x-front.cart>
 @endif
