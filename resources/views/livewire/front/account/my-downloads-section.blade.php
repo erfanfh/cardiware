@@ -10,7 +10,13 @@
     <div class="mt-4 space-y-3 transition sm:mt-5 sm:space-y-4" wire:loading.class="opacity-40">
         @forelse($this->purchaseAccesses as $access)
             @php
-                $files = $access->productSaleItem?->files ?? collect();
+                if($access->productSaleItem->launcher_enabled){
+                    $launcherEnabled = true;
+                    $files = collect();
+                }else{
+                    $launcherEnabled = false;
+                    $files = $access->productSaleItem?->files ?? collect();
+                }
                 $productUrl = $this->productUrl($access);
                 $hasInstallationSteps = $this->hasInstallationSteps($access);
             @endphp
@@ -93,59 +99,66 @@
                     </div>
 
                     <div x-show="open" x-collapse class="mt-4">
-                        @if($files->isNotEmpty())
-                            <div
-                                class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60">
-                                @foreach($files as $file)
-                                    @php
-                                        $fileSize = $this->fileSizeLabel($file);
-                                        $fileIsUsable = $this->fileIsUsable($access, $file);
-                                    @endphp
-
-                                    <div
-                                        wire:key="purchase-access-{{ $access->id }}-file-{{ $file->id }}"
-                                        class="flex flex-col gap-3 border-b border-slate-200 p-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:p-4 dark:border-slate-700"
-                                    >
-                                        <div class="min-w-0">
-                                            <div
-                                                class="text-sm font-extrabold leading-7 text-slate-900 dark:text-white">
-                                                {{ $this->fileTitle($file) }}
-                                            </div>
-
-                                            <div
-                                                class="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                                                @if($fileSize)
-                                                    <span>{{ $fileSize }}</span>
-                                                    <span class="text-slate-300 dark:text-slate-600">•</span>
-                                                @endif
-
-                                                <span>{{ $this->fileRemainingDownloadsLabel($access, $file) }}</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="flex shrink-0">
-                                            @if($fileIsUsable)
-                                                <a
-                                                    href="{{ $this->downloadUrl($access->id, $file->id) }}"
-                                                    class="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 dark:hover:bg-brand-400 sm:w-auto"
-                                                >
-                                                    دانلود
-                                                </a>
-                                            @else
-                                                <span
-                                                    class="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-6 text-sm font-extrabold text-slate-400 sm:w-auto dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
-                                                    غیرفعال
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
+                        @if($launcherEnabled)
                             <div
                                 class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                                برای این خرید هنوز فایلی ثبت نشده است.
+                                دسترسی به این محصول فقط از طریق لانچر رسمی مودینگ وی امکان پذیر می باشد.
                             </div>
+                        @else
+                            @if($files->isNotEmpty())
+                                <div
+                                    class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60">
+                                    @foreach($files as $file)
+                                        @php
+                                            $fileSize = $this->fileSizeLabel($file);
+                                            $fileIsUsable = $this->fileIsUsable($access, $file);
+                                        @endphp
+
+                                        <div
+                                            wire:key="purchase-access-{{ $access->id }}-file-{{ $file->id }}"
+                                            class="flex flex-col gap-3 border-b border-slate-200 p-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:p-4 dark:border-slate-700"
+                                        >
+                                            <div class="min-w-0">
+                                                <div
+                                                    class="text-sm font-extrabold leading-7 text-slate-900 dark:text-white">
+                                                    {{ $this->fileTitle($file) }}
+                                                </div>
+
+                                                <div
+                                                    class="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
+                                                    @if($fileSize)
+                                                        <span>{{ $fileSize }}</span>
+                                                        <span class="text-slate-300 dark:text-slate-600">•</span>
+                                                    @endif
+
+                                                    <span>{{ $this->fileRemainingDownloadsLabel($access, $file) }}</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex shrink-0">
+                                                @if($fileIsUsable)
+                                                    <a
+                                                        href="{{ $this->downloadUrl($access->id, $file->id) }}"
+                                                        class="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-500 px-6 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 dark:hover:bg-brand-400 sm:w-auto"
+                                                    >
+                                                        دانلود
+                                                    </a>
+                                                @else
+                                                    <span
+                                                        class="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 px-6 text-sm font-extrabold text-slate-400 sm:w-auto dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
+                                                    غیرفعال
+                                                </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div
+                                    class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                                    برای این خرید هنوز فایلی ثبت نشده است.
+                                </div>
+                            @endif
                         @endif
                     </div>
                 </div>
