@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\Launcher\LauncherBootstrapController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCatalogController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherDeviceController;
+use App\Http\Controllers\Api\V1\Launcher\LauncherSlideController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCommerceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherContentController;
 use App\Http\Controllers\Api\V1\Launcher\OfflineLicenseController;
@@ -27,6 +28,8 @@ Route::middleware([
             ->name('launcher.offline-license');
 
         Route::prefix('launcher')->name('launcher.')->group(function (): void {
+            Route::get('slides', LauncherSlideController::class)
+                ->name('slides.index');
             Route::get('catalog', [LauncherCatalogController::class, 'index'])
                 ->name('catalog.index');
             Route::get('catalog/{saleItem}', [LauncherCatalogController::class, 'show'])

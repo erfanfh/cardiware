@@ -128,6 +128,7 @@
                             download_type: '',
 
                             archive_format: '',
+                            archive_password: '',
                             assembled_file_name: '',
 
                             install_directory: '',
@@ -613,6 +614,7 @@
                             title: item.title ?? '',
                             description: item.description ?? '',
                             changelog: item.changelog ?? '',
+                            archive_password: item.archive_password ?? '',
                             is_enabled: this.normalizeBoolean(item.is_enabled, false),
                             is_mandatory: this.normalizeBoolean(item.is_mandatory, false),
                             has_option_file: this.normalizeBoolean(item.has_option_file, false),
@@ -644,7 +646,12 @@
                             group_key: item.group_key ?? '',
                             short_description: item.short_description ?? '',
                             description: item.description ?? '',
+                            archive_password: item.archive_password ?? '',
                             image_media_id: item.image_media_id ?? '',
+                            image: {
+                                id: item.image?.id ?? item.image_media_id ?? null,
+                                path: item.image?.path ?? null,
+                            },
                             size_bytes: item.size_bytes ?? '',
                             priority: item.priority ?? 0,
                             is_enabled: this.normalizeBoolean(item.is_enabled, false),
@@ -673,12 +680,12 @@
                         if (!group) {
                             group = this.normalizeLauncherModGroups([{
                                 key: groupKey,
-                                title: 'سطح قدرت بازیکنان ایران',
+                                title: 'سطح قدرت بازیکنان',
                                 is_exclusive: true,
                             }])[0];
                             item.launcher_mod_groups.push(group);
                         } else {
-                            group.title = 'سطح قدرت بازیکنان ایران';
+                            group.title = 'سطح قدرت بازیکنان';
                             group.is_exclusive = true;
                         }
 
@@ -700,6 +707,7 @@
                                 mod = this.normalizeLauncherMods([{
                                     name,
                                     slug,
+                                    version: '1.0.0',
                                     group_key: groupKey,
                                     install_target: 'windows_documents',
                                     priority,

@@ -14,6 +14,10 @@ return [
             ),
 
             'download_url' => env('LAUNCHER_DOWNLOAD_URL'),
+            'file_name' => env('LAUNCHER_UPDATE_FILE_NAME'),
+            'file_size_bytes' => (int)env('LAUNCHER_UPDATE_FILE_SIZE_BYTES', 0),
+            'sha256' => env('LAUNCHER_UPDATE_SHA256'),
+            'release_notes' => env('LAUNCHER_UPDATE_RELEASE_NOTES'),
         ],
     ],
 

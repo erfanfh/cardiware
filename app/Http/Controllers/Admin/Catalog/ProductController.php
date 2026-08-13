@@ -163,6 +163,11 @@ class ProductController extends Controller
         $product->load([
             'informationEntries',
             'imageGallery.mediaFile.primaryVariant',
+            'saleItems.launcherMods.image.primaryVariant',
+            'saleItems.launcherMods.group',
+            'saleItems.launcherMods.files',
+            'saleItems.launcherModGroups',
+            'saleItems.launcherUpdates.files',
         ]);
 
         $selectedTags = $product->tags

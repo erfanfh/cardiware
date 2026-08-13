@@ -56,6 +56,7 @@ class ProductSaleItemManifest extends Model
         'download_type',
         'assembly_strategy',
         'archive_format',
+        'archive_password',
         'assembled_file_name',
         'validation_mode',
         'install_directory',
@@ -81,6 +82,7 @@ class ProductSaleItemManifest extends Model
 
     protected $casts = [
         'schema_version' => 'integer',
+        'archive_password' => 'encrypted',
         'download_type' => ProductManifestDownloadTypeEnum::class,
         'assembly_strategy' => ProductManifestAssemblyStrategyEnum::class,
         'validation_mode' => ProductManifestValidationModeEnum::class,

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1\Identity;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Identity\LoginRequest;
+use App\Http\Requests\Api\V1\Identity\LoginWithLauncherOtpRequest;
+use App\Http\Requests\Api\V1\Identity\RequestLauncherLoginOtpRequest;
 use App\Http\Resources\Api\V1\Identity\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,9 +18,12 @@ use App\Application\Launcher\Exceptions\DeviceTransferRequiredException;
 use App\Application\Launcher\Actions\Security\VerifyDeviceProofAction;
 use App\Application\Identity\Actions\Auth\ConsumeOtpAction;
 use App\Application\Identity\Actions\Otp\RequestOtpAction;
+use App\Application\Identity\Actions\Auth\GetActiveUserByMobileAction;
+use App\Application\Identity\Actions\Auth\RequestLoginOtpAction;
 use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Launcher\Models\LauncherDevice;
 use Illuminate\Support\Facades\DB;
+use DomainException;
 
 class AuthController extends Controller
 {
@@ -61,27 +66,7 @@ class AuthController extends Controller
         $deviceData = $data['device'];
         $verifyDeviceProof->execute($deviceData);
 
-        $activeSlot = (int)($user->active_device_slot ?: 0);
-        $activeKeyFingerprint = $this->publicKeyFingerprintForSlot($user, $activeSlot);
-        $isFirstActivation = $activeSlot === 0 || blank($activeKeyFingerprint);
-        $isActiveDevice = !$isFirstActivation && hash_equals(
-            (string)$activeKeyFingerprint,
-            (string)$deviceData['public_key_fingerprint']
-        );
-
-        if ($isActiveDevice) {
-            $registeredHardware = $activeSlot === 2
-                ? $user->second_device_fingerprint
-                : $user->first_device_fingerprint;
-            if ($registeredHardware !== null && !hash_equals($registeredHardware, (string)$deviceData['fingerprint_hash'])) {
-                throw new DeviceFingerprintMismatchException();
-            }
-        }
-
-        $isTransfer = !$isFirstActivation && !$isActiveDevice;
-        if ($isTransfer && $user->device_transfer_used) {
-            throw new DeviceLimitReachedException(1, []);
-        }
+        $isTransfer = $this->isDeviceTransfer($user, $deviceData);
 
         if ($isTransfer && empty($data['device_transfer_code'])) {
             if (blank($user->mobile)) {
@@ -110,13 +95,115 @@ class AuthController extends Controller
             )
             : $complete();
 
+        return $this->loginResponse($device, $token, $freshUser);
+    }
+
+    public function requestLoginOtp(
+        RequestLauncherLoginOtpRequest $request,
+        RequestLoginOtpAction $requestLoginOtp,
+    ): JsonResponse {
+        try {
+            $result = $requestLoginOtp->execute((string)$request->validated('mobile'));
+        } catch (DomainException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'otp_request_failed',
+            ], 422);
+        }
+
+        $status = $result->sent || $result->alreadySent ? 200 : 503;
+
+        return response()->json([
+            'message' => $result->message,
+            'data' => [
+                'sent' => $result->sent,
+                'already_sent' => $result->alreadySent,
+                'retry_after_seconds' => $result->retryAfterSeconds,
+                'expires_after_seconds' => $result->expiresAfterSeconds,
+            ],
+        ], $status);
+    }
+
+    public function loginWithOtp(
+        LoginWithLauncherOtpRequest $request,
+        VerifyDeviceProofAction $verifyDeviceProof,
+        ConsumeOtpAction $consumeOtp,
+        GetActiveUserByMobileAction $getActiveUserByMobile,
+    ): JsonResponse {
+        $data = $request->validated();
+
+        try {
+            $user = $getActiveUserByMobile->execute((string)$data['mobile']);
+            $deviceData = $data['device'];
+            $verifyDeviceProof->execute($deviceData);
+            $isTransfer = $this->isDeviceTransfer($user, $deviceData);
+
+            // The login OTP itself confirms ownership of the account mobile and therefore
+            // also authorizes the one permitted device transfer.
+            [$device, $token, $freshUser] = $consumeOtp->execute(
+                $user->mobile,
+                (string)$data['otp_code'],
+                OtpTypeEnum::LOGIN,
+                function () use ($user, $deviceData, $request, $isTransfer): array {
+                    $user->forceFill([
+                        'mobile_verified_at' => $user->mobile_verified_at ?? now(),
+                    ])->save();
+
+                    return $this->completeDeviceLogin(
+                        $user->getKey(),
+                        $deviceData,
+                        $request->ip(),
+                        $isTransfer,
+                    );
+                },
+            );
+        } catch (DomainException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'invalid_otp',
+            ], 422);
+        }
+
+        return $this->loginResponse($device, $token, $freshUser);
+    }
+
+    private function isDeviceTransfer(User $user, array $deviceData): bool
+    {
+        $activeSlot = (int)($user->active_device_slot ?: 0);
+        $activeKeyFingerprint = $this->publicKeyFingerprintForSlot($user, $activeSlot);
+        $isFirstActivation = $activeSlot === 0 || blank($activeKeyFingerprint);
+        $isActiveDevice = !$isFirstActivation && hash_equals(
+            (string)$activeKeyFingerprint,
+            (string)$deviceData['public_key_fingerprint']
+        );
+
+        if ($isActiveDevice) {
+            $registeredHardware = $activeSlot === 2
+                ? $user->second_device_fingerprint
+                : $user->first_device_fingerprint;
+            if ($registeredHardware !== null
+                && !hash_equals($registeredHardware, (string)$deviceData['fingerprint_hash'])) {
+                throw new DeviceFingerprintMismatchException();
+            }
+        }
+
+        $isTransfer = !$isFirstActivation && !$isActiveDevice;
+        if ($isTransfer && $user->device_transfer_used) {
+            throw new DeviceLimitReachedException(1, []);
+        }
+
+        return $isTransfer;
+    }
+
+    private function loginResponse(LauncherDevice $device, mixed $token, User $user): JsonResponse
+    {
         return response()->json([
             'message' => 'Login completed successfully.',
             'data' => [
                 'token_type' => 'Bearer',
                 'access_token' => $token->plainTextToken,
                 'expires_at' => $token->accessToken->expires_at?->toISOString(),
-                'user' => UserResource::make($freshUser),
+                'user' => UserResource::make($user),
                 'device' => [
                     'id' => $device->device_id,
                     'name' => $device->name,

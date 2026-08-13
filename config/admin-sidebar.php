@@ -144,6 +144,18 @@ return [
                 'gate' => 'launcher-device.manage',
             ],
             [
+                'label' => 'آپدیت لانچر',
+                'route' => 'admin.launcher-releases.index',
+                'icon' => 'icons.arrow-reload-horizontal',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
+                'label' => 'اسلایدر لانچر',
+                'route' => 'admin.launcher-slides.index',
+                'icon' => 'icons.image-03',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
                 'label' => 'تحلیل فروش و درآمد',
                 'route' => 'admin.analytics.index',
                 'icon' => 'icons.chart-03',

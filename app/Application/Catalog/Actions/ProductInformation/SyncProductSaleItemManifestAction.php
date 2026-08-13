@@ -82,6 +82,10 @@ class SyncProductSaleItemManifestAction
                     ? '7z'
                     : null,
 
+                'archive_password' => $this->nullableString(
+                    Arr::get($data, 'archive_password')
+                ),
+
                 'assembled_file_name' =>
                     $this->resolveAssembledFileName(
                         data: $data,

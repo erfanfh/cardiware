@@ -43,6 +43,9 @@ class SyncLauncherSaleItemContentAction
                 'is_mandatory' => (bool)($data['is_mandatory'] ?? false),
                 'has_option_file' => (bool)($data['has_option_file'] ?? false),
                 'archive_format' => '7z',
+                'archive_password' => filled($data['archive_password'] ?? null)
+                    ? (string)$data['archive_password']
+                    : null,
                 'published_at' => filled($data['published_at'] ?? null)
                     ? $data['published_at']
                     : ((bool)($data['is_enabled'] ?? false) ? now() : null),
@@ -97,6 +100,9 @@ class SyncLauncherSaleItemContentAction
                 'short_description' => $data['short_description'] ?? null,
                 'description' => $data['description'] ?? null,
                 'version' => trim((string)$data['version']),
+                'archive_password' => filled($data['archive_password'] ?? null)
+                    ? (string)$data['archive_password']
+                    : null,
                 'install_target' => in_array(
                     $data['install_target'] ?? null,
                     LauncherModInstallTargetEnum::values(),
