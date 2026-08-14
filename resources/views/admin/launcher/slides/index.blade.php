@@ -22,15 +22,15 @@
 
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
                     <div class="md:col-span-8">
-                        <x-admin.field label="عنوان اسلاید">
-                            <x-admin.form.input name="title" required maxlength="255"
+                        <x-admin.field label="عنوان اسلاید" hint="اختیاری؛ برای اسلاید تمام‌تصویر خالی بگذارید">
+                            <x-admin.form.input name="title" maxlength="255"
                                                 value="{{ old('title', $formSlide?->title) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-4">
-                        <x-admin.field label="متن دکمه">
-                            <x-admin.form.input name="button_text" required maxlength="80"
-                                                value="{{ old('button_text', $formSlide?->button_text ?? 'مشاهده') }}" />
+                        <x-admin.field label="متن دکمه" hint="اختیاری">
+                            <x-admin.form.input name="button_text" maxlength="80"
+                                                value="{{ old('button_text', $formSlide?->button_text) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-12">

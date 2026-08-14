@@ -162,6 +162,18 @@ return [
                 'gate' => 'launcher-device.manage',
             ],
             [
+                'label' => 'اعلانات لانچر',
+                'route' => 'admin.launcher-notifications.index',
+                'icon' => 'icons.notification-01',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
+                'label' => 'راهنمای لانچر',
+                'route' => 'admin.launcher-guides.index',
+                'icon' => 'icons.help-circle',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
                 'label' => 'تحلیل فروش و درآمد',
                 'route' => 'admin.analytics.index',
                 'icon' => 'icons.chart-03',

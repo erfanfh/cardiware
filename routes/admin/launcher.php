@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\Launcher\LauncherDeviceManagementController;
 use App\Http\Controllers\Admin\Launcher\LauncherDeviceUserSearchController;
 use App\Http\Controllers\Admin\Launcher\LauncherReleaseController;
 use App\Http\Controllers\Admin\Launcher\LauncherSlideController;
+use App\Http\Controllers\Admin\Launcher\LauncherNotificationController;
+use App\Http\Controllers\Admin\Launcher\LauncherGuideController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('launcher-devices')
@@ -28,4 +30,20 @@ Route::prefix('launcher-slides')
         Route::get('/', [LauncherSlideController::class, 'index'])->name('index');
         Route::post('/', [LauncherSlideController::class, 'store'])->name('store');
         Route::delete('/{launcherSlide}', [LauncherSlideController::class, 'destroy'])->name('destroy');
+    });
+
+Route::prefix('launcher-notifications')
+    ->name('launcher-notifications.')
+    ->group(function (): void {
+        Route::get('/', [LauncherNotificationController::class, 'index'])->name('index');
+        Route::post('/', [LauncherNotificationController::class, 'store'])->name('store');
+        Route::delete('/{launcherNotification}', [LauncherNotificationController::class, 'destroy'])->name('destroy');
+    });
+
+Route::prefix('launcher-guides')
+    ->name('launcher-guides.')
+    ->group(function (): void {
+        Route::get('/', [LauncherGuideController::class, 'index'])->name('index');
+        Route::post('/', [LauncherGuideController::class, 'store'])->name('store');
+        Route::delete('/{launcherGuide}', [LauncherGuideController::class, 'destroy'])->name('destroy');
     });

@@ -41,9 +41,9 @@ final class LauncherSlideController extends Controller
 
         $validated = $request->validate([
             'id' => ['nullable', 'integer', Rule::exists('launcher_slides', 'id')],
-            'title' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:500'],
-            'button_text' => ['required', 'string', 'max:80'],
+            'button_text' => ['nullable', 'string', 'max:80'],
             'image.id' => ['required', 'integer', Rule::exists('media_files', 'id')],
             'target_type' => ['required', Rule::in(['product', 'url', 'none'])],
             'target_sale_item_id' => [
@@ -70,11 +70,13 @@ final class LauncherSlideController extends Controller
             : new LauncherSlide();
         $targetType = (string)$validated['target_type'];
         $slide->fill([
-            'title' => trim((string)$validated['title']),
+            'title' => filled($validated['title'] ?? null) ? trim((string)$validated['title']) : null,
             'description' => filled($validated['description'] ?? null)
                 ? trim((string)$validated['description'])
                 : null,
-            'button_text' => trim((string)$validated['button_text']),
+            'button_text' => filled($validated['button_text'] ?? null)
+                ? trim((string)$validated['button_text'])
+                : null,
             'image_media_id' => (int)data_get($validated, 'image.id'),
             'target_type' => $targetType,
             'target_sale_item_id' => $targetType === 'product'

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\Launcher\LauncherBootstrapController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCatalogController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherDeviceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherSlideController;
+use App\Http\Controllers\Api\V1\Launcher\LauncherPortalContentController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCommerceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherContentController;
 use App\Http\Controllers\Api\V1\Launcher\OfflineLicenseController;
@@ -30,6 +31,12 @@ Route::middleware([
         Route::prefix('launcher')->name('launcher.')->group(function (): void {
             Route::get('slides', LauncherSlideController::class)
                 ->name('slides.index');
+            Route::get('notifications', [LauncherPortalContentController::class, 'notifications'])
+                ->name('notifications.index');
+            Route::post('notifications/read', [LauncherPortalContentController::class, 'markNotificationsRead'])
+                ->name('notifications.read');
+            Route::get('guides', [LauncherPortalContentController::class, 'guides'])
+                ->name('guides.index');
             Route::get('catalog', [LauncherCatalogController::class, 'index'])
                 ->name('catalog.index');
             Route::get('catalog/{saleItem}', [LauncherCatalogController::class, 'show'])
