@@ -150,6 +150,11 @@
                             <td class="px-4 py-3">
                                 @if($slide->target_type === 'product')
                                     محصول #{{ $slide->target_sale_item_id }}
+                                    @if($slide->targetSaleItem?->launcher_enabled !== true)
+                                        <div class="mt-1 text-xs font-bold text-amber-600">
+                                            مقصد لانچر غیرفعال است؛ اسلاید بدون لینک نمایش داده می‌شود.
+                                        </div>
+                                    @endif
                                 @elseif($slide->target_type === 'url')
                                     <span dir="ltr" class="block max-w-xs truncate">{{ $slide->target_url }}</span>
                                 @else
