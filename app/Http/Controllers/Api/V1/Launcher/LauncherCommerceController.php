@@ -53,7 +53,8 @@ class LauncherCommerceController extends Controller
             ->where('user_id', $request->user()->getKey())
             ->where('product_sale_item_id', $saleItem)
             ->latest('id')
-            ->first();
+            ->get()
+            ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
 
         if ($existingAccess instanceof PurchaseAccess) {
             return response()->json([

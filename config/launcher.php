@@ -1,6 +1,10 @@
 <?php
 
 return [
+    // Public installer used by moddingway.ir/launcher. Keep this separate
+    // from LAUNCHER_DOWNLOAD_URL which points to an updater package.
+    'public_download_url' => env('LAUNCHER_PUBLIC_DOWNLOAD_URL'),
+
     'max_active_devices_per_user' => (int)env('LAUNCHER_MAX_ACTIVE_DEVICES', 2),
     'token_ttl_days' => (int)env('LAUNCHER_TOKEN_TTL_DAYS', 30),
     'checkout_session_ttl_minutes' => (int)env('LAUNCHER_CHECKOUT_SESSION_TTL_MINUTES', 15),

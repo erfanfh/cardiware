@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('launcher_slides', function (Blueprint $table): void {
             $table->id();
-            $table->string('title', 255);
+            $table->string('title', 255)->nullable();
             $table->string('description', 500)->nullable();
-            $table->string('button_text', 80)->default('مشاهده');
+            $table->string('button_text', 80)->nullable();
             $table->foreignId('image_media_id')->constrained('media_files')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('target_type', 20)->default('product');
             $table->foreignId('target_sale_item_id')->nullable()

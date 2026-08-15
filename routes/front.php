@@ -1,14 +1,23 @@
 <?php
 
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
+use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
 
 Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
+        //Route::get('/launcher', LauncherLandingController::class)
+        //->name('launcher.landing');
+        Route::get('/launcher/open/product/{saleItem}', [LauncherBridgeController::class, 'product'])
+            ->whereNumber('saleItem')
+            ->name('launcher.open-product');
+        Route::get('/launcher/purchase-complete', [LauncherBridgeController::class, 'purchaseComplete'])
+            ->middleware(['signed', 'throttle:30,1'])
+            ->name('launcher.purchase-complete');
         Route::get(
             '/launcher/checkout/{checkoutSession}/{state}',
             LauncherCheckoutEntryController::class

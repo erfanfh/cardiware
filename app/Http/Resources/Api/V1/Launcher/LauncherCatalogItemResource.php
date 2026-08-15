@@ -21,16 +21,13 @@ class LauncherCatalogItemResource extends JsonResource
             )
             ->values();
 
-        /** @var PurchaseAccess|null $ownedAccess */
-        $ownedAccess = $saleItemAccesses->first();
-
         /** @var PurchaseAccess|null $usableAccess */
         $usableAccess = $saleItemAccesses
             ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
 
-        $owned = $ownedAccess instanceof PurchaseAccess;
-        $canInstall = $usableAccess instanceof PurchaseAccess;
-        $resolvedAccess = $usableAccess ?? $ownedAccess;
+        // A cancelled/refunded/revoked historical order must not unlock the
+        // launcher.  Ownership is deliberately based only on a usable access.
+        $hasAccess = $usableAccess instanceof PurchaseAccess;
 
         return [
             'id' => $this->id,
@@ -43,13 +40,14 @@ class LauncherCatalogItemResource extends JsonResource
             'card_image_url' => $this->product?->picture?->url,
             'is_free' => $isFree,
             'ownership' => [
-                'owned' => $owned,
-                'access_id' => $resolvedAccess?->id,
+                'owned' => $hasAccess,
+                'has_access' => $hasAccess,
+                'access_id' => $usableAccess?->id,
             ],
             'actions' => [
-                'can_buy' => !$isFree && !$owned,
-                'can_claim' => $isFree && !$owned,
-                'can_install' => $canInstall,
+                'can_buy' => !$isFree && !$hasAccess,
+                'can_claim' => $isFree && !$hasAccess,
+                'can_install' => $hasAccess,
             ],
             'web_url' => $this->product?->url,
             'capabilities' => $this->when(

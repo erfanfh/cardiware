@@ -29,5 +29,6 @@ return [
         'namad',
         'docs',
         'q',
+        'launcher',
     ],
 ];

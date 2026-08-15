@@ -76,6 +76,14 @@
     $productsUrl = \Illuminate\Support\Facades\Route::has('products.list')
         ? route('products.list')
         : url('/');
+
+    $launcherSaleItems = $rootItems
+        ->map(fn ($item) => $item->purchasable)
+        ->filter(fn ($purchasable) =>
+            $purchasable instanceof \App\Domain\Catalog\Models\ProductSaleItem
+            && (bool) $purchasable->launcher_enabled
+        )
+        ->values();
 @endphp
 
 @section('head')
@@ -317,10 +325,18 @@
                                         </div>
 
                                         @if($isPaid)
-                                            <a href="{{ $downloadsUrl }}"
-                                               class="mt-2 inline-flex text-xs font-extrabold text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">
-                                                دانلود ←
-                                            </a>
+                                            <div class="mt-2 flex flex-wrap justify-end gap-3">
+                                                @if($item->purchasable instanceof \App\Domain\Catalog\Models\ProductSaleItem && $item->purchasable->launcher_enabled)
+                                                    <a href="{{ route('launcher.open-product', ['saleItem' => $item->purchasable->getKey()]) }}"
+                                                       class="inline-flex text-xs font-extrabold text-orange-600 transition hover:text-orange-500">
+                                                        باز کردن در لانچر ←
+                                                    </a>
+                                                @endif
+                                                <a href="{{ $downloadsUrl }}"
+                                                   class="inline-flex text-xs font-extrabold text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">
+                                                    دانلود ←
+                                                </a>
+                                            </div>
                                         @else
                                             <span
                                                 class="mt-2 inline-flex text-xs font-extrabold text-slate-400 dark:text-slate-500">
@@ -340,6 +356,12 @@
 
                     <div class="mt-5 grid grid-cols-1 gap-3 sm:mt-7 sm:flex sm:flex-row sm:flex-wrap">
                         @if($isPaid)
+                            @if($launcherSaleItems->count() === 1)
+                                <a href="{{ route('launcher.open-product', ['saleItem' => $launcherSaleItems->first()->getKey()]) }}"
+                                   class="inline-flex h-11 items-center justify-center gap-2 bg-orange-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-orange-400">
+                                    باز کردن محصول در MW Launcher
+                                </a>
+                            @endif
                             <a href="{{ $downloadsUrl }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
                                 مشاهده دانلودها

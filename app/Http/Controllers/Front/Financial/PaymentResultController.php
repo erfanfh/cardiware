@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Domain\Launcher\Models\LauncherCheckoutSession;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Throwable;
 
 class PaymentResultController extends Controller
@@ -139,8 +140,12 @@ class PaymentResultController extends Controller
 
         $checkout->forceFill(['order_id' => $order->getKey()])->save();
 
-        return redirect()->away(
-            'mwlauncher://purchase-complete?state=' . rawurlencode($state)
+        return redirect()->to(
+            URL::temporarySignedRoute(
+                'launcher.purchase-complete',
+                $checkout->expires_at,
+                ['state' => $state],
+            )
         );
     }
 
