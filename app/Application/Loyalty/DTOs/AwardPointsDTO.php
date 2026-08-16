@@ -5,6 +5,7 @@ namespace App\Application\Loyalty\DTOs;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Models\EarningRule;
 use App\Domain\Loyalty\Models\PointAccount;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 
 final readonly class AwardPointsDTO
@@ -22,6 +23,7 @@ final readonly class AwardPointsDTO
         public ?Model $reference = null,
         public ?string $description = null,
         public array $metadata = [],
+        public ?CarbonInterface $occurredAt = null,
     ) {
     }
 }

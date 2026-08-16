@@ -67,6 +67,7 @@ class AwardPointsAction
                     'idempotency_key' => $data->idempotencyKey,
                     'idempotency_fingerprint' => $fingerprint,
                     'description' => $data->description,
+                    'occurred_at' => $data->occurredAt ?? now(),
                     'metadata' => $data->earningRule
                         ? array_merge($data->metadata, [
                             'earning_rule_snapshot' => [

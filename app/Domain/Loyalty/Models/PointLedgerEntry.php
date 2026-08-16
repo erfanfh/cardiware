@@ -33,6 +33,7 @@ class PointLedgerEntry extends Model
         'idempotency_fingerprint',
         'description',
         'metadata',
+        'occurred_at',
     ];
 
     protected $casts = [
@@ -42,6 +43,7 @@ class PointLedgerEntry extends Model
         'balance_before' => 'integer',
         'balance_after' => 'integer',
         'metadata' => 'array',
+        'occurred_at' => 'datetime',
         'created_at' => 'datetime',
     ];
 
