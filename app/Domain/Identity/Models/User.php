@@ -12,6 +12,7 @@ use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Launcher\Models\LauncherDevice;
+use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Support\Models\Ticket;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -174,6 +175,12 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function wallet(): HasOne
     {
         return $this->hasOne(Wallet::class);
+    }
+
+
+    public function pointAccount(): HasOne
+    {
+        return $this->hasOne(PointAccount::class);
     }
 
     /**
