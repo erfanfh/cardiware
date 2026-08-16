@@ -5,6 +5,8 @@ namespace App\Application\Commerce\Actions\Order;
 use App\Application\Shared\Cache\Invalidators\OrderCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
+use App\Domain\Commerce\Events\OrderPaidEvent;
+use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -42,6 +44,8 @@ class UpdateOrderStatusAction
                 newStatus: $newStatus,
             );
 
+            $transitionedAt = now(config('app.timezone'))->toImmutable();
+
             $order = $this->changeOrderStatusAction->execute(
                 order: $order,
                 newStatus: $newStatus,
@@ -55,6 +59,29 @@ class UpdateOrderStatusAction
 
             app(UserCacheInvalidator::class)->flushForUser($order->user);
             app(OrderCacheInvalidator::class)->flushSuccessfulPayment();
+
+            $orderId = (int)$order->getKey();
+
+            if (!$oldStatus->isPaid() && $newStatus->isPaid()) {
+                DB::afterCommit(
+                    fn() => event(
+                        new OrderPaidEvent(
+                            orderId: $orderId,
+                            occurredAt: $transitionedAt,
+                        )
+                    )
+                );
+            } elseif ($oldStatus->isPaid() && !$newStatus->isPaid()) {
+                DB::afterCommit(
+                    fn() => event(
+                        new OrderPaymentRevokedEvent(
+                            orderId: $orderId,
+                            reason: $newStatus->value,
+                            occurredAt: $transitionedAt,
+                        )
+                    )
+                );
+            }
 
             return $order->refresh();
         });

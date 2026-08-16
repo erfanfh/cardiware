@@ -54,14 +54,6 @@ class CommentEarningRuleHandler implements EarningRuleHandler
             );
         }
 
-        // A root comment with rating belongs to the Review rule, not the Comment rule.
-        if ($comment->rating_percent !== null) {
-            return EarningRuleEvaluation::skip(
-                $rule,
-                EarningRuleSkipReasonEnum::NOT_APPLICABLE,
-            );
-        }
-
         $includeReplies = $this->config->bool($rule, 'include_replies', false);
 
         if (!$includeReplies && $comment->isReply()) {
@@ -71,9 +63,7 @@ class CommentEarningRuleHandler implements EarningRuleHandler
             );
         }
 
-        $requireApproval = $this->config->bool($rule, 'require_approval', true);
-
-        if ($requireApproval && !$comment->isApproved()) {
+        if (!$comment->isApproved()) {
             return EarningRuleEvaluation::skip(
                 $rule,
                 EarningRuleSkipReasonEnum::NOT_APPROVED,

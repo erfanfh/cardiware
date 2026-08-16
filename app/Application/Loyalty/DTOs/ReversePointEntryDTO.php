@@ -4,6 +4,7 @@ namespace App\Application\Loyalty\DTOs;
 
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 
 final readonly class ReversePointEntryDTO
@@ -19,6 +20,7 @@ final readonly class ReversePointEntryDTO
         public ?Model $reference = null,
         public ?string $description = null,
         public array $metadata = [],
+        public ?CarbonInterface $occurredAt = null,
     ) {
     }
 }

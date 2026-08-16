@@ -3,6 +3,7 @@
 namespace App\Application\Commerce\Actions\Order;
 
 use App\Domain\Commerce\Enums\OrderStatusEnum;
+use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Models\Order;
 use DomainException;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,19 @@ class MarkOrderAsPaidAction
                 'status' => OrderStatusEnum::PAID,
                 'paid_at' => $order->paid_at ?? now(),
             ])->save();
+
+            $orderId = (int)$order->getKey();
+            $occurredAt = $order->paid_at?->toImmutable()
+                ?? now(config('app.timezone'))->toImmutable();
+
+            DB::afterCommit(
+                fn() => event(
+                    new OrderPaidEvent(
+                        orderId: $orderId,
+                        occurredAt: $occurredAt,
+                    )
+                )
+            );
 
             return $order->refresh();
         });

@@ -8,7 +8,6 @@ enum EarningRuleTypeEnum: string
     case DAILY_VISIT = 'daily_visit';
     case PURCHASE = 'purchase';
     case COMMENT = 'comment';
-    case REVIEW = 'review';
     case MEMBERSHIP_ANNIVERSARY = 'membership_anniversary';
 
     public function label(): string
@@ -18,7 +17,6 @@ enum EarningRuleTypeEnum: string
             self::DAILY_VISIT => 'بازدید روزانه',
             self::PURCHASE => 'خرید',
             self::COMMENT => 'ثبت دیدگاه',
-            self::REVIEW => 'ثبت نقد و بررسی',
             self::MEMBERSHIP_ANNIVERSARY => 'سالگرد عضویت',
         };
     }

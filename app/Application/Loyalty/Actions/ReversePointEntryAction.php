@@ -103,6 +103,7 @@ class ReversePointEntryAction
                     'idempotency_key' => $data->idempotencyKey,
                     'idempotency_fingerprint' => $fingerprint,
                     'description' => $data->description,
+                    'occurred_at' => $data->occurredAt ?? now(),
                     'metadata' => array_merge($data->metadata, [
                         'original_entry_type' => $original->type->value,
                         'original_entry_reason' => $original->reason,

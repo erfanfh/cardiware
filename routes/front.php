@@ -1,14 +1,15 @@
 <?php
 
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
+use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
+use App\Http\Controllers\Front\Launcher\LauncherLandingController;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
+use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
-use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
-use App\Http\Controllers\Front\Launcher\LauncherLandingController;
 
-Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class])
+Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
         Route::get('/launcher', LauncherLandingController::class)

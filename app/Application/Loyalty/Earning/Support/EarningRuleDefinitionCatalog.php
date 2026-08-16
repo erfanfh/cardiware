@@ -27,13 +27,7 @@ class EarningRuleDefinitionCatalog
             EarningRuleTypeEnum::COMMENT => [
                 'points' => 10,
                 'daily_limit' => 3,
-                'require_approval' => true,
                 'include_replies' => false,
-            ],
-            EarningRuleTypeEnum::REVIEW => [
-                'points' => 30,
-                'daily_limit' => 2,
-                'require_approval' => true,
             ],
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => [
                 'points' => 100,
@@ -64,13 +58,7 @@ class EarningRuleDefinitionCatalog
             EarningRuleTypeEnum::COMMENT => [
                 'points' => ['required', 'integer', 'min:1'],
                 'daily_limit' => ['required', 'integer', 'min:1'],
-                'require_approval' => ['required', 'boolean'],
                 'include_replies' => ['required', 'boolean'],
-            ],
-            EarningRuleTypeEnum::REVIEW => [
-                'points' => ['required', 'integer', 'min:1'],
-                'daily_limit' => ['required', 'integer', 'min:1'],
-                'require_approval' => ['required', 'boolean'],
             ],
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => [
                 'points' => ['required', 'integer', 'min:1'],

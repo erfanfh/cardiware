@@ -8,6 +8,7 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\NavigationServiceProvider::class,
     App\Providers\PageLayoutServiceProvider::class,
+    App\Providers\LoyaltyServiceProvider::class,
     App\Providers\SchedulerServiceProvider::class,
     App\Providers\SeoServiceProvider::class,
     App\Providers\SlugServiceProvider::class,

@@ -7,7 +7,6 @@ use App\Application\Loyalty\Earning\Contexts\DailyVisitEarningContext;
 use App\Application\Loyalty\Earning\Contexts\MembershipAnniversaryEarningContext;
 use App\Application\Loyalty\Earning\Contexts\PurchaseEarningContext;
 use App\Application\Loyalty\Earning\Contexts\RegistrationEarningContext;
-use App\Application\Loyalty\Earning\Contexts\ReviewEarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningContext;
 use App\Application\Loyalty\Earning\Exceptions\UnexpectedEarningContextException;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
@@ -23,7 +22,6 @@ class EarningIdempotencyKeyFactory
             EarningRuleTypeEnum::DAILY_VISIT => $this->dailyVisit($type, $context),
             EarningRuleTypeEnum::PURCHASE => $this->purchase($type, $context),
             EarningRuleTypeEnum::COMMENT => $this->comment($type, $context),
-            EarningRuleTypeEnum::REVIEW => $this->review($type, $context),
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => $this->membershipAnniversary($type, $context),
         };
     }
@@ -56,7 +54,9 @@ class EarningIdempotencyKeyFactory
             throw UnexpectedEarningContextException::forType($type, $context);
         }
 
-        return "loyalty:earn:purchase:order:{$context->order->getKey()}";
+        $occurrence = $this->occurrenceToken($context);
+
+        return "loyalty:earn:purchase:order:{$context->order->getKey()}:{$occurrence}";
     }
 
     private function comment(EarningRuleTypeEnum $type, EarningContext $context): string
@@ -65,16 +65,9 @@ class EarningIdempotencyKeyFactory
             throw UnexpectedEarningContextException::forType($type, $context);
         }
 
-        return "loyalty:earn:comment:comment:{$context->comment->getKey()}";
-    }
+        $occurrence = $this->occurrenceToken($context);
 
-    private function review(EarningRuleTypeEnum $type, EarningContext $context): string
-    {
-        if (!$context instanceof ReviewEarningContext) {
-            throw UnexpectedEarningContextException::forType($type, $context);
-        }
-
-        return "loyalty:earn:review:comment:{$context->comment->getKey()}";
+        return "loyalty:earn:comment:comment:{$context->comment->getKey()}:{$occurrence}";
     }
 
     private function membershipAnniversary(
@@ -90,5 +83,12 @@ class EarningIdempotencyKeyFactory
             ->format('Y');
 
         return "loyalty:earn:membership_anniversary:user:{$context->user->getKey()}:{$year}";
+    }
+
+    private function occurrenceToken(EarningContext $context): string
+    {
+        return $context->occurredAt()
+            ->utc()
+            ->format('YmdHis.u');
     }
 }
