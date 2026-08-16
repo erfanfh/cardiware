@@ -36,7 +36,7 @@ class StreamLauncherDownloadController extends Controller
             ->whereKey($purchaseAccess)
             ->firstOrFail();
 
-        abort_unless($access->isUsable(), 403);
+        abort_unless($access->isUsableForLauncher(), 403);
 
         [$sourceType, $downloadFile, $sourceUrl] = $this->resolveDownload(
             access: $access,

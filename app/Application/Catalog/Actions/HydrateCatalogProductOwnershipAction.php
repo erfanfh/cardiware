@@ -43,7 +43,7 @@ class HydrateCatalogProductOwnershipAction
                     : collect();
 
                 $usableAccesses = $accesses->filter(
-                    static fn(PurchaseAccess $access): bool => $access->isUsable()
+                    static fn(PurchaseAccess $access): bool => $access->isUsableForLauncher()
                 );
 
                 $product->setAttribute(
@@ -64,7 +64,7 @@ class HydrateCatalogProductOwnershipAction
                         );
 
                         $usableAccess = $saleItemAccesses->first(
-                            static fn(PurchaseAccess $access): bool => $access->isUsable()
+                            static fn(PurchaseAccess $access): bool => $access->isUsableForLauncher()
                         );
 
                         $firstAccess = $usableAccess ?? $saleItemAccesses->first();

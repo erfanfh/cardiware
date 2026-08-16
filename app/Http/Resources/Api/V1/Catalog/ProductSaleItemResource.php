@@ -20,6 +20,7 @@ class ProductSaleItemResource extends JsonResource
             'edition_key' => $this->edition_key,
             'version' => $this->version,
             'launcher_enabled' => $this->launcher_enabled,
+            'launcher_free_claim_enabled' => $this->launcher_free_claim_enabled,
 
             'status' => $this->status->value,
             'is_available' => $this->isPurchasable(),

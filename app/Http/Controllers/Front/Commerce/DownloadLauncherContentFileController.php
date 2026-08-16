@@ -19,7 +19,7 @@ class DownloadLauncherContentFileController extends Controller
         int $content,
         int $file,
     ): RedirectResponse {
-        abort_unless($purchaseAccess->isUsable(), 403);
+        abort_unless($purchaseAccess->isUsableForLauncher(), 403);
 
         if ($contentType === 'update') {
             $owner = LauncherUpdate::query()

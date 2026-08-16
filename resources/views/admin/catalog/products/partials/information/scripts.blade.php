@@ -516,6 +516,7 @@
                                 max_quantity_per_order: item.max_quantity_per_order ?? '',
                                 description: item.description ?? '',
                                 launcher_enabled: this.normalizeBoolean(item.launcher_enabled, false),
+                                launcher_free_claim_enabled: this.normalizeBoolean(item.launcher_free_claim_enabled, false),
                                 launcher_title: item.launcher_title ?? '',
                                 launcher_excerpt: item.launcher_excerpt ?? '',
                                 launcher_hero: {
@@ -816,6 +817,7 @@
                             max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
                             launcher_enabled: this.normalizeBoolean(payload.launcher_enabled, false),
+                            launcher_free_claim_enabled: this.normalizeBoolean(payload.launcher_free_claim_enabled, false),
                             launcher_title: payload.launcher_title ?? '',
                             launcher_excerpt: payload.launcher_excerpt ?? '',
                             launcher_hero: {

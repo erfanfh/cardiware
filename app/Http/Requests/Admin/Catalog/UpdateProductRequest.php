@@ -133,6 +133,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.description' => ['nullable', 'string'],
             'sale_items.*.launcher_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_free_claim_enabled' => ['nullable', 'boolean'],
             'sale_items.*.launcher_title' => ['nullable', 'string', 'max:255'],
             'sale_items.*.launcher_excerpt' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_cover_media_id' => ['nullable', 'integer', 'exists:media_files,id'],
@@ -971,6 +972,10 @@ class UpdateProductRequest extends FormRequest
                 $item['max_quantity_per_order'] = $this->normalizeIntegerInput(data_get($item, 'max_quantity_per_order'));
                 $item['description'] = $this->normalizeNullableStringInput(data_get($item, 'description'));
                 $item['launcher_enabled'] = $this->normalizeBooleanInput(data_get($item, 'launcher_enabled'), false);
+                $item['launcher_free_claim_enabled'] = $this->normalizeBooleanInput(
+                    data_get($item, 'launcher_free_claim_enabled'),
+                    false
+                );
                 $item['launcher_title'] = $this->normalizeNullableStringInput(data_get($item, 'launcher_title'), 255);
                 $item['launcher_excerpt'] = $this->normalizeNullableStringInput(data_get($item, 'launcher_excerpt'), 2000);
                 $item['launcher_cover_media_id'] = $this->normalizeIntegerInput(

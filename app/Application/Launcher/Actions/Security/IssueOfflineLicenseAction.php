@@ -44,7 +44,7 @@ final class IssueOfflineLicenseAction
         );
 
         $entitlements = $user->purchaseAccesses()
-            ->usable()
+            ->launcherUsable()
             ->orderBy('id')
             ->get(['id', 'product_id', 'product_sale_item_id', 'expires_at'])
             ->map(fn($access): array => [

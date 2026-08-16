@@ -73,7 +73,7 @@ class PreparePurchaseAccessFileDownloadAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!$purchaseAccess->isUsable()) {
+            if (!$purchaseAccess->isUsableForLauncher()) {
                 throw new PurchaseAccessIsNotUsableException();
             }
 
@@ -132,7 +132,7 @@ class PreparePurchaseAccessFileDownloadAction
             )
             ->firstOrFail();
 
-        if (!$purchaseAccess->isUsable()) {
+        if (!$purchaseAccess->isUsableForLauncher()) {
             throw new PurchaseAccessIsNotUsableException();
         }
 

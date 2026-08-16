@@ -12,7 +12,8 @@ class LauncherCatalogItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         $price = app(ResolvePurchasablePriceAction::class)->execute($this->resource);
-        $isFree = $price->finalPrice === 0;
+        $isFree = (bool) $this->launcher_free_claim_enabled
+            && $price->finalPrice === 0;
 
         $saleItemAccesses = $this->purchaseAccesses
             ->filter(
@@ -23,7 +24,7 @@ class LauncherCatalogItemResource extends JsonResource
 
         /** @var PurchaseAccess|null $usableAccess */
         $usableAccess = $saleItemAccesses
-            ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
+            ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
 
         // A cancelled/refunded/revoked historical order must not unlock the
         // launcher.  Ownership is deliberately based only on a usable access.
@@ -51,12 +52,14 @@ class LauncherCatalogItemResource extends JsonResource
             ],
             'web_url' => $this->product?->url,
             'capabilities' => $this->when(
-                $this->relationLoaded('manifest') && $this->manifest !== null,
+                $hasAccess && $this->relationLoaded('manifest') && $this->manifest !== null,
                 fn() => $this->manifest->resolvedCapabilities(),
             ),
             'support' => [
-                'enabled' => (bool)$this->launcher_support_enabled,
-                'url' => $this->launcher_support_enabled ? $this->launcher_support_url : null,
+                'enabled' => $hasAccess && (bool)$this->launcher_support_enabled,
+                'url' => $hasAccess && $this->launcher_support_enabled
+                    ? $this->launcher_support_url
+                    : null,
             ],
         ];
     }

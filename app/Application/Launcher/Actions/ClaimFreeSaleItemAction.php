@@ -39,7 +39,7 @@ class ClaimFreeSaleItemAction
                 ->get();
 
             $usableAccess = $existingAccesses
-                ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
+                ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
 
             if ($usableAccess instanceof PurchaseAccess) {
                 return $usableAccess;
@@ -49,7 +49,8 @@ class ClaimFreeSaleItemAction
                 throw LauncherCommerceException::alreadyOwned();
             }
 
-            if (!$saleItem->isPurchasableAvailable()
+            if (!(bool) $saleItem->launcher_free_claim_enabled
+                || !$saleItem->isPurchasableAvailable()
                 || $this->resolvePrice->execute($saleItem)->finalPrice !== 0) {
                 throw LauncherCommerceException::notFree();
             }

@@ -93,7 +93,7 @@ class LauncherContentController extends Controller
             )
             ->firstOrFail();
 
-        abort_unless($access->isUsable(), 403);
+        abort_unless($access->isUsableForLauncher(), 403);
 
         return $access;
     }

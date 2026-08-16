@@ -31,7 +31,7 @@ class GetUserLibraryManifestAction
             )
             ->firstOrFail();
 
-        if (!$purchaseAccess->isUsable()) {
+        if (!$purchaseAccess->isUsableForLauncher()) {
             throw new PurchaseAccessIsNotUsableException();
         }
 

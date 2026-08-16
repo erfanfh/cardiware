@@ -28,6 +28,10 @@ class GetLauncherCatalogAction
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {
                     $relation->withoutGlobalScopes()
                         ->where('user_id', $user->getKey())
+                        ->with([
+                            'order:id,metadata',
+                            'productSaleItem:id,launcher_free_claim_enabled',
+                        ])
                         ->latest('id');
                 },
             ])
@@ -61,6 +65,10 @@ class GetLauncherCatalogAction
                 'purchaseAccesses' => function (HasMany $relation) use ($user): void {
                     $relation->withoutGlobalScopes()
                         ->where('user_id', $user->getKey())
+                        ->with([
+                            'order:id,metadata',
+                            'productSaleItem:id,launcher_free_claim_enabled',
+                        ])
                         ->latest('id');
                 },
             ])

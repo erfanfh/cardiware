@@ -54,7 +54,7 @@ class LauncherCommerceController extends Controller
             ->where('product_sale_item_id', $saleItem)
             ->latest('id')
             ->get()
-            ->first(fn(PurchaseAccess $access): bool => $access->isUsable());
+            ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
 
         if ($existingAccess instanceof PurchaseAccess) {
             return response()->json([
@@ -121,7 +121,7 @@ class LauncherCommerceController extends Controller
                 ->where('product_sale_item_id', $session->product_sale_item_id)
                 ->latest('id')
                 ->get()
-                ->first(fn(PurchaseAccess $item): bool => $item->isUsable());
+                ->first(fn(PurchaseAccess $item): bool => $item->isUsableForLauncher());
 
             if (!$access instanceof PurchaseAccess) {
                 throw LauncherCommerceException::purchaseNotCompleted();

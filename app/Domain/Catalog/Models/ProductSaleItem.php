@@ -33,6 +33,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'version',
         'manifest_revision',
         'launcher_enabled',
+        'launcher_free_claim_enabled',
         'launcher_title',
         'launcher_excerpt',
         'launcher_cover_media_id',
@@ -51,6 +52,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     protected $casts = [
         'manifest_revision' => 'integer',
         'launcher_enabled' => 'boolean',
+        'launcher_free_claim_enabled' => 'boolean',
         'launcher_sort_order' => 'integer',
         'launcher_support_enabled' => 'boolean',
         'base_price' => 'integer',

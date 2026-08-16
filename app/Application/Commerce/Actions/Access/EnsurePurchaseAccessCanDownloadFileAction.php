@@ -28,12 +28,8 @@ class EnsurePurchaseAccessCanDownloadFileAction
             throw new DomainException('File does not belong to this purchase access.');
         }
 
-        if (!$purchaseAccess->status->isUsable()) {
-            throw new DomainException('Purchase access is not active.');
-        }
-
-        if ($purchaseAccess->isExpiredByDate()) {
-            throw new DomainException('Purchase access has expired.');
+        if (!$purchaseAccess->isUsableForLauncher()) {
+            throw new DomainException('Purchase access is not valid.');
         }
 
         if ($this->hasPurchaseAccessFileReachedDownloadLimitAction->execute($purchaseAccess, $file)) {

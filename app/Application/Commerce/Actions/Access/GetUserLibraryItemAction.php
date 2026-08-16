@@ -22,15 +22,16 @@ class GetUserLibraryItemAction
         $purchaseAccess = PurchaseAccess::query()
             ->whereKey($purchaseAccessId)
             ->where('user_id', $user->getKey())
-            ->usable()
+            ->launcherUsable()
             ->whereHas(
                 'productSaleItem',
                 fn($query) => $query->where('launcher_enabled', true)
             )
             ->with([
+                'order:id,metadata',
                 'product:id,title,slug,picture_id',
 
-                'productSaleItem:id,product_id,sku,title,edition_key,version,description,launcher_enabled,launcher_title,launcher_excerpt',
+                'productSaleItem:id,product_id,sku,title,edition_key,version,description,launcher_enabled,launcher_free_claim_enabled,launcher_title,launcher_excerpt',
 
                 'productSaleItem.files' => function (
                     HasMany $relation,

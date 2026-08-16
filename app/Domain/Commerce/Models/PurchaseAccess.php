@@ -127,6 +127,34 @@ class PurchaseAccess extends Model
     }
 
     /**
+     * Scope accesses that may be exposed to MW Launcher.
+     *
+     * Historical zero-price claims are accepted only when the administrator
+     * explicitly enabled free claiming for their sale item. This prevents an
+     * accidentally empty/zero price from granting a paid launcher product.
+     */
+    public function scopeLauncherUsable(Builder $query): Builder
+    {
+        return $query
+            ->usable()
+            ->where(function (Builder $query): void {
+                $query
+                    ->where(function (Builder $paid): void {
+                        $paid
+                            ->whereDoesntHave('order')
+                            ->orWhereHas('order', function (Builder $order): void {
+                                $order
+                                    ->whereNull('metadata->source')
+                                    ->orWhere('metadata->source', '!=', 'launcher_free_claim');
+                            });
+                    })
+                    ->orWhereHas('productSaleItem', fn (Builder $saleItem): Builder =>
+                        $saleItem->where('launcher_free_claim_enabled', true)
+                    );
+            });
+    }
+
+    /**
      * Determine whether this access can currently be used.
      */
     public function isUsable(): bool
@@ -140,5 +168,27 @@ class PurchaseAccess extends Model
         }
 
         return !$this->isExpiredByDate();
+    }
+
+    /** Determine whether this access is valid specifically for MW Launcher. */
+    public function isUsableForLauncher(): bool
+    {
+        if (!$this->isUsable()) {
+            return false;
+        }
+
+        $source = $this->relationLoaded('order')
+            ? data_get($this->order?->metadata, 'source')
+            : data_get($this->order()->first()?->metadata, 'source');
+
+        if ($source !== 'launcher_free_claim') {
+            return true;
+        }
+
+        $saleItem = $this->relationLoaded('productSaleItem')
+            ? $this->productSaleItem
+            : $this->productSaleItem()->first();
+
+        return (bool) $saleItem?->launcher_free_claim_enabled;
     }
 }

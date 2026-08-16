@@ -35,6 +35,22 @@
             </div>
         </div>
 
+        <div class="border-b border-slate-200 bg-amber-50/60 px-4 py-3">
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div class="min-w-0">
+                    <div class="text-xs font-bold text-amber-900">اجازه دریافت رایگان در لانچر</div>
+                    <div class="mt-1 text-[11px] leading-6 text-amber-800">
+                        فقط برای محصولی فعال کنید که عمداً رایگان منتشر شده است. صفر بودن قیمت به‌تنهایی هیچ دسترسی دانلودی ایجاد نمی‌کند.
+                    </div>
+                </div>
+
+                <x-admin.form.switch
+                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_free_claim_enabled]`"
+                    x-model="{{ $item }}.launcher_free_claim_enabled"
+                />
+            </div>
+        </div>
+
         <div class="p-4">
             <div class="grid grid-cols-12 gap-4">
                 <x-admin.field label="عنوان در لانچر" class="col-span-12 md:col-span-9">

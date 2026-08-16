@@ -13,7 +13,7 @@ class LibraryItemResource extends JsonResource
             'access_id' => $this->id,
 
             'status' => $this->status->value,
-            'is_usable' => $this->isUsable(),
+            'is_usable' => $this->isUsableForLauncher(),
 
             'starts_at' => $this->starts_at?->toISOString(),
             'expires_at' => $this->expires_at?->toISOString(),

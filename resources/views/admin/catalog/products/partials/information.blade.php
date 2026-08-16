@@ -281,6 +281,7 @@
                 'max_quantity_per_order' => $saleItem->max_quantity_per_order,
                 'description' => $saleItem->description,
                 'launcher_enabled' => (bool) $saleItem->launcher_enabled,
+                'launcher_free_claim_enabled' => (bool) $saleItem->launcher_free_claim_enabled,
                 'launcher_title' => $saleItem->launcher_title,
                 'launcher_excerpt' => $saleItem->launcher_excerpt,
                 'launcher_hero' => [

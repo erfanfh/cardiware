@@ -58,7 +58,7 @@ class HydratePurchaseAccessFileDownloadStatsAction
                     return;
                 }
 
-                $accessIsUsable = $purchaseAccess->isUsable();
+                $accessIsUsable = $purchaseAccess->isUsableForLauncher();
 
                 $purchaseAccess->productSaleItem->files->each(
                     function (ProductSaleItemFile $file) use (

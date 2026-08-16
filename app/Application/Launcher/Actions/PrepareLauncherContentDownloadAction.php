@@ -73,7 +73,7 @@ class PrepareLauncherContentDownloadAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!$access->isUsable()) {
+            if (!$access->isUsableForLauncher()) {
                 throw new PurchaseAccessIsNotUsableException();
             }
 
@@ -164,7 +164,7 @@ class PrepareLauncherContentDownloadAction
             )
             ->firstOrFail();
 
-        if (!$access->isUsable()) {
+        if (!$access->isUsableForLauncher()) {
             throw new PurchaseAccessIsNotUsableException();
         }
 

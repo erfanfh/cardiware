@@ -90,7 +90,7 @@ class MyDownloadsSection extends Component
             return 'منقضی شده';
         }
 
-        if (!$access->status->isUsable()) {
+        if (!$access->isUsableForLauncher()) {
             return $access->status->label();
         }
 
@@ -106,7 +106,7 @@ class MyDownloadsSection extends Component
             return 'text-red-700 bg-red-50 border-red-200';
         }
 
-        if (!$access->status->isUsable()) {
+        if (!$access->isUsableForLauncher()) {
             return 'text-amber-700 bg-amber-50 border-amber-200';
         }
 
@@ -206,7 +206,7 @@ class MyDownloadsSection extends Component
      */
     public function fileIsUsable(PurchaseAccess $access, ProductSaleItemFile $file): bool
     {
-        if (!$access->status->isUsable()) {
+        if (!$access->isUsableForLauncher()) {
             return false;
         }
 

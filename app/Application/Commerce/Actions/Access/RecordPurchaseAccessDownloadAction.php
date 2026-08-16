@@ -35,12 +35,8 @@ class RecordPurchaseAccessDownloadAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!$purchaseAccess->status->isUsable()) {
-                throw new DomainException('Purchase access is not active.');
-            }
-
-            if ($purchaseAccess->isExpiredByDate()) {
-                throw new DomainException('Purchase access has expired.');
+            if (!$purchaseAccess->isUsableForLauncher()) {
+                throw new DomainException('Purchase access is not valid.');
             }
 
             if ((int)$file->product_sale_item_id !== (int)$purchaseAccess->product_sale_item_id) {
