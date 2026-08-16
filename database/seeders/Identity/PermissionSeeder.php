@@ -127,6 +127,12 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش کدتخفیف',
                 'delete' => 'حذف کدتخفیف',
             ],
+            'loyalty-rule' => [
+                'list' => 'لیست قوانین امتیاز',
+                'create' => 'ایجاد قانون امتیاز',
+                'edit' => 'ویرایش قانون امتیاز',
+                'delete' => 'حذف قانون امتیاز',
+            ],
             'ticket' => [
                 'list' => 'لیست تیکت‌ها',
                 'show' => 'مشاهده و پاسخ تیکت',

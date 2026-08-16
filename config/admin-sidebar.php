@@ -183,6 +183,25 @@ return [
     ],
 
     [
+        'label' => 'باشگاه مخاطبان',
+        'icon' => 'icons.award-03',
+        'children' => [
+            [
+                'label' => 'قوانین کسب امتیاز',
+                'route' => 'admin.earning-rules.index',
+                'icon' => 'icons.star',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'ایجاد قانون امتیاز',
+                'route' => 'admin.earning-rules.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'loyalty-rule.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'محصولات',
         'route' => 'admin.products.index',
         'icon' => 'icons.shopping-bag-03',
