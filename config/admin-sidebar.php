@@ -193,6 +193,12 @@ return [
                 'gate' => 'loyalty-rule.list',
             ],
             [
+                'label' => 'کاربران باشگاه',
+                'route' => 'admin.loyalty-members.index',
+                'icon' => 'icons.user-multiple',
+                'gate' => 'loyalty-account.list',
+            ],
+            [
                 'label' => 'ایجاد قانون امتیاز',
                 'route' => 'admin.earning-rules.create',
                 'icon' => 'icons.plus-sign',

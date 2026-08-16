@@ -71,6 +71,7 @@ class SpendPointsAction
                     'idempotency_key' => $data->idempotencyKey,
                     'idempotency_fingerprint' => $fingerprint,
                     'description' => $data->description,
+                    'occurred_at' => now(),
                     'metadata' => $data->metadata,
                 ]);
 
