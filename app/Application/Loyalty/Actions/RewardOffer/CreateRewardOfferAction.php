@@ -5,11 +5,17 @@ namespace App\Application\Loyalty\Actions\RewardOffer;
 use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Application\Loyalty\RewardFulfillment\Support\RewardOfferConfigCatalog;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class CreateRewardOfferAction
 {
+    public function __construct(
+        private readonly RewardOfferConfigCatalog $configCatalog,
+    ) {
+    }
+
     /**
      * @param array<string, mixed> $data
      * @throws Throwable
@@ -35,7 +41,10 @@ class CreateRewardOfferAction
                 'ends_at' => $data['ends_at'] ?? null,
                 'redemption_limit' => $data['redemption_limit'] ?? null,
                 'redemption_limit_per_user' => $data['redemption_limit_per_user'] ?? null,
-                'config' => $this->normalizedConfig($type, $data['config'] ?? []),
+                'config' => $this->configCatalog->validateConfig(
+                    $type,
+                    $this->normalizedConfig($type, $data['config'] ?? []),
+                ),
                 'target_type' => $targetType,
                 'target_id' => $targetId,
             ])->refresh();

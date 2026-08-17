@@ -77,7 +77,7 @@ class RewardOfferController extends Controller
     ): View {
         Gate::authorize('loyalty-reward.edit');
 
-        $rewardOffer->loadMissing('target');
+        $rewardOffer->loadMissing('target')->loadCount('redemptions');
 
         return view('admin.loyalty.rewards.edit', array_merge(
             ['rewardOffer' => $rewardOffer],

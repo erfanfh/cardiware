@@ -215,7 +215,7 @@
                         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <div class="min-w-0">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">{{ $redemption->rewardOffer?->title ?? 'پاداش' }}</div>
+                                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">{{ $redemption->rewardTitle() }}</div>
                                     <span class="rounded-full px-2.5 py-1 text-[10px] font-extrabold {{ $isReversed ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' }}">
                                         {{ $redemption->status->label() }}
                                     </span>

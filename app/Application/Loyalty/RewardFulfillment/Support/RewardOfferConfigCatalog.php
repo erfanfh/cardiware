@@ -4,6 +4,7 @@ namespace App\Application\Loyalty\RewardFulfillment\Support;
 
 use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Promotion\Enums\CouponTypeEnum;
+use Illuminate\Support\Facades\Validator;
 
 class RewardOfferConfigCatalog
 {
@@ -41,5 +42,29 @@ class RewardOfferConfigCatalog
                 'ticket_quantity' => ['required', 'integer', 'min:1', 'max:1000'],
             ],
         };
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     * @return array<string, mixed>
+     */
+    public function validateConfig(RewardTypeEnum $type, array $config): array
+    {
+        $validator = Validator::make($config, $this->validationRules($type));
+
+        $validator->after(function ($validator) use ($type, $config): void {
+            if (
+                $type === RewardTypeEnum::COUPON
+                && ($config['coupon_type'] ?? null) === CouponTypeEnum::PERCENTAGE->value
+                && (int) ($config['coupon_value'] ?? 0) > 100
+            ) {
+                $validator->errors()->add(
+                    'coupon_value',
+                    'درصد تخفیف نمی تواند بیشتر از 100 باشد.'
+                );
+            }
+        });
+
+        return $validator->validate();
     }
 }

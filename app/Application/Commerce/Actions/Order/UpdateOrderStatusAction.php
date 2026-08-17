@@ -49,6 +49,7 @@ class UpdateOrderStatusAction
             $order = $this->changeOrderStatusAction->execute(
                 order: $order,
                 newStatus: $newStatus,
+                transitionedAt: $transitionedAt,
             );
 
             $this->syncPurchaseAccessesForOrderStatusAction->execute(

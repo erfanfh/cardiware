@@ -33,12 +33,20 @@ class DrawCampaignRunController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $activeRun = $runs->getCollection()
-            ->first(fn(DrawRun $run): bool => in_array($run->status, [
-                DrawRunStatusEnum::PENDING,
-                DrawRunStatusEnum::RUNNING,
-                DrawRunStatusEnum::FAILED,
-            ], true));
+        $activeRun = $drawCampaign->drawRuns()
+            ->with([
+                'starter',
+                'winners.user',
+                'winners.ticket',
+                'winners.prize',
+            ])
+            ->whereIn('status', [
+                DrawRunStatusEnum::PENDING->value,
+                DrawRunStatusEnum::RUNNING->value,
+                DrawRunStatusEnum::FAILED->value,
+            ])
+            ->latest('id')
+            ->first();
 
         $hasInitialRun = $drawCampaign->drawRuns()
             ->where('type', \App\Domain\Raffle\Enums\DrawRunTypeEnum::INITIAL)

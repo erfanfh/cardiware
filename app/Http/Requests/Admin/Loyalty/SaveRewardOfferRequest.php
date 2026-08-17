@@ -49,9 +49,14 @@ class SaveRewardOfferRequest extends FormRequest
         ];
 
         if ($type === RewardTypeEnum::COUPON) {
+            $couponValueRules = ['required', 'integer', 'min:1'];
+            if ((string) $this->input('config.coupon_type') === 'percentage') {
+                $couponValueRules[] = 'max:100';
+            }
+
             $rules += [
                 'config.coupon_type' => ['required', Rule::in(['fixed_amount', 'percentage'])],
-                'config.coupon_value' => ['required', 'integer', 'min:1'],
+                'config.coupon_value' => $couponValueRules,
                 'config.max_discount_amount' => ['nullable', 'integer', 'min:1'],
                 'config.minimum_order_amount' => ['required', 'integer', 'min:0'],
                 'config.expires_after_days' => ['nullable', 'integer', 'min:1', 'max:3650'],
@@ -94,7 +99,8 @@ class SaveRewardOfferRequest extends FormRequest
                 );
             }
 
-            if ((int) $rewardOffer->redeemed_count <= 0) {
+            $hasHistoricalRedemptions = $rewardOffer->redemptions()->exists();
+            if (!$hasHistoricalRedemptions) {
                 return;
             }
 

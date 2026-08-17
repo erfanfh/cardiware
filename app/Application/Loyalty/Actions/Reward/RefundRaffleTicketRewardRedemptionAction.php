@@ -32,6 +32,7 @@ class RefundRaffleTicketRewardRedemptionAction
 
         return DB::transaction(function () use ($redemption, $reason, $actor): RewardRedemption {
             $offer = RewardOffer::query()
+                ->withTrashed()
                 ->whereKey($redemption->reward_offer_id)
                 ->lockForUpdate()
                 ->firstOrFail();

@@ -33,7 +33,9 @@ class GetAudienceClubOverviewAction
             ->currentlyActive()
             ->orderByDesc('priority')
             ->orderBy('id')
-            ->get();
+            ->get()
+            ->unique(fn(EarningRule $rule): string => $rule->type->value)
+            ->values();
 
         $rewardOffers = RewardOffer::query()
             ->currentlyActive()

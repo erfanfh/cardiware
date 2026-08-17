@@ -3,8 +3,8 @@
 namespace App\Application\Raffle\Actions\Winner;
 
 use App\Application\Raffle\Exceptions\DrawWinnerTransitionException;
+use App\Application\Raffle\Support\EligibleReserveWinnerResolver;
 use App\Domain\Identity\Models\User;
-use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Events\DrawReservePromotedEvent;
 use App\Domain\Raffle\Models\DrawCampaign;
@@ -14,6 +14,11 @@ use Throwable;
 
 class PromoteReserveWinnerAction
 {
+    public function __construct(
+        private readonly EligibleReserveWinnerResolver $reserveResolver,
+    ) {
+    }
+
     /** @throws Throwable */
     public function execute(DrawWinner $failedWinner, ?User $actor = null): ?DrawWinner
     {
@@ -28,63 +33,38 @@ class PromoteReserveWinnerAction
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!in_array($failed->status, [DrawWinnerStatusEnum::REJECTED, DrawWinnerStatusEnum::EXPIRED], true)) {
-                throw new DrawWinnerTransitionException('Only a rejected or expired effective winner can be replaced.');
+            if (!in_array($failed->status, [
+                DrawWinnerStatusEnum::REJECTED,
+                DrawWinnerStatusEnum::EXPIRED,
+            ], true)) {
+                throw new DrawWinnerTransitionException(
+                    'Only a rejected or expired effective winner can be replaced.'
+                );
             }
 
             $primaryPosition = $failed->effectivePrimaryPosition();
             if ($primaryPosition === null) {
-                throw new DrawWinnerTransitionException('The selected winner does not represent a primary prize position.');
+                throw new DrawWinnerTransitionException(
+                    'The selected winner does not represent a primary prize position.'
+                );
             }
 
-            if (DrawWinner::query()->where('replaces_winner_id', $failed->getKey())->exists()) {
-                return DrawWinner::query()->where('replaces_winner_id', $failed->getKey())->first();
+            $replacement = DrawWinner::query()
+                ->where('replaces_winner_id', $failed->getKey())
+                ->first();
+
+            if ($replacement) {
+                return $replacement;
             }
 
-            $reservedUserIds = [];
-            if (!$campaign->allow_multiple_wins_per_user) {
-                $reservedUserIds = DrawWinner::query()
-                    ->where('campaign_id', $campaign->getKey())
-                    ->where(function ($query): void {
-                        $query->where('kind', DrawWinnerKindEnum::PRIMARY)
-                            ->orWhereNotNull('promoted_at');
-                    })
-                    ->whereIn('status', [
-                        DrawWinnerStatusEnum::PENDING,
-                        DrawWinnerStatusEnum::CONFIRMED,
-                        DrawWinnerStatusEnum::DELIVERED,
-                    ])
-                    ->pluck('user_id')
-                    ->map(fn($id) => (int)$id)
-                    ->all();
-            }
-
-            $reserveQuery = DrawWinner::query()
-                ->where('campaign_id', $campaign->getKey())
-                ->where('prize_id', $failed->prize_id)
-                ->where('kind', DrawWinnerKindEnum::RESERVE)
-                ->where('status', DrawWinnerStatusEnum::PENDING)
-                ->whereNull('promoted_at')
-                ->whereNull('replaces_winner_id')
-                ->where('user_id', '!=', $failed->user_id)
-                ->orderBy('selected_at')
-                ->orderBy('draw_run_id')
-                ->orderBy('position')
-                ->orderBy('id')
-                ->lockForUpdate();
-
-            if ($reservedUserIds !== []) {
-                $reserveQuery->whereNotIn('user_id', $reservedUserIds);
-            }
-
-            $reserve = $reserveQuery->first();
+            $reserve = $this->reserveResolver->firstForUpdate($failed, $campaign);
             if (!$reserve) {
                 return null;
             }
 
             $now = now()->toImmutable();
             $deadline = $campaign->winner_confirmation_window_hours
-                ? $now->addHours((int)$campaign->winner_confirmation_window_hours)
+                ? $now->addHours((int) $campaign->winner_confirmation_window_hours)
                 : null;
 
             $reserve->forceFill([
@@ -96,10 +76,10 @@ class PromoteReserveWinnerAction
             ])->save();
 
             DB::afterCommit(fn() => event(new DrawReservePromotedEvent(
-                campaignId: (int)$campaign->getKey(),
-                prizeId: (int)$reserve->prize_id,
-                winnerId: (int)$reserve->getKey(),
-                replacedWinnerId: (int)$failed->getKey(),
+                campaignId: (int) $campaign->getKey(),
+                prizeId: (int) $reserve->prize_id,
+                winnerId: (int) $reserve->getKey(),
+                replacedWinnerId: (int) $failed->getKey(),
                 primaryPosition: $primaryPosition,
                 actorUserId: $actor?->getKey(),
                 occurredAt: $now,

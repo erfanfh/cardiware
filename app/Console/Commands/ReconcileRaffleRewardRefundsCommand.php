@@ -17,34 +17,31 @@ class ReconcileRaffleRewardRefundsCommand extends Command
     /** @throws Throwable */
     public function handle(RefundRaffleTicketRewardRedemptionAction $refund): int
     {
-        $redemptionMorph = (new RewardRedemption())->getMorphClass();
+        $grantMorph = (new TicketGrant())->getMorphClass();
         $limit = max(1, min(10000, (int) $this->option('limit')));
-
-        $redemptionIds = TicketGrant::query()
-            ->where('source_type', $redemptionMorph)
-            ->whereNotNull('source_id')
-            ->whereNotNull('invalidated_at')
-            ->orderBy('id')
-            ->limit($limit)
-            ->pluck('source_id')
-            ->filter()
-            ->unique()
-            ->values();
-
         $processed = 0;
 
-        RewardRedemption::query()
-            ->whereIn('id', $redemptionIds)
+        $redemptions = RewardRedemption::query()
             ->where('status', RewardRedemptionStatusEnum::COMPLETED->value)
+            ->where('fulfillment_type', $grantMorph)
+            ->whereNotNull('fulfillment_id')
+            ->whereIn(
+                'fulfillment_id',
+                TicketGrant::query()
+                    ->select('id')
+                    ->whereNotNull('invalidated_at')
+            )
             ->orderBy('id')
-            ->get()
-            ->each(function (RewardRedemption $redemption) use ($refund, &$processed): void {
-                $refund->execute(
-                    redemption: $redemption,
-                    reason: 'بازگشت امتیاز توسط فرآیند تطبیق خودکار ابطال بلیط قرعه کشی',
-                );
-                $processed++;
-            });
+            ->limit($limit)
+            ->get();
+
+        foreach ($redemptions as $redemption) {
+            $refund->execute(
+                redemption: $redemption,
+                reason: 'بازگشت امتیاز توسط فرآیند تطبیق خودکار ابطال بلیط قرعه کشی',
+            );
+            $processed++;
+        }
 
         $this->info("Reconciled {$processed} raffle reward redemption(s).");
 

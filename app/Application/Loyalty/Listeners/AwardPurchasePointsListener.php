@@ -19,10 +19,7 @@ class AwardPurchasePointsListener
     public function handle(OrderPaidEvent $event): void
     {
         try {
-            $order = Order::query()
-                ->with('user')
-                ->find($event->orderId);
-
+            $order = Order::query()->with('user')->find($event->orderId);
             if (!$order?->user) {
                 return;
             }
@@ -36,6 +33,8 @@ class AwardPurchasePointsListener
                 ),
             );
         } catch (Throwable $exception) {
+            // Loyalty must never make a committed payment fail. The scheduled
+            // reconciliation command replays the current durable order state.
             report($exception);
         }
     }

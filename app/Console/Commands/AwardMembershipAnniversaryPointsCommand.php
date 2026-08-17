@@ -14,24 +14,75 @@ use Throwable;
 class AwardMembershipAnniversaryPointsCommand extends Command
 {
     protected $signature = 'loyalty:award-membership-anniversaries
-                            {--date= : Target date in Y-m-d format}';
+                            {--date= : Target date in Y-m-d format}
+                            {--lookback=1 : Number of calendar days to process when --date is omitted}';
 
-    protected $description = 'Award loyalty points for membership anniversaries.';
+    protected $description = 'Award loyalty points for membership anniversaries with an idempotent lookback window.';
 
     public function handle(ProcessEarningRuleAction $processEarningRuleAction): int
     {
         try {
-            $targetDate = $this->resolveTargetDate();
+            $targetDates = $this->resolveTargetDates();
         } catch (Throwable $exception) {
             $this->components->error($exception->getMessage());
 
             return self::FAILURE;
         }
 
-        $processed = 0;
-        $awarded = 0;
-        $failed = 0;
+        $totals = [
+            'dates' => 0,
+            'processed' => 0,
+            'awarded' => 0,
+            'failed' => 0,
+        ];
 
+        foreach ($targetDates as $targetDate) {
+            $totals['dates']++;
+            $this->processDate($processEarningRuleAction, $targetDate, $totals);
+        }
+
+        $this->components->info(sprintf(
+            'Membership anniversaries dates=%d, processed=%d, awarded=%d, failed=%d.',
+            $totals['dates'],
+            $totals['processed'],
+            $totals['awarded'],
+            $totals['failed'],
+        ));
+
+        return $totals['failed'] === 0
+            ? self::SUCCESS
+            : self::FAILURE;
+    }
+
+    /** @return list<CarbonImmutable> */
+    private function resolveTargetDates(): array
+    {
+        $timezone = (string) config('app.timezone');
+        $date = $this->option('date');
+
+        if (filled($date)) {
+            return [
+                CarbonImmutable::createFromFormat('!Y-m-d', (string) $date, $timezone)
+                    ->startOfDay(),
+            ];
+        }
+
+        $lookback = max(1, min(30, (int) $this->option('lookback')));
+        $today = now($timezone)->startOfDay()->toImmutable();
+        $dates = [];
+
+        for ($daysAgo = $lookback - 1; $daysAgo >= 0; $daysAgo--) {
+            $dates[] = $today->subDays($daysAgo);
+        }
+
+        return $dates;
+    }
+
+    private function processDate(
+        ProcessEarningRuleAction $processEarningRuleAction,
+        CarbonImmutable $targetDate,
+        array &$totals,
+    ): void {
         $query = User::query()
             ->where('status', UserStatusEnum::ACTIVE->value)
             ->whereYear('created_at', '<', $targetDate->year)
@@ -50,12 +101,10 @@ class AwardMembershipAnniversaryPointsCommand extends Command
         $query->chunkById(500, function ($users) use (
             $processEarningRuleAction,
             $targetDate,
-            &$processed,
-            &$awarded,
-            &$failed,
+            &$totals,
         ): void {
             foreach ($users as $user) {
-                $processed++;
+                $totals['processed']++;
 
                 try {
                     $membershipYears = $targetDate->year - $user->created_at->year;
@@ -70,35 +119,14 @@ class AwardMembershipAnniversaryPointsCommand extends Command
                     );
 
                     if ($result->wasAwarded()) {
-                        $awarded++;
+                        $totals['awarded']++;
                     }
                 } catch (Throwable $exception) {
-                    $failed++;
+                    $totals['failed']++;
                     report($exception);
                 }
             }
         });
-
-        $this->components->info(
-            "Membership anniversaries processed: {$processed}, awarded: {$awarded}, failed: {$failed}."
-        );
-
-        return $failed === 0
-            ? self::SUCCESS
-            : self::FAILURE;
-    }
-
-    private function resolveTargetDate(): CarbonImmutable
-    {
-        $timezone = (string)config('app.timezone');
-        $date = $this->option('date');
-
-        if (blank($date)) {
-            return now($timezone)->startOfDay()->toImmutable();
-        }
-
-        return CarbonImmutable::createFromFormat('!Y-m-d', (string)$date, $timezone)
-            ->startOfDay();
     }
 
     private function shouldIncludeLeapDayMembers(CarbonImmutable $targetDate): bool

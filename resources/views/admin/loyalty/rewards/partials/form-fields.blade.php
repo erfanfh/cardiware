@@ -9,7 +9,7 @@
     $couponType = $config['coupon_type'] ?? CouponTypeEnum::FIXED_AMOUNT->value;
     $isActive = old('is_active', $rewardOffer?->is_active ?? true);
     $targetId = old('target_id', $rewardOffer?->target_id);
-    $hasRedemptions = (int)($rewardOffer?->redeemed_count ?? 0) > 0;
+    $hasRedemptions = (int)($rewardOffer?->redemptions_count ?? 0) > 0;
 @endphp
 
 <x-admin.page>

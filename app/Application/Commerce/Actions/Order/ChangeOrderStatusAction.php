@@ -4,22 +4,32 @@ namespace App\Application\Commerce\Actions\Order;
 
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Order;
+use Carbon\CarbonImmutable;
+use DateTimeInterface;
 
 class ChangeOrderStatusAction
 {
-    public function execute(Order $order, OrderStatusEnum $newStatus): Order
-    {
+    public function execute(
+        Order $order,
+        OrderStatusEnum $newStatus,
+        ?DateTimeInterface $transitionedAt = null,
+    ): Order {
         if ($order->status === $newStatus) {
             return $order->refresh();
         }
 
+        $oldStatus = $order->status;
+        $transitionedAt = $transitionedAt
+            ? CarbonImmutable::instance($transitionedAt)
+            : now(config('app.timezone'))->toImmutable();
+
         $order->forceFill([
             'status' => $newStatus,
-            'paid_at' => $newStatus->isPaid()
-                ? ($order->paid_at ?? now())
+            'paid_at' => $newStatus->isPaid() && !$oldStatus->isPaid()
+                ? $transitionedAt
                 : $order->paid_at,
             'cancelled_at' => $newStatus === OrderStatusEnum::CANCELLED
-                ? ($order->cancelled_at ?? now())
+                ? ($order->cancelled_at ?? $transitionedAt)
                 : $order->cancelled_at,
         ])->save();
 

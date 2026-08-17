@@ -20,7 +20,6 @@ class AwardRegistrationPointsListener
     {
         try {
             $user = User::query()->find($event->userId);
-
             if (!$user) {
                 return;
             }
@@ -33,6 +32,8 @@ class AwardRegistrationPointsListener
                 ),
             );
         } catch (Throwable $exception) {
+            // The exact public-registration eligibility is persisted by a separate
+            // synchronous listener, so reconciliation can safely retry later.
             report($exception);
         }
     }

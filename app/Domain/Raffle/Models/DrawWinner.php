@@ -65,11 +65,20 @@ class DrawWinner extends Model
                 'kind',
                 'position',
                 'selected_at',
-        'confirmation_deadline_at',
             ];
 
             if ($winner->isDirty($immutableFields)) {
                 throw new LogicException('Draw winner selection identity cannot be changed.');
+            }
+
+            if ($winner->isDirty('confirmation_deadline_at')) {
+                $isFirstPromotion = $winner->isDirty('promoted_at')
+                    && $winner->getOriginal('promoted_at') === null
+                    && $winner->promoted_at !== null;
+
+                if (!$isFirstPromotion) {
+                    throw new LogicException('Winner confirmation deadline can only change during reserve promotion.');
+                }
             }
         });
 

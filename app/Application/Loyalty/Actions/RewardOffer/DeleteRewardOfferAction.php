@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Loyalty\Actions\Reward;
+namespace App\Application\Loyalty\Actions\RewardOffer;
 
 use App\Domain\Loyalty\Models\RewardOffer;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +12,11 @@ class DeleteRewardOfferAction
     public function execute(RewardOffer $rewardOffer): void
     {
         DB::transaction(function () use ($rewardOffer): void {
-            $rewardOffer->delete();
+            RewardOffer::query()
+                ->whereKey($rewardOffer->getKey())
+                ->lockForUpdate()
+                ->firstOrFail()
+                ->delete();
         });
     }
 }

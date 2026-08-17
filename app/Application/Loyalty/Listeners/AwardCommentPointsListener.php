@@ -19,10 +19,7 @@ class AwardCommentPointsListener
     public function handle(CommentApprovedEvent $event): void
     {
         try {
-            $comment = Comment::query()
-                ->with('user')
-                ->find($event->commentId);
-
+            $comment = Comment::query()->with('user')->find($event->commentId);
             if (!$comment?->user) {
                 return;
             }

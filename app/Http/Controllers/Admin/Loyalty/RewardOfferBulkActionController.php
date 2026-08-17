@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Loyalty;
 
-use App\Application\Loyalty\Actions\Reward\HandleRewardOfferBulkAction;
+use App\Application\Loyalty\Actions\RewardOffer\HandleRewardOfferBulkAction;
 use App\Http\Requests\Admin\Loyalty\BulkRewardOfferActionRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;

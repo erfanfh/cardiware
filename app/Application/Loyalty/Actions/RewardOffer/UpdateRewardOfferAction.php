@@ -5,11 +5,18 @@ namespace App\Application\Loyalty\Actions\RewardOffer;
 use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Application\Loyalty\RewardFulfillment\Support\RewardOfferConfigCatalog;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
 class UpdateRewardOfferAction
 {
+    public function __construct(
+        private readonly RewardOfferConfigCatalog $configCatalog,
+    ) {
+    }
+
     /**
      * @param array<string, mixed> $data
      * @throws Throwable
@@ -26,7 +33,20 @@ class UpdateRewardOfferAction
                 ? $data['type']
                 : RewardTypeEnum::from((string) $data['type']);
 
+            $hasHistoricalRedemptions = $offer->redemptions()->exists();
+            if ($hasHistoricalRedemptions && $type !== $offer->type) {
+                throw new DomainException('Reward type cannot change after the first historical redemption.');
+            }
+
             [$targetType, $targetId] = $this->resolveTarget($type, $data['target_id'] ?? null);
+
+            if (
+                $hasHistoricalRedemptions
+                && $offer->type === RewardTypeEnum::RAFFLE_TICKET
+                && (int) $targetId !== (int) $offer->target_id
+            ) {
+                throw new DomainException('Raffle target cannot change after the first historical redemption.');
+            }
 
             $offer->update([
                 'code' => $data['code'],
@@ -40,7 +60,10 @@ class UpdateRewardOfferAction
                 'ends_at' => $data['ends_at'] ?? null,
                 'redemption_limit' => $data['redemption_limit'] ?? null,
                 'redemption_limit_per_user' => $data['redemption_limit_per_user'] ?? null,
-                'config' => $this->normalizedConfig($type, $data['config'] ?? []),
+                'config' => $this->configCatalog->validateConfig(
+                    $type,
+                    $this->normalizedConfig($type, $data['config'] ?? []),
+                ),
                 'target_type' => $targetType,
                 'target_id' => $targetId,
             ]);

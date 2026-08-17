@@ -18,10 +18,7 @@ class ReversePurchasePointsListener
     public function handle(OrderPaymentRevokedEvent $event): void
     {
         try {
-            $order = Order::query()
-                ->with('user')
-                ->find($event->orderId);
-
+            $order = Order::query()->with('user')->find($event->orderId);
             if (!$order?->user) {
                 return;
             }

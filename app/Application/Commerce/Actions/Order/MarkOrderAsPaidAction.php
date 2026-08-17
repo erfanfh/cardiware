@@ -11,16 +11,10 @@ use Throwable;
 
 class MarkOrderAsPaidAction
 {
-    /**
-     * Mark order as paid.
-     *
-     * @param Order $order
-     * @return Order
-     * @throws Throwable
-     */
+    /** @throws Throwable */
     public function execute(Order $order): Order
     {
-        return DB::transaction(function () use ($order) {
+        return DB::transaction(function () use ($order): Order {
             $order = Order::query()
                 ->whereKey($order->id)
                 ->lockForUpdate()
@@ -34,22 +28,20 @@ class MarkOrderAsPaidAction
                 throw new DomainException('Order cannot be marked as paid.');
             }
 
+            $transitionedAt = now(config('app.timezone'))->toImmutable();
+
             $order->forceFill([
                 'status' => OrderStatusEnum::PAID,
-                'paid_at' => $order->paid_at ?? now(),
+                'paid_at' => $transitionedAt,
             ])->save();
 
-            $orderId = (int)$order->getKey();
-            $occurredAt = $order->paid_at?->toImmutable()
-                ?? now(config('app.timezone'))->toImmutable();
+            $orderId = (int) $order->getKey();
 
             DB::afterCommit(
-                fn() => event(
-                    new OrderPaidEvent(
-                        orderId: $orderId,
-                        occurredAt: $occurredAt,
-                    )
-                )
+                fn() => event(new OrderPaidEvent(
+                    orderId: $orderId,
+                    occurredAt: $transitionedAt,
+                ))
             );
 
             return $order->refresh();

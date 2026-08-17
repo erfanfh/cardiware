@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Application\Loyalty\Actions\Reward;
+namespace App\Application\Loyalty\Actions\RewardOffer;
 
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -28,7 +28,9 @@ class HandleRewardOfferBulkAction
     /** @param list<int> $ids */
     private function updateActiveState(array $ids, bool $isActive): int
     {
-        return RewardOffer::query()->whereIn('id', $ids)->update(['is_active' => $isActive]);
+        return RewardOffer::query()
+            ->whereIn('id', $ids)
+            ->update(['is_active' => $isActive]);
     }
 
     /** @param list<int> $ids @throws Throwable */

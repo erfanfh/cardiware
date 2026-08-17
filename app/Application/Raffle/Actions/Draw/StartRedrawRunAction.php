@@ -6,11 +6,11 @@ use App\Application\Raffle\Exceptions\DrawStartNotAllowedException;
 use App\Application\Raffle\Jobs\ExecuteDrawRunJob;
 use App\Application\Raffle\Support\DrawAlgorithm;
 use App\Application\Raffle\Support\DrawRunSeedManager;
+use App\Application\Raffle\Support\EligibleReserveWinnerResolver;
 use App\Domain\Identity\Models\User;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Enums\DrawRunStatusEnum;
 use App\Domain\Raffle\Enums\DrawRunTypeEnum;
-use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Events\DrawRedrawStartedEvent;
 use App\Domain\Raffle\Models\DrawCampaign;
@@ -22,8 +22,10 @@ use Throwable;
 
 class StartRedrawRunAction
 {
-    public function __construct(private readonly DrawRunSeedManager $seedManager)
-    {
+    public function __construct(
+        private readonly DrawRunSeedManager $seedManager,
+        private readonly EligibleReserveWinnerResolver $reserveResolver,
+    ) {
     }
 
     /** @throws Throwable */
@@ -46,16 +48,7 @@ class StartRedrawRunAction
                 throw new DrawStartNotAllowedException('This winner has already been replaced.');
             }
 
-            $availableReserveExists = DrawWinner::query()
-                ->where('campaign_id', $campaign->getKey())
-                ->where('prize_id', $failed->prize_id)
-                ->where('kind', DrawWinnerKindEnum::RESERVE)
-                ->where('status', DrawWinnerStatusEnum::PENDING)
-                ->whereNull('promoted_at')
-                ->whereNull('replaces_winner_id')
-                ->exists();
-
-            if ($availableReserveExists) {
+            if ($this->reserveResolver->exists($failed, $campaign)) {
                 throw new DrawStartNotAllowedException('A reserve winner is still available and must be promoted before starting a redraw.');
             }
 
