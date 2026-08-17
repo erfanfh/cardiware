@@ -7,6 +7,7 @@
             ['route' => 'account.orders', 'label' => 'سفارش‌های من', 'icon' => 'icons.shopping-basket-03', 'end' => $user->paid_orders_count],
             ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
             ['route' => 'account.favorites', 'label' => 'علاقه‌مندی‌ها', 'icon' => 'icons.favourite', 'end' => $user->favorite_products_count],
+            ['route' => 'account.raffles', 'label' => 'قرعه کشی‌های من', 'icon' => 'icons.award-03', 'end' => 'arrow'],
             ['route' => 'account.transactions', 'label' => 'تراکنش‌ها', 'icon' => 'icons.transaction', 'end' => 'arrow'],
             ['route' => 'account.loyalty', 'label' => 'باشگاه مخاطبان', 'icon' => 'icons.award-03', 'end' => $user->loyalty_points],
             ['route' => 'account.information', 'label' => 'اطلاعات حساب', 'icon' => 'icons.user-edit-01', 'end' => 'arrow'],
