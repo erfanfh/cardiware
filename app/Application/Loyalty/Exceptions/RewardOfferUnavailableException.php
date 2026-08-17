@@ -2,8 +2,8 @@
 
 namespace App\Application\Loyalty\Exceptions;
 
-use RuntimeException;
+use DomainException;
 
-class RewardOfferUnavailableException extends RuntimeException
+class RewardOfferUnavailableException extends DomainException
 {
 }

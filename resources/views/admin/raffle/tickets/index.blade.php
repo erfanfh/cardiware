@@ -36,7 +36,15 @@
                     <x-admin.list.td>
                         @can('raffle-ticket.invalidate')
                             @if($ticket->status->value === 'active' && $drawCampaign->status->allowsTicketInvalidation())
-                                <x-admin.form method="post" action="{{ route('admin.draw-campaigns.tickets.invalidate',[$drawCampaign,$ticket]) }}" class="flex items-center gap-2 js-confirm" data-confirm-title="ابطال بلیط" data-confirm-text="بلیط {{ $ticket->code }} باطل شود؟"><x-admin.form.input name="reason" placeholder="دلیل ابطال" class="min-w-[120px]"/><x-admin.form.button type="submit" variant="danger">ابطال</x-admin.form.button></x-admin.form>
+                                @if(data_get($ticket->grant?->metadata, 'invalidation_mode') === 'grant')
+                                    <x-admin.form method="post" action="{{ route('admin.draw-campaigns.ticket-grants.invalidate',[$drawCampaign,$ticket->grant]) }}" class="flex items-center gap-2 js-confirm" data-confirm-title="ابطال کل سری بلیط" data-confirm-text="تمام بلیط های فعال سری #{{ $ticket->ticket_grant_id }} باطل شوند؟ اگر این سری از پاداش امتیازی آمده باشد، فرآیند بازگشت امتیاز فعال می شود.">
+                                        <x-admin.form.input name="reason" placeholder="دلیل ابطال سری" class="min-w-[120px]"/>
+                                        <x-admin.form.button type="submit" variant="danger">ابطال کل سری</x-admin.form.button>
+                                    </x-admin.form>
+                                    <div class="mt-1 text-[10px] text-amber-600">این سری به صورت یکپارچه مدیریت می شود.</div>
+                                @else
+                                    <x-admin.form method="post" action="{{ route('admin.draw-campaigns.tickets.invalidate',[$drawCampaign,$ticket]) }}" class="flex items-center gap-2 js-confirm" data-confirm-title="ابطال بلیط" data-confirm-text="بلیط {{ $ticket->code }} باطل شود؟"><x-admin.form.input name="reason" placeholder="دلیل ابطال" class="min-w-[120px]"/><x-admin.form.button type="submit" variant="danger">ابطال</x-admin.form.button></x-admin.form>
+                                @endif
                             @elseif($ticket->invalidated_at)
                                 <div class="text-[11px] leading-5 text-slate-500">{{ $ticket->invalidation_reason }}<br>{{ jalali_date($ticket->invalidated_at,'Y/m/d H:i') }}</div>
                             @else <span class="text-xs text-slate-400">غیرقابل ابطال</span> @endif

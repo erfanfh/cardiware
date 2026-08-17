@@ -6,165 +6,189 @@ use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
 use App\Application\Loyalty\Actions\SpendPointsAction;
 use App\Application\Loyalty\DTOs\SpendPointsDTO;
 use App\Application\Loyalty\Exceptions\RewardOfferUnavailableException;
-use App\Application\Loyalty\Exceptions\RewardRedemptionIdempotencyConflictException;
 use App\Application\Loyalty\Exceptions\RewardRedemptionLimitExceededException;
-use App\Application\Promotion\Actions\Coupon\CreateCouponAction;
+use App\Application\Loyalty\Exceptions\RewardRedemptionIdempotencyConflictException;
+use App\Application\Loyalty\RewardFulfillment\Support\RewardFulfillmentHandlerResolver;
 use App\Domain\Identity\Models\User;
-use App\Domain\Loyalty\Enums\RewardTypeEnum;
+use App\Domain\Loyalty\Enums\RewardRedemptionStatusEnum;
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Domain\Loyalty\Models\RewardRedemption;
-use App\Domain\Promotion\Enums\CouponScopeEnum;
-use App\Domain\Promotion\Enums\CouponStatusEnum;
 use App\Domain\Promotion\Models\Coupon;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Throwable;
 
 class RedeemRewardOfferAction
 {
     public function __construct(
-        private readonly GetOrCreatePointAccountAction $getOrCreatePointAccountAction,
-        private readonly SpendPointsAction $spendPointsAction,
-        private readonly CreateCouponAction $createCouponAction,
+        private readonly GetOrCreatePointAccountAction $getOrCreatePointAccount,
+        private readonly SpendPointsAction $spendPoints,
+        private readonly RewardFulfillmentHandlerResolver $handlerResolver,
     ) {
     }
 
     /** @throws Throwable */
-    public function execute(RewardOffer $rewardOffer, User $user, string $idempotencyKey): RewardRedemption
-    {
-        if ($existing = $this->findExisting($rewardOffer, $user, $idempotencyKey)) {
+    public function execute(
+        RewardOffer $rewardOffer,
+        User $user,
+        string $idempotencyKey,
+    ): RewardRedemption {
+        $this->validate($rewardOffer, $user, $idempotencyKey);
+
+        if ($existing = $this->findExisting($idempotencyKey, $rewardOffer, $user)) {
             return $existing;
         }
 
-        return DB::transaction(function () use ($rewardOffer, $user, $idempotencyKey): RewardRedemption {
-            $lockedOffer = RewardOffer::query()
-                ->whereKey($rewardOffer->getKey())
-                ->lockForUpdate()
-                ->firstOrFail();
+        try {
+            return DB::transaction(function () use ($rewardOffer, $user, $idempotencyKey): RewardRedemption {
+                $offer = RewardOffer::query()
+                    ->whereKey($rewardOffer->getKey())
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            if ($existing = $this->findExisting($lockedOffer, $user, $idempotencyKey)) {
+                if ($existing = $this->findExisting($idempotencyKey, $offer, $user)) {
+                    return $existing;
+                }
+
+                if (!$offer->isCurrentlyActive()) {
+                    throw new RewardOfferUnavailableException(
+                        'This reward offer is not currently active.'
+                    );
+                }
+
+                if ($offer->hasReachedGlobalLimit()) {
+                    throw new RewardRedemptionLimitExceededException(
+                        'The global redemption limit for this reward has been reached.'
+                    );
+                }
+
+                $completedUserRedemptions = RewardRedemption::query()
+                    ->where('reward_offer_id', $offer->getKey())
+                    ->where('user_id', $user->getKey())
+                    ->where('status', RewardRedemptionStatusEnum::COMPLETED->value)
+                    ->count();
+
+                if (
+                    $offer->redemption_limit_per_user !== null
+                    && $completedUserRedemptions >= (int) $offer->redemption_limit_per_user
+                ) {
+                    throw new RewardRedemptionLimitExceededException(
+                        'The per-user redemption limit for this reward has been reached.'
+                    );
+                }
+
+                $offer->loadMissing('target');
+                $account = $this->getOrCreatePointAccount->execute($user);
+
+                $spendEntry = $this->spendPoints->execute(new SpendPointsDTO(
+                    account: $account,
+                    amount: (int) $offer->points_cost,
+                    reason: 'reward_redemption',
+                    idempotencyKey: 'loyalty:reward:' . $idempotencyKey . ':spend',
+                    actor: $user,
+                    reference: $offer,
+                    description: 'دریافت پاداش: ' . $offer->title,
+                    metadata: [
+                        'reward_offer_id' => $offer->getKey(),
+                        'reward_type' => $offer->type->value,
+                    ],
+                ));
+
+                $redemption = RewardRedemption::query()->create([
+                    'reward_offer_id' => $offer->getKey(),
+                    'user_id' => $user->getKey(),
+                    'point_ledger_entry_id' => $spendEntry->getKey(),
+                    'points_spent' => (int) $offer->points_cost,
+                    'status' => RewardRedemptionStatusEnum::PENDING,
+                    'idempotency_key' => $idempotencyKey,
+                    'metadata' => [
+                        'reward_snapshot' => [
+                            'code' => $offer->code,
+                            'title' => $offer->title,
+                            'type' => $offer->type->value,
+                            'points_cost' => (int) $offer->points_cost,
+                            'config' => $offer->config,
+                            'target_type' => $offer->target_type,
+                            'target_id' => $offer->target_id,
+                        ],
+                    ],
+                ]);
+
+                $fulfillment = $this->handlerResolver
+                    ->resolve($offer->type)
+                    ->fulfill($offer, $redemption, $user);
+
+                $redemption->forceFill([
+                    'coupon_id' => $fulfillment instanceof Coupon
+                        ? $fulfillment->getKey()
+                        : null,
+                    'fulfillment_type' => $fulfillment->getMorphClass(),
+                    'fulfillment_id' => $fulfillment->getKey(),
+                    'status' => RewardRedemptionStatusEnum::COMPLETED,
+                    'fulfilled_at' => now(),
+                ])->save();
+
+                $offer->forceFill([
+                    'redeemed_count' => (int) $offer->redeemed_count + 1,
+                ])->save();
+
+                return $redemption->loadMissing([
+                    'rewardOffer.target',
+                    'coupon',
+                    'fulfillment',
+                    'pointLedgerEntry',
+                ]);
+            }, 3);
+        } catch (QueryException $exception) {
+            if ($existing = $this->findExisting($idempotencyKey, $rewardOffer, $user)) {
                 return $existing;
             }
 
-            $this->assertAvailable($lockedOffer, $user);
-
-            $account = $this->getOrCreatePointAccountAction->execute($user);
-
-            $ledgerEntry = $this->spendPointsAction->execute(new SpendPointsDTO(
-                account: $account,
-                amount: (int)$lockedOffer->points_cost,
-                reason: 'reward_redemption',
-                idempotencyKey: 'loyalty:reward:' . $lockedOffer->id . ':' . $idempotencyKey,
-                actor: $user,
-                reference: $lockedOffer,
-                description: 'دریافت پاداش «' . $lockedOffer->title . '» از باشگاه مخاطبان',
-                metadata: [
-                    'reward_offer_id' => $lockedOffer->id,
-                    'reward_offer_code' => $lockedOffer->code,
-                ],
-            ));
-
-            $coupon = match ($lockedOffer->type) {
-                RewardTypeEnum::COUPON => $this->createCoupon($lockedOffer, $user),
-            };
-
-            $redemption = RewardRedemption::query()->create([
-                'reward_offer_id' => $lockedOffer->id,
-                'user_id' => $user->id,
-                'point_ledger_entry_id' => $ledgerEntry->id,
-                'coupon_id' => $coupon?->id,
-                'points_spent' => (int)$lockedOffer->points_cost,
-                'idempotency_key' => $idempotencyKey,
-                'metadata' => [
-                    'reward_title' => $lockedOffer->title,
-                    'reward_type' => $lockedOffer->type->value,
-                    'reward_config' => $lockedOffer->config,
-                ],
-            ]);
-
-            $lockedOffer->forceFill([
-                'redeemed_count' => (int)$lockedOffer->redeemed_count + 1,
-            ])->save();
-
-            return $redemption->load(['rewardOffer', 'coupon']);
-        }, 3);
-    }
-
-    private function assertAvailable(RewardOffer $rewardOffer, User $user): void
-    {
-        if (!$rewardOffer->isCurrentlyActive()) {
-            throw new RewardOfferUnavailableException('این پاداش در حال حاضر قابل دریافت نیست.');
-        }
-
-        if ($rewardOffer->hasReachedGlobalLimit()) {
-            throw new RewardOfferUnavailableException('ظرفیت دریافت این پاداش تکمیل شده است.');
-        }
-
-        if ($rewardOffer->redemption_limit_per_user !== null) {
-            $userRedemptions = RewardRedemption::query()
-                ->where('reward_offer_id', $rewardOffer->id)
-                ->where('user_id', $user->id)
-                ->count();
-
-            if ($userRedemptions >= (int)$rewardOffer->redemption_limit_per_user) {
-                throw new RewardRedemptionLimitExceededException('سقف دریافت این پاداش برای حساب شما تکمیل شده است.');
-            }
+            throw $exception;
         }
     }
 
-    private function findExisting(RewardOffer $rewardOffer, User $user, string $idempotencyKey): ?RewardRedemption
+    private function validate(RewardOffer $rewardOffer, User $user, string $idempotencyKey): void
     {
-        $existing = RewardRedemption::query()
+        if (!$rewardOffer->exists) {
+            throw new InvalidArgumentException('Reward offer must exist before it can be redeemed.');
+        }
+
+        if (!$user->exists) {
+            throw new InvalidArgumentException('Reward redemption user must exist.');
+        }
+
+        if (trim($idempotencyKey) === '' || Str::length($idempotencyKey) > 120) {
+            throw new InvalidArgumentException(
+                'Reward redemption idempotency key is required and cannot exceed 120 characters.'
+            );
+        }
+    }
+
+    private function findExisting(
+        string $idempotencyKey,
+        RewardOffer $rewardOffer,
+        User $user,
+    ): ?RewardRedemption {
+        $redemption = RewardRedemption::query()
             ->where('idempotency_key', $idempotencyKey)
             ->first();
 
-        if (!$existing) {
+        if (!$redemption) {
             return null;
         }
 
-        if ((int)$existing->reward_offer_id !== (int)$rewardOffer->id || (int)$existing->user_id !== (int)$user->id) {
-            throw new RewardRedemptionIdempotencyConflictException('شناسه درخواست دریافت پاداش با درخواست دیگری استفاده شده است.');
+        if (
+            (int) $redemption->reward_offer_id !== (int) $rewardOffer->getKey()
+            || (int) $redemption->user_id !== (int) $user->getKey()
+        ) {
+            throw new RewardRedemptionIdempotencyConflictException(
+                'The reward redemption idempotency key has already been used for another operation.'
+            );
         }
 
-        return $existing->loadMissing(['rewardOffer', 'coupon']);
-    }
-
-    /** @throws Throwable */
-    private function createCoupon(RewardOffer $rewardOffer, User $user): Coupon
-    {
-        $config = $rewardOffer->config;
-        $expiresAfterDays = isset($config['expires_after_days']) && $config['expires_after_days'] !== null
-            ? (int)$config['expires_after_days']
-            : null;
-
-        return $this->createCouponAction->execute([
-            'status' => CouponStatusEnum::ACTIVE->value,
-            'title' => 'پاداش باشگاه - ' . $rewardOffer->title,
-            'code' => $this->generateCouponCode($user),
-            'description' => 'کد تخفیف اختصاصی دریافت شده از باشگاه مخاطبان مودینگ وی.',
-            'type' => $config['coupon_type'],
-            'value' => (int)$config['coupon_value'],
-            'max_discount_amount' => $config['max_discount_amount'] ?? null,
-            'minimum_order_amount' => (int)($config['minimum_order_amount'] ?? 0),
-            'starts_at' => now(),
-            'expires_at' => $expiresAfterDays ? now()->addDays($expiresAfterDays) : null,
-            'usage_limit' => 1,
-            'usage_limit_per_user' => 1,
-            'scope' => CouponScopeEnum::ORDER->value,
-            'applies_to_all_users' => false,
-            'user_ids' => [$user->id],
-            'product_ids' => [],
-            'store_id' => null,
-            'applies_to_addons' => (bool)($config['applies_to_addons'] ?? false),
-        ], $user);
-    }
-
-    private function generateCouponCode(User $user): string
-    {
-        do {
-            $code = 'MWR-' . $user->id . '-' . Str::upper(Str::random(10));
-        } while (Coupon::withTrashed()->where('code', $code)->exists());
-
-        return $code;
+        return $redemption;
     }
 }

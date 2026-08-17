@@ -2,8 +2,8 @@
 
 namespace App\Application\Loyalty\Exceptions;
 
-use RuntimeException;
+use DomainException;
 
-class RewardRedemptionLimitExceededException extends RuntimeException
+class RewardRedemptionLimitExceededException extends DomainException
 {
 }

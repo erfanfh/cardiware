@@ -45,6 +45,10 @@ class AppServiceProvider extends ServiceProvider
             $this->app->register(TelescopeServiceProvider::class);
         }
 
+        if (class_exists(LoyaltyRaffleIntegrationServiceProvider::class)) {
+            $this->app->register(LoyaltyRaffleIntegrationServiceProvider::class);
+        }
+
         $this->app->scoped(
             ResolveCommentAuthorBadgesAction::class,
             fn() => new ResolveCommentAuthorBadgesAction()

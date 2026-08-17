@@ -2,8 +2,8 @@
 
 namespace App\Application\Loyalty\Exceptions;
 
-use RuntimeException;
+use DomainException;
 
-class RewardRedemptionIdempotencyConflictException extends RuntimeException
+class RewardRedemptionIdempotencyConflictException extends DomainException
 {
 }

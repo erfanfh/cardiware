@@ -3,94 +3,116 @@
 namespace App\Application\Loyalty\Actions;
 
 use App\Domain\Identity\Models\User;
+use App\Domain\Loyalty\Enums\RewardRedemptionStatusEnum;
+use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Loyalty\Models\EarningRule;
-use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Domain\Loyalty\Models\RewardRedemption;
+use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
+use App\Domain\Raffle\Models\TicketGrant;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Collection;
 
 class GetAudienceClubOverviewAction
 {
-    /**
-     * @return array{
-     *     account: PointAccount|null,
-     *     balance: int,
-     *     spendable_balance: int,
-     *     debt: int,
-     *     lifetime_earned: int,
-     *     lifetime_spent: int,
-     *     entries_count: int,
-     *     earning_rules: Collection<int, EarningRule>,
-     *     reward_offers: Collection<int, RewardOffer>,
-     *     reward_redemptions: LengthAwarePaginator<int, RewardRedemption>,
-     *     entries: LengthAwarePaginator<int, PointLedgerEntry>
-     * }
-     */
-    public function execute(User $user, int $perPage = 10): array
+    public function __construct(
+        private readonly EvaluateRewardOfferAvailabilityAction $evaluateReward,
+    ) {
+    }
+
+    /** @return array<string, mixed> */
+    public function execute(User $user): array
     {
         $account = $user->pointAccount()->first();
+        $balance = (int) ($account?->balance ?? 0);
 
-        $rules = EarningRule::query()
+        $pointEntries = $this->pointEntries($account?->getKey());
+        $earningRules = EarningRule::query()
             ->currentlyActive()
-            ->orderBy('type')
             ->orderByDesc('priority')
-            ->orderByDesc('id')
-            ->get()
-            ->unique(fn(EarningRule $rule): string => $rule->type->value)
-            ->values();
-
-        $rewardOffers = RewardOffer::query()
-            ->currentlyActive()
-            ->withCount([
-                'redemptions as user_redemptions_count' => fn($query) => $query->where('user_id', $user->id),
-            ])
-            ->orderBy('sort_order')
-            ->orderBy('points_cost')
             ->orderBy('id')
             ->get();
 
+        $rewardOffers = RewardOffer::query()
+            ->currentlyActive()
+            ->with('target')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->filter(function (RewardOffer $offer): bool {
+                if ($offer->type !== RewardTypeEnum::RAFFLE_TICKET) {
+                    return true;
+                }
+
+                $campaign = $offer->target;
+                if (!$campaign) {
+                    return false;
+                }
+
+                return in_array($campaign->status, [
+                    DrawCampaignStatusEnum::SCHEDULED,
+                    DrawCampaignStatusEnum::OPEN,
+                ], true);
+            })
+            ->values();
+
+        $rewardAvailabilities = $rewardOffers
+            ->mapWithKeys(fn(RewardOffer $offer) => [
+                $offer->getKey() => $this->evaluateReward->execute($offer, $user),
+            ]);
+
         $rewardRedemptions = RewardRedemption::query()
+            ->where('user_id', $user->getKey())
             ->with([
-                'rewardOffer:id,title,type,deleted_at',
-                'coupon:id,code,type,value,max_discount_amount,minimum_order_amount,status,starts_at,expires_at,usage_limit,used_count,deleted_at',
+                'rewardOffer.target',
+                'coupon',
+                'fulfillment' => function (MorphTo $morphTo): void {
+                    $morphTo->morphWith([
+                        TicketGrant::class => ['campaign', 'tickets'],
+                    ]);
+                },
+                'pointLedgerEntry',
+                'reversalPointLedgerEntry',
             ])
-            ->where('user_id', $user->id)
-            ->latest('created_at')
-            ->paginate(6, ['*'], 'reward_page')
-            ->withQueryString()
-            ->fragment('rewards');
-
-        $entriesQuery = PointLedgerEntry::query()
-            ->with(['earningRule:id,title,type'])
-            ->when(
-                $account,
-                fn($query) => $query->where('point_account_id', $account->id),
-                fn($query) => $query->whereRaw('1 = 0'),
-            )
-            ->orderByDesc('occurred_at')
-            ->orderByDesc('id');
-
-        $entries = $entriesQuery
-            ->paginate(max(5, min($perPage, 30)))
-            ->withQueryString()
-            ->fragment('point-history');
-
-        $balance = (int)($account?->balance ?? 0);
+            ->latest('id')
+            ->paginate(8, ['*'], 'rewards_page')
+            ->withQueryString();
 
         return [
-            'account' => $account,
-            'balance' => $balance,
-            'spendable_balance' => max(0, $balance),
-            'debt' => max(0, -$balance),
-            'lifetime_earned' => (int)($account?->lifetime_earned ?? 0),
-            'lifetime_spent' => (int)($account?->lifetime_spent ?? 0),
-            'entries_count' => $account ? (int)$account->entries()->count() : 0,
-            'earning_rules' => $rules,
-            'reward_offers' => $rewardOffers,
-            'reward_redemptions' => $rewardRedemptions,
-            'entries' => $entries,
+            'pointAccount' => $account,
+            'pointBalance' => $balance,
+            'spendablePointBalance' => max(0, $balance),
+            'lifetimeEarned' => (int) ($account?->lifetime_earned ?? 0),
+            'lifetimeSpent' => (int) ($account?->lifetime_spent ?? 0),
+            'pointEntries' => $pointEntries,
+            'earningRules' => $earningRules,
+            'rewardOffers' => $rewardOffers,
+            'rewardAvailabilities' => $rewardAvailabilities,
+            'rewardRedemptions' => $rewardRedemptions,
+            'completedRewardCount' => RewardRedemption::query()
+                ->where('user_id', $user->getKey())
+                ->where('status', RewardRedemptionStatusEnum::COMPLETED->value)
+                ->count(),
         ];
+    }
+
+    private function pointEntries(?int $accountId): LengthAwarePaginator
+    {
+        if (!$accountId) {
+            return PointLedgerEntry::query()
+                ->whereRaw('1 = 0')
+                ->paginate(12, ['*'], 'points_page')
+                ->withQueryString();
+        }
+
+        return PointLedgerEntry::query()
+            ->where('point_account_id', $accountId)
+            ->with(['earningRule', 'reference', 'reversalOf'])
+            ->orderByDesc('occurred_at')
+            ->orderByDesc('id')
+            ->paginate(12, ['*'], 'points_page')
+            ->withQueryString();
     }
 }

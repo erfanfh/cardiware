@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Admin\Raffle;
 
 use App\Application\Raffle\Actions\Ticket\InvalidateDrawTicketAction;
+use App\Application\Raffle\Actions\Ticket\InvalidateTicketGrantAction;
 use App\Application\Raffle\Actions\Ticket\IssueDrawTicketsAction;
 use App\Application\Raffle\DTOs\InvalidateDrawTicketDTO;
+use App\Application\Raffle\DTOs\InvalidateTicketGrantDTO;
 use App\Application\Raffle\DTOs\IssueDrawTicketsDTO;
 use App\Application\Raffle\Listings\DrawTicketListing;
 use App\Domain\Identity\Models\User;
 use App\Domain\Raffle\Enums\DrawTicketStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
 use App\Domain\Raffle\Models\DrawTicket;
+use App\Domain\Raffle\Models\TicketGrant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Raffle\IndexDrawTicketRequest;
 use App\Http\Requests\Admin\Raffle\InvalidateDrawTicketRequest;
+use App\Http\Requests\Admin\Raffle\InvalidateTicketGrantRequest;
 use App\Http\Requests\Admin\Raffle\IssueDrawTicketsRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -73,4 +77,33 @@ class DrawCampaignTicketController extends Controller
         }
         return back()->with('success', 'بلیط '.$drawTicket->code.' با موفقیت باطل شد.');
     }
+
+    /** @throws Throwable */
+    public function invalidateGrant(
+        InvalidateTicketGrantRequest $request,
+        DrawCampaign $drawCampaign,
+        TicketGrant $ticketGrant,
+        InvalidateTicketGrantAction $action,
+    ): RedirectResponse {
+        Gate::authorize('raffle-ticket.invalidate');
+        abort_unless((int) $ticketGrant->campaign_id === (int) $drawCampaign->id, 404);
+
+        try {
+            $action->execute(new InvalidateTicketGrantDTO(
+                grant: $ticketGrant,
+                reason: $request->validated('reason'),
+                invalidatedBy: $request->user(),
+            ));
+        } catch (\DomainException|\LogicException $exception) {
+            return back()
+                ->with('error', $exception->getMessage())
+                ->with('error_title', 'ابطال سری بلیط انجام نشد');
+        }
+
+        return back()->with(
+            'success',
+            'سری بلیط #' . $ticketGrant->id . ' با موفقیت باطل شد.'
+        );
+    }
+
 }

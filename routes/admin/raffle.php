@@ -15,6 +15,7 @@ Route::post('draw-campaigns/{draw_campaign}/transition', DrawCampaignStatusContr
 Route::get('draw-campaigns/{draw_campaign}/tickets', [DrawCampaignTicketController::class, 'index'])->name('draw-campaigns.tickets.index');
 Route::post('draw-campaigns/{draw_campaign}/tickets', [DrawCampaignTicketController::class, 'issue'])->name('draw-campaigns.tickets.issue');
 Route::post('draw-campaigns/{draw_campaign}/tickets/{draw_ticket}/invalidate', [DrawCampaignTicketController::class, 'invalidate'])->name('draw-campaigns.tickets.invalidate');
+Route::post('draw-campaigns/{draw_campaign}/ticket-grants/{ticket_grant}/invalidate', [DrawCampaignTicketController::class, 'invalidateGrant'])->name('draw-campaigns.ticket-grants.invalidate');
 Route::get('draw-campaigns/{draw_campaign}/participants', DrawCampaignParticipantController::class)->name('draw-campaigns.participants.index');
 
 Route::get('draw-campaigns/{draw_campaign}/draws', [DrawCampaignRunController::class, 'index'])->name('draw-campaigns.draws.index');

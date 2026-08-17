@@ -5,41 +5,68 @@ namespace App\Http\Controllers\Front\Loyalty;
 use App\Application\Loyalty\Actions\Reward\RedeemRewardOfferAction;
 use App\Application\Loyalty\Exceptions\InsufficientPointsException;
 use App\Application\Loyalty\Exceptions\RewardOfferUnavailableException;
-use App\Application\Loyalty\Exceptions\RewardRedemptionIdempotencyConflictException;
 use App\Application\Loyalty\Exceptions\RewardRedemptionLimitExceededException;
+use App\Application\Loyalty\Exceptions\RewardRedemptionIdempotencyConflictException;
+use App\Application\Raffle\Exceptions\DrawCampaignNotAcceptingTicketsException;
+use App\Application\Raffle\Exceptions\DrawTicketCapacityExceededException;
+use App\Application\Raffle\Exceptions\DrawUserTicketLimitExceededException;
+use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Loyalty\Models\RewardOffer;
+use App\Domain\Raffle\Models\TicketGrant;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Front\Loyalty\RedeemRewardOfferRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Throwable;
 
 class RedeemRewardOfferController extends Controller
 {
+    /** @throws Throwable */
     public function __invoke(
-        RedeemRewardOfferRequest $request,
+        Request $request,
         RewardOffer $rewardOffer,
-        RedeemRewardOfferAction $action,
+        RedeemRewardOfferAction $redeemReward,
     ): RedirectResponse {
-        try {
-            $redemption = $action->execute($rewardOffer, $request->user(), $request->idempotencyKey());
+        $request->validate([
+            'idempotency_key' => ['required', 'string', 'max:120'],
+        ]);
 
-            return redirect()->to(route('account.loyalty') . '#rewards')
-                ->with('success', 'پاداش با موفقیت دریافت شد. کد تخفیف اختصاصی شما آماده استفاده است.')
-                ->with('reward_redemption_token', $redemption->public_token);
+        try {
+            $redemption = $redeemReward->execute(
+                rewardOffer: $rewardOffer,
+                user: $request->user(),
+                idempotencyKey: (string) $request->input('idempotency_key'),
+            );
         } catch (InsufficientPointsException) {
-            return redirect()->to(route('account.loyalty') . '#rewards')
-                ->with('error', 'امتیاز قابل استفاده شما برای دریافت این پاداش کافی نیست.');
-        } catch (RewardOfferUnavailableException|RewardRedemptionLimitExceededException $exception) {
-            return redirect()->to(route('account.loyalty') . '#rewards')
-                ->with('error', $exception->getMessage());
-        } catch (RewardRedemptionIdempotencyConflictException $exception) {
-            report($exception);
-            return redirect()->to(route('account.loyalty') . '#rewards')
-                ->with('error', 'درخواست دریافت پاداش معتبر نیست. صفحه را تازه‌سازی و دوباره تلاش کنید.');
-        } catch (Throwable $exception) {
-            report($exception);
-            return redirect()->to(route('account.loyalty') . '#rewards')
-                ->with('error', 'در دریافت پاداش مشکلی رخ داد. لطفا دوباره تلاش کنید.');
+            return back()->with('error', 'امتیاز شما برای دریافت این پاداش کافی نیست.');
+        } catch (RewardRedemptionLimitExceededException) {
+            return back()->with('error', 'سقف مجاز دریافت این پاداش تکمیل شده است.');
+        } catch (RewardRedemptionIdempotencyConflictException) {
+            return back()->with('error', 'شناسه این درخواست قبلا برای عملیات دیگری استفاده شده است. صفحه را تازه سازی و دوباره تلاش کنید.');
+        } catch (RewardOfferUnavailableException) {
+            return back()->with('error', 'این پاداش در حال حاضر قابل دریافت نیست.');
+        } catch (DrawCampaignNotAcceptingTicketsException) {
+            return back()->with('error', 'این قرعه کشی در حال حاضر بلیط جدید نمی پذیرد.');
+        } catch (DrawTicketCapacityExceededException) {
+            return back()->with('error', 'ظرفیت باقی مانده قرعه کشی برای این پاداش کافی نیست.');
+        } catch (DrawUserTicketLimitExceededException) {
+            return back()->with('error', 'با دریافت این پاداش از سقف مجاز بلیط شما عبور می شود.');
         }
+
+        if (
+            $rewardOffer->type === RewardTypeEnum::RAFFLE_TICKET
+            && $redemption->fulfillment instanceof TicketGrant
+        ) {
+            return redirect()
+                ->route('account.raffles')
+                ->with('success', sprintf(
+                    '%s با موفقیت دریافت شد و بلیط های شما صادر شدند.',
+                    $rewardOffer->title,
+                ));
+        }
+
+        return redirect()
+            ->to(route('account.loyalty') . '#rewards')
+            ->with('success', 'پاداش با موفقیت دریافت شد.');
     }
 }

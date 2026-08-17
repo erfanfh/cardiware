@@ -8,6 +8,7 @@ use App\Domain\Raffle\Enums\DrawTicketStatusEnum;
 use App\Domain\Raffle\Events\DrawTicketsInvalidatedEvent;
 use App\Domain\Raffle\Models\DrawCampaign;
 use App\Domain\Raffle\Models\DrawTicket;
+use App\Domain\Raffle\Models\TicketGrant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -33,6 +34,16 @@ class InvalidateDrawTicketAction
 
             if ($ticket->status === DrawTicketStatusEnum::INVALIDATED) {
                 return $ticket;
+            }
+
+            $grant = TicketGrant::query()
+                ->whereKey($ticket->ticket_grant_id)
+                ->first();
+
+            if (data_get($grant?->metadata, 'invalidation_mode') === 'grant') {
+                throw new DrawTicketInvalidationNotAllowedException(
+                    'Tickets from this grant must be invalidated as a whole grant.'
+                );
             }
 
             if (!$campaign->status->allowsTicketInvalidation()) {

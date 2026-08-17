@@ -206,6 +206,8 @@
                     </x-front.cart>
                 @endauth
 
+                @include('front.raffles.partials.loyalty-rewards')
+
                 <section id="prizes" class="scroll-mt-24">
                     <div class="mb-4 flex items-end justify-between gap-4">
                         <div>

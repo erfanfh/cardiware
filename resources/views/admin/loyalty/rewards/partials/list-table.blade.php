@@ -1,3 +1,9 @@
+@php
+    use App\Domain\Loyalty\Enums\RewardTypeEnum;
+    use App\Domain\Promotion\Enums\CouponTypeEnum;
+    use App\Domain\Raffle\Models\DrawCampaign;
+@endphp
+
 <x-admin.list.table>
     <x-admin.list.thead>
         <tr>
@@ -9,30 +15,32 @@
             </x-admin.list.th>
             <x-admin.list.th width="300px">پاداش</x-admin.list.th>
             <x-admin.list.th width="150px">نوع</x-admin.list.th>
-            <x-admin.list.th width="250px">جزئیات جایزه</x-admin.list.th>
-            <x-admin.list.th width="130px" label="هزینه" sortable sortKey="points_cost" :current-sort="request('sort')" :current-direction="request('direction', 'asc')"/>
-            <x-admin.list.th width="180px">محدودیت دریافت</x-admin.list.th>
-            <x-admin.list.th width="180px">بازه اجرا</x-admin.list.th>
-            <x-admin.list.th width="120px">وضعیت</x-admin.list.th>
-            <x-admin.list.th width="120px" label="دریافت شده" sortable sortKey="redeemed_count" :current-sort="request('sort')" :current-direction="request('direction', 'asc')"/>
+            <x-admin.list.th width="280px">جزئیات</x-admin.list.th>
+            <x-admin.list.th width="120px">هزینه</x-admin.list.th>
+            <x-admin.list.th width="165px">محدودیت دریافت</x-admin.list.th>
+            <x-admin.list.th width="150px">وضعیت</x-admin.list.th>
+            <x-admin.list.th width="110px">دریافت موفق</x-admin.list.th>
         </tr>
     </x-admin.list.thead>
 
     <x-admin.list.tbody>
         @forelse($rewardOffers as $rewardOffer)
             @php
-                $config = $rewardOffer->config ?? [];
-                $couponType = $config['coupon_type'] ?? 'fixed_amount';
+                $isRaffle = $rewardOffer->type === RewardTypeEnum::RAFFLE_TICKET;
+                $campaign = $isRaffle && $rewardOffer->target instanceof DrawCampaign ? $rewardOffer->target : null;
+                $cfg = $rewardOffer->config ?? [];
                 $now = now();
 
                 if (!$rewardOffer->is_active) {
                     $statusLabel = 'غیرفعال'; $statusColor = 'slate';
                 } elseif ($rewardOffer->starts_at && $rewardOffer->starts_at->gt($now)) {
-                    $statusLabel = 'زمان‌بندی شده'; $statusColor = 'blue';
+                    $statusLabel = 'زمان بندی شده'; $statusColor = 'blue';
                 } elseif ($rewardOffer->ends_at && $rewardOffer->ends_at->lt($now)) {
                     $statusLabel = 'پایان یافته'; $statusColor = 'red';
                 } elseif ($rewardOffer->hasReachedGlobalLimit()) {
                     $statusLabel = 'تکمیل ظرفیت'; $statusColor = 'yellow';
+                } elseif($isRaffle && !$campaign?->acceptsTicketsAt()) {
+                    $statusLabel = $campaign ? $campaign->status->label() : 'هدف نامعتبر'; $statusColor = 'yellow';
                 } else {
                     $statusLabel = 'قابل دریافت'; $statusColor = 'green';
                 }
@@ -45,9 +53,7 @@
 
                 <x-admin.list.td>
                     <div class="min-w-[240px] max-w-[300px]">
-                        <a href="{{ route('admin.reward-offers.edit', $rewardOffer) }}" class="block truncate text-sm font-bold leading-6 text-slate-800 transition hover:text-brand-600">
-                            {{ $rewardOffer->title }}
-                        </a>
+                        <a href="{{ route('admin.reward-offers.edit', $rewardOffer) }}" class="block truncate text-sm font-bold leading-6 text-slate-800 transition hover:text-brand-600">{{ $rewardOffer->title }}</a>
                         <div class="mt-2 flex items-center gap-2">
                             <x-admin.badge color="dark" size="sm" dir="ltr">{{ $rewardOffer->code }}</x-admin.badge>
                             <span class="text-[11px] text-slate-400">#{{ $rewardOffer->id }}</span>
@@ -58,7 +64,7 @@
                             @endcan
                             @can('loyalty-reward.delete')
                                 @can('loyalty-reward.edit')<span class="text-slate-300">|</span>@endcan
-                                <x-admin.form action="{{ route('admin.reward-offers.destroy', $rewardOffer) }}" method="delete" class="js-confirm" data-confirm-title="حذف پاداش" data-confirm-text="آیا از حذف پاداش «{{ $rewardOffer->title }}» مطمئن هستید؟ سوابق دریافت کاربران حفظ می‌شود.">
+                                <x-admin.form action="{{ route('admin.reward-offers.destroy', $rewardOffer) }}" method="delete" class="js-confirm" data-confirm-title="حذف پاداش" data-confirm-text="سوابق دریافت قبلی حفظ می شوند. آیا مطمئن هستید؟">
                                     <x-admin.list.action tag="button" type="submit" variant="danger">حذف</x-admin.list.action>
                                 </x-admin.form>
                             @endcan
@@ -66,25 +72,33 @@
                     </div>
                 </x-admin.list.td>
 
-                <x-admin.list.td><x-admin.badge color="brand" size="md">{{ $rewardOffer->type->label() }}</x-admin.badge></x-admin.list.td>
+                <x-admin.list.td>
+                    <x-admin.badge :color="$isRaffle ? 'yellow' : 'brand'" size="md">{{ $rewardOffer->type->label() }}</x-admin.badge>
+                </x-admin.list.td>
 
                 <x-admin.list.td>
-                    <div class="min-w-[220px] space-y-1 text-xs leading-6 text-slate-600">
-                        <div class="font-bold text-slate-800">
-                            @if($couponType === 'percentage')
-                                {{ number_format((int)($config['coupon_value'] ?? 0)) }}٪ تخفیف
-                            @else
-                                {{ number_format((int)($config['coupon_value'] ?? 0)) }} تومان تخفیف
+                    @if($isRaffle)
+                        <div class="min-w-[240px] space-y-1 text-xs leading-6 text-slate-600">
+                            <div class="font-black text-slate-800">{{ number_format((int)($cfg['ticket_quantity'] ?? 0)) }} بلیط</div>
+                            <div>{{ $campaign?->title ?? 'قرعه کشی حذف یا نامعتبر' }}</div>
+                            @if($campaign)
+                                <div class="text-[11px] text-slate-400">وضعیت Campaign: {{ $campaign->status->label() }}</div>
                             @endif
                         </div>
-                        @if($couponType === 'percentage' && !empty($config['max_discount_amount']))
-                            <div>سقف تخفیف: {{ number_format((int)$config['max_discount_amount']) }} تومان</div>
-                        @endif
-                        @if((int)($config['minimum_order_amount'] ?? 0) > 0)
-                            <div>حداقل خرید: {{ number_format((int)$config['minimum_order_amount']) }} تومان</div>
-                        @endif
-                        <div>اعتبار: {{ !empty($config['expires_after_days']) ? number_format((int)$config['expires_after_days']) . ' روز' : 'بدون انقضا' }}</div>
-                    </div>
+                    @else
+                        <div class="min-w-[240px] space-y-1 text-xs leading-6 text-slate-600">
+                            <div class="font-black text-slate-800">
+                                @if(($cfg['coupon_type'] ?? null) === CouponTypeEnum::PERCENTAGE->value)
+                                    {{ number_format((int)($cfg['coupon_value'] ?? 0)) }}٪ تخفیف
+                                @else
+                                    {{ number_format((int)($cfg['coupon_value'] ?? 0)) }} تومان تخفیف
+                                @endif
+                            </div>
+                            @if((int)($cfg['minimum_order_amount'] ?? 0) > 0)
+                                <div>حداقل خرید: {{ number_format((int)$cfg['minimum_order_amount']) }} تومان</div>
+                            @endif
+                        </div>
+                    @endif
                 </x-admin.list.td>
 
                 <x-admin.list.td>
@@ -99,29 +113,17 @@
                     </div>
                 </x-admin.list.td>
 
-                <x-admin.list.td muted>
-                    <div class="space-y-1 text-xs leading-6">
-                        <div>{{ $rewardOffer->starts_at ? 'شروع: ' . jalali_date($rewardOffer->starts_at, 'Y/m/d H:i') : 'شروع: نامحدود' }}</div>
-                        <div>{{ $rewardOffer->ends_at ? 'پایان: ' . jalali_date($rewardOffer->ends_at, 'Y/m/d H:i') : 'پایان: نامحدود' }}</div>
-                    </div>
-                </x-admin.list.td>
-
                 <x-admin.list.td><x-admin.badge :color="$statusColor" size="md">{{ $statusLabel }}</x-admin.badge></x-admin.list.td>
 
                 <x-admin.list.td>
                     <div class="text-sm font-black text-slate-800">{{ number_format((int)$rewardOffer->redeemed_count) }}</div>
                     @if($rewardOffer->remainingRedemptions() !== null)
-                        <div class="mt-1 text-[11px] text-slate-400">{{ number_format($rewardOffer->remainingRedemptions()) }} باقی‌مانده</div>
+                        <div class="mt-1 text-[11px] text-slate-400">{{ number_format($rewardOffer->remainingRedemptions()) }} باقی مانده</div>
                     @endif
                 </x-admin.list.td>
             </x-admin.list.tr>
         @empty
-            <x-admin.list.empty
-                title="پاداشی برای نمایش وجود ندارد"
-                description="هنوز پاداشی برای خرج کردن امتیاز کاربران تعریف نشده است."
-                action-text="افزودن پاداش جدید"
-                :action-href="route('admin.reward-offers.create')"
-            />
+            <x-admin.list.empty title="پاداشی برای نمایش وجود ندارد" description="هنوز پاداشی برای خرج کردن امتیاز کاربران تعریف نشده است." action-text="افزودن پاداش جدید" :action-href="route('admin.reward-offers.create')"/>
         @endforelse
     </x-admin.list.tbody>
 </x-admin.list.table>
