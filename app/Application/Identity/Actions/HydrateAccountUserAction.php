@@ -25,6 +25,9 @@ class HydrateAccountUserAction
         $user->setAttribute('open_tickets_count', $stats['open_tickets_count']);
         $user->setAttribute('avatar_url', $avatar['url']);
 
+        $pointAccount = $user->pointAccount()->first(['balance']);
+        $user->setAttribute('loyalty_points', max(0, (int)($pointAccount?->balance ?? 0)));
+
         return $user;
     }
 }

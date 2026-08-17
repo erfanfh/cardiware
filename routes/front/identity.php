@@ -22,5 +22,6 @@ Route::prefix('account')->middleware('auth')->name('account.')->controller(Accou
     Route::get('transactions', [AccountController::class, 'transactions'])->name('transactions');
     Route::get('security', [AccountController::class, 'security'])->name('security');
     Route::get('wallet', [AccountController::class, 'wallet'])->name('wallet');
+    Route::get('loyalty', [AccountController::class, 'loyalty'])->name('loyalty');
 });
 
