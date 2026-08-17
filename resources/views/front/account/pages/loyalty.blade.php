@@ -12,6 +12,9 @@
     $lifetimeSpent = $club['lifetime_spent'];
     $entriesCount = $club['entries_count'];
     $earningRules = $club['earning_rules'];
+    $rewardOffers = $club['reward_offers'];
+    $rewardRedemptions = $club['reward_redemptions'];
+    $highlightedRedemptionToken = session('reward_redemption_token');
     $entries = $club['entries'];
 @endphp
 
@@ -50,8 +53,16 @@
 
                         <div class="mt-4 flex flex-wrap gap-2">
                             <a
-                                href="#earning-methods"
+                                href="#rewards"
                                 class="inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white shadow-soft transition hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-400 [&_svg]:h-4 [&_svg]:w-4"
+                            >
+                                دریافت پاداش
+                                @include('icons.discount')
+                            </a>
+
+                            <a
+                                href="#earning-methods"
+                                class="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 text-xs font-extrabold text-slate-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 [&_svg]:h-4 [&_svg]:w-4"
                             >
                                 راه‌های کسب امتیاز
                                 @include('icons.arrow-down-01')
@@ -154,6 +165,241 @@
                     </div>
                 </div>
             @endforeach
+        </section>
+
+        {{-- Rewards --}}
+        <section id="rewards" class="scroll-mt-32">
+            <x-front.cart class="relative overflow-hidden !p-4 sm:!p-5">
+                <div class="pointer-events-none absolute -left-16 -top-20 h-44 w-44 rounded-full bg-amber-100/60 blur-3xl dark:bg-amber-500/5"></div>
+
+                <div class="relative">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <x-front.cart-title
+                            class="!mb-0"
+                            title="پاداش‌های قابل دریافت"
+                            subtitle="امتیازهات رو برای مزایای واقعی خرج کن؛ اولین نوع پاداش به کد تخفیف اختصاصی وصل شده"
+                            icon-name="discount"
+                        />
+
+                        <div class="inline-flex w-fit items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-3 py-1.5 text-[10px] font-extrabold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                            <span>{{ number_format($spendableBalance) }}</span>
+                            <span>امتیاز قابل استفاده</span>
+                        </div>
+                    </div>
+
+                    @if(session('success'))
+                        <div class="mt-4 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold leading-6 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+                            <span class="mt-0.5 [&_svg]:h-5 [&_svg]:w-5">@include('icons.checkmark-badge-01')</span>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    @endif
+
+                    @if(session('error'))
+                        <div class="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold leading-6 text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if($rewardOffers->isEmpty())
+                        <div class="mt-5 rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-5 py-9 text-center dark:border-slate-700 dark:bg-slate-800/50">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm dark:bg-slate-900 dark:text-slate-500 [&_svg]:h-6 [&_svg]:w-6">
+                                @include('icons.discount')
+                            </div>
+                            <div class="mt-3 text-sm font-black text-slate-800 dark:text-slate-200">فعلا پاداش فعالی وجود نداره</div>
+                            <div class="mx-auto mt-1 max-w-md text-xs font-semibold leading-6 text-slate-500 dark:text-slate-400">
+                                امتیازهات محفوظ می‌مونن و به محض فعال شدن پاداش جدید، همین‌جا می‌تونی دریافتش کنی.
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-5 grid grid-cols-1 gap-4 xl:grid-cols-2">
+                            @foreach($rewardOffers as $rewardOffer)
+                                @php
+                                    $rewardConfig = $rewardOffer->config ?? [];
+                                    $couponType = $rewardConfig['coupon_type'] ?? 'fixed_amount';
+                                    $couponValue = (int)($rewardConfig['coupon_value'] ?? 0);
+                                    $userRedemptionsCount = (int)($rewardOffer->user_redemptions_count ?? 0);
+                                    $userLimitReached = $rewardOffer->redemption_limit_per_user !== null
+                                        && $userRedemptionsCount >= (int)$rewardOffer->redemption_limit_per_user;
+                                    $soldOut = $rewardOffer->hasReachedGlobalLimit();
+                                    $canAfford = $spendableBalance >= (int)$rewardOffer->points_cost;
+                                    $canRedeem = !$soldOut && !$userLimitReached && $canAfford;
+                                    $modalName = 'redeem-reward-' . $rewardOffer->id;
+                                    $redemptionRequestKey = (string) \Illuminate\Support\Str::uuid();
+                                @endphp
+
+                                <article class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-white to-slate-50 p-4 transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-soft sm:p-5 dark:border-slate-700 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 dark:hover:border-brand-500/30 dark:hover:shadow-black/20">
+                                    <div class="pointer-events-none absolute -left-10 -top-10 h-28 w-28 rounded-full bg-brand-100/60 blur-3xl transition group-hover:bg-brand-200/70 dark:bg-brand-500/5 dark:group-hover:bg-brand-500/10"></div>
+
+                                    <div class="relative flex h-full flex-col">
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="flex min-w-0 items-start gap-3">
+                                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-amber-100 bg-amber-50 text-amber-600 shadow-sm dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300 [&_svg]:h-6 [&_svg]:w-6">
+                                                    @include('icons.discount')
+                                                </span>
+                                                <div class="min-w-0">
+                                                    <h3 class="text-sm font-black leading-6 text-slate-900 sm:text-base dark:text-white">{{ $rewardOffer->title }}</h3>
+                                                    <p class="mt-1 text-[11px] font-semibold leading-6 text-slate-500 dark:text-slate-400">
+                                                        {{ $rewardOffer->description ?: 'این پاداش با امتیازهای باشگاه قابل دریافت است.' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <span class="shrink-0 rounded-full border border-brand-100 bg-brand-50 px-2.5 py-1 text-[10px] font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                                                {{ number_format($rewardOffer->points_cost) }} امتیاز
+                                            </span>
+                                        </div>
+
+                                        <div class="mt-4 grid grid-cols-2 gap-2 text-[10px] font-bold sm:grid-cols-3">
+                                            <div class="rounded-2xl border border-slate-100 bg-white/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900/60">
+                                                <div class="text-slate-400 dark:text-slate-500">تخفیف</div>
+                                                <div class="mt-1 text-slate-800 dark:text-slate-200">
+                                                    {{ $couponType === 'percentage' ? number_format($couponValue) . '٪' : number_format($couponValue) . ' تومان' }}
+                                                </div>
+                                            </div>
+                                            <div class="rounded-2xl border border-slate-100 bg-white/80 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-900/60">
+                                                <div class="text-slate-400 dark:text-slate-500">اعتبار کد</div>
+                                                <div class="mt-1 text-slate-800 dark:text-slate-200">
+                                                    {{ !empty($rewardConfig['expires_after_days']) ? number_format((int)$rewardConfig['expires_after_days']) . ' روز' : 'بدون انقضا' }}
+                                                </div>
+                                            </div>
+                                            <div class="col-span-2 rounded-2xl border border-slate-100 bg-white/80 px-3 py-2.5 sm:col-span-1 dark:border-slate-700 dark:bg-slate-900/60">
+                                                <div class="text-slate-400 dark:text-slate-500">دریافت شما</div>
+                                                <div class="mt-1 text-slate-800 dark:text-slate-200">
+                                                    {{ number_format($userRedemptionsCount) }}{{ $rewardOffer->redemption_limit_per_user ? ' از ' . number_format($rewardOffer->redemption_limit_per_user) : ' بار' }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if((int)($rewardConfig['minimum_order_amount'] ?? 0) > 0 || ($couponType === 'percentage' && !empty($rewardConfig['max_discount_amount'])))
+                                            <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                                                @if((int)($rewardConfig['minimum_order_amount'] ?? 0) > 0)
+                                                    <span>حداقل خرید: {{ number_format((int)$rewardConfig['minimum_order_amount']) }} تومان</span>
+                                                @endif
+                                                @if($couponType === 'percentage' && !empty($rewardConfig['max_discount_amount']))
+                                                    <span>سقف تخفیف: {{ number_format((int)$rewardConfig['max_discount_amount']) }} تومان</span>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        <div class="mt-auto pt-4">
+                                            @if($soldOut)
+                                                <button disabled class="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-2xl bg-slate-100 px-4 text-xs font-extrabold text-slate-400 dark:bg-slate-700 dark:text-slate-500">ظرفیت این پاداش تکمیل شده</button>
+                                            @elseif($userLimitReached)
+                                                <button disabled class="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-2xl bg-emerald-50 px-4 text-xs font-extrabold text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">سقف دریافت شما تکمیل شده</button>
+                                            @elseif(!$canAfford)
+                                                <div class="flex items-center justify-between gap-3 rounded-2xl border border-amber-100 bg-amber-50 px-3 py-2.5 dark:border-amber-500/20 dark:bg-amber-500/10">
+                                                    <span class="text-[10px] font-bold text-amber-700 dark:text-amber-300">{{ number_format(max(0, $rewardOffer->points_cost - $spendableBalance)) }} امتیاز دیگه نیاز داری</span>
+                                                    <a href="#earning-methods" class="text-[10px] font-black text-brand-600 hover:text-brand-700 dark:text-brand-300">راه‌های کسب امتیاز</a>
+                                                </div>
+                                            @else
+                                                <button
+                                                    type="button"
+                                                    x-data
+                                                    @click="$dispatch('open-modal', '{{ $modalName }}')"
+                                                    class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400 [&_svg]:h-4 [&_svg]:w-4"
+                                                >
+                                                    دریافت پاداش
+                                                    @include('icons.arrow-left-02')
+                                                </button>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </article>
+
+                                @if($canRedeem)
+                                    <x-front.modal
+                                        :name="$modalName"
+                                        title="تأیید دریافت پاداش"
+                                        description="بعد از تأیید، امتیاز این پاداش از موجودی حساب شما کم می‌شود."
+                                        maxWidth="max-w-lg"
+                                    >
+                                        <div class="rounded-3xl border border-brand-100 bg-brand-50/70 p-4 sm:p-5 dark:border-brand-500/20 dark:bg-brand-500/10">
+                                            <div class="flex items-start gap-3">
+                                                <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-brand-600 shadow-sm dark:bg-slate-900 dark:text-brand-300 [&_svg]:h-6 [&_svg]:w-6">@include('icons.discount')</span>
+                                                <div>
+                                                    <h3 class="text-sm font-black text-slate-900 dark:text-white">{{ $rewardOffer->title }}</h3>
+                                                    <p class="mt-1.5 text-xs font-semibold leading-6 text-slate-600 dark:text-slate-400">
+                                                        برای دریافت این پاداش <strong class="text-slate-900 dark:text-white">{{ number_format($rewardOffer->points_cost) }} امتیاز</strong> مصرف می‌شه و یک کد تخفیف اختصاصی فقط برای حساب شما ساخته می‌شه.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <x-slot name="footer">
+                                            <div class="flex w-full flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                                <button type="button" x-data @click="$dispatch('close-modal', '{{ $modalName }}')" class="inline-flex h-11 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">انصراف</button>
+                                                <form method="POST" action="{{ route('account.loyalty.rewards.redeem', $rewardOffer) }}" class="w-full sm:w-auto">
+                                                    @csrf
+                                                    <input type="hidden" name="idempotency_key" value="{{ $redemptionRequestKey }}">
+                                                    <button type="submit" class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-xs font-extrabold text-white shadow-soft transition hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-400 sm:w-auto">
+                                                        تأیید و دریافت
+                                                        <span class="rounded-full bg-white/15 px-2 py-0.5">{{ number_format($rewardOffer->points_cost) }}</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </x-slot>
+                                    </x-front.modal>
+                                @endif
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if($rewardRedemptions->isNotEmpty())
+                        <div class="mt-6 border-t border-slate-100 pt-5 dark:border-slate-800">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <h3 class="text-sm font-black text-slate-900 dark:text-white">پاداش‌های دریافت‌شده شما</h3>
+                                    <p class="mt-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">آخرین کدهای اختصاصی ساخته‌شده از امتیازهای باشگاه</p>
+                                </div>
+                                <span class="text-[10px] font-bold text-slate-400">{{ number_format($rewardRedemptions->total()) }} پاداش ثبت شده</span>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+                                @foreach($rewardRedemptions as $redemption)
+                                    @php
+                                        $coupon = $redemption->coupon;
+                                        $isHighlighted = $highlightedRedemptionToken === $redemption->public_token;
+                                        $couponExpired = $coupon?->expires_at && $coupon->expires_at->isPast();
+                                        $couponUsable = $coupon && !$coupon->trashed() && $coupon->isCurrentlyUsable() && !$coupon->hasReachedUsageLimit();
+                                    @endphp
+                                    <div
+                                        x-data="{ copied: false, copyCode() { navigator.clipboard?.writeText(@js($coupon?->code ?? '')).then(() => { this.copied = true; setTimeout(() => this.copied = false, 1800) }) } }"
+                                        class="rounded-3xl border p-4 transition {{ $isHighlighted ? 'border-emerald-300 bg-emerald-50/70 ring-2 ring-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:ring-emerald-500/10' : 'border-slate-200 bg-slate-50/70 dark:border-slate-700 dark:bg-slate-800/50' }}"
+                                    >
+                                        <div class="flex items-start justify-between gap-3">
+                                            <div class="min-w-0">
+                                                <div class="truncate text-xs font-black text-slate-900 dark:text-white">{{ $redemption->rewardOffer?->title ?? 'پاداش باشگاه' }}</div>
+                                                <div class="mt-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">{{ jalali_date($redemption->created_at, 'Y/m/d - H:i') }} · {{ number_format($redemption->points_spent) }} امتیاز</div>
+                                            </div>
+                                            <span class="rounded-full px-2 py-1 text-[9px] font-black {{ $couponUsable ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400' }}">
+                                                {{ $couponUsable ? 'قابل استفاده' : ($couponExpired ? 'منقضی شده' : 'استفاده شده/غیرفعال') }}
+                                            </span>
+                                        </div>
+
+                                        @if($coupon)
+                                            <div class="mt-3 flex items-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-white px-3 py-2.5 dark:border-slate-600 dark:bg-slate-900/70" dir="ltr">
+                                                <code class="min-w-0 flex-1 truncate text-sm font-black tracking-wider text-slate-800 dark:text-slate-100">{{ $coupon->code }}</code>
+                                                <button type="button" @click="copyCode()" class="shrink-0 cursor-pointer rounded-xl bg-slate-100 px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 transition hover:bg-brand-50 hover:text-brand-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                                                    <span x-show="!copied">کپی</span><span x-show="copied" x-cloak>کپی شد</span>
+                                                </button>
+                                            </div>
+                                            <div class="mt-2 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                                                {{ $coupon->expires_at ? 'اعتبار تا ' . jalali_date($coupon->expires_at, 'Y/m/d H:i') : 'بدون تاریخ انقضا' }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            @if($rewardRedemptions->hasPages())
+                                <div class="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
+                                    {{ $rewardRedemptions->onEachSide(1)->links() }}
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </x-front.cart>
         </section>
 
         {{-- Ways to earn --}}
@@ -287,6 +533,7 @@
                             EarningRuleTypeEnum::COMMENT->value => 'ثبت دیدگاه',
                             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY->value => 'سالگرد عضویت',
                             'manual_adjustment' => 'اصلاح دستی',
+                            'reward_redemption' => 'دریافت پاداش',
                             'reversal' => 'برگشت امتیاز',
                             default => $entry->type->label(),
                         };

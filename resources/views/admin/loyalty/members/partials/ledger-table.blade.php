@@ -35,6 +35,7 @@
                 $reasonLabel = \App\Domain\Loyalty\Enums\EarningRuleTypeEnum::tryFrom($entry->reason)?->label()
                     ?? match($entry->reason) {
                         'manual_adjustment' => 'اصلاح دستی',
+                        'reward_redemption' => 'دریافت پاداش',
                         'reversal' => 'برگشت تراکنش',
                         default => $entry->reason,
                     };
