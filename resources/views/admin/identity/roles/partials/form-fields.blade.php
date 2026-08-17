@@ -34,6 +34,9 @@
         'loyalty-rule' => 'باشگاه مخاطبان - قوانین امتیاز',
         'loyalty-account' => 'باشگاه مخاطبان - کاربران و امتیازات',
         'loyalty-reward' => 'باشگاه مخاطبان - پاداش‌ها',
+        'raffle-campaign' => 'قرعه کشی ها - مدیریت',
+        'raffle-ticket' => 'قرعه کشی ها - بلیط ها',
+        'raffle-participant' => 'قرعه کشی ها - شرکت کنندگان',
     ];
 @endphp
 

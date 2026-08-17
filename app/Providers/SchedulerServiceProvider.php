@@ -44,5 +44,10 @@ class SchedulerServiceProvider extends ServiceProvider
             ->dailyAt('03:30')
             ->withoutOverlapping(120)
             ->onOneServer();
+
+        $schedule->command('raffles:sync-statuses')
+            ->everyMinute()
+            ->withoutOverlapping(5)
+            ->onOneServer();
     }
 }

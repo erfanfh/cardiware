@@ -90,6 +90,26 @@ return [
     ],
 
     [
+        'label' => 'قرعه کشی ها',
+        'route' => 'admin.draw-campaigns.index',
+        'icon' => 'icons.award-03',
+        'children' => [
+            [
+                'label' => 'لیست قرعه کشی ها',
+                'route' => 'admin.draw-campaigns.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'raffle-campaign.list',
+            ],
+            [
+                'label' => 'ایجاد قرعه کشی',
+                'route' => 'admin.draw-campaigns.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'raffle-campaign.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'پروژه‌ها',
         'route' => 'admin.projects.index',
         'icon' => 'icons.folder-management',
