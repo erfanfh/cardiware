@@ -21,6 +21,20 @@ enum DrawRunStatusEnum: string
 
     public function isTerminal(): bool
     {
-        return in_array($this, [self::COMPLETED, self::FAILED], true);
+        return $this === self::COMPLETED;
+    }
+
+    public function canTransitionTo(self $status): bool
+    {
+        if ($this === $status) {
+            return true;
+        }
+
+        return match ($this) {
+            self::PENDING => in_array($status, [self::RUNNING, self::FAILED], true),
+            self::RUNNING => in_array($status, [self::COMPLETED, self::FAILED], true),
+            self::FAILED => $status === self::RUNNING,
+            self::COMPLETED => false,
+        };
     }
 }

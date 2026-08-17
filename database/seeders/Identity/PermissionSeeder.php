@@ -137,6 +137,11 @@ class PermissionSeeder extends Seeder
             'raffle-participant' => [
                 'list' => 'مشاهده شرکت کنندگان قرعه کشی',
             ],
+            'raffle-draw' => [
+                'list' => 'مشاهده اجرای قرعه کشی و نتایج',
+                'execute' => 'شروع اجرای قرعه کشی',
+                'retry' => 'اجرای مجدد DrawRun ناموفق با همان Seed',
+            ],
             'coupon' => [
                 'list' => 'لیست کدهای تخفیف',
                 'create' => 'ایجاد کدتخفیف',

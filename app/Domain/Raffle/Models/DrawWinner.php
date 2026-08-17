@@ -49,6 +49,23 @@ class DrawWinner extends Model
 
     protected static function booted(): void
     {
+        static::updating(function (DrawWinner $winner): void {
+            $immutableFields = [
+                'campaign_id',
+                'draw_run_id',
+                'prize_id',
+                'ticket_id',
+                'user_id',
+                'kind',
+                'position',
+                'selected_at',
+            ];
+
+            if ($winner->isDirty($immutableFields)) {
+                throw new LogicException('Draw winner selection identity cannot be changed.');
+            }
+        });
+
         static::deleting(function (): never {
             throw new LogicException('Draw winner records cannot be deleted.');
         });

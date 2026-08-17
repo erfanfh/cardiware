@@ -26,6 +26,15 @@ class TransitionDrawCampaignStatusAction
     {
         $this->validate($data);
 
+        if (in_array($data->status, [
+            DrawCampaignStatusEnum::DRAWING,
+            DrawCampaignStatusEnum::COMPLETED,
+        ], true)) {
+            throw new InvalidArgumentException(
+                'DRAWING and COMPLETED statuses can only be managed by the raffle draw engine.'
+            );
+        }
+
         return DB::transaction(function () use ($data): DrawCampaign {
             $campaign = DrawCampaign::query()
                 ->whereKey($data->campaign->getKey())

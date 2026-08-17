@@ -49,6 +49,33 @@ class DrawRun extends Model
             }
         });
 
+        static::updating(function (DrawRun $run): void {
+            $immutableFields = [
+                'campaign_id',
+                'type',
+                'algorithm',
+                'seed_commitment',
+                'seed_ciphertext',
+                'started_by_user_id',
+            ];
+
+            if ($run->isDirty($immutableFields)) {
+                throw new LogicException('Draw run identity and committed seed cannot be changed.');
+            }
+
+            if ($run->isDirty('status')) {
+                $original = DrawRunStatusEnum::tryFrom((string)$run->getRawOriginal('status'));
+
+                if (!$original || !$original->canTransitionTo($run->status)) {
+                    throw new LogicException('Invalid draw run status transition.');
+                }
+            }
+
+            if ($run->seed_reveal && $run->status !== DrawRunStatusEnum::COMPLETED) {
+                throw new LogicException('Draw seed can only be revealed after successful completion.');
+            }
+        });
+
         static::deleting(function (): never {
             throw new LogicException('Draw runs cannot be deleted.');
         });
