@@ -21,12 +21,15 @@ class DrawWinner extends Model
         'position',
         'status',
         'selected_at',
+        'confirmation_deadline_at',
         'confirmed_at',
         'confirmed_by_user_id',
         'rejected_at',
         'rejected_by_user_id',
         'rejection_reason',
+        'expired_at',
         'promoted_at',
+        'promoted_for_position',
         'promoted_by_user_id',
         'replaces_winner_id',
         'delivered_at',
@@ -40,9 +43,12 @@ class DrawWinner extends Model
         'status' => DrawWinnerStatusEnum::class,
         'position' => 'integer',
         'selected_at' => 'datetime',
+        'confirmation_deadline_at' => 'datetime',
         'confirmed_at' => 'datetime',
         'rejected_at' => 'datetime',
+        'expired_at' => 'datetime',
         'promoted_at' => 'datetime',
+        'promoted_for_position' => 'integer',
         'delivered_at' => 'datetime',
         'metadata' => 'array',
     ];
@@ -59,6 +65,7 @@ class DrawWinner extends Model
                 'kind',
                 'position',
                 'selected_at',
+        'confirmation_deadline_at',
             ];
 
             if ($winner->isDirty($immutableFields)) {
@@ -119,5 +126,31 @@ class DrawWinner extends Model
     public function deliverer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'delivered_by_user_id');
+    }
+
+    public function isEffectivePrimary(): bool
+    {
+        return $this->kind === DrawWinnerKindEnum::PRIMARY || $this->promoted_at !== null;
+    }
+
+    public function effectivePrimaryPosition(): ?int
+    {
+        if ($this->kind === DrawWinnerKindEnum::PRIMARY) {
+            return (int)$this->position;
+        }
+
+        return $this->promoted_for_position !== null
+            ? (int)$this->promoted_for_position
+            : null;
+    }
+
+    public function hasReplacement(): bool
+    {
+        return self::query()->where('replaces_winner_id', $this->getKey())->exists();
+    }
+
+    public function replacement(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(self::class, 'replaces_winner_id');
     }
 }

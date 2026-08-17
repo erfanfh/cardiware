@@ -38,6 +38,7 @@
         'raffle-ticket' => 'قرعه کشی ها - بلیط ها',
         'raffle-participant' => 'قرعه کشی ها - شرکت کنندگان',
         'raffle-draw' => 'قرعه کشی ها - اجرای Draw و نتایج',
+        'raffle-winner' => 'قرعه کشی ها - مدیریت برندگان',
     ];
 @endphp
 

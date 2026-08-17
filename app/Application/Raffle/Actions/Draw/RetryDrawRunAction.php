@@ -6,6 +6,7 @@ use App\Application\Raffle\Exceptions\DrawRunExecutionException;
 use App\Application\Raffle\Jobs\ExecuteDrawRunJob;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Enums\DrawRunStatusEnum;
+use App\Domain\Raffle\Enums\DrawRunTypeEnum;
 use App\Domain\Raffle\Models\DrawRun;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -23,8 +24,12 @@ class RetryDrawRunAction
                 throw new DrawRunExecutionException('Only a failed or pending draw run can be queued again.');
             }
 
-            if ($run->campaign->status !== DrawCampaignStatusEnum::DRAWING) {
-                throw new DrawRunExecutionException('Draw campaign is not in DRAWING status.');
+            $expectedCampaignStatus = $run->type === DrawRunTypeEnum::INITIAL
+                ? DrawCampaignStatusEnum::DRAWING
+                : DrawCampaignStatusEnum::COMPLETED;
+
+            if ($run->campaign->status !== $expectedCampaignStatus) {
+                throw new DrawRunExecutionException('Draw campaign status does not match this draw run type.');
             }
 
             if ($run->winners()->exists()) {

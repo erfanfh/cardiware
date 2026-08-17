@@ -142,6 +142,13 @@ class PermissionSeeder extends Seeder
                 'execute' => 'شروع اجرای قرعه کشی',
                 'retry' => 'اجرای مجدد DrawRun ناموفق با همان Seed',
             ],
+            'raffle-winner' => [
+                'list' => 'مشاهده و مدیریت برندگان قرعه کشی',
+                'confirm' => 'تایید برنده قرعه کشی',
+                'reject' => 'رد صلاحیت برنده قرعه کشی',
+                'promote' => 'جایگزینی برنده ذخیره',
+                'deliver' => 'ثبت تحویل جایزه',
+            ],
             'coupon' => [
                 'list' => 'لیست کدهای تخفیف',
                 'create' => 'ایجاد کدتخفیف',

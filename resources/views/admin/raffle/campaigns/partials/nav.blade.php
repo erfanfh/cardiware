@@ -3,6 +3,7 @@
     ['label'=>'بلیط ها','route'=>'admin.draw-campaigns.tickets.index','gate'=>'raffle-ticket.list'],
     ['label'=>'شرکت کنندگان','route'=>'admin.draw-campaigns.participants.index','gate'=>'raffle-participant.list'],
     ['label'=>'اجرای قرعه کشی','route'=>'admin.draw-campaigns.draws.index','gate'=>'raffle-draw.list'],
+    ['label'=>'برندگان','route'=>'admin.draw-campaigns.winners.index','gate'=>'raffle-winner.list'],
 ])
 <div class="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm">
     @foreach($items as $item)

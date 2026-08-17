@@ -21,6 +21,8 @@ class DrawCandidateSelector
         string $seed,
         int $candidateLimit,
         ?bool $allowMultipleWinsPerUser = null,
+        array $excludedTicketIds = [],
+        array $excludedUserIds = [],
     ): DrawSelectionSnapshotDTO {
         $allowMultipleWinsPerUser ??= (bool)$campaign->allow_multiple_wins_per_user;
         $hashContext = hash_init('sha256');
@@ -34,9 +36,19 @@ class DrawCandidateSelector
         /** @var array<int, DrawCandidateDTO> $bestByUser */
         $bestByUser = [];
 
-        DB::table('draw_tickets')
+        $query = DB::table('draw_tickets')
             ->where('campaign_id', $campaign->getKey())
-            ->where('status', DrawTicketStatusEnum::ACTIVE->value)
+            ->where('status', DrawTicketStatusEnum::ACTIVE->value);
+
+        if ($excludedTicketIds !== []) {
+            $query->whereNotIn('id', $excludedTicketIds);
+        }
+
+        if ($excludedUserIds !== []) {
+            $query->whereNotIn('user_id', $excludedUserIds);
+        }
+
+        $query
             ->select(['id', 'public_token', 'user_id', 'code'])
             ->orderBy('id')
             ->chunkById(5000, function ($tickets) use (

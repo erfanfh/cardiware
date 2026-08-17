@@ -49,5 +49,10 @@ class SchedulerServiceProvider extends ServiceProvider
             ->everyMinute()
             ->withoutOverlapping(5)
             ->onOneServer();
+
+        $schedule->command('raffles:expire-overdue-winners')
+            ->everyFiveMinutes()
+            ->withoutOverlapping(10)
+            ->onOneServer();
     }
 }

@@ -60,6 +60,8 @@ class VerifyDrawRunAction
             seed: $seed,
             candidateLimit: $candidateLimit,
             allowMultipleWinsPerUser: (bool)($metadata['allow_multiple_wins_per_user'] ?? false),
+            excludedTicketIds: array_map('intval', $metadata['excluded_ticket_ids'] ?? []),
+            excludedUserIds: array_map('intval', $metadata['excluded_user_ids'] ?? []),
         );
 
         $countValid = $snapshot->eligibleTicketCount === (int)$run->eligible_ticket_count;
@@ -86,15 +88,27 @@ class VerifyDrawRunAction
             ->values()
             ->all();
 
+        $redrawTarget = $metadata['redraw_target'] ?? null;
         $expectedComparable = collect($expected)
-            ->map(fn($selection): array => [
-                'prize_id' => $selection->prizeId,
-                'kind' => $selection->kind->value,
-                'position' => $selection->position,
-                'ticket_id' => $selection->candidate->ticketId,
-                'user_id' => $selection->candidate->userId,
-                'score' => $selection->candidate->score,
-            ])
+            ->map(function ($selection) use ($run, $redrawTarget): array {
+                $position = $selection->position;
+                if (
+                    $run->type === \App\Domain\Raffle\Enums\DrawRunTypeEnum::REDRAW
+                    && $selection->kind->value === 'primary'
+                    && is_array($redrawTarget)
+                ) {
+                    $position = (int)($redrawTarget['primary_position'] ?? $position);
+                }
+
+                return [
+                    'prize_id' => $selection->prizeId,
+                    'kind' => $selection->kind->value,
+                    'position' => $position,
+                    'ticket_id' => $selection->candidate->ticketId,
+                    'user_id' => $selection->candidate->userId,
+                    'score' => $selection->candidate->score,
+                ];
+            })
             ->sortBy(fn(array $item): string => sprintf('%010d|%s|%010d', $item['prize_id'], $item['kind'], $item['position']))
             ->values()
             ->all();
