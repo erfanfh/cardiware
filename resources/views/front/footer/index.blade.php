@@ -2,7 +2,7 @@
     $footerStats = app(\App\Application\System\Actions\Footer\GetFooterStatsAction::class)->execute();
 @endphp
 
-<footer dir="rtl" class="bg-white dark:bg-slate-950">
+<footer id="footer" dir="rtl" class="bg-white dark:bg-slate-950">
     <div class="h-px w-full bg-gray-200 dark:bg-slate-800"></div>
 
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
