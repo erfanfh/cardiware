@@ -14,6 +14,7 @@ final readonly class TimeSpentEarningContext implements EarningContext
 
     public function __construct(
         public User $user,
+        public int $sessionId,
         public string $targetType,
         public int $targetId,
         public int $durationSeconds,

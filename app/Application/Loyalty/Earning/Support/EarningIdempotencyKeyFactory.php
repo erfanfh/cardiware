@@ -94,11 +94,7 @@ class EarningIdempotencyKeyFactory
             throw UnexpectedEarningContextException::forType($type, $context);
         }
 
-        $date = $context->occurredAt()
-            ->setTimezone(config('app.timezone'))
-            ->format('Y-m-d');
-
-        return "loyalty:earn:time_spent:user:{$context->user->getKey()}:{$context->targetType}:{$context->targetId}:{$date}";
+        return "loyalty:earn:time_spent:session:{$context->sessionId}";
     }
 
     private function occurrenceToken(EarningContext $context): string

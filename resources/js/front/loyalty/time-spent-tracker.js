@@ -7,18 +7,23 @@ export default function initTimeSpentTracker() {
 
     const element = document.querySelector('[data-loyalty-time-spent]');
 
-    if (!element || !window.Laravel?.user) return;
+    if (!element) return;
 
     const targetType = element.dataset.targetType;
     const targetId = element.dataset.targetId;
 
     if (!targetType || !targetId) return;
 
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    if (!csrf) return;
+
     let token = null;
     let completed = false;
-    let active = document.visibilityState === 'visible';
-
-    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+    let completing = false;
+    let activeSeconds = 0;
+    let requiredSeconds = 0;
+    let timer = null;
 
     const request = async (url, body = {}) => {
         const response = await fetch(url, {
@@ -28,12 +33,12 @@ export default function initTimeSpentTracker() {
                 'X-CSRF-TOKEN': csrf,
                 'Accept': 'application/json',
             },
+            credentials: 'same-origin',
             body: JSON.stringify(body),
-            keepalive: true,
         });
 
         if (!response.ok) {
-            throw new Error('Loyalty request failed');
+            throw new Error(`Loyalty request failed with status ${response.status}`);
         }
 
         return response.json();
@@ -49,8 +54,18 @@ export default function initTimeSpentTracker() {
         }));
     };
 
+    const stop = () => {
+        if (timer) {
+            window.clearInterval(timer);
+            timer = null;
+        }
+    };
+
     const complete = async () => {
-        if (!token || completed || !active) return;
+        if (!token || completed || completing) return;
+        if (activeSeconds < requiredSeconds) return;
+
+        completing = true;
 
         try {
             const result = await request('/loyalty/time-spent/complete', {
@@ -58,32 +73,40 @@ export default function initTimeSpentTracker() {
             });
 
             completed = true;
+            stop();
 
             showEarnToast(result.earned_points);
         } catch {
-            // Ignore tracking failures.
+            // A temporary failure should not permanently kill the tracker.
+        } finally {
+            completing = false;
         }
     };
-
-    document.addEventListener('visibilitychange', () => {
-        active = document.visibilityState === 'visible';
-    });
-
-    window.addEventListener('pagehide', complete);
 
     request('/loyalty/time-spent/start', {
         target_type: targetType,
         target_id: targetId,
     }).then((data) => {
         token = data.token;
+        requiredSeconds = Math.max(1, Number(data.required_seconds) || 1);
 
-        const timer = setInterval(() => {
+        timer = window.setInterval(() => {
             if (completed) {
-                clearInterval(timer);
+                stop();
                 return;
             }
 
-            complete();
-        }, 5000);
-    }).catch(() => {});
+            if (document.visibilityState !== 'visible' || !document.hasFocus()) {
+                return;
+            }
+
+            activeSeconds += 1;
+
+            if (activeSeconds >= requiredSeconds) {
+                complete();
+            }
+        }, 1000);
+    }).catch(() => {
+        stop();
+    });
 }

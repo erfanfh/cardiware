@@ -2,9 +2,11 @@
 
 @section('content')
     <main
-        data-loyalty-time-spent
-        data-target-type="post"
-        data-target-id="{{ $post->id }}" class="mx-auto max-w-7xl px-4 py-8" x-init="init()">
+        @auth
+            data-loyalty-time-spent
+            data-target-type="post"
+            data-target-id="{{ $post->id }}"
+        @endauth class="mx-auto max-w-7xl px-4 py-8" x-init="init()">
         @include('front.posts.partials.detail.title')
         @include('front.posts.partials.detail.share-box')
 

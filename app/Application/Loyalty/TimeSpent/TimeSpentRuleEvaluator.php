@@ -4,6 +4,7 @@ namespace App\Application\Loyalty\TimeSpent;
 
 use App\Application\Loyalty\Earning\Support\EarningRuleUsageCounter;
 use App\Domain\Identity\Models\User;
+use App\Domain\Loyalty\Enums\LoyaltyTimeSpentStatusEnum;
 use App\Domain\Loyalty\Models\EarningRule;
 use App\Domain\Loyalty\Models\LoyaltyTimeSpentSession;
 
@@ -47,7 +48,7 @@ class TimeSpentRuleEvaluator
                 ->where('target_id', $session->target_id)
                 ->whereDate('created_at', today())
                 ->whereKeyNot($session->id)
-                ->whereNotNull('completed_at')
+                ->where('status', LoyaltyTimeSpentStatusEnum::COMPLETED->value)
                 ->exists();
 
             if ($exists) {

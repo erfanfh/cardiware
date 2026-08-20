@@ -19,13 +19,14 @@ class CompleteTimeSpentController extends Controller
             'token' => ['required', 'string'],
         ]);
 
-        $session = $this->service->complete(
+        $result = $this->service->complete(
             $request->user(),
             $data['token']
         );
 
         return response()->json([
-            'status' => $session->status->value,
+            'status' => $result->session->status->value,
+            'earned_points' => $result->earnedPoints,
         ]);
     }
 }

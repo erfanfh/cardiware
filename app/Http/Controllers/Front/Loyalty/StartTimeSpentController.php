@@ -43,6 +43,7 @@ class StartTimeSpentController extends Controller
 
         return response()->json([
             'token' => $session->token,
+            'required_seconds' => (int) data_get($rule->config, 'required_seconds', 1),
         ]);
     }
 }

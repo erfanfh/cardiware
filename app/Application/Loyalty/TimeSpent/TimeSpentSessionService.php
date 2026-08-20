@@ -4,6 +4,7 @@ namespace App\Application\Loyalty\TimeSpent;
 
 use App\Application\Loyalty\Earning\Actions\ProcessEarningRuleAction;
 use App\Application\Loyalty\Earning\Contexts\TimeSpentEarningContext;
+use App\Application\Loyalty\TimeSpent\DTOs\TimeSpentCompletionResult;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use App\Domain\Loyalty\Enums\LoyaltyTimeSpentStatusEnum;
@@ -29,65 +30,104 @@ class TimeSpentSessionService
         return LoyaltyTimeSpentSession::firstOrCreate(
             [
                 'user_id' => $user->id,
+                'earning_rule_id' => $rule->id,
                 'target_type' => $targetType,
                 'target_id' => $targetId,
                 'status' => LoyaltyTimeSpentStatusEnum::PENDING,
             ],
             [
-                'earning_rule_id' => $rule->id,
                 'token' => Str::uuid()->toString(),
                 'started_at' => now(),
             ]
         );
     }
 
-    public function complete(User $user, string $token): LoyaltyTimeSpentSession
+    public function complete(User $user, string $token): TimeSpentCompletionResult
     {
-        return DB::transaction(function () use ($user, $token) {
+        return DB::transaction(function () use ($user, $token): TimeSpentCompletionResult {
             $session = LoyaltyTimeSpentSession::query()
+                ->with('earningRule')
                 ->where('user_id', $user->id)
                 ->where('token', $token)
                 ->lockForUpdate()
                 ->firstOrFail();
 
             if ($session->status !== LoyaltyTimeSpentStatusEnum::PENDING) {
-                return $session;
+                return new TimeSpentCompletionResult(
+                    session: $session,
+                );
             }
 
-            $duration = now()->diffInSeconds($session->started_at);
+            $duration = $session->started_at->diffInSeconds(now());
 
-            $session->update([
+            $session->forceFill([
                 'duration_seconds' => $duration,
                 'completed_at' => now(),
-            ]);
+            ])->save();
 
-            $reason = $this->evaluator->evaluate($user, $session->refresh(), $session->earningRule);
+            $rule = $session->earningRule;
 
-            if ($reason) {
-                $session->update([
+            if (!$rule) {
+                $session->forceFill([
                     'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
-                    'rejection_reason' => $reason,
-                ]);
+                    'rejection_reason' => 'earning_rule_missing',
+                ])->save();
 
-                return $session->refresh();
+                return new TimeSpentCompletionResult(
+                    session: $session->refresh(),
+                );
             }
 
-            $session->update([
-                'status' => LoyaltyTimeSpentStatusEnum::COMPLETED,
-            ]);
+            $reason = $this->evaluator->evaluate(
+                $user,
+                $session,
+                $rule,
+            );
 
-            $this->processEarningRuleAction->execute(
+            if ($reason) {
+                $session->forceFill([
+                    'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
+                    'rejection_reason' => $reason,
+                ])->save();
+
+                return new TimeSpentCompletionResult(
+                    session: $session->refresh(),
+                );
+            }
+
+            $processResult = $this->processEarningRuleAction->execute(
                 EarningRuleTypeEnum::TIME_SPENT,
                 new TimeSpentEarningContext(
                     user: $user,
+                    sessionId: (int) $session->getKey(),
                     targetType: $session->target_type,
-                    targetId: $session->target_id,
+                    targetId: (int) $session->target_id,
                     durationSeconds: $duration,
                     occurredAt: now(),
                 ),
             );
 
-            return $session->refresh();
-        });
+            if (!$processResult->entry) {
+                $session->forceFill([
+                    'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
+                    'rejection_reason' => $processResult->evaluation->skipReason?->value
+                        ?? 'earning_rule_not_awarded',
+                ])->save();
+
+                return new TimeSpentCompletionResult(
+                    session: $session->refresh(),
+                );
+            }
+
+            $session->forceFill([
+                'status' => LoyaltyTimeSpentStatusEnum::COMPLETED,
+                'rejection_reason' => null,
+            ])->save();
+
+            return new TimeSpentCompletionResult(
+                session: $session->refresh(),
+                earnedPoints: (int) $processResult->entry->amount,
+            );
+        }, 3);
     }
 }
