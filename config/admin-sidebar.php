@@ -204,7 +204,7 @@ return [
 
     [
         'label' => 'باشگاه مخاطبان',
-        'icon' => 'icons.award-03',
+        'icon' => 'icons.medal-06',
         'children' => [
             [
                 'label' => 'قوانین کسب امتیاز',
