@@ -6,11 +6,9 @@ use App\Application\Loyalty\Earning\Contexts\TimeSpentEarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningRuleHandler;
 use App\Application\Loyalty\Earning\DTOs\EarningRuleEvaluation;
-use App\Application\Loyalty\Earning\Enums\EarningRuleSkipReasonEnum;
 use App\Application\Loyalty\Earning\Exceptions\UnexpectedEarningContextException;
 use App\Application\Loyalty\Earning\Support\EarningIdempotencyKeyFactory;
 use App\Application\Loyalty\Earning\Support\EarningRuleConfigReader;
-use App\Application\Loyalty\Earning\Support\EarningRuleUsageCounter;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use App\Domain\Loyalty\Models\EarningRule;
 
@@ -19,7 +17,6 @@ class TimeSpentEarningRuleHandler implements EarningRuleHandler
     public function __construct(
         private readonly EarningRuleConfigReader $config,
         private readonly EarningIdempotencyKeyFactory $idempotencyKeys,
-        private readonly EarningRuleUsageCounter $usageCounter,
     ) {
     }
 
@@ -39,42 +36,17 @@ class TimeSpentEarningRuleHandler implements EarningRuleHandler
             throw UnexpectedEarningContextException::forType($this->type(), $context);
         }
 
-        $requiredSeconds = $this->config->positiveInt($rule, 'required_seconds');
-
-        if ($context->durationSeconds < $requiredSeconds) {
-            return EarningRuleEvaluation::skip(
-                $rule,
-                EarningRuleSkipReasonEnum::NOT_APPLICABLE,
-                [
-                    'required_seconds' => $requiredSeconds,
-                    'actual_seconds' => $context->durationSeconds,
-                ],
-            );
-        }
-
-        $dailyLimit = $this->config->positiveInt($rule, 'daily_limit');
-
-        $usedToday = $this->usageCounter->countAwardsOnDate(
-            $context->user,
-            $rule,
-            $context->occurredAt,
-        );
-
-        if ($usedToday >= $dailyLimit) {
-            return EarningRuleEvaluation::skip(
-                $rule,
-                EarningRuleSkipReasonEnum::DAILY_LIMIT_REACHED,
-            );
-        }
+        $points = $this->config->positiveInt($rule, 'points');
 
         return EarningRuleEvaluation::award(
             rule: $rule,
-            points: $this->config->positiveInt($rule, 'points'),
+            points: $points,
             reason: EarningRuleTypeEnum::TIME_SPENT->value,
             idempotencyKey: $this->idempotencyKeys->make($this->type(), $context),
             reference: $context->reference(),
-            description: 'امتیاز حضور در صفحه',
+            description: 'امتیاز حضور در صفحه محتوا',
             metadata: [
+                'event_type' => EarningRuleTypeEnum::TIME_SPENT->value,
                 'target_type' => $context->targetType,
                 'target_id' => $context->targetId,
                 'duration_seconds' => $context->durationSeconds,

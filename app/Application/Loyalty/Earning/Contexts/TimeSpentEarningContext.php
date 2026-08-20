@@ -37,6 +37,6 @@ final readonly class TimeSpentEarningContext implements EarningContext
 
     public function reference(): ?Model
     {
-        return $this->reference;
+        return $this->reference ?? $this->user;
     }
 }
