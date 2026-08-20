@@ -68,6 +68,8 @@ class SaveEarningRuleRequest extends FormRequest
             'config.include_replies' => 'محاسبه پاسخ دیدگاه',
             'config.minimum_membership_years' => 'حداقل سابقه عضویت',
             'config.required_seconds' => 'حداقل زمان حضور',
+            'config.targets' => 'نوع محتوای قابل امتیاز',
+            'config.targets.*' => 'نوع محتوای قابل امتیاز',
             'config.unique_target_daily' => 'محدودیت هر محتوا',
         ];
     }

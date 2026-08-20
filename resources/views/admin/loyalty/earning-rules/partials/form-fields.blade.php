@@ -12,6 +12,13 @@
         $earningRule?->config ?? ($ruleDefaults[$selectedType] ?? [])
     );
 
+    if (
+        $selectedType === EarningRuleTypeEnum::TIME_SPENT->value
+        && !array_key_exists('targets', $initialConfig)
+    ) {
+        $initialConfig['targets'] = $ruleDefaults[$selectedType]['targets'] ?? [];
+    }
+
     $isActive = old('is_active', $earningRule?->is_active ?? true);
 @endphp
 
@@ -242,8 +249,7 @@
                 </div>
 
                 <div x-show="ruleType === 'time_spent'" x-cloak class="md:col-span-2">
-                    <label
-                        class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                         <div>
                             <div class="text-sm font-bold text-slate-800">هر محتوا فقط یک بار در روز</div>
                             <p class="mt-1 text-xs leading-6 text-slate-500">
@@ -257,6 +263,39 @@
                             x-model="config.unique_target_daily"
                         />
                     </label>
+                </div>
+
+
+                <div x-show="ruleType === 'time_spent'" x-cloak class="md:col-span-2">
+                    <x-admin.field
+                        required
+                        label="نوع محتوای قابل امتیاز"
+                        hint="مشخص کنید حضور کاربر در کدام نوع صفحات برای این قانون امتیاز داشته باشد."
+                    >
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    name="config[targets][]"
+                                    value="product"
+                                    x-model="config.targets"
+                                    class="rounded border-slate-300 text-orange-500 focus:ring-orange-200"
+                                >
+                                <span class="text-sm font-medium text-slate-700">محصولات</span>
+                            </label>
+
+                            <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    name="config[targets][]"
+                                    value="post"
+                                    x-model="config.targets"
+                                    class="rounded border-slate-300 text-orange-500 focus:ring-orange-200"
+                                >
+                                <span class="text-sm font-medium text-slate-700">نوشته‌ها</span>
+                            </label>
+                        </div>
+                    </x-admin.field>
                 </div>
 
                 <div x-show="ruleType === 'membership_anniversary'" x-cloak>
