@@ -106,6 +106,60 @@
                 <div x-show="ruleType === 'comment'" x-cloak>
                     فقط دیدگاه تاییدشده امتیاز می‌گیرد و در صورت رد یا حذف دیدگاه، امتیاز آن برگشت داده می‌شود.
                 </div>
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    <x-admin.field
+                        required
+                        label="حداقل زمان حضور (ثانیه)"
+                        hint="کاربر باید حداقل این مدت در صفحه فعال بماند تا امتیاز دریافت کند."
+                    >
+                        <x-admin.form.input
+                            name="config[required_seconds]"
+                            type="number"
+                            min="10"
+                            dir="ltr"
+                            :value="$initialConfig['required_seconds'] ?? ''"
+                            x-model.number="config.required_seconds"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    <x-admin.field
+                        required
+                        label="حداکثر دریافت روزانه"
+                        hint="تعداد دفعاتی که کاربر در روز می‌تواند از این قانون امتیاز بگیرد."
+                    >
+                        <x-admin.form.input
+                            name="config[daily_limit]"
+                            type="number"
+                            min="1"
+                            dir="ltr"
+                            :value="$initialConfig['daily_limit'] ?? ''"
+                            x-model.number="config.daily_limit"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak class="md:col-span-2">
+                    <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <div>
+                            <div class="text-sm font-bold text-slate-800">هر محتوا فقط یک بار در روز</div>
+                            <p class="mt-1 text-xs leading-6 text-slate-500">
+                                اگر فعال باشد، کاربر برای یک محصول یا نوشته مشخص در همان روز فقط یک بار امتیاز می‌گیرد.
+                            </p>
+                        </div>
+
+                        <x-admin.form.switch
+                            name="config[unique_target_daily]"
+                            :checked="$initialConfig['unique_target_daily'] ?? false"
+                            x-model="config.unique_target_daily"
+                        />
+                    </label>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    این قانون بر اساس مدت حضور واقعی کاربر در صفحه محصول یا نوشته امتیاز ایجاد می‌کند.
+                </div>
                 <div x-show="ruleType === 'membership_anniversary'" x-cloak>
                     این قانون توسط پردازش روزانه سالگرد عضویت اجرا می‌شود.
                 </div>
@@ -204,6 +258,60 @@
                     </label>
                 </div>
 
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    <x-admin.field
+                        required
+                        label="حداقل زمان حضور (ثانیه)"
+                        hint="کاربر باید حداقل این مدت در صفحه فعال بماند تا امتیاز دریافت کند."
+                    >
+                        <x-admin.form.input
+                            name="config[required_seconds]"
+                            type="number"
+                            min="10"
+                            dir="ltr"
+                            :value="$initialConfig['required_seconds'] ?? ''"
+                            x-model.number="config.required_seconds"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    <x-admin.field
+                        required
+                        label="حداکثر دریافت روزانه"
+                        hint="تعداد دفعاتی که کاربر در روز می‌تواند از این قانون امتیاز بگیرد."
+                    >
+                        <x-admin.form.input
+                            name="config[daily_limit]"
+                            type="number"
+                            min="1"
+                            dir="ltr"
+                            :value="$initialConfig['daily_limit'] ?? ''"
+                            x-model.number="config.daily_limit"
+                        />
+                    </x-admin.field>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak class="md:col-span-2">
+                    <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <div>
+                            <div class="text-sm font-bold text-slate-800">هر محتوا فقط یک بار در روز</div>
+                            <p class="mt-1 text-xs leading-6 text-slate-500">
+                                اگر فعال باشد، کاربر برای یک محصول یا نوشته مشخص در همان روز فقط یک بار امتیاز می‌گیرد.
+                            </p>
+                        </div>
+
+                        <x-admin.form.switch
+                            name="config[unique_target_daily]"
+                            :checked="$initialConfig['unique_target_daily'] ?? false"
+                            x-model="config.unique_target_daily"
+                        />
+                    </label>
+                </div>
+
+                <div x-show="ruleType === 'time_spent'" x-cloak>
+                    این قانون بر اساس مدت حضور واقعی کاربر در صفحه محصول یا نوشته امتیاز ایجاد می‌کند.
+                </div>
                 <div x-show="ruleType === 'membership_anniversary'" x-cloak>
                     <x-admin.field
                         required

@@ -1,59 +1,83 @@
+let initialized = false;
+
 export default function initTimeSpentTracker() {
-    const elements = document.querySelectorAll('[data-loyalty-time-spent]');
+    if (initialized) return;
 
-    if (!elements.length || !window.Laravel?.user) {
-        return;
-    }
+    initialized = true;
 
-    elements.forEach((element) => {
-        const targetType = element.dataset.targetType;
-        const targetId = element.dataset.targetId;
+    const element = document.querySelector('[data-loyalty-time-spent]');
 
-        if (!targetType || !targetId) {
-            return;
+    if (!element || !window.Laravel?.user) return;
+
+    const targetType = element.dataset.targetType;
+    const targetId = element.dataset.targetId;
+
+    if (!targetType || !targetId) return;
+
+    let token = null;
+    let completed = false;
+    let active = document.visibilityState === 'visible';
+
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+
+    const request = async (url, body = {}) => {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify(body),
+            keepalive: true,
+        });
+
+        if (!response.ok) {
+            throw new Error('Loyalty request failed');
         }
 
-        let token = null;
-        let completed = false;
+        return response.json();
+    };
 
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
+    const complete = async () => {
+        if (!token || completed || !active) return;
 
-        const request = async (url, body = {}) => {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf,
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify(body),
+        try {
+            const result = await request('/loyalty/time-spent/complete', {
+                token,
             });
 
-            if (!response.ok) {
-                throw new Error('Loyalty request failed');
+            completed = true;
+
+            if (result.earned_points && window.showToast) {
+                window.showToast(
+                    `+${result.earned_points} امتیاز باشگاه مخاطبان دریافت کردید`
+                );
+            }
+        } catch {
+            // ignore
+        }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+        active = document.visibilityState === 'visible';
+    });
+
+    window.addEventListener('pagehide', complete);
+
+    request('/loyalty/time-spent/start', {
+        target_type: targetType,
+        target_id: targetId,
+    }).then((data) => {
+        token = data.token;
+
+        const timer = setInterval(() => {
+            if (completed) {
+                clearInterval(timer);
+                return;
             }
 
-            return response.json();
-        };
-
-        request('/loyalty/time-spent/start', {
-            target_type: targetType,
-            target_id: targetId,
-        }).then((data) => {
-            token = data.token;
-
-            window.setInterval(async () => {
-                if (!completed && token) {
-                    try {
-                        await request('/loyalty/time-spent/complete', {
-                            token,
-                        });
-
-                        completed = true;
-                    } catch (e) {
-                    }
-                }
-            }, 5000);
-        }).catch(() => {});
-    });
+            complete();
+        }, 5000);
+    }).catch(() => {});
 }

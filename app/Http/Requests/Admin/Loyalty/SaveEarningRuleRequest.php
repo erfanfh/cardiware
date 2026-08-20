@@ -67,6 +67,8 @@ class SaveEarningRuleRequest extends FormRequest
             'config.daily_limit' => 'حداکثر تعداد امتیازدهی روزانه',
             'config.include_replies' => 'محاسبه پاسخ دیدگاه',
             'config.minimum_membership_years' => 'حداقل سابقه عضویت',
+            'config.required_seconds' => 'حداقل زمان حضور',
+            'config.unique_target_daily' => 'محدودیت هر محتوا',
         ];
     }
 
@@ -74,12 +76,16 @@ class SaveEarningRuleRequest extends FormRequest
     {
         $config = is_array($this->input('config')) ? $this->input('config') : [];
 
-        foreach (['points', 'amount_step', 'minimum_order_amount', 'max_points_per_order', 'daily_limit', 'minimum_membership_years'] as $key) {
+        foreach (['points', 'amount_step', 'minimum_order_amount', 'max_points_per_order', 'daily_limit', 'minimum_membership_years', 'required_seconds'] as $key) {
             if (!array_key_exists($key, $config)) {
                 continue;
             }
 
             $config[$key] = $this->normalizeNullableInteger($config[$key]);
+        }
+
+        if (array_key_exists('unique_target_daily', $config)) {
+            $config['unique_target_daily'] = filter_var($config['unique_target_daily'], FILTER_VALIDATE_BOOLEAN);
         }
 
         if (array_key_exists('include_replies', $config)) {
