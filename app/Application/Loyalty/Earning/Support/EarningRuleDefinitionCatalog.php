@@ -33,6 +33,11 @@ class EarningRuleDefinitionCatalog
                 'points' => 100,
                 'minimum_membership_years' => 1,
             ],
+            EarningRuleTypeEnum::TIME_SPENT => [
+                'points' => 5,
+                'required_seconds' => 60,
+                'daily_limit' => 5,
+            ],
         };
     }
 
@@ -63,6 +68,11 @@ class EarningRuleDefinitionCatalog
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => [
                 'points' => ['required', 'integer', 'min:1'],
                 'minimum_membership_years' => ['required', 'integer', 'min:1'],
+            ],
+            EarningRuleTypeEnum::TIME_SPENT => [
+                'points' => ['required', 'integer', 'min:1'],
+                'required_seconds' => ['required', 'integer', 'min:10'],
+                'daily_limit' => ['required', 'integer', 'min:1'],
             ],
         };
     }

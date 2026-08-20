@@ -8,6 +8,7 @@ use App\Application\Loyalty\Earning\Handlers\DailyVisitEarningRuleHandler;
 use App\Application\Loyalty\Earning\Handlers\MembershipAnniversaryEarningRuleHandler;
 use App\Application\Loyalty\Earning\Handlers\PurchaseEarningRuleHandler;
 use App\Application\Loyalty\Earning\Handlers\RegistrationEarningRuleHandler;
+use App\Application\Loyalty\Earning\Handlers\TimeSpentEarningRuleHandler;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 
 class EarningRuleHandlerResolver
@@ -18,6 +19,7 @@ class EarningRuleHandlerResolver
         private readonly PurchaseEarningRuleHandler $purchaseHandler,
         private readonly CommentEarningRuleHandler $commentHandler,
         private readonly MembershipAnniversaryEarningRuleHandler $membershipAnniversaryHandler,
+        private readonly TimeSpentEarningRuleHandler $timeSpentHandler,
     ) {
     }
 
@@ -29,6 +31,7 @@ class EarningRuleHandlerResolver
             EarningRuleTypeEnum::PURCHASE => $this->purchaseHandler,
             EarningRuleTypeEnum::COMMENT => $this->commentHandler,
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => $this->membershipAnniversaryHandler,
+            EarningRuleTypeEnum::TIME_SPENT => $this->timeSpentHandler,
         };
     }
 }

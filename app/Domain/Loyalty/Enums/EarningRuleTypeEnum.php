@@ -9,6 +9,7 @@ enum EarningRuleTypeEnum: string
     case PURCHASE = 'purchase';
     case COMMENT = 'comment';
     case MEMBERSHIP_ANNIVERSARY = 'membership_anniversary';
+    case TIME_SPENT = 'time_spent';
 
     public function label(): string
     {
@@ -18,6 +19,7 @@ enum EarningRuleTypeEnum: string
             self::PURCHASE => 'خرید',
             self::COMMENT => 'ثبت دیدگاه',
             self::MEMBERSHIP_ANNIVERSARY => 'سالگرد عضویت',
+            self::TIME_SPENT => 'مدت زمان حضور در صفحه',
         };
     }
 }
