@@ -11,7 +11,6 @@ use App\Domain\Loyalty\Models\EarningRule;
 use App\Domain\Loyalty\Models\LoyaltyTimeSpentSession;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use RuntimeException;
 
 class TimeSpentSessionService
 {
@@ -54,23 +53,13 @@ class TimeSpentSessionService
                 return $session;
             }
 
-            $duration = $session->started_at->diffInSeconds(now());
+            $duration = now()->diffInSeconds($session->started_at);
 
-            $session->duration_seconds = $duration;
-            $session->completed_at = now();
-
-            $requiredSeconds = (int) data_get(
-                $session->earningRule?->config,
-                'required_seconds',
-                0
-            );
-
-            if ($duration < $requiredSeconds) {
-                $session->status = LoyaltyTimeSpentStatusEnum::REJECTED;
-                $session->save();
-
-                return $session;
-            }
+            $session->update([
+                'duration_seconds' => $duration,
+                'completed_at' => now(),
+                'status' => LoyaltyTimeSpentStatusEnum::COMPLETED,
+            ]);
 
             $this->processEarningRuleAction->execute(
                 EarningRuleTypeEnum::TIME_SPENT,
@@ -80,13 +69,10 @@ class TimeSpentSessionService
                     targetId: $session->target_id,
                     durationSeconds: $duration,
                     occurredAt: now(),
-                )
+                ),
             );
 
-            $session->status = LoyaltyTimeSpentStatusEnum::COMPLETED;
-            $session->save();
-
-            return $session;
+            return $session->refresh();
         });
     }
 }

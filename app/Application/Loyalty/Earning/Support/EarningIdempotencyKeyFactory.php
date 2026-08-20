@@ -7,6 +7,7 @@ use App\Application\Loyalty\Earning\Contexts\DailyVisitEarningContext;
 use App\Application\Loyalty\Earning\Contexts\MembershipAnniversaryEarningContext;
 use App\Application\Loyalty\Earning\Contexts\PurchaseEarningContext;
 use App\Application\Loyalty\Earning\Contexts\RegistrationEarningContext;
+use App\Application\Loyalty\Earning\Contexts\TimeSpentEarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningContext;
 use App\Application\Loyalty\Earning\Exceptions\UnexpectedEarningContextException;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
@@ -23,6 +24,7 @@ class EarningIdempotencyKeyFactory
             EarningRuleTypeEnum::PURCHASE => $this->purchase($type, $context),
             EarningRuleTypeEnum::COMMENT => $this->comment($type, $context),
             EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY => $this->membershipAnniversary($type, $context),
+            EarningRuleTypeEnum::TIME_SPENT => $this->timeSpent($type, $context),
         };
     }
 
@@ -83,6 +85,20 @@ class EarningIdempotencyKeyFactory
             ->format('Y');
 
         return "loyalty:earn:membership_anniversary:user:{$context->user->getKey()}:{$year}";
+    }
+
+
+    private function timeSpent(EarningRuleTypeEnum $type, EarningContext $context): string
+    {
+        if (!$context instanceof TimeSpentEarningContext) {
+            throw UnexpectedEarningContextException::forType($type, $context);
+        }
+
+        $date = $context->occurredAt()
+            ->setTimezone(config('app.timezone'))
+            ->format('Y-m-d');
+
+        return "loyalty:earn:time_spent:user:{$context->user->getKey()}:{$context->targetType}:{$context->targetId}:{$date}";
     }
 
     private function occurrenceToken(EarningContext $context): string

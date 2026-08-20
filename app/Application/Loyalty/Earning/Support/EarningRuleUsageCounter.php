@@ -43,4 +43,19 @@ class EarningRuleUsageCounter
             })
             ->count();
     }
+
+
+    public function hasReachedDailyLimit(
+        User $user,
+        EarningRule $rule,
+        int $limit,
+        CarbonInterface $date,
+    ): bool {
+        if ($limit <= 0) {
+            return false;
+        }
+
+        return $this->countAwardsOnDate($user, $rule, $date) >= $limit;
+    }
+
 }
