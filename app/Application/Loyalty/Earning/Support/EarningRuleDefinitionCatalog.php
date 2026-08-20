@@ -75,6 +75,9 @@ class EarningRuleDefinitionCatalog
                 'points' => ['required', 'integer', 'min:1'],
                 'required_seconds' => ['required', 'integer', 'min:10'],
                 'daily_limit' => ['required', 'integer', 'min:1'],
+                'targets' => ['required', 'array'],
+                'targets.*' => ['string', 'in:product,post'],
+                'unique_target_daily' => ['required', 'boolean'],
             ],
         };
     }

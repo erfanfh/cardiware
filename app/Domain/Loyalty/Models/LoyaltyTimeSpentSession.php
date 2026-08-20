@@ -18,6 +18,7 @@ class LoyaltyTimeSpentSession extends Model
         'duration_seconds',
         'status',
         'earning_rule_id',
+        'rejection_reason',
     ];
 
     protected $casts = [
