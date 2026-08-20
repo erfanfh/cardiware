@@ -28,6 +28,8 @@ class ProductBuyBox extends Component
      */
     public array $addons = [];
 
+    public array $purchasePoints = [];
+
     /**
      * @var array<string, mixed>
      */
@@ -49,6 +51,7 @@ class ProductBuyBox extends Component
 
         $this->saleItems = $buyBoxData['saleItems'];
         $this->addons = $buyBoxData['addons'];
+        $this->purchasePoints = $buyBoxData['purchasePoints'] ?? [];
         $this->hasAvailableSaleItems = $buyBoxData['hasAvailableSaleItems'];
 
         $this->purchaseState = $getProductCartStateAction->execute($product);

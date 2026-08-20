@@ -8,12 +8,19 @@ use App\Domain\Catalog\Enums\ProductSaleItemStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemDiscount;
+use App\Application\Loyalty\Earning\Actions\ResolveActiveEarningRuleAction;
+use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Facades\Cache;
 
 final class GetProductBuyBoxDataAction
 {
+    public function __construct(
+        private readonly ResolveActiveEarningRuleAction $resolveActiveEarningRuleAction,
+    ) {
+    }
+
     /**
      * @return array{
      *     saleItems: array<int, array<string, mixed>>,
@@ -99,6 +106,7 @@ final class GetProductBuyBoxDataAction
         return [
             'saleItems' => $saleItems,
             'addons' => $addons,
+            'purchasePoints' => $this->purchasePoints($product, $saleItems),
             'hasAvailableSaleItems' => count($saleItems) > 0,
         ];
     }
@@ -237,6 +245,55 @@ final class GetProductBuyBoxDataAction
         }
 
         return $discount->isActiveAt();
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $saleItems
+     * @return array{enabled: bool, amountStep: int|null, pointsPerStep: int|null, items: array<int, int>}
+     */
+    private function purchasePoints(Product $product, array $saleItems): array
+    {
+        $rule = $this->resolveActiveEarningRuleAction->execute(
+            EarningRuleTypeEnum::PURCHASE,
+            now(),
+        );
+
+        if (!$rule) {
+            return [
+                'enabled' => false,
+                'amountStep' => null,
+                'pointsPerStep' => null,
+                'items' => [],
+            ];
+        }
+
+        $amountStep = (int)($rule->config['amount_step'] ?? 0);
+        $pointsPerStep = (int)($rule->config['points'] ?? 0);
+        $minimumAmount = (int)($rule->config['minimum_order_amount'] ?? 0);
+        $maxPoints = $rule->config['max_points_per_order'] ?? null;
+
+        $items = [];
+        foreach ($saleItems as $item) {
+            $amount = (int)($item['price'] ?? 0);
+            if ($amount < $minimumAmount || $amountStep <= 0 || $pointsPerStep <= 0) {
+                $items[$item['id']] = 0;
+                continue;
+            }
+
+            $points = intdiv($amount, $amountStep) * $pointsPerStep;
+            if ($maxPoints !== null) {
+                $points = min($points, (int)$maxPoints);
+            }
+
+            $items[$item['id']] = $points;
+        }
+
+        return [
+            'enabled' => true,
+            'amountStep' => $amountStep,
+            'pointsPerStep' => $pointsPerStep,
+            'items' => $items,
+        ];
     }
 
     /**

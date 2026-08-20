@@ -4,6 +4,7 @@
             productId: @js($product->id),
             saleItems: @js($saleItems),
             addons: @js($addons),
+            purchasePoints: @js($purchasePoints),
             purchaseState: @js($purchaseState),
             hasAvailableSaleItems: @js($hasAvailableSaleItems),
             cartUrl: @js(route('cart.index')),
@@ -642,6 +643,30 @@
                         <span>در حال افزودن...</span>
                     </span>
                 </button>
+
+                <div
+                    x-show="purchasePoints.enabled && selectedSaleItemId && purchasePoints.items[selectedSaleItemId] > 0"
+                    x-cloak
+                    class="flex items-center gap-3 rounded-2xl border border-amber-200 bg-gradient-to-l from-amber-50 to-white px-4 py-3 dark:border-amber-900/50 dark:from-amber-950/30 dark:to-slate-900"
+                >
+                    <div
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300">
+                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M12 2C7.58 2 4 3.79 4 6V18C4 20.21 7.58 22 12 22C16.42 22 20 20.21 20 18V6C20 3.79 16.42 2 12 2Z"
+                                stroke="currentColor" stroke-width="2"/>
+                            <path d="M4 6C4 8.21 7.58 10 12 10C16.42 10 20 8.21 20 6" stroke="currentColor"
+                                  stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-xs font-black text-amber-900 dark:text-amber-200 leading-6">
+                            با خرید این محصول
+                            <span x-text="purchasePoints.items[selectedSaleItemId]"></span>
+                            امتیاز به باشگاه مخاطبان شما اضافه می‌شود.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             @if(!empty($actionLinks))
