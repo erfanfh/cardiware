@@ -7,8 +7,10 @@ use App\Application\Loyalty\Earning\Contexts\TimeSpentEarningContext;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use App\Domain\Loyalty\Enums\LoyaltyTimeSpentStatusEnum;
+use App\Domain\Loyalty\Models\EarningRule;
 use App\Domain\Loyalty\Models\LoyaltyTimeSpentSession;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TimeSpentSessionService
 {
@@ -16,6 +18,27 @@ class TimeSpentSessionService
         private readonly ProcessEarningRuleAction $processEarningRuleAction,
         private readonly TimeSpentRuleEvaluator $evaluator,
     ) {
+    }
+
+    public function start(
+        User $user,
+        string $targetType,
+        int $targetId,
+        EarningRule $rule,
+    ): LoyaltyTimeSpentSession {
+        return LoyaltyTimeSpentSession::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'target_type' => $targetType,
+                'target_id' => $targetId,
+                'status' => LoyaltyTimeSpentStatusEnum::PENDING,
+            ],
+            [
+                'earning_rule_id' => $rule->id,
+                'token' => Str::uuid()->toString(),
+                'started_at' => now(),
+            ]
+        );
     }
 
     public function complete(User $user, string $token): LoyaltyTimeSpentSession
@@ -32,14 +55,16 @@ class TimeSpentSessionService
             }
 
             $duration = now()->diffInSeconds($session->started_at);
-            $rule = $session->earningRule;
 
-            $reason = $this->evaluator->evaluate($user, $rule, $session->setAttribute('duration_seconds', $duration));
+            $session->update([
+                'duration_seconds' => $duration,
+                'completed_at' => now(),
+            ]);
+
+            $reason = $this->evaluator->evaluate($user, $session->refresh(), $session->earningRule);
 
             if ($reason) {
                 $session->update([
-                    'duration_seconds' => $duration,
-                    'completed_at' => now(),
                     'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
                     'rejection_reason' => $reason,
                 ]);
@@ -48,8 +73,6 @@ class TimeSpentSessionService
             }
 
             $session->update([
-                'duration_seconds' => $duration,
-                'completed_at' => now(),
                 'status' => LoyaltyTimeSpentStatusEnum::COMPLETED,
             ]);
 

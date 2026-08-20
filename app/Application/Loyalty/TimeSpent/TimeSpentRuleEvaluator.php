@@ -16,8 +16,8 @@ class TimeSpentRuleEvaluator
 
     public function evaluate(
         User $user,
-        EarningRule $rule,
         LoyaltyTimeSpentSession $session,
+        EarningRule $rule,
     ): ?string {
         $config = $rule->config ?? [];
 
@@ -31,6 +31,22 @@ class TimeSpentRuleEvaluator
 
         if ($this->usageCounter->hasReachedDailyLimit($user, $rule, $dailyLimit, now())) {
             return 'daily_limit_reached';
+        }
+
+        if (($config['unique_target_daily'] ?? false) === true) {
+            $exists = LoyaltyTimeSpentSession::query()
+                ->where('user_id', $user->id)
+                ->where('earning_rule_id', $rule->id)
+                ->where('target_type', $session->target_type)
+                ->where('target_id', $session->target_id)
+                ->whereDate('created_at', today())
+                ->whereKeyNot($session->id)
+                ->whereNotNull('completed_at')
+                ->exists();
+
+            if ($exists) {
+                return 'duplicate_target_daily';
+            }
         }
 
         return null;
