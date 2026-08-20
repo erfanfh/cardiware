@@ -48,6 +48,12 @@
                         <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
                             با فعالیت در مودینگ وی امتیاز بگیر و پاداش دریافت کن.
                         </p>
+
+                        <a href="{{ route('loyalty.leaderboard') }}"
+                           class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white shadow-lg shadow-slate-900/10 transition hover:-translate-y-0.5 hover:bg-brand-600 dark:bg-white dark:text-slate-900 dark:shadow-black/20 dark:hover:bg-brand-300">
+                            مشاهده برترین‌های باشگاه
+                            <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                        </a>
                     </div>
 
                     <div class="lg:col-span-5">
