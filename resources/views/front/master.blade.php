@@ -23,6 +23,7 @@
 @include('front.footer.index')
 <x-front.lightbox-gallery/>
 <x-front.scroll-to-top/>
+<x-front.loyalty-earned-toast/>
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts

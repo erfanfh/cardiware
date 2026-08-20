@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use App\Application\Loyalty\Earning\Actions\ProcessEarningRuleAction;
 use App\Application\Loyalty\Earning\Contexts\DailyVisitEarningContext;
 use App\Application\Loyalty\Earning\Enums\EarningRuleSkipReasonEnum;
+use App\Application\Loyalty\Notifications\LoyaltyEarnedNotificationFactory;
+use App\Application\Loyalty\Notifications\PendingLoyaltyEarnedNotifications;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use Closure;
 use Illuminate\Http\Request;
@@ -16,14 +18,15 @@ class RecordDailyLoyaltyVisit
 {
     public function __construct(
         private readonly ProcessEarningRuleAction $processEarningRuleAction,
-    ) {
-    }
+        private readonly LoyaltyEarnedNotificationFactory $notificationFactory,
+        private readonly PendingLoyaltyEarnedNotifications $pendingNotifications,
+    ) {}
 
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
 
-        if (!$this->shouldRecord($request, $response)) {
+        if (! $this->shouldRecord($request, $response)) {
             return $response;
         }
 
@@ -42,7 +45,7 @@ class RecordDailyLoyaltyVisit
             10,
         );
 
-        if (!$lock->get()) {
+        if (! $lock->get()) {
             return $response;
         }
 
@@ -58,6 +61,14 @@ class RecordDailyLoyaltyVisit
                     occurredAt: $occurredAt,
                 ),
             );
+
+            if ($result->wasNewlyAwarded()) {
+                $this->pendingNotifications->push(
+                    $request,
+                    $this->notificationFactory->forDailyVisit($result->entry),
+                );
+                $this->pendingNotifications->markClientPending($request, $response);
+            }
 
             if (
                 $result->evaluation->skipReason
@@ -88,11 +99,11 @@ class RecordDailyLoyaltyVisit
 
     private function shouldRecord(Request $request, Response $response): bool
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return false;
         }
 
-        if (!in_array($request->method(), ['GET', 'HEAD'], true)) {
+        if (! in_array($request->method(), ['GET', 'HEAD'], true)) {
             return false;
         }
 

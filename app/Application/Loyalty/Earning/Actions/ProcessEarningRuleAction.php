@@ -23,8 +23,7 @@ class ProcessEarningRuleAction
         private readonly GetOrCreatePointAccountAction $getOrCreatePointAccountAction,
         private readonly AwardPointsAction $awardPointsAction,
         private readonly EarningIdempotencyKeyFactory $idempotencyKeyFactory,
-    ) {
-    }
+    ) {}
 
     /** @throws Throwable */
     public function execute(
@@ -37,6 +36,7 @@ class ProcessEarningRuleAction
             return new EarningRuleProcessResult(
                 EarningRuleEvaluation::fromExisting($existing),
                 $existing,
+                false,
             );
         }
 
@@ -60,19 +60,20 @@ class ProcessEarningRuleAction
                 return new EarningRuleProcessResult(
                     EarningRuleEvaluation::fromExisting($existing),
                     $existing,
+                    false,
                 );
             }
 
             $evaluation = $this->evaluateEarningRuleAction->execute($type, $context);
 
-            if (!$evaluation->shouldAward()) {
+            if (! $evaluation->shouldAward()) {
                 return new EarningRuleProcessResult($evaluation, null);
             }
 
             if (
-                !$evaluation->rule
-                || !$evaluation->reason
-                || !$evaluation->idempotencyKey
+                ! $evaluation->rule
+                || ! $evaluation->reason
+                || ! $evaluation->idempotencyKey
             ) {
                 throw new LogicException('Awardable earning rule evaluation is incomplete.');
             }
@@ -95,7 +96,7 @@ class ProcessEarningRuleAction
                 occurredAt: $context->occurredAt(),
             ));
 
-            return new EarningRuleProcessResult($evaluation, $entry);
+            return new EarningRuleProcessResult($evaluation, $entry, true);
         }, 3);
     }
 

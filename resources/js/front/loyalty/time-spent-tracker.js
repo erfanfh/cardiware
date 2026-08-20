@@ -44,13 +44,11 @@ export default function initTimeSpentTracker() {
         return response.json();
     };
 
-    const showEarnToast = (points) => {
-        if (!points) return;
+    const showEarnToast = (notification) => {
+        if (!notification) return;
 
-        window.dispatchEvent(new CustomEvent('loyalty:toast', {
-            detail: {
-                message: `+${points} امتیاز باشگاه مخاطبان دریافت کردید`,
-            },
+        window.dispatchEvent(new CustomEvent('loyalty:earned', {
+            detail: notification,
         }));
     };
 
@@ -75,7 +73,7 @@ export default function initTimeSpentTracker() {
             completed = true;
             stop();
 
-            showEarnToast(result.earned_points);
+            showEarnToast(result.notification);
         } catch {
             // A temporary failure should not permanently kill the tracker.
         } finally {

@@ -18,8 +18,7 @@ class TimeSpentSessionService
     public function __construct(
         private readonly ProcessEarningRuleAction $processEarningRuleAction,
         private readonly TimeSpentRuleEvaluator $evaluator,
-    ) {
-    }
+    ) {}
 
     public function start(
         User $user,
@@ -67,7 +66,7 @@ class TimeSpentSessionService
 
             $rule = $session->earningRule;
 
-            if (!$rule) {
+            if (! $rule) {
                 $session->forceFill([
                     'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
                     'rejection_reason' => 'earning_rule_missing',
@@ -107,7 +106,7 @@ class TimeSpentSessionService
                 ),
             );
 
-            if (!$processResult->entry) {
+            if (! $processResult->entry) {
                 $session->forceFill([
                     'status' => LoyaltyTimeSpentStatusEnum::REJECTED,
                     'rejection_reason' => $processResult->evaluation->skipReason?->value
@@ -126,7 +125,12 @@ class TimeSpentSessionService
 
             return new TimeSpentCompletionResult(
                 session: $session->refresh(),
-                earnedPoints: (int) $processResult->entry->amount,
+                earnedPoints: $processResult->wasNewlyAwarded()
+                    ? (int) $processResult->entry->amount
+                    : 0,
+                entry: $processResult->wasNewlyAwarded()
+                    ? $processResult->entry
+                    : null,
             );
         }, 3);
     }
