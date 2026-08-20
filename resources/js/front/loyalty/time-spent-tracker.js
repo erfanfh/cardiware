@@ -49,6 +49,14 @@ export default function initTimeSpentTracker() {
 
             completed = true;
 
+                        if (data.earned_points > 0) {
+                            window.dispatchEvent(new CustomEvent('loyalty:toast', {
+                                detail: {
+                                    message: `+${data.earned_points} امتیاز باشگاه مخاطبان دریافت کردید`
+                                }
+                            }));
+                        }
+
             if (result.earned_points && window.showToast) {
                 window.showToast(
                     `+${result.earned_points} امتیاز باشگاه مخاطبان دریافت کردید`
