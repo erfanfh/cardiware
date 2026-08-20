@@ -29,3 +29,7 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 });
+
+import initTimeSpentTracker from './loyalty/time-spent-tracker.js';
+
+initTimeSpentTracker();
