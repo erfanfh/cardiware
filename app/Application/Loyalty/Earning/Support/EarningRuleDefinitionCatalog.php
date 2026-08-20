@@ -37,6 +37,8 @@ class EarningRuleDefinitionCatalog
                 'points' => 5,
                 'required_seconds' => 60,
                 'daily_limit' => 5,
+                'targets' => ['product', 'post'],
+                'unique_target_daily' => true,
             ],
         };
     }

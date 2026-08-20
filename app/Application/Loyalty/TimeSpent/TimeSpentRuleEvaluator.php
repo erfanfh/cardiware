@@ -21,6 +21,12 @@ class TimeSpentRuleEvaluator
     ): ?string {
         $config = $rule->config ?? [];
 
+        $allowedTargets = $config['targets'] ?? ['product', 'post'];
+
+        if (!in_array($session->target_type, $allowedTargets, true)) {
+            return 'target_type_not_allowed';
+        }
+
         $requiredSeconds = (int) ($config['required_seconds'] ?? 0);
 
         if ($requiredSeconds > 0 && $session->duration_seconds < $requiredSeconds) {
