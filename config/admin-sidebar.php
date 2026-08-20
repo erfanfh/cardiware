@@ -224,18 +224,6 @@ return [
                 'icon' => 'icons.discount',
                 'gate' => 'loyalty-reward.list',
             ],
-            [
-                'label' => 'ایجاد پاداش',
-                'route' => 'admin.reward-offers.create',
-                'icon' => 'icons.plus-sign',
-                'gate' => 'loyalty-reward.create',
-            ],
-            [
-                'label' => 'ایجاد قانون امتیاز',
-                'route' => 'admin.earning-rules.create',
-                'icon' => 'icons.plus-sign',
-                'gate' => 'loyalty-rule.create',
-            ],
         ],
     ],
 

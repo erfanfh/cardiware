@@ -12,7 +12,8 @@
     @endphp
 
     <div class="space-y-5">
-        <div class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center">
+        <div
+            class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center">
             <div class="flex min-w-0 items-center gap-4">
                 <x-admin.list.thumbnail :src="$user->avatar?->url" :alt="$user->full_name" size="sm-square"/>
 
@@ -23,9 +24,15 @@
                     </div>
 
                     <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                        @if($user->username)<span dir="ltr">{{ '@' . $user->username }}</span>@endif
-                        @if($user->mobile)<span>{{ $user->mobile }}</span>@endif
-                        @if($user->email)<span dir="ltr">{{ $user->email }}</span>@endif
+                        @if($user->username)
+                            <span dir="ltr">{{ '@' . $user->username }}</span>
+                        @endif
+                        @if($user->mobile)
+                            <span>{{ $user->mobile }}</span>
+                        @endif
+                        @if($user->email)
+                            <span dir="ltr">{{ $user->email }}</span>
+                        @endif
                         <span>{{ $user->role?->title ?? 'بدون نقش' }}</span>
                     </div>
                 </div>
@@ -46,7 +53,8 @@
         <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div class="text-xs font-bold text-slate-500">موجودی فعلی</div>
-                <div class="mt-2 text-2xl font-black {{ $balance < 0 ? 'text-red-600' : 'text-slate-900' }}">{{ number_format($balance) }}</div>
+                <div
+                    class="mt-2 text-2xl font-black {{ $balance < 0 ? 'text-red-600' : 'text-slate-900' }}">{{ number_format($balance) }}</div>
                 <div class="mt-1 text-[11px] text-slate-400">امتیاز</div>
             </div>
 
@@ -97,33 +105,29 @@
                                 min="1"
                                 dir="ltr"
                                 :value="old('amount')"
-                                placeholder="مثلا 500"
                             />
                         </x-admin.field>
 
                         <div class="lg:col-span-1"></div>
 
                         <div class="lg:col-span-3">
-                            <x-admin.field
-                                required
-                                label="دلیل تغییر"
-                                hint="این متن داخل Ledger ذخیره می‌شود و بعدا قابل حذف یا ویرایش مستقیم نیست."
-                            >
+                            <x-admin.field required label="دلیل تغییر">
                                 <x-admin.form.textarea
                                     name="note"
                                     rows="3"
                                     :value="old('note')"
-                                    placeholder="مثلا جبران اختلال سفارش شماره ..."
                                 />
                             </x-admin.field>
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
-                        اصلاح دستی فقط موجودی فعلی را تغییر می‌دهد و شاخص‌های «کل کسب شده» و «کل مصرف شده» را دستکاری نمی‌کند. کاهش دستی می‌تواند در صورت نیاز موجودی کاربر را منفی کند و بدهی امتیاز ایجاد کند.
+                    <div
+                        class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
+                        اصلاح دستی فقط موجودی فعلی را تغییر می‌دهد و شاخص‌های «کل کسب شده» و «کل مصرف شده» را دستکاری
+                        نمی‌کند. کاهش دستی می‌تواند در صورت نیاز موجودی کاربر را منفی کند و بدهی امتیاز ایجاد کند.
                     </div>
 
-                    <div class="flex justify-end">
+                    <div class="flex justify-end mt-3">
                         <x-admin.form.button type="submit" variant="solid">ثبت تغییر امتیاز</x-admin.form.button>
                     </div>
                 </x-admin.form>

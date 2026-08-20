@@ -36,20 +36,15 @@
                     <x-admin.form.input
                         name="title"
                         :value="old('title', $earningRule?->title)"
-                        placeholder="مثلا امتیاز خرید عادی"
                     />
                 </x-admin.field>
 
-                <x-admin.field
-                    required
-                    label="کد قانون"
-                    hint="شناسه داخلی و یکتا؛ فقط حروف انگلیسی کوچک، عدد، خط تیره، زیرخط و نقطه. مثال: purchase-default"
-                >
+                <x-admin.field required label="کد قانون">
                     <x-admin.form.input
                         name="code"
                         dir="ltr"
                         :value="old('code', $earningRule?->code)"
-                        placeholder="purchase-default"
+                        placeholder="شناسه داخلی و یکتا؛ فقط حروف انگلیسی کوچک، عدد، خط تیره، زیرخط و نقطه"
                     />
                 </x-admin.field>
 
@@ -78,7 +73,8 @@
                 </x-admin.field>
 
                 <div class="md:col-span-2">
-                    <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <label
+                        class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                         <div>
                             <div class="text-sm font-bold text-slate-800">فعال بودن قانون</div>
                             <p class="mt-1 text-xs leading-6 text-slate-500">
@@ -96,7 +92,8 @@
         </x-admin.metabox>
 
         <x-admin.metabox title="تنظیمات امتیازدهی">
-            <div class="mb-5 rounded-2xl border border-brand-100 bg-brand-50/60 px-4 py-3 text-xs leading-7 text-slate-700">
+            <div
+                class="mb-5 rounded-2xl border border-brand-100 bg-brand-50/60 px-4 py-3 text-xs leading-7 text-slate-700">
                 <div x-show="ruleType === 'registration'" x-cloak>
                     این قانون یک بار و پس از ثبت نام واقعی کاربر در سایت بررسی می‌شود.
                 </div>
@@ -190,7 +187,8 @@
                 </div>
 
                 <div x-show="ruleType === 'comment'" x-cloak class="md:col-span-2">
-                    <label class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                    <label
+                        class="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
                         <div>
                             <div class="text-sm font-bold text-slate-800">پاسخ به دیدگاه هم امتیاز داشته باشد</div>
                             <p class="mt-1 text-xs leading-6 text-slate-500">
@@ -248,8 +246,10 @@
                 </x-admin.field>
             </div>
 
-            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
-                اگر دو قانون از یک نوع در یک زمان فعال باشند، موتور امتیازدهی فقط قانونی را انتخاب می‌کند که اولویت بیشتری دارد. در اولویت برابر، قانون جدیدتر انتخاب می‌شود.
+            <div
+                class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
+                اگر دو قانون از یک نوع در یک زمان فعال باشند، موتور امتیازدهی فقط قانونی را انتخاب می‌کند که اولویت
+                بیشتری دارد. در اولویت برابر، قانون جدیدتر انتخاب می‌شود.
             </div>
         </x-admin.metabox>
     </div>
