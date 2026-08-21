@@ -5,9 +5,10 @@ namespace App\Providers;
 use App\Application\Loyalty\Listeners\AwardCommentPointsListener;
 use App\Application\Loyalty\Listeners\AwardPurchasePointsListener;
 use App\Application\Loyalty\Listeners\AwardRegistrationPointsListener;
+use App\Application\Loyalty\Listeners\GrantRegistrationRewardListener;
+use App\Application\Loyalty\Listeners\RecordRegistrationPointEligibilityListener;
 use App\Application\Loyalty\Listeners\ReverseCommentPointsListener;
 use App\Application\Loyalty\Listeners\ReversePurchasePointsListener;
-use App\Application\Loyalty\Listeners\RecordRegistrationPointEligibilityListener;
 use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Discussion\Events\CommentApprovedEvent;
@@ -29,6 +30,11 @@ class LoyaltyServiceProvider extends ServiceProvider
         Event::listen(
             UserRegisteredEvent::class,
             AwardRegistrationPointsListener::class,
+        );
+
+        Event::listen(
+            UserRegisteredEvent::class,
+            GrantRegistrationRewardListener::class,
         );
 
         Event::listen(

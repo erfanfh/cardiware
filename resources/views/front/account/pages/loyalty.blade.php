@@ -268,10 +268,22 @@
                                         class="rounded-full px-2.5 py-1 text-[10px] font-extrabold {{ $isReversed ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' }}">
                                         {{ $redemption->status->label() }}
                                     </span>
+                                    @if($redemption->isRegistrationGift())
+                                        <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-extrabold text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
+                                            هدیه خوش‌آمدگویی
+                                        </span>
+                                    @endif
                                 </div>
                                 <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400">
-                                    <span>{{ number_format($redemption->points_spent) }} امتیاز</span>
+                                    @if($redemption->isRegistrationGift())
+                                        <span class="font-bold text-emerald-600 dark:text-emerald-400">بدون کسر امتیاز</span>
+                                    @else
+                                        <span>{{ number_format($redemption->points_spent) }} امتیاز</span>
+                                    @endif
                                     <span>{{ jalali_date($redemption->created_at, 'Y/m/d H:i') }}</span>
+                                    @if($redemption->coupon?->expires_at)
+                                        <span>معتبر تا {{ jalali_date($redemption->coupon->expires_at, 'Y/m/d H:i') }}</span>
+                                    @endif
                                 </div>
                             </div>
 

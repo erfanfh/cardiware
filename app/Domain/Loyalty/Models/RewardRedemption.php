@@ -116,4 +116,9 @@ class RewardRedemption extends Model
             ?? $this->rewardOffer?->title
             ?? 'پاداش');
     }
+
+    public function isRegistrationGift(): bool
+    {
+        return data_get($this->metadata ?? [], 'source') === 'registration_gift';
+    }
 }

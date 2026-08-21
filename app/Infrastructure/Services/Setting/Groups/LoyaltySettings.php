@@ -17,6 +17,8 @@ class LoyaltySettings extends BaseSettings
         'point_conversion_minimum_points',
         'point_conversion_maximum_points_per_request',
         'point_conversion_daily_points_limit',
+        'registration_gift_enabled',
+        'registration_gift_reward_offer_id',
     ];
 
     protected array $casts = [
@@ -26,5 +28,7 @@ class LoyaltySettings extends BaseSettings
         'point_conversion_minimum_points' => IntegerCast::class,
         'point_conversion_maximum_points_per_request' => IntegerCast::class,
         'point_conversion_daily_points_limit' => IntegerCast::class,
+        'registration_gift_enabled' => BooleanCast::class,
+        'registration_gift_reward_offer_id' => IntegerCast::class,
     ];
 }

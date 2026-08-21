@@ -28,6 +28,7 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
         User $user,
     ): Model {
         $config = $offer->config ?? [];
+        $isRegistrationGift = data_get($redemption->metadata, 'source') === 'registration_gift';
         $couponType = CouponTypeEnum::from((string) $config['coupon_type']);
         $expiresAfterDays = filled($config['expires_after_days'] ?? null)
             ? (int) $config['expires_after_days']
@@ -36,7 +37,9 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
         $coupon = Coupon::query()->create([
             'code' => $this->uniqueCode($user),
             'title' => $offer->title,
-            'description' => 'پاداش باشگاه مخاطبان: ' . $offer->title,
+            'description' => ($isRegistrationGift
+                ? 'هدیه ثبت‌نام باشگاه مخاطبان: '
+                : 'پاداش باشگاه مخاطبان: ').$offer->title,
             'type' => $couponType,
             'value' => (int) $config['coupon_value'],
             'max_discount_amount' => $couponType->isPercentage()
@@ -54,7 +57,7 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
             'applies_to_addons' => (bool) ($config['applies_to_addons'] ?? false),
             'created_by_user_id' => null,
             'metadata' => [
-                'source' => 'loyalty_reward',
+                'source' => $isRegistrationGift ? 'loyalty_registration_gift' : 'loyalty_reward',
                 'reward_offer_id' => $offer->getKey(),
                 'reward_redemption_id' => $redemption->getKey(),
             ],
@@ -68,9 +71,9 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
     private function uniqueCode(User $user): string
     {
         for ($attempt = 0; $attempt < 10; $attempt++) {
-            $code = 'MWR-' . $user->getKey() . '-' . Str::upper(Str::random(10));
+            $code = 'MWR-'.$user->getKey().'-'.Str::upper(Str::random(10));
 
-            if (!Coupon::query()->where('code', $code)->exists()) {
+            if (! Coupon::query()->where('code', $code)->exists()) {
                 return $code;
             }
         }

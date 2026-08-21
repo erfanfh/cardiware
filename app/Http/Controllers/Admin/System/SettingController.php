@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin\System;
 
 use App\Application\Seo\Support\SeoTemplateVariableRegistry;
 use App\Application\System\Actions\UpdateSettingAction;
+use App\Domain\Loyalty\Models\RewardOffer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
+use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,11 +18,25 @@ use RuntimeException;
 
 class SettingController extends Controller
 {
-    public function loyalty(): View
+    public function loyalty(LoyaltySettings $settings): View
     {
         Gate::authorize('loyalty-rule.list');
 
-        return view('admin.system.settings.loyalty');
+        $selectedRewardOfferId = (int) $settings->get('registration_gift_reward_offer_id', 0);
+        $registrationGiftOffers = RewardOffer::query()
+            ->where(function ($query) use ($selectedRewardOfferId): void {
+                $query->where('is_active', true);
+
+                if ($selectedRewardOfferId > 0) {
+                    $query->orWhere('id', $selectedRewardOfferId);
+                }
+            })
+            ->orderByDesc('is_active')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        return view('admin.system.settings.loyalty', compact('registrationGiftOffers'));
     }
 
     public function storeLoyalty(UpdateLoyaltySettingsRequest $request): RedirectResponse
@@ -33,14 +49,14 @@ class SettingController extends Controller
                     ->execute('loyalty', $field, $value);
 
                 if (! $updated) {
-                    throw new RuntimeException('Unable to persist loyalty conversion settings.');
+                    throw new RuntimeException('Unable to persist loyalty settings.');
                 }
             }
         });
 
         return redirect()
             ->route('admin.settings.loyalty')
-            ->with('success', 'تنظیمات تبدیل امتیاز با موفقیت ذخیره شد.');
+            ->with('success', 'تنظیمات باشگاه مخاطبان با موفقیت ذخیره شد.');
     }
 
     /**

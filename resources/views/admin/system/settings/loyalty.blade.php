@@ -10,6 +10,40 @@
         $minimumPoints = old('point_conversion_minimum_points', get_setting('loyalty', 'point_conversion_minimum_points', 500));
         $maximumPoints = old('point_conversion_maximum_points_per_request', get_setting('loyalty', 'point_conversion_maximum_points_per_request', 10000));
         $dailyLimit = old('point_conversion_daily_points_limit', get_setting('loyalty', 'point_conversion_daily_points_limit', 20000));
+        $registrationGiftEnabled = old('registration_gift_enabled', get_setting('loyalty', 'registration_gift_enabled', false));
+        $registrationGiftOfferId = old('registration_gift_reward_offer_id', get_setting('loyalty', 'registration_gift_reward_offer_id'));
+        $registrationGiftOfferOptions = ['' => 'انتخاب پاداش...'] + $registrationGiftOffers
+            ->mapWithKeys(fn ($offer) => [
+                $offer->getKey() => $offer->title . ' — ' . $offer->type->label()
+                    . ($offer->is_active ? '' : ' (غیرفعال)'),
+            ])
+            ->all();
+        $registrationGiftOfferDetails = $registrationGiftOffers
+            ->mapWithKeys(function ($offer) {
+                $config = $offer->config ?? [];
+                $summary = $offer->type->label();
+
+                if ($offer->type->value === 'coupon') {
+                    $value = number_format((int) ($config['coupon_value'] ?? 0));
+                    $summary = ($config['coupon_type'] ?? null) === 'percentage'
+                        ? "{$value} درصد تخفیف"
+                        : "{$value} تومان تخفیف";
+                    $days = (int) ($config['expires_after_days'] ?? 0);
+
+                    if ($days > 0) {
+                        $summary .= " با {$days} روز اعتبار";
+                    }
+                } elseif ($offer->type->value === 'raffle_ticket') {
+                    $summary = number_format((int) ($config['ticket_quantity'] ?? 0)) . ' بلیط قرعه‌کشی';
+                }
+
+                return [(string) $offer->getKey() => [
+                    'title' => $offer->title,
+                    'summary' => $summary,
+                    'active' => $offer->isCurrentlyActive(),
+                ]];
+            })
+            ->all();
     @endphp
 
     <x-admin.form action="{{ route('admin.settings.loyalty.store') }}" method="put">
@@ -17,6 +51,9 @@
             <div
                 class="space-y-6"
                 x-data="{
+                    registrationGiftEnabled: @js((bool) $registrationGiftEnabled),
+                    registrationGiftOfferId: @js((string) ($registrationGiftOfferId ?? '')),
+                    registrationGiftOffers: @js($registrationGiftOfferDetails),
                     points: Number(@js($pointsPerUnit)) || 1,
                     wallet: Number(@js($walletAmountPerUnit)) || 1,
                     minimum: Number(@js($minimumPoints)) || 1,
@@ -25,10 +62,68 @@
                     },
                     preview() {
                         return Math.floor(this.minimum / Math.max(1, this.points)) * this.wallet;
+                    },
+                    selectedGift() {
+                        return this.registrationGiftOffers[String(this.registrationGiftOfferId)] || null;
                     }
                 }"
             >
                 <x-admin.form.validation-errors/>
+
+                <x-admin.metabox title="هدیه خوش‌آمدگویی پس از ثبت‌نام" :collapsible="false">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-medium text-gray-500">فعال‌سازی هدیه</label>
+                            <x-admin.field :error="$errors->first('registration_gift_enabled')">
+                                <x-admin.form.switch
+                                    name="registration_gift_enabled"
+                                    :checked="$registrationGiftEnabled"
+                                    x-model="registrationGiftEnabled"
+                                />
+                            </x-admin.field>
+                        </div>
+
+                        <x-admin.field
+                            label="پاداش هدیه ثبت‌نام"
+                            hint="پاداش از لیست پاداش‌های باشگاه انتخاب می‌شود و امتیازی از کاربر کم نمی‌شود."
+                            :error="$errors->first('registration_gift_reward_offer_id')"
+                        >
+                            <x-admin.form.select
+                                name="registration_gift_reward_offer_id"
+                                :options="$registrationGiftOfferOptions"
+                                :value="$registrationGiftOfferId"
+                                x-model="registrationGiftOfferId"
+                            />
+                        </x-admin.field>
+
+                        <div
+                            x-show="registrationGiftEnabled && selectedGift()"
+                            x-cloak
+                            class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 lg:col-span-2"
+                        >
+                            <div class="text-xs font-black text-emerald-800" x-text="selectedGift()?.title"></div>
+                            <div class="mt-1 text-xs leading-6 text-emerald-700" x-text="selectedGift()?.summary"></div>
+                            <div
+                                x-show="selectedGift() && !selectedGift().active"
+                                class="mt-2 text-xs font-bold text-rose-600"
+                            >
+                                این پاداش در بازه فعلی قابل صدور نیست؛ تا زمان فعال شدن آن هدیه‌ای صادر نمی‌شود.
+                            </div>
+                        </div>
+
+                        <div
+                            class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs leading-7 text-slate-600 lg:col-span-2">
+                            صدور فقط برای ثبت‌نام‌های جدید پس از فعال‌سازی انجام می‌شود و برای هر کاربر دقیقاً یک‌بار
+                            است.
+                            درصد، مبلغ، مدت اعتبار و سایر جزئیات از خود پاداش انتخاب‌شده خوانده می‌شود.
+                            @can('loyalty-reward.create')
+                                <a href="{{ route('admin.reward-offers.create') }}" class="font-black text-brand-600">
+                                    ساخت پاداش جدید
+                                </a>
+                            @endcan
+                        </div>
+                    </div>
+                </x-admin.metabox>
 
                 <div
                     class="rounded-2xl border border-amber-200 bg-gradient-to-l from-amber-50 to-orange-50 p-4 text-sm leading-7 text-amber-900">

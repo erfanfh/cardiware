@@ -17,8 +17,7 @@ class RefundRaffleTicketRewardRedemptionAction
 {
     public function __construct(
         private readonly ReversePointEntryAction $reversePointEntry,
-    ) {
-    }
+    ) {}
 
     /** @throws Throwable */
     public function execute(
@@ -26,7 +25,7 @@ class RefundRaffleTicketRewardRedemptionAction
         string $reason,
         ?User $actor = null,
     ): RewardRedemption {
-        if (!$redemption->exists) {
+        if (! $redemption->exists) {
             throw new InvalidArgumentException('Reward redemption must exist before it can be refunded.');
         }
 
@@ -56,25 +55,29 @@ class RefundRaffleTicketRewardRedemptionAction
                 return $locked;
             }
 
-            $pointEntry = $locked->pointLedgerEntry()->firstOrFail();
+            $reversal = null;
 
-            $reversal = $this->reversePointEntry->execute(new ReversePointEntryDTO(
-                entry: $pointEntry,
-                amount: (int) $locked->points_spent,
-                idempotencyKey: 'loyalty:reward-redemption:' . $locked->getKey() . ':raffle-refund',
-                actor: $actor,
-                reference: $locked,
-                description: $reason,
-                metadata: [
-                    'reward_redemption_id' => $locked->getKey(),
-                    'reward_offer_id' => $offer->getKey(),
-                    'refund_source' => 'raffle',
-                ],
-            ));
+            if ($locked->point_ledger_entry_id && (int) $locked->points_spent > 0) {
+                $pointEntry = $locked->pointLedgerEntry()->firstOrFail();
+
+                $reversal = $this->reversePointEntry->execute(new ReversePointEntryDTO(
+                    entry: $pointEntry,
+                    amount: (int) $locked->points_spent,
+                    idempotencyKey: 'loyalty:reward-redemption:'.$locked->getKey().':raffle-refund',
+                    actor: $actor,
+                    reference: $locked,
+                    description: $reason,
+                    metadata: [
+                        'reward_redemption_id' => $locked->getKey(),
+                        'reward_offer_id' => $offer->getKey(),
+                        'refund_source' => 'raffle',
+                    ],
+                ));
+            }
 
             $locked->forceFill([
                 'status' => RewardRedemptionStatusEnum::REVERSED,
-                'reversal_point_ledger_entry_id' => $reversal->getKey(),
+                'reversal_point_ledger_entry_id' => $reversal?->getKey(),
                 'reversed_at' => now(),
                 'metadata' => array_merge($locked->metadata ?? [], [
                     'refund' => [
