@@ -384,6 +384,12 @@ return [
                 'gate' => 'setting.general',
             ],
             [
+                'label' => 'باشگاه مخاطبان',
+                'route' => 'admin.settings.loyalty',
+                'icon' => 'icons.settings-02',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
                 'label' => 'سئو',
                 'route' => 'admin.settings.seo',
                 'icon' => 'icons.settings-02',

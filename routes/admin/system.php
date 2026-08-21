@@ -3,6 +3,8 @@
 use App\Http\Controllers\Admin\System\SettingController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
+    Route::get('loyalty', 'loyalty')->name('loyalty');
+    Route::put('loyalty', 'storeLoyalty')->name('loyalty.store');
     Route::get('general', 'general')->name('general');
     Route::put('general', 'storeGeneral')->name('general.store');
     Route::get('seo', 'seo')->name('seo');

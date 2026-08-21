@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\Identity\AccountController;
 use App\Http\Controllers\Front\Identity\AuthController;
+use App\Http\Controllers\Front\Loyalty\ConvertPointsToWalletController;
 use App\Http\Controllers\Front\Loyalty\RedeemRewardOfferController;
 use App\Http\Middleware\ForceTrailingSlash;
 use Illuminate\Support\Facades\Route;
@@ -30,4 +31,8 @@ Route::prefix('account')->middleware('auth')->name('account.')->group(function (
     Route::post('loyalty/rewards/{rewardOffer}/redeem', RedeemRewardOfferController::class)
         ->middleware('throttle:20,1')
         ->name('loyalty.rewards.redeem');
+
+    Route::post('loyalty/convert-to-wallet', ConvertPointsToWalletController::class)
+        ->middleware('throttle:10,1')
+        ->name('loyalty.convert-to-wallet');
 });

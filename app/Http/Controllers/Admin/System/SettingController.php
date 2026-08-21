@@ -5,14 +5,44 @@ namespace App\Http\Controllers\Admin\System;
 use App\Application\Seo\Support\SeoTemplateVariableRegistry;
 use App\Application\System\Actions\UpdateSettingAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
+use RuntimeException;
 
 class SettingController extends Controller
 {
+    public function loyalty(): View
+    {
+        Gate::authorize('loyalty-rule.list');
+
+        return view('admin.system.settings.loyalty');
+    }
+
+    public function storeLoyalty(UpdateLoyaltySettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('loyalty-rule.list');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                $updated = app(UpdateSettingAction::class)
+                    ->execute('loyalty', $field, $value);
+
+                if (! $updated) {
+                    throw new RuntimeException('Unable to persist loyalty conversion settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.loyalty')
+            ->with('success', 'تنظیمات تبدیل امتیاز با موفقیت ذخیره شد.');
+    }
+
     /**
      * General settings page
      *

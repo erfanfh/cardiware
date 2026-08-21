@@ -50,6 +50,11 @@ enum WalletTransactionTypeEnum: string
     case BONUS = 'bonus';
 
     /**
+     * Non-withdrawable credit created by converting loyalty points.
+     */
+    case LOYALTY_CONVERSION = 'loyalty_conversion';
+
+    /**
      * Get the human-readable label.
      */
     public function label(): string
@@ -64,6 +69,7 @@ enum WalletTransactionTypeEnum: string
             self::ADMIN_CREDIT => 'افزایش موجودی توسط مدیر',
             self::ADMIN_DEBIT => 'کاهش موجودی توسط مدیر',
             self::BONUS => 'اعتبار هدیه',
+            self::LOYALTY_CONVERSION => 'تبدیل امتیاز باشگاه',
         };
     }
 
@@ -78,6 +84,7 @@ enum WalletTransactionTypeEnum: string
             self::TRANSFER_IN,
             self::ADMIN_CREDIT,
             self::BONUS => WalletTransactionDirectionEnum::CREDIT,
+            self::LOYALTY_CONVERSION => WalletTransactionDirectionEnum::CREDIT,
 
             self::ORDER_PAYMENT,
             self::TRANSFER_OUT,

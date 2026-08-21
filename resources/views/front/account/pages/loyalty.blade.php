@@ -99,6 +99,8 @@
             @endforeach
         </div>
 
+        @include('front.account.partials.loyalty-point-conversion')
+
         <section id="rewards" class="scroll-mt-24">
             <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                 <div>
