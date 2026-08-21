@@ -120,6 +120,8 @@
             @endforeach
         </section>
 
+        @include('front.account.partials.dashboard-loyalty-card', ['audienceClub' => $audienceClub])
+
         <section class="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
             <div
                 class="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
