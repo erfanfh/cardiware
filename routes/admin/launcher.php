@@ -14,6 +14,8 @@ Route::prefix('launcher-devices')
         Route::get('/', [LauncherDeviceManagementController::class, 'index'])->name('index');
         Route::get('/users/search', LauncherDeviceUserSearchController::class)->name('users.search');
         Route::post('/reset', [LauncherDeviceManagementController::class, 'reset'])->name('reset');
+        Route::post('/suspend', [LauncherDeviceManagementController::class, 'suspend'])->name('suspend');
+        Route::post('/restore', [LauncherDeviceManagementController::class, 'restore'])->name('restore');
     });
 
 Route::prefix('launcher-releases')

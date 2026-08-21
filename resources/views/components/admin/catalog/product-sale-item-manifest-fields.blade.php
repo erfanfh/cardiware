@@ -739,10 +739,13 @@
             <div class="col-span-12 md:col-span-6">
                 <x-admin.field label="حالت پیش‌فرض">
                     <x-admin.form.select x-model="{{ $state }}.cpu_compatibility.default_mode">
-                        <option value="off">Off</option>
-                        <option value="auto">Auto</option>
-                        <option value="manual">Manual</option>
+                        <option value="off">خاموش</option>
+                        <option value="auto">خودکار — فقط CPU هیبریدی</option>
+                        <option value="manual">دستی — پیش‌فرض خاموش</option>
                     </x-admin.form.select>
+                    <p class="mt-1 text-[11px] leading-5 text-slate-500">
+                        در حالت خودکار، پردازنده‌های قدیمی و غیرهیبریدی بدون تغییر اجرا می‌شوند. حالت دستی نیازمند اجازه تغییر توسط کاربر است.
+                    </p>
                 </x-admin.field>
             </div>
 

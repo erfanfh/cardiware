@@ -13,6 +13,7 @@ class GenerateTemporaryLauncherDownloadUrlAction
         int $contentId,
         int $fileId,
         string $downloadSessionId,
+        int $manifestRevision,
         CarbonInterface $expiresAt,
     ): string {
         return URL::temporarySignedRoute(
@@ -24,6 +25,7 @@ class GenerateTemporaryLauncherDownloadUrlAction
                 'content' => $contentId,
                 'file' => $fileId,
                 'downloadSessionId' => $downloadSessionId,
+                'manifestRevision' => $manifestRevision,
             ],
         );
     }

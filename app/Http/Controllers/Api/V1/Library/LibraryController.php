@@ -7,8 +7,8 @@ use App\Application\Commerce\Actions\Access\GetUserLibraryItemAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Library\LibraryIndexRequest;
 use App\Http\Resources\Api\V1\Library\LibraryItemResource;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class LibraryController extends Controller
 {
@@ -28,14 +28,16 @@ class LibraryController extends Controller
     public function index(
         LibraryIndexRequest  $request,
         GetUserLibraryAction $action,
-    ): AnonymousResourceCollection
+    ): JsonResponse
     {
         $purchaseAccesses = $action->execute(
             user: $request->user(),
             perPage: $request->perPage(),
         );
 
-        return LibraryItemResource::collection($purchaseAccesses);
+        return LibraryItemResource::collection($purchaseAccesses)
+            ->response()
+            ->header('Cache-Control', 'private, no-store, max-age=0');
     }
 
     /**
@@ -59,13 +61,15 @@ class LibraryController extends Controller
         Request                  $request,
         int                      $purchaseAccess,
         GetUserLibraryItemAction $action,
-    ): LibraryItemResource
+    ): JsonResponse
     {
         $access = $action->execute(
             user: $request->user(),
             purchaseAccessId: $purchaseAccess,
         );
 
-        return LibraryItemResource::make($access);
+        return LibraryItemResource::make($access)
+            ->response()
+            ->header('Cache-Control', 'private, no-store, max-age=0');
     }
 }

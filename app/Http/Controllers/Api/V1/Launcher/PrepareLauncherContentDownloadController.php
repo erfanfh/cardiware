@@ -38,6 +38,10 @@ class PrepareLauncherContentDownloadController extends Controller
                 $contentId,
                 $file,
                 $request->string('download_session_id')->toString(),
+                $request->integer('manifest_revision'),
+                $request->string('file_name')->toString(),
+                $request->integer('size_bytes'),
+                $request->string('sha256')->toString(),
             ),
         ]);
     }

@@ -47,6 +47,10 @@ class PrepareDownloadController extends Controller
             purchaseAccessId: $purchaseAccess,
             fileId: $file,
             downloadSessionId: $request->string('download_session_id')->toString(),
+            expectedManifestRevision: $request->integer('manifest_revision'),
+            expectedFileName: $request->string('file_name')->toString(),
+            expectedSizeBytes: $request->integer('size_bytes'),
+            expectedSha256: $request->string('sha256')->toString(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );

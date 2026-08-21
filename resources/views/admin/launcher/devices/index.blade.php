@@ -108,6 +108,113 @@
                 </div>
             @endif
 
+            <section class="rounded-2xl border {{ $selectedUser->isLauncherSuspended() ? 'border-red-300 bg-red-50/40' : 'border-emerald-200 bg-white' }} shadow-sm">
+                <div class="border-b border-slate-200 px-5 py-4">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-sm font-black text-slate-900">دسترسی حساب به لانچر</h2>
+                            <p class="mt-1 text-xs font-bold leading-6 text-slate-500">
+                                محرومیت فقط ورود و API لانچر را مسدود می‌کند و خریدها، اسلات دستگاه و سابقه انتقال را تغییر نمی‌دهد.
+                            </p>
+                        </div>
+                        <span class="rounded-xl px-3 py-2 text-xs font-black {{ $selectedUser->isLauncherSuspended() ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800' }}">
+                            {{ $selectedUser->isLauncherSuspended() ? 'محروم از لانچر' : 'مجاز' }}
+                        </span>
+                    </div>
+                    @if($selectedUser->isLauncherSuspended())
+                        <div class="mt-4 rounded-2xl border border-red-200 bg-white p-4 text-xs font-bold leading-7 text-red-800">
+                            <div>{{ $selectedUser->launcher_suspension_reason ?: 'علتی ثبت نشده است.' }}</div>
+                            <div class="mt-1 text-red-600">
+                                {{ $selectedUser->launcherSuspensionIsPermanent()
+                                    ? 'مدت: دائمی'
+                                    : 'پایان محرومیت: ' . jalali_date($selectedUser->launcher_suspended_until) }}
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                @if($selectedUser->isLauncherSuspended())
+                    <form method="POST" action="{{ route('admin.launcher-devices.restore') }}" class="space-y-4 p-5">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $selectedUser->getKey() }}">
+                        <div>
+                            <label class="mb-2 block text-xs font-black text-slate-700">دلیل رفع محرومیت</label>
+                            <x-admin.form.textarea name="restore_reason" rows="3" :value="old('restore_reason')" placeholder="برای مثال: بررسی توسط پشتیبانی و رفع محدودیت" required />
+                            @error('restore_reason')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                        <label class="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-xs font-bold leading-6 text-emerald-800">
+                            <input type="checkbox" name="confirm_restore" value="1" class="mt-1 h-4 w-4" required>
+                            <span>رفع محرومیت این حساب را تأیید می‌کنم. کاربر پس از آن باید یک‌بار آنلاین وارد لانچر شود.</span>
+                        </label>
+                        <div class="flex justify-end">
+                            <x-admin.form.button type="submit" variant="solid">رفع محرومیت لانچر</x-admin.form.button>
+                        </div>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('admin.launcher-devices.suspend') }}" class="space-y-4 p-5" onsubmit="return confirm('آیا از محروم‌کردن این حساب از لانچر مطمئن هستید؟')">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $selectedUser->getKey() }}">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                            <div>
+                                <label class="mb-2 block text-xs font-black text-slate-700">نوع محرومیت</label>
+                                <select name="duration_type" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold" required>
+                                    <option value="days" @selected(old('duration_type') === 'days')>تعداد روز مشخص</option>
+                                    <option value="permanent" @selected(old('duration_type') === 'permanent')>دائمی</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="mb-2 block text-xs font-black text-slate-700">تعداد روز</label>
+                                <input type="number" name="duration_days" min="1" max="3650" value="{{ old('duration_days', 10) }}" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold" inputmode="numeric">
+                                @error('duration_days')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
+                            </div>
+                        </div>
+                        <div>
+                            <label class="mb-2 block text-xs font-black text-slate-700">علت قابل نمایش به کاربر</label>
+                            <x-admin.form.textarea name="suspension_reason" rows="3" :value="old('suspension_reason')" placeholder="برای مثال: اشتراک‌گذاری حساب برخلاف قوانین استفاده از لانچر" required />
+                            @error('suspension_reason')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                        <label class="flex items-start gap-3 rounded-2xl border border-red-100 bg-red-50 p-4 text-xs font-bold leading-6 text-red-800">
+                            <input type="checkbox" name="confirm_suspension" value="1" class="mt-1 h-4 w-4" required>
+                            <span>ابطال فوری Tokenهای لانچر و جلوگیری از ورود این حساب را تأیید می‌کنم.</span>
+                        </label>
+                        <div class="flex justify-end">
+                            <x-admin.form.button type="submit" variant="danger">اعمال محرومیت لانچر</x-admin.form.button>
+                        </div>
+                    </form>
+                @endif
+            </section>
+
+            <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-5 py-4">
+                    <h2 class="text-sm font-black text-slate-900">۲۰ تغییر آخر دسترسی لانچر</h2>
+                </div>
+                @if($suspensionLogs->isEmpty())
+                    <div class="px-5 py-8 text-center text-sm font-bold text-slate-500">سابقه‌ای ثبت نشده است.</div>
+                @else
+                    <div class="divide-y divide-slate-100">
+                        @foreach($suspensionLogs as $log)
+                            @php
+                                $adminName = $log->admin_display_name ?: trim(($log->admin_first_name ?? '') . ' ' . ($log->admin_last_name ?? ''));
+                            @endphp
+                            <div class="p-4">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div class="text-xs font-black {{ $log->action === 'suspend' ? 'text-red-700' : 'text-emerald-700' }}">
+                                        {{ $log->action === 'suspend' ? 'اعمال محرومیت' : 'رفع محرومیت' }} · {{ $adminName ?: 'مدیر حذف‌شده' }}
+                                    </div>
+                                    <div class="text-[11px] font-bold text-slate-400">{{ jalali_date($log->created_at) }} · {{ $log->ip_address ?: 'بدون IP' }}</div>
+                                </div>
+                                <p class="mt-2 text-xs font-bold leading-6 text-slate-600">{{ $log->reason ?: 'بدون توضیح' }}</p>
+                                @if($log->action === 'suspend')
+                                    <div class="mt-1 text-[11px] font-bold text-slate-400">
+                                        {{ $log->suspended_until ? 'تا ' . jalali_date($log->suspended_until) : 'دائمی' }}
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-5 py-4">
                     <h2 class="text-sm font-black text-slate-900">سوابق دستگاه‌ها</h2>

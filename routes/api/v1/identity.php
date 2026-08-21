@@ -23,6 +23,7 @@ Route::prefix('auth')
             ->middleware([
                 'auth:sanctum',
                 'user.active',
+                'launcher.account',
                 'launcher.device',
             ])
             ->name('logout');
@@ -32,6 +33,7 @@ Route::get('me', MeController::class)
     ->middleware([
         'auth:sanctum',
         'user.active',
+        'launcher.account',
         'launcher.device',
     ])
     ->name('me');

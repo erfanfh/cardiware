@@ -39,6 +39,6 @@ class LibraryManifestController extends Controller
                 user: $request->user(),
                 purchaseAccessId: $purchaseAccess,
             ),
-        ]);
+        ])->header('Cache-Control', 'private, no-store, max-age=0');
     }
 }

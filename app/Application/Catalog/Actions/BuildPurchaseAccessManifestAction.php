@@ -284,21 +284,35 @@ class BuildPurchaseAccessManifestAction
         }
 
         foreach ($files as $file) {
-            if (blank($file->file_name)) {
+            $declaredFileName = trim((string) $file->file_name);
+
+            if (blank($declaredFileName)) {
                 throw new ProductManifestUnavailableException(
                     "File {$file->id} does not have a file name."
                 );
             }
 
-            if (
-                $capabilities['supports_verify']
-                && !preg_match(
-                    '/^[a-fA-F0-9]{64}$/',
-                    (string)$file->sha256
-                )
-            ) {
+            if (basename(str_replace('\\', '/', $declaredFileName)) !== $declaredFileName) {
+                throw new ProductManifestUnavailableException(
+                    "File {$file->id} must use a base file name without a path."
+                );
+            }
+
+            if ($file->size_bytes === null || (int) $file->size_bytes <= 0) {
+                throw new ProductManifestUnavailableException(
+                    "File {$file->id} does not have a valid positive size."
+                );
+            }
+
+            if (!preg_match('/^[a-fA-F0-9]{64}$/', (string) $file->sha256)) {
                 throw new ProductManifestUnavailableException(
                     "File {$file->id} does not have a valid SHA-256 hash."
+                );
+            }
+
+            if (blank($file->url)) {
+                throw new ProductManifestUnavailableException(
+                    "File {$file->id} does not have a download source."
                 );
             }
         }
@@ -328,6 +342,13 @@ class BuildPurchaseAccessManifestAction
         if (blank($manifest->assembled_file_name)) {
             throw new ProductManifestUnavailableException(
                 'The assembled archive file name is missing.'
+            );
+        }
+
+        $assembledFileName = trim((string) $manifest->assembled_file_name);
+        if (basename(str_replace('\\', '/', $assembledFileName)) !== $assembledFileName) {
+            throw new ProductManifestUnavailableException(
+                'The assembled archive name must be a base file name without a path.'
             );
         }
 

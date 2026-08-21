@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware([
     'auth:sanctum',
     'user.active',
+    'launcher.account',
     'launcher.device',
     'abilities:library:read',
 ])

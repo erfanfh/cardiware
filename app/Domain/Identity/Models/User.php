@@ -56,6 +56,10 @@ class User extends Authenticatable implements HasDiscussionOwner
         'device_transfer_used',
         'first_activated_at',
         'transferred_at',
+        'launcher_suspended_at',
+        'launcher_suspended_until',
+        'launcher_suspension_reason',
+        'launcher_suspended_by',
     ];
 
     /**
@@ -88,6 +92,9 @@ class User extends Authenticatable implements HasDiscussionOwner
             'device_transfer_used' => 'boolean',
             'first_activated_at' => 'datetime',
             'transferred_at' => 'datetime',
+            'launcher_suspended_at' => 'datetime',
+            'launcher_suspended_until' => 'datetime',
+            'launcher_suspended_by' => 'integer',
         ];
     }
 
@@ -154,6 +161,22 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function launcherDevices(): HasMany
     {
         return $this->hasMany(LauncherDevice::class);
+    }
+
+    public function isLauncherSuspended(): bool
+    {
+        if ($this->launcher_suspended_at === null) {
+            return false;
+        }
+
+        return $this->launcher_suspended_until === null
+            || $this->launcher_suspended_until->isFuture();
+    }
+
+    public function launcherSuspensionIsPermanent(): bool
+    {
+        return $this->launcher_suspended_at !== null
+            && $this->launcher_suspended_until === null;
     }
 
     public function tickets(): HasMany
