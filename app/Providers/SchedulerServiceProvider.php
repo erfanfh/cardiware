@@ -12,11 +12,11 @@ class SchedulerServiceProvider extends ServiceProvider
      */
     public function boot(Schedule $schedule): void
     {
-        $viewsSchedule = max((int)config('cache.page_views_schedule', 1), 1);
-        $viewsLimit = (int)config('cache.page_views_flush_limit', 10000);
+        $viewsSchedule = max((int) config('cache.page_views_schedule', 1), 1);
+        $viewsLimit = (int) config('cache.page_views_flush_limit', 10000);
 
-        $downloadClicksSchedule = max((int)config('cache.download_clicks_schedule', 1), 1);
-        $downloadClicksLimit = (int)config('cache.download_clicks_flush_limit', 10000);
+        $downloadClicksSchedule = max((int) config('cache.download_clicks_schedule', 1), 1);
+        $downloadClicksLimit = (int) config('cache.download_clicks_flush_limit', 10000);
 
         $schedule->command("app:transfer-views-to-database --limit={$viewsLimit}")
             ->cron("*/{$viewsSchedule} * * * *")
@@ -51,6 +51,11 @@ class SchedulerServiceProvider extends ServiceProvider
             ->onOneServer();
 
         $schedule->command('raffles:expire-overdue-winners')
+            ->everyFiveMinutes()
+            ->withoutOverlapping(10)
+            ->onOneServer();
+
+        $schedule->command('raffles:send-winner-reminders')
             ->everyFiveMinutes()
             ->withoutOverlapping(10)
             ->onOneServer();

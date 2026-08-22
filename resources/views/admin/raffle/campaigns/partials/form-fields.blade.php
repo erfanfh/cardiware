@@ -39,7 +39,7 @@
                 label="نمایش عمومی برندگان"
                 :checked="old('show_winners_publicly', $drawCampaign?->show_winners_publicly ?? false)"
             />
-            <p class="mt-2 text-xs leading-6 text-slate-500">جزئیات Privacy نمایش برنده در فاز فرانت نهایی می‌شود.</p>
+            <p class="mt-2 text-xs leading-6 text-slate-500">نام و کد بلیط برندگان در صفحه عمومی به‌صورت ماسک‌شده نمایش داده می‌شود.</p>
         </x-admin.metabox>
     </x-slot:sidebar>
 

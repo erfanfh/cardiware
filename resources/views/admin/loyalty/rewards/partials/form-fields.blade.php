@@ -3,12 +3,12 @@
     use App\Domain\Promotion\Enums\CouponTypeEnum;
 
     $rewardOffer = $rewardOffer ?? null;
-    $selectedType = old('type', $rewardOffer?->type?->value ?? RewardTypeEnum::COUPON->value);
+    $selectedType = old('type', $rewardOffer?->type?->value ?? request('type', RewardTypeEnum::COUPON->value));
     $defaultConfig = $defaultConfigs[$selectedType] ?? [];
     $config = old('config', $rewardOffer?->config ?? $defaultConfig);
     $couponType = $config['coupon_type'] ?? CouponTypeEnum::FIXED_AMOUNT->value;
     $isActive = old('is_active', $rewardOffer?->is_active ?? true);
-    $targetId = old('target_id', $rewardOffer?->target_id);
+    $targetId = old('target_id', $rewardOffer?->target_id ?? request('target_id'));
     $hasRedemptions = (int)($rewardOffer?->redemptions_count ?? 0) > 0;
 @endphp
 

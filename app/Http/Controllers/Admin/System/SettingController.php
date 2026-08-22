@@ -7,6 +7,7 @@ use App\Application\System\Actions\UpdateSettingAction;
 use App\Domain\Loyalty\Models\RewardOffer;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
+use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,30 @@ use RuntimeException;
 
 class SettingController extends Controller
 {
+    public function raffle(): View
+    {
+        Gate::authorize('raffle-campaign.edit');
+
+        return view('admin.system.settings.raffle');
+    }
+
+    public function storeRaffle(UpdateRaffleSettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('raffle-campaign.edit');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (! app(UpdateSettingAction::class)->execute('raffle', $field, $value)) {
+                    throw new RuntimeException('Unable to persist raffle settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.raffle')
+            ->with('success', 'تنظیمات قرعه‌کشی با موفقیت ذخیره شد.');
+    }
+
     public function loyalty(LoyaltySettings $settings): View
     {
         Gate::authorize('loyalty-rule.list');
@@ -61,8 +86,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function general(): View
     {
@@ -74,8 +97,6 @@ class SettingController extends Controller
     /**
      * Store general settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeGeneral(Request $request): RedirectResponse
@@ -92,8 +113,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function seo(): View
     {
@@ -115,8 +134,6 @@ class SettingController extends Controller
     /**
      * Store seo settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeSeo(Request $request): RedirectResponse
@@ -133,8 +150,6 @@ class SettingController extends Controller
 
     /**
      * Header settings page
-     *
-     * @return View
      */
     public function header(): View
     {
@@ -146,8 +161,6 @@ class SettingController extends Controller
     /**
      * Store header settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeHeader(Request $request): RedirectResponse
@@ -165,8 +178,6 @@ class SettingController extends Controller
 
     /**
      * Footer settings page
-     *
-     * @return View
      */
     public function footer(): View
     {
@@ -178,8 +189,6 @@ class SettingController extends Controller
     /**
      * Store footer settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeFooter(Request $request): RedirectResponse
@@ -195,8 +204,6 @@ class SettingController extends Controller
 
     /**
      * Home settings page
-     *
-     * @return View
      */
     public function home(): View
     {
@@ -208,8 +215,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeHome(Request $request): RedirectResponse
@@ -239,8 +244,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeAboutUs(Request $request): RedirectResponse
@@ -256,8 +259,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function sidebarWidgets(): View
     {
@@ -269,8 +270,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeSidebarWidgets(Request $request): RedirectResponse
@@ -288,8 +287,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function auth(): View
     {
@@ -301,8 +298,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeAuth(Request $request): RedirectResponse
@@ -318,8 +313,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function projects(): View
     {
@@ -331,8 +324,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeProjects(Request $request): RedirectResponse
@@ -348,8 +339,6 @@ class SettingController extends Controller
 
     /**
      * General settings page
-     *
-     * @return View
      */
     public function posts(): View
     {
@@ -361,8 +350,6 @@ class SettingController extends Controller
     /**
      * Store home settings
      *
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storePosts(Request $request): RedirectResponse
@@ -376,9 +363,6 @@ class SettingController extends Controller
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 
-    /**
-     * @return View
-     */
     public function products(): View
     {
         Gate::authorize('setting.products');
@@ -387,8 +371,6 @@ class SettingController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeProducts(Request $request): RedirectResponse
@@ -402,9 +384,6 @@ class SettingController extends Controller
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
     }
 
-    /**
-     * @return View
-     */
     public function ticket(): View
     {
         Gate::authorize('setting.ticket');
@@ -413,8 +392,6 @@ class SettingController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
      * @throws BindingResolutionException
      */
     public function storeTicket(Request $request): RedirectResponse
@@ -429,15 +406,16 @@ class SettingController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param string $group
      * @return void
+     *
      * @throws BindingResolutionException
      */
     private function storeSettings(Request $request, string $group)
     {
         foreach ($request->all() as $field => $value) {
-            if (in_array($field, ['_method', '_token'])) continue;
+            if (in_array($field, ['_method', '_token'])) {
+                continue;
+            }
 
             app(UpdateSettingAction::class)->execute($group, $field, $value);
         }

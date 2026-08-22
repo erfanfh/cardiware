@@ -7,6 +7,7 @@ use App\Application\Raffle\Actions\Winner\ConfirmDrawWinnerAction;
 use App\Application\Raffle\Actions\Winner\DeliverDrawPrizeAction;
 use App\Application\Raffle\Actions\Winner\PromoteReserveWinnerAction;
 use App\Application\Raffle\Actions\Winner\RejectDrawWinnerAction;
+use App\Application\Raffle\Jobs\SendRaffleWinnerSmsJob;
 use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
@@ -40,7 +41,7 @@ class DrawCampaignWinnerController extends Controller
             'primary' => $winners->where('kind', DrawWinnerKindEnum::PRIMARY)->count(),
             'confirmed' => $winners->where('status', DrawWinnerStatusEnum::CONFIRMED)->count(),
             'delivered' => $winners->where('status', DrawWinnerStatusEnum::DELIVERED)->count(),
-            'pending' => $winners->where('status', DrawWinnerStatusEnum::PENDING)->filter(fn(DrawWinner $winner) => $winner->isEffectivePrimary())->count(),
+            'pending' => $winners->where('status', DrawWinnerStatusEnum::PENDING)->filter(fn (DrawWinner $winner) => $winner->isEffectivePrimary())->count(),
         ];
 
         return view('admin.raffle.winners.index', compact('drawCampaign', 'winners', 'byPrize', 'stats'));
@@ -92,7 +93,7 @@ class DrawCampaignWinnerController extends Controller
             return back()->with('error', $exception->getMessage())->with('error_title', 'جایگزینی ذخیره انجام نشد');
         }
 
-        if (!$replacement) {
+        if (! $replacement) {
             return back()->with('error', 'برنده ذخیره قابل استفاده ای برای این جایزه باقی نمانده است. از Redraw استفاده کنید.')->with('error_title', 'نیاز به Redraw');
         }
 
@@ -131,8 +132,29 @@ class DrawCampaignWinnerController extends Controller
             ->with('success_title', 'Redraw شروع شد');
     }
 
+    public function notify(DrawCampaign $drawCampaign, DrawWinner $drawWinner): RedirectResponse
+    {
+        Gate::authorize('raffle-winner.confirm');
+        $this->ensureBelongs($drawCampaign, $drawWinner);
+
+        if (! $drawWinner->isEffectivePrimary() || $drawWinner->status !== DrawWinnerStatusEnum::PENDING) {
+            return back()->with('error', 'پیامک اعلام برنده فقط برای برنده در انتظار تأیید قابل ارسال است.');
+        }
+
+        $drawWinner->forceFill([
+            'winner_sms_sent_at' => null,
+            'winner_sms_message_id' => null,
+            'winner_sms_failed_at' => null,
+            'winner_sms_failure' => null,
+        ])->save();
+
+        SendRaffleWinnerSmsJob::dispatch((int) $drawWinner->getKey(), 'winner');
+
+        return back()->with('success', 'ارسال پیامک برنده در صف قرار گرفت.');
+    }
+
     private function ensureBelongs(DrawCampaign $campaign, DrawWinner $winner): void
     {
-        abort_unless((int)$winner->campaign_id === (int)$campaign->getKey(), 404);
+        abort_unless((int) $winner->campaign_id === (int) $campaign->getKey(), 404);
     }
 }

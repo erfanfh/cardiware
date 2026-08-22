@@ -47,7 +47,7 @@
         </x-front.cart>
 
         @if($winningRecords->isNotEmpty())
-            <section>
+            <section id="my-wins" class="scroll-mt-24">
                 <div class="mb-3 flex items-center justify-between gap-3">
                     <div>
                         <div class="text-[10px] font-extrabold text-amber-600 dark:text-amber-300">خبر خوب</div>
@@ -76,9 +76,11 @@
                                             {{ $winner->status->label() }}
                                         </span>
                                     </div>
-                                    <a href="{{ route('raffles.show', $winner->campaign->slug) }}" class="mt-1 block truncate text-[11px] font-bold text-brand-600 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200">
-                                        {{ $winner->campaign->title }}
-                                    </a>
+                                    @if($winner->campaign->isPubliclyVisible())
+                                        <a href="{{ route('raffles.show', $winner->campaign->slug) }}" class="mt-1 block truncate text-[11px] font-bold text-brand-600 hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200">{{ $winner->campaign->title }}</a>
+                                    @else
+                                        <div class="mt-1 truncate text-[11px] font-bold text-slate-500">{{ $winner->campaign->title }}</div>
+                                    @endif
                                     @if($winner->ticket)
                                         <div class="mt-2 text-[10px] font-bold tracking-wide text-slate-400" dir="ltr">{{ $winner->ticket->code }}</div>
                                     @endif
@@ -87,6 +89,7 @@
                                             مهلت تایید: {{ jalali_date($winner->confirmation_deadline_at, 'Y/m/d H:i') }}
                                         </div>
                                     @endif
+                                    @include('front.raffles.partials.winner-claim-actions', ['winner' => $winner])
                                 </div>
                             </div>
                         </article>
@@ -109,7 +112,11 @@
                     @foreach($campaigns as $campaign)
                         <article class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:border-brand-200 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:hover:border-brand-500/30">
                             <div class="flex flex-col sm:flex-row">
-                                <a href="{{ route('raffles.show', $campaign->slug) }}" class="relative aspect-[16/8] shrink-0 overflow-hidden bg-slate-900 sm:aspect-auto sm:w-40">
+                                @if($campaign->isPubliclyVisible())
+                                    <a href="{{ route('raffles.show', $campaign->slug) }}" class="relative aspect-[16/8] shrink-0 overflow-hidden bg-slate-900 sm:aspect-auto sm:w-40">
+                                @else
+                                    <div class="relative aspect-[16/8] shrink-0 overflow-hidden bg-slate-900 sm:aspect-auto sm:w-40">
+                                @endif
                                     @if($campaign->coverMediaFile)
                                         <x-front.responsive-image
                                             :media="$campaign->coverMediaFile"
@@ -127,15 +134,17 @@
                                         <div class="absolute inset-0 flex items-center justify-center text-white/60 [&_svg]:h-10 [&_svg]:w-10">@include('icons.award-03')</div>
                                     @endif
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950/50 to-transparent"></div>
-                                </a>
+                                @if($campaign->isPubliclyVisible()) </a> @else </div> @endif
 
                                 <div class="min-w-0 flex-1 p-4">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="min-w-0">
                                             <x-front.raffle.status-badge :status="$campaign->status"/>
-                                            <a href="{{ route('raffles.show', $campaign->slug) }}" class="mt-2 block line-clamp-2 text-sm font-black leading-6 text-slate-900 transition hover:text-brand-600 dark:text-white dark:hover:text-brand-300">
-                                                {{ $campaign->title }}
-                                            </a>
+                                            @if($campaign->isPubliclyVisible())
+                                                <a href="{{ route('raffles.show', $campaign->slug) }}" class="mt-2 block line-clamp-2 text-sm font-black leading-6 text-slate-900 transition hover:text-brand-600 dark:text-white dark:hover:text-brand-300">{{ $campaign->title }}</a>
+                                            @else
+                                                <div class="mt-2 line-clamp-2 text-sm font-black leading-6 text-slate-900 dark:text-white">{{ $campaign->title }}</div>
+                                            @endif
                                         </div>
                                         <span class="text-slate-300 dark:text-slate-600 [&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
                                     </div>
@@ -155,9 +164,11 @@
                                         <a href="{{ route('account.raffles', ['campaign' => $campaign->public_token]) }}#my-tickets" class="inline-flex items-center gap-1.5 rounded-xl bg-brand-50 px-2.5 py-1.5 text-[10px] font-extrabold text-brand-700 transition hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/15">
                                             بلیط های این قرعه کشی
                                         </a>
-                                        <a href="{{ route('raffles.show', $campaign->slug) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
-                                            جزئیات
-                                        </a>
+                                        @if($campaign->isPubliclyVisible())
+                                            <a href="{{ route('raffles.show', $campaign->slug) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">جزئیات</a>
+                                        @elseif($campaign->status->value === 'cancelled')
+                                            <span class="inline-flex items-center rounded-xl bg-red-50 px-2.5 py-1.5 text-[10px] font-extrabold text-red-600 dark:bg-red-500/10 dark:text-red-300">لغوشده؛ بلیط‌ها از اعتبار خارج شده‌اند</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -212,16 +223,18 @@
                             <article class="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/60">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
-                                        <a href="{{ route('raffles.show', $ticket->campaign->slug) }}" class="line-clamp-1 text-xs font-extrabold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-300">{{ $ticket->campaign->title }}</a>
+                                        @if($ticket->campaign->isPubliclyVisible())
+                                            <a href="{{ route('raffles.show', $ticket->campaign->slug) }}" class="line-clamp-1 text-xs font-extrabold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-300">{{ $ticket->campaign->title }}</a>
+                                        @else
+                                            <div class="line-clamp-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">{{ $ticket->campaign->title }}</div>
+                                        @endif
                                         <div class="mt-2 truncate text-xs font-black tracking-wide text-slate-900 dark:text-white" dir="ltr" title="{{ $ticket->code }}">{{ $ticket->code }}</div>
                                     </div>
                                     <span class="rounded-lg px-2 py-1 text-[9px] font-extrabold {{ $ticket->status === DrawTicketStatusEnum::ACTIVE ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400' }}">{{ $ticket->status->label() }}</span>
                                 </div>
                                 <div class="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
                                     <span>{{ jalali_date($ticket->issued_at, 'Y/m/d H:i') }}</span>
-                                    @if($ticket->winnerRecords->isNotEmpty())
-                                        <span class="font-extrabold text-amber-600 dark:text-amber-300">منتخب قرعه کشی</span>
-                                    @endif
+                                    @include('front.raffles.partials.ticket-result', ['ticket' => $ticket])
                                 </div>
                             </article>
                         @endforeach
@@ -242,7 +255,11 @@
                                 @foreach($tickets as $ticket)
                                     <tr class="transition hover:bg-slate-50 dark:hover:bg-slate-800/50">
                                         <td class="px-4 py-3">
-                                            <a href="{{ route('raffles.show', $ticket->campaign->slug) }}" class="font-extrabold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-300">{{ $ticket->campaign->title }}</a>
+                                            @if($ticket->campaign->isPubliclyVisible())
+                                                <a href="{{ route('raffles.show', $ticket->campaign->slug) }}" class="font-extrabold text-slate-700 transition hover:text-brand-600 dark:text-slate-300 dark:hover:text-brand-300">{{ $ticket->campaign->title }}</a>
+                                            @else
+                                                <span class="font-extrabold text-slate-700 dark:text-slate-300">{{ $ticket->campaign->title }}</span>
+                                            @endif
                                         </td>
                                         <td class="px-4 py-3 font-black tracking-wide text-slate-900 dark:text-white" dir="ltr">{{ $ticket->code }}</td>
                                         <td class="px-4 py-3">
@@ -250,11 +267,7 @@
                                         </td>
                                         <td class="px-4 py-3 text-slate-400">{{ jalali_date($ticket->issued_at, 'Y/m/d H:i') }}</td>
                                         <td class="px-4 py-3">
-                                            @if($ticket->winnerRecords->isNotEmpty())
-                                                <span class="font-extrabold text-amber-600 dark:text-amber-300">منتخب قرعه کشی</span>
-                                            @else
-                                                <span class="text-slate-300 dark:text-slate-600">—</span>
-                                            @endif
+                                            @include('front.raffles.partials.ticket-result', ['ticket' => $ticket])
                                         </td>
                                     </tr>
                                 @endforeach

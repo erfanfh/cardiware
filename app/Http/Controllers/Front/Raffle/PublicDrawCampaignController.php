@@ -20,10 +20,10 @@ class PublicDrawCampaignController extends Controller
     }
 
     public function show(
-        string $slug,
+        string $raffleSlug,
         GetPublicDrawCampaignDetailAction $action,
     ): View {
-        $data = $action->execute($slug, auth()->user());
+        $data = $action->execute($raffleSlug, auth()->user());
 
         return view('front.raffles.show', $data);
     }

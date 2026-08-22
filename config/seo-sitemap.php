@@ -57,5 +57,11 @@ return [
             'include_listing_in_first_page' => true,
             'include_images' => true,
         ],
+
+        'raffle' => [
+            'enabled' => true,
+            'route_pattern' => 'raffle-sitemap{page}.xml',
+            'include_images' => true,
+        ],
     ],
 ];

@@ -1,5 +1,8 @@
 @php
-    $notifications = get_setting('header', 'notifications');
+    $notifications = collect(get_setting('header', 'notifications') ?: [])
+        ->concat($raffleHeaderNotifications ?? collect())
+        ->values()
+        ->all();
 @endphp
 <div
     x-data="{ open: false }"

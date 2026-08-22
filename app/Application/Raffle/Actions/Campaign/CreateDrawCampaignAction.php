@@ -6,6 +6,7 @@ use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Identity\Models\User;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
+use App\Domain\Raffle\Events\DrawCampaignCreatedEvent;
 use App\Domain\Raffle\Models\DrawCampaign;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
@@ -17,8 +18,7 @@ class CreateDrawCampaignAction
     public function __construct(
         private readonly SyncDrawPrizesAction $syncPrizes,
         private readonly AssignSlugAction $assignSlug,
-    ) {
-    }
+    ) {}
 
     /** @param array<string,mixed> $data @throws Throwable */
     public function execute(array $data, ?User $actor = null): DrawCampaign
@@ -26,7 +26,7 @@ class CreateDrawCampaignAction
         return DB::transaction(function () use ($data, $actor): DrawCampaign {
             $campaign = DrawCampaign::query()->create([
                 'title' => $data['title'],
-                'slug' => 'pending-' . Str::lower((string) Str::ulid()),
+                'slug' => 'pending-'.Str::lower((string) Str::ulid()),
                 'short_description' => $data['short_description'] ?? null,
                 'body' => $data['body'] ?? null,
                 'rules' => $data['rules'] ?? null,
@@ -37,10 +37,10 @@ class CreateDrawCampaignAction
                 'draw_at' => $data['draw_at'] ?? null,
                 'ticket_limit' => $data['ticket_limit'] ?? null,
                 'ticket_limit_per_user' => $data['ticket_limit_per_user'] ?? null,
-                'allow_multiple_wins_per_user' => (bool)($data['allow_multiple_wins_per_user'] ?? false),
-                'reserve_winners_per_prize' => (int)($data['reserve_winners_per_prize'] ?? 3),
+                'allow_multiple_wins_per_user' => (bool) ($data['allow_multiple_wins_per_user'] ?? false),
+                'reserve_winners_per_prize' => (int) ($data['reserve_winners_per_prize'] ?? 3),
                 'winner_confirmation_window_hours' => $data['winner_confirmation_window_hours'] ?? 72,
-                'show_winners_publicly' => (bool)($data['show_winners_publicly'] ?? false),
+                'show_winners_publicly' => (bool) ($data['show_winners_publicly'] ?? false),
                 'created_by_user_id' => $actor?->getKey(),
             ]);
 
@@ -51,6 +51,12 @@ class CreateDrawCampaignAction
             ));
 
             $this->syncPrizes->execute($campaign, $data['prizes'] ?? []);
+
+            DB::afterCommit(fn () => event(new DrawCampaignCreatedEvent(
+                campaignId: (int) $campaign->getKey(),
+                actorUserId: $actor?->getKey(),
+                occurredAt: now()->toImmutable(),
+            )));
 
             return $campaign->load(['prizes.mediaFile', 'coverMediaFile']);
         });

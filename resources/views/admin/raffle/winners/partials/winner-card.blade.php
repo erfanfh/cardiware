@@ -56,6 +56,33 @@
                 </div>
             @endif
 
+            @if($winner->claimed_at)
+                <div class="mt-3 rounded-xl border border-sky-200 bg-sky-50 px-3 py-3 text-xs leading-6 text-sky-800">
+                    <div class="font-black">اطلاعات ثبت‌شده توسط برنده</div>
+                    <div class="mt-1">{{ $winner->claim_contact_name }} · <span dir="ltr">{{ $winner->claim_mobile }}</span></div>
+                    @if($winner->claim_postal_code)<div>کد پستی: <span dir="ltr">{{ $winner->claim_postal_code }}</span></div>@endif
+                    <div>{{ $winner->claim_address }}</div>
+                    <div class="mt-1 text-[10px] text-sky-600">ثبت: {{ jalali_date($winner->claimed_at, 'Y/m/d H:i') }}</div>
+                </div>
+            @endif
+
+            @if($isEffective)
+                <div class="mt-3 flex flex-wrap gap-2 text-[10px]">
+                    @if($winner->winner_sms_sent_at)
+                        <span class="rounded-lg bg-emerald-50 px-2 py-1 font-bold text-emerald-700">پیامک برنده ارسال شد · {{ jalali_date($winner->winner_sms_sent_at, 'Y/m/d H:i') }}</span>
+                    @elseif($winner->winner_sms_failed_at)
+                        <span class="rounded-lg bg-red-50 px-2 py-1 font-bold text-red-700" title="{{ $winner->winner_sms_failure }}">ارسال پیامک ناموفق</span>
+                    @else
+                        <span class="rounded-lg bg-slate-100 px-2 py-1 font-bold text-slate-500">پیامک برنده ارسال نشده</span>
+                    @endif
+                    @if($winner->winner_reminder_sms_sent_at)
+                        <span class="rounded-lg bg-amber-50 px-2 py-1 font-bold text-amber-700">یادآوری ارسال شد</span>
+                    @elseif($winner->winner_reminder_sms_failed_at)
+                        <span class="rounded-lg bg-red-50 px-2 py-1 font-bold text-red-700" title="{{ $winner->winner_reminder_sms_failure }}">ارسال یادآوری ناموفق</span>
+                    @endif
+                </div>
+            @endif
+
             @if($winner->replacedWinner)
                 <div class="mt-3 text-xs text-brand-700">
                     جایگزین Winner #{{ $winner->replacedWinner->id }} شده است.
@@ -79,6 +106,11 @@
         @if($isEffective && !$replacement)
             <div class="w-full shrink-0 space-y-2 lg:w-[310px]">
                 @if($winner->status === DrawWinnerStatusEnum::PENDING)
+                    @can('raffle-winner.confirm')
+                        <x-admin.form method="post" action="{{ route('admin.draw-campaigns.winners.notify', [$drawCampaign, $winner]) }}">
+                            <x-admin.form.button type="submit" variant="secondary" class="w-full justify-center">{{ $winner->winner_sms_sent_at ? 'ارسال مجدد پیامک' : 'ارسال پیامک برنده' }}</x-admin.form.button>
+                        </x-admin.form>
+                    @endcan
                     @can('raffle-winner.confirm')
                         <x-admin.form method="post" action="{{ route('admin.draw-campaigns.winners.confirm', [$drawCampaign, $winner]) }}" class="js-confirm" data-confirm-title="تایید برنده" data-confirm-text="این کاربر به عنوان برنده این جایگاه تایید شود؟">
                             <x-admin.form.button type="submit" variant="solid" class="w-full justify-center">تایید برنده</x-admin.form.button>

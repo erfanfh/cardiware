@@ -14,14 +14,14 @@ use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
 use App\Domain\Catalog\Models\ProductSaleItemManifest;
+use App\Domain\Commerce\Models\Order;
+use App\Domain\Financial\Models\WalletTopUp;
+use App\Domain\Identity\Models\User;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherModGroup;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
-use App\Domain\Commerce\Models\Order;
-use App\Domain\Financial\Models\WalletTopUp;
-use App\Domain\Identity\Models\User;
 use App\Domain\Support\Models\Ticket;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->scoped(
             ResolveCommentAuthorBadgesAction::class,
-            fn() => new ResolveCommentAuthorBadgesAction()
+            fn () => new ResolveCommentAuthorBadgesAction
         );
     }
 
@@ -60,12 +60,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->environment('production'))
+        if (app()->environment('production')) {
             URL::forceScheme('https');
+        }
 
-        if (Request::is('admin/*'))
+        if (Request::is('admin/*')) {
             Paginator::defaultView('vendor.pagination.admin');
-        else {
+        } else {
             Paginator::defaultView('vendor.pagination.front');
         }
 
@@ -79,27 +80,31 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('api', function (\Illuminate\Http\Request $request): Limit {
             $key = $request->user()
-                ? 'user:' . $request->user()->getAuthIdentifier()
-                : 'ip:' . $request->ip();
+                ? 'user:'.$request->user()->getAuthIdentifier()
+                : 'ip:'.$request->ip();
 
             return Limit::perMinute(60)->by($key);
         });
 
         RateLimiter::for('api-login', function (\Illuminate\Http\Request $request) {
-            $login = (string)$request->input('login');
+            $login = (string) $request->input('login');
 
             return [
                 Limit::perMinute(5)->by($request->ip()),
-                Limit::perMinute(5)->by($login . '|' . $request->ip()),
+                Limit::perMinute(5)->by($login.'|'.$request->ip()),
             ];
         });
 
         RateLimiter::for('catalog', function (\Illuminate\Http\Request $request): Limit {
             $key = $request->user()
-                ? 'user:' . $request->user()->getAuthIdentifier()
-                : 'ip:' . $request->ip();
+                ? 'user:'.$request->user()->getAuthIdentifier()
+                : 'ip:'.$request->ip();
 
-            return Limit::perMinute(120)->by('catalog:' . $key);
+            return Limit::perMinute(120)->by('catalog:'.$key);
+        });
+
+        RateLimiter::for('raffle-claims', function (\Illuminate\Http\Request $request): Limit {
+            return Limit::perMinute(6)->by('raffle-claim:'.($request->user()?->getAuthIdentifier() ?: $request->ip()));
         });
 
         RateLimiter::for(
@@ -116,7 +121,7 @@ class AppServiceProvider extends ServiceProvider
                     ?? $request->input('code')
                     ?? $request->input('Code');
 
-                $gateway = (string)$request->route('gateway');
+                $gateway = (string) $request->route('gateway');
 
                 $key = filled($reference)
                     ? "{$gateway}:{$reference}"

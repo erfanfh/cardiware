@@ -151,9 +151,13 @@
                                             <div class="text-sm font-black text-amber-900 dark:text-amber-200">تبریک! در نتیجه قرعه کشی انتخاب شده ای</div>
                                             <div class="mt-2 flex flex-wrap gap-2">
                                                 @foreach($myWinningRecords as $winningRecord)
-                                                    <span class="rounded-xl border border-amber-200 bg-white px-2.5 py-1.5 text-[11px] font-extrabold text-amber-800 dark:border-amber-500/20 dark:bg-slate-900/60 dark:text-amber-300">
-                                                        {{ $winningRecord->prize?->title }} · {{ $winningRecord->status->label() }}
-                                                    </span>
+                                                    <div class="rounded-2xl border border-amber-200 bg-white p-3 dark:border-amber-500/20 dark:bg-slate-900/60">
+                                                        <div class="text-[11px] font-extrabold text-amber-800 dark:text-amber-300">{{ $winningRecord->prize?->title }} · {{ $winningRecord->status->label() }}</div>
+                                                        @if($winningRecord->confirmation_deadline_at && $winningRecord->status === DrawWinnerStatusEnum::PENDING)
+                                                            <div class="mt-1 text-[10px] text-amber-700">مهلت تأیید: {{ jalali_date($winningRecord->confirmation_deadline_at, 'Y/m/d H:i') }}</div>
+                                                        @endif
+                                                        @include('front.raffles.partials.winner-claim-actions', ['winner' => $winningRecord])
+                                                    </div>
                                                 @endforeach
                                             </div>
                                         </div>
@@ -310,6 +314,52 @@
                         </x-front.cart>
                     </section>
                 @endif
+
+                @if($publicDrawRuns->isNotEmpty())
+                    <section id="verification" class="scroll-mt-24">
+                        <x-front.cart>
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                                <div>
+                                    <div class="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-300">شفافیت و صحت‌سنجی</div>
+                                    <h2 class="mt-1 text-lg font-black text-slate-900 dark:text-white">گزارش قابل بررسی قرعه‌کشی</h2>
+                                    <p class="mt-2 max-w-2xl text-xs leading-7 text-slate-500 dark:text-slate-400">تعهد seed پیش از اعلام نتیجه ثبت می‌شود و پس از تکمیل، seed و مجموعه واجدان شرایط برای بازتولید مستقل نتیجه منتشر می‌شوند.</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 space-y-3">
+                                @foreach($publicDrawRuns as $proof)
+                                    @php($run = $proof['run'])
+                                    @php($verification = $proof['verification'])
+                                    <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+                                        <div class="flex flex-wrap items-center justify-between gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <span class="rounded-lg bg-white px-2 py-1 text-[10px] font-extrabold text-slate-600 dark:bg-slate-900 dark:text-slate-300">{{ $run->type->label() }}</span>
+                                                <span class="text-[10px] font-bold text-slate-400">{{ $run->status->label() }}</span>
+                                            </div>
+                                            @if($verification)
+                                                <span class="rounded-xl px-2.5 py-1.5 text-[10px] font-extrabold {{ $verification->valid ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-300' }}">
+                                                    {{ $verification->valid ? 'صحت نتیجه تأیید شد' : 'نیازمند بررسی' }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <dl class="mt-3 grid grid-cols-1 gap-3 text-[10px] sm:grid-cols-2">
+                                            <div><dt class="font-bold text-slate-400">الگوریتم</dt><dd class="mt-1 break-all font-mono text-slate-700 dark:text-slate-300" dir="ltr">{{ $run->algorithm }}</dd></div>
+                                            <div><dt class="font-bold text-slate-400">تعداد بلیط واجد شرایط</dt><dd class="mt-1 font-black text-slate-700 dark:text-slate-300">{{ number_format($run->eligible_ticket_count) }}</dd></div>
+                                            <div class="sm:col-span-2"><dt class="font-bold text-slate-400">Seed commitment</dt><dd class="mt-1 break-all font-mono text-slate-700 dark:text-slate-300" dir="ltr">{{ $run->seed_commitment }}</dd></div>
+                                            @if($run->seed_reveal)
+                                                <div class="sm:col-span-2"><dt class="font-bold text-slate-400">Seed reveal</dt><dd class="mt-1 break-all font-mono text-slate-700 dark:text-slate-300" dir="ltr">{{ $run->seed_reveal }}</dd></div>
+                                                <div class="sm:col-span-2"><dt class="font-bold text-slate-400">Eligible set hash</dt><dd class="mt-1 break-all font-mono text-slate-700 dark:text-slate-300" dir="ltr">{{ $run->eligible_set_hash }}</dd></div>
+                                            @endif
+                                        </dl>
+                                        @if($run->status === \App\Domain\Raffle\Enums\DrawRunStatusEnum::COMPLETED)
+                                            <a href="{{ route('raffles.verification', [$campaign->slug, $run]) }}" class="mt-4 inline-flex rounded-xl bg-slate-900 px-3 py-2 text-[10px] font-extrabold text-white hover:bg-brand-600 dark:bg-slate-700">دانلود گزارش کامل JSON</a>
+                                        @endif
+                                    </article>
+                                @endforeach
+                            </div>
+                        </x-front.cart>
+                    </section>
+                @endif
             </div>
 
             <aside class="space-y-4 lg:col-span-4 xl:col-span-3">
@@ -372,6 +422,12 @@
                             @if($campaign->status === DrawCampaignStatusEnum::COMPLETED)
                                 <a href="#winners" class="flex items-center justify-between rounded-2xl border border-slate-200 px-3 py-2.5 text-xs font-extrabold text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
                                     برندگان
+                                    <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                </a>
+                            @endif
+                            @if($publicDrawRuns->isNotEmpty())
+                                <a href="#verification" class="flex items-center justify-between rounded-2xl border border-slate-200 px-3 py-2.5 text-xs font-extrabold text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">
+                                    صحت‌سنجی نتیجه
                                     <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
                                 </a>
                             @endif

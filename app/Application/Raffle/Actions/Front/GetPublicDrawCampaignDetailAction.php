@@ -2,13 +2,16 @@
 
 namespace App\Application\Raffle\Actions\Front;
 
+use App\Application\Raffle\Actions\Draw\VerifyDrawRunAction;
 use App\Application\Raffle\Support\PublicDrawWinnerPresenter;
 use App\Domain\Identity\Models\User;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
+use App\Domain\Raffle\Enums\DrawRunStatusEnum;
 use App\Domain\Raffle\Enums\DrawTicketStatusEnum;
 use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Domain\Raffle\Models\DrawRun;
 use App\Domain\Raffle\Models\DrawTicket;
 use App\Domain\Raffle\Models\DrawWinner;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -18,8 +21,8 @@ class GetPublicDrawCampaignDetailAction
 {
     public function __construct(
         private readonly PublicDrawWinnerPresenter $winnerPresenter,
-    ) {
-    }
+        private readonly VerifyDrawRunAction $verifyDrawRun,
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -35,8 +38,8 @@ class GetPublicDrawCampaignDetailAction
             ])
             ->first();
 
-        if (!$campaign) {
-            throw (new ModelNotFoundException())->setModel(DrawCampaign::class, [$slug]);
+        if (! $campaign) {
+            throw (new ModelNotFoundException)->setModel(DrawCampaign::class, [$slug]);
         }
 
         $myTickets = collect();
@@ -83,6 +86,7 @@ class GetPublicDrawCampaignDetailAction
         }
 
         $publicWinners = $this->publicWinners($campaign);
+        $publicDrawRuns = $this->publicDrawRuns($campaign);
 
         return compact(
             'campaign',
@@ -91,13 +95,42 @@ class GetPublicDrawCampaignDetailAction
             'myTotalTicketsCount',
             'myWinningRecords',
             'publicWinners',
+            'publicDrawRuns',
         );
+    }
+
+    private function publicDrawRuns(DrawCampaign $campaign): Collection
+    {
+        return DrawRun::query()
+            ->where('campaign_id', $campaign->getKey())
+            ->whereIn('status', [
+                DrawRunStatusEnum::PENDING->value,
+                DrawRunStatusEnum::RUNNING->value,
+                DrawRunStatusEnum::COMPLETED->value,
+            ])
+            ->select([
+                'id', 'public_token', 'campaign_id', 'type', 'status', 'algorithm',
+                'seed_commitment', 'seed_reveal', 'eligible_ticket_count',
+                'eligible_set_hash', 'started_at', 'completed_at', 'created_at',
+            ])
+            ->latest('id')
+            ->get()
+            ->map(function (DrawRun $run): array {
+                $verification = $run->status === DrawRunStatusEnum::COMPLETED
+                    ? $this->verifyDrawRun->execute($run)
+                    : null;
+
+                return [
+                    'run' => $run,
+                    'verification' => $verification,
+                ];
+            });
     }
 
     private function publicWinners(DrawCampaign $campaign): Collection
     {
         if (
-            !$campaign->show_winners_publicly
+            ! $campaign->show_winners_publicly
             || $campaign->status !== DrawCampaignStatusEnum::COMPLETED
         ) {
             return collect();

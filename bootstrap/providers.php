@@ -1,15 +1,29 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\AuthServiceProvider;
+use App\Providers\FinancialServiceProvider;
+use App\Providers\HorizonServiceProvider;
+use App\Providers\LoyaltyServiceProvider;
+use App\Providers\NavigationServiceProvider;
+use App\Providers\PageLayoutServiceProvider;
+use App\Providers\RaffleServiceProvider;
+use App\Providers\RouteBindingServiceProvider;
+use App\Providers\SchedulerServiceProvider;
+use App\Providers\SeoServiceProvider;
+use App\Providers\SlugServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\AuthServiceProvider::class,
-    App\Providers\RouteBindingServiceProvider::class,
-    App\Providers\FinancialServiceProvider::class,
-    App\Providers\HorizonServiceProvider::class,
-    App\Providers\NavigationServiceProvider::class,
-    App\Providers\PageLayoutServiceProvider::class,
-    App\Providers\LoyaltyServiceProvider::class,
-    App\Providers\SchedulerServiceProvider::class,
-    App\Providers\SeoServiceProvider::class,
-    App\Providers\SlugServiceProvider::class,
+    AppServiceProvider::class,
+    AuthServiceProvider::class,
+    RouteBindingServiceProvider::class,
+    FinancialServiceProvider::class,
+    HorizonServiceProvider::class,
+    NavigationServiceProvider::class,
+    PageLayoutServiceProvider::class,
+    LoyaltyServiceProvider::class,
+    RaffleServiceProvider::class,
+    SchedulerServiceProvider::class,
+    SeoServiceProvider::class,
+    SlugServiceProvider::class,
 ];

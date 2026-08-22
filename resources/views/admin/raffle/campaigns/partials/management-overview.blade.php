@@ -32,6 +32,9 @@
                 </div>
 
                 <div class="flex flex-wrap gap-2">
+                    <x-admin.form.button tag="a" href="{{ route('admin.settings.raffle') }}" variant="secondary">
+                        تنظیمات و پیامک
+                    </x-admin.form.button>
                     @if($isPubliclyVisible)
                         <x-admin.form.button tag="a" href="{{ route('raffles.show', $drawCampaign->slug) }}" target="_blank" variant="secondary">
                             مشاهده در سایت

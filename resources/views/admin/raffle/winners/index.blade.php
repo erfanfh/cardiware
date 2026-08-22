@@ -4,6 +4,7 @@
 
 @section('content')
     @include('admin.raffle.campaigns.partials.nav')
+    <div class="mt-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.winners', $drawCampaign) }}" variant="secondary">خروجی CSV برندگان و تحویل</x-admin.form.button></div>
 
     <div class="mt-5 space-y-5">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

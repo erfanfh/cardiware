@@ -7,6 +7,7 @@ use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use LogicException;
 
 class DrawWinner extends Model
@@ -24,6 +25,12 @@ class DrawWinner extends Model
         'confirmation_deadline_at',
         'confirmed_at',
         'confirmed_by_user_id',
+        'claimed_at',
+        'claim_contact_name',
+        'claim_mobile',
+        'claim_postal_code',
+        'claim_address',
+        'claim_ip',
         'rejected_at',
         'rejected_by_user_id',
         'rejection_reason',
@@ -35,6 +42,14 @@ class DrawWinner extends Model
         'delivered_at',
         'delivered_by_user_id',
         'delivery_note',
+        'winner_sms_sent_at',
+        'winner_sms_message_id',
+        'winner_sms_failed_at',
+        'winner_sms_failure',
+        'winner_reminder_sms_sent_at',
+        'winner_reminder_sms_message_id',
+        'winner_reminder_sms_failed_at',
+        'winner_reminder_sms_failure',
         'metadata',
     ];
 
@@ -45,11 +60,16 @@ class DrawWinner extends Model
         'selected_at' => 'datetime',
         'confirmation_deadline_at' => 'datetime',
         'confirmed_at' => 'datetime',
+        'claimed_at' => 'datetime',
         'rejected_at' => 'datetime',
         'expired_at' => 'datetime',
         'promoted_at' => 'datetime',
         'promoted_for_position' => 'integer',
         'delivered_at' => 'datetime',
+        'winner_sms_sent_at' => 'datetime',
+        'winner_sms_failed_at' => 'datetime',
+        'winner_reminder_sms_sent_at' => 'datetime',
+        'winner_reminder_sms_failed_at' => 'datetime',
         'metadata' => 'array',
     ];
 
@@ -76,7 +96,7 @@ class DrawWinner extends Model
                     && $winner->getOriginal('promoted_at') === null
                     && $winner->promoted_at !== null;
 
-                if (!$isFirstPromotion) {
+                if (! $isFirstPromotion) {
                     throw new LogicException('Winner confirmation deadline can only change during reserve promotion.');
                 }
             }
@@ -145,11 +165,11 @@ class DrawWinner extends Model
     public function effectivePrimaryPosition(): ?int
     {
         if ($this->kind === DrawWinnerKindEnum::PRIMARY) {
-            return (int)$this->position;
+            return (int) $this->position;
         }
 
         return $this->promoted_for_position !== null
-            ? (int)$this->promoted_for_position
+            ? (int) $this->promoted_for_position
             : null;
     }
 
@@ -158,7 +178,7 @@ class DrawWinner extends Model
         return self::query()->where('replaces_winner_id', $this->getKey())->exists();
     }
 
-    public function replacement(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function replacement(): HasOne
     {
         return $this->hasOne(self::class, 'replaces_winner_id');
     }

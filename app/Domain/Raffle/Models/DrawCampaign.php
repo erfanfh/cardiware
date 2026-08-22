@@ -3,8 +3,9 @@
 namespace App\Domain\Raffle\Models;
 
 use App\Domain\Identity\Models\User;
-use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
+use App\Domain\Raffle\Enums\DrawTicketStatusEnum;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -65,7 +66,7 @@ class DrawCampaign extends Model
     {
         static::creating(function (DrawCampaign $campaign): void {
             if (blank($campaign->public_token)) {
-                $campaign->public_token = (string)Str::ulid();
+                $campaign->public_token = (string) Str::ulid();
             }
         });
 
@@ -76,10 +77,10 @@ class DrawCampaign extends Model
         static::updating(function (DrawCampaign $campaign): void {
             if ($campaign->isDirty('status')) {
                 $original = DrawCampaignStatusEnum::tryFrom(
-                    (string)$campaign->getRawOriginal('status')
+                    (string) $campaign->getRawOriginal('status')
                 );
 
-                if (!$original || !$original->canTransitionTo($campaign->status)) {
+                if (! $original || ! $original->canTransitionTo($campaign->status)) {
                     throw new LogicException('Invalid draw campaign status transition.');
                 }
             }
@@ -88,7 +89,7 @@ class DrawCampaign extends Model
         static::deleting(function (DrawCampaign $campaign): void {
             if (
                 $campaign->status !== DrawCampaignStatusEnum::DRAFT
-                || (int)$campaign->issued_tickets_count > 0
+                || (int) $campaign->issued_tickets_count > 0
             ) {
                 throw new LogicException(
                     'Only empty draft draw campaigns can be deleted.'
@@ -130,7 +131,7 @@ class DrawCampaign extends Model
     public function activeTickets(): HasMany
     {
         return $this->tickets()
-            ->where('status', \App\Domain\Raffle\Enums\DrawTicketStatusEnum::ACTIVE);
+            ->where('status', DrawTicketStatusEnum::ACTIVE);
     }
 
     public function drawRuns(): HasMany
@@ -143,9 +144,14 @@ class DrawCampaign extends Model
         return $this->hasMany(DrawWinner::class, 'campaign_id');
     }
 
+    public function auditEvents(): HasMany
+    {
+        return $this->hasMany(DrawCampaignEvent::class, 'campaign_id')->latest('occurred_at');
+    }
+
     private function assertConfigurationIntegrity(): void
     {
-        if ($this->starts_at && $this->closes_at && !$this->starts_at->lt($this->closes_at)) {
+        if ($this->starts_at && $this->closes_at && ! $this->starts_at->lt($this->closes_at)) {
             throw new LogicException('Draw campaign start date must be before its close date.');
         }
 
@@ -153,33 +159,33 @@ class DrawCampaign extends Model
             throw new LogicException('Draw date cannot be before the campaign close date.');
         }
 
-        if (!$this->closes_at && $this->starts_at && $this->draw_at && $this->draw_at->lt($this->starts_at)) {
+        if (! $this->closes_at && $this->starts_at && $this->draw_at && $this->draw_at->lt($this->starts_at)) {
             throw new LogicException('Draw date cannot be before the campaign start date.');
         }
 
-        if ($this->ticket_limit !== null && (int)$this->ticket_limit <= 0) {
+        if ($this->ticket_limit !== null && (int) $this->ticket_limit <= 0) {
             throw new LogicException('Draw campaign ticket limit must be greater than zero or null.');
         }
 
-        if ($this->ticket_limit_per_user !== null && (int)$this->ticket_limit_per_user <= 0) {
+        if ($this->ticket_limit_per_user !== null && (int) $this->ticket_limit_per_user <= 0) {
             throw new LogicException('Per-user ticket limit must be greater than zero or null.');
         }
 
         if (
             $this->ticket_limit !== null
             && $this->ticket_limit_per_user !== null
-            && (int)$this->ticket_limit_per_user > (int)$this->ticket_limit
+            && (int) $this->ticket_limit_per_user > (int) $this->ticket_limit
         ) {
             throw new LogicException('Per-user ticket limit cannot exceed total campaign ticket limit.');
         }
 
-        if ((int)$this->reserve_winners_per_prize < 0) {
+        if ((int) $this->reserve_winners_per_prize < 0) {
             throw new LogicException('Reserve winners per prize cannot be negative.');
         }
 
         if (
             $this->winner_confirmation_window_hours !== null
-            && (int)$this->winner_confirmation_window_hours <= 0
+            && (int) $this->winner_confirmation_window_hours <= 0
         ) {
             throw new LogicException(
                 'Winner confirmation window must be greater than zero or null.'
@@ -191,7 +197,7 @@ class DrawCampaign extends Model
     {
         $at ??= now();
 
-        if (!$this->status->acceptsTicketIssuance()) {
+        if (! $this->status->acceptsTicketIssuance()) {
             return false;
         }
 
@@ -199,7 +205,7 @@ class DrawCampaign extends Model
             return false;
         }
 
-        return !$this->closes_at || $at->lt($this->closes_at);
+        return ! $this->closes_at || $at->lt($this->closes_at);
     }
 
     public function hasReachedTicketLimit(): bool
@@ -217,10 +223,21 @@ class DrawCampaign extends Model
         return max(0, $this->ticket_limit - $this->active_tickets_count);
     }
 
+    public function isPubliclyVisible(): bool
+    {
+        return in_array($this->status, [
+            DrawCampaignStatusEnum::SCHEDULED,
+            DrawCampaignStatusEnum::OPEN,
+            DrawCampaignStatusEnum::CLOSED,
+            DrawCampaignStatusEnum::DRAWING,
+            DrawCampaignStatusEnum::COMPLETED,
+        ], true);
+    }
+
     protected function isCurrentlyOpen(): Attribute
     {
         return Attribute::make(
-            get: fn(): bool => $this->acceptsTicketsAt(),
+            get: fn (): bool => $this->acceptsTicketsAt(),
         );
     }
 }
