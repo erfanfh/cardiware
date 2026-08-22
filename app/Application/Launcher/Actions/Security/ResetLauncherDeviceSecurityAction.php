@@ -2,7 +2,9 @@
 
 namespace App\Application\Launcher\Actions\Security;
 
+use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Identity\Models\User;
+use App\Domain\Launcher\Models\LauncherDownloadSession;
 use Illuminate\Support\Facades\DB;
 
 final class ResetLauncherDeviceSecurityAction
@@ -54,6 +56,21 @@ final class ResetLauncherDeviceSecurityAction
             }
 
             $user->tokens()->where('name', 'like', 'MW Launcher%')->delete();
+            $invalidatedAt = now();
+            PurchaseAccessDownload::query()
+                ->where('user_id', $user->getKey())
+                ->whereNull('invalidated_at')
+                ->update([
+                    'invalidated_at' => $invalidatedAt,
+                    'session_expires_at' => $invalidatedAt,
+                ]);
+            LauncherDownloadSession::query()
+                ->whereHas('access', fn($query) => $query->where('user_id', $user->getKey()))
+                ->whereNull('invalidated_at')
+                ->update([
+                    'invalidated_at' => $invalidatedAt,
+                    'session_expires_at' => $invalidatedAt,
+                ]);
             $user->forceFill([
                 'first_device_public_key' => null,
                 'first_device_fingerprint' => null,

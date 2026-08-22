@@ -16,6 +16,7 @@ use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -126,11 +127,7 @@ class PrepareLauncherContentDownloadAction
                 ->where('download_session_id', $sessionId)
                 ->first();
 
-            if ($download && (
-                $download->invalidated_at !== null
-                || $download->session_expires_at === null
-                || $download->session_expires_at->isPast()
-            )) {
+            if ($download && $download->invalidated_at !== null) {
                 throw new PurchaseAccessDownloadSessionExpiredException();
             }
 
@@ -161,17 +158,23 @@ class PrepareLauncherContentDownloadAction
                     'file_sha256' => $metadata['sha256'],
                     'file_size_bytes' => $metadata['size_bytes'],
                     'file_name' => $fileName,
-                    'session_expires_at' => now()->addMinutes(
-                        max(1, (int)config('launcher.download_session_ttl_minutes', 1440))
-                    ),
+                    'session_expires_at' => $this->newSessionLeaseExpiration(),
                     'last_prepared_at' => now(),
                     'prepare_count' => 1,
                 ]);
             } else {
                 $download->forceFill([
+                    'session_expires_at' => $this->newSessionLeaseExpiration(),
                     'last_prepared_at' => now(),
                     'prepare_count' => max(1, (int)$download->prepare_count) + 1,
                 ])->save();
+            }
+
+            $signedUrlExpiresAt = now()->addMinutes(
+                max(1, (int)config('launcher.download_url_ttl_minutes', 60))
+            );
+            if ($download->session_expires_at->lessThan($signedUrlExpiresAt)) {
+                $signedUrlExpiresAt = $download->session_expires_at;
             }
 
             return [
@@ -184,7 +187,7 @@ class PrepareLauncherContentDownloadAction
                     fileId: $file->getKey(),
                     downloadSessionId: (string)$download->download_session_id,
                     manifestRevision: $manifestRevision,
-                    expiresAt: $download->session_expires_at,
+                    expiresAt: $signedUrlExpiresAt,
                 ),
                 'file_name' => $fileName,
                 'size_bytes' => $metadata['size_bytes'],
@@ -312,5 +315,12 @@ class PrepareLauncherContentDownloadAction
         ) {
             throw new LauncherManifestChangedException($manifestRevision);
         }
+    }
+
+    private function newSessionLeaseExpiration(): CarbonInterface
+    {
+        return now()->addMinutes(
+            max(1, (int)config('launcher.download_session_lease_minutes', 10080))
+        );
     }
 }

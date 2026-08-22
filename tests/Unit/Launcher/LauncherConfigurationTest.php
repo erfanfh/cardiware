@@ -10,6 +10,10 @@ class LauncherConfigurationTest extends TestCase
     {
         $this->assertSame(2, config('launcher.max_active_devices_per_user'));
         $this->assertGreaterThanOrEqual(1, config('launcher.download_url_ttl_minutes'));
+        $this->assertGreaterThan(
+            config('launcher.download_url_ttl_minutes'),
+            config('launcher.download_session_lease_minutes')
+        );
         $this->assertGreaterThanOrEqual(1, config('launcher.checkout_session_ttl_minutes'));
     }
 

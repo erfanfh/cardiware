@@ -30,4 +30,9 @@ class LauncherDownloadSession extends Model
     {
         return $this->belongsTo(PurchaseAccess::class, 'purchase_access_id');
     }
+
+    public function device(): BelongsTo
+    {
+        return $this->belongsTo(LauncherDevice::class, 'launcher_device_id');
+    }
 }

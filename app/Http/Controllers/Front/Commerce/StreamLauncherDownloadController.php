@@ -10,6 +10,7 @@ use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Launcher\Models\LauncherDownloadSession;
+use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherUpdate;
@@ -38,6 +39,12 @@ class StreamLauncherDownloadController extends Controller
             ->firstOrFail();
 
         abort_unless($access->isUsableForLauncher(), 403);
+        $access->loadMissing('user');
+        abort_if(
+            $access->user === null || $access->user->isLauncherSuspended(),
+            403,
+            'Launcher account is suspended.',
+        );
 
         $signedManifestRevision = filter_var(
             $request->query('manifestRevision'),
@@ -63,6 +70,7 @@ class StreamLauncherDownloadController extends Controller
             fileId: $file,
             sessionId: strtolower($downloadSessionId),
         );
+        $this->ensureSessionDeviceIsActive($downloadSession, $access);
 
         $metadata = $metadataResolver->resolve(
             sourceType: $sourceType,
@@ -195,6 +203,43 @@ class StreamLauncherDownloadController extends Controller
     private function ensureSessionIsAlive(mixed $expiresAt): void
     {
         abort_if($expiresAt === null || $expiresAt->isPast(), 410, 'Download session has expired.');
+    }
+
+    private function ensureSessionDeviceIsActive(Model $session, PurchaseAccess $access): void
+    {
+        $deviceId = (int) $session->getAttribute('launcher_device_id');
+        abort_if($deviceId <= 0, 410, 'Download session is not bound to an active device.');
+
+        $device = LauncherDevice::query()
+            ->whereKey($deviceId)
+            ->where('user_id', $access->user_id)
+            ->first();
+        $user = $access->user;
+        $activeSlot = (int) ($user?->active_device_slot ?: 0);
+
+        abort_if(
+            !$device instanceof LauncherDevice
+            || !$device->isActive()
+            || $activeSlot === 0
+            || (int) $device->device_slot !== $activeSlot,
+            410,
+            'Download session device is no longer active.',
+        );
+
+        $activePublicKey = $activeSlot === 2
+            ? $user->second_device_public_key
+            : $user->first_device_public_key;
+        $decodedKey = base64_decode((string) $activePublicKey, true);
+
+        abort_if(
+            $decodedKey === false
+            || !hash_equals(
+                hash('sha256', $decodedKey),
+                (string) $device->public_key_fingerprint,
+            ),
+            410,
+            'Download session device identity is no longer valid.',
+        );
     }
 
     /**

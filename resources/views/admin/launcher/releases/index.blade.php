@@ -56,6 +56,19 @@
                                                 value="{{ old('sha256', $formRelease?->sha256) }}" />
                         </x-admin.field>
                     </div>
+                    <div class="md:col-span-8">
+                        <x-admin.field label="امضای مستقل بسته (Base64)"
+                                       hint="خروجی Signature ابزار publish-update؛ برای انتشار امن هر دو فیلد امضا را ثبت کنید.">
+                            <x-admin.form.textarea name="signature" rows="3" dir="ltr"
+                                                   :value="old('signature', $formRelease?->signature)" />
+                        </x-admin.field>
+                    </div>
+                    <div class="md:col-span-4">
+                        <x-admin.field label="شناسه کلید امضا" hint="Signature key id خروجی ابزار ساخت بسته">
+                            <x-admin.form.input name="signature_key_id" dir="ltr" maxlength="64"
+                                                value="{{ old('signature_key_id', $formRelease?->signature_key_id) }}" />
+                        </x-admin.field>
+                    </div>
                     <div class="md:col-span-4">
                         <x-admin.field label="تاریخ انتشار" hint="اگر فعال باشد و خالی بماند، زمان فعلی ثبت می‌شود.">
                             <x-admin.form.input name="published_at" dir="ltr" placeholder="2026-08-13 12:00:00"
@@ -116,7 +129,12 @@
                         <tr>
                             <td class="px-4 py-3 font-black" dir="ltr">{{ $release->version }}</td>
                             <td class="px-4 py-3">{{ number_format($release->size_bytes / 1048576, 1) }} MB</td>
-                            <td class="px-4 py-3">{{ $release->is_mandatory ? 'اجباری' : 'اختیاری' }}</td>
+                            <td class="px-4 py-3">
+                                {{ $release->is_mandatory ? 'اجباری' : 'اختیاری' }}
+                                <span class="mr-2 {{ filled($release->signature) ? 'text-emerald-700' : 'text-amber-700' }}">
+                                    {{ filled($release->signature) ? '• امضاشده' : '• بدون امضا' }}
+                                </span>
+                            </td>
                             <td class="px-4 py-3 {{ $release->is_enabled ? 'text-emerald-700' : 'text-slate-400' }}">
                                 {{ $release->is_enabled ? 'فعال' : 'پیش‌نویس' }}
                             </td>

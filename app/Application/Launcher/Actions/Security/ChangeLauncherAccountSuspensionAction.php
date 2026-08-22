@@ -2,7 +2,9 @@
 
 namespace App\Application\Launcher\Actions\Security;
 
+use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Identity\Models\User;
+use App\Domain\Launcher\Models\LauncherDownloadSession;
 use Illuminate\Support\Facades\DB;
 
 final class ChangeLauncherAccountSuspensionAction
@@ -27,9 +29,30 @@ final class ChangeLauncherAccountSuspensionAction
 
             // محرومیت حساب با Reset دستگاه متفاوت است: اسلات‌ها و فرصت انتقال حفظ می‌شوند.
             $user->tokens()->where('name', 'like', 'MW Launcher%')->delete();
+            $this->invalidateDownloadSessions($user);
 
             $this->log($user, $adminUser, 'suspend', $reason, $until, $ipAddress);
         });
+    }
+
+    private function invalidateDownloadSessions(User $user): void
+    {
+        $invalidatedAt = now();
+        PurchaseAccessDownload::query()
+            ->where('user_id', $user->getKey())
+            ->whereNull('invalidated_at')
+            ->update([
+                'invalidated_at' => $invalidatedAt,
+                'session_expires_at' => $invalidatedAt,
+            ]);
+
+        LauncherDownloadSession::query()
+            ->whereHas('access', fn($query) => $query->where('user_id', $user->getKey()))
+            ->whereNull('invalidated_at')
+            ->update([
+                'invalidated_at' => $invalidatedAt,
+                'session_expires_at' => $invalidatedAt,
+            ]);
     }
 
     public function restore(
