@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests\Admin\Raffle;
 
+use App\Application\Slug\Services\SlugNormalizer;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SaveDrawCampaignRequest extends FormRequest
 {
@@ -11,12 +11,9 @@ class SaveDrawCampaignRequest extends FormRequest
 
     public function rules(): array
     {
-        $campaign = $this->route('draw_campaign');
-        $campaignId = is_object($campaign) ? $campaign->id : null;
-
         return [
             'title' => ['required','string','max:255'],
-            'slug' => ['required','string','max:255','alpha_dash', Rule::unique('draw_campaigns','slug')->ignore($campaignId)],
+            'slug' => ['required','string','max:255','alpha_dash'],
             'short_description' => ['nullable','string','max:1000'],
             'body' => ['nullable','string'],
             'rules' => ['nullable','string'],
@@ -56,6 +53,9 @@ class SaveDrawCampaignRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'slug' => app(SlugNormalizer::class)->normalize(
+                first_filled($this->input('slug'), $this->input('title')),
+            ),
             'cover_media_file_id' => $this->input('cover.id'),
             'show_winners_publicly' => $this->boolean('show_winners_publicly'),
             'allow_multiple_wins_per_user' => $this->boolean('allow_multiple_wins_per_user'),

@@ -2,8 +2,11 @@
 
 namespace App\Application\Raffle\Actions\Campaign;
 
+use App\Application\Slug\Actions\AssignSlugAction;
+use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Domain\Slug\Enums\SlugScopeEnum;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -11,6 +14,7 @@ class UpdateDrawCampaignAction
 {
     public function __construct(
         private readonly SyncDrawPrizesAction $syncPrizes,
+        private readonly AssignSlugAction $assignSlug,
     ) {
     }
 
@@ -27,7 +31,6 @@ class UpdateDrawCampaignAction
 
             $common = [
                 'title' => $data['title'],
-                'slug' => $data['slug'],
                 'short_description' => $data['short_description'] ?? null,
                 'body' => $data['body'] ?? null,
                 'rules' => $data['rules'] ?? null,
@@ -49,6 +52,12 @@ class UpdateDrawCampaignAction
             }
 
             $campaign->update($common);
+
+            $this->assignSlug->execute(new AssignSlugDTO(
+                scope: SlugScopeEnum::RAFFLE,
+                model: $campaign,
+                desiredSlug: first_filled($data['slug'] ?? null, $data['title'] ?? null),
+            ));
 
             if ($structureEditable) {
                 $this->syncPrizes->execute($campaign, $data['prizes'] ?? []);

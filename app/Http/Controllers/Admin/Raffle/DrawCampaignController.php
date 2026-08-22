@@ -47,8 +47,12 @@ class DrawCampaignController extends Controller
         return redirect()->route('admin.draw-campaigns.edit', $campaign)->with('success', 'قرعه کشی با موفقیت ایجاد شد.');
     }
 
-    public function show(DrawCampaign $drawCampaign): View
+    public function show(DrawCampaign $drawCampaign): View|RedirectResponse
     {
+        if (Gate::allows('raffle-campaign.edit')) {
+            return redirect()->route('admin.draw-campaigns.edit', $drawCampaign);
+        }
+
         Gate::authorize('raffle-campaign.show');
         $drawCampaign->load(['coverMediaFile','prizes.mediaFile','creator']);
         $recentTickets = DrawTicket::query()->where('campaign_id', $drawCampaign->id)->with('user')->latest('id')->limit(8)->get();

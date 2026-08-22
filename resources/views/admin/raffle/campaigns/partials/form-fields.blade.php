@@ -6,37 +6,20 @@
         in_array($drawCampaign->status, [DrawCampaignStatusEnum::DRAFT, DrawCampaignStatusEnum::SCHEDULED], true)
         && (int)$drawCampaign->issued_tickets_count === 0
     );
+    $isPubliclyVisible = $drawCampaign && !in_array($drawCampaign->status, [
+        DrawCampaignStatusEnum::DRAFT,
+        DrawCampaignStatusEnum::CANCELLED,
+    ], true);
 @endphp
 
 <x-admin.page columns="2">
     <x-slot:sidebar>
-        <x-admin.metabox title="وضعیت قرعه کشی" :collapsible="false">
-            @if($drawCampaign)
-                @php
-                    $statusColor = match($drawCampaign->status) {
-                        DrawCampaignStatusEnum::DRAFT => 'slate',
-                        DrawCampaignStatusEnum::SCHEDULED => 'blue',
-                        DrawCampaignStatusEnum::OPEN => 'green',
-                        DrawCampaignStatusEnum::CLOSED => 'yellow',
-                        DrawCampaignStatusEnum::DRAWING => 'brand',
-                        DrawCampaignStatusEnum::COMPLETED => 'emerald',
-                        DrawCampaignStatusEnum::CANCELLED => 'red',
-                    };
-                @endphp
-                <div class="space-y-3">
-                    <x-admin.badge :color="$statusColor" size="md">{{ $drawCampaign->status->label() }}</x-admin.badge>
-                    <p class="text-xs leading-7 text-slate-500">
-                        تغییر وضعیت از صفحه جزئیات قرعه کشی انجام می‌شود تا Lifecycle به صورت کنترل شده حفظ شود.
-                    </p>
-                    <x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.show', $drawCampaign) }}" variant="secondary" class="w-full justify-center">
-                        مشاهده داشبورد قرعه کشی
-                    </x-admin.form.button>
-                </div>
-            @else
+        @if(!$drawCampaign)
+            <x-admin.metabox title="وضعیت قرعه کشی" :collapsible="false">
                 <x-admin.badge color="slate" size="md">پیش نویس</x-admin.badge>
                 <p class="mt-3 text-xs leading-7 text-slate-500">قرعه کشی جدید همیشه به صورت پیش نویس ساخته می‌شود.</p>
-            @endif
-        </x-admin.metabox>
+            </x-admin.metabox>
+        @endif
 
         <x-admin.metabox title="کاور قرعه کشی" class="overflow-visible">
             <x-admin.form.media-picker
@@ -62,22 +45,21 @@
 
     <x-admin.form.validation-errors class="mb-6"/>
 
-    <x-admin.metabox title="اطلاعات اصلی">
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <x-admin.field required label="عنوان قرعه کشی">
-                <x-admin.form.input name="title" :value="old('title', $drawCampaign?->title)"/>
-            </x-admin.field>
+    <x-admin.form.wp-title-slug
+        titleName="title"
+        slugName="slug"
+        :titleValue="$drawCampaign?->title ?? ''"
+        :slugValue="$drawCampaign?->slug ?? ''"
+        :basePath="rtrim(route('raffles.index'), '/') . '/'"
+        :scope="\App\Domain\Slug\Enums\SlugScopeEnum::RAFFLE"
+        :currentId="$drawCampaign?->id"
+        :itemUrl="$isPubliclyVisible ? route('raffles.show', $drawCampaign->slug) : null"
+    />
 
-            <x-admin.field required label="اسلاگ" hint="فقط حروف انگلیسی، عدد، خط تیره و زیرخط.">
-                <x-admin.form.input name="slug" dir="ltr" :value="old('slug', $drawCampaign?->slug)"/>
-            </x-admin.field>
-
-            <div class="md:col-span-2">
-                <x-admin.field label="توضیح کوتاه">
-                    <x-admin.form.textarea name="short_description" rows="3" :value="old('short_description', $drawCampaign?->short_description)"/>
-                </x-admin.field>
-            </div>
-        </div>
+    <x-admin.metabox title="خلاصه قرعه کشی">
+        <x-admin.field label="توضیح کوتاه" hint="این متن در کارت و معرفی کوتاه قرعه کشی نمایش داده می‌شود.">
+            <x-admin.form.textarea name="short_description" rows="3" :value="old('short_description', $drawCampaign?->short_description)"/>
+        </x-admin.field>
     </x-admin.metabox>
 
     <x-admin.metabox title="معرفی قرعه کشی">

@@ -29,7 +29,7 @@
 
                 <div class="flex flex-wrap gap-2">
                     <x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.show', $drawCampaign) }}" variant="secondary">
-                        بازگشت به داشبورد
+                        بازگشت به مدیریت قرعه کشی
                     </x-admin.form.button>
 
                     @can('raffle-draw.execute')

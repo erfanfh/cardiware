@@ -10,6 +10,7 @@ enum SlugScopeEnum: string
     case CONTENT = 'content';
     case PROJECT = 'project';
     case PRODUCT = 'product';
+    case RAFFLE = 'raffle';
     case STORE = 'store';
 
     case TAXONOMY__POST_CATEGORY = 'taxonomy:post_category';
