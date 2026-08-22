@@ -100,6 +100,10 @@ class GetLauncherBootstrapAction
                 ?: ($configuration['file_size_bytes'] ?? null),
             'sha256' => $release?->sha256
                 ?: ($configuration['sha256'] ?? null),
+            'signature' => $release?->signature
+                ?: ($configuration['signature'] ?? null),
+            'signature_key_id' => $release?->signature_key_id
+                ?: ($configuration['signature_key_id'] ?? null),
             'release_notes' => $release?->release_notes
                 ?: ($configuration['release_notes'] ?? null),
             'release_published_at' => $release?->published_at?->toISOString(),

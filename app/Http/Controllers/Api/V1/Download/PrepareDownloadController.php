@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1\Download;
 use App\Application\Commerce\Actions\Access\PreparePurchaseAccessFileDownloadAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Download\PrepareDownloadRequest;
+use App\Domain\Launcher\Models\LauncherDevice;
 use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PrepareDownloadController extends Controller
 {
@@ -42,11 +44,21 @@ class PrepareDownloadController extends Controller
         PreparePurchaseAccessFileDownloadAction $action,
     ): JsonResponse
     {
+        $device = $request->attributes->get('launcher_device');
+        if (!$device instanceof LauncherDevice) {
+            throw new AccessDeniedHttpException('Launcher device is not active.');
+        }
+
         $result = $action->execute(
             user: $request->user(),
+            device: $device,
             purchaseAccessId: $purchaseAccess,
             fileId: $file,
             downloadSessionId: $request->string('download_session_id')->toString(),
+            expectedManifestRevision: $request->integer('manifest_revision'),
+            expectedFileName: $request->string('file_name')->toString(),
+            expectedSizeBytes: $request->integer('size_bytes'),
+            expectedSha256: $request->string('sha256')->toString(),
             ipAddress: $request->ip(),
             userAgent: $request->userAgent(),
         );

@@ -24,10 +24,12 @@ LAUNCHER_DOWNLOAD_URL=https://example.com/downloads/MWLauncher-1.20.0.zip
 LAUNCHER_UPDATE_FILE_NAME=MWLauncher-1.20.0.zip
 LAUNCHER_UPDATE_FILE_SIZE_BYTES=12345678
 LAUNCHER_UPDATE_SHA256=64_character_sha256_here
+LAUNCHER_UPDATE_SIGNATURE=base64_rsa_pss_signature_here
+LAUNCHER_UPDATE_SIGNATURE_KEY_ID=64_character_public_key_id_here
 LAUNCHER_MAINTENANCE_ENABLED=false
 LAUNCHER_FORCE_UPDATE=false
-LAUNCHER_DOWNLOAD_URL_TTL_MINUTES=10
-LAUNCHER_DOWNLOAD_SESSION_TTL_MINUTES=1440
+LAUNCHER_DOWNLOAD_URL_TTL_MINUTES=60
+LAUNCHER_DOWNLOAD_SESSION_LEASE_MINUTES=10080
 LAUNCHER_ALLOWED_DOWNLOAD_HOSTS=cdn.example.com,files.example.com
 ```
 
@@ -97,8 +99,34 @@ php artisan queue:restart
 ## ۶. انتشار آپدیت لانچر
 
 فایل خروجی `publish-update.ps1` پروژه لانچر را روی هاست یا CDN آپلود کنید. سپس از
-منوی «آپدیت لانچر»، نسخه، نام فایل، حجم دقیق بایت، لینک مستقیم HTTPS و SHA-256 را
-ثبت کنید. تیک «آپدیت اجباری» ورود نسخه‌های قدیمی را تا نصب نسخه جدید مسدود می‌کند.
+منوی «آپدیت لانچر»، نسخه، نام فایل، حجم دقیق بایت، لینک مستقیم HTTPS، SHA-256،
+امضای RSA-PSS و شناسه کلید عمومی را ثبت کنید. تیک «آپدیت اجباری» ورود نسخه‌های
+قدیمی را تا نصب نسخه جدید مسدود می‌کند.
+
+کلید خصوصی امضای آپدیت نباید روی هاست عمومی، CDN، مخزن Git یا داخل ZIP پروژه
+قرار گیرد. فقط فایل عمومی `update-signing-public.pem` همراه لانچر منتشر می‌شود.
+مراحل دقیق ساخت و امضای بسته در `docs/SECURE-UPDATE-AND-DOWNLOAD-1.21.8-FA.md`
+پروژه لانچر نوشته شده است.
+
+URL امضاشده دانلود محصول، آپدیت و ماد ۶۰ دقیقه اعتبار دارد و پس از آن لانچر با
+درخواست Prepare یک URL تازه می‌گیرد. نشست سمت سرور یک Lease هفت‌روزه و قابل تمدید
+است؛ هر Prepare معتبر ابتدا خرید، دستگاه فعال، revision، نام، حجم و SHA-256 را دوباره
+کنترل و سپس همان نشست را بدون مصرف دوباره سهمیه تمدید می‌کند. بنابراین دانلودهای
+چندده‌گیگابایتی می‌توانند بعد از قطع اینترنت یا توقف طولانی با Range از همان بایت قبلی
+ادامه پیدا کنند. فقط کد `launcher_manifest_changed` یا ناهماهنگی واقعی نام/حجم/هش
+اجازه حذف فایل ناقص و شروع از صفر را می‌دهد. Reset کامل دستگاه یا تعلیق حساب همچنان
+نشست را فوراً و غیرقابل تمدید باطل می‌کند.
+
+کلید قدیمی `LAUNCHER_DOWNLOAD_SESSION_TTL_MINUTES` دیگر استفاده نمی‌شود. روی سرور
+حتماً `LAUNCHER_DOWNLOAD_SESSION_LEASE_MINUTES` را تنظیم کنید و سپس اجرا کنید:
+
+```bash
+php artisan optimize:clear
+php artisan config:cache
+```
+
+محدودیت تعداد فایل و حجم استخراج فقط مربوط به ZIP آپدیت خود لانچر است. هیچ سقف
+تعداد فایلی برای بسته‌های بازی، ماد یا Sider در این تغییر اضافه نشده است.
 
 نسخه `1.20.0` زیرساخت آپدیتر را برای اولین بار اضافه می‌کند و باید یک‌بار با روش فعلی
 توزیع شود؛ انتشار نسخه‌های بعدی از همین پنل انجام خواهد شد.

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Launcher;
 
 use App\Application\Launcher\Actions\Security\ResetLauncherDeviceSecurityAction;
+use App\Application\Launcher\Actions\Security\ChangeLauncherAccountSuspensionAction;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -26,6 +27,7 @@ final class LauncherDeviceManagementController extends Controller
         $selectedUserOption = [];
         $devices = collect();
         $resetLogs = collect();
+        $suspensionLogs = collect();
 
         if (!empty($validated['user_id'])) {
             $selectedUser = User::query()->findOrFail((int)$validated['user_id']);
@@ -55,6 +57,24 @@ final class LauncherDeviceManagementController extends Controller
                 ->latest('logs.id')
                 ->limit(20)
                 ->get();
+
+            $suspensionLogs = DB::table('launcher_access_suspension_logs as logs')
+                ->leftJoin('users as admins', 'admins.id', '=', 'logs.admin_user_id')
+                ->where('logs.target_user_id', $selectedUser->getKey())
+                ->select([
+                    'logs.id',
+                    'logs.action',
+                    'logs.reason',
+                    'logs.suspended_until',
+                    'logs.ip_address',
+                    'logs.created_at',
+                    'admins.display_name as admin_display_name',
+                    'admins.first_name as admin_first_name',
+                    'admins.last_name as admin_last_name',
+                ])
+                ->latest('logs.id')
+                ->limit(20)
+                ->get();
         }
 
         return view('admin.launcher.devices.index', compact(
@@ -62,7 +82,83 @@ final class LauncherDeviceManagementController extends Controller
             'selectedUserOption',
             'devices',
             'resetLogs',
+            'suspensionLogs',
         ));
+    }
+
+    public function suspend(
+        Request $request,
+        ChangeLauncherAccountSuspensionAction $changeSuspension,
+    ): RedirectResponse {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', Rule::exists('users', 'id')],
+            'duration_type' => ['required', Rule::in(['permanent', 'days'])],
+            'duration_days' => [
+                Rule::requiredIf(fn(): bool => $request->input('duration_type') === 'days'),
+                'nullable',
+                'integer',
+                'min:1',
+                'max:3650',
+            ],
+            'suspension_reason' => ['required', 'string', 'min:5', 'max:1000'],
+            'confirm_suspension' => ['accepted'],
+        ], [
+            'duration_days.required' => 'تعداد روزهای محرومیت را وارد کنید.',
+            'duration_days.min' => 'مدت محرومیت باید حداقل یک روز باشد.',
+            'suspension_reason.required' => 'ثبت علت محرومیت الزامی است.',
+            'suspension_reason.min' => 'علت محرومیت باید حداقل ۵ کاراکتر باشد.',
+            'confirm_suspension.accepted' => 'برای اعمال محرومیت باید تأیید نهایی را فعال کنید.',
+        ]);
+
+        $targetUser = User::query()->findOrFail((int)$validated['user_id']);
+        abort_if($request->user()?->is($targetUser), 422, 'مدیر نمی‌تواند حساب لانچر خودش را محروم کند.');
+
+        $changeSuspension->suspend(
+            targetUser: $targetUser,
+            reason: $validated['suspension_reason'],
+            durationDays: $validated['duration_type'] === 'days'
+                ? (int)$validated['duration_days']
+                : null,
+            adminUser: $request->user(),
+            ipAddress: $request->ip(),
+        );
+
+        return redirect()
+            ->route('admin.launcher-devices.index', ['user_id' => $targetUser->getKey()])
+            ->with('success', 'دسترسی این حساب به لانچر مسدود شد و Tokenهای لانچر آن باطل شدند.')
+            ->with('success_title', 'محرومیت حساب لانچر');
+    }
+
+    public function restore(
+        Request $request,
+        ChangeLauncherAccountSuspensionAction $changeSuspension,
+    ): RedirectResponse {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', Rule::exists('users', 'id')],
+            'restore_reason' => ['required', 'string', 'min:5', 'max:1000'],
+            'confirm_restore' => ['accepted'],
+        ], [
+            'restore_reason.required' => 'ثبت دلیل رفع محرومیت الزامی است.',
+            'restore_reason.min' => 'دلیل رفع محرومیت باید حداقل ۵ کاراکتر باشد.',
+            'confirm_restore.accepted' => 'برای رفع محرومیت باید تأیید نهایی را فعال کنید.',
+        ]);
+
+        $targetUser = User::query()->findOrFail((int)$validated['user_id']);
+        $changeSuspension->restore(
+            targetUser: $targetUser,
+            reason: $validated['restore_reason'],
+            adminUser: $request->user(),
+            ipAddress: $request->ip(),
+        );
+
+        return redirect()
+            ->route('admin.launcher-devices.index', ['user_id' => $targetUser->getKey()])
+            ->with('success', 'محرومیت لانچر رفع شد. کاربر باید یک‌بار به‌صورت آنلاین وارد شود.')
+            ->with('success_title', 'رفع محرومیت لانچر');
     }
 
     public function reset(

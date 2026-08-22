@@ -66,7 +66,7 @@ class LauncherContentController extends Controller
 
         return response()->json([
             'data' => $updates->all(),
-        ]);
+        ])->header('Cache-Control', 'private, no-store, max-age=0');
     }
 
     public function mods(
@@ -78,7 +78,7 @@ class LauncherContentController extends Controller
 
         return response()->json([
             'data' => $action->execute($access),
-        ]);
+        ])->header('Cache-Control', 'private, no-store, max-age=0');
     }
 
     private function access(Request $request, int $id): PurchaseAccess

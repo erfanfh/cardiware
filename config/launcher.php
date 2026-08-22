@@ -21,6 +21,8 @@ return [
             'file_name' => env('LAUNCHER_UPDATE_FILE_NAME'),
             'file_size_bytes' => (int)env('LAUNCHER_UPDATE_FILE_SIZE_BYTES', 0),
             'sha256' => env('LAUNCHER_UPDATE_SHA256'),
+            'signature' => env('LAUNCHER_UPDATE_SIGNATURE'),
+            'signature_key_id' => env('LAUNCHER_UPDATE_SIGNATURE_KEY_ID'),
             'release_notes' => env('LAUNCHER_UPDATE_RELEASE_NOTES'),
         ],
     ],
@@ -37,7 +39,7 @@ return [
 
     'download_url_ttl_minutes' => env(
         'LAUNCHER_DOWNLOAD_URL_TTL_MINUTES',
-        10
+        60
     ),
 
     'allowed_download_hosts' => array_values(
@@ -52,9 +54,14 @@ return [
         )
     ),
 
-    'download_session_ttl_minutes' => (int)env(
-        'LAUNCHER_DOWNLOAD_SESSION_TTL_MINUTES',
-        1440
+    /*
+     * Renewable server-side lease. It is not the maximum duration of a large
+     * download. Every authenticated prepare request revalidates the purchase,
+     * active device and manifest before extending this lease.
+     */
+    'download_session_lease_minutes' => (int)env(
+        'LAUNCHER_DOWNLOAD_SESSION_LEASE_MINUTES',
+        10080
     ),
 
     /*

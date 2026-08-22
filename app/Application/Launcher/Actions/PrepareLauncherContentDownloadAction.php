@@ -3,9 +3,11 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
+use App\Application\Commerce\Exceptions\LauncherManifestChangedException;
 use App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Identity\Models\User;
 use App\Domain\Launcher\Models\LauncherDevice;
@@ -14,6 +16,7 @@ use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,6 +40,10 @@ class PrepareLauncherContentDownloadAction
         int $contentId,
         int $fileId,
         string $sessionId,
+        ?int $expectedManifestRevision = null,
+        ?string $expectedFileName = null,
+        ?int $expectedSizeBytes = null,
+        ?string $expectedSha256 = null,
     ): array {
         [$accessSnapshot, $contentSnapshot, $fileSnapshot] = $this->resolveAccessContentAndFile(
             user: $user,
@@ -65,6 +72,10 @@ class PrepareLauncherContentDownloadAction
             $contentId,
             $fileId,
             $sessionId,
+            $expectedManifestRevision,
+            $expectedFileName,
+            $expectedSizeBytes,
+            $expectedSha256,
         ): array {
             $access = PurchaseAccess::query()
                 ->withoutGlobalScope(ActivePurchaseAccessScope::class)
@@ -92,6 +103,21 @@ class PrepareLauncherContentDownloadAction
                 throw new NotFoundHttpException('فایل محتوای لانچر پیدا نشد.');
             }
 
+            $manifestRevision = (int) ProductSaleItem::query()
+                ->withTrashed()
+                ->whereKey($access->product_sale_item_id)
+                ->value('manifest_revision');
+            $fileName = $this->resolveFileName($file);
+            $this->assertExpectedManifest(
+                manifestRevision: $manifestRevision,
+                fileName: $fileName,
+                metadata: $metadata,
+                expectedManifestRevision: $expectedManifestRevision,
+                expectedFileName: $expectedFileName,
+                expectedSizeBytes: $expectedSizeBytes,
+                expectedSha256: $expectedSha256,
+            );
+
             $download = LauncherDownloadSession::query()
                 ->where('purchase_access_id', $access->getKey())
                 ->where('launcher_device_id', $device->getKey())
@@ -101,9 +127,24 @@ class PrepareLauncherContentDownloadAction
                 ->where('download_session_id', $sessionId)
                 ->first();
 
-            if ($download && $download->session_expires_at->isPast()) {
+            if ($download && $download->invalidated_at !== null) {
                 throw new PurchaseAccessDownloadSessionExpiredException();
             }
+
+            if ($download && (
+                (int) $download->manifest_revision !== $manifestRevision
+                || !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
+                || (int) $download->file_size_bytes !== $metadata['size_bytes']
+                || !hash_equals((string) $download->file_name, $fileName)
+            )) {
+                $download->forceFill([
+                    'invalidated_at' => now(),
+                    'session_expires_at' => now(),
+                ])->save();
+                throw new LauncherManifestChangedException($manifestRevision);
+            }
+
+            $reusedSession = $download instanceof LauncherDownloadSession;
 
             if (!$download) {
                 $download = LauncherDownloadSession::query()->create([
@@ -113,17 +154,27 @@ class PrepareLauncherContentDownloadAction
                     'content_id' => $contentId,
                     'file_id' => $fileId,
                     'download_session_id' => $sessionId,
-                    'session_expires_at' => now()->addMinutes(
-                        max(1, (int)config('launcher.download_session_ttl_minutes', 1440))
-                    ),
+                    'manifest_revision' => $manifestRevision,
+                    'file_sha256' => $metadata['sha256'],
+                    'file_size_bytes' => $metadata['size_bytes'],
+                    'file_name' => $fileName,
+                    'session_expires_at' => $this->newSessionLeaseExpiration(),
                     'last_prepared_at' => now(),
                     'prepare_count' => 1,
                 ]);
             } else {
                 $download->forceFill([
+                    'session_expires_at' => $this->newSessionLeaseExpiration(),
                     'last_prepared_at' => now(),
                     'prepare_count' => max(1, (int)$download->prepare_count) + 1,
                 ])->save();
+            }
+
+            $signedUrlExpiresAt = now()->addMinutes(
+                max(1, (int)config('launcher.download_url_ttl_minutes', 60))
+            );
+            if ($download->session_expires_at->lessThan($signedUrlExpiresAt)) {
+                $signedUrlExpiresAt = $download->session_expires_at;
             }
 
             return [
@@ -135,11 +186,14 @@ class PrepareLauncherContentDownloadAction
                     contentId: $content->getKey(),
                     fileId: $file->getKey(),
                     downloadSessionId: (string)$download->download_session_id,
-                    expiresAt: $download->session_expires_at,
+                    manifestRevision: $manifestRevision,
+                    expiresAt: $signedUrlExpiresAt,
                 ),
-                'file_name' => $this->resolveFileName($file),
+                'file_name' => $fileName,
                 'size_bytes' => $metadata['size_bytes'],
                 'sha256' => $metadata['sha256'],
+                'manifest_revision' => $manifestRevision,
+                'reused_session' => $reusedSession,
             ];
         });
     }
@@ -238,5 +292,35 @@ class PrepareLauncherContentDownloadAction
         return $fromUrl !== '' && $fromUrl !== '.' && $fromUrl !== '/'
             ? $fromUrl
             : 'download.bin';
+    }
+
+    /**
+     * @param array{size_bytes:int,sha256:string,mime_type:?string} $metadata
+     */
+    private function assertExpectedManifest(
+        int $manifestRevision,
+        string $fileName,
+        array $metadata,
+        ?int $expectedManifestRevision,
+        ?string $expectedFileName,
+        ?int $expectedSizeBytes,
+        ?string $expectedSha256,
+    ): void {
+        if (
+            ($expectedManifestRevision !== null && $expectedManifestRevision !== $manifestRevision)
+            || ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
+            || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
+            || ($expectedSha256 !== null
+                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])))
+        ) {
+            throw new LauncherManifestChangedException($manifestRevision);
+        }
+    }
+
+    private function newSessionLeaseExpiration(): CarbonInterface
+    {
+        return now()->addMinutes(
+            max(1, (int)config('launcher.download_session_lease_minutes', 10080))
+        );
     }
 }

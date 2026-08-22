@@ -165,51 +165,96 @@
                 font-size: 12.5px;
             }
         }
+
+        @media (prefers-reduced-motion: reduce) {
+            #tubes-canvas {
+                display: none;
+            }
+
+            .animate-fade-up,
+            .animate-soft-glow,
+            .animate-heartbeat,
+            .text-shine,
+            .cta-ring::before,
+            .cta-ring::after {
+                animation: none !important;
+            }
+        }
     </style>
 @endpush
 
 @push('scripts')
     <script type="module">
-        // Vanilla-JS port of the original TubesCursor React component: same
-        // library, same colors, same behavior — just without the React wrapper.
+        // The WebGL effect is decorative. Do not make the download page depend on
+        // it, and avoid starting it on devices where it would waste resources.
         const canvas = document.getElementById('tubes-canvas');
         let cursorApp = null;
+        let initTimer = null;
 
         const randomColors = (count) =>
             Array.from({length: count}, () =>
                 '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
             );
 
-        // A short delay lets the canvas receive its final layout size before the
-        // library reads it, avoiding a "Computed radius is NaN" init race.
-        const initTimer = setTimeout(() => {
-            import('/js/tubes1.min.js')
-                .then((module) => {
-                    const TubesCursor = module.default;
-                    if (!canvas) return;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const touchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        const saveData = navigator.connection?.saveData === true;
+        const supportsWebGL = () => {
+            try {
+                const probe = document.createElement('canvas');
+                return Boolean(probe.getContext('webgl2') || probe.getContext('webgl'));
+            } catch (_) {
+                return false;
+            }
+        };
 
-                    cursorApp = TubesCursor(canvas, {
-                        tubes: {
-                            colors: ['#5e72e4', '#8965e0', '#f5365c'],
-                            lights: {
-                                intensity: 200,
-                                colors: ['#21d4fd', '#b721ff', '#f4d03f', '#11cdef']
+        if (canvas && !reducedMotion && !touchOnly && !saveData && supportsWebGL()) {
+            // Let the canvas receive its final layout size before the renderer
+            // reads it, avoiding a "Computed radius is NaN" initialization race.
+            initTimer = window.setTimeout(() => {
+                import('/js/tubes1.min.js')
+                    .then((module) => {
+                        if (!canvas) return;
+
+                        cursorApp = module.default(canvas, {
+                            bloom: {
+                                threshold: 0.25,
+                                strength: 0.8,
+                                radius: 0.3
+                            },
+                            tubes: {
+                                count: 10,
+                                minTubularSegments: 24,
+                                maxTubularSegments: 72,
+                                colors: ['#5e72e4', '#8965e0', '#f5365c'],
+                                lights: {
+                                    intensity: 80,
+                                    colors: ['#21d4fd', '#b721ff', '#f4d03f', '#11cdef']
+                                }
                             }
-                        }
+                        });
+                    })
+                    .catch((err) => {
+                        canvas.hidden = true;
+                        console.error('Failed to load the tubes cursor animation:', err);
                     });
-                })
-                .catch((err) => console.error('Failed to load the tubes cursor animation:', err));
-        }, 100);
+            }, 100);
+        } else if (canvas) {
+            canvas.hidden = true;
+        }
 
         window.addEventListener('beforeunload', () => {
-            clearTimeout(initTimer);
+            if (initTimer !== null) {
+                clearTimeout(initTimer);
+            }
             if (cursorApp && typeof cursorApp.dispose === 'function') {
                 cursorApp.dispose();
             }
         });
 
         document.addEventListener('click', (event) => {
-            if (!cursorApp || event.target.closest('[data-no-tubes-click]')) return;
+            const target = event.target;
+            if (!cursorApp || (target instanceof Element && target.closest('[data-no-tubes-click]'))) return;
 
             cursorApp.tubes.setColors(randomColors(3));
             cursorApp.tubes.setLightsColors(randomColors(4));
@@ -251,19 +296,35 @@
                 </div>
 
                 <p class="animate-fade-up delay-200 m-0 select-none text-base font-extrabold text-brand-400 [text-shadow:0_0_20px_rgba(0,0,0,.85)] sm:text-lg md:text-xl">
-                    به زودی ...
+                    دانلود و نصب MW Launcher
                 </p>
 
                 <p class="animate-fade-up delay-200 m-0 max-w-xl select-none text-xs leading-7 text-slate-300 [text-shadow:0_0_20px_rgba(0,0,0,.9)] sm:text-sm md:text-base">
                     تجربه‌ای جدید و آسان از نصب محصولات
                 </p>
 
-                <a href="https://moddingway.ir/"
-                   data-no-tubes-click
-                   class="cta-ring animate-fade-up delay-300 relative mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-600 active:bg-brand-700 sm:px-8 sm:py-3.5 sm:text-base">
-                    بازگشت به سایت
-                    <span aria-hidden="true">←</span>
-                </a>
+                <div class="animate-fade-up delay-300 mt-4 flex flex-wrap items-center justify-center gap-3">
+                    @if(filled($downloadUrl))
+                        <a href="{{ $downloadUrl }}"
+                           data-no-tubes-click
+                           class="cta-ring relative inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-600 active:bg-brand-700 sm:px-8 sm:py-3.5 sm:text-base">
+                            دانلود لانچر ویندوز
+                            <span aria-hidden="true">↓</span>
+                        </a>
+                    @else
+                        <span data-no-tubes-click
+                              class="inline-flex cursor-not-allowed items-center justify-center rounded-full border border-slate-600 bg-slate-800/80 px-7 py-3 text-sm font-bold text-slate-400 sm:px-8 sm:py-3.5 sm:text-base">
+                            لینک دانلود هنوز فعال نشده است
+                        </span>
+                    @endif
+
+                    <a href="{{ url('/') }}"
+                       data-no-tubes-click
+                       class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-600 bg-slate-900/70 px-6 py-3 text-sm font-bold text-slate-200 transition hover:border-brand-500 hover:text-brand-300 sm:px-7 sm:py-3.5 sm:text-base">
+                        بازگشت به سایت
+                        <span aria-hidden="true">←</span>
+                    </a>
+                </div>
 
                 <p class="animate-fade-up delay-300 pointer-events-none m-0 mt-2 select-none text-[11px] text-slate-400/60 sm:text-xs">
                     برای تغییر افکت کلیک کن

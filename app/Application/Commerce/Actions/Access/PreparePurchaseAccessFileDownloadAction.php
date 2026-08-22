@@ -4,14 +4,18 @@ namespace App\Application\Commerce\Actions\Access;
 
 use App\Application\Commerce\Exceptions\PurchaseAccessDownloadLimitExceededException;
 use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
+use App\Application\Commerce\Exceptions\LauncherManifestChangedException;
 use App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException;
 use App\Application\Launcher\Actions\GenerateTemporaryLauncherDownloadUrlAction;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Identity\Models\User;
+use App\Domain\Launcher\Models\LauncherDevice;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,9 +36,14 @@ class PreparePurchaseAccessFileDownloadAction
      */
     public function execute(
         User $user,
+        LauncherDevice $device,
         int $purchaseAccessId,
         int $fileId,
         string $downloadSessionId,
+        ?int $expectedManifestRevision = null,
+        ?string $expectedFileName = null,
+        ?int $expectedSizeBytes = null,
+        ?string $expectedSha256 = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
     ): array {
@@ -58,11 +67,16 @@ class PreparePurchaseAccessFileDownloadAction
 
         return DB::transaction(function () use (
             $user,
+            $device,
             $accessSnapshot,
             $fileSnapshot,
             $sourceUrl,
             $metadata,
             $downloadSessionId,
+            $expectedManifestRevision,
+            $expectedFileName,
+            $expectedSizeBytes,
+            $expectedSha256,
             $ipAddress,
             $userAgent,
         ): array {
@@ -87,8 +101,24 @@ class PreparePurchaseAccessFileDownloadAction
                 throw new NotFoundHttpException('فایل موردنظر برای این دسترسی پیدا نشد.');
             }
 
+            $manifestRevision = (int) ProductSaleItem::query()
+                ->withTrashed()
+                ->whereKey($purchaseAccess->product_sale_item_id)
+                ->value('manifest_revision');
+            $fileName = $this->resolveFileName($file);
+            $this->assertExpectedManifest(
+                $manifestRevision,
+                $fileName,
+                $metadata,
+                $expectedManifestRevision,
+                $expectedFileName,
+                $expectedSizeBytes,
+                $expectedSha256,
+            );
+
             $existingDownload = PurchaseAccessDownload::query()
                 ->where('purchase_access_id', $purchaseAccess->getKey())
+                ->where('launcher_device_id', $device->getKey())
                 ->where('product_sale_item_file_id', $file->getKey())
                 ->where('download_session_id', $downloadSessionId)
                 ->first();
@@ -99,15 +129,18 @@ class PreparePurchaseAccessFileDownloadAction
                     file: $file,
                     download: $existingDownload,
                     metadata: $metadata,
+                    manifestRevision: $manifestRevision,
                 );
             }
 
             return $this->createNewSession(
                 user: $user,
+                device: $device,
                 purchaseAccess: $purchaseAccess,
                 file: $file,
                 downloadSessionId: $downloadSessionId,
                 metadata: $metadata,
+                manifestRevision: $manifestRevision,
                 ipAddress: $ipAddress,
                 userAgent: $userAgent,
             );
@@ -155,10 +188,12 @@ class PreparePurchaseAccessFileDownloadAction
      */
     private function createNewSession(
         User $user,
+        LauncherDevice $device,
         PurchaseAccess $purchaseAccess,
         ProductSaleItemFile $file,
         string $downloadSessionId,
         array $metadata,
+        int $manifestRevision,
         ?string $ipAddress,
         ?string $userAgent,
     ): array {
@@ -171,18 +206,20 @@ class PreparePurchaseAccessFileDownloadAction
             throw new PurchaseAccessDownloadLimitExceededException();
         }
 
-        $sessionExpiresAt = now()->addMinutes(
-            max(1, (int)config('launcher.download_session_ttl_minutes', 1440))
-        );
+        $sessionExpiresAt = $this->newSessionLeaseExpiration();
         $fileName = $this->resolveFileName($file);
 
         $download = PurchaseAccessDownload::query()->create([
             'purchase_access_id' => $purchaseAccess->getKey(),
             'user_id' => $user->getKey(),
+            'launcher_device_id' => $device->getKey(),
             'product_id' => $purchaseAccess->product_id,
             'product_sale_item_id' => $purchaseAccess->product_sale_item_id,
             'product_sale_item_file_id' => $file->getKey(),
             'download_session_id' => $downloadSessionId,
+            'manifest_revision' => $manifestRevision,
+            'file_sha256' => $metadata['sha256'],
+            'file_size_bytes' => $metadata['size_bytes'],
             'session_expires_at' => $sessionExpiresAt,
             'last_prepared_at' => now(),
             'prepare_count' => 1,
@@ -208,6 +245,8 @@ class PreparePurchaseAccessFileDownloadAction
             file: $file,
             download: $download,
             metadata: $metadata,
+            manifestRevision: $manifestRevision,
+            reusedSession: false,
         );
     }
 
@@ -220,12 +259,27 @@ class PreparePurchaseAccessFileDownloadAction
         ProductSaleItemFile $file,
         PurchaseAccessDownload $download,
         array $metadata,
+        int $manifestRevision,
     ): array {
-        if ($download->session_expires_at === null || $download->session_expires_at->isPast()) {
+        if ($download->invalidated_at !== null) {
             throw new PurchaseAccessDownloadSessionExpiredException();
         }
 
+        if (
+            (int) $download->manifest_revision !== $manifestRevision
+            || !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
+            || (int) $download->file_size_bytes !== $metadata['size_bytes']
+            || !hash_equals((string) $download->file_name, $this->resolveFileName($file))
+        ) {
+            $download->forceFill([
+                'invalidated_at' => now(),
+                'session_expires_at' => now(),
+            ])->save();
+            throw new LauncherManifestChangedException($manifestRevision);
+        }
+
         $download->forceFill([
+            'session_expires_at' => $this->newSessionLeaseExpiration(),
             'last_prepared_at' => now(),
             'prepare_count' => max(1, (int)$download->prepare_count) + 1,
         ])->save();
@@ -235,6 +289,8 @@ class PreparePurchaseAccessFileDownloadAction
             file: $file,
             download: $download,
             metadata: $metadata,
+            manifestRevision: $manifestRevision,
+            reusedSession: true,
         );
     }
 
@@ -247,11 +303,20 @@ class PreparePurchaseAccessFileDownloadAction
         ProductSaleItemFile $file,
         PurchaseAccessDownload $download,
         array $metadata,
+        int $manifestRevision,
+        bool $reusedSession,
     ): array {
         $expiresAt = $download->session_expires_at;
 
         if ($expiresAt === null) {
             throw new PurchaseAccessDownloadSessionExpiredException();
+        }
+
+        $signedUrlExpiresAt = now()->addMinutes(
+            max(1, (int)config('launcher.download_url_ttl_minutes', 60))
+        );
+        if ($expiresAt->lessThan($signedUrlExpiresAt)) {
+            $signedUrlExpiresAt = $expiresAt;
         }
 
         return [
@@ -263,12 +328,38 @@ class PreparePurchaseAccessFileDownloadAction
                 contentId: (int)$purchaseAccess->product_sale_item_id,
                 fileId: $file->getKey(),
                 downloadSessionId: (string)$download->download_session_id,
-                expiresAt: $expiresAt,
+                manifestRevision: $manifestRevision,
+                expiresAt: $signedUrlExpiresAt,
             ),
             'file_name' => $download->file_name ?: $this->resolveFileName($file),
             'size_bytes' => $metadata['size_bytes'],
             'sha256' => $metadata['sha256'],
+            'manifest_revision' => $manifestRevision,
+            'reused_session' => $reusedSession,
         ];
+    }
+
+    /**
+     * @param array{size_bytes:int,sha256:string,mime_type:?string} $metadata
+     */
+    private function assertExpectedManifest(
+        int $manifestRevision,
+        string $fileName,
+        array $metadata,
+        ?int $expectedManifestRevision,
+        ?string $expectedFileName,
+        ?int $expectedSizeBytes,
+        ?string $expectedSha256,
+    ): void {
+        if (
+            ($expectedManifestRevision !== null && $expectedManifestRevision !== $manifestRevision)
+            || ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
+            || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
+            || ($expectedSha256 !== null
+                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])))
+        ) {
+            throw new LauncherManifestChangedException($manifestRevision);
+        }
     }
 
     private function resolveFileName(ProductSaleItemFile $file): string
@@ -289,5 +380,12 @@ class PreparePurchaseAccessFileDownloadAction
         $title = trim((string)$file->title);
 
         return $title !== '' ? $title : "download-{$file->getKey()}";
+    }
+
+    private function newSessionLeaseExpiration(): CarbonInterface
+    {
+        return now()->addMinutes(
+            max(1, (int)config('launcher.download_session_lease_minutes', 10080))
+        );
     }
 }

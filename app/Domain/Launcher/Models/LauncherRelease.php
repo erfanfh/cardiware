@@ -18,6 +18,8 @@ class LauncherRelease extends Model
         'file_name',
         'size_bytes',
         'sha256',
+        'signature',
+        'signature_key_id',
         'release_notes',
         'published_at',
     ];

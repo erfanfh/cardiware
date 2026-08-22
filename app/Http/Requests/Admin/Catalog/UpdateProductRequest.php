@@ -156,7 +156,11 @@ class UpdateProductRequest extends FormRequest
                 Rule::in(['7z']),
             ],
             'sale_items.*.manifest.archive_password' => ['nullable', 'string', 'max:512'],
-            'sale_items.*.manifest.assembled_file_name' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.manifest.assembled_file_name' => [
+                'nullable', 'string', 'max:255',
+                'not_regex:/[\\\\\/]/',
+                'not_in:.,..',
+            ],
             'sale_items.*.manifest.install_directory' => ['nullable', 'string', 'max:500'],
             'sale_items.*.manifest.install_folder_name' => [
                 'nullable', 'string', 'max:150',
@@ -578,6 +582,17 @@ class UpdateProductRequest extends FormRequest
                     FILTER_VALIDATE_BOOLEAN
                 );
 
+                $cpuCompatibilityMode = strtolower(trim((string) data_get(
+                    $manifest,
+                    'cpu_compatibility.default_mode',
+                    'off'
+                )));
+
+                $allowCpuUserOverride = filter_var(
+                    data_get($manifest, 'cpu_compatibility.allow_user_override', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
                 if ($cpuCompatibilityEnabled && !$applyCpuToGame && !$applyCpuToSider) {
                     $validator->errors()->add(
                         "{$prefix}.manifest.cpu_compatibility.enabled",
@@ -589,6 +604,13 @@ class UpdateProductRequest extends FormRequest
                     $validator->errors()->add(
                         "{$prefix}.manifest.cpu_compatibility.apply_to_sider",
                         'برای اعمال CPU Compatibility روی Sider باید پشتیبانی از Sider فعال باشد.'
+                    );
+                }
+
+                if ($cpuCompatibilityEnabled && $cpuCompatibilityMode === 'manual' && !$allowCpuUserOverride) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.cpu_compatibility.allow_user_override",
+                        'در حالت دستی CPU Compatibility باید اجازه تغییر توسط کاربر فعال باشد.'
                     );
                 }
 

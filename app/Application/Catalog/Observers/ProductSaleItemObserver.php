@@ -2,10 +2,16 @@
 
 namespace App\Application\Catalog\Observers;
 
+use App\Application\Catalog\Actions\BumpLauncherManifestRevisionAction;
 use App\Domain\Catalog\Models\ProductSaleItem;
 
 class ProductSaleItemObserver
 {
+    public function __construct(
+        private readonly BumpLauncherManifestRevisionAction $bumpRevisionAction,
+    ) {
+    }
+
     public function updated(ProductSaleItem $saleItem): void
     {
         if (!$saleItem->wasChanged([
@@ -13,13 +19,18 @@ class ProductSaleItemObserver
             'title',
             'edition_key',
             'version',
+            'launcher_enabled',
+            'launcher_free_claim_enabled',
+            'launcher_title',
+            'launcher_excerpt',
+            'launcher_cover_media_id',
+            'launcher_sort_order',
+            'launcher_support_enabled',
+            'launcher_support_url',
         ])) {
             return;
         }
 
-        ProductSaleItem::query()
-            ->withTrashed()
-            ->whereKey($saleItem->getKey())
-            ->increment('manifest_revision');
+        $this->bumpRevisionAction->execute((int) $saleItem->getKey());
     }
 }

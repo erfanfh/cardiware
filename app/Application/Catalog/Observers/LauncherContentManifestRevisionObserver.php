@@ -2,29 +2,56 @@
 
 namespace App\Application\Catalog\Observers;
 
-use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Application\Catalog\Actions\BumpLauncherManifestRevisionAction;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherModGroup;
+use App\Domain\Launcher\Models\LauncherDownloadFileIntegrity;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
 use Illuminate\Database\Eloquent\Model;
 
 final class LauncherContentManifestRevisionObserver
 {
+    public function __construct(
+        private readonly BumpLauncherManifestRevisionAction $bumpRevisionAction,
+    ) {
+    }
+
     public function created(Model $model): void
     {
+        $this->invalidateIntegrity($model);
         $this->bumpForModel($model);
     }
 
     public function updated(Model $model): void
     {
+        $this->invalidateIntegrity($model);
         $this->bumpForModel($model, includeOriginalOwner: true);
     }
 
     public function deleted(Model $model): void
     {
+        $this->invalidateIntegrity($model);
         $this->bumpForModel($model);
+    }
+
+    private function invalidateIntegrity(Model $model): void
+    {
+        $sourceType = match (true) {
+            $model instanceof LauncherUpdateFile => 'update',
+            $model instanceof LauncherModFile => 'mod',
+            default => null,
+        };
+
+        if ($sourceType === null || !is_numeric($model->getKey())) {
+            return;
+        }
+
+        LauncherDownloadFileIntegrity::query()
+            ->where('source_type', $sourceType)
+            ->where('source_file_id', (int) $model->getKey())
+            ->delete();
     }
 
     private function bumpForModel(Model $model, bool $includeOriginalOwner = false): void
@@ -32,10 +59,7 @@ final class LauncherContentManifestRevisionObserver
         $saleItemIds = $this->saleItemIdsForModel($model, $includeOriginalOwner);
 
         foreach ($saleItemIds as $saleItemId) {
-            ProductSaleItem::query()
-                ->withTrashed()
-                ->whereKey($saleItemId)
-                ->increment('manifest_revision');
+            $this->bumpRevisionAction->execute($saleItemId);
         }
     }
 

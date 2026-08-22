@@ -24,6 +24,7 @@ use App\Domain\Identity\Enums\OtpTypeEnum;
 use App\Domain\Launcher\Models\LauncherDevice;
 use Illuminate\Support\Facades\DB;
 use DomainException;
+use App\Application\Launcher\Exceptions\LauncherAccountSuspendedException;
 
 class AuthController extends Controller
 {
@@ -63,6 +64,8 @@ class AuthController extends Controller
             ]);
         }
 
+        $this->ensureLauncherAccess($user);
+
         $deviceData = $data['device'];
         $verifyDeviceProof->execute($deviceData);
 
@@ -101,9 +104,13 @@ class AuthController extends Controller
     public function requestLoginOtp(
         RequestLauncherLoginOtpRequest $request,
         RequestLoginOtpAction $requestLoginOtp,
+        GetActiveUserByMobileAction $getActiveUserByMobile,
     ): JsonResponse {
         try {
-            $result = $requestLoginOtp->execute((string)$request->validated('mobile'));
+            $mobile = (string)$request->validated('mobile');
+            $user = $getActiveUserByMobile->execute($mobile);
+            $this->ensureLauncherAccess($user);
+            $result = $requestLoginOtp->execute($mobile);
         } catch (DomainException $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),
@@ -134,6 +141,7 @@ class AuthController extends Controller
 
         try {
             $user = $getActiveUserByMobile->execute((string)$data['mobile']);
+            $this->ensureLauncherAccess($user);
             $deviceData = $data['device'];
             $verifyDeviceProof->execute($deviceData);
             $isTransfer = $this->isDeviceTransfer($user, $deviceData);
@@ -226,6 +234,7 @@ class AuthController extends Controller
     ): array {
         return DB::transaction(function () use ($userId, $deviceData, $ip, $transfer): array {
             $user = User::query()->whereKey($userId)->lockForUpdate()->firstOrFail();
+            $this->ensureLauncherAccess($user);
             $slot = (int)($user->active_device_slot ?: 0);
             $activeFingerprint = $this->publicKeyFingerprintForSlot($user, $slot);
             $incomingFingerprint = (string)$deviceData['public_key_fingerprint'];
@@ -306,6 +315,13 @@ class AuthController extends Controller
 
         $der = base64_decode((string)$encoded, true);
         return $der === false ? null : hash('sha256', $der);
+    }
+
+    private function ensureLauncherAccess(User $user): void
+    {
+        if ($user->isLauncherSuspended()) {
+            throw new LauncherAccountSuspendedException($user);
+        }
     }
 
     /**

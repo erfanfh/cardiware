@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Front\Commerce;
 use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Launcher\Models\LauncherDownloadSession;
+use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherUpdate;
@@ -37,19 +39,50 @@ class StreamLauncherDownloadController extends Controller
             ->firstOrFail();
 
         abort_unless($access->isUsableForLauncher(), 403);
+        $access->loadMissing('user');
+        abort_if(
+            $access->user === null || $access->user->isLauncherSuspended(),
+            403,
+            'Launcher account is suspended.',
+        );
 
-        [$sourceType, $downloadFile, $sourceUrl] = $this->resolveDownload(
+        $signedManifestRevision = filter_var(
+            $request->query('manifestRevision'),
+            FILTER_VALIDATE_INT,
+            ['options' => ['min_range' => 0]],
+        );
+        abort_if($signedManifestRevision === false, 410, 'Download manifest is no longer valid.');
+
+        $currentManifestRevision = (int) ProductSaleItem::query()
+            ->withTrashed()
+            ->whereKey($access->product_sale_item_id)
+            ->value('manifest_revision');
+        abort_if(
+            $signedManifestRevision !== $currentManifestRevision,
+            410,
+            'Download manifest is no longer valid.',
+        );
+
+        [$sourceType, $downloadFile, $sourceUrl, $downloadSession] = $this->resolveDownload(
             access: $access,
             contentType: $contentType,
             contentId: $content,
             fileId: $file,
             sessionId: strtolower($downloadSessionId),
         );
+        $this->ensureSessionDeviceIsActive($downloadSession, $access);
 
         $metadata = $metadataResolver->resolve(
             sourceType: $sourceType,
             file: $downloadFile,
             url: $sourceUrl,
+        );
+        $this->ensureSessionMatchesCurrentFile(
+            session: $downloadSession,
+            file: $downloadFile,
+            sourceUrl: $sourceUrl,
+            metadata: $metadata,
+            manifestRevision: $currentManifestRevision,
         );
 
         $totalSize = $metadata['size_bytes'];
@@ -95,7 +128,7 @@ class StreamLauncherDownloadController extends Controller
     }
 
     /**
-     * @return array{0:string,1:Model,2:string}
+     * @return array{0:string,1:Model,2:string,3:Model}
      */
     private function resolveDownload(
         PurchaseAccess $access,
@@ -121,7 +154,7 @@ class StreamLauncherDownloadController extends Controller
                 ->where('is_active', true)
                 ->firstOrFail();
 
-            return ['product', $file, (string)$file->url];
+            return ['product', $file, (string)$file->url, $downloadSession];
         }
 
         $downloadSession = LauncherDownloadSession::query()
@@ -146,7 +179,7 @@ class StreamLauncherDownloadController extends Controller
                 ->where('launcher_update_id', $owner->getKey())
                 ->firstOrFail();
 
-            return ['update', $file, (string)$file->url];
+            return ['update', $file, (string)$file->url, $downloadSession];
         }
 
         if ($contentType === 'mod') {
@@ -161,7 +194,7 @@ class StreamLauncherDownloadController extends Controller
                 ->where('launcher_mod_id', $owner->getKey())
                 ->firstOrFail();
 
-            return ['mod', $file, (string)$file->url];
+            return ['mod', $file, (string)$file->url, $downloadSession];
         }
 
         abort(404);
@@ -170,6 +203,70 @@ class StreamLauncherDownloadController extends Controller
     private function ensureSessionIsAlive(mixed $expiresAt): void
     {
         abort_if($expiresAt === null || $expiresAt->isPast(), 410, 'Download session has expired.');
+    }
+
+    private function ensureSessionDeviceIsActive(Model $session, PurchaseAccess $access): void
+    {
+        $deviceId = (int) $session->getAttribute('launcher_device_id');
+        abort_if($deviceId <= 0, 410, 'Download session is not bound to an active device.');
+
+        $device = LauncherDevice::query()
+            ->whereKey($deviceId)
+            ->where('user_id', $access->user_id)
+            ->first();
+        $user = $access->user;
+        $activeSlot = (int) ($user?->active_device_slot ?: 0);
+
+        abort_if(
+            !$device instanceof LauncherDevice
+            || !$device->isActive()
+            || $activeSlot === 0
+            || (int) $device->device_slot !== $activeSlot,
+            410,
+            'Download session device is no longer active.',
+        );
+
+        $activePublicKey = $activeSlot === 2
+            ? $user->second_device_public_key
+            : $user->first_device_public_key;
+        $decodedKey = base64_decode((string) $activePublicKey, true);
+
+        abort_if(
+            $decodedKey === false
+            || !hash_equals(
+                hash('sha256', $decodedKey),
+                (string) $device->public_key_fingerprint,
+            ),
+            410,
+            'Download session device identity is no longer valid.',
+        );
+    }
+
+    /**
+     * @param array{size_bytes:int,sha256:string,mime_type:?string} $metadata
+     */
+    private function ensureSessionMatchesCurrentFile(
+        Model $session,
+        Model $file,
+        string $sourceUrl,
+        array $metadata,
+        int $manifestRevision,
+    ): void {
+        abort_if(
+            $session->getAttribute('invalidated_at') !== null
+            || (int) $session->getAttribute('manifest_revision') !== $manifestRevision
+            || (int) $session->getAttribute('file_size_bytes') !== $metadata['size_bytes']
+            || !hash_equals(
+                strtolower((string) $session->getAttribute('file_sha256')),
+                strtolower($metadata['sha256']),
+            )
+            || !hash_equals(
+                (string) $session->getAttribute('file_name'),
+                $this->resolveFileName($file, $sourceUrl),
+            ),
+            410,
+            'Download manifest is no longer valid.',
+        );
     }
 
     /**

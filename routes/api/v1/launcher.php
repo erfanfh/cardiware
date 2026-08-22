@@ -17,6 +17,7 @@ Route::get('launcher/bootstrap', LauncherBootstrapController::class)
 Route::middleware([
     'auth:sanctum',
     'user.active',
+    'launcher.account',
     'launcher.device',
 ])
     ->group(function (): void {

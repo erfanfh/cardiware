@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Launcher;
 
 use App\Domain\Launcher\Models\LauncherRelease;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 final class LauncherReleaseController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, GeneralSettings $settings): View
     {
         Gate::authorize('launcher-device.manage');
 
@@ -26,7 +27,34 @@ final class LauncherReleaseController extends Controller
             ? LauncherRelease::query()->findOrFail((int)$request->query('edit'))
             : null;
 
-        return view('admin.launcher.releases.index', compact('releases', 'editingRelease'));
+        $publicDownloadUrl = trim((string)$settings->get(
+            'launcher_public_download_url',
+            config('launcher.public_download_url')
+        ));
+
+        return view('admin.launcher.releases.index', compact(
+            'releases',
+            'editingRelease',
+            'publicDownloadUrl'
+        ));
+    }
+
+    public function updatePublicDownload(Request $request, GeneralSettings $settings): RedirectResponse
+    {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'launcher_public_download_url' => ['nullable', 'url:https', 'max:2048'],
+        ], [
+            'launcher_public_download_url.url' => 'لینک دانلود عمومی لانچر باید کامل و با HTTPS باشد.',
+        ]);
+
+        $url = trim((string)($validated['launcher_public_download_url'] ?? ''));
+        $settings->set('launcher_public_download_url', $url !== '' ? $url : null);
+
+        return redirect()->route('admin.launcher-releases.index')
+            ->with('success', 'لینک دانلود عمومی لانچر با موفقیت ذخیره شد.')
+            ->with('success_title', 'دانلود عمومی لانچر');
     }
 
     public function store(Request $request): RedirectResponse
@@ -62,6 +90,12 @@ final class LauncherReleaseController extends Controller
             'file_name' => basename(str_replace('\\', '/', (string)$validated['file_name'])),
             'size_bytes' => (int)$validated['size_bytes'],
             'sha256' => strtolower((string)$validated['sha256']),
+            'signature' => filled($validated['signature'] ?? null)
+                ? preg_replace('/\s+/', '', (string)$validated['signature'])
+                : null,
+            'signature_key_id' => filled($validated['signature_key_id'] ?? null)
+                ? strtolower(trim((string)$validated['signature_key_id']))
+                : null,
             'release_notes' => filled($validated['release_notes'] ?? null)
                 ? trim((string)$validated['release_notes'])
                 : null,
@@ -105,6 +139,18 @@ final class LauncherReleaseController extends Controller
             'file_name' => ['required', 'string', 'max:255', 'not_regex:/[\\\\\/:*?"<>|]/', 'regex:/\.zip$/i'],
             'size_bytes' => ['required', 'integer', 'min:1'],
             'sha256' => ['required', 'regex:/^[a-fA-F0-9]{64}$/'],
+            'signature' => [
+                'nullable',
+                'required_with:signature_key_id',
+                'string',
+                'max:2048',
+                'regex:/\A[A-Za-z0-9+\/]+={0,2}\z/',
+            ],
+            'signature_key_id' => [
+                'nullable',
+                'required_with:signature',
+                'regex:/\A[a-fA-F0-9]{64}\z/',
+            ],
             'release_notes' => ['nullable', 'string', 'max:10000'],
             'published_at' => ['nullable', 'date'],
             'is_mandatory' => ['nullable', 'boolean'],
@@ -121,6 +167,10 @@ final class LauncherReleaseController extends Controller
             'download_url.url' => 'لینک دانلود باید کامل و با HTTPS باشد.',
             'file_name.regex' => 'بسته آپدیت لانچر باید فایل ZIP باشد.',
             'sha256.regex' => 'SHA-256 باید دقیقاً ۶۴ کاراکتر هگزادسیمال باشد.',
+            'signature.regex' => 'امضای بسته باید Base64 معتبر و بدون فاصله باشد.',
+            'signature.required_with' => 'امضا و شناسه کلید باید با هم ثبت شوند.',
+            'signature_key_id.regex' => 'شناسه کلید امضا باید دقیقاً ۶۴ کاراکتر هگزادسیمال باشد.',
+            'signature_key_id.required_with' => 'امضا و شناسه کلید باید با هم ثبت شوند.',
         ];
     }
 }

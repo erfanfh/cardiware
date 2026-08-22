@@ -5,6 +5,39 @@
 @section('content')
     @php($formRelease = $editingRelease)
     <div class="mx-auto max-w-7xl space-y-5">
+        <section class="rounded-2xl border border-orange-200 bg-white shadow-sm">
+            <div class="border-b border-orange-100 px-5 py-4">
+                <h1 class="text-base font-black text-slate-900">لینک دانلود عمومی MW Launcher</h1>
+                <p class="mt-1 text-sm leading-7 text-slate-500">
+                    این لینک در صفحه <span dir="ltr">/launcher</span> و صفحه هدایت به لانچر نمایش داده می‌شود.
+                    آن را با فایل ZIP آپدیت لانچر اشتباه نگیرید؛ اینجا باید لینک نصب‌کننده عمومی کاربران ثبت شود.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ route('admin.launcher-releases.public-download') }}" class="p-5">
+                @csrf
+                @method('PUT')
+                <x-admin.field label="لینک مستقیم HTTPS نصب‌کننده لانچر"
+                               hint="مثال: https://download.example.com/MWLauncher-Setup.exe">
+                    <x-admin.form.input name="launcher_public_download_url" type="url" dir="ltr"
+                                        placeholder="https://download.example.com/MWLauncher-Setup.exe"
+                                        value="{{ old('launcher_public_download_url', $publicDownloadUrl) }}" />
+                </x-admin.field>
+
+                <div class="mt-5 flex flex-wrap items-center gap-3">
+                    <x-admin.form.button type="submit" variant="dark" size="lg">
+                        ذخیره لینک دانلود عمومی
+                    </x-admin.form.button>
+                    @if(filled($publicDownloadUrl))
+                        <a href="{{ $publicDownloadUrl }}" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700">
+                            بررسی لینک فعلی
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </section>
+
         <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
                 <h1 class="text-base font-black text-slate-900">مدیریت آپدیت MW Launcher</h1>
@@ -54,6 +87,19 @@
                         <x-admin.field label="SHA-256 فایل ZIP">
                             <x-admin.form.input name="sha256" dir="ltr" required maxlength="64"
                                                 value="{{ old('sha256', $formRelease?->sha256) }}" />
+                        </x-admin.field>
+                    </div>
+                    <div class="md:col-span-8">
+                        <x-admin.field label="امضای مستقل بسته (Base64)"
+                                       hint="خروجی Signature ابزار publish-update؛ برای انتشار امن هر دو فیلد امضا را ثبت کنید.">
+                            <x-admin.form.textarea name="signature" rows="3" dir="ltr"
+                                                   :value="old('signature', $formRelease?->signature)" />
+                        </x-admin.field>
+                    </div>
+                    <div class="md:col-span-4">
+                        <x-admin.field label="شناسه کلید امضا" hint="Signature key id خروجی ابزار ساخت بسته">
+                            <x-admin.form.input name="signature_key_id" dir="ltr" maxlength="64"
+                                                value="{{ old('signature_key_id', $formRelease?->signature_key_id) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-4">
@@ -116,7 +162,12 @@
                         <tr>
                             <td class="px-4 py-3 font-black" dir="ltr">{{ $release->version }}</td>
                             <td class="px-4 py-3">{{ number_format($release->size_bytes / 1048576, 1) }} MB</td>
-                            <td class="px-4 py-3">{{ $release->is_mandatory ? 'اجباری' : 'اختیاری' }}</td>
+                            <td class="px-4 py-3">
+                                {{ $release->is_mandatory ? 'اجباری' : 'اختیاری' }}
+                                <span class="mr-2 {{ filled($release->signature) ? 'text-emerald-700' : 'text-amber-700' }}">
+                                    {{ filled($release->signature) ? '• امضاشده' : '• بدون امضا' }}
+                                </span>
+                            </td>
                             <td class="px-4 py-3 {{ $release->is_enabled ? 'text-emerald-700' : 'text-slate-400' }}">
                                 {{ $release->is_enabled ? 'فعال' : 'پیش‌نویس' }}
                             </td>
