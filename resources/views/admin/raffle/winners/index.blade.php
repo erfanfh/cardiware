@@ -4,7 +4,7 @@
 
 @section('content')
     @include('admin.raffle.campaigns.partials.nav')
-    <div class="mt-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.winners', $drawCampaign) }}" variant="secondary">خروجی CSV برندگان و تحویل</x-admin.form.button></div>
+    <div class="mt-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.winners', $drawCampaign) }}" variant="secondary">دریافت خروجی برندگان و تحویل</x-admin.form.button></div>
 
     <div class="mt-5 space-y-5">
         <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -15,7 +15,7 @@
                         <x-admin.badge color="emerald" size="md">{{ $drawCampaign->status->label() }}</x-admin.badge>
                     </div>
                     <p class="mt-2 max-w-3xl text-xs leading-7 text-slate-500">
-                        نتیجه اولیه Draw هیچ وقت بازنویسی نمی شود. رد، انقضا، Promote ذخیره و Redraw به صورت رکوردهای مستقل و قابل Audit نگهداری می شوند.
+                        نتیجه هر اجرا حفظ می‌شود و تغییراتی مانند رد یا جایگزینی برنده، جداگانه در تاریخچه عملیات ثبت می‌شوند.
                     </p>
                 </div>
                 <div class="text-xs text-slate-400" dir="ltr">{{ $drawCampaign->public_token }}</div>
@@ -77,7 +77,7 @@
 
                     @if($prizeWinners->isEmpty())
                         <div class="rounded-2xl border border-dashed border-slate-300 py-8 text-center text-xs text-slate-400">
-                            هنوز Winner برای این جایزه ایجاد نشده است.
+                            هنوز برنده‌ای برای این جایزه ثبت نشده است.
                         </div>
                     @endif
                 </div>

@@ -7,7 +7,7 @@
                     <div class="mt-1 text-[10px] text-slate-400">
                         {{ $auditEvent->actor?->full_name ?: 'سیستم' }}
                         @if($auditEvent->subject_type && $auditEvent->subject_id)
-                            · {{ $auditEvent->subject_type }} #{{ $auditEvent->subject_id }}
+                            · {{ $auditEvent->subjectLabel() }} #{{ $auditEvent->subject_id }}
                         @endif
                     </div>
                 </div>

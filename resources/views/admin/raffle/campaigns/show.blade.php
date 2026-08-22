@@ -10,7 +10,7 @@
                 <div class="space-y-3 text-xs leading-6 text-slate-600">
                     <div><span class="font-bold">شروع:</span> {{ $drawCampaign->starts_at ? jalali_date($drawCampaign->starts_at,'Y/m/d H:i') : 'بدون محدودیت' }}</div>
                     <div><span class="font-bold">پایان:</span> {{ $drawCampaign->closes_at ? jalali_date($drawCampaign->closes_at,'Y/m/d H:i') : 'بدون محدودیت' }}</div>
-                    <div><span class="font-bold">Draw:</span> {{ $drawCampaign->draw_at ? jalali_date($drawCampaign->draw_at,'Y/m/d H:i') : 'تعیین نشده' }}</div>
+                    <div><span class="font-bold">قرعه‌کشی:</span> {{ $drawCampaign->draw_at ? jalali_date($drawCampaign->draw_at,'Y/m/d H:i') : 'تعیین نشده' }}</div>
                 </div>
             </x-admin.metabox>
         </x-slot:sidebar>

@@ -19,10 +19,10 @@ class BuildDrawCampaignOperationalAlertsAction
         $now = now();
 
         if ($campaign->status === DrawCampaignStatusEnum::SCHEDULED && $campaign->starts_at?->lte($now)) {
-            $alerts->push($this->alert('danger', 'شروع زمان‌بندی‌شده انجام نشده', 'Scheduler باید کمپین را باز می‌کرد. اجرای raffles:sync-statuses و لاگ سرور را بررسی کنید.'));
+            $alerts->push($this->alert('danger', 'شروع زمان‌بندی‌شده انجام نشده', 'سامانه زمان‌بندی خودکار و گزارش خطاهای سرور را بررسی کنید.'));
         }
         if ($campaign->status === DrawCampaignStatusEnum::OPEN && $campaign->closes_at?->lte($now)) {
-            $alerts->push($this->alert('danger', 'پایان زمان‌بندی‌شده انجام نشده', 'کمپین بعد از زمان پایان هنوز باز است؛ Scheduler را بررسی کنید.'));
+            $alerts->push($this->alert('danger', 'پایان زمان‌بندی‌شده انجام نشده', 'کمپین بعد از زمان پایان هنوز باز است؛ سامانه زمان‌بندی خودکار را بررسی کنید.'));
         }
         if (
             $campaign->status === DrawCampaignStatusEnum::CLOSED
@@ -33,14 +33,14 @@ class BuildDrawCampaignOperationalAlertsAction
                 'warning',
                 'قرعه‌کشی آماده اجراست',
                 $this->settings->get('auto_start_draw_enabled', false)
-                    ? 'شروع خودکار فعال است؛ اگر تا یک دقیقه Run ساخته نشد Scheduler را بررسی کنید.'
+                    ? 'شروع خودکار فعال است؛ اگر تا یک دقیقه اجرا ساخته نشد، سامانه زمان‌بندی را بررسی کنید.'
                     : 'شروع خودکار غیرفعال است و ادمین باید اجرای قرعه‌کشی را آغاز کند.',
             ));
         }
 
         $failedRuns = $campaign->drawRuns()->where('status', DrawRunStatusEnum::FAILED->value)->count();
         if ($failedRuns > 0) {
-            $alerts->push($this->alert('danger', 'اجرای ناموفق قرعه‌کشی', "{$failedRuns} اجرای ناموفق وجود دارد؛ از صفحه اجراها Retry با همان seed را انجام دهید."));
+            $alerts->push($this->alert('danger', 'اجرای ناموفق قرعه‌کشی', "{$failedRuns} اجرای ناموفق وجود دارد؛ پس از رفع خطا از صفحه اجراها دوباره تلاش کنید."));
         }
 
         $staleRuns = $campaign->drawRuns()
@@ -48,7 +48,7 @@ class BuildDrawCampaignOperationalAlertsAction
             ->where('started_at', '<=', $now->copy()->subMinutes(20))
             ->count();
         if ($staleRuns > 0) {
-            $alerts->push($this->alert('danger', 'اجرای طولانی یا متوقف‌شده', 'Worker صف raffle و Horizon را بررسی کنید.'));
+            $alerts->push($this->alert('danger', 'اجرای طولانی یا متوقف‌شده', 'پردازشگر صف قرعه‌کشی را بررسی کنید.'));
         }
 
         $overdueWinners = $campaign->winners()
@@ -57,7 +57,7 @@ class BuildDrawCampaignOperationalAlertsAction
             ->where('confirmation_deadline_at', '<=', $now)
             ->count();
         if ($overdueWinners > 0) {
-            $alerts->push($this->alert('warning', 'برنده منقضی در انتظار پردازش', "{$overdueWinners} برنده باید منقضی و با ذخیره جایگزین شود؛ Scheduler را بررسی کنید."));
+            $alerts->push($this->alert('warning', 'برنده منقضی در انتظار پردازش', "{$overdueWinners} برنده باید منقضی و با ذخیره جایگزین شود؛ سامانه زمان‌بندی را بررسی کنید."));
         }
 
         $smsFailures = $campaign->winners()

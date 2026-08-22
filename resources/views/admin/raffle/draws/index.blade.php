@@ -23,7 +23,7 @@
                         <x-admin.badge color="brand" size="md">{{ $drawCampaign->status->label() }}</x-admin.badge>
                     </div>
                     <p class="mt-2 max-w-3xl text-xs leading-7 text-slate-500">
-                        نتیجه با الگوریتم HMAC-SHA256 و Seed از پیش Commit شده تولید می شود. پس از شروع، مجموعه بلیط های واجد شرایط Freeze می شود و Retry همان DrawRun همیشه با همان Seed انجام خواهد شد.
+                        پس از شروع، بلیط‌های واجد شرایط قفل می‌شوند و اجرای دوباره پس از خطا نیز با همان اطلاعات اولیه انجام می‌شود.
                     </p>
                 </div>
 
@@ -39,9 +39,9 @@
                                 method="post"
                                 class="js-confirm"
                                 data-confirm-title="شروع قرعه کشی"
-                                data-confirm-text="با شروع Draw، بلیط ها Freeze می شوند و دیگر امکان صدور یا ابطال بلیط وجود ندارد. نتیجه توسط Queue اختصاصی محاسبه خواهد شد. ادامه می دهید؟"
+                                data-confirm-text="پس از شروع، صدور یا ابطال بلیط ممکن نیست و نتیجه در صف پردازش قرار می‌گیرد. ادامه می‌دهید؟"
                             >
-                                <x-admin.form.button type="submit" variant="solid">شروع Draw امن</x-admin.form.button>
+                                <x-admin.form.button type="submit" variant="solid">شروع قرعه‌کشی</x-admin.form.button>
                             </x-admin.form>
                         @endif
                     @endcan
@@ -50,19 +50,19 @@
 
             @if($canStart && !$drawTimeReached)
                 <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
-                    زمان برنامه ریزی شده Draw هنوز نرسیده است: {{ jalali_date($drawCampaign->draw_at, 'Y/m/d H:i') }}
+                    زمان تعیین‌شده برای قرعه‌کشی هنوز نرسیده است: {{ jalali_date($drawCampaign->draw_at, 'Y/m/d H:i') }}
                 </div>
             @elseif($drawCampaign->status === DrawCampaignStatusEnum::OPEN)
                 <div class="mt-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs leading-7 text-blue-800">
-                    ابتدا دریافت بلیط را ببندید؛ فقط Campaign با وضعیت «بسته شده» قابل Freeze و Draw است.
+                    ابتدا دریافت بلیط را ببندید؛ قرعه‌کشی فقط در وضعیت «بسته شده» قابل اجراست.
                 </div>
             @elseif($drawCampaign->status === DrawCampaignStatusEnum::DRAWING)
                 <div class="mt-4 rounded-2xl border border-brand-200 bg-brand-50 px-4 py-3 text-xs leading-7 text-brand-800">
-                    Campaign در حالت Freeze قرار دارد. تا زمان تکمیل یا Retry همین DrawRun، Ticket Set تغییر نخواهد کرد.
+                    بلیط‌های واجد شرایط قفل شده‌اند و تا پایان اجرای جاری تغییر نمی‌کنند.
                 </div>
             @elseif($drawCampaign->status === DrawCampaignStatusEnum::COMPLETED)
                 <div class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs leading-7 text-emerald-800">
-                    قرعه کشی با موفقیت تکمیل شده و Seed نهایی برای Verification آشکار شده است.
+                    قرعه‌کشی تکمیل شده و اطلاعات لازم برای صحت‌سنجی نتیجه در دسترس است.
                 </div>
             @endif
         </div>
@@ -104,10 +104,10 @@
                                     action="{{ route('admin.draw-campaigns.draws.retry', [$drawCampaign, $run]) }}"
                                     method="post"
                                     class="js-confirm"
-                                    data-confirm-title="اجرای مجدد Draw"
-                                    data-confirm-text="Retry با همان Seed و همان Commitment انجام می شود و نتیجه تصادفی جدیدی ساخته نخواهد شد."
+                                    data-confirm-title="اجرای دوباره قرعه‌کشی"
+                                    data-confirm-text="اجرا با همان اطلاعات اولیه تکرار می‌شود و نتیجه تصادفی تازه‌ای ساخته نخواهد شد."
                                 >
-                                    <x-admin.form.button type="submit" variant="solid">Retry با همان Seed</x-admin.form.button>
+                                    <x-admin.form.button type="submit" variant="solid">تلاش دوباره</x-admin.form.button>
                                 </x-admin.form>
                             @endcan
                         @endif
@@ -122,25 +122,25 @@
 
                 <div class="grid grid-cols-1 gap-0 divide-y divide-slate-100 lg:grid-cols-2 lg:divide-x lg:divide-y-0 lg:divide-x-reverse">
                     <div class="p-5">
-                        <div class="mb-3 text-xs font-extrabold text-slate-700">اطلاعات Audit</div>
+                        <div class="mb-3 text-xs font-extrabold text-slate-700">اطلاعات صحت‌سنجی</div>
                         <div class="space-y-3 text-xs">
                             <div>
-                                <div class="mb-1 text-slate-400">Seed Commitment</div>
+                                <div class="mb-1 text-slate-400">تعهد اولیه</div>
                                 <code class="block overflow-x-auto rounded-xl bg-slate-950 px-3 py-2 text-[11px] text-slate-100" dir="ltr">{{ $run->seed_commitment ?: '—' }}</code>
                             </div>
 
                             <div>
-                                <div class="mb-1 text-slate-400">Eligible Set Hash</div>
+                                <div class="mb-1 text-slate-400">شناسه محاسباتی بلیط‌های واجد شرایط</div>
                                 <code class="block overflow-x-auto rounded-xl bg-slate-950 px-3 py-2 text-[11px] text-slate-100" dir="ltr">{{ $run->eligible_set_hash ?: 'پس از تکمیل محاسبه می شود' }}</code>
                             </div>
 
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="rounded-xl bg-slate-50 p-3">
-                                    <div class="text-[11px] text-slate-400">Ticket واجد شرایط</div>
+                                    <div class="text-[11px] text-slate-400">بلیط واجد شرایط</div>
                                     <div class="mt-1 text-lg font-black text-slate-900">{{ number_format($run->eligible_ticket_count) }}</div>
                                 </div>
                                 <div class="rounded-xl bg-slate-50 p-3">
-                                    <div class="text-[11px] text-slate-400">Winner Record</div>
+                                    <div class="text-[11px] text-slate-400">نتیجه ثبت‌شده</div>
                                     <div class="mt-1 text-lg font-black text-slate-900">{{ number_format($run->winners->count()) }}</div>
                                 </div>
                             </div>
@@ -148,9 +148,9 @@
                             @if($run->status === DrawRunStatusEnum::COMPLETED && $run->seed_reveal)
                                 <div>
                                     <div class="mb-1 flex items-center justify-between gap-2">
-                                        <span class="text-slate-400">Seed Reveal</span>
+                                        <span class="text-slate-400">مقدار اولیه آشکارشده</span>
                                         <x-admin.badge :color="$seedCommitmentValid ? 'green' : 'red'" size="sm">
-                                            {{ $seedCommitmentValid ? 'Commitment معتبر' : 'عدم تطابق' }}
+                                            {{ $seedCommitmentValid ? 'معتبر' : 'عدم تطابق' }}
                                         </x-admin.badge>
                                     </div>
                                     <code class="block overflow-x-auto rounded-xl bg-slate-950 px-3 py-2 text-[11px] text-slate-100" dir="ltr">{{ $run->seed_reveal }}</code>
@@ -201,11 +201,11 @@
                             </div>
                         @elseif($run->status === DrawRunStatusEnum::FAILED)
                             <div class="rounded-2xl bg-red-50 px-4 py-8 text-center text-xs leading-7 text-red-700">
-                                نتیجه ای Persist نشده است. بعد از رفع مشکل، همین Run را با همان Seed Retry کنید.
+                                نتیجه‌ای ثبت نشده است. پس از رفع مشکل، همین اجرا را دوباره انجام دهید.
                             </div>
                         @else
                             <div class="rounded-2xl bg-brand-50 px-4 py-8 text-center text-xs leading-7 text-brand-700">
-                                Worker در حال پردازش Ticket Set است. این صفحه را چند لحظه دیگر Refresh کنید.
+                                نتیجه در حال پردازش است. این صفحه چند لحظه دیگر خودکار تازه‌سازی می‌شود.
                             </div>
                         @endif
                     </div>
@@ -213,8 +213,8 @@
             </div>
         @empty
             <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-                <div class="text-sm font-black text-slate-800">هنوز DrawRun ساخته نشده است</div>
-                <p class="mt-2 text-xs leading-7 text-slate-500">پس از بسته شدن دریافت بلیط و رسیدن زمان Draw، اجرای اولیه را از همین صفحه شروع کنید.</p>
+                <div class="text-sm font-black text-slate-800">هنوز اجرایی ثبت نشده است</div>
+                <p class="mt-2 text-xs leading-7 text-slate-500">پس از بسته شدن دریافت بلیط و رسیدن زمان قرعه‌کشی، اجرا را از همین صفحه شروع کنید.</p>
             </div>
         @endforelse
 

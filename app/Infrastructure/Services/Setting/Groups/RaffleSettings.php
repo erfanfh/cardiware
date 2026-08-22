@@ -15,7 +15,6 @@ class RaffleSettings extends BaseSettings
         'winner_reminder_sms_enabled',
         'winner_reminder_hours_before_deadline',
         'auto_start_draw_enabled',
-        'show_in_header_navigation',
 
         'smsir_winner_template_id',
         'smsir_winner_name_parameter',
@@ -48,6 +47,5 @@ class RaffleSettings extends BaseSettings
         'winner_reminder_sms_enabled' => BooleanCast::class,
         'winner_reminder_hours_before_deadline' => IntegerCast::class,
         'auto_start_draw_enabled' => BooleanCast::class,
-        'show_in_header_navigation' => BooleanCast::class,
     ];
 }

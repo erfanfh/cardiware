@@ -2,7 +2,7 @@
 @section('title', 'شرکت کنندگان ' . $drawCampaign->title)
 @section('content')
     @include('admin.raffle.campaigns.partials.nav')
-    <div class="mb-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.participants', $drawCampaign) }}" variant="secondary">خروجی CSV شرکت‌کنندگان</x-admin.form.button></div>
+    <div class="mb-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.participants', $drawCampaign) }}" variant="secondary">دریافت خروجی شرکت‌کنندگان</x-admin.form.button></div>
     <x-admin.form method="get" action="{{ route('admin.draw-campaigns.participants.index',$drawCampaign) }}">
         <x-admin.filters.panel :open="$hasActiveFilters"><x-admin.filters.header title="فیلتر شرکت کنندگان"/><x-admin.filters.body><x-admin.filters.grid>
             <x-admin.filters.item label="شناسه کاربر"><x-admin.form.input name="user_id" type="number" :value="request('user_id')"/></x-admin.filters.item>

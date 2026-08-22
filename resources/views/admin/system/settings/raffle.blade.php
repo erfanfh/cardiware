@@ -11,7 +11,7 @@
         <x-admin.page>
             <div class="space-y-5">
                 <div class="rounded-2xl border border-brand-200 bg-brand-50 p-4 text-xs leading-7 text-brand-800">
-                    قالب پیامک برنده با قالب OTP متفاوت است. ابتدا در پنل سرویس پیامکی یک قالب مستقل بسازید و شناسه و نام متغیرهای همان قالب را اینجا وارد کنید.
+                    برای اعلام برنده و یادآوری، در پنل پیامکی دو قالب جدا از قالب رمز یک‌بارمصرف بسازید.
                 </div>
 
                 <x-admin.metabox title="رفتار عمومی قرعه‌کشی" :collapsible="false">
@@ -27,7 +27,6 @@
                             <x-admin.form.switch name="winner_reminder_sms_enabled" :checked="$get('winner_reminder_sms_enabled', false)"/>
                             <div>
                                 <div class="text-xs font-bold text-slate-700">یادآوری مهلت تأیید</div>
-                                <div class="mt-1 text-[11px] text-slate-400">فقط برای برنده در انتظار تأیید</div>
                             </div>
                         </div>
                         <x-admin.field label="ارسال یادآوری، چند ساعت مانده به مهلت" :error="$errors->first('winner_reminder_hours_before_deadline')">
@@ -37,14 +36,7 @@
                             <x-admin.form.switch name="auto_start_draw_enabled" :checked="$get('auto_start_draw_enabled', false)"/>
                             <div>
                                 <div class="text-xs font-bold text-slate-700">شروع خودکار قرعه‌کشی</div>
-                                <div class="mt-1 text-[11px] text-slate-400">کمپین بسته در زمان draw_at وارد صف اجرا شود</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <x-admin.form.switch name="show_in_header_navigation" :checked="$get('show_in_header_navigation', true)"/>
-                            <div>
-                                <div class="text-xs font-bold text-slate-700">نمایش در منوی سایت</div>
-                                <div class="mt-1 text-[11px] text-slate-400">لینک قرعه‌کشی‌ها به منوی اصلی افزوده شود</div>
+                                <div class="mt-1 text-[11px] text-slate-400">شروع اجرا در زمان تعیین‌شده</div>
                             </div>
                         </div>
                     </div>

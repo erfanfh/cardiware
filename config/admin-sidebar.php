@@ -56,7 +56,7 @@ return [
                 'route' => 'admin.pages.create',
                 'icon' => 'icons.plus-sign',
                 'gate' => 'page.create',
-            ]
+            ],
         ],
     ],
 
@@ -125,7 +125,7 @@ return [
                 'route' => 'admin.projects.create',
                 'icon' => 'icons.plus-sign',
                 'gate' => 'project.create',
-            ]
+            ],
         ],
     ],
 
@@ -299,7 +299,7 @@ return [
                 'route' => 'admin.roles.index',
                 'icon' => 'icons.square-unlock-02',
                 'gate' => 'role.list',
-            ]
+            ],
         ],
     ],
 
@@ -388,6 +388,12 @@ return [
                 'route' => 'admin.settings.loyalty',
                 'icon' => 'icons.settings-02',
                 'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'قرعه‌کشی',
+                'route' => 'admin.settings.raffle',
+                'icon' => 'icons.settings-02',
+                'gate' => 'raffle-campaign.edit',
             ],
             [
                 'label' => 'سئو',

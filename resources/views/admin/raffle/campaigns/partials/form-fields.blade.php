@@ -109,7 +109,7 @@
     @else
         <x-admin.metabox title="تنظیمات قفل شده">
             <div class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
-                با شروع قرعه کشی یا صدور اولین بلیط، ساختار جوایز، ظرفیت، زمان بندی و قوانین برد قفل می‌شوند تا عدالت و قابلیت Audit حفظ شود. محتوای معرفی و قوانین متنی همچنان قابل ویرایش است.
+                پس از صدور اولین بلیط، جوایز، ظرفیت و زمان‌بندی قفل می‌شوند. متن معرفی و قوانین همچنان قابل ویرایش است.
             </div>
             <div class="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <div class="rounded-2xl bg-slate-50 p-3"><div class="text-[11px] text-slate-500">ظرفیت کل</div><div class="mt-1 text-sm font-black text-slate-800">{{ $drawCampaign->ticket_limit ? number_format($drawCampaign->ticket_limit) : 'نامحدود' }}</div></div>

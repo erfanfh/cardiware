@@ -33,14 +33,14 @@
                 @endif
 
                 @if($winner->drawRun?->type?->value === 'redraw')
-                    <x-admin.badge color="blue" size="sm">Redraw</x-admin.badge>
+                    <x-admin.badge color="blue" size="sm">قرعه‌کشی مجدد</x-admin.badge>
                 @endif
             </div>
 
             <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500">
-                <span>User #{{ $winner->user_id }}</span>
-                <span dir="ltr">Ticket: {{ $winner->ticket?->code }}</span>
-                <span>Run #{{ $winner->draw_run_id }}</span>
+                <span>کاربر #{{ $winner->user_id }}</span>
+                <span>بلیط: <span dir="ltr">{{ $winner->ticket?->code }}</span></span>
+                <span>اجرا #{{ $winner->draw_run_id }}</span>
                 <span>انتخاب: {{ jalali_date($winner->selected_at, 'Y/m/d H:i') }}</span>
             </div>
 
@@ -85,13 +85,13 @@
 
             @if($winner->replacedWinner)
                 <div class="mt-3 text-xs text-brand-700">
-                    جایگزین Winner #{{ $winner->replacedWinner->id }} شده است.
+                    جایگزین برنده شماره {{ $winner->replacedWinner->id }} شده است.
                 </div>
             @endif
 
             @if($replacement)
                 <div class="mt-3 rounded-xl bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
-                    این نتیجه با Winner #{{ $replacement->id }} ({{ $replacement->user?->full_name }}) جایگزین شده است.
+                    این نتیجه با برنده شماره {{ $replacement->id }} ({{ $replacement->user?->full_name }}) جایگزین شده است.
                 </div>
             @endif
 
@@ -139,13 +139,13 @@
                 @if(in_array($winner->status, [DrawWinnerStatusEnum::REJECTED, DrawWinnerStatusEnum::EXPIRED], true))
                     @can('raffle-winner.promote')
                         <x-admin.form method="post" action="{{ route('admin.draw-campaigns.winners.promote', [$drawCampaign, $winner]) }}">
-                            <x-admin.form.button type="submit" variant="secondary" class="w-full justify-center">Promote ذخیره بعدی</x-admin.form.button>
+                            <x-admin.form.button type="submit" variant="secondary" class="w-full justify-center">جایگزینی با ذخیره بعدی</x-admin.form.button>
                         </x-admin.form>
                     @endcan
 
                     @can('raffle-draw.execute')
-                        <x-admin.form method="post" action="{{ route('admin.draw-campaigns.winners.redraw', [$drawCampaign, $winner]) }}" class="js-confirm" data-confirm-title="شروع Redraw" data-confirm-text="اگر ذخیره ای باقی نمانده باشد، برای همین جایگاه DrawRun جدید با Seed مستقل ساخته می شود.">
-                            <x-admin.form.button type="submit" variant="solid" class="w-full justify-center">شروع Redraw برای این جایگاه</x-admin.form.button>
+                        <x-admin.form method="post" action="{{ route('admin.draw-campaigns.winners.redraw', [$drawCampaign, $winner]) }}" class="js-confirm" data-confirm-title="قرعه‌کشی مجدد" data-confirm-text="اگر ذخیره‌ای باقی نمانده باشد، برای این جایگاه یک اجرای مستقل ساخته می‌شود.">
+                            <x-admin.form.button type="submit" variant="solid" class="w-full justify-center">قرعه‌کشی مجدد این جایگاه</x-admin.form.button>
                         </x-admin.form>
                     @endcan
                 @endif

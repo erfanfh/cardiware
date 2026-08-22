@@ -2,7 +2,7 @@
 @section('title', 'بلیط های ' . $drawCampaign->title)
 @section('content')
     @include('admin.raffle.campaigns.partials.nav')
-    <div class="mb-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.tickets', $drawCampaign) }}" variant="secondary">خروجی CSV بلیط‌ها</x-admin.form.button></div>
+    <div class="mb-4 flex justify-end"><x-admin.form.button tag="a" href="{{ route('admin.draw-campaigns.exports.tickets', $drawCampaign) }}" variant="secondary">دریافت خروجی بلیط‌ها</x-admin.form.button></div>
     @can('raffle-ticket.issue')
         <x-admin.metabox title="صدور دستی بلیط">
             @if($drawCampaign->acceptsTicketsAt())

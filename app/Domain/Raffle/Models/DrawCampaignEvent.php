@@ -66,4 +66,15 @@ class DrawCampaignEvent extends Model
             default => str_replace('_', ' ', $this->type),
         };
     }
+
+    public function subjectLabel(): ?string
+    {
+        return match ($this->subject_type) {
+            'winner' => 'برنده',
+            'draw_run' => 'اجرای قرعه‌کشی',
+            'ticket_grant' => 'سری صدور بلیط',
+            null => null,
+            default => 'رکورد مرتبط',
+        };
+    }
 }

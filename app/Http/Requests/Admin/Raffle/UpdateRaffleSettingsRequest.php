@@ -23,7 +23,6 @@ class UpdateRaffleSettingsRequest extends FormRequest
             'winner_reminder_sms_enabled' => ['required', 'boolean'],
             'winner_reminder_hours_before_deadline' => ['required', 'integer', 'min:1', 'max:168'],
             'auto_start_draw_enabled' => ['required', 'boolean'],
-            'show_in_header_navigation' => ['required', 'boolean'],
 
             'smsir_winner_template_id' => ['nullable', 'string', 'max:100'],
             'smsir_winner_name_parameter' => ['nullable', 'string', 'max:100'],

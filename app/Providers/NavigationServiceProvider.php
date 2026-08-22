@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Application\Navigation\Actions\ResolveFrontendNavigationMenuAction;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Models\DrawWinner;
-use App\Infrastructure\Services\Setting\Groups\RaffleSettings;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,28 +25,6 @@ class NavigationServiceProvider extends ServiceProvider
     {
         View::composer('front.header.index', function ($view) {
             $items = app(ResolveFrontendNavigationMenuAction::class)->execute('header');
-
-            if (app(RaffleSettings::class)->get('show_in_header_navigation', true)) {
-                $raffleUrl = route('raffles.index');
-                $alreadyPresent = $items->contains(fn (array $item): bool => rtrim((string) $item['url'], '/') === rtrim($raffleUrl, '/'));
-
-                if (! $alreadyPresent) {
-                    $items->push([
-                        'id' => 'system-raffles',
-                        'title' => 'قرعه‌کشی‌ها',
-                        'url' => $raffleUrl,
-                        'target' => '_self',
-                        'icon' => '🎁',
-                        'badge' => null,
-                        'css_class' => '',
-                        'is_mega_menu' => false,
-                        'mega_menu_title' => null,
-                        'mega_menu_description' => null,
-                        'mega_menu_columns' => null,
-                        'children' => collect(),
-                    ]);
-                }
-            }
 
             $raffleHeaderNotifications = collect();
             if (auth()->check()) {
