@@ -12,6 +12,7 @@ class UpdateCouponAction
     public function __construct(
         private readonly SyncCouponUsersAction   $syncCouponUsersAction,
         private readonly SyncCouponTargetsAction $syncCouponTargetsAction,
+        private readonly EnsureSingleFloatingCouponAction $ensureSingleFloatingCouponAction,
     )
     {
     }
@@ -33,6 +34,8 @@ class UpdateCouponAction
                 coupon: $coupon,
                 data: $data
             );
+
+            $this->ensureSingleFloatingCouponAction->execute($coupon);
 
             return $coupon->refresh();
         });
@@ -64,6 +67,7 @@ class UpdateCouponAction
 
             'usage_limit' => $data['usage_limit'] ?? null,
             'usage_limit_per_user' => $data['usage_limit_per_user'] ?? null,
+            'is_floating_box_enabled' => (bool)($data['is_floating_box_enabled'] ?? false),
 
             'scope' => $data['scope'],
 

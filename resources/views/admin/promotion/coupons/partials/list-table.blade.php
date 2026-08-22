@@ -130,6 +130,14 @@
                                 </p>
                             @endif
 
+                            @if($coupon->is_floating_box_enabled)
+                                <div class="mt-2">
+                                    <x-admin.badge color="yellow" size="sm" class="whitespace-nowrap">
+                                        باکس پایین سایت فعال است
+                                    </x-admin.badge>
+                                </div>
+                            @endif
+
                             <x-admin.list.row-actions>
                                 <x-admin.list.action
                                     tag="a"

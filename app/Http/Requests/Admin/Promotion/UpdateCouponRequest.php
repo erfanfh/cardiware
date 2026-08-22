@@ -95,6 +95,11 @@ class UpdateCouponRequest extends FormRequest
                 'min:1',
             ],
 
+            'is_floating_box_enabled' => [
+                'required',
+                'boolean',
+            ],
+
             'applies_to_all_users' => [
                 'required',
                 'boolean',
@@ -154,6 +159,7 @@ class UpdateCouponRequest extends FormRequest
             'expires_at' => 'زمان پایان',
             'usage_limit' => 'تعداد استفاده کلی',
             'usage_limit_per_user' => 'تعداد استفاده برای هر کاربر',
+            'is_floating_box_enabled' => 'باکس شناور تخفیف',
             'applies_to_all_users' => 'قابل استفاده برای همه کاربران',
             'user_ids' => 'کاربران خاص',
             'scope' => 'محدوده اعمال',
@@ -194,6 +200,20 @@ class UpdateCouponRequest extends FormRequest
             ) {
                 $validator->errors()->add('store_id', 'برای محدودیت روی فروشنده خاص، انتخاب فروشنده الزامی است.');
             }
+
+            if ($this->boolean('is_floating_box_enabled') && blank($this->input('usage_limit'))) {
+                $validator->errors()->add(
+                    'usage_limit',
+                    'برای نمایش باکس شناور تخفیف، تعیین تعداد استفاده کلی الزامی است.'
+                );
+            }
+
+            if ($this->boolean('is_floating_box_enabled') && !$this->boolean('applies_to_all_users')) {
+                $validator->errors()->add(
+                    'is_floating_box_enabled',
+                    'باکس عمومی تخفیف فقط برای کدهای قابل استفاده توسط همه کاربران فعال می‌شود.'
+                );
+            }
         });
     }
 
@@ -204,6 +224,7 @@ class UpdateCouponRequest extends FormRequest
 
             'applies_to_all_users' => $this->boolean('applies_to_all_users'),
             'applies_to_addons' => $this->boolean('applies_to_addons'),
+            'is_floating_box_enabled' => $this->boolean('is_floating_box_enabled'),
 
             'starts_at' => $this->normalizeDateTime($this->input('starts_at')),
             'expires_at' => $this->normalizeDateTime($this->input('expires_at')),
