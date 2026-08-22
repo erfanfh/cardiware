@@ -22,6 +22,8 @@ Route::prefix('launcher-releases')
     ->name('launcher-releases.')
     ->group(function (): void {
         Route::get('/', [LauncherReleaseController::class, 'index'])->name('index');
+        Route::put('/public-download', [LauncherReleaseController::class, 'updatePublicDownload'])
+            ->name('public-download');
         Route::post('/', [LauncherReleaseController::class, 'store'])->name('store');
         Route::delete('/{launcherRelease}', [LauncherReleaseController::class, 'destroy'])->name('destroy');
     });

@@ -5,6 +5,39 @@
 @section('content')
     @php($formRelease = $editingRelease)
     <div class="mx-auto max-w-7xl space-y-5">
+        <section class="rounded-2xl border border-orange-200 bg-white shadow-sm">
+            <div class="border-b border-orange-100 px-5 py-4">
+                <h1 class="text-base font-black text-slate-900">لینک دانلود عمومی MW Launcher</h1>
+                <p class="mt-1 text-sm leading-7 text-slate-500">
+                    این لینک در صفحه <span dir="ltr">/launcher</span> و صفحه هدایت به لانچر نمایش داده می‌شود.
+                    آن را با فایل ZIP آپدیت لانچر اشتباه نگیرید؛ اینجا باید لینک نصب‌کننده عمومی کاربران ثبت شود.
+                </p>
+            </div>
+
+            <form method="POST" action="{{ route('admin.launcher-releases.public-download') }}" class="p-5">
+                @csrf
+                @method('PUT')
+                <x-admin.field label="لینک مستقیم HTTPS نصب‌کننده لانچر"
+                               hint="مثال: https://download.example.com/MWLauncher-Setup.exe">
+                    <x-admin.form.input name="launcher_public_download_url" type="url" dir="ltr"
+                                        placeholder="https://download.example.com/MWLauncher-Setup.exe"
+                                        value="{{ old('launcher_public_download_url', $publicDownloadUrl) }}" />
+                </x-admin.field>
+
+                <div class="mt-5 flex flex-wrap items-center gap-3">
+                    <x-admin.form.button type="submit" variant="dark" size="lg">
+                        ذخیره لینک دانلود عمومی
+                    </x-admin.form.button>
+                    @if(filled($publicDownloadUrl))
+                        <a href="{{ $publicDownloadUrl }}" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center rounded-xl border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700">
+                            بررسی لینک فعلی
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </section>
+
         <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
                 <h1 class="text-base font-black text-slate-900">مدیریت آپدیت MW Launcher</h1>

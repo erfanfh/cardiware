@@ -47,6 +47,10 @@ class GeneralSettings extends BaseSettings
         'aqayepardakht_sandbox',
 
         'goftino_code',
+
+        // Public installer shown on /launcher and launcher bridge pages.
+        // This is intentionally separate from launcher update packages.
+        'launcher_public_download_url',
     ];
 
     protected array $casts = [

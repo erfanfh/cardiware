@@ -10,7 +10,15 @@ class LauncherLandingController extends Controller
     public function __invoke(): View
     {
         return view('front.launcher.landing', [
-            'downloadUrl' => config('launcher.public_download_url'),
+            'downloadUrl' => $this->publicDownloadUrl(),
         ]);
+    }
+
+    private function publicDownloadUrl(): ?string
+    {
+        $stored = trim((string)get_setting('general', 'launcher_public_download_url', ''));
+        $fallback = trim((string)config('launcher.public_download_url', ''));
+
+        return $stored !== '' ? $stored : ($fallback !== '' ? $fallback : null);
     }
 }
