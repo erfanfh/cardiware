@@ -41,5 +41,6 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         require __DIR__ . '/front/loyalty.php';
         require __DIR__ . '/front/support.php';
         require __DIR__ . '/front/raffle.php';
+        require __DIR__ . '/front/poll.php';
         require __DIR__ . '/front/content.php'; // This must be the last
     });

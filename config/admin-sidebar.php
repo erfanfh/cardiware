@@ -69,6 +69,26 @@ return [
     ],
 
     [
+        'label' => 'نظرسنجی‌ها',
+        'route' => 'admin.polls.index',
+        'icon' => 'icons.chart-03',
+        'children' => [
+            [
+                'label' => 'لیست نظرسنجی‌ها',
+                'route' => 'admin.polls.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'poll.list',
+            ],
+            [
+                'label' => 'ایجاد نظرسنجی',
+                'route' => 'admin.polls.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'poll.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'پشتیبانی',
         'icon' => 'icons.customer-support',
         'badge' => 'open_tickets',

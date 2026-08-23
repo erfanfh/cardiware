@@ -107,6 +107,10 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(6)->by('raffle-claim:'.($request->user()?->getAuthIdentifier() ?: $request->ip()));
         });
 
+        RateLimiter::for('poll-votes', function (\Illuminate\Http\Request $request): Limit {
+            return Limit::perMinute(10)->by('poll-vote:'.($request->user()?->getAuthIdentifier() ?: $request->ip()));
+        });
+
         RateLimiter::for(
             'payment-callback',
             function (\Illuminate\Http\Request $request): Limit {

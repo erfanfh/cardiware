@@ -31,4 +31,5 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/icon.php';
         require __DIR__ . '/admin/launcher.php';
         require __DIR__ . '/admin/raffle.php';
+        require __DIR__ . '/admin/poll.php';
     });
