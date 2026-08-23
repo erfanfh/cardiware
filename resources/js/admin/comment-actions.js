@@ -1,10 +1,13 @@
-document.addEventListener('alpine:init', () => {
-    Alpine.data('adminCommentActions', (
+const registerAdminCommentActions = () => {
+    window.Alpine.data('adminCommentActions', (
         {
             bulkActionUrl = '',
             csrfToken = '',
             initialStatuses = {},
             initialPins = {},
+            initialContents = {},
+            initialRatings = {},
+            initialEditMeta = {},
         }
     ) => ({
         bulkActionUrl,
@@ -30,6 +33,24 @@ document.addEventListener('alpine:init', () => {
             )
         ),
 
+        rowContents: Object.fromEntries(
+            Object.entries(initialContents).map(
+                ([id, content]) => [Number(id), String(content || '')]
+            )
+        ),
+
+        rowRatings: Object.fromEntries(
+            Object.entries(initialRatings).map(
+                ([id, rating]) => [Number(id), rating === null ? null : Number(rating)]
+            )
+        ),
+
+        rowEditMeta: Object.fromEntries(
+            Object.entries(initialEditMeta).map(
+                ([id, meta]) => [Number(id), meta || {}]
+            )
+        ),
+
         isProcessing(id) {
             return this.processingIds.includes(Number(id));
         },
@@ -44,6 +65,22 @@ document.addEventListener('alpine:init', () => {
 
         setPinned(id, isPinned) {
             this.rowPins[Number(id)] = Boolean(isPinned);
+        },
+
+        commentContent(id) {
+            return this.rowContents[Number(id)] || '';
+        },
+
+        setCommentContent(id, content) {
+            this.rowContents[Number(id)] = String(content || '');
+        },
+
+        commentRating(id) {
+            return Number(this.rowRatings[Number(id)] || 0);
+        },
+
+        setCommentRating(id, rating) {
+            this.rowRatings[Number(id)] = rating === null ? null : Number(rating);
         },
 
         rowStatus(id) {
@@ -276,6 +313,123 @@ document.addEventListener('alpine:init', () => {
             replyUrl: '',
         },
 
+        editModal: {
+            open: false,
+            processing: false,
+            id: null,
+            author: '',
+            content: '',
+            rating: null,
+            hoverRating: 0,
+            canEditRating: false,
+            error: null,
+            updateUrl: '',
+        },
+
+        openEditModal(commentId) {
+            const id = Number(commentId);
+            const meta = this.rowEditMeta[id] || {};
+
+            if (this.isProcessing(id)) {
+                return;
+            }
+
+            this.editModal.open = true;
+            this.editModal.processing = false;
+            this.editModal.id = id;
+            this.editModal.author = meta.author || 'کاربر';
+            this.editModal.content = this.commentContent(id);
+            this.editModal.canEditRating = Boolean(meta.can_edit_rating);
+            this.editModal.rating = this.editModal.canEditRating
+                ? (this.commentRating(id) || null)
+                : null;
+            this.editModal.hoverRating = 0;
+            this.editModal.error = null;
+            this.editModal.updateUrl = meta.update_url || '';
+
+            this.$nextTick(() => this.$refs.editCommentContent?.focus());
+        },
+
+        closeEditModal(force = false) {
+            if (this.editModal.processing && !force) {
+                return;
+            }
+
+            this.editModal.open = false;
+            this.editModal.processing = false;
+            this.editModal.id = null;
+            this.editModal.author = '';
+            this.editModal.content = '';
+            this.editModal.rating = null;
+            this.editModal.hoverRating = 0;
+            this.editModal.canEditRating = false;
+            this.editModal.error = null;
+            this.editModal.updateUrl = '';
+        },
+
+        async submitEdit() {
+            const id = Number(this.editModal.id);
+            const content = String(this.editModal.content || '').trim();
+
+            if (content.length < 2) {
+                this.editModal.error = 'متن دیدگاه باید حداقل ۲ کاراکتر باشد.';
+                return;
+            }
+
+            if (this.editModal.canEditRating && !this.editModal.rating) {
+                this.editModal.error = 'لطفاً امتیاز دیدگاه را انتخاب کنید.';
+                return;
+            }
+
+            this.editModal.processing = true;
+            this.editModal.error = null;
+
+            try {
+                const formData = new FormData();
+                formData.append('_method', 'PATCH');
+                formData.append('content', content);
+
+                if (this.editModal.canEditRating) {
+                    formData.append('rating_stars', String(this.editModal.rating));
+                }
+
+                const response = await fetch(this.editModal.updateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                    },
+                    body: formData,
+                });
+
+                const data = await this.parseJsonResponse(response);
+
+                if (!response.ok || !data?.ok) {
+                    const validationMessage = data?.errors
+                        ? Object.values(data.errors).flat()[0]
+                        : null;
+
+                    throw new Error(
+                        validationMessage ||
+                        data?.message ||
+                        'ویرایش دیدگاه با خطا مواجه شد.'
+                    );
+                }
+
+                this.setCommentContent(id, data.comment?.content || content);
+                this.setCommentRating(id, data.comment?.rating_stars ?? null);
+                this.notifySuccess(data.message || 'دیدگاه با موفقیت ویرایش شد.');
+                this.closeEditModal(true);
+            } catch (error) {
+                console.error(error);
+                this.editModal.error = error.message || 'ویرایش دیدگاه با خطا مواجه شد.';
+                this.notifyError(this.editModal.error);
+            } finally {
+                this.editModal.processing = false;
+            }
+        },
+
         openReplyModal(payload) {
             this.replyModal.open = true;
             this.replyModal.processing = false;
@@ -366,4 +520,10 @@ document.addEventListener('alpine:init', () => {
             }
         },
     }));
-});
+};
+
+if (window.Alpine) {
+    registerAdminCommentActions();
+} else {
+    document.addEventListener('alpine:init', registerAdminCommentActions, {once: true});
+}

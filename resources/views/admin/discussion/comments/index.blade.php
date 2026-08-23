@@ -19,6 +19,28 @@
                 $comment->id => (bool) $comment->is_pinned,
             ])
             ->all();
+
+        $commentContents = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => $comment->content,
+            ])
+            ->all();
+
+        $commentRatings = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => $comment->isRoot() ? $comment->rating_stars : null,
+            ])
+            ->all();
+
+        $commentEditMeta = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => [
+                    'author' => $comment->display_name,
+                    'can_edit_rating' => $comment->isRoot(),
+                    'update_url' => route('admin.comments.update', $comment),
+                ],
+            ])
+            ->all();
     @endphp
 
     <div
@@ -29,6 +51,9 @@
                 csrfToken: @js(csrf_token()),
                 initialStatuses: @js($commentStatuses),
                 initialPins: @js($commentPinnedStates),
+                initialContents: @js($commentContents),
+                initialRatings: @js($commentRatings),
+                initialEditMeta: @js($commentEditMeta),
             })
         }"
         class="space-y-4"
@@ -218,6 +243,8 @@
                 </div>
             </div>
         </div>
+
+        @include('admin.discussion.comments.partials.edit-modal')
     </div>
 @endsection
 

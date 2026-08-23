@@ -219,11 +219,47 @@
                                 </span>
                             </div>
 
-                            <div class="text-sm leading-7 text-slate-700">
-                                {!! nl2br(htmlspecialchars(e($comment->content))) !!}
-                            </div>
+                            @if($comment->isRoot())
+                                <div class="mb-2 flex flex-wrap items-center gap-2">
+                                    <div class="flex items-center gap-0.5" aria-label="امتیاز دیدگاه">
+                                        @for($n = 1; $n <= 5; $n++)
+                                            <svg
+                                                viewBox="0 0 20 20"
+                                                class="h-4 w-4 transition-colors"
+                                                :class="commentRating({{ $comment->id }}) >= {{ $n }} ? 'text-amber-400' : 'text-slate-200'"
+                                                aria-hidden="true"
+                                            >
+                                                <path
+                                                    fill="currentColor"
+                                                    d="M10 15.27l-5.18 2.73 0.99-5.82L1.62 7.9l5.84-.85L10 1.75l2.54 5.3 5.84.85-4.19 4.28.99 5.82z"
+                                                />
+                                            </svg>
+                                        @endfor
+                                    </div>
+
+                                    <span
+                                        class="text-[11px] font-bold text-slate-400"
+                                        x-text="commentRating({{ $comment->id }}) ? `${commentRating({{ $comment->id }})} از ۵` : 'بدون امتیاز'"
+                                    ></span>
+                                </div>
+                            @endif
+
+                            <div
+                                class="whitespace-pre-line text-sm leading-7 text-slate-700"
+                                x-text="commentContent({{ $comment->id }})"
+                            >{{ $comment->content }}</div>
 
                             <x-admin.list.row-actions x-cloak class="mt-4">
+                                <x-admin.list.action
+                                    tag="button"
+                                    type="button"
+                                    x-on:click="openEditModal({{ $comment->id }})"
+                                    x-bind:disabled="isProcessing({{ $comment->id }})"
+                                >
+                                    ویرایش
+                                </x-admin.list.action>
+
+                                <span class="text-slate-300">|</span>
                                 {{-- Pending: approve / reject / delete / reply --}}
                                 <template x-if="rowStatus({{ $comment->id }}) === 'pending'">
                                     <div class="inline-flex items-center gap-2">
@@ -351,7 +387,7 @@
                                     x-on:click="openReplyModal({
                                         id: {{ $comment->id }},
                                         author: @js($comment->display_name),
-                                        content: @js($comment->content),
+                                        content: commentContent({{ $comment->id }}),
                                         replyUrl: @js(route('admin.comments.reply', $comment)),
                                     })"
                                     x-bind:disabled="isProcessing({{ $comment->id }})"
