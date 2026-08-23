@@ -23,6 +23,7 @@ class RemoteDownloadFileMetadataResolver
         string $url,
     ): array {
         $this->ensureSafeSourceUrl($url);
+        $this->ensureConfiguredFileNameMatchesSource($file, $url);
 
         $urlHash = hash('sha256', $url);
 
@@ -95,6 +96,41 @@ class RemoteDownloadFileMetadataResolver
         )));
 
         if ($host === '' || ($allowedHosts !== [] && !in_array($host, $allowedHosts, true))) {
+            throw new PurchaseAccessFileUnavailableException();
+        }
+    }
+
+    /**
+     * The launcher manifest treats file_name as the physical archive name, not
+     * merely as a friendly Content-Disposition alias. Rejecting a mismatch here
+     * prevents an existing remote object from silently being saved under a new
+     * multipart archive name.
+     */
+    private function ensureConfiguredFileNameMatchesSource(Model $file, string $url): void
+    {
+        if (!(bool)config('launcher.require_source_file_name_match', true)) {
+            return;
+        }
+
+        $configuredName = basename(str_replace(
+            '\\',
+            '/',
+            trim((string)$file->getAttribute('file_name')),
+        ));
+
+        if ($configuredName === '') {
+            return;
+        }
+
+        $sourcePath = rawurldecode((string)parse_url($url, PHP_URL_PATH));
+        $sourceName = basename(str_replace('\\', '/', $sourcePath));
+
+        if (
+            $sourceName === ''
+            || $sourceName === '.'
+            || $sourceName === '/'
+            || !hash_equals($sourceName, $configuredName)
+        ) {
             throw new PurchaseAccessFileUnavailableException();
         }
     }

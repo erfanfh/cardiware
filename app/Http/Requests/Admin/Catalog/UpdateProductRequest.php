@@ -450,10 +450,31 @@ class UpdateProductRequest extends FormRequest
                             'URL فایل لانچر باید HTTPS باشد.'
                         );
                     }
+
+                    if (filled($file['file_name'] ?? null) && filled($file['url'] ?? null)) {
+                        $configuredFileName = basename(str_replace(
+                            '\\',
+                            '/',
+                            trim((string)$file['file_name'])
+                        ));
+                        $sourceFileName = basename(str_replace(
+                            '\\',
+                            '/',
+                            rawurldecode((string)parse_url((string)$file['url'], PHP_URL_PATH))
+                        ));
+
+                        if ($sourceFileName === '' || !hash_equals($sourceFileName, $configuredFileName)) {
+                            $validator->errors()->add(
+                                "{$prefix}.files.{$fileIndex}.file_name",
+                                'نام فایل باید دقیقاً با نام واقعی فایل در انتهای URL دانلود یکسان باشد.'
+                            );
+                        }
+                    }
                 }
 
                 if ($this->isSplitArchivePayload($manifest, $files) && $files !== []) {
                     $partNumbers = [];
+                    $multipartBaseName = null;
 
                     foreach ($files as $fileIndex => $file) {
                         $partNumber = filter_var(
@@ -469,6 +490,38 @@ class UpdateProductRequest extends FormRequest
                             );
                         } else {
                             $partNumbers[] = (int)$partNumber;
+                        }
+
+                        $fileName = basename(str_replace(
+                            '\\',
+                            '/',
+                            trim((string)($file['file_name'] ?? ''))
+                        ));
+                        $matches = [];
+
+                        if (preg_match('/^(.*\.7z)\.(\d{3,})$/i', $fileName, $matches) !== 1) {
+                            $validator->errors()->add(
+                                "{$prefix}.files.{$fileIndex}.file_name",
+                                'در حالت چندپارتی نام همه فایل‌ها باید مانند package.7z.001 باشد.'
+                            );
+                        } else {
+                            $baseName = strtolower($matches[1]);
+                            $suffixPartNumber = (int)$matches[2];
+                            $multipartBaseName ??= $baseName;
+
+                            if ($multipartBaseName !== $baseName) {
+                                $validator->errors()->add(
+                                    "{$prefix}.files.{$fileIndex}.file_name",
+                                    'تمام پارت‌ها باید نام پایه یکسان داشته باشند.'
+                                );
+                            }
+
+                            if ($partNumber !== false && $suffixPartNumber !== (int)$partNumber) {
+                                $validator->errors()->add(
+                                    "{$prefix}.files.{$fileIndex}.part_number",
+                                    'شماره پارت باید با شماره انتهای نام فایل یکسان باشد.'
+                                );
+                            }
                         }
 
                         if (!filter_var(

@@ -54,6 +54,13 @@ return [
         )
     ),
 
+    // file_name in the admin manifest must be the exact physical file name at
+    // the end of the source URL. Disable only for providers with opaque URLs.
+    'require_source_file_name_match' => (bool)env(
+        'LAUNCHER_REQUIRE_SOURCE_FILE_NAME_MATCH',
+        true
+    ),
+
     /*
      * Renewable server-side lease. It is not the maximum duration of a large
      * download. Every authenticated prepare request revalidates the purchase,

@@ -315,6 +315,20 @@ class BuildPurchaseAccessManifestAction
                     "File {$file->id} does not have a download source."
                 );
             }
+
+            if ((bool)config('launcher.require_source_file_name_match', true)) {
+                $sourceFileName = basename(str_replace(
+                    '\\',
+                    '/',
+                    rawurldecode((string)parse_url((string)$file->url, PHP_URL_PATH))
+                ));
+
+                if ($sourceFileName === '' || !hash_equals($sourceFileName, $declaredFileName)) {
+                    throw new ProductManifestUnavailableException(
+                        "File {$file->id} name does not match its remote source name."
+                    );
+                }
+            }
         }
 
         if ($manifest->download_type !== ProductManifestDownloadTypeEnum::SPLIT_ARCHIVE) {
@@ -379,6 +393,34 @@ class BuildPurchaseAccessManifestAction
             throw new ProductManifestUnavailableException(
                 'Split archive part numbers must be unique and contiguous, starting from 1.'
             );
+        }
+
+        $multipartBaseName = null;
+
+        foreach ($files as $file) {
+            $fileName = trim((string)$file->file_name);
+            $matches = [];
+
+            if (preg_match('/^(.*\.7z)\.(\d{3,})$/i', $fileName, $matches) !== 1) {
+                throw new ProductManifestUnavailableException(
+                    "Split archive file {$file->id} must use a multipart name such as package.7z.001."
+                );
+            }
+
+            $baseName = strtolower($matches[1]);
+            $multipartBaseName ??= $baseName;
+
+            if ($multipartBaseName !== $baseName) {
+                throw new ProductManifestUnavailableException(
+                    'Every split archive part must use the same base file name.'
+                );
+            }
+
+            if ((int)$matches[2] !== (int)$file->part_number) {
+                throw new ProductManifestUnavailableException(
+                    "Split archive file {$file->id} suffix does not match its part number."
+                );
+            }
         }
     }
 
