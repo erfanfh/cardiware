@@ -120,6 +120,15 @@
                         return fallback;
                     },
 
+                    normalizeNullableInteger(value) {
+                        if (value === null || value === undefined || value === '') {
+                            return null;
+                        }
+
+                        const number = Number(value);
+                        return Number.isSafeInteger(number) && number >= 0 ? number : null;
+                    },
+
                     defaultSaleItemManifest() {
                         return {
                             /*
@@ -170,6 +179,8 @@
                                 ask_before_delete_archives: true,
                                 clean_temp_after_install: true,
                                 create_desktop_shortcut: false,
+                                required_install_space_bytes: null,
+                                estimated_installed_size_bytes: null,
                             },
                         };
                     },
@@ -354,6 +365,12 @@
                                         installOptions.create_desktop_shortcut,
                                         false
                                     ),
+
+                                required_install_space_bytes:
+                                    this.normalizeNullableInteger(installOptions.required_install_space_bytes),
+
+                                estimated_installed_size_bytes:
+                                    this.normalizeNullableInteger(installOptions.estimated_installed_size_bytes),
                             },
                         };
                     },

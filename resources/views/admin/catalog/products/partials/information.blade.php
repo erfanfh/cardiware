@@ -172,6 +172,8 @@
             'ask_before_delete_archives' => true,
             'clean_temp_after_install' => true,
             'create_desktop_shortcut' => false,
+            'required_install_space_bytes' => null,
+            'estimated_installed_size_bytes' => null,
         ],
     ];
 

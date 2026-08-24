@@ -47,6 +47,32 @@
             }
         }
 
+        @keyframes ctaSheen {
+            0%, 55% { transform: translateX(-180%) rotate(15deg); opacity: 0; }
+            65% { opacity: .75; }
+            85%, 100% { transform: translateX(420%) rotate(15deg); opacity: 0; }
+        }
+
+        .cta-sheen {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .cta-sheen::after {
+            content: '';
+            position: absolute;
+            top: -60%;
+            bottom: -60%;
+            left: 0;
+            width: 28%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+            transform: translateX(-180%) rotate(15deg);
+            animation: ctaSheen 3.8s ease-in-out infinite;
+        }
+
         .animate-fade-up {
             animation: fadeUp .7s ease both;
         }
@@ -114,17 +140,10 @@
         }
 
         .text-shine {
-            background-image: linear-gradient(100deg,
-            #ffffff 0%, #ffffff 38%,
-            #fed7aa 46%, #f97316 50%, #fed7aa 54%,
-            #ffffff 62%, #ffffff 100%);
-            background-size: 250% 100%;
-            background-position: 200% 0;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            color: transparent;
-            animation: textShine 3.2s linear infinite;
+            background: none;
+            -webkit-text-fill-color: #ffffff;
+            color: #ffffff;
+            animation: none;
         }
 
         .feature-card {
@@ -219,16 +238,16 @@
                         cursorApp = module.default(canvas, {
                             bloom: {
                                 threshold: 0.25,
-                                strength: 0.8,
-                                radius: 0.3
+                                strength: 0.4,
+                                radius: 0.2
                             },
                             tubes: {
-                                count: 10,
-                                minTubularSegments: 24,
-                                maxTubularSegments: 72,
+                                count: 5,
+                                minTubularSegments: 12,
+                                maxTubularSegments: 32,
                                 colors: ['#5e72e4', '#8965e0', '#f5365c'],
                                 lights: {
-                                    intensity: 80,
+                                    intensity: 35,
                                     colors: ['#21d4fd', '#b721ff', '#f4d03f', '#11cdef']
                                 }
                             }
@@ -300,7 +319,7 @@
                 </p>
 
                 <p class="animate-fade-up delay-200 m-0 max-w-xl select-none text-xs leading-7 text-slate-300 [text-shadow:0_0_20px_rgba(0,0,0,.9)] sm:text-sm md:text-base">
-                    تجربه‌ای جدید و آسان از نصب محصولات
+                    تجربه ای جدید و آسان و سریع از نصب پچ ها و بازی ها فقط با 1 کلیک
                 </p>
 
                 <div class="animate-fade-up delay-300 mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -308,8 +327,9 @@
                         <a href="{{ $downloadUrl }}"
                            data-no-tubes-click
                            class="cta-ring relative inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-600 active:bg-brand-700 sm:px-8 sm:py-3.5 sm:text-base">
-                            دانلود لانچر ویندوز
-                            <span aria-hidden="true">↓</span>
+                            <span class="relative z-10">دانلود لانچر ویندوز</span>
+                            <span class="relative z-10" aria-hidden="true">↓</span>
+                            <span class="cta-sheen" aria-hidden="true"></span>
                         </a>
                     @else
                         <span data-no-tubes-click
@@ -326,12 +346,8 @@
                     </a>
                 </div>
 
-                <p class="animate-fade-up delay-300 pointer-events-none m-0 mt-2 select-none text-[11px] text-slate-400/60 sm:text-xs">
-                    برای تغییر افکت کلیک کن
-                </p>
-
                 <div
-                    class="animate-fade-up delay-300 mt-6 grid w-full max-w-4xl grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
+                    class="animate-fade-up delay-300 mt-6 grid w-full max-w-5xl grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6">
 
                     <div class="feature-card">
                         <svg class="feature-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -379,6 +395,17 @@
                                 d="M10 4h4a1 1 0 0 1 1 1v2.2a2 2 0 1 0 0 3.6V13a1 1 0 0 1-1 1h-2.2a2 2 0 1 1-3.6 0H6a1 1 0 0 1-1-1V9a2 2 0 1 0 0-3.6V5a1 1 0 0 1 1-1h2.2a2 2 0 1 1 3.6 0z"/>
                         </svg>
                         <span class="feature-card-label">سیستم مادمنیجر پچ‌ها</span>
+                    </div>
+
+                    <div class="feature-card">
+                        <svg class="feature-card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/>
+                            <path d="M21 3v5h-5"/>
+                            <path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/>
+                            <path d="M3 21v-5h5"/>
+                        </svg>
+                        <span class="feature-card-label">آپدیت اتوماتیک لانچر</span>
                     </div>
 
                 </div>

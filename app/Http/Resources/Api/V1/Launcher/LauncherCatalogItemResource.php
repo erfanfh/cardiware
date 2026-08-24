@@ -55,6 +55,23 @@ class LauncherCatalogItemResource extends JsonResource
                 $hasAccess && $this->relationLoaded('manifest') && $this->manifest !== null,
                 fn() => $this->manifest->resolvedCapabilities(),
             ),
+            // Installation metadata is intentionally exposed only to owners.
+            // The launcher uses these values for preflight disk checks and
+            // must never reveal archive/install requirements for locked items.
+            'installation' => $this->when(
+                $hasAccess && $this->relationLoaded('manifest') && $this->manifest !== null,
+                fn() => [
+                    'options' => $this->manifest->resolvedInstallOptions(),
+                    'required_install_space_bytes' => data_get(
+                        $this->manifest->resolvedInstallOptions(),
+                        'required_install_space_bytes'
+                    ),
+                    'estimated_installed_size_bytes' => data_get(
+                        $this->manifest->resolvedInstallOptions(),
+                        'estimated_installed_size_bytes'
+                    ),
+                ],
+            ),
             'support' => [
                 'enabled' => $hasAccess && (bool)$this->launcher_support_enabled,
                 'url' => $hasAccess && $this->launcher_support_enabled

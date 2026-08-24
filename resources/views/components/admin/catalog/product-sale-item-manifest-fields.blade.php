@@ -51,6 +51,8 @@
             'ask_before_delete_archives' => true,
             'clean_temp_after_install' => true,
             'create_desktop_shortcut' => false,
+            'required_install_space_bytes' => null,
+            'estimated_installed_size_bytes' => null,
         ],
     ];
 
@@ -205,6 +207,29 @@
                         class="direction-ltr"
                         placeholder="بدون رمز"
                     />
+                </x-admin.field>
+            </div>
+        </div>
+
+        <div class="mt-4 grid grid-cols-12 gap-4">
+            <div class="col-span-12 md:col-span-6">
+                @if($isSimple)
+                    <input type="hidden" name="{{ $staticName('install_options.required_install_space_bytes') }}" x-bind:value="{{ $state }}.install_options.required_install_space_bytes">
+                @else
+                    <input type="hidden" x-bind:name="{{ $dynamicName('install_options.required_install_space_bytes') }}" x-bind:value="{{ $state }}.install_options.required_install_space_bytes">
+                @endif
+                <x-admin.field label="فضای موردنیاز نصب (Byte)" hint="حداقل فضای آزاد لازم؛ خالی یعنی تشخیص خودکار.">
+                    <x-admin.form.input type="number" min="0" x-model="{{ $state }}.install_options.required_install_space_bytes" class="direction-ltr" placeholder="مثلاً 150000000000" />
+                </x-admin.field>
+            </div>
+            <div class="col-span-12 md:col-span-6">
+                @if($isSimple)
+                    <input type="hidden" name="{{ $staticName('install_options.estimated_installed_size_bytes') }}" x-bind:value="{{ $state }}.install_options.estimated_installed_size_bytes">
+                @else
+                    <input type="hidden" x-bind:name="{{ $dynamicName('install_options.estimated_installed_size_bytes') }}" x-bind:value="{{ $state }}.install_options.estimated_installed_size_bytes">
+                @endif
+                <x-admin.field label="حجم تقریبی نصب‌شده (Byte)" hint="برای نمایش به کاربر؛ خالی یعنی اندازه واقعی پس از نصب محاسبه شود.">
+                    <x-admin.form.input type="number" min="0" x-model="{{ $state }}.install_options.estimated_installed_size_bytes" class="direction-ltr" placeholder="مثلاً 120000000000" />
                 </x-admin.field>
             </div>
         </div>

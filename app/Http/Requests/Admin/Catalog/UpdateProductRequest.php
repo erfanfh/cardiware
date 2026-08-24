@@ -218,6 +218,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.install_options.ask_before_delete_archives' => ['nullable', 'boolean'],
             'sale_items.*.manifest.install_options.clean_temp_after_install' => ['nullable', 'boolean'],
             'sale_items.*.manifest.install_options.create_desktop_shortcut' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.install_options.required_install_space_bytes' => ['nullable', 'integer', 'min:0'],
+            'sale_items.*.manifest.install_options.estimated_installed_size_bytes' => ['nullable', 'integer', 'min:0'],
 
             'sale_items.*.discount' => ['nullable', 'array'],
             'sale_items.*.discount.id' => ['nullable', 'integer'],
@@ -1197,8 +1199,21 @@ class UpdateProductRequest extends FormRequest
                 'ask_before_delete_archives' => $this->normalizeBooleanInput(data_get($installOptions, 'ask_before_delete_archives'), true),
                 'clean_temp_after_install' => $this->normalizeBooleanInput(data_get($installOptions, 'clean_temp_after_install'), true),
                 'create_desktop_shortcut' => $this->normalizeBooleanInput(data_get($installOptions, 'create_desktop_shortcut'), false),
+                'required_install_space_bytes' => $this->normalizeByteSizeInput(data_get($installOptions, 'required_install_space_bytes')),
+                'estimated_installed_size_bytes' => $this->normalizeByteSizeInput(data_get($installOptions, 'estimated_installed_size_bytes')),
             ],
         ];
+    }
+
+    private function normalizeByteSizeInput(mixed $value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        $value = filter_var($value, FILTER_VALIDATE_INT);
+
+        return $value !== false && $value >= 0 ? $value : null;
     }
 
     private function normalizeLauncherModInstallTarget(mixed $value): string
