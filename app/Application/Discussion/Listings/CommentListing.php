@@ -4,6 +4,7 @@ namespace App\Application\Discussion\Listings;
 
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
+use App\Domain\Video\Models\Video;
 use App\Infrastructure\Support\Listings\BaseListing;
 
 class CommentListing extends BaseListing
@@ -87,6 +88,7 @@ class CommentListing extends BaseListing
         $modelClass = match ($value) {
             'post' => Post::class,
             'product' => Product::class,
+            'video' => Video::class,
             default => null,
         };
 

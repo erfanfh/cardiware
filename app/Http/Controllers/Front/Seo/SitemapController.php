@@ -89,6 +89,16 @@ class SitemapController extends Controller
         return $this->xml("product-sitemap{$page}.xml");
     }
 
+    public function videos(): Response
+    {
+        return $this->xml('video-sitemap.xml');
+    }
+
+    public function paginatedVideos(int $page): Response
+    {
+        return $this->xml("video-sitemap{$page}.xml");
+    }
+
     private function xml(string $filename): Response
     {
         abort_unless($this->storage->exists($filename), 404);

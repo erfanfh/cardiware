@@ -12,6 +12,7 @@ use App\Application\Seo\Generators\Sitemap\ProductStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProjectStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\RaffleStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\TagStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\VideoStaticSitemapGenerator;
 use App\Application\Seo\Resolvers\AuthorSeoResolver;
 use App\Application\Seo\Resolvers\AuthSeoResolver;
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
@@ -27,6 +28,7 @@ use App\Application\Seo\Resolvers\ProjectSeoResolver;
 use App\Application\Seo\Resolvers\RaffleSeoResolver;
 use App\Application\Seo\Resolvers\SearchSeoResolver;
 use App\Application\Seo\Resolvers\StoreSeoResolver;
+use App\Application\Seo\Resolvers\VideoSeoResolver;
 use App\Application\Seo\Support\SeoManager;
 use App\Application\Seo\Support\SeoResolverRegistry;
 use App\Application\Seo\Support\Sitemap\SitemapStorage;
@@ -38,6 +40,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Project\Models\Project;
 use App\Domain\Raffle\Models\DrawCampaign;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Video\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -59,6 +62,7 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(ProjectListSeoResolver::class),
                 $app->make(ProductListSeoResolver::class),
                 $app->make(RaffleSeoResolver::class),
+                $app->make(VideoSeoResolver::class),
 
                 $app->make(AuthorSeoResolver::class),
                 $app->make(PostTagSeoResolver::class),
@@ -90,6 +94,7 @@ class SeoServiceProvider extends ServiceProvider
             AuthorStaticSitemapGenerator::class,
             ProductStaticSitemapGenerator::class,
             RaffleStaticSitemapGenerator::class,
+            VideoStaticSitemapGenerator::class,
         ], StaticSitemapGeneratorInterface::class);
 
         $this->app->bind(
@@ -134,5 +139,9 @@ class SeoServiceProvider extends ServiceProvider
         DrawCampaign::saved($markSitemapsDirty);
         DrawCampaign::deleted($markSitemapsDirty);
         DrawCampaign::restored($markSitemapsDirty);
+
+        Video::saved($markSitemapsDirty);
+        Video::deleted($markSitemapsDirty);
+        Video::restored($markSitemapsDirty);
     }
 }

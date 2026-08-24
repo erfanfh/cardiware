@@ -25,6 +25,7 @@ use App\Domain\Launcher\Models\LauncherUpdateFile;
 use App\Domain\Support\Models\Ticket;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Domain\Video\Models\Video;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Request;
@@ -76,6 +77,7 @@ class AppServiceProvider extends ServiceProvider
             'product_addon' => ProductAddon::class,
             'order' => Order::class,
             'wallet_top_up' => WalletTopUp::class,
+            'video' => Video::class,
         ]);
 
         RateLimiter::for('api', function (\Illuminate\Http\Request $request): Limit {

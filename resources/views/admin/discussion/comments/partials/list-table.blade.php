@@ -61,12 +61,14 @@
                     $commentableTypeLabel = match ($resolvedCommentableClass) {
                         \App\Domain\Content\Models\Post::class => 'نوشته',
                         \App\Domain\Catalog\Models\Product::class => 'محصول',
+                        \App\Domain\Video\Models\Video::class => 'ویدیو',
                         default => 'محتوا',
                     };
 
                     $commentableTypeBadgeClass = match ($resolvedCommentableClass) {
                         \App\Domain\Content\Models\Post::class => 'border-sky-200 bg-sky-50 text-sky-700',
                         \App\Domain\Catalog\Models\Product::class => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                        \App\Domain\Video\Models\Video::class => 'border-orange-200 bg-orange-50 text-orange-700',
                         default => 'border-slate-200 bg-slate-50 text-slate-600',
                     };
                 @endphp

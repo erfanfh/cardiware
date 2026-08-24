@@ -63,5 +63,10 @@ return [
             'route_pattern' => 'raffle-sitemap{page}.xml',
             'include_images' => true,
         ],
+        'video' => [
+            'enabled' => true,
+            'route_pattern' => 'video-sitemap{page}.xml',
+            'include_images' => true,
+        ],
     ],
 ];

@@ -12,12 +12,15 @@ enum SlugScopeEnum: string
     case PRODUCT = 'product';
     case RAFFLE = 'raffle';
     case STORE = 'store';
+    case VIDEO = 'video';
 
     case TAXONOMY__POST_CATEGORY = 'taxonomy:post_category';
     case TAXONOMY__POST_TAG = 'taxonomy:post_tag';
     case TAXONOMY__PROJECT_TAG = 'taxonomy:project_tag';
     case TAXONOMY__PRODUCT_CATEGORY = 'taxonomy:product_category';
     case TAXONOMY__PRODUCT_TAG = 'taxonomy:product_tag';
+    case TAXONOMY__VIDEO_CATEGORY = 'taxonomy:video_category';
+    case TAXONOMY__VIDEO_TAG = 'taxonomy:video_tag';
 
     /**
      * Determine whether the given scope belongs to taxonomy scopes.
@@ -70,6 +73,8 @@ enum SlugScopeEnum: string
             TaxonomyKeyEnum::PROJECT_TAG => self::TAXONOMY__PROJECT_TAG,
             TaxonomyKeyEnum::PRODUCT_CATEGORY => self::TAXONOMY__PRODUCT_CATEGORY,
             TaxonomyKeyEnum::PRODUCT_TAG => self::TAXONOMY__PRODUCT_TAG,
+            TaxonomyKeyEnum::VIDEO_CATEGORY => self::TAXONOMY__VIDEO_CATEGORY,
+            TaxonomyKeyEnum::VIDEO_TAG => self::TAXONOMY__VIDEO_TAG,
         };
     }
 }

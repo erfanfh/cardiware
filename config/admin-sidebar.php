@@ -61,6 +61,18 @@ return [
     ],
 
     [
+        'label' => 'مودینگ تی‌وی',
+        'route' => 'admin.videos.index',
+        'icon' => 'icons.video-01',
+        'children' => [
+            ['label' => 'همه ویدیوها', 'route' => 'admin.videos.index', 'icon' => 'icons.menu-01', 'gate' => 'video.list'],
+            ['label' => 'افزودن ویدیو', 'route' => 'admin.videos.create', 'icon' => 'icons.plus-sign', 'gate' => 'video.create'],
+            ['label' => 'دسته‌ها', 'route' => 'admin.videos.categories.index', 'icon' => 'icons.tag-02', 'gate' => 'video.category'],
+            ['label' => 'برچسب‌ها', 'route' => 'admin.videos.tags.index', 'icon' => 'icons.tag-02', 'gate' => 'video.tag'],
+        ],
+    ],
+
+    [
         'label' => 'دیدگاه‌ها',
         'route' => 'admin.comments.index',
         'icon' => 'icons.comment-01',
