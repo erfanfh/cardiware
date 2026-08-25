@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Search;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
+use App\Domain\Video\Models\Video;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,7 @@ class SearchController extends Controller
 {
     public function index(Request $request): RedirectResponse|View
     {
-        $searchTerm = trim((string)$request->q);
+        $searchTerm = trim((string) $request->q);
 
         $hasExplicitType = $request->query->has('type');
 
@@ -25,9 +26,10 @@ class SearchController extends Controller
             'posts',
             'projects',
             'products',
+            'videos',
         ];
 
-        if (!in_array($requestedType, $allowedTypes, true)) {
+        if (! in_array($requestedType, $allowedTypes, true)) {
             return redirect()->route('search', [
                 'q' => $searchTerm,
             ]);
@@ -36,27 +38,31 @@ class SearchController extends Controller
         $postsQuery = $this->postsQuery($searchTerm);
         $projectsQuery = $this->projectsQuery($searchTerm);
         $productsQuery = $this->productsQuery($searchTerm);
+        $videosQuery = $this->videosQuery($searchTerm);
 
         $postsCount = (clone $postsQuery)->count();
         $projectsCount = (clone $projectsQuery)->count();
         $productsCount = (clone $productsQuery)->count();
+        $videosCount = (clone $videosQuery)->count();
 
         $type = $requestedType;
 
         if (
-            !$hasExplicitType
-            && $this->countByType($type, $postsCount, $projectsCount, $productsCount) === 0
+            ! $hasExplicitType
+            && $this->countByType($type, $postsCount, $projectsCount, $productsCount, $videosCount) === 0
         ) {
             $type = $this->resolveFirstAvailableType(
                 postsCount: $postsCount,
                 projectsCount: $projectsCount,
                 productsCount: $productsCount,
+                videosCount: $videosCount,
             );
         }
 
         $posts = null;
         $projects = null;
         $products = null;
+        $videos = null;
 
         if ($type === 'posts') {
             $posts = (clone $postsQuery)
@@ -66,7 +72,7 @@ class SearchController extends Controller
                     'categories',
                 ])
                 ->latest()
-                ->paginate((int)(get_setting('general', 'search_posts_count_settings') ?? 12))
+                ->paginate((int) (get_setting('general', 'search_posts_count_settings') ?? 12))
                 ->withQueryString();
 
             request()->attributes->set('seo_paginator', $posts);
@@ -75,7 +81,7 @@ class SearchController extends Controller
         if ($type === 'projects') {
             $projects = (clone $projectsQuery)
                 ->latest()
-                ->paginate((int)(get_setting('general', 'search_projects_count_settings') ?? 12))
+                ->paginate((int) (get_setting('general', 'search_projects_count_settings') ?? 12))
                 ->withQueryString();
 
             request()->attributes->set('seo_paginator', $projects);
@@ -89,20 +95,38 @@ class SearchController extends Controller
                     'store',
                 ])
                 ->latest()
-                ->paginate((int)(get_setting('general', 'search_products_count_settings') ?? 12))
+                ->paginate((int) (get_setting('general', 'search_products_count_settings') ?? 12))
                 ->withQueryString();
 
             request()->attributes->set('seo_paginator', $products);
+        }
+
+        if ($type === 'videos') {
+            $videos = (clone $videosQuery)
+                ->with([
+                    'cover.primaryVariant',
+                    'cover.variants',
+                    'categories',
+                    'author',
+                ])
+                ->withCount('approvedComments')
+                ->latest('published_at')
+                ->paginate((int) (get_setting('general', 'search_videos_count_settings') ?? 12))
+                ->withQueryString();
+
+            request()->attributes->set('seo_paginator', $videos);
         }
 
         return view('front.search', compact(
             'posts',
             'projects',
             'products',
+            'videos',
             'type',
             'postsCount',
             'projectsCount',
             'productsCount',
+            'videosCount',
             'searchTerm',
         ));
     }
@@ -110,32 +134,39 @@ class SearchController extends Controller
     private function postsQuery(string $searchTerm): Builder
     {
         return Post::query()
-            ->where('title', 'LIKE', '%' . $searchTerm . '%');
+            ->where('title', 'LIKE', '%'.$searchTerm.'%');
     }
 
     private function projectsQuery(string $searchTerm): Builder
     {
         return Project::query()
-            ->where('title', 'LIKE', '%' . $searchTerm . '%');
+            ->where('title', 'LIKE', '%'.$searchTerm.'%');
     }
 
     private function productsQuery(string $searchTerm): Builder
     {
         return Product::query()
-            ->where('title', 'LIKE', '%' . $searchTerm . '%');
+            ->where('title', 'LIKE', '%'.$searchTerm.'%');
+    }
+
+    private function videosQuery(string $searchTerm): Builder
+    {
+        return Video::query()
+            ->where('title', 'LIKE', '%'.$searchTerm.'%');
     }
 
     private function countByType(
         string $type,
-        int    $postsCount,
-        int    $projectsCount,
-        int    $productsCount,
-    ): int
-    {
+        int $postsCount,
+        int $projectsCount,
+        int $productsCount,
+        int $videosCount,
+    ): int {
         return match ($type) {
             'posts' => $postsCount,
             'products' => $productsCount,
             'projects' => $projectsCount,
+            'videos' => $videosCount,
             default => 0,
         };
     }
@@ -144,12 +175,13 @@ class SearchController extends Controller
         int $postsCount,
         int $projectsCount,
         int $productsCount,
-    ): string
-    {
+        int $videosCount,
+    ): string {
         return match (true) {
             $postsCount > 0 => 'posts',
             $productsCount > 0 => 'products',
             $projectsCount > 0 => 'projects',
+            $videosCount > 0 => 'videos',
             default => 'posts',
         };
     }

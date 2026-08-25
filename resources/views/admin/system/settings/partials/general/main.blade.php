@@ -63,7 +63,7 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="نتایج جستجو">
-        <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
             <x-admin.field
                 label="تعداد آیتم در صفحه نتایج جستجوی نوشته ها"
                 hint="بر اساس این تنظیمات تعیین کنید چه تعداد نوشته در صفحه جستجوی نوشته ها صفحه بندی شوند."
@@ -94,6 +94,17 @@
                     name="search_projects_count_settings"
                     placeholder="تعداد پروژه"
                     value="{{ get_setting('general', 'search_projects_count_settings') ?? 12 }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field
+                label="تعداد آیتم در صفحه نتایج جستجوی ویدیوها"
+                hint="بر اساس این تنظیمات تعیین کنید چه تعداد ویدیو در صفحه جستجوی ویدیوها صفحه بندی شوند."
+            >
+                <x-admin.form.input
+                    name="search_videos_count_settings"
+                    placeholder="تعداد ویدیو"
+                    value="{{ get_setting('general', 'search_videos_count_settings') ?? 12 }}"
                 />
             </x-admin.field>
         </div>
