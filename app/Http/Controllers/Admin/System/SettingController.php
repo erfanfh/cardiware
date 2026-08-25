@@ -370,6 +370,27 @@ class SettingController extends Controller
         return view('admin.system.settings.products');
     }
 
+    public function videos(): View
+    {
+        Gate::authorize('video.edit');
+
+        return view('admin.system.settings.videos');
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function storeVideos(Request $request): RedirectResponse
+    {
+        Gate::authorize('video.edit');
+
+        $this->storeSettings($request, 'videos');
+
+        return redirect()
+            ->route('admin.settings.videos')
+            ->with('success', 'تنظیمات صفحه ویدیوها با موفقیت ذخیره شد.');
+    }
+
     /**
      * @throws BindingResolutionException
      */

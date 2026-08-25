@@ -23,10 +23,15 @@ class VideoController extends Controller
     {
         $sort = $this->resolveSort($request);
         $videos = $this->applySort(
-            Video::query()->with(['cover', 'categories', 'author'])->withCount('approvedComments'),
+            Video::query()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
             $sort,
         )->paginate(12)->withQueryString();
-        $featured = Video::query()->featured()->with(['cover', 'categories'])->latest('published_at')->first();
+        $featured = Video::query()
+            ->featured()
+            ->with(['cover.primaryVariant', 'categories', 'author'])
+            ->withCount('approvedComments')
+            ->latest('published_at')
+            ->first();
         $categories = TaxonomyTerm::query()->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
             ->whereNull('parent_id')->withCount('videos')->orderBy('title')->get();
         $trendingVideos = $this->trendingVideos();
@@ -73,7 +78,7 @@ class VideoController extends Controller
         $term = $resolved->model;
         $sort = $this->resolveSort($request);
         $videos = $this->applySort(
-            $term->videosIncludingDescendants()->with(['cover', 'categories', 'author'])->withCount('approvedComments'),
+            $term->videosIncludingDescendants()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
             $sort,
         )->paginate(12)->withQueryString();
         request()->attributes->set('video_taxonomy_term', $term);
@@ -116,7 +121,7 @@ class VideoController extends Controller
     private function trendingVideos(): Collection
     {
         return $this->applySort(
-            Video::query()->with(['cover', 'categories'])->withCount('approvedComments'),
+            Video::query()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
             'popular',
         )->limit(4)->get();
     }

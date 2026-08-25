@@ -2,6 +2,11 @@
     <x-admin.filters.panel :open="$hasActiveFilters">
         <x-admin.filters.header title="مدیریت و جستجوی ویدیوها">
             <x-slot:actions>
+                @can('video.edit')
+                    <x-admin.form.button tag="a" href="{{ route('admin.settings.videos') }}" variant="secondary">
+                        تنظیمات صفحه ویدیوها
+                    </x-admin.form.button>
+                @endcan
                 <x-admin.form.button tag="a" href="{{ route('admin.videos.create') }}" variant="solid">
                     + افزودن ویدیوی جدید
                 </x-admin.form.button>

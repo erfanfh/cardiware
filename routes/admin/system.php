@@ -29,6 +29,8 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('posts', 'storePosts')->name('posts.store');
     Route::get('products', 'products')->name('products');
     Route::put('products', 'storeProducts')->name('products.store');
+    Route::get('videos', 'videos')->name('videos');
+    Route::put('videos', 'storeVideos')->name('videos.store');
     Route::get('ticket', 'ticket')->name('ticket');
     Route::put('ticket', 'storeTicket')->name('ticket.store');
 });
