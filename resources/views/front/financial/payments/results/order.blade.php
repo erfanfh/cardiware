@@ -358,7 +358,7 @@
                         @if($isPaid)
                             @if($launcherSaleItems->count() === 1)
                                 <a href="{{ route('launcher.open-product', ['saleItem' => $launcherSaleItems->first()->getKey()]) }}"
-                                   class="inline-flex h-11 items-center justify-center gap-2 bg-orange-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-orange-400">
+                                   class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-orange-400">
                                     باز کردن محصول در MW Launcher
                                 </a>
                             @endif
