@@ -4,16 +4,24 @@ namespace App\Application\Launcher\Support;
 
 use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
 use App\Domain\Launcher\Models\LauncherDownloadFileIntegrity;
+use App\Jobs\VerifyRemoteDownloadFileIntegrityJob;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class RemoteDownloadFileMetadataResolver
 {
     /**
-     * Resolve integrity metadata from the real remote file.
+     * Resolve integrity metadata for a remote file without ever blocking the
+     * caller on a full-file download+hash.
      *
-     * The first verification (or a verification after the cache TTL expires)
-     * streams the complete remote file without buffering it in memory and
-     * calculates both byte size and SHA-256 from the received bytes.
+     * A verified-and-cached result (see verifyAndPersist()) is returned
+     * immediately. Otherwise, verification of the real remote file — which
+     * streams the complete file to compute its SHA-256 and can take minutes
+     * for a multi-gigabyte archive — is handed to a background queue job,
+     * and the administrator-entered size/checksum already on the file record
+     * is returned immediately instead. The launcher independently
+     * re-verifies SHA-256 after every download, so this is a safe interim
+     * value, not a security-relevant trust decision.
      *
      * @return array{size_bytes:int,sha256:string,mime_type:?string}
      */
@@ -36,6 +44,24 @@ class RemoteDownloadFileMetadataResolver
             return $this->metadataFromIntegrity($integrity);
         }
 
+        $this->dispatchBackgroundVerificationOnce($sourceType, $file, $url);
+
+        return $this->metadataFromAdminEnteredValues($file);
+    }
+
+    /**
+     * Performs the actual remote download+hash and persists the result. This
+     * is the slow path: only ever run from the queued job, never inline in a
+     * request/response cycle.
+     *
+     * @return array{size_bytes:int,sha256:string,mime_type:?string}
+     */
+    public function verifyAndPersist(
+        string $sourceType,
+        Model $file,
+        string $url,
+    ): array {
+        $urlHash = hash('sha256', $url);
         $metadata = $this->inspectRemoteFile($url);
 
         $integrity = LauncherDownloadFileIntegrity::query()->updateOrCreate(
@@ -78,6 +104,45 @@ class RemoteDownloadFileMetadataResolver
         }
 
         return $this->metadataFromIntegrity($integrity);
+    }
+
+    /**
+     * @return array{size_bytes:int,sha256:string,mime_type:?string}
+     */
+    private function metadataFromAdminEnteredValues(Model $file): array
+    {
+        return [
+            'size_bytes' => (int)$file->getAttribute('size_bytes'),
+            'sha256' => strtolower((string)$file->getAttribute('sha256')),
+            'mime_type' => array_key_exists('mime_type', $file->getAttributes())
+                ? $file->getAttribute('mime_type')
+                : null,
+        ];
+    }
+
+    /**
+     * A single stalled/slow file must not queue the same multi-gigabyte
+     * verification repeatedly — the launcher's multi-chunk downloader calls
+     * this resolver once per chunk per retry for the same file.
+     */
+    private function dispatchBackgroundVerificationOnce(
+        string $sourceType,
+        Model $file,
+        string $url,
+    ): void {
+        $lockKey = "launcher-download-integrity-verify:{$sourceType}:{$file->getKey()}";
+
+        if (!Cache::add($lockKey, true, now()->addMinutes(30))) {
+            return;
+        }
+
+        VerifyRemoteDownloadFileIntegrityJob::dispatch(
+            $sourceType,
+            $file::class,
+            $file->getKey(),
+            $url,
+            $lockKey,
+        );
     }
 
     public function ensureSafeSourceUrl(string $url): void
