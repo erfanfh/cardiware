@@ -293,6 +293,8 @@
                 'launcher_sort_order' => (int) $saleItem->launcher_sort_order,
                 'launcher_support_enabled' => (bool) $saleItem->launcher_support_enabled,
                 'launcher_support_url' => $saleItem->launcher_support_url,
+                'launcher_usage_guide_enabled' => (bool) $saleItem->launcher_usage_guide_enabled,
+                'launcher_usage_guide_content' => $saleItem->launcher_usage_guide_content,
                 'sort_order' => (int) $saleItem->sort_order,
                 'attribute_values' => $attributeValues,
                 'discount' => [

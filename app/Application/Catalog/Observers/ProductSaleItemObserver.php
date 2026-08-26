@@ -27,6 +27,8 @@ class ProductSaleItemObserver
             'launcher_sort_order',
             'launcher_support_enabled',
             'launcher_support_url',
+            'launcher_usage_guide_enabled',
+            'launcher_usage_guide_content',
         ])) {
             return;
         }
