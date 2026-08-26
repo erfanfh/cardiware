@@ -19,6 +19,7 @@ class PollController extends Controller
         BuildPollResultsAction $resultsAction,
     ): View {
         $poll = Poll::query()->publiclyVisible()->where('slug', $pollSlug)->with('options')->firstOrFail();
+        $request->attributes->set('poll', $poll);
         $identity = PollVoterIdentity::resolve($request->user(), $request->ip());
         $recordView->execute($poll, $identity);
         $response = $poll->responses()->where('identity_key', $identity->key)->with('options')->first();

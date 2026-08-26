@@ -76,6 +76,39 @@ class PollVotingTest extends TestCase
         $this->assertFalse(app('router')->getRoutes()->hasNamedRoute('polls.index'));
     }
 
+    public function test_public_poll_page_renders_complete_unique_seo_metadata_and_schema(): void
+    {
+        [$poll] = $this->makePoll([
+            'title' => 'بهترین بازی نقش‌آفرینی سال',
+            'question' => '<p>به نظر شما کدام بازی نقش‌آفرینی شایسته انتخاب شدن است؟</p>',
+            'description' => '<p>در این نظرسنجی، بهترین بازی نقش‌آفرینی سال را با رأی کاربران انتخاب می‌کنیم.</p>',
+        ]);
+
+        $response = $this->get(route('polls.show', $poll->slug).'/')->assertOk();
+        $html = $response->getContent();
+        $canonical = rtrim(route('polls.show', $poll->slug), '/').'/';
+
+        self::assertSame(1, substr_count($html, '<title>'));
+        $response->assertSee('<title>'.$poll->title.' | ', false);
+        $response->assertSee('<meta name="description" content="در این نظرسنجی، بهترین بازی نقش‌آفرینی سال را با رأی کاربران انتخاب می‌کنیم.">', false);
+        $response->assertSee('<link rel="canonical" href="'.$canonical.'">', false);
+        $response->assertSee('<meta property="og:title" content="'.$poll->title.'">', false);
+        $response->assertSee('<meta property="og:url" content="'.$canonical.'">', false);
+        $response->assertSee('<meta name="twitter:title" content="'.$poll->title.'">', false);
+
+        self::assertSame(1, preg_match('/<script type="application\/ld\+json">(.*?)<\/script>/s', $html, $matches));
+        $schema = json_decode($matches[1], true, flags: JSON_THROW_ON_ERROR);
+        $types = array_column($schema['@graph'], '@type');
+
+        self::assertContains('WebPage', $types);
+        self::assertContains('BreadcrumbList', $types);
+        self::assertNotContains('QAPage', $types);
+
+        $pageNode = collect($schema['@graph'])->firstWhere('@type', 'WebPage');
+        self::assertSame($canonical, $pageNode['url']);
+        self::assertSame($poll->title, $pageNode['name']);
+    }
+
     private function makePoll(array $attributes = []): array
     {
         $poll = Poll::query()->create(array_merge([

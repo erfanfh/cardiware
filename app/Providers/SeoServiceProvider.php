@@ -17,6 +17,7 @@ use App\Application\Seo\Resolvers\AuthorSeoResolver;
 use App\Application\Seo\Resolvers\AuthSeoResolver;
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
 use App\Application\Seo\Resolvers\PageSeoResolver;
+use App\Application\Seo\Resolvers\PollSeoResolver;
 use App\Application\Seo\Resolvers\PostCategorySeoResolver;
 use App\Application\Seo\Resolvers\PostListSeoResolver;
 use App\Application\Seo\Resolvers\PostSeoResolver;
@@ -63,6 +64,7 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(ProductListSeoResolver::class),
                 $app->make(RaffleSeoResolver::class),
                 $app->make(VideoSeoResolver::class),
+                $app->make(PollSeoResolver::class),
 
                 $app->make(AuthorSeoResolver::class),
                 $app->make(PostTagSeoResolver::class),
