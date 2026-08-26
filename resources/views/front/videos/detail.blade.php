@@ -50,8 +50,8 @@
                 <span class="truncate text-slate-700 dark:text-slate-200">{{ $video->title }}</span>
             </nav>
 
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:items-start">
-                <div class="min-w-0 space-y-6 lg:col-span-8">
+            <div data-smart-sidebar-layout class="grid grid-cols-1 gap-6 lg:grid-cols-10 lg:items-start">
+                <div data-smart-sidebar-content class="min-w-0 space-y-6 lg:col-span-7">
                     <section class="overflow-hidden rounded-[1.4rem] border border-slate-800/90 bg-slate-950 shadow-2xl shadow-slate-950/15 sm:rounded-[2rem] dark:border-white/10 dark:shadow-black/50"
                              aria-label="پخش {{ $video->title }}">
                         <div class="relative aspect-video overflow-hidden bg-slate-950">
@@ -211,16 +211,16 @@
                     </section>
                 </div>
 
-                <aside class="space-y-5 lg:col-span-4">
-                    <div class="lg:sticky lg:top-24 lg:space-y-5">
+                <div data-smart-sidebar-column class="min-w-0 lg:col-span-3">
+                    <aside data-smart-sidebar-box class="space-y-5">
                         @if($relatedVideos->isNotEmpty())
                             <section class="rounded-[1.4rem] border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                                 <div class="flex items-center justify-between gap-3">
                                     <div class="flex items-center gap-3">
                                         <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.play')</span>
                                         <div>
-                                            <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">ویدیوهای پیشنهادی</h2>
-                                            <p class="mt-1 text-[10px] font-bold text-slate-400">انتخاب‌شده براساس موضوع این ویدیو</p>
+                                            <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">ویدیوهای مرتبط</h2>
+                                            <p class="mt-1 text-[10px] font-bold text-slate-400">پیشنهادهای بعدی برای تماشا</p>
                                         </div>
                                     </div>
                                     <a href="{{ route('videos.index') }}" class="shrink-0 text-[10px] font-black text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">آرشیو ←</a>
@@ -266,7 +266,32 @@
                             </section>
                         @endif
 
-                        <section class="relative mt-5 overflow-hidden rounded-[1.4rem] border border-slate-800 bg-slate-950 p-5 shadow-xl shadow-slate-950/10 dark:border-white/10">
+                        @if($sidebarCategories->isNotEmpty())
+                            <section class="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                                <div class="flex items-center gap-3">
+                                    <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.folder-library')</span>
+                                    <div>
+                                        <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">دسته‌بندی‌های ویدیو</h2>
+                                        <p class="mt-1 text-[10px] font-bold text-slate-400">موضوع مورد علاقه‌تان را انتخاب کنید</p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 grid gap-2">
+                                    @foreach($sidebarCategories as $sidebarCategory)
+                                        @php
+                                            $isCurrentCategory = $video->categories->contains('id', $sidebarCategory->id);
+                                        @endphp
+                                        <a href="{{ route('videos.categories', $sidebarCategory->path) }}"
+                                           class="flex items-center justify-between gap-3 rounded-2xl border p-3 transition {{ $isCurrentCategory ? 'border-brand-200 bg-brand-50 dark:border-brand-500/30 dark:bg-brand-500/10' : 'border-transparent bg-slate-50 hover:border-slate-200 hover:bg-white hover:shadow-sm dark:bg-slate-800/60 dark:hover:border-slate-700 dark:hover:bg-slate-800' }}">
+                                            <span class="truncate text-xs font-black {{ $isCurrentCategory ? 'text-brand-800 dark:text-brand-300' : 'text-slate-700 dark:text-slate-200' }}">{{ $sidebarCategory->title }}</span>
+                                            <span class="shrink-0 rounded-lg bg-white px-2 py-1 text-[9px] font-black text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-400">{{ number_format($sidebarCategory->videos_count) }}</span>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </section>
+                        @endif
+
+                        <section class="relative overflow-hidden rounded-[1.4rem] border border-slate-800 bg-slate-950 p-5 shadow-xl shadow-slate-950/10 dark:border-white/10">
                             <div class="absolute -left-12 -top-12 h-36 w-36 rounded-full bg-brand-500/20 blur-3xl"></div>
                             <div class="absolute -bottom-12 -right-12 h-36 w-36 rounded-full bg-violet-500/15 blur-3xl"></div>
                             <div class="relative">
@@ -284,22 +309,22 @@
                             </div>
                         </section>
 
-                        @if($video->categories->isNotEmpty())
-                            <section class="mt-5 rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
+                        @if($video->tags->isNotEmpty())
+                            <section class="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                                 <div class="flex items-center gap-3">
-                                    <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.folder-library')</span>
-                                    <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">موضوعات این ویدیو</h2>
+                                    <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.tag-02')</span>
+                                    <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">برچسب‌های این ویدیو</h2>
                                 </div>
                                 <div class="mt-4 flex flex-wrap gap-2">
-                                    @foreach($video->categories as $category)
-                                        <a href="{{ route('videos.categories', $category->path) }}"
-                                           class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-black text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">{{ $category->title }}</a>
+                                    @foreach($video->tags as $tag)
+                                        <a href="{{ route('videos.tags', $tag->path) }}"
+                                           class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] font-black text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300">#{{ $tag->title }}</a>
                                     @endforeach
                                 </div>
                             </section>
                         @endif
-                    </div>
-                </aside>
+                    </aside>
+                </div>
             </div>
         </div>
     </main>

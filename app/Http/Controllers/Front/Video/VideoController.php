@@ -62,19 +62,19 @@ class VideoController extends Controller
         ])->loadCount('approvedComments');
         $storeView->execute($video);
 
-        $termIds = $video->categories->concat($video->tags)->pluck('id')->unique();
-        $relatedVideos = Video::query()->whereKeyNot($video->id)->with([
-            'cover.primaryVariant',
-            'cover.variants',
-            'categories',
-            'author',
-        ])->withCount('approvedComments')
-            ->when($termIds->isNotEmpty(), fn (Builder $q) => $q->whereHas('taxonomyTerms', fn (Builder $t) => $t->whereIn('taxonomy_terms.id', $termIds)))
-            ->latest('published_at')->limit(4)->get();
+        $relatedVideos = $this->relatedVideos($video);
+        $sidebarCategories = TaxonomyTerm::query()
+            ->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
+            ->whereNull('parent_id')
+            ->withCount('videos')
+            ->orderByDesc('videos_count')
+            ->orderBy('title')
+            ->limit(6)
+            ->get();
 
         request()->attributes->set('video', $video);
 
-        return view('front.videos.detail', compact('video', 'relatedVideos'));
+        return view('front.videos.detail', compact('video', 'relatedVideos', 'sidebarCategories'));
     }
 
     public function taxonomy(Request $request, string $path, string $taxonomy, ResolveSlugAction $resolveSlug): View|RedirectResponse
@@ -136,5 +136,48 @@ class VideoController extends Controller
             Video::query()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
             'popular',
         )->limit(4)->get();
+    }
+
+    private function relatedVideos(Video $video): Collection
+    {
+        $termIds = $video->categories->concat($video->tags)->pluck('id')->unique();
+        $relations = [
+            'cover.primaryVariant',
+            'cover.variants',
+            'categories',
+            'author',
+        ];
+
+        $relatedVideos = Video::query()
+            ->whereKeyNot($video->id)
+            ->with($relations)
+            ->withCount('approvedComments')
+            ->when(
+                $termIds->isNotEmpty(),
+                fn (Builder $query) => $query->whereHas(
+                    'taxonomyTerms',
+                    fn (Builder $taxonomyQuery) => $taxonomyQuery->whereIn('taxonomy_terms.id', $termIds),
+                ),
+            )
+            ->latest('published_at')
+            ->limit(5)
+            ->get();
+
+        $remaining = 5 - $relatedVideos->count();
+
+        if ($remaining <= 0) {
+            return $relatedVideos;
+        }
+
+        $fallbackVideos = $this->applySort(
+            Video::query()
+                ->whereKeyNot($video->id)
+                ->whereNotIn('videos.id', $relatedVideos->modelKeys())
+                ->with($relations)
+                ->withCount('approvedComments'),
+            'popular',
+        )->limit($remaining)->get();
+
+        return $relatedVideos->concat($fallbackVideos);
     }
 }
