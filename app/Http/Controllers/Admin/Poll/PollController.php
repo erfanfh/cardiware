@@ -4,37 +4,59 @@ namespace App\Http\Controllers\Admin\Poll;
 
 use App\Application\Poll\Actions\CreatePollAction;
 use App\Application\Poll\Actions\UpdatePollAction;
+use App\Application\Poll\Listings\PollListing;
 use App\Domain\Poll\Enums\PollAudienceEnum;
+use App\Domain\Poll\Enums\PollResultsVisibilityEnum;
 use App\Domain\Poll\Enums\PollStatusEnum;
 use App\Domain\Poll\Models\Poll;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Poll\IndexPollRequest;
 use App\Http\Requests\Admin\Poll\SavePollRequest;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PollController extends Controller
 {
-    public function index(Request $request): View
+    public function index(IndexPollRequest $request, PollListing $listing): View
     {
         Gate::authorize('poll.list');
-        $query = Poll::query()->withCount(['options as active_options_count' => fn ($q) => $q->where('is_active', true)]);
+        $filters = $request->validated();
+        $polls = $listing
+            ->handle(
+                Poll::query()->withCount([
+                    'options as active_options_count' => fn ($query) => $query->where('is_active', true),
+                ]),
+                $filters,
+            )
+            ->paginate($listing->perPage())
+            ->withQueryString();
 
-        if (filled($request->string('search'))) {
-            $term = '%'.trim($request->string('search')->toString()).'%';
-            $query->where(fn ($q) => $q->where('title', 'like', $term)->orWhere('question', 'like', $term));
-        }
-        if (PollStatusEnum::tryFrom($request->string('status')->toString())) {
-            $query->where('status', $request->string('status')->toString());
-        }
-        if (PollAudienceEnum::tryFrom($request->string('audience')->toString())) {
-            $query->where('audience', $request->string('audience')->toString());
-        }
+        $statuses = collect(PollStatusEnum::cases())
+            ->mapWithKeys(fn (PollStatusEnum $status) => [$status->value => $status->label()])
+            ->all();
+        $audiences = collect(PollAudienceEnum::cases())
+            ->mapWithKeys(fn (PollAudienceEnum $audience) => [$audience->value => $audience->label()])
+            ->all();
+        $resultsVisibilities = collect(PollResultsVisibilityEnum::cases())
+            ->mapWithKeys(fn (PollResultsVisibilityEnum $visibility) => [$visibility->value => $visibility->label()])
+            ->all();
+        $timings = [
+            'not_started' => 'شروع‌نشده',
+            'accepting_votes' => 'در حال دریافت رأی',
+            'ended' => 'پایان‌یافته',
+            'without_end' => 'بدون تاریخ پایان',
+        ];
+        $hasActiveFilters = $listing->hasActiveFilters($filters);
 
-        $polls = $query->latest('id')->paginate(20)->withQueryString();
-
-        return view('admin.poll.polls.index', compact('polls'));
+        return view('admin.poll.polls.index', compact(
+            'polls',
+            'statuses',
+            'audiences',
+            'resultsVisibilities',
+            'timings',
+            'hasActiveFilters',
+        ));
     }
 
     public function create(): View
