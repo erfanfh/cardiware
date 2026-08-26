@@ -52,6 +52,8 @@
         titleName="title" slugName="slug"
         :titleValue="$poll?->title ?? ''" :slugValue="$poll?->slug ?? ''"
         :basePath="url('/polls').'/'"
+        :scope="\App\Domain\Slug\Enums\SlugScopeEnum::POLL"
+        :currentId="$poll?->id"
         :itemUrl="$poll?->status === PollStatusEnum::PUBLISHED ? route('polls.show', $poll->slug) : null"
     />
 

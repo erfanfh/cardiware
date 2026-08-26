@@ -11,6 +11,7 @@ enum SlugScopeEnum: string
     case PROJECT = 'project';
     case PRODUCT = 'product';
     case RAFFLE = 'raffle';
+    case POLL = 'poll';
     case STORE = 'store';
     case VIDEO = 'video';
 
@@ -24,9 +25,6 @@ enum SlugScopeEnum: string
 
     /**
      * Determine whether the given scope belongs to taxonomy scopes.
-     *
-     * @param self $scope
-     * @return bool
      */
     public static function isTaxonomyScope(self $scope): bool
     {
@@ -35,13 +33,10 @@ enum SlugScopeEnum: string
 
     /**
      * Extract taxonomy key string from a taxonomy scope.
-     *
-     * @param self $scope
-     * @return string
      */
     public static function extractTaxonomyKey(self $scope): string
     {
-        if (!self::isTaxonomyScope($scope)) {
+        if (! self::isTaxonomyScope($scope)) {
             throw new InvalidArgumentException("Scope [{$scope->value}] is not a taxonomy scope.");
         }
 
@@ -50,9 +45,6 @@ enum SlugScopeEnum: string
 
     /**
      * Resolve taxonomy enum from a taxonomy scope.
-     *
-     * @param self $scope
-     * @return TaxonomyKeyEnum
      */
     public static function extractTaxonomyEnum(self $scope): TaxonomyKeyEnum
     {
@@ -61,9 +53,6 @@ enum SlugScopeEnum: string
 
     /**
      * Build a slug scope enum from taxonomy key enum.
-     *
-     * @param TaxonomyKeyEnum $taxonomy
-     * @return self
      */
     public static function fromTaxonomyKey(TaxonomyKeyEnum $taxonomy): self
     {

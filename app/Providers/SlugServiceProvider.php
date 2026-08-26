@@ -8,6 +8,7 @@ use App\Application\Slug\Services\SlugNormalizer;
 use App\Application\Slug\Services\SlugResolverManager;
 use App\Application\Slug\Services\SlugSuggestionGenerator;
 use App\Infrastructure\Slug\Checkers\ContentSlugChecker;
+use App\Infrastructure\Slug\Checkers\PollSlugChecker;
 use App\Infrastructure\Slug\Checkers\ProductSlugChecker;
 use App\Infrastructure\Slug\Checkers\ProjectSlugChecker;
 use App\Infrastructure\Slug\Checkers\RaffleSlugChecker;
@@ -43,6 +44,7 @@ class SlugServiceProvider extends ServiceProvider
         $this->app->singleton(TaxonomyRouteKeyBuilder::class);
 
         $this->app->singleton(ContentSlugChecker::class);
+        $this->app->singleton(PollSlugChecker::class);
         $this->app->singleton(ProjectSlugChecker::class);
         $this->app->singleton(RaffleSlugChecker::class);
         $this->app->singleton(TaxonomySlugChecker::class);
@@ -68,6 +70,7 @@ class SlugServiceProvider extends ServiceProvider
         $this->app->tag(
             [
                 ContentSlugChecker::class,
+                PollSlugChecker::class,
                 ProjectSlugChecker::class,
                 RaffleSlugChecker::class,
                 TaxonomySlugChecker::class,
