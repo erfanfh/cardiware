@@ -52,11 +52,23 @@ class VideoController extends Controller
 
         /** @var Video $video */
         $video = $resolved->model;
-        $video->load(['cover', 'author', 'categories', 'tags', 'seoMeta'])->loadCount('approvedComments');
+        $video->load([
+            'cover.primaryVariant',
+            'cover.variants',
+            'author.avatar',
+            'categories',
+            'tags',
+            'seoMeta',
+        ])->loadCount('approvedComments');
         $storeView->execute($video);
 
         $termIds = $video->categories->concat($video->tags)->pluck('id')->unique();
-        $relatedVideos = Video::query()->whereKeyNot($video->id)->with(['cover', 'categories'])
+        $relatedVideos = Video::query()->whereKeyNot($video->id)->with([
+            'cover.primaryVariant',
+            'cover.variants',
+            'categories',
+            'author',
+        ])->withCount('approvedComments')
             ->when($termIds->isNotEmpty(), fn (Builder $q) => $q->whereHas('taxonomyTerms', fn (Builder $t) => $t->whereIn('taxonomy_terms.id', $termIds)))
             ->latest('published_at')->limit(4)->get();
 
