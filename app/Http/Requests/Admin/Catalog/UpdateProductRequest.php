@@ -140,6 +140,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_sort_order' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.launcher_support_enabled' => ['nullable', 'boolean'],
             'sale_items.*.launcher_support_url' => ['nullable', 'string', 'url:https', 'max:2048'],
+            'sale_items.*.launcher_usage_guide_enabled' => ['nullable', 'boolean'],
+            'sale_items.*.launcher_usage_guide_content' => ['nullable', 'string', 'max:20000'],
 
             /*
             |--------------------------------------------------------------------------
@@ -368,6 +370,19 @@ class UpdateProductRequest extends FormRequest
                     $validator->errors()->add(
                         "{$prefix}.launcher_support_url",
                         'آدرس صفحه پشتیبانی هنگام فعال بودن پشتیبانی آنلاین الزامی است.'
+                    );
+                }
+
+                if (
+                    filter_var(
+                        $item['launcher_usage_guide_enabled'] ?? false,
+                        FILTER_VALIDATE_BOOLEAN
+                    )
+                    && blank($item['launcher_usage_guide_content'] ?? null)
+                ) {
+                    $validator->errors()->add(
+                        "{$prefix}.launcher_usage_guide_content",
+                        'متن آموزش کاربردی هنگام فعال بودن این گزینه الزامی است.'
                     );
                 }
 
@@ -1110,6 +1125,16 @@ class UpdateProductRequest extends FormRequest
                 $item['launcher_support_url'] = $this->normalizeNullableStringInput(
                     data_get($item, 'launcher_support_url'),
                     2048
+                );
+
+                $item['launcher_usage_guide_enabled'] = $this->normalizeBooleanInput(
+                    data_get($item, 'launcher_usage_guide_enabled'),
+                    false
+                );
+
+                $item['launcher_usage_guide_content'] = $this->normalizeNullableStringInput(
+                    data_get($item, 'launcher_usage_guide_content'),
+                    20000
                 );
 
                 return $item;

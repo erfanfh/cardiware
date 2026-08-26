@@ -160,6 +160,15 @@ class BuildPurchaseAccessManifestAction
                 'merge_mode' => $manifest->package_root_mode,
                 'option_file' => $manifest->resolvedOptionFile(),
                 ...$installOptions,
+                /*
+                 * The launcher client contract uses installed_size_bytes /
+                 * temporary_size_bytes; the admin form's internal option keys
+                 * (estimated_installed_size_bytes / required_install_space_bytes)
+                 * are aliased here so a configured value actually reaches the
+                 * client instead of silently falling back to its own estimate.
+                 */
+                'installed_size_bytes' => (int)($installOptions['estimated_installed_size_bytes'] ?? 0),
+                'temporary_size_bytes' => (int)($installOptions['required_install_space_bytes'] ?? 0),
             ],
 
             'launch' => [

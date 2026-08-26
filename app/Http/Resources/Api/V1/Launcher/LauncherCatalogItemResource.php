@@ -78,6 +78,12 @@ class LauncherCatalogItemResource extends JsonResource
                     ? $this->launcher_support_url
                     : null,
             ],
+            'usage_guide' => [
+                'enabled' => $hasAccess && (bool)$this->launcher_usage_guide_enabled,
+                'content' => $hasAccess && $this->launcher_usage_guide_enabled
+                    ? $this->launcher_usage_guide_content
+                    : null,
+            ],
         ];
     }
 }

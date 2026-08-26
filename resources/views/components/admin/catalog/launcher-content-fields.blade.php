@@ -122,6 +122,46 @@
                     </div>
                 </div>
 
+                <div class="col-span-12 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div class="min-w-0">
+                            <div class="text-sm font-bold text-slate-900">
+                                فعال بودن آموزش کاربردی
+                            </div>
+
+                            <div class="mt-1 text-xs leading-6 text-slate-500">
+                                در صورت فعال بودن، دکمه «آموزش‌های کاربردی» کنار پشتیبانی آنلاین در لانچر فعال می‌شود و متن زیر را نمایش می‌دهد.
+                            </div>
+                        </div>
+
+                        <div class="shrink-0">
+                            <x-admin.form.switch
+                                x-bind:name="`sale_items[{{ $indexToken }}][launcher_usage_guide_enabled]`"
+                                x-model="{{ $item }}.launcher_usage_guide_enabled"
+                            />
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-4"
+                        x-show="{{ $item }}.launcher_usage_guide_enabled"
+                        x-cloak
+                    >
+                        <x-admin.field
+                            label="متن آموزش کاربردی"
+                            hint="برای متن پررنگ از [b]متن[/b]، برای متن رنگی از [color=#FF8A1C]متن[/color] و برای لینک دانلود از [url=https://...]متن لینک[/url] استفاده کنید. این تگ‌ها قابل تودرتو شدن هم هستند."
+                        >
+                            <x-admin.form.textarea
+                                rows="6"
+                                x-bind:name="`sale_items[{{ $indexToken }}][launcher_usage_guide_content]`"
+                                x-model="{{ $item }}.launcher_usage_guide_content"
+                                x-bind:required="{{ $item }}.launcher_usage_guide_enabled"
+                                placeholder="مثال: [b]نصب Sider[/b]&#10;برای نصب صحیح، ابتدا [color=#FF8A1C]پوشه محصول[/color] را باز کنید...&#10;[url=https://moddingway.ir/download/tool]دانلود ابزار جانبی[/url]"
+                            />
+                        </x-admin.field>
+                    </div>
+                </div>
+
                 <div
                     class="col-span-12"
                     x-on:mfip-selected.window="

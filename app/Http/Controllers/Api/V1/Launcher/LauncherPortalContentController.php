@@ -68,6 +68,7 @@ final class LauncherPortalContentController extends Controller
                 'summary' => $guide->summary,
                 'content' => $guide->content,
                 'sort_order' => (int)$guide->sort_order,
+                'published_at' => $guide->created_at?->toIso8601String(),
             ]);
 
         return response()->json(['data' => $guides]);
