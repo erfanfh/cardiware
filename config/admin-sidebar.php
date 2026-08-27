@@ -416,6 +416,12 @@ return [
                 'gate' => 'setting.general',
             ],
             [
+                'label' => 'بک‌آپ خودکار',
+                'route' => 'admin.settings.backup',
+                'icon' => 'icons.arrow-reload-horizontal',
+                'gate' => 'setting.general',
+            ],
+            [
                 'label' => 'باشگاه مخاطبان',
                 'route' => 'admin.settings.loyalty',
                 'icon' => 'icons.settings-02',

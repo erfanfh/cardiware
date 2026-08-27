@@ -3,6 +3,9 @@
 use App\Http\Controllers\Admin\System\SettingController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
+    Route::get('backup', 'backup')->name('backup');
+    Route::put('backup', 'storeBackup')->name('backup.store');
+    Route::post('backup/run', 'runBackup')->name('backup.run');
     Route::get('raffle', 'raffle')->name('raffle');
     Route::put('raffle', 'storeRaffle')->name('raffle.store');
     Route::get('loyalty', 'loyalty')->name('loyalty');

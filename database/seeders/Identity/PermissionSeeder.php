@@ -117,6 +117,7 @@ class PermissionSeeder extends Seeder
                 'posts' => 'تنظیمات صفحه نوشته ها',
                 'products' => 'تنظیمات صفحه محصولات',
                 'ticket' => 'تنظیمات تیکت',
+                'backup' => 'تنظیمات بک آپ',
             ],
             'order' => [
                 'list' => 'لیست سفارش ها',

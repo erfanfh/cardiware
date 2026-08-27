@@ -41,7 +41,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL'), '/') . '/storage',
+            'url' => rtrim(env('APP_URL'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,
@@ -60,10 +60,25 @@ return [
             'report' => false,
         ],
 
+        'parspack_backup' => [
+            'driver' => 's3',
+            'key' => env('PARSPACK_BACKUP_ACCESS_KEY'),
+            'secret' => env('PARSPACK_BACKUP_SECRET_KEY'),
+            'region' => env('PARSPACK_BACKUP_REGION'),
+            'bucket' => env('PARSPACK_BACKUP_BUCKET'),
+            'url' => env('PARSPACK_BACKUP_URL'),
+            'endpoint' => env('PARSPACK_BACKUP_ENDPOINT'),
+            'root' => trim((string) env('PARSPACK_BACKUP_PREFIX', 'backups'), '/'),
+            'use_path_style_endpoint' => env('PARSPACK_BACKUP_USE_PATH_STYLE_ENDPOINT', false),
+            'visibility' => 'private',
+            'throw' => true,
+            'report' => true,
+        ],
+
         'wordpress_uploads' => [
             'driver' => 'local',
             'root' => public_path('wp-content/uploads'),
-            'url' => env('APP_URL') . '/wp-content/uploads',
+            'url' => env('APP_URL').'/wp-content/uploads',
             'visibility' => 'public',
             'throw' => false,
         ],

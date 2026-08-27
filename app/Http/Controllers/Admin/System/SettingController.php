@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Admin\System;
 
 use App\Application\Seo\Support\SeoTemplateVariableRegistry;
 use App\Application\System\Actions\UpdateSettingAction;
+use App\Application\System\Backup\BackupEnvironment;
+use App\Application\System\Backup\BackupRunDispatcher;
 use App\Domain\Loyalty\Models\RewardOffer;
+use App\Domain\System\Models\BackupRun;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
+use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +24,62 @@ use RuntimeException;
 
 class SettingController extends Controller
 {
+    public function backup(BackupEnvironment $environment): View
+    {
+        Gate::authorize('setting.backup');
+
+        $backupRuns = BackupRun::query()
+            ->latest()
+            ->limit(20)
+            ->get();
+        $environmentChecks = $environment->checks();
+
+        return view('admin.system.settings.backup', compact('backupRuns', 'environmentChecks'));
+    }
+
+    public function storeBackup(UpdateBackupSettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('setting.backup');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (!app(UpdateSettingAction::class)->execute('backup', $field, $value)) {
+                    throw new RuntimeException('Unable to persist backup settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.backup')
+            ->with('success', 'تنظیمات بک‌آپ با موفقیت ذخیره شد.');
+    }
+
+    public function runBackup(
+        Request             $request,
+        BackupEnvironment   $environment,
+        BackupSettings      $settings,
+        BackupRunDispatcher $dispatcher,
+    ): RedirectResponse
+    {
+        Gate::authorize('setting.backup');
+
+        $validated = $request->validate(['type' => ['required', 'in:full,database']]);
+
+        if (!$environment->isReady()) {
+            return back()->with('error', 'ابتدا مقادیر اتصال پارس‌پک و رمز آرشیو را در env سرور کامل کنید.');
+        }
+
+        if ($validated['type'] === 'database' && !$settings->value('database_enabled')) {
+            return back()->with('error', 'بک‌آپ دیتابیس در تنظیمات غیرفعال است.');
+        }
+
+        $run = $dispatcher->dispatch($validated['type'], 'manual', $request->user()?->getKey());
+
+        return $run
+            ? back()->with('success', 'بک‌آپ در صف اجرا قرار گرفت.')
+            : back()->with('error', 'یک بک‌آپ دیگر در حال انتظار یا اجرا است.');
+    }
+
     public function raffle(): View
     {
         Gate::authorize('raffle-campaign.edit');
@@ -32,7 +93,7 @@ class SettingController extends Controller
 
         DB::transaction(function () use ($request): void {
             foreach ($request->validated() as $field => $value) {
-                if (! app(UpdateSettingAction::class)->execute('raffle', $field, $value)) {
+                if (!app(UpdateSettingAction::class)->execute('raffle', $field, $value)) {
                     throw new RuntimeException('Unable to persist raffle settings.');
                 }
             }
@@ -47,7 +108,7 @@ class SettingController extends Controller
     {
         Gate::authorize('loyalty-rule.list');
 
-        $selectedRewardOfferId = (int) $settings->get('registration_gift_reward_offer_id', 0);
+        $selectedRewardOfferId = (int)$settings->get('registration_gift_reward_offer_id', 0);
         $registrationGiftOffers = RewardOffer::query()
             ->where(function ($query) use ($selectedRewardOfferId): void {
                 $query->where('is_active', true);
@@ -73,7 +134,7 @@ class SettingController extends Controller
                 $updated = app(UpdateSettingAction::class)
                     ->execute('loyalty', $field, $value);
 
-                if (! $updated) {
+                if (!$updated) {
                     throw new RuntimeException('Unable to persist loyalty settings.');
                 }
             }
