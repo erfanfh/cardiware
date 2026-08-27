@@ -38,7 +38,15 @@ class ProductInformationPayloadNormalizer
      */
     public function nullableString(mixed $value): ?string
     {
-        $value = trim((string)($value ?? ''));
+        // A browser <textarea>'s captured value is not guaranteed to use a bare '\n' for
+        // every line break -- Shift+Enter has been observed producing a lone '\r' in some
+        // environments. A bare '\r' with no '\n' renders as nothing at all (no visible
+        // break) both back in this same textarea on reload and inside the launcher's own
+        // text renderer, which is what actually read as "every line glued together" for
+        // multi-line fields like launcher_usage_guide_content. Normalizing every line
+        // ending to '\n' here, once, at the point of saving, fixes it for every reader.
+        $value = str_replace(["\r\n", "\r"], "\n", (string)($value ?? ''));
+        $value = trim($value);
 
         return $value === '' ? null : $value;
     }
