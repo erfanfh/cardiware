@@ -9,7 +9,7 @@ final class AuthenticateUserAction
 {
     public function execute(
         User $user,
-        bool $remember = false,
+        bool $remember = true,
     ): void
     {
         Auth::login(
