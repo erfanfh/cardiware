@@ -50,6 +50,18 @@
             <div class="w-full h-full flex items-center justify-center px-4 md:px-10">
                 <div
                     class="w-full max-w-lg rounded-2xl bg-white shadow-xl border border-slate-200 p-8 my-4 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30">
+                    <div class="mb-4 flex justify-end">
+                        <a
+                            href="{{ route('home') }}"
+                            class="group inline-flex items-center gap-1.5 rounded-lg px-1 py-1 text-[0.7rem] font-medium text-slate-400 transition-colors hover:text-brand-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:text-slate-500 dark:hover:text-brand-400"
+                        >
+                            <span class="opacity-80 transition-transform duration-200 group-hover:-translate-x-0.5 [&_svg]:h-3.5 [&_svg]:w-3.5">
+                                @include('icons.home-12')
+                            </span>
+                            <span>بازگشت به صفحه اصلی</span>
+                        </a>
+                    </div>
+
                     <livewire:front.identity.user.auth.auth-flow/>
                 </div>
             </div>
