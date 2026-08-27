@@ -4,11 +4,14 @@ namespace App\Application\Launcher\Actions\Security;
 
 use App\Application\Launcher\Exceptions\OfflineLicenseTransferCooldownException;
 use App\Application\Launcher\Exceptions\DeviceRevokedException;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Identity\Models\User;
 use App\Domain\Launcher\Models\LauncherDevice;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -43,10 +46,13 @@ final class IssueOfflineLicenseAction
             min(7, max(1, (int)config('launcher_security.offline_license_days', 7)))
         );
 
-        $entitlements = $user->purchaseAccesses()
+        $usableAccesses = $user->purchaseAccesses()
             ->launcherUsable()
+            ->with('productSaleItem.manifest:id,product_sale_item_id,content_key_id,content_key_value')
             ->orderBy('id')
-            ->get(['id', 'product_id', 'product_sale_item_id', 'expires_at'])
+            ->get(['id', 'product_id', 'product_sale_item_id', 'expires_at']);
+
+        $entitlements = $usableAccesses
             ->map(fn($access): array => [
                 'purchase_access_id' => (int)$access->id,
                 'product_id' => (int)$access->product_id,
@@ -55,6 +61,8 @@ final class IssueOfflineLicenseAction
             ])
             ->values()
             ->all();
+
+        $contentKeys = $this->resolveContentKeys($usableAccesses);
 
         $payload = [
             'version' => 1,
@@ -66,6 +74,9 @@ final class IssueOfflineLicenseAction
             'not_before' => $issuedAt->copy()->subMinutes(5)->toISOString(),
             'expires_at' => $expiresAt->toISOString(),
             'entitlements' => $entitlements,
+            // Absent (never an empty object) when the user owns nothing protected --
+            // matches OfflinePayload.ContentKeys being nullable on the launcher side.
+            ...($contentKeys !== [] ? ['content_keys' => $contentKeys] : []),
         ];
 
         $payloadJson = json_encode(
@@ -89,6 +100,48 @@ final class IssueOfflineLicenseAction
             'max_offline_days' => min(7, max(1, (int)config('launcher_security.offline_license_days', 7))),
         ];
         });
+    }
+
+    /**
+     * Builds the content_key_id -> Base64(32-byte key) map for everything the user
+     * currently owns and is entitled to use offline. Lives INSIDE the RS256-signed
+     * payload (see execute() above) -- not the outer envelope -- so a tampered key can
+     * never pass the launcher's signature verification.
+     *
+     * @param Collection<int, PurchaseAccess> $usableAccesses
+     * @return array<string, string>
+     */
+    private function resolveContentKeys(Collection $usableAccesses): array
+    {
+        $contentKeys = [];
+
+        foreach ($usableAccesses as $access) {
+            $manifest = $access->productSaleItem?->manifest;
+
+            if ($manifest === null
+                || blank($manifest->content_key_id)
+                || blank($manifest->content_key_value)) {
+                continue;
+            }
+
+            $keyId = $manifest->content_key_id;
+
+            if (array_key_exists($keyId, $contentKeys)
+                && $contentKeys[$keyId] !== $manifest->content_key_value) {
+                // The DB-level unique constraint on content_key_id should make this
+                // unreachable; if it ever happens, log it loudly rather than silently
+                // pick one of two different keys for the same id.
+                Log::error('launcher.offline_license.content_key_id_collision', [
+                    'content_key_id' => $keyId,
+                    'purchase_access_id' => $access->id,
+                ]);
+                continue;
+            }
+
+            $contentKeys[$keyId] = $manifest->content_key_value;
+        }
+
+        return $contentKeys;
     }
 
     /** @return array{0: string, 1: string} */

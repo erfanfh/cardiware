@@ -337,6 +337,7 @@
 
             <x-admin.catalog.product-sale-item-manifest-fields
                 mode="simple"
+                :sale-item-id="$simpleSaleItem['id'] ?? null"
                 :manifest="old(
                 'sale_items.0.manifest',
                 $simpleSaleItem['manifest'] ?? []

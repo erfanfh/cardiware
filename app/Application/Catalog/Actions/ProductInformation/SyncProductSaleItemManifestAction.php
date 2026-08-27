@@ -57,6 +57,10 @@ class SyncProductSaleItemManifestAction
             supportsSider: $supportsSider,
         );
 
+        $contentKeyId = $this->nullableString(
+            Arr::get($data, 'content_key_id')
+        );
+
         $saleItem->manifest()->updateOrCreate(
             [],
             [
@@ -158,6 +162,18 @@ class SyncProductSaleItemManifestAction
                         )
                     ),
 
+                // Validated properly (format, uniqueness, exact 32-byte key length,
+                // vault-password grant) in UpdateProductRequest -- this method only
+                // decides WHAT to persist, given that decision already passed.
+                'content_key_id' => $contentKeyId,
+                'content_key_value' => $this->resolveContentKeyValue(
+                    saleItem: $saleItem,
+                    submittedContentKeyId: $contentKeyId,
+                    submittedContentKeyValue: $this->nullableString(
+                        Arr::get($data, 'content_key_value')
+                    ),
+                ),
+
                 'cpu_compatibility' =>
                     $this->normalizeCpuCompatibility(
                         Arr::get($data, 'cpu_compatibility')
@@ -182,6 +198,38 @@ class SyncProductSaleItemManifestAction
                     : [],
             ]
         );
+    }
+
+    /**
+     * The admin panel redacts content_key_value to an empty string on page load and
+     * only ever fills in the real value after a successful vault-password unlock (see
+     * RevealContentKeyAction). So a blank submission alongside the SAME
+     * content_key_id that is already stored means "left locked, unchanged" -- not
+     * "clear the key" -- and must fall back to whatever is already in the database
+     * instead of overwriting it with null. UpdateProductRequest's validateContentKey
+     * makes the matching decision about whether a REAL change is even allowed
+     * (requires the vault grant); this method only decides what to persist once that
+     * decision has already passed.
+     */
+    private function resolveContentKeyValue(
+        ProductSaleItem $saleItem,
+        ?string         $submittedContentKeyId,
+        ?string         $submittedContentKeyValue,
+    ): ?string
+    {
+        if ($submittedContentKeyValue !== null) {
+            return $submittedContentKeyValue;
+        }
+
+        $existing = $saleItem->manifest;
+
+        if ($existing !== null
+            && $submittedContentKeyId !== null
+            && $existing->content_key_id === $submittedContentKeyId) {
+            return $existing->content_key_value;
+        }
+
+        return null;
     }
 
     private function resolveDownloadType(

@@ -44,6 +44,7 @@
             "sider_executable_path": "sider.exe",
             "sider_working_directory": ".",
             "run_sider_as_administrator": false,
+            "content_key_id": "pgl6-db-2026-01",
             "cpu_compatibility": {
                 "enabled": true,
                 "default_mode": "auto",

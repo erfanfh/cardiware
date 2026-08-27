@@ -182,6 +182,23 @@ class UpdateProductRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
+            | Content key (encrypted database protection)
+            |--------------------------------------------------------------------------
+            | content_key_id is an opaque, versioned identifier (e.g. "pgl6-db-2026-01"),
+            | never the product slug -- shipping a re-encrypted database update under a
+            | new id lets the launcher tell an old cached key apart from a new one.
+            | Cross-field checks (both-or-neither, exact 32-byte key, uniqueness across
+            | ALL manifests) live in withValidator() below, matching how this file
+            | already handles sider_executable_path and the CPU compatibility fields.
+            */
+            'sale_items.*.manifest.content_key_id' => [
+                'nullable', 'string', 'max:128',
+                'regex:/^[A-Za-z0-9._-]+$/',
+            ],
+            'sale_items.*.manifest.content_key_value' => ['nullable', 'string', 'max:512'],
+
+            /*
+            |--------------------------------------------------------------------------
             | CPU compatibility
             |--------------------------------------------------------------------------
             */
@@ -637,6 +654,14 @@ class UpdateProductRequest extends FormRequest
                     );
                 }
 
+                $this->validateContentKey(
+                    validator: $validator,
+                    manifest: $manifest,
+                    prefix: $prefix,
+                    currentSaleItemId: $item['id'] ?? null,
+                    supportsSider: $supportsSider,
+                );
+
                 $cpuCompatibilityEnabled = filter_var(
                     data_get($manifest, 'cpu_compatibility.enabled', false),
                     FILTER_VALIDATE_BOOLEAN
@@ -914,6 +939,130 @@ class UpdateProductRequest extends FormRequest
         return false;
     }
 
+    /**
+     * Both-or-neither, exact 32-byte key, uniqueness of content_key_id across ALL
+     * manifests, AND a separate vault-password grant for any REAL change to the key
+     * value -- see RevealContentKeyController/RevealContentKeyAction. The vault gate
+     * is enforced HERE, server-side, against the database's current value -- not by
+     * trusting whatever the submitted form fields say -- specifically so an admin
+     * cannot bypass it by editing the DOM to re-enable a field the front end left
+     * disabled.
+     */
+    private function validateContentKey(
+        mixed   $validator,
+        array   $manifest,
+        string  $prefix,
+        ?int    $currentSaleItemId,
+        bool    $supportsSider,
+    ): void
+    {
+        $contentKeyId = is_string($manifest['content_key_id'] ?? null)
+            ? trim($manifest['content_key_id'])
+            : null;
+        $contentKeyValue = is_string($manifest['content_key_value'] ?? null)
+            ? trim($manifest['content_key_value'])
+            : null;
+
+        $existing = $currentSaleItemId !== null
+            ? ProductSaleItemManifest::query()
+                ->where('product_sale_item_id', $currentSaleItemId)
+                ->first(['content_key_id', 'content_key_value'])
+            : null;
+
+        // The admin panel redacts content_key_value to blank on page load and only
+        // fills it in after a successful vault unlock. A blank value submitted
+        // alongside the SAME content_key_id already on file means "left locked,
+        // unchanged" -- SyncProductSaleItemManifestAction preserves the existing
+        // value in exactly this case, so there is nothing to validate here.
+        if (blank($contentKeyValue)
+            && filled($contentKeyId)
+            && $existing !== null
+            && $existing->content_key_id === $contentKeyId) {
+            return;
+        }
+
+        if (blank($contentKeyId) && blank($contentKeyValue)) {
+            return;
+        }
+
+        if (blank($contentKeyId)) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_id",
+                'وقتی مقدار کلید محتوا وارد شده، شناسه کلید هم الزامی است.'
+            );
+        }
+
+        if (blank($contentKeyValue)) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_value",
+                'برای ثبت این شناسه، مقدار کلید هم لازم است -- یا صندوق کلید محتوا را باز کنید تا مقدار فعلی حفظ شود.'
+            );
+        }
+
+        if (blank($contentKeyId) || blank($contentKeyValue)) {
+            return;
+        }
+
+        $decoded = base64_decode($contentKeyValue, true);
+
+        if ($decoded === false || strlen($decoded) !== 32) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_value",
+                'کلید محتوا باید یک رشته Base64 معتبر باشد که دقیقاً به ۳۲ بایت (۲۵۶ بیت) رمزگشایی شود.'
+            );
+        }
+
+        // Sharing a content_key_id across sale item variants is allowed on purpose --
+        // e.g. PGL6's half-season and full-season editions legitimately ship the
+        // identical database until their update paths diverge, and re-encrypting it
+        // twice under two different ids would be pure waste. What must never happen is
+        // the SAME id pointing at two DIFFERENT keys, which would make the launcher's
+        // lookup ambiguous (see IssueOfflineLicenseAction's own defensive check for
+        // this same invariant on the read side).
+        // content_key_value is encrypted at rest (non-deterministic ciphertext even
+        // for the same plaintext), so the comparison MUST happen after Eloquent
+        // decrypts it in PHP -- a SQL "!= $contentKeyValue" against the raw column
+        // would compare plaintext to ciphertext and never match correctly.
+        $conflictingValue = ProductSaleItemManifest::query()
+            ->where('content_key_id', $contentKeyId)
+            ->when(
+                $currentSaleItemId !== null,
+                fn($query) => $query->where('product_sale_item_id', '!=', $currentSaleItemId)
+            )
+            ->get(['content_key_value'])
+            ->contains(fn(ProductSaleItemManifest $row): bool => $row->content_key_value !== $contentKeyValue);
+
+        if ($conflictingValue) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_id",
+                'این شناسه قبلاً با یک مقدار کلید متفاوت برای نسخه فروش دیگری ثبت شده است. برای اشتراک یک کلید بین چند نسخه، مقدار کلید هم باید دقیقاً یکی باشد؛ برای دیتابیس متفاوت، شناسه‌ی جداگانه انتخاب کنید.'
+            );
+        }
+
+        if (!$supportsSider) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_id",
+                'تحویل کلید محتوا فقط از طریق Sider انجام می‌شود؛ ابتدا پشتیبانی از Sider را برای این نسخه فعال کنید.'
+            );
+        }
+
+        $isRealChange = $existing === null || $existing->content_key_value !== $contentKeyValue;
+
+        if ($isRealChange && !$this->hasContentKeyVaultGrant()) {
+            $validator->errors()->add(
+                "{$prefix}.manifest.content_key_value",
+                'برای ثبت یا تغییر کلید محتوا، ابتدا باید رمز صندوق کلید محتوا را در همین صفحه وارد کنید.'
+            );
+        }
+    }
+
+    private function hasContentKeyVaultGrant(): bool
+    {
+        $unlockedUntil = $this->session()?->get('content_key_vault_unlocked_until');
+
+        return is_int($unlockedUntil) && $unlockedUntil > now()->timestamp;
+    }
+
     private function isSafeRelativeWindowsPath(string $path): bool
     {
         $normalized = str_replace('\\', '/', trim($path));
@@ -965,6 +1114,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.sider_executable_path' => 'مسیر فایل اجرایی Sider',
             'sale_items.*.manifest.sider_working_directory' => 'پوشه اجرای Sider',
             'sale_items.*.manifest.sider_arguments' => 'آرگومان‌های Sider',
+            'sale_items.*.manifest.content_key_id' => 'شناسه کلید محتوا',
+            'sale_items.*.manifest.content_key_value' => 'مقدار کلید محتوا',
             'sale_items.*.manifest.cpu_compatibility.default_mode' => 'حالت پیش‌فرض CPU Compatibility',
         ];
     }

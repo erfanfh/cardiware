@@ -1,6 +1,10 @@
 @props([
     'mode' => 'variable',
     'manifest' => [],
+    // Only meaningful/passed for mode="simple" -- the "variable" mode reads the sale
+    // item's id reactively from Alpine's own loop scope (item.id) instead, since many
+    // rows share this one component instance as an x-for template.
+    'saleItemId' => null,
 ])
 
 @php
@@ -26,6 +30,10 @@
         'sider_working_directory' => '.',
         'sider_arguments' => null,
         'run_sider_as_administrator' => false,
+
+        'content_key_id' => null,
+        'content_key_value' => null,
+        'content_key_configured' => false,
 
         'cpu_compatibility' => [
             'enabled' => false,
@@ -68,6 +76,14 @@
     $state = $isSimple
         ? 'manifest'
         : 'item.manifest';
+
+    // A brand-new, not-yet-saved sale item has no manifest row to protect yet, so its
+    // content-key fields start freely editable -- the vault only gates EXISTING
+    // secrets. "variable" mode reads the id reactively (item.id) since one component
+    // instance is reused as an x-for template across every row.
+    $saleItemIdJs = $isSimple
+        ? \Illuminate\Support\Js::from($saleItemId)
+        : 'item.id ?? null';
 
     $staticName = static function (string $path): string {
         return 'sale_items[0][manifest]['
@@ -687,6 +703,167 @@
                         </span>
                     </span>
                 </label>
+            </div>
+        </div>
+    </div>
+
+    {{-- Content Key (encrypted database protection) --}}
+    <div
+        class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+        x-data="{
+            saleItemId: {{ $saleItemIdJs }},
+            vaultUnlocked: false,
+            vaultPassword: '',
+            vaultError: '',
+            vaultBusy: false,
+            get vaultRequired() {
+                return this.saleItemId !== null && this.saleItemId !== undefined && !this.vaultUnlocked;
+            },
+            async unlockVault() {
+                if (!this.vaultPassword) return;
+                this.vaultBusy = true;
+                this.vaultError = '';
+                try {
+                    const response = await fetch('{{ route('admin.products.content-key.reveal') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=\'csrf-token\']')?.content ?? '',
+                        },
+                        body: JSON.stringify({
+                            sale_item_id: this.saleItemId,
+                            vault_password: this.vaultPassword,
+                        }),
+                    });
+                    const data = await response.json();
+                    if (!response.ok || data.ok !== true) {
+                        this.vaultError = data.message || 'باز کردن صندوق ناموفق بود.';
+                        return;
+                    }
+                    {{ $state }}.content_key_id = data.content_key_id || {{ $state }}.content_key_id;
+                    {{ $state }}.content_key_value = data.content_key_value || '';
+                    this.vaultUnlocked = true;
+                    this.vaultPassword = '';
+                } catch (e) {
+                    this.vaultError = 'ارتباط با سرور برقرار نشد.';
+                } finally {
+                    this.vaultBusy = false;
+                }
+            },
+            generateKey() {
+                const bytes = new Uint8Array(32);
+                window.crypto.getRandomValues(bytes);
+                let binary = '';
+                bytes.forEach(b => binary += String.fromCharCode(b));
+                {{ $state }}.content_key_value = window.btoa(binary);
+            }
+        }"
+    >
+        <div class="mb-3">
+            <div class="text-xs font-bold text-slate-800">
+                محافظت محتوا (کلید رمزگشایی دیتابیس)
+            </div>
+
+            <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                فقط برای محصولاتی که دیتابیس بازی از قبل رمزنگاری شده پر کنید (مثلاً PGL6).
+                برای بقیه‌ی محصولات هر دو فیلد را خالی بگذارید. جزئیات کامل در
+                <span dir="ltr" class="font-mono">docs/CONTENT-KEY-PIPE-FA.md</span>
+                سمت لانچر.
+            </div>
+        </div>
+
+        {{-- Hidden inputs submit whatever is currently in Alpine state regardless of
+             lock status -- an existing key that was never unlocked simply stays as the
+             empty string the server already redacted, so the update request never
+             overwrites it (see UpdateProductRequest's untouched-when-locked check). --}}
+        @if($isSimple)
+            <input type="hidden" name="{{ $staticName('content_key_id') }}" x-bind:value="{{ $state }}.content_key_id">
+            <input type="hidden" name="{{ $staticName('content_key_value') }}" x-bind:value="{{ $state }}.content_key_value">
+        @else
+            <input type="hidden" x-bind:name="{{ $dynamicName('content_key_id') }}" x-bind:value="{{ $state }}.content_key_id">
+            <input type="hidden" x-bind:name="{{ $dynamicName('content_key_value') }}" x-bind:value="{{ $state }}.content_key_value">
+        @endif
+
+        <template x-if="vaultRequired">
+            <div class="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                <div class="mb-2 flex items-center gap-2 text-xs font-bold text-amber-800">
+                    <span>🔒</span>
+                    <span>
+                        این نسخه فروش
+                        <template x-if="{{ $state }}.content_key_configured">
+                            <span>یک کلید محتوای ثبت‌شده دارد</span>
+                        </template>
+                        <template x-if="!{{ $state }}.content_key_configured">
+                            <span>هنوز کلید محتوایی ندارد</span>
+                        </template>
+                        — برای مشاهده یا تغییر آن، رمز صندوق کلید محتوا را وارد کنید.
+                    </span>
+                </div>
+
+                <div class="flex flex-col gap-2 md:flex-row">
+                    <input
+                        type="password"
+                        x-model="vaultPassword"
+                        x-on:keydown.enter.prevent="unlockVault()"
+                        autocomplete="off"
+                        placeholder="رمز صندوق کلید محتوا"
+                        class="h-10 flex-1 rounded-xl border border-amber-300 bg-white px-3 text-sm direction-ltr outline-none focus:border-amber-500"
+                    >
+                    <button
+                        type="button"
+                        x-on:click="unlockVault()"
+                        x-bind:disabled="vaultBusy || !vaultPassword"
+                        class="h-10 shrink-0 rounded-xl bg-amber-600 px-4 text-xs font-bold text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <span x-show="!vaultBusy">باز کردن</span>
+                        <span x-show="vaultBusy">در حال بررسی...</span>
+                    </button>
+                </div>
+
+                <p class="mt-2 text-[11px] leading-5 text-rose-600" x-show="vaultError" x-text="vaultError"></p>
+            </div>
+        </template>
+
+        <div class="grid grid-cols-12 gap-4" x-show="!vaultRequired" x-cloak>
+            <div class="col-span-12 md:col-span-6">
+                <x-admin.field
+                    label="شناسه کلید محتوا"
+                    hint="یک شناسه‌ی نسخه‌دار و یکتا، نه اسم محصول -- مثلاً pgl6-db-2026-01. با هر بار رمزنگاری مجدد دیتابیس، این شناسه را عوض کنید."
+                >
+                    <x-admin.form.input
+                        x-model="{{ $state }}.content_key_id"
+                        class="direction-ltr"
+                        placeholder="pgl6-db-2026-01"
+                    />
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <x-admin.field
+                    label="مقدار کلید محتوا (Base64، دقیقاً ۳۲ بایت)"
+                    hint="همان کلیدی که دیتابیس با آن رمزنگاری شده -- باید کاراکتر به کاراکتر با آنچه در اسکریپت رمزنگاری استفاده کردید یکی باشد."
+                >
+                    <div class="flex gap-2">
+                        <x-admin.form.input
+                            x-model="{{ $state }}.content_key_value"
+                            class="direction-ltr flex-1"
+                            placeholder="Base64..."
+                            autocomplete="off"
+                        />
+                        <button
+                            type="button"
+                            x-on:click="generateKey()"
+                            class="shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-bold text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
+                        >
+                            تولید تصادفی
+                        </button>
+                    </div>
+                    <p class="mt-1 text-[11px] leading-5 text-amber-700">
+                        کلید تولیدشده را همین‌جا کپی کنید و دقیقاً همان مقدار را در اسکریپت
+                        رمزنگاری دیتابیس هم استفاده کنید -- این دو باید کاراکتر به کاراکتر یکی باشند.
+                    </p>
+                </x-admin.field>
             </div>
         </div>
     </div>

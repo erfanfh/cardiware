@@ -180,6 +180,16 @@ class BuildPurchaseAccessManifestAction
                 'sider_working_directory' => $manifest->sider_working_directory,
                 'sider_arguments' => $manifest->sider_arguments,
                 'run_sider_as_administrator' => $manifest->run_sider_as_administrator,
+
+                /*
+                 * Opaque, versioned identifier only -- never the key value itself. The
+                 * launcher looks this up against the content_keys map inside the signed
+                 * offline-license payload (see IssueOfflineLicenseAction), which is only
+                 * ever returned to the entitled user's own launcher, never embedded in
+                 * this general-purpose manifest response.
+                 */
+                'content_key_id' => $manifest->content_key_id,
+
                 'cpu_compatibility' => $cpuCompatibility,
             ],
 

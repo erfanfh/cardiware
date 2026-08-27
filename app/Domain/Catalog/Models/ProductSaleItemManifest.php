@@ -73,6 +73,8 @@ class ProductSaleItemManifest extends Model
         'sider_working_directory',
         'sider_arguments',
         'run_sider_as_administrator',
+        'content_key_id',
+        'content_key_value',
         'cpu_compatibility',
         'capabilities',
         'install_options',
@@ -90,6 +92,10 @@ class ProductSaleItemManifest extends Model
         'has_option_file' => 'boolean',
         'requires_sider' => 'boolean',
         'run_sider_as_administrator' => 'boolean',
+        // Same treatment as archive_password on this table: encrypted at rest, Laravel
+        // transparently decrypts on read. The stored value is the exact Base64 string
+        // the launcher expects -- never re-encoded on the way out.
+        'content_key_value' => 'encrypted',
         'cpu_compatibility' => 'array',
         'capabilities' => 'array',
         'install_options' => 'array',

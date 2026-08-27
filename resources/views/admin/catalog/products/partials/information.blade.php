@@ -148,6 +148,10 @@
         'sider_arguments' => '',
         'run_sider_as_administrator' => false,
 
+        'content_key_id' => '',
+        'content_key_value' => '',
+        'content_key_configured' => false,
+
         'cpu_compatibility' => [
             'enabled' => false,
             'default_mode' => 'off',
@@ -221,6 +225,14 @@
                 'sider_arguments' => $manifest->sider_arguments ?? '',
 
                 'run_sider_as_administrator' => (bool) $manifest->run_sider_as_administrator,
+
+                'content_key_id' => $manifest->content_key_id ?? '',
+                // NEVER the real secret here -- this array feeds the initial page
+                // render, which every admin with product-edit access can open.
+                // content_key_value stays redacted until RevealContentKeyController
+                // returns it (after the separate vault password is verified).
+                'content_key_value' => '',
+                'content_key_configured' => filled($manifest->content_key_value),
 
                 'cpu_compatibility' => $manifest->resolvedCpuCompatibility(),
 
