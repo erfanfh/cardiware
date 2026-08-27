@@ -3,6 +3,7 @@
 @section('title', 'ویرایش سفارش ' . $order->order_number)
 
 @php
+    use App\Domain\Catalog\Models\ProductSaleItem;
     use Illuminate\Support\Facades\Route;
 
     $money = fn (?int $amount): string => number_format((int) $amount) . ' تومان';
@@ -350,6 +351,19 @@
                                                 ?? data_get($item->purchasable, 'title')
                                                 ?? 'آیتم سفارش';
 
+                                            $itemVariantTitle = data_get($item->snapshot, 'product_sale_item_title')
+                                                ?? data_get($item->snapshot, 'sale_item_title')
+                                                ?? data_get($item->snapshot, 'variation_title')
+                                                ?? data_get($item->snapshot, 'attributes_label');
+
+                                            if (!$itemVariantTitle && $item->purchasable instanceof ProductSaleItem) {
+                                                $itemVariantTitle = $item->purchasable->title;
+                                            }
+
+                                            if ($itemVariantTitle === $itemTitle) {
+                                                $itemVariantTitle = null;
+                                            }
+
                                             $itemQuantity = (int) ($item->quantity ?? 1);
                                             $itemUnitPrice = (int) ($item->unit_price ?? 0);
                                             $itemDiscount = (int) ($item->discount_amount ?? 0);
@@ -373,6 +387,12 @@
                                                 <div class="text-sm font-black leading-7 text-slate-900">
                                                     {{ $itemTitle }}
                                                 </div>
+
+                                                @if(filled($itemVariantTitle))
+                                                    <div class="mt-1 text-xs font-bold text-slate-600">
+                                                        متغیر: <span class="font-black text-brand-700">{{ $itemVariantTitle }}</span>
+                                                    </div>
+                                                @endif
 
                                                 @if(data_get($item->snapshot, 'sku'))
                                                     <div class="mt-1 text-xs font-bold text-slate-400" dir="ltr">
