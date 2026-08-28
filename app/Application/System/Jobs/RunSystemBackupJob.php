@@ -24,31 +24,33 @@ final class RunSystemBackupJob implements ShouldQueue
 
     public function __construct(public readonly int $backupRunId)
     {
-        $this->onQueue('default');
+        $this->onConnection('redis-backup');
+        $this->onQueue('backups');
     }
 
     public function handle(
         BackupConfigManager $configManager,
-        BackupEnvironment $environment,
-        BackupSettings $settings,
-    ): void {
+        BackupEnvironment   $environment,
+        BackupSettings      $settings,
+    ): void
+    {
         $run = BackupRun::query()->findOrFail($this->backupRunId);
         $run->update(['status' => 'running', 'started_at' => now(), 'message' => null]);
 
         try {
             $configManager->apply();
 
-            if (! $environment->isReady()) {
-                throw new RuntimeException('Backup environment is incomplete: '.implode(', ', $environment->missing()));
+            if (!$environment->isReady()) {
+                throw new RuntimeException('Backup environment is incomplete: ' . implode(', ', $environment->missing()));
             }
 
             $parameters = ['--disable-notifications' => true];
-            $filesEnabled = (bool) $settings->value('files_enabled');
-            $databaseEnabled = (bool) $settings->value('database_enabled');
+            $filesEnabled = (bool)$settings->value('files_enabled');
+            $databaseEnabled = (bool)$settings->value('database_enabled');
 
-            if ($run->type === 'database' || ! $filesEnabled) {
+            if ($run->type === 'database' || !$filesEnabled) {
                 $parameters['--only-db'] = true;
-            } elseif (! $databaseEnabled) {
+            } elseif (!$databaseEnabled) {
                 $parameters['--only-files'] = true;
             }
 
@@ -89,6 +91,6 @@ final class RunSystemBackupJob implements ShouldQueue
 
     public function tags(): array
     {
-        return ['backup', 'backup-run:'.$this->backupRunId];
+        return ['backup', 'backup-run:' . $this->backupRunId];
     }
 }
