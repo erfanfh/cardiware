@@ -17,6 +17,8 @@
         'category' => 'دسته‌بندی‌ها',
         'tag' => 'برچسب‌ها',
         'post' => 'نوشته‌ها',
+        'poll' => 'نظرسنجی‌ها',
+        'video' => 'مودینگ تی‌وی',
         'page' => 'برگه‌ها',
         'project' => 'پروژه‌ها',
         'role' => 'نقش‌ها',
@@ -31,6 +33,14 @@
         'purchase-access' => 'دسترسی خرید و دانلود',
         'store' => 'فروشنده‌ها',
         'coupon' => 'کدهای تخفیف',
+        'loyalty-rule' => 'باشگاه مخاطبان - قوانین امتیاز',
+        'loyalty-account' => 'باشگاه مخاطبان - کاربران و امتیازات',
+        'loyalty-reward' => 'باشگاه مخاطبان - پاداش‌ها',
+        'raffle-campaign' => 'قرعه کشی ها - مدیریت',
+        'raffle-ticket' => 'قرعه کشی ها - بلیط ها',
+        'raffle-participant' => 'قرعه کشی ها - شرکت کنندگان',
+        'raffle-draw' => 'قرعه کشی ها - اجرای Draw و نتایج',
+        'raffle-winner' => 'قرعه کشی ها - مدیریت برندگان',
     ];
 @endphp
 
@@ -41,8 +51,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-admin.field required label="عنوان">
                 <x-admin.form.input
-                    name="title"
-                    :value="old('title', $role?->title)"
+                        name="title"
+                        :value="old('title', $role?->title)"
                 />
             </x-admin.field>
         </div>
@@ -64,7 +74,7 @@
                             </div>
 
                             <div
-                                class="inline-flex items-center rounded-xl bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
+                                    class="inline-flex items-center rounded-xl bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
                                 {{ $items->count() }} مورد
                             </div>
                         </div>
@@ -73,7 +83,7 @@
                     <div class="p-4 space-y-3">
                         @foreach($items as $permission)
                             <div
-                                class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-brand-200 hover:bg-brand-50/40">
+                                    class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition hover:border-brand-200 hover:bg-brand-50/40">
                                 <div class="flex items-center justify-between gap-4">
                                     <div class="min-w-0">
                                         <div class="text-sm font-bold text-slate-900">
@@ -89,9 +99,9 @@
 
                                     <div class="shrink-0">
                                         <x-admin.form.switch
-                                            name="permissions[{{ $permission->id }}]"
-                                            label="فعال"
-                                            :checked="in_array((string) $permission->id, collect($selectedPermissionIds)->map(fn ($id) => (string) $id)->all(), true)"
+                                                name="permissions[{{ $permission->id }}]"
+                                                label="فعال"
+                                                :checked="in_array((string) $permission->id, collect($selectedPermissionIds)->map(fn ($id) => (string) $id)->all(), true)"
                                         />
                                     </div>
                                 </div>

@@ -73,6 +73,8 @@ class Comment extends Model
                 'commentable_id',
                 'status',
                 'approved_at',
+                'content',
+                'rating_percent',
             ])) {
                 $comment->flushCommentableCache();
             }

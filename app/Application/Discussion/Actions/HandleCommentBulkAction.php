@@ -3,6 +3,7 @@
 namespace App\Application\Discussion\Actions;
 
 use App\Domain\Discussion\Enums\CommentStatusEnum;
+use App\Domain\Discussion\Events\CommentDisqualifiedEvent;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -10,6 +11,11 @@ use Throwable;
 
 class HandleCommentBulkAction
 {
+    public function __construct(
+        private readonly ChangeCommentStatusAction $changeCommentStatusAction,
+    ) {
+    }
+
     /**
      * @param string $action
      * @param array<int> $ids
@@ -20,9 +26,9 @@ class HandleCommentBulkAction
     {
         return DB::transaction(function () use ($action, $ids) {
             $affected = match ($action) {
-                'approve' => $this->approve($ids),
-                'reject' => $this->reject($ids),
-                'pending' => $this->pending($ids),
+                'approve' => $this->changeStatus($ids, CommentStatusEnum::APPROVED),
+                'reject' => $this->changeStatus($ids, CommentStatusEnum::REJECTED),
+                'pending' => $this->changeStatus($ids, CommentStatusEnum::PENDING),
                 'delete' => $this->delete($ids),
                 default => throw new InvalidArgumentException('Bulk action is not supported.'),
             };
@@ -53,52 +59,60 @@ class HandleCommentBulkAction
     /**
      * @param array<int> $ids
      */
-    protected function approve(array $ids): int
+    private function changeStatus(array $ids, CommentStatusEnum $status): int
     {
-        return Comment::query()
+        $comments = Comment::query()
             ->whereIn('id', $ids)
-            ->update([
-                'status' => CommentStatusEnum::APPROVED,
-                'approved_at' => now(),
-            ]);
+            ->get();
+
+        $affected = 0;
+
+        foreach ($comments as $comment) {
+            if ($comment->status === $status) {
+                continue;
+            }
+
+            $this->changeCommentStatusAction->execute($comment, $status);
+            $affected++;
+        }
+
+        return $affected;
     }
 
     /**
      * @param array<int> $ids
      */
-    protected function pending(array $ids): int
+    private function delete(array $ids): int
     {
-        return Comment::query()
+        $comments = Comment::query()
             ->whereIn('id', $ids)
-            ->update([
-                'status' => CommentStatusEnum::PENDING,
-                'approved_at' => null,
-            ]);
-    }
+            ->get();
 
-    /**
-     * @param array<int> $ids
-     */
-    protected function reject(array $ids): int
-    {
-        return Comment::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => CommentStatusEnum::REJECTED,
-                'approved_at' => null,
-            ]);
-    }
+        $affected = 0;
 
-    /**
-     * @param array<int> $ids
-     */
-    protected function delete(array $ids): int
-    {
-        return Comment::query()
-            ->whereIn('id', $ids)
-            ->get()
-            ->filter(fn(Comment $comment) => !$comment->trashed())
-            ->tap(fn($comments) => $comments->each->delete())
-            ->count();
+        foreach ($comments as $comment) {
+            $wasApproved = $comment->isApproved();
+            $commentId = (int)$comment->getKey();
+            $occurredAt = now(config('app.timezone'))->toImmutable();
+
+            $comment->delete();
+            $affected++;
+
+            if (!$wasApproved) {
+                continue;
+            }
+
+            DB::afterCommit(
+                fn() => event(
+                    new CommentDisqualifiedEvent(
+                        commentId: $commentId,
+                        reason: 'deleted',
+                        occurredAt: $occurredAt,
+                    )
+                )
+            );
+        }
+
+        return $affected;
     }
 }

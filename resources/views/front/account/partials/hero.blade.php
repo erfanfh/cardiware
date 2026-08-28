@@ -67,7 +67,7 @@
                 ['label' => 'دانلود فعال', 'value' => $user->purchase_accesses_count],
                 ['label' => 'سفارش‌ها', 'value' => $user->paid_orders_count],
                 ['label' => 'تیکت باز', 'value' => $user->open_tickets_count],
-                ['label' => 'امتیاز', 'value' => 0],
+                ['label' => 'امتیاز', 'value' => $user->loyalty_points],
             ] as $stat)
                 <div
                     class="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center sm:rounded-3xl sm:p-4 dark:border-slate-700 dark:bg-slate-800/70">

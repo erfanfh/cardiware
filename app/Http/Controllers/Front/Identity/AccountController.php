@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Front\Identity;
 use App\Application\Content\Actions\GetYesterdayTopPostsAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Identity\Actions\HydrateAccountUserAction;
+use App\Application\Loyalty\Actions\GetAudienceClubOverviewAction;
+use App\Application\Loyalty\Actions\GetAudienceClubDashboardCardAction;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
@@ -19,15 +21,18 @@ class AccountController extends Controller
 
     public function dashboard(
         GetYesterdayTopPostsAction $getYesterdayTopPostsAction,
+        GetAudienceClubDashboardCardAction $getAudienceClubDashboardCardAction,
     ): View
     {
         $user = $this->getHydratedUser();
 
         $yesterdayTopPosts = $getYesterdayTopPostsAction->execute();
+        $audienceClub = $getAudienceClubDashboardCardAction->execute($user);
 
         return view('front.account.pages.dashboard', compact(
             'user',
-            'yesterdayTopPosts'
+            'yesterdayTopPosts',
+            'audienceClub',
         ));
     }
 
@@ -87,6 +92,16 @@ class AccountController extends Controller
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
 
         return view('front.account.pages.wallet', compact('user', 'wallet'));
+    }
+
+    public function loyalty(
+        GetAudienceClubOverviewAction $getAudienceClubOverviewAction,
+    ): View
+    {
+        $user = $this->getHydratedUser();
+        $club = $getAudienceClubOverviewAction->execute($user);
+
+        return view('front.account.pages.loyalty', compact('user', 'club'));
     }
 
     private function getHydratedUser(): User

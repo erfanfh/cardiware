@@ -49,6 +49,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $schedule->exec('nice -n 10 ionice -c2 -n7 php artisan sitemap:regenerate-if-needed')
             ->everyFiveMinutes()
             ->withoutOverlapping();
+
+        $schedule->command('backups:dispatch-due')
+            ->everyFifteenMinutes()
+            ->withoutOverlapping(30)
+            ->onOneServer();
+
+        $schedule->command('backups:cleanup')
+            ->dailyAt('04:10')
+            ->withoutOverlapping(180)
+            ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

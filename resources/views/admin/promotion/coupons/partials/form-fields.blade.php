@@ -34,6 +34,11 @@
         $coupon?->applies_to_addons ?? false
     );
 
+    $floatingBoxEnabled = old(
+        'is_floating_box_enabled',
+        $coupon?->is_floating_box_enabled ?? false
+    );
+
     $selectedScope = old(
         'scope',
         $coupon?->scope?->value ?? CouponScopeEnum::ORDER->value
@@ -225,6 +230,50 @@
                     :value="old('usage_limit_per_user', $coupon?->usage_limit_per_user)"
                 />
             </x-admin.field>
+        </div>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="باکس شناور تخفیف">
+        <div
+            x-data="{ enabled: @js((bool) $floatingBoxEnabled) }"
+            class="space-y-4"
+        >
+            <label
+                class="group flex cursor-pointer items-start gap-4 rounded-2xl border p-4 transition"
+                :class="enabled
+                    ? 'border-orange-200 bg-orange-50 shadow-sm'
+                    : 'border-slate-200 bg-slate-50 hover:border-slate-300'"
+            >
+                <input type="hidden" name="is_floating_box_enabled" value="0">
+
+                <input
+                    type="checkbox"
+                    name="is_floating_box_enabled"
+                    value="1"
+                    x-model="enabled"
+                    class="mt-1 rounded border-slate-300 text-orange-500 focus:ring-orange-200"
+                >
+
+                <span class="min-w-0">
+                    <span class="block text-sm font-bold text-slate-800">
+                        نمایش این تخفیف در باکس ثابت پایین سایت
+                    </span>
+                    <span class="mt-1 block text-xs leading-6 text-slate-500">
+                        ظرفیت باقی‌مانده از «تعداد استفاده کلی» محاسبه و بعد از هر خرید موفق خودکار کم می‌شود.
+                        با فعال‌کردن این گزینه، باکس کدتخفیف دیگری که قبلاً فعال بوده غیرفعال خواهد شد.
+                    </span>
+                </span>
+            </label>
+
+            <div
+                x-show="enabled"
+                x-transition
+                x-cloak
+                class="rounded-2xl border border-dashed border-orange-200 bg-white p-4 text-xs leading-7 text-slate-600"
+            >
+                برای نمایش صحیح ظرفیت، فیلد «تعداد استفاده کلی» را پر کنید. عنوان، مقدار تخفیف، کد و
+                محصول هدف به‌صورت خودکار از همین کدتخفیف خوانده می‌شوند.
+            </div>
         </div>
     </x-admin.metabox>
 

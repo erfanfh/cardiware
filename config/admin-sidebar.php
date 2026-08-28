@@ -56,7 +56,19 @@ return [
                 'route' => 'admin.pages.create',
                 'icon' => 'icons.plus-sign',
                 'gate' => 'page.create',
-            ]
+            ],
+        ],
+    ],
+
+    [
+        'label' => 'مودینگ تی‌وی',
+        'route' => 'admin.videos.index',
+        'icon' => 'icons.video-01',
+        'children' => [
+            ['label' => 'همه ویدیوها', 'route' => 'admin.videos.index', 'icon' => 'icons.menu-01', 'gate' => 'video.list'],
+            ['label' => 'افزودن ویدیو', 'route' => 'admin.videos.create', 'icon' => 'icons.plus-sign', 'gate' => 'video.create'],
+            ['label' => 'دسته‌ها', 'route' => 'admin.videos.categories.index', 'icon' => 'icons.tag-02', 'gate' => 'video.category'],
+            ['label' => 'برچسب‌ها', 'route' => 'admin.videos.tags.index', 'icon' => 'icons.tag-02', 'gate' => 'video.tag'],
         ],
     ],
 
@@ -66,6 +78,26 @@ return [
         'icon' => 'icons.comment-01',
         'gate' => 'comment.list',
         'badge' => 'pending_comments',
+    ],
+
+    [
+        'label' => 'نظرسنجی‌ها',
+        'route' => 'admin.polls.index',
+        'icon' => 'icons.chart-03',
+        'children' => [
+            [
+                'label' => 'لیست نظرسنجی‌ها',
+                'route' => 'admin.polls.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'poll.list',
+            ],
+            [
+                'label' => 'ایجاد نظرسنجی',
+                'route' => 'admin.polls.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'poll.create',
+            ],
+        ],
     ],
 
     [
@@ -90,6 +122,26 @@ return [
     ],
 
     [
+        'label' => 'قرعه کشی ها',
+        'route' => 'admin.draw-campaigns.index',
+        'icon' => 'icons.award-03',
+        'children' => [
+            [
+                'label' => 'لیست قرعه کشی ها',
+                'route' => 'admin.draw-campaigns.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'raffle-campaign.list',
+            ],
+            [
+                'label' => 'ایجاد قرعه کشی',
+                'route' => 'admin.draw-campaigns.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'raffle-campaign.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'پروژه‌ها',
         'route' => 'admin.projects.index',
         'icon' => 'icons.folder-management',
@@ -105,7 +157,7 @@ return [
                 'route' => 'admin.projects.create',
                 'icon' => 'icons.plus-sign',
                 'gate' => 'project.create',
-            ]
+            ],
         ],
     ],
 
@@ -183,6 +235,31 @@ return [
     ],
 
     [
+        'label' => 'باشگاه مخاطبان',
+        'icon' => 'icons.medal-06',
+        'children' => [
+            [
+                'label' => 'قوانین کسب امتیاز',
+                'route' => 'admin.earning-rules.index',
+                'icon' => 'icons.star',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'کاربران باشگاه',
+                'route' => 'admin.loyalty-members.index',
+                'icon' => 'icons.user-multiple',
+                'gate' => 'loyalty-account.list',
+            ],
+            [
+                'label' => 'پاداش‌ها',
+                'route' => 'admin.reward-offers.index',
+                'icon' => 'icons.discount',
+                'gate' => 'loyalty-reward.list',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'محصولات',
         'route' => 'admin.products.index',
         'icon' => 'icons.shopping-bag-03',
@@ -254,7 +331,7 @@ return [
                 'route' => 'admin.roles.index',
                 'icon' => 'icons.square-unlock-02',
                 'gate' => 'role.list',
-            ]
+            ],
         ],
     ],
 
@@ -337,6 +414,24 @@ return [
                 'route' => 'admin.settings.general',
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.general',
+            ],
+            [
+                'label' => 'بک‌آپ خودکار',
+                'route' => 'admin.settings.backup',
+                'icon' => 'icons.arrow-reload-horizontal',
+                'gate' => 'setting.general',
+            ],
+            [
+                'label' => 'باشگاه مخاطبان',
+                'route' => 'admin.settings.loyalty',
+                'icon' => 'icons.settings-02',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'قرعه‌کشی',
+                'route' => 'admin.settings.raffle',
+                'icon' => 'icons.settings-02',
+                'gate' => 'raffle-campaign.edit',
             ],
             [
                 'label' => 'سئو',

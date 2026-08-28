@@ -5,6 +5,82 @@
     display: none !important;
 }
 
+.loyalty-earned-toast-card {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(.96);
+    transition: opacity 220ms ease, transform 280ms cubic-bezier(.2, .9, .2, 1.1);
+}
+
+.loyalty-earned-toast-card.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+.loyalty-earned-toast-card.is-visible .loyalty-earned-icon {
+    animation: loyalty-earned-icon-pop 700ms cubic-bezier(.2, .9, .2, 1.2) both;
+}
+
+.loyalty-earned-progress {
+    animation: loyalty-earned-progress 7.2s linear forwards;
+}
+
+.loyalty-earned-particle {
+    position: absolute;
+    top: 16px;
+    right: 58px;
+    width: 5px;
+    height: 9px;
+    border-radius: 999px;
+    background: #f59e0b;
+    opacity: 0;
+}
+
+.loyalty-earned-toast-card.is-visible .loyalty-earned-particle {
+    animation: loyalty-earned-particle 1.2s ease-out both;
+}
+
+.loyalty-earned-particle:nth-of-type(4n + 1) { background: #f97316; }
+.loyalty-earned-particle:nth-of-type(4n + 2) { background: #eab308; }
+.loyalty-earned-particle:nth-of-type(4n + 3) { background: #10b981; }
+.loyalty-earned-particle:nth-of-type(1) { --particle-x: -48px; --particle-y: 45px; animation-delay: 80ms; }
+.loyalty-earned-particle:nth-of-type(2) { --particle-x: -20px; --particle-y: 62px; animation-delay: 130ms; }
+.loyalty-earned-particle:nth-of-type(3) { --particle-x: 12px; --particle-y: 50px; animation-delay: 40ms; }
+.loyalty-earned-particle:nth-of-type(4) { --particle-x: 43px; --particle-y: 36px; animation-delay: 170ms; }
+.loyalty-earned-particle:nth-of-type(5) { --particle-x: -58px; --particle-y: 15px; animation-delay: 210ms; }
+.loyalty-earned-particle:nth-of-type(6) { --particle-x: 54px; --particle-y: 8px; animation-delay: 115ms; }
+.loyalty-earned-particle:nth-of-type(7) { --particle-x: -34px; --particle-y: -15px; animation-delay: 190ms; }
+.loyalty-earned-particle:nth-of-type(8) { --particle-x: 30px; --particle-y: -19px; animation-delay: 70ms; }
+
+@keyframes loyalty-earned-icon-pop {
+    0% { transform: scale(.72) rotate(8deg); }
+    55% { transform: scale(1.08) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes loyalty-earned-progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+@keyframes loyalty-earned-particle {
+    0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(0); }
+    15% { opacity: 1; }
+    100% { opacity: 0; transform: translate3d(var(--particle-x, 0), var(--particle-y, 40px), 0) rotate(220deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loyalty-earned-toast-card,
+    .loyalty-earned-icon,
+    .loyalty-earned-progress {
+        animation: none;
+        transition-duration: 1ms;
+    }
+
+    .loyalty-earned-particle {
+        display: none;
+    }
+}
+
 #product-image-gallery-pagination-prev.swiper-button-disabled,
 #product-image-gallery-pagination-next.swiper-button-disabled,
 .mwGalleryPrev.swiper-button-disabled,

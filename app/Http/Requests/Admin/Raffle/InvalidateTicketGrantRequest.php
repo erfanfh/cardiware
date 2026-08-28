@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Requests\Admin\Raffle;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class InvalidateTicketGrantRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'reason' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'reason' => is_string($this->input('reason'))
+                ? trim($this->input('reason'))
+                : $this->input('reason'),
+        ]);
+    }
+}

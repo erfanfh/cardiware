@@ -11,12 +11,10 @@ use App\Domain\Media\Models\MediaFile;
 final class ResolveSearchSeoPayloadAction
 {
     public function __construct(
-        protected ResolveCanonicalUrlAction    $resolveCanonicalUrlAction,
-        protected SeoTemplateParser            $seoTemplateParser,
+        protected ResolveCanonicalUrlAction $resolveCanonicalUrlAction,
+        protected SeoTemplateParser $seoTemplateParser,
         protected SearchSeoVariableDataBuilder $searchSeoVariableDataBuilder,
-    )
-    {
-    }
+    ) {}
 
     public function execute(): ResolvedSeoPayloadDTO
     {
@@ -45,7 +43,7 @@ final class ResolveSearchSeoPayloadAction
             title: $title,
             description: $description,
             headline: filled($searchTerm)
-                ? 'نتایج جستجو برای ' . $searchTerm
+                ? 'نتایج جستجو برای '.$searchTerm
                 : 'نتایج جستجو',
 
             ogTitle: $title,
@@ -65,14 +63,14 @@ final class ResolveSearchSeoPayloadAction
             pageImageWidth: $image?->primaryVariant?->width,
             pageImageHeight: $image?->primaryVariant?->height,
             pageImageCaption: filled($searchTerm)
-                ? 'نتایج جستجو برای ' . $searchTerm
+                ? 'نتایج جستجو برای '.$searchTerm
                 : 'نتایج جستجو',
         );
     }
 
     protected function resolveSearchTerm(): string
     {
-        return trim((string)request()->query('q', request()->query('s', '')));
+        return trim((string) request()->query('q', request()->query('s', '')));
     }
 
     protected function resolveCanonicalUrl(string $searchTerm): string
@@ -105,7 +103,7 @@ final class ResolveSearchSeoPayloadAction
 
     protected function currentPage(): int
     {
-        return max(1, (int)request()->integer('page', 1));
+        return max(1, (int) request()->integer('page', 1));
     }
 
     protected function appendPaginationToTitle(string $title): string
@@ -133,30 +131,38 @@ final class ResolveSearchSeoPayloadAction
             $siteName = array_pop($parts);
 
             return implode($separator, $parts)
-                . $separator
-                . $paginationText
-                . $separator
-                . $siteName;
+                .$separator
+                .$paginationText
+                .$separator
+                .$siteName;
         }
 
-        return $title . $separator . $paginationText;
+        return $title.$separator.$paginationText;
     }
 
     protected function resolvePrimaryImage(): ?MediaFile
     {
         $paginator = request()->attributes->get('seo_paginator');
 
-        if (!$paginator || !method_exists($paginator, 'items')) {
+        if (! $paginator || ! method_exists($paginator, 'items')) {
             return null;
         }
 
-        foreach ($paginator->items() as $post) {
-            if ($post->relationLoaded('picture') && $post->picture instanceof MediaFile) {
-                return $post->picture;
+        foreach ($paginator->items() as $result) {
+            if ($result->relationLoaded('picture') && $result->picture instanceof MediaFile) {
+                return $result->picture;
             }
 
-            if ($post->picture instanceof MediaFile) {
-                return $post->picture;
+            if ($result->picture instanceof MediaFile) {
+                return $result->picture;
+            }
+
+            if ($result->relationLoaded('cover') && $result->cover instanceof MediaFile) {
+                return $result->cover;
+            }
+
+            if ($result->cover instanceof MediaFile) {
+                return $result->cover;
             }
         }
 

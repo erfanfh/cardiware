@@ -39,6 +39,11 @@ enum FinancialActivityTypeEnum: string
      */
     case BONUS = 'bonus';
 
+    /**
+     * Wallet credit created from loyalty points.
+     */
+    case LOYALTY_CONVERSION = 'loyalty_conversion';
+
     public function label(): string
     {
         return match ($this) {
@@ -49,6 +54,7 @@ enum FinancialActivityTypeEnum: string
             self::ADMIN_CREDIT => 'افزایش موجودی توسط مدیر',
             self::ADMIN_DEBIT => 'کاهش موجودی توسط مدیر',
             self::BONUS => 'اعتبار هدیه',
+            self::LOYALTY_CONVERSION => 'تبدیل امتیاز باشگاه',
         };
     }
 }

@@ -9,6 +9,7 @@ use App\Infrastructure\Services\Setting\BaseSettings;
 class GeneralSettings extends BaseSettings
 {
     protected string $group = 'general';
+
     protected array $allowedKeys = [
         'active_tab',
         'title',
@@ -34,6 +35,7 @@ class GeneralSettings extends BaseSettings
         'search_posts_count_settings',
         'search_projects_count_settings',
         'search_products_count_settings',
+        'search_videos_count_settings',
         'author_posts_count_settings',
 
         'default_payment_gateway',

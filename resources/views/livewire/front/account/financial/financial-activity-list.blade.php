@@ -304,6 +304,7 @@
                         'failure_reason' => 'علت ناموفق بودن',
                         'counterparty_mobile' => 'شماره طرف مقابل',
                         'transfer_status' => 'وضعیت انتقال',
+                        'converted_points' => 'امتیاز مصرف‌شده',
                     ];
 
                     $amountDetailKeys = [
@@ -329,7 +330,9 @@
                                 class="flex h-11 w-11 shrink-0 items-center
                                    justify-center rounded-2xl {{ $iconClasses }}"
                             >
-                                @if($activity->type === FinancialActivityTypeEnum::WALLET_TRANSFER)
+                                @if($activity->type === FinancialActivityTypeEnum::LOYALTY_CONVERSION)
+                                    <span class="[&_svg]:h-5 [&_svg]:w-5">@include('icons.award-03')</span>
+                                @elseif($activity->type === FinancialActivityTypeEnum::WALLET_TRANSFER)
                                     <svg
                                         class="h-5 w-5"
                                         viewBox="0 0 24 24"

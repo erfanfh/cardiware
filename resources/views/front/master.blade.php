@@ -23,6 +23,9 @@
 @include('front.footer.index')
 <x-front.lightbox-gallery/>
 <x-front.scroll-to-top/>
+<x-front.registration-gift-toast/>
+<x-front.loyalty-earned-toast/>
+<livewire:front.promotion.floating-coupon-box />
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts

@@ -610,6 +610,7 @@ class GetUserFinancialActivitiesAction
                     WalletTransactionTypeEnum::ADMIN_CREDIT->value,
                     WalletTransactionTypeEnum::ADMIN_DEBIT->value,
                     WalletTransactionTypeEnum::BONUS->value,
+                    WalletTransactionTypeEnum::LOYALTY_CONVERSION->value,
                 ],
             )
             ->select([
@@ -1236,6 +1237,10 @@ class GetUserFinancialActivitiesAction
                 'withdrawable_amount' =>
                     (int)$transaction->withdrawable_amount > 0
                         ? (int)$transaction->withdrawable_amount
+                        : null,
+                'converted_points' =>
+                    $transaction->type === WalletTransactionTypeEnum::LOYALTY_CONVERSION
+                        ? number_format((int)data_get($transaction->metadata, 'converted_points')) . ' امتیاز'
                         : null,
             ], static fn(mixed $value): bool => filled($value)),
         );

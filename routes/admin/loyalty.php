@@ -1,0 +1,19 @@
+<?php
+
+use App\Http\Controllers\Admin\Loyalty\AdjustAudienceMemberPointsController;
+use App\Http\Controllers\Admin\Loyalty\AudienceMemberController;
+use App\Http\Controllers\Admin\Loyalty\EarningRuleBulkActionController;
+use App\Http\Controllers\Admin\Loyalty\EarningRuleController;
+use App\Http\Controllers\Admin\Loyalty\RewardOfferBulkActionController;
+use App\Http\Controllers\Admin\Loyalty\RewardOfferController;
+use Illuminate\Support\Facades\Route;
+
+Route::resource('earning-rules', EarningRuleController::class)->except(['show']);
+Route::post('earning-rules/bulk-action', EarningRuleBulkActionController::class)->name('earning-rules.bulk-action');
+
+Route::resource('reward-offers', RewardOfferController::class)->except(['show']);
+Route::post('reward-offers/bulk-action', RewardOfferBulkActionController::class)->name('reward-offers.bulk-action');
+
+Route::get('loyalty-members', [AudienceMemberController::class, 'index'])->name('loyalty-members.index');
+Route::get('loyalty-members/{user}', [AudienceMemberController::class, 'show'])->name('loyalty-members.show');
+Route::post('loyalty-members/{user}/adjust', AdjustAudienceMemberPointsController::class)->name('loyalty-members.adjust');

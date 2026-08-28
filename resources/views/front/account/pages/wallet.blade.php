@@ -172,6 +172,16 @@
 
                             انتقال پول
                         </a>
+
+                        @if(get_setting('loyalty', 'point_conversion_enabled', false))
+                            <a
+                                href="{{ route('account.loyalty') }}#convert-points"
+                                class="group flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:border-emerald-300/30 hover:bg-emerald-400/15 focus:outline-none focus:ring-4 focus:ring-emerald-400/10"
+                            >
+                                <span class="[&_svg]:h-5 [&_svg]:w-5">@include('icons.award-03')</span>
+                                تبدیل امتیاز به موجودی
+                            </a>
+                        @endif
                     </div>
 
                     <p class="mt-3 text-center text-xs leading-6 text-slate-500">

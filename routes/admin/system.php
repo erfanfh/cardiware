@@ -3,6 +3,13 @@
 use App\Http\Controllers\Admin\System\SettingController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
+    Route::get('backup', 'backup')->name('backup');
+    Route::put('backup', 'storeBackup')->name('backup.store');
+    Route::post('backup/run', 'runBackup')->name('backup.run');
+    Route::get('raffle', 'raffle')->name('raffle');
+    Route::put('raffle', 'storeRaffle')->name('raffle.store');
+    Route::get('loyalty', 'loyalty')->name('loyalty');
+    Route::put('loyalty', 'storeLoyalty')->name('loyalty.store');
     Route::get('general', 'general')->name('general');
     Route::put('general', 'storeGeneral')->name('general.store');
     Route::get('seo', 'seo')->name('seo');
@@ -25,6 +32,8 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('posts', 'storePosts')->name('posts.store');
     Route::get('products', 'products')->name('products');
     Route::put('products', 'storeProducts')->name('products.store');
+    Route::get('videos', 'videos')->name('videos');
+    Route::put('videos', 'storeVideos')->name('videos.store');
     Route::get('ticket', 'ticket')->name('ticket');
     Route::put('ticket', 'storeTicket')->name('ticket.store');
 });

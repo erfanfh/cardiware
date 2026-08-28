@@ -54,3 +54,6 @@ Route::get('/product-sitemap.xml', [SitemapController::class, 'products'])
 Route::get('/product-sitemap{page}.xml', [SitemapController::class, 'paginatedProducts'])
     ->whereNumber('page')
     ->name('sitemap.products.paginated');
+
+Route::get('/video-sitemap.xml', [SitemapController::class, 'videos'])->name('sitemap.videos');
+Route::get('/video-sitemap{page}.xml', [SitemapController::class, 'paginatedVideos'])->whereNumber('page')->name('sitemap.videos.paginated');

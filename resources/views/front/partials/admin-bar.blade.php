@@ -32,6 +32,13 @@
             ];
         }
 
+        if(\Illuminate\Support\Facades\Gate::allows('video.create')){
+            $quickActions[] = [
+                'title' => 'ویدیو جدید',
+                'href' => route('admin.videos.create'),
+            ];
+        }
+
         $contextAction = null;
 
         if (request()->routeIs('contents.detail') and \Illuminate\Support\Facades\Gate::allows('post.edit') and isset($post)) {
@@ -53,6 +60,11 @@
             $contextAction = [
                 'title' => 'ویرایش محصول',
                 'href' => route('admin.products.edit', $product),
+            ];
+        } elseif (request()->routeIs('videos.show') and \Illuminate\Support\Facades\Gate::allows('video.edit') and isset($video)) {
+            $contextAction = [
+                'title' => 'ویرایش ویدیو',
+                'href' => route('admin.videos.edit', $video),
             ];
         }
     @endphp
@@ -259,6 +271,16 @@
                         class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
                     >
                         <span>محصول جدید</span>
+                        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
+                        </svg>
+                    </a>
+
+                    <a
+                        href="{{ route('admin.videos.create') }}"
+                        class="flex items-center justify-between rounded-xl bg-white/5 px-3 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10"
+                    >
+                        <span>ویدیو جدید</span>
                         <svg viewBox="0 0 24 24" class="h-4 w-4 fill-none" stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
                         </svg>

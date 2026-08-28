@@ -1,14 +1,15 @@
 <?php
 
 use App\Http\Controllers\Front\HomeController;
+use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
+use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
+use App\Http\Controllers\Front\Launcher\LauncherLandingController;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
+use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
-use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
-use App\Http\Controllers\Front\Launcher\LauncherLandingController;
 
-Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class])
+Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
         Route::get('/launcher', LauncherLandingController::class)
@@ -37,6 +38,10 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         require __DIR__ . '/front/marketplace.php';
         require __DIR__ . '/front/financial.php';
         require __DIR__ . '/front/system.php';
+        require __DIR__ . '/front/loyalty.php';
         require __DIR__ . '/front/support.php';
+        require __DIR__ . '/front/raffle.php';
+        require __DIR__ . '/front/poll.php';
+        require __DIR__ . '/front/video.php';
         require __DIR__ . '/front/content.php'; // This must be the last
     });

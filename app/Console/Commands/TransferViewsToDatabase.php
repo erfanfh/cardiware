@@ -9,6 +9,7 @@ use App\Domain\Marketplace\Models\Store;
 use App\Domain\Project\Models\Project;
 use App\Domain\System\Models\PageView;
 use App\Domain\System\Models\PageViewDetail;
+use App\Domain\Video\Models\Video;
 use App\Infrastructure\Support\Counters\BufferedCounter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class TransferViewsToDatabase extends Command
             'Project' => Project::class,
             'Product' => Product::class,
             'Store' => Store::class,
+            'Video' => Video::class,
         ];
 
         $limit = (int)$this->option('limit');

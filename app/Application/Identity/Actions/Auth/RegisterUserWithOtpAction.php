@@ -9,8 +9,10 @@ use App\Application\Identity\DTOs\RegisterUserDTO;
 use App\Application\Identity\DTOs\RegisterUserWithOtpDTO;
 use App\Domain\Identity\Enums\AuthRateLimitScopeEnum;
 use App\Domain\Identity\Enums\OtpTypeEnum;
+use App\Domain\Identity\Events\UserRegisteredEvent;
 use App\Domain\Identity\Models\Otp;
 use App\Domain\Identity\Models\User;
+use Illuminate\Support\Facades\DB;
 
 final class RegisterUserWithOtpAction
 {
@@ -68,6 +70,18 @@ final class RegisterUserWithOtpAction
                     ->markUserMobileAsVerifiedAction
                     ->execute($user);
             },
+        );
+
+        $registeredAt = $user->created_at?->toImmutable()
+            ?? now(config('app.timezone'))->toImmutable();
+
+        DB::afterCommit(
+            fn() => event(
+                new UserRegisteredEvent(
+                    userId: (int)$user->getKey(),
+                    occurredAt: $registeredAt,
+                )
+            )
         );
 
         /*

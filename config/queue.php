@@ -73,6 +73,15 @@ return [
             'after_commit' => false,
         ],
 
+        'redis-raffle' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
+            'queue' => env('RAFFLE_QUEUE', 'raffle'),
+            'retry_after' => (int) env('RAFFLE_QUEUE_RETRY_AFTER', 3660),
+            'block_for' => null,
+            'after_commit' => true,
+        ],
+
         'deferred' => [
             'driver' => 'deferred',
         ],

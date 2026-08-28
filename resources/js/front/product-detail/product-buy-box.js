@@ -3,6 +3,7 @@ export default function productBuyBox(config) {
         productId: Number(config.productId),
         saleItems: config.saleItems ?? [],
         addons: config.addons ?? [],
+        purchasePoints: config.purchasePoints ?? {enabled: false, items: {}},
         cartUrl: config.cartUrl,
         hasAvailableSaleItems: Boolean(config.hasAvailableSaleItems ?? false),
 

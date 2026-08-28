@@ -5,6 +5,7 @@ namespace App\Application\Discussion\Actions;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
+use App\Domain\Discussion\Events\CommentApprovedEvent;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,21 @@ class CreateCommentAction
             if ($comment->isRoot()) {
                 $comment->root_id = $comment->id;
                 $comment->save();
+            }
+
+            if ($comment->isApproved()) {
+                $commentId = (int)$comment->getKey();
+                $occurredAt = $comment->approved_at?->toImmutable()
+                    ?? now(config('app.timezone'))->toImmutable();
+
+                DB::afterCommit(
+                    fn() => event(
+                        new CommentApprovedEvent(
+                            commentId: $commentId,
+                            occurredAt: $occurredAt,
+                        )
+                    )
+                );
             }
 
             return $comment->fresh(['user']);

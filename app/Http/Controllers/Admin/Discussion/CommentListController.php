@@ -46,6 +46,7 @@ class CommentListController extends Controller
         $commentableTypes = [
             'post' => 'نوشته‌ها',
             'product' => 'محصولات',
+            'video' => 'ویدیوها',
         ];
 
         $statusCounts = [

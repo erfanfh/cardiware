@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Application\Loyalty\Earning\Contexts;
+
+use App\Application\Loyalty\Earning\Contracts\EarningContext;
+use App\Domain\Identity\Models\User;
+use Carbon\CarbonImmutable;
+use DateTimeInterface;
+use Illuminate\Database\Eloquent\Model;
+
+final readonly class RegistrationEarningContext implements EarningContext
+{
+    public CarbonImmutable $occurredAt;
+
+    public function __construct(
+        public User $user,
+        ?DateTimeInterface $occurredAt = null,
+    ) {
+        $this->occurredAt = $occurredAt
+            ? CarbonImmutable::instance($occurredAt)
+            : ($user->created_at?->toImmutable() ?? now()->toImmutable());
+    }
+
+    public function user(): User
+    {
+        return $this->user;
+    }
+
+    public function occurredAt(): CarbonImmutable
+    {
+        return $this->occurredAt;
+    }
+
+    public function reference(): ?Model
+    {
+        return $this->user;
+    }
+}

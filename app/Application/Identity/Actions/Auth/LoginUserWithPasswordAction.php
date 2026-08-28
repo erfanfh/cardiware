@@ -20,7 +20,7 @@ final class LoginUserWithPasswordAction
     public function execute(
         string $mobile,
         string $password,
-        bool   $remember = false,
+        bool   $remember = true,
     ): User
     {
         $user = $this->getActiveUserByMobileAction->execute(

@@ -10,11 +10,14 @@ use App\Application\Seo\Generators\Sitemap\PageStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\PostStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProductStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProjectStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\RaffleStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\TagStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\VideoStaticSitemapGenerator;
 use App\Application\Seo\Resolvers\AuthorSeoResolver;
 use App\Application\Seo\Resolvers\AuthSeoResolver;
 use App\Application\Seo\Resolvers\HomePageSeoResolver;
 use App\Application\Seo\Resolvers\PageSeoResolver;
+use App\Application\Seo\Resolvers\PollSeoResolver;
 use App\Application\Seo\Resolvers\PostCategorySeoResolver;
 use App\Application\Seo\Resolvers\PostListSeoResolver;
 use App\Application\Seo\Resolvers\PostSeoResolver;
@@ -23,8 +26,10 @@ use App\Application\Seo\Resolvers\ProductListSeoResolver;
 use App\Application\Seo\Resolvers\ProductSeoResolver;
 use App\Application\Seo\Resolvers\ProjectListSeoResolver;
 use App\Application\Seo\Resolvers\ProjectSeoResolver;
+use App\Application\Seo\Resolvers\RaffleSeoResolver;
 use App\Application\Seo\Resolvers\SearchSeoResolver;
 use App\Application\Seo\Resolvers\StoreSeoResolver;
+use App\Application\Seo\Resolvers\VideoSeoResolver;
 use App\Application\Seo\Support\SeoManager;
 use App\Application\Seo\Support\SeoResolverRegistry;
 use App\Application\Seo\Support\Sitemap\SitemapStorage;
@@ -34,7 +39,9 @@ use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Identity\Models\User;
 use App\Domain\Project\Models\Project;
+use App\Domain\Raffle\Models\DrawCampaign;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Domain\Video\Models\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
@@ -55,6 +62,9 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(PostListSeoResolver::class),
                 $app->make(ProjectListSeoResolver::class),
                 $app->make(ProductListSeoResolver::class),
+                $app->make(RaffleSeoResolver::class),
+                $app->make(VideoSeoResolver::class),
+                $app->make(PollSeoResolver::class),
 
                 $app->make(AuthorSeoResolver::class),
                 $app->make(PostTagSeoResolver::class),
@@ -75,7 +85,6 @@ class SeoServiceProvider extends ServiceProvider
             );
         });
 
-
         $this->app->singleton(SitemapStorage::class);
 
         $this->app->tag([
@@ -86,11 +95,13 @@ class SeoServiceProvider extends ServiceProvider
             TagStaticSitemapGenerator::class,
             AuthorStaticSitemapGenerator::class,
             ProductStaticSitemapGenerator::class,
+            RaffleStaticSitemapGenerator::class,
+            VideoStaticSitemapGenerator::class,
         ], StaticSitemapGeneratorInterface::class);
 
         $this->app->bind(
             StaticSitemapGeneratorRegistry::class,
-            fn($app) => new StaticSitemapGeneratorRegistry(
+            fn ($app) => new StaticSitemapGeneratorRegistry(
                 $app->tagged(StaticSitemapGeneratorInterface::class)
             )
         );
@@ -101,7 +112,7 @@ class SeoServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $markSitemapsDirty = fn() => app(MarkSitemapsDirtyAction::class)->execute();
+        $markSitemapsDirty = fn () => app(MarkSitemapsDirtyAction::class)->execute();
 
         Post::saved($markSitemapsDirty);
         Post::deleted($markSitemapsDirty);
@@ -126,5 +137,13 @@ class SeoServiceProvider extends ServiceProvider
         Product::saved($markSitemapsDirty);
         Product::deleted($markSitemapsDirty);
         Product::restored($markSitemapsDirty);
+
+        DrawCampaign::saved($markSitemapsDirty);
+        DrawCampaign::deleted($markSitemapsDirty);
+        DrawCampaign::restored($markSitemapsDirty);
+
+        Video::saved($markSitemapsDirty);
+        Video::deleted($markSitemapsDirty);
+        Video::restored($markSitemapsDirty);
     }
 }

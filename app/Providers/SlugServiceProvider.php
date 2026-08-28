@@ -8,20 +8,26 @@ use App\Application\Slug\Services\SlugNormalizer;
 use App\Application\Slug\Services\SlugResolverManager;
 use App\Application\Slug\Services\SlugSuggestionGenerator;
 use App\Infrastructure\Slug\Checkers\ContentSlugChecker;
+use App\Infrastructure\Slug\Checkers\PollSlugChecker;
 use App\Infrastructure\Slug\Checkers\ProductSlugChecker;
 use App\Infrastructure\Slug\Checkers\ProjectSlugChecker;
+use App\Infrastructure\Slug\Checkers\RaffleSlugChecker;
 use App\Infrastructure\Slug\Checkers\StoreSlugChecker;
 use App\Infrastructure\Slug\Checkers\TaxonomySlugChecker;
+use App\Infrastructure\Slug\Checkers\VideoSlugChecker;
 use App\Infrastructure\Slug\Drivers\ContentSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\ProductSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\ProjectSlugPersistenceDriver;
+use App\Infrastructure\Slug\Drivers\RaffleSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\StoreSlugPersistenceDriver;
 use App\Infrastructure\Slug\Drivers\TaxonomySlugPersistenceDriver;
+use App\Infrastructure\Slug\Drivers\VideoSlugPersistenceDriver;
 use App\Infrastructure\Slug\Resolvers\ContentSlugResolverDriver;
 use App\Infrastructure\Slug\Resolvers\ProductSlugResolverDriver;
 use App\Infrastructure\Slug\Resolvers\ProjectSlugResolverDriver;
 use App\Infrastructure\Slug\Resolvers\StoreSlugResolverDriver;
 use App\Infrastructure\Slug\Resolvers\TaxonomySlugResolverDriver;
+use App\Infrastructure\Slug\Resolvers\VideoSlugResolverDriver;
 use App\Infrastructure\Slug\Services\TaxonomyRouteKeyBuilder;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\ServiceProvider;
@@ -38,30 +44,39 @@ class SlugServiceProvider extends ServiceProvider
         $this->app->singleton(TaxonomyRouteKeyBuilder::class);
 
         $this->app->singleton(ContentSlugChecker::class);
+        $this->app->singleton(PollSlugChecker::class);
         $this->app->singleton(ProjectSlugChecker::class);
+        $this->app->singleton(RaffleSlugChecker::class);
         $this->app->singleton(TaxonomySlugChecker::class);
         $this->app->singleton(ProductSlugChecker::class);
         $this->app->singleton(StoreSlugChecker::class);
+        $this->app->singleton(VideoSlugChecker::class);
 
         $this->app->singleton(ContentSlugPersistenceDriver::class);
         $this->app->singleton(ProjectSlugPersistenceDriver::class);
+        $this->app->singleton(RaffleSlugPersistenceDriver::class);
         $this->app->singleton(TaxonomySlugPersistenceDriver::class);
         $this->app->singleton(ProductSlugPersistenceDriver::class);
         $this->app->singleton(StoreSlugPersistenceDriver::class);
+        $this->app->singleton(VideoSlugPersistenceDriver::class);
 
         $this->app->singleton(ContentSlugResolverDriver::class);
         $this->app->singleton(ProjectSlugResolverDriver::class);
         $this->app->singleton(TaxonomySlugResolverDriver::class);
         $this->app->singleton(ProductSlugResolverDriver::class);
         $this->app->singleton(StoreSlugResolverDriver::class);
+        $this->app->singleton(VideoSlugResolverDriver::class);
 
         $this->app->tag(
             [
                 ContentSlugChecker::class,
+                PollSlugChecker::class,
                 ProjectSlugChecker::class,
+                RaffleSlugChecker::class,
                 TaxonomySlugChecker::class,
                 ProductSlugChecker::class,
                 StoreSlugChecker::class,
+                VideoSlugChecker::class,
             ],
             'slug.scope.checkers'
         );
@@ -70,9 +85,11 @@ class SlugServiceProvider extends ServiceProvider
             [
                 ContentSlugPersistenceDriver::class,
                 ProjectSlugPersistenceDriver::class,
+                RaffleSlugPersistenceDriver::class,
                 TaxonomySlugPersistenceDriver::class,
                 ProductSlugPersistenceDriver::class,
                 StoreSlugPersistenceDriver::class,
+                VideoSlugPersistenceDriver::class,
             ],
             'slug.persistence.drivers'
         );
@@ -84,6 +101,7 @@ class SlugServiceProvider extends ServiceProvider
                 TaxonomySlugResolverDriver::class,
                 ProductSlugResolverDriver::class,
                 StoreSlugResolverDriver::class,
+                VideoSlugResolverDriver::class,
             ],
             'slug.resolver.drivers'
         );

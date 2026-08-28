@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Discussion;
 
+use App\Application\Discussion\Actions\ChangeCommentStatusAction;
 use App\Application\Discussion\Actions\CreateCommentAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
@@ -20,8 +21,9 @@ class CommentReplyController
      */
     public function __invoke(
         ReplyToCommentRequest $request,
-        Comment               $comment,
-        CreateCommentAction   $createCommentAction,
+        Comment                   $comment,
+        CreateCommentAction       $createCommentAction,
+        ChangeCommentStatusAction $changeCommentStatusAction,
     ): JsonResponse
     {
         Gate::authorize('comment.edit');
@@ -32,11 +34,20 @@ class CommentReplyController
             ]);
         }
 
-        $reply = DB::transaction(function () use ($comment, $request, $createCommentAction) {
-            if (auth()->user()->can('comment.auto_approve')) {
-                $comment->update([
-                    'status' => CommentStatusEnum::APPROVED,
-                ]);
+        $reply = DB::transaction(function () use (
+            $comment,
+            $request,
+            $createCommentAction,
+            $changeCommentStatusAction,
+        ) {
+            if (
+                auth()->user()->can('comment.auto_approve')
+                && !$comment->isApproved()
+            ) {
+                $comment = $changeCommentStatusAction->execute(
+                    $comment,
+                    CommentStatusEnum::APPROVED,
+                );
             }
 
             return $createCommentAction->execute(new CreateCommentDataDTO(

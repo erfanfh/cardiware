@@ -27,7 +27,7 @@ class LoginUserByIdentifierAction
         if (!Auth::attempt([
             $field => $value,
             'password' => $password,
-        ])) {
+        ], true)) {
             throw new DomainException('Invalid login credentials.');
         }
 

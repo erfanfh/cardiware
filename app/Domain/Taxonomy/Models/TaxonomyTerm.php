@@ -7,6 +7,7 @@ use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
 use App\Domain\Seo\Traits\HasSeoMeta;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
+use App\Domain\Video\Models\Video;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -174,6 +175,13 @@ class TaxonomyTerm extends Model
         );
     }
 
+    public function videos(): MorphToMany
+    {
+        return $this->morphedByMany(
+            Video::class, 'taxonomable', 'taxonomables', 'taxonomy_term_id', 'taxonomable_id'
+        );
+    }
+
     /**
      * Recursive children relation.
      *
@@ -224,5 +232,14 @@ class TaxonomyTerm extends Model
             ->whereHas('taxonomyTerms', function (Builder $query) use ($termIds): void {
                 $query->whereIn('taxonomy_terms.id', $termIds);
             });
+    }
+
+    public function videosIncludingDescendants(): Builder
+    {
+        $termIds = $this->isHierarchical() ? $this->selfAndDescendantIds() : [$this->id];
+
+        return Video::query()->whereHas('taxonomyTerms', function (Builder $query) use ($termIds): void {
+            $query->whereIn('taxonomy_terms.id', $termIds);
+        });
     }
 }
