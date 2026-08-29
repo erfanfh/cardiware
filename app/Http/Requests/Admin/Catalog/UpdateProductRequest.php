@@ -677,7 +677,7 @@ class UpdateProductRequest extends FormRequest
                     FILTER_VALIDATE_BOOLEAN
                 );
 
-                $cpuCompatibilityMode = strtolower(trim((string) data_get(
+                $cpuCompatibilityMode = strtolower(trim((string)data_get(
                     $manifest,
                     'cpu_compatibility.default_mode',
                     'off'
@@ -949,11 +949,11 @@ class UpdateProductRequest extends FormRequest
      * disabled.
      */
     private function validateContentKey(
-        mixed   $validator,
-        array   $manifest,
-        string  $prefix,
-        ?int    $currentSaleItemId,
-        bool    $supportsSider,
+        mixed  $validator,
+        array  $manifest,
+        string $prefix,
+        ?int   $currentSaleItemId,
+        bool   $supportsSider,
     ): void
     {
         $contentKeyId = is_string($manifest['content_key_id'] ?? null)
@@ -1351,6 +1351,14 @@ class UpdateProductRequest extends FormRequest
             'sider_working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_working_directory'), 500) ?? '.',
             'sider_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_arguments'), 2000),
             'run_sider_as_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'run_sider_as_administrator'), false),
+            // Lost silently before this fix: this function rebuilds the whole manifest
+            // array from an explicit key list, and content_key_id/content_key_value were
+            // never added to it when the content-key feature shipped -- so both fields
+            // were stripped here, in prepareForValidation(), BEFORE validateContentKey()
+            // or SyncProductSaleItemManifestAction ever saw them, regardless of what the
+            // browser actually submitted.
+            'content_key_id' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_id'), 128),
+            'content_key_value' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_value'), 512),
             'cpu_compatibility' => [
                 'enabled' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'enabled'), false),
                 'default_mode' => $this->normalizeCpuCompatibilityModeInput(
