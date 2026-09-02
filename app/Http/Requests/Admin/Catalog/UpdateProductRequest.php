@@ -199,6 +199,48 @@ class UpdateProductRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
+            | Content protection policy (delivered to sider.dll at launch)
+            |--------------------------------------------------------------------------
+            | Paths and module digests, not secrets: every customer already has these
+            | files on disk. They live here rather than compiled into pgldrm.cpp so that
+            | protecting a new file or updating a Lua module is an admin-panel edit
+            | instead of a sider.dll rebuild plus a launcher release.
+            |
+            | No value may contain a line break. The policy is serialized for sider in a
+            | line-oriented format (one directive per line, no escaping by design), so an
+            | embedded newline would let a single field inject additional directives --
+            | for instance an extra MODULE line granting content tier to a module of the
+            | submitter's choosing. The launcher drops such values defensively too, but
+            | they must never reach the database in the first place.
+            |
+            | The three path lists arrive from the admin form as one-path-per-line
+            | text, but an API or artisan caller may pass a real array -- both are
+            | accepted, and SyncProductSaleItemManifestAction normalizes either into
+            | a clean list (trimming, dropping blanks and duplicates, and rejecting
+            | any value with an embedded line break a second time).
+            */
+            'sale_items.*.manifest.protected_folder_markers' => ['nullable'],
+            'sale_items.*.manifest.protected_exact_paths' => ['nullable'],
+            'sale_items.*.manifest.protected_excluded_paths' => ['nullable'],
+
+            // Posted by the form as a JSON string (one field instead of ~150 hidden
+            // inputs for a 50-module list). Structure is validated during
+            // normalization, where a malformed entry can be dropped individually.
+            'sale_items.*.manifest.protected_modules_json' => ['nullable', 'string', 'max:500000'],
+            'sale_items.*.manifest.protected_modules' => ['nullable', 'array', 'max:1000'],
+            'sale_items.*.manifest.protected_modules.*.path' => [
+                'required', 'string', 'max:512', 'not_regex:/[\r\n]/',
+            ],
+            'sale_items.*.manifest.protected_modules.*.tier' => [
+                'required', Rule::in(['content', 'shipped']),
+            ],
+            'sale_items.*.manifest.protected_modules.*.sha256' => [
+                'required', 'regex:/\A[a-fA-F0-9]{64}\z/',
+            ],
+            'sale_items.*.manifest.protected_strict_modules' => ['nullable', 'boolean'],
+
+            /*
+            |--------------------------------------------------------------------------
             | CPU compatibility
             |--------------------------------------------------------------------------
             */
@@ -677,7 +719,7 @@ class UpdateProductRequest extends FormRequest
                     FILTER_VALIDATE_BOOLEAN
                 );
 
-                $cpuCompatibilityMode = strtolower(trim((string)data_get(
+                $cpuCompatibilityMode = strtolower(trim((string) data_get(
                     $manifest,
                     'cpu_compatibility.default_mode',
                     'off'
@@ -949,11 +991,11 @@ class UpdateProductRequest extends FormRequest
      * disabled.
      */
     private function validateContentKey(
-        mixed  $validator,
-        array  $manifest,
-        string $prefix,
-        ?int   $currentSaleItemId,
-        bool   $supportsSider,
+        mixed   $validator,
+        array   $manifest,
+        string  $prefix,
+        ?int    $currentSaleItemId,
+        bool    $supportsSider,
     ): void
     {
         $contentKeyId = is_string($manifest['content_key_id'] ?? null)

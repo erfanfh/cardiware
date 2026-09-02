@@ -28,6 +28,29 @@ final class LauncherDeviceManagementController extends Controller
         $devices = collect();
         $resetLogs = collect();
         $suspensionLogs = collect();
+        $transferBlockLogs = collect();
+
+        // Proactive discovery: accounts with 2+ blocked third-device attempts in the last
+        // 30 days, most-frequent first, shown even before any user is searched -- so staff
+        // can spot likely-shared accounts without already suspecting a specific person.
+        $watchlist = DB::table('launcher_device_transfer_blocks as blocks')
+            ->join('users', 'users.id', '=', 'blocks.user_id')
+            ->where('blocks.created_at', '>=', now()->subDays(30))
+            ->groupBy('blocks.user_id', 'users.display_name', 'users.first_name', 'users.last_name', 'users.mobile', 'users.email')
+            ->havingRaw('COUNT(*) >= 2')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(25)
+            ->get([
+                'blocks.user_id',
+                'users.display_name',
+                'users.first_name',
+                'users.last_name',
+                'users.mobile',
+                'users.email',
+                DB::raw('COUNT(*) as attempts_count'),
+                DB::raw('COUNT(DISTINCT blocks.attempted_public_key_fingerprint) as distinct_devices_count'),
+                DB::raw('MAX(blocks.created_at) as last_attempt_at'),
+            ]);
 
         if (!empty($validated['user_id'])) {
             $selectedUser = User::query()->findOrFail((int)$validated['user_id']);
@@ -75,6 +98,12 @@ final class LauncherDeviceManagementController extends Controller
                 ->latest('logs.id')
                 ->limit(20)
                 ->get();
+
+            $transferBlockLogs = DB::table('launcher_device_transfer_blocks')
+                ->where('user_id', $selectedUser->getKey())
+                ->latest('id')
+                ->limit(20)
+                ->get();
         }
 
         return view('admin.launcher.devices.index', compact(
@@ -83,6 +112,8 @@ final class LauncherDeviceManagementController extends Controller
             'devices',
             'resetLogs',
             'suspensionLogs',
+            'transferBlockLogs',
+            'watchlist',
         ));
     }
 

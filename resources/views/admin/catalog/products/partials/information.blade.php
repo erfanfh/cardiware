@@ -152,6 +152,16 @@
         'content_key_value' => '',
         'content_key_configured' => false,
 
+        // Content protection policy handed to sider.dll at launch. Kept as plain
+        // text areas (one path per line) plus a modules.json upload, because the
+        // module list is produced wholesale by hash_lua_modules.py -- pasting ~50
+        // digests by hand would be both tedious and easy to get wrong.
+        'protected_folder_markers' => '',
+        'protected_exact_paths' => '',
+        'protected_excluded_paths' => '',
+        'protected_modules' => [],
+        'protected_strict_modules' => true,
+
         'cpu_compatibility' => [
             'enabled' => false,
             'default_mode' => 'off',
@@ -233,6 +243,15 @@
                 // returns it (after the separate vault password is verified).
                 'content_key_value' => '',
                 'content_key_configured' => filled($manifest->content_key_value),
+
+                // Unlike the key value above, none of these are secret -- they are
+                // paths and digests of files the customer already has -- so they
+                // render normally. Lists become one-per-line text for editing.
+                'protected_folder_markers' => implode("\n", $manifest->protected_folder_markers ?? []),
+                'protected_exact_paths' => implode("\n", $manifest->protected_exact_paths ?? []),
+                'protected_excluded_paths' => implode("\n", $manifest->protected_excluded_paths ?? []),
+                'protected_modules' => $manifest->protected_modules ?? [],
+                'protected_strict_modules' => (bool)($manifest->protected_strict_modules ?? true),
 
                 'cpu_compatibility' => $manifest->resolvedCpuCompatibility(),
 

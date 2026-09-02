@@ -69,7 +69,7 @@ class AuthController extends Controller
         $deviceData = $data['device'];
         $verifyDeviceProof->execute($deviceData);
 
-        $isTransfer = $this->isDeviceTransfer($user, $deviceData);
+        $isTransfer = $this->isDeviceTransfer($user, $deviceData, $request->ip());
 
         if ($isTransfer && empty($data['device_transfer_code'])) {
             if (blank($user->mobile)) {
@@ -144,7 +144,7 @@ class AuthController extends Controller
             $this->ensureLauncherAccess($user);
             $deviceData = $data['device'];
             $verifyDeviceProof->execute($deviceData);
-            $isTransfer = $this->isDeviceTransfer($user, $deviceData);
+            $isTransfer = $this->isDeviceTransfer($user, $deviceData, $request->ip());
 
             // The login OTP itself confirms ownership of the account mobile and therefore
             // also authorizes the one permitted device transfer.
@@ -175,7 +175,7 @@ class AuthController extends Controller
         return $this->loginResponse($device, $token, $freshUser);
     }
 
-    private function isDeviceTransfer(User $user, array $deviceData): bool
+    private function isDeviceTransfer(User $user, array $deviceData, ?string $ip = null): bool
     {
         $activeSlot = (int)($user->active_device_slot ?: 0);
         $activeKeyFingerprint = $this->publicKeyFingerprintForSlot($user, $activeSlot);
@@ -197,10 +197,38 @@ class AuthController extends Controller
 
         $isTransfer = !$isFirstActivation && !$isActiveDevice;
         if ($isTransfer && $user->device_transfer_used) {
+            $this->logBlockedTransferAttempt($user, $deviceData, $ip, 'transfer_already_used');
             throw new DeviceLimitReachedException(1, []);
         }
 
         return $isTransfer;
+    }
+
+    /**
+     * Every blocked third-device attempt is recorded here so support/admin staff can
+     * proactively spot likely-shared accounts (repeated attempts from different device
+     * fingerprints) instead of only finding out when a user complains they were locked
+     * out -- see admin.launcher-devices.index, "watchlist" section.
+     *
+     * @param array<string, mixed> $deviceData
+     */
+    private function logBlockedTransferAttempt(
+        User $user,
+        array $deviceData,
+        ?string $ip,
+        string $reason,
+    ): void {
+        DB::table('launcher_device_transfer_blocks')->insert([
+            'user_id' => $user->getKey(),
+            'reason' => $reason,
+            'attempted_device_id' => $deviceData['id'] ?? null,
+            'attempted_device_name' => $deviceData['name'] ?? null,
+            'attempted_platform' => $deviceData['platform'] ?? null,
+            'attempted_public_key_fingerprint' => $deviceData['public_key_fingerprint'] ?? null,
+            'attempted_fingerprint_hash' => $deviceData['fingerprint_hash'] ?? null,
+            'ip_address' => $ip,
+            'created_at' => now(),
+        ]);
     }
 
     private function loginResponse(LauncherDevice $device, mixed $token, User $user): JsonResponse
@@ -251,6 +279,12 @@ class AuthController extends Controller
                 ])->save();
             } elseif (!hash_equals((string)$activeFingerprint, $incomingFingerprint)) {
                 if (!$transfer || $user->device_transfer_used) {
+                    $this->logBlockedTransferAttempt(
+                        $user,
+                        $deviceData,
+                        $ip,
+                        $transfer ? 'transfer_already_used' : 'transfer_not_authorized',
+                    );
                     throw new DeviceLimitReachedException(1, []);
                 }
 

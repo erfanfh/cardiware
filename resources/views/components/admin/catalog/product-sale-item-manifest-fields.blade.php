@@ -35,6 +35,12 @@
         'content_key_value' => null,
         'content_key_configured' => false,
 
+        'protected_folder_markers' => '',
+        'protected_exact_paths' => '',
+        'protected_excluded_paths' => '',
+        'protected_modules' => [],
+        'protected_strict_modules' => true,
+
         'cpu_compatibility' => [
             'enabled' => false,
             'default_mode' => 'off',
@@ -865,6 +871,191 @@
                     </p>
                 </x-admin.field>
             </div>
+        </div>
+    </div>
+
+    {{-- Content protection policy: what sider.dll protects and which Lua modules it
+         may run. Unlike the key value above this is not secret (paths, plus digests
+         of files the customer already has), so it needs no vault gate -- it only
+         needs to be editable by admins and nobody else. It lives here instead of
+         compiled into pgldrm.cpp so that protecting a new file or updating a module
+         is an edit on this page rather than a sider.dll rebuild and a new launcher
+         release. --}}
+    <div
+        class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+        x-data="{
+            modulesError: '',
+            loadModulesFile(event) {
+                this.modulesError = '';
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        const parsed = JSON.parse(reader.result);
+                        // Accepts either the file hash_lua_modules.py writes
+                        // ({modules: [...]}) or a bare array, so a hand-trimmed
+                        // list still works.
+                        const list = Array.isArray(parsed) ? parsed : parsed.modules;
+                        if (!Array.isArray(list)) {
+                            this.modulesError = 'ساختار فایل معتبر نیست: کلید modules پیدا نشد.';
+                            return;
+                        }
+
+                        const cleaned = [];
+                        for (const entry of list) {
+                            const path = (entry && entry.path ? String(entry.path) : '').trim();
+                            const tier = (entry && entry.tier ? String(entry.tier) : 'shipped').trim().toLowerCase();
+                            const sha256 = (entry && entry.sha256 ? String(entry.sha256) : '').trim().toLowerCase();
+                            // Rejected here as well as server-side: catching a bad
+                            // file at upload time tells the admin which line is wrong,
+                            // instead of silently dropping the module and leaving them
+                            // to discover it when the game stops loading it.
+                            if (!path || /[\r\n]/.test(path)) continue;
+                            if (tier !== 'content' && tier !== 'shipped') continue;
+                            if (!/^[a-f0-9]{64}$/.test(sha256)) continue;
+                            cleaned.push({ path, tier, sha256 });
+                        }
+
+                        if (!cleaned.length) {
+                            this.modulesError = 'هیچ ماژول معتبری در فایل پیدا نشد.';
+                            return;
+                        }
+                        if (cleaned.length !== list.length) {
+                            this.modulesError = (list.length - cleaned.length) + ' ردیف نامعتبر نادیده گرفته شد.';
+                        }
+                        {{ $state }}.protected_modules = cleaned;
+                    } catch (error) {
+                        this.modulesError = 'خواندن فایل JSON ناموفق بود.';
+                    } finally {
+                        event.target.value = '';
+                    }
+                };
+                reader.readAsText(file);
+            },
+        }"
+    >
+        <div class="mb-3">
+            <div class="text-xs font-bold text-slate-800">سیاست محافظت محتوا</div>
+            <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                فقط برای محصولاتی که شناسه کلید محتوا دارند اعمال می‌شود. هر خط یک مسیر.
+                این مقادیر محرمانه نیستند و رمزنگاری نمی‌شوند؛ اهمیتشان این است که فقط مدیر بتواند تغییرشان دهد.
+            </div>
+        </div>
+
+        @php($protectionFields = [
+            'protected_folder_markers' => [
+                'label' => 'پوشه‌های کاملاً محافظت‌شده',
+                'hint' => 'مثل pesdb — فقط وقتی مجاز است که همه فایل‌های داخل آن پوشه مال ما و رمزشده باشند. اگر فایل سالم بازی را در بر بگیرد، آن فایل خراب می‌شود.',
+                'placeholder' => "pesdb",
+            ],
+            'protected_exact_paths' => [
+                'label' => 'فایل‌های محافظت‌شده (مسیر کامل)',
+                'hint' => 'برای پوشه‌هایی که فایل‌های اصلی بازی هم داخلشان هست (مثل common\\menu\\licence که حدود ۱۰۰۰ فایل سالم کنار چند فایل ما دارد).',
+                'placeholder' => "common\\menu\\licence\\game2dpes_perest.bin",
+            ],
+            'protected_excluded_paths' => [
+                'label' => 'استثناها (همیشه بدون رمز)',
+                'hint' => 'قبل از دو لیست بالا بررسی می‌شود. فایل‌هایی که باید plain بمانند هرچند داخل پوشه‌ی محافظت‌شده‌اند.',
+                'placeholder' => "\\pesdb\\competition.bin",
+            ],
+        ])
+
+        <div class="grid grid-cols-12 gap-4">
+            @foreach($protectionFields as $field => $meta)
+                <div class="col-span-12 md:col-span-4">
+                    <x-admin.field :label="$meta['label']" :hint="$meta['hint']">
+                        <textarea
+                            x-model="{{ $state }}.{{ $field }}"
+                            rows="5"
+                            dir="ltr"
+                            placeholder="{{ $meta['placeholder'] }}"
+                            class="w-full rounded-xl border border-slate-200 bg-white p-3 font-mono text-[11px] leading-5 outline-none focus:border-orange-400"
+                        ></textarea>
+                    </x-admin.field>
+                    @if($isSimple)
+                        <input type="hidden" name="{{ $staticName($field) }}" x-bind:value="{{ $state }}.{{ $field }}">
+                    @else
+                        <input type="hidden" x-bind:name="{{ $dynamicName($field) }}" x-bind:value="{{ $state }}.{{ $field }}">
+                    @endif
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-4 rounded-xl border border-slate-200 bg-white p-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <div class="text-xs font-bold text-slate-800">ماژول‌های Lua مجاز</div>
+                    <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                        خروجی <span dir="ltr" class="font-mono">hash_lua_modules.py</span> را اینجا آپلود کنید.
+                        هر ماژول با مسیر و SHA-256 دقیقش ثبت می‌شود، پس فایلی با همان نام ولی محتوای متفاوت پذیرفته نمی‌شود.
+                    </div>
+                </div>
+                <div class="text-[11px] font-bold text-slate-600">
+                    <span x-text="({{ $state }}.protected_modules || []).length"></span>
+                    ماژول ثبت‌شده
+                </div>
+            </div>
+
+            <div class="mt-3 flex flex-wrap items-center gap-3">
+                <input
+                    type="file"
+                    accept=".json,application/json"
+                    x-on:change="loadModulesFile($event)"
+                    class="text-[11px] file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-[11px] file:font-bold file:text-slate-700"
+                >
+                <button
+                    type="button"
+                    x-on:click="{{ $state }}.protected_modules = []"
+                    class="rounded-lg border border-slate-200 px-3 py-2 text-[11px] font-bold text-slate-600 transition hover:border-rose-300 hover:text-rose-600"
+                >
+                    پاک‌کردن لیست
+                </button>
+                <p class="text-[11px] font-bold text-rose-600" x-show="modulesError" x-text="modulesError"></p>
+            </div>
+
+            {{-- Serialized as JSON in one hidden field rather than as an input per
+                 module: a 50-module list would otherwise mean 150 hidden inputs, and
+                 Alpine would have to keep them all in sync on every upload. --}}
+            @if($isSimple)
+                <input type="hidden" name="{{ $staticName('protected_modules_json') }}"
+                       x-bind:value="JSON.stringify({{ $state }}.protected_modules || [])">
+            @else
+                <input type="hidden" x-bind:name="{{ $dynamicName('protected_modules_json') }}"
+                       x-bind:value="JSON.stringify({{ $state }}.protected_modules || [])">
+            @endif
+
+            <div class="mt-3 max-h-56 overflow-y-auto rounded-lg border border-slate-100"
+                 x-show="({{ $state }}.protected_modules || []).length">
+                <template x-for="entry in ({{ $state }}.protected_modules || [])" :key="entry.path">
+                    <div class="flex items-center justify-between gap-3 border-b border-slate-50 px-3 py-2 last:border-b-0">
+                        <span class="truncate font-mono text-[11px] text-slate-700" dir="ltr" x-text="entry.path"></span>
+                        <span
+                            class="shrink-0 rounded px-2 py-1 text-[10px] font-black"
+                            x-bind:class="entry.tier === 'content' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'"
+                            x-text="entry.tier === 'content' ? 'محتوای محافظت‌شده' : 'عادی'"
+                        ></span>
+                    </div>
+                </template>
+            </div>
+
+            <label class="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <input type="checkbox" x-model="{{ $state }}.protected_strict_modules" class="mt-1 h-4 w-4">
+                <span class="text-[11px] leading-5 text-slate-700">
+                    <span class="font-bold">فقط ماژول‌های مجاز اجرا شوند</span>
+                    — ماژول‌های خارج از این لیست اصلاً بارگذاری نمی‌شوند. اگر خاموش باشد،
+                    آن ماژول‌ها اجرا می‌شوند ولی به کتابخانه‌ی <span dir="ltr" class="font-mono">memory</span>
+                    و محتوای رمزگشایی‌شده دسترسی ندارند.
+                </span>
+            </label>
+            @if($isSimple)
+                <input type="hidden" name="{{ $staticName('protected_strict_modules') }}"
+                       x-bind:value="{{ $state }}.protected_strict_modules ? 1 : 0">
+            @else
+                <input type="hidden" x-bind:name="{{ $dynamicName('protected_strict_modules') }}"
+                       x-bind:value="{{ $state }}.protected_strict_modules ? 1 : 0">
+            @endif
         </div>
     </div>
 

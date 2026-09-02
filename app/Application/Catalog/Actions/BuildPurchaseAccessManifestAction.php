@@ -190,6 +190,26 @@ class BuildPurchaseAccessManifestAction
                  */
                 'content_key_id' => $manifest->content_key_id,
 
+                /*
+                 * DRM policy for sider.dll: which virtual paths are protected, which
+                 * must stay plain, and which Lua modules may run (by path + SHA-256).
+                 * Only sent for a product that actually declares a content key -- for
+                 * anything else there is nothing to protect and sider keeps its stock
+                 * behaviour, including full third-party module support.
+                 *
+                 * None of this is secret (paths, plus digests of files the customer
+                 * already has); it lives here rather than compiled into pgldrm.cpp so
+                 * that adding a protected file or updating a module is an admin-panel
+                 * edit instead of a sider.dll rebuild plus a launcher release.
+                 */
+                'content_protection' => blank($manifest->content_key_id) ? null : [
+                    'folder_markers' => array_values($manifest->protected_folder_markers ?? []),
+                    'exact_paths' => array_values($manifest->protected_exact_paths ?? []),
+                    'excluded_paths' => array_values($manifest->protected_excluded_paths ?? []),
+                    'modules' => array_values($manifest->protected_modules ?? []),
+                    'strict_modules' => (bool)($manifest->protected_strict_modules ?? true),
+                ],
+
                 'cpu_compatibility' => $cpuCompatibility,
             ],
 

@@ -3,12 +3,18 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Domain\Launcher\Models\LauncherRelease;
+use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use RuntimeException;
 
 class GetLauncherBootstrapAction
 {
+    public function __construct(
+        private readonly GeneralSettings $settings,
+    ) {
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -69,9 +75,16 @@ class GetLauncherBootstrapAction
             || $mandatoryReleasePending
             || $minimumVersionNotSatisfied;
 
-        $maintenanceEnabled = (bool)config(
-            'launcher.maintenance.enabled',
-            false
+        // Admin panel ("مدیریت آپدیت لانچر") controls this at runtime via the settings table;
+        // the LAUNCHER_MAINTENANCE_* env vars only serve as the fallback for a deployment where
+        // nobody has touched this panel yet.
+        $maintenanceEnabled = (bool)$this->settings->get(
+            'launcher_maintenance_enabled',
+            config('launcher.maintenance.enabled', false)
+        );
+        $maintenanceMessage = $this->settings->get(
+            'launcher_maintenance_message',
+            config('launcher.maintenance.message')
         );
 
         return [
@@ -87,9 +100,7 @@ class GetLauncherBootstrapAction
 
             'maintenance' => [
                 'enabled' => $maintenanceEnabled,
-                'message' => $maintenanceEnabled
-                    ? config('launcher.maintenance.message')
-                    : null,
+                'message' => $maintenanceEnabled ? $maintenanceMessage : null,
             ],
 
             'download_url' => $release?->download_url

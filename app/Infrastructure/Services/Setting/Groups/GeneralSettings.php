@@ -9,7 +9,6 @@ use App\Infrastructure\Services\Setting\BaseSettings;
 class GeneralSettings extends BaseSettings
 {
     protected string $group = 'general';
-
     protected array $allowedKeys = [
         'active_tab',
         'title',
@@ -53,6 +52,13 @@ class GeneralSettings extends BaseSettings
         // Public installer shown on /launcher and launcher bridge pages.
         // This is intentionally separate from launcher update packages.
         'launcher_public_download_url',
+
+        // Remote kill switch: when enabled, the Windows launcher blocks login/session-restore
+        // and shows launcher_maintenance_message instead. Falls back to the LAUNCHER_MAINTENANCE_*
+        // env vars (config/launcher.php) when never set from this panel, so existing deployments
+        // keep working without needing this row populated.
+        'launcher_maintenance_enabled',
+        'launcher_maintenance_message',
     ];
 
     protected array $casts = [
@@ -61,5 +67,6 @@ class GeneralSettings extends BaseSettings
         'zarinpal_sandbox' => BooleanCast::class,
         'payping_sandbox' => BooleanCast::class,
         'aqayepardakht_sandbox' => BooleanCast::class,
+        'launcher_maintenance_enabled' => BooleanCast::class,
     ];
 }

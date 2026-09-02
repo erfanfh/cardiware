@@ -32,11 +32,49 @@ final class LauncherReleaseController extends Controller
             config('launcher.public_download_url')
         ));
 
+        $maintenanceEnabled = (bool)$settings->get(
+            'launcher_maintenance_enabled',
+            config('launcher.maintenance.enabled', false)
+        );
+        $maintenanceMessage = (string)$settings->get(
+            'launcher_maintenance_message',
+            config('launcher.maintenance.message')
+        );
+
         return view('admin.launcher.releases.index', compact(
             'releases',
             'editingRelease',
-            'publicDownloadUrl'
+            'publicDownloadUrl',
+            'maintenanceEnabled',
+            'maintenanceMessage'
         ));
+    }
+
+    public function updateMaintenance(Request $request, GeneralSettings $settings): RedirectResponse
+    {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'launcher_maintenance_enabled' => ['nullable', 'boolean'],
+            'launcher_maintenance_message' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'launcher_maintenance_message.max' => 'پیام حالت تعمیر نباید بیشتر از ۱۰۰۰ کاراکتر باشد.',
+        ]);
+
+        $enabled = $request->boolean('launcher_maintenance_enabled');
+        $message = trim((string)($validated['launcher_maintenance_message'] ?? ''));
+
+        $settings->set('launcher_maintenance_enabled', $enabled);
+        $settings->set('launcher_maintenance_message', $message !== '' ? $message : null);
+
+        return redirect()->route('admin.launcher-releases.index')
+            ->with(
+                'success',
+                $enabled
+                    ? 'حالت تعمیر لانچر فعال شد؛ کاربران تا غیرفعال‌شدن این حالت نمی‌توانند وارد لانچر شوند.'
+                    : 'حالت تعمیر لانچر غیرفعال شد.'
+            )
+            ->with('success_title', 'حالت تعمیر لانچر');
     }
 
     public function updatePublicDownload(Request $request, GeneralSettings $settings): RedirectResponse

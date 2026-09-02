@@ -38,6 +38,57 @@
             </form>
         </section>
 
+        <section class="rounded-2xl border {{ $maintenanceEnabled ? 'border-red-300 bg-red-50/40' : 'border-slate-200 bg-white' }} shadow-sm">
+            <div class="border-b {{ $maintenanceEnabled ? 'border-red-200' : 'border-slate-200' }} px-5 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-base font-black text-slate-900">حالت تعمیر (قطع کامل دسترسی لانچر)</h1>
+                        <p class="mt-1 text-sm leading-7 text-slate-500">
+                            وقتی فعال باشد، هیچ کاربری — حتی با نشست ذخیره‌شده معتبر — نمی‌تواند وارد لانچر شود؛
+                            به‌جای آن همین پیام زیر را می‌بیند. این بررسی فقط موقع باز شدن لانچر یا زدن دکمه
+                            «بررسی مجدد اتصال» انجام می‌شود، نه لحظه‌ای روی نشست‌های از قبل بازِ کاربران.
+                        </p>
+                    </div>
+                    <span class="rounded-xl px-3 py-2 text-xs font-black {{ $maintenanceEnabled ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800' }}">
+                        {{ $maintenanceEnabled ? 'فعال — لانچر مسدود است' : 'غیرفعال — لانچر در دسترس است' }}
+                    </span>
+                </div>
+            </div>
+
+            <form
+                method="POST"
+                action="{{ route('admin.launcher-releases.maintenance') }}"
+                class="space-y-4 p-5"
+                onsubmit="return !this.querySelector('input[type=checkbox][name=launcher_maintenance_enabled]').checked || confirm('با فعال‌کردن حالت تعمیر، همه کاربران از ورود به لانچر مسدود می‌شوند. ادامه می‌دهید؟')"
+            >
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label class="mb-2 block text-xs font-black text-slate-700">پیام نمایش‌داده‌شده به کاربران</label>
+                    <x-admin.form.textarea name="launcher_maintenance_message" rows="2"
+                                           placeholder="سرویس موقتاً در دسترس نیست."
+                                           :value="old('launcher_maintenance_message', $maintenanceMessage)" />
+                    @error('launcher_maintenance_message')
+                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-red-200 bg-red-50 p-4">
+                    <span class="text-sm font-black text-red-800">حالت تعمیر فعال باشد (قطع کامل ورود به لانچر)</span>
+                    <input type="hidden" name="launcher_maintenance_enabled" value="0">
+                    <input type="checkbox" name="launcher_maintenance_enabled" value="1" class="h-5 w-5"
+                           @checked(old('launcher_maintenance_enabled', $maintenanceEnabled))>
+                </label>
+
+                <div class="flex justify-end">
+                    <x-admin.form.button type="submit" variant="{{ $maintenanceEnabled ? 'dark' : 'danger' }}" size="lg">
+                        ذخیره وضعیت حالت تعمیر
+                    </x-admin.form.button>
+                </div>
+            </form>
+        </section>
+
         <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="border-b border-slate-200 px-5 py-4">
                 <h1 class="text-base font-black text-slate-900">مدیریت آپدیت MW Launcher</h1>

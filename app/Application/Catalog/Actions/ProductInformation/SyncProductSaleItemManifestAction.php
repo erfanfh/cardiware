@@ -174,6 +174,29 @@ class SyncProductSaleItemManifestAction
                     ),
                 ),
 
+                // Content protection policy. Stored as plain JSON (not encrypted like
+                // content_key_value above) on purpose: these are paths and digests of
+                // files the customer already has, so what matters is that only an admin
+                // can change them, not that they stay secret.
+                'protected_folder_markers' =>
+                    $this->normalizeStringList(Arr::get($data, 'protected_folder_markers')),
+                'protected_exact_paths' =>
+                    $this->normalizeStringList(Arr::get($data, 'protected_exact_paths')),
+                'protected_excluded_paths' =>
+                    $this->normalizeStringList(Arr::get($data, 'protected_excluded_paths')),
+                // The admin form posts this as one JSON string (protected_modules_json)
+                // rather than ~150 hidden inputs for a 50-module list; an API/artisan
+                // caller can still pass a plain array as protected_modules.
+                'protected_modules' => $this->normalizeProtectedModules(
+                    Arr::get($data, 'protected_modules')
+                        ?? $this->decodeJsonList(Arr::get($data, 'protected_modules_json'))
+                ),
+                // Defaults to strict when absent: for a product that declares a content
+                // key, "load every module" is the setting that silently weakens
+                // protection, so it must be turned off deliberately.
+                'protected_strict_modules' =>
+                    $this->toBoolean(Arr::get($data, 'protected_strict_modules', true)),
+
                 'cpu_compatibility' =>
                     $this->normalizeCpuCompatibility(
                         Arr::get($data, 'cpu_compatibility')
@@ -569,6 +592,113 @@ class SyncProductSaleItemManifestAction
         return $value !== ''
             ? $value
             : null;
+    }
+
+    /**
+     * Trimmed, de-duplicated, re-indexed list of non-empty strings, or null when
+     * nothing is left. Null rather than [] so a manifest with no exclusions reads as
+     * "not configured" rather than "configured to be empty" -- the launcher and the
+     * admin form both distinguish the two.
+     *
+     * Values containing line breaks are dropped: the policy sider receives is
+     * line-oriented with no escaping, so a newline inside a value could inject an
+     * extra directive. UpdateProductRequest rejects those before we get here; this is
+     * the second line of defence for any path that reaches this action another way
+     * (an artisan command, a seeder, a future API).
+     *
+     * @return list<string>|null
+     */
+    private function normalizeStringList(mixed $value): ?array
+    {
+        // The admin form sends one path per line in a textarea; an API or artisan
+        // caller can send a real array. Accept both rather than forcing either side
+        // to adapt.
+        if (is_string($value)) {
+            $value = preg_split('/\R/', $value) ?: [];
+        }
+
+        if (!is_array($value)) {
+            return null;
+        }
+
+        $items = [];
+        foreach ($value as $entry) {
+            if (!is_string($entry)) {
+                continue;
+            }
+            $entry = trim($entry);
+            if ($entry === '' || preg_match('/[\r\n]/', $entry)) {
+                continue;
+            }
+            $items[] = $entry;
+        }
+
+        $items = array_values(array_unique($items));
+
+        return $items !== [] ? $items : null;
+    }
+
+    /**
+     * Decodes the admin form's JSON-encoded module list. Returns null (not an empty
+     * array) on anything unusable, so normalizeProtectedModules treats it as "not
+     * submitted" rather than "submitted as empty" -- the difference decides whether
+     * an existing list is wiped.
+     */
+    private function decodeJsonList(mixed $value): ?array
+    {
+        if (!is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        $decoded = json_decode($value, true);
+
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    /**
+     * @return list<array{path: string, tier: string, sha256: string}>|null
+     */
+    private function normalizeProtectedModules(mixed $value): ?array
+    {
+        if (!is_array($value)) {
+            return null;
+        }
+
+        $modules = [];
+        $seen = [];
+        foreach ($value as $entry) {
+            if (!is_array($entry)) {
+                continue;
+            }
+
+            $path = trim((string)($entry['path'] ?? ''));
+            $tier = strtolower(trim((string)($entry['tier'] ?? 'shipped')));
+            $sha256 = strtolower(trim((string)($entry['sha256'] ?? '')));
+
+            if ($path === '' || preg_match('/[\r\n]/', $path)) {
+                continue;
+            }
+            // An unknown tier is dropped rather than coerced: guessing "shipped" would
+            // silently grant the `memory` library, and guessing "content" would grant
+            // access to decrypted content. Neither is a safe default for a typo.
+            if (!in_array($tier, ['content', 'shipped'], true)) {
+                continue;
+            }
+            if (!preg_match('/\A[a-f0-9]{64}\z/', $sha256)) {
+                continue;
+            }
+            // Sider matches module paths case-insensitively, so two entries differing
+            // only in case would be ambiguous -- keep the first.
+            $key = mb_strtolower($path);
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+
+            $modules[] = ['path' => $path, 'tier' => $tier, 'sha256' => $sha256];
+        }
+
+        return $modules !== [] ? $modules : null;
     }
 
     private function integer(

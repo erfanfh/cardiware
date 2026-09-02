@@ -75,6 +75,11 @@ class ProductSaleItemManifest extends Model
         'run_sider_as_administrator',
         'content_key_id',
         'content_key_value',
+        'protected_folder_markers',
+        'protected_exact_paths',
+        'protected_excluded_paths',
+        'protected_modules',
+        'protected_strict_modules',
         'cpu_compatibility',
         'capabilities',
         'install_options',
@@ -96,6 +101,15 @@ class ProductSaleItemManifest extends Model
         // transparently decrypts on read. The stored value is the exact Base64 string
         // the launcher expects -- never re-encoded on the way out.
         'content_key_value' => 'encrypted',
+        // Deliberately NOT encrypted, unlike content_key_value above: these are paths
+        // and SHA-256 digests of files every customer already has on disk. Their
+        // security value is integrity (only an admin may change them), not secrecy,
+        // and encrypting them would make them unsearchable for no benefit.
+        'protected_folder_markers' => 'array',
+        'protected_exact_paths' => 'array',
+        'protected_excluded_paths' => 'array',
+        'protected_modules' => 'array',
+        'protected_strict_modules' => 'boolean',
         'cpu_compatibility' => 'array',
         'capabilities' => 'array',
         'install_options' => 'array',
