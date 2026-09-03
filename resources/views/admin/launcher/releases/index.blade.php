@@ -3,7 +3,9 @@
 @section('title', 'مدیریت آپدیت لانچر')
 
 @section('content')
-    @php($formRelease = $editingRelease)
+    @php
+        $formRelease = $editingRelease;
+    @endphp
     <div class="mx-auto max-w-7xl space-y-5">
         <section class="rounded-2xl border border-orange-200 bg-white shadow-sm">
             <div class="border-b border-orange-100 px-5 py-4">

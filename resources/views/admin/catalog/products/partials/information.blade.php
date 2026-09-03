@@ -191,13 +191,33 @@
         ],
     ];
 
-    $makeSaleItemManifestFormData = static function ($saleItem) use (
+    // $index selects which sale_items.{index}.manifest.* old() bucket to read back
+    // after a failed submission. Passed through explicitly (from the enclosing
+    // ->map()'s $key) rather than discovered here, because this closure has no
+    // other way to know which repeater row it is being asked to render.
+    $makeSaleItemManifestFormData = static function ($saleItem, int $index) use (
         $manifestFormDefaults
     ): array {
         $manifest = $saleItem->manifest;
+        $old = fn(string $field, mixed $default = null) => old("sale_items.{$index}.manifest.{$field}", $default);
 
         if (!$manifest) {
-            return $manifestFormDefaults;
+            // Even with no manifest row yet, a failed submission may have carried real
+            // input for it (e.g. the admin typed a content key and protection paths for
+            // a brand-new sale item, and some OTHER field on the page failed
+            // validation) -- discarding that here would be the exact bug this closure
+            // is being changed to fix, just for the "no manifest yet" case instead of
+            // the "manifest exists" case below.
+            return array_replace_recursive($manifestFormDefaults, [
+                'content_key_id' => $old('content_key_id', ''),
+                'protected_folder_markers' => $old('protected_folder_markers', ''),
+                'protected_exact_paths' => $old('protected_exact_paths', ''),
+                'protected_excluded_paths' => $old('protected_excluded_paths', ''),
+                'protected_modules' => ($json = $old('protected_modules_json'))
+                    ? (json_decode($json, true) ?: [])
+                    : [],
+                'protected_strict_modules' => (bool)$old('protected_strict_modules', 1),
+            ]);
         }
 
         $downloadType = $manifest->download_type instanceof \BackedEnum
@@ -236,22 +256,48 @@
 
                 'run_sider_as_administrator' => (bool) $manifest->run_sider_as_administrator,
 
-                'content_key_id' => $manifest->content_key_id ?? '',
+                'content_key_id' => $old('content_key_id', $manifest->content_key_id ?? ''),
                 // NEVER the real secret here -- this array feeds the initial page
                 // render, which every admin with product-edit access can open.
                 // content_key_value stays redacted until RevealContentKeyController
-                // returns it (after the separate vault password is verified).
+                // returns it (after the separate vault password is verified). Not
+                // read from old() either, for the same reason: a failed submission's
+                // flashed session input is exactly as readable to other admins as the
+                // database would be, so it gets no special exemption from the redaction.
                 'content_key_value' => '',
                 'content_key_configured' => filled($manifest->content_key_value),
 
                 // Unlike the key value above, none of these are secret -- they are
                 // paths and digests of files the customer already has -- so they
                 // render normally. Lists become one-per-line text for editing.
-                'protected_folder_markers' => implode("\n", $manifest->protected_folder_markers ?? []),
-                'protected_exact_paths' => implode("\n", $manifest->protected_exact_paths ?? []),
-                'protected_excluded_paths' => implode("\n", $manifest->protected_excluded_paths ?? []),
-                'protected_modules' => $manifest->protected_modules ?? [],
-                'protected_strict_modules' => (bool)($manifest->protected_strict_modules ?? true),
+                //
+                // All five of these now fall back to old() before the database. Without
+                // it, ANY validation failure anywhere on this (large, multi-section) form
+                // -- not necessarily in these fields -- silently discarded whatever the
+                // admin had just typed or uploaded here on redisplay, with no visible
+                // sign anything was lost beyond an error message elsewhere on the page.
+                // That is exactly what happened in practice: the content-key vault grant
+                // (see UpdateProductRequest::hasContentKeyVaultGrant) expires after
+                // CONTENT_KEY_VAULT_UNLOCK_MINUTES, an admin who unlocked it, then went
+                // and ran a separate tool to regenerate modules.json before coming back
+                // and clicking Save, found the grant had lapsed -- and lost the pasted
+                // paths and the freshly uploaded module list along with it, because nothing
+                // here fell back to the flashed input.
+                'protected_folder_markers' => $old('protected_folder_markers',
+                    implode("\n", $manifest->protected_folder_markers ?? [])),
+                'protected_exact_paths' => $old('protected_exact_paths',
+                    implode("\n", $manifest->protected_exact_paths ?? [])),
+                'protected_excluded_paths' => $old('protected_excluded_paths',
+                    implode("\n", $manifest->protected_excluded_paths ?? [])),
+                // protected_modules itself is never posted as a field (see the blade
+                // component: only the serialized protected_modules_json hidden input
+                // is submitted), so old() must be read from THAT key and decoded back
+                // into the array shape the Alpine state expects.
+                'protected_modules' => ($json = $old('protected_modules_json'))
+                    ? (json_decode($json, true) ?: [])
+                    : ($manifest->protected_modules ?? []),
+                'protected_strict_modules' => (bool)$old('protected_strict_modules',
+                    (int)($manifest->protected_strict_modules ?? true)),
 
                 'cpu_compatibility' => $manifest->resolvedCpuCompatibility(),
 
@@ -280,7 +326,8 @@
         ])
         ->orderBy('sort_order')
         ->get()
-        ->map(function ($saleItem) use ($makeSaleItemManifestFormData) {
+        ->values()
+        ->map(function ($saleItem, $index) use ($makeSaleItemManifestFormData) {
             $attributeValues = [];
 
             foreach ($saleItem->attributeValues as $selectedValue) {
@@ -359,7 +406,7 @@
                     ->values()
                     ->all(),
                 'manifest' => $makeSaleItemManifestFormData(
-                    $saleItem
+                    $saleItem, $index
                 ),
                 'launcher_updates' => $saleItem->launcherUpdates->map(fn ($update) => [
                     'id' => $update->id,
