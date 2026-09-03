@@ -19,6 +19,7 @@ use App\Domain\Launcher\Models\LauncherUpdateFile;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PrepareLauncherContentDownloadAction
@@ -27,6 +28,89 @@ class PrepareLauncherContentDownloadAction
         private readonly RemoteDownloadFileMetadataResolver $metadataResolver,
         private readonly GenerateTemporaryLauncherDownloadUrlAction $generateTemporaryDownloadUrlAction,
     ) {
+    }
+
+    /**
+     * Chooses between handing back the download host's own URL and a signed URL that
+     * proxies through this server (see launcher.direct_download_enabled for why the
+     * direct form exists and what it trades away).
+     *
+     * Direct mode still refuses anything that is not HTTPS on an allow-listed host.
+     * Those two checks already run when an administrator saves a file, but they are
+     * repeated here because this is the moment the value is handed to a client: a URL
+     * stored before the allow-list was tightened, or edited directly in the database,
+     * must not slip out just because it passed validation once. Falling back to the
+     * proxy on failure keeps the download working rather than breaking it.
+     */
+    private function resolveDownloadUrl(
+        Model $file,
+        Model $access,
+        Model $content,
+        string $contentType,
+        int $fileId,
+        string $downloadSessionId,
+        int $manifestRevision,
+        CarbonInterface $signedUrlExpiresAt,
+    ): string {
+        if ((bool)config('launcher.direct_download_enabled', false)) {
+            $directUrl = trim((string)$file->getAttribute('url'));
+            if ($this->isDeliverableDirectUrl($directUrl)) {
+                return $directUrl;
+            }
+
+            Log::warning('launcher.direct_download.url_rejected', [
+                'file_id' => $fileId,
+                'content_type' => $contentType,
+                'host' => (string)parse_url($directUrl, PHP_URL_HOST),
+            ]);
+        }
+
+        return $this->generateTemporaryDownloadUrlAction->execute(
+            purchaseAccessId: $access->getKey(),
+            contentType: $contentType,
+            contentId: $content->getKey(),
+            fileId: $fileId,
+            downloadSessionId: $downloadSessionId,
+            manifestRevision: $manifestRevision,
+            expiresAt: $signedUrlExpiresAt,
+        );
+    }
+
+    private function isDeliverableDirectUrl(string $url): bool
+    {
+        if ($url === '') {
+            return false;
+        }
+
+        $parts = parse_url($url);
+        if (!is_array($parts) || ($parts['scheme'] ?? '') !== 'https') {
+            return false;
+        }
+
+        $host = strtolower((string)($parts['host'] ?? ''));
+        if ($host === '') {
+            return false;
+        }
+
+        $allowed = array_filter(array_map(
+            static fn($value): string => strtolower(trim((string)$value)),
+            (array)config('launcher.allowed_download_hosts', [])
+        ));
+
+        // An empty allow-list means the deployment never configured one. Refusing here
+        // is deliberate: silently handing out whatever host happens to be stored would
+        // turn a missing config into an open redirect for our own customers.
+        if ($allowed === []) {
+            return false;
+        }
+
+        foreach ($allowed as $candidate) {
+            if ($host === $candidate || str_ends_with($host, '.' . $candidate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -180,14 +264,15 @@ class PrepareLauncherContentDownloadAction
             return [
                 'download_session_id' => (string)$download->download_session_id,
                 'session_expires_at' => $download->session_expires_at->toISOString(),
-                'url' => $this->generateTemporaryDownloadUrlAction->execute(
-                    purchaseAccessId: $access->getKey(),
+                'url' => $this->resolveDownloadUrl(
+                    file: $file,
+                    access: $access,
+                    content: $content,
                     contentType: $contentType,
-                    contentId: $content->getKey(),
-                    fileId: $file->getKey(),
+                    fileId: $fileId,
                     downloadSessionId: (string)$download->download_session_id,
                     manifestRevision: $manifestRevision,
-                    expiresAt: $signedUrlExpiresAt,
+                    signedUrlExpiresAt: $signedUrlExpiresAt,
                 ),
                 'file_name' => $fileName,
                 'size_bytes' => $metadata['size_bytes'],
