@@ -944,23 +944,25 @@
             </div>
         </div>
 
-        @php($protectionFields = [
-            'protected_folder_markers' => [
-                'label' => 'پوشه‌های کاملاً محافظت‌شده',
-                'hint' => 'مثل pesdb — فقط وقتی مجاز است که همه فایل‌های داخل آن پوشه مال ما و رمزشده باشند. اگر فایل سالم بازی را در بر بگیرد، آن فایل خراب می‌شود.',
-                'placeholder' => "pesdb",
-            ],
-            'protected_exact_paths' => [
-                'label' => 'فایل‌های محافظت‌شده (مسیر کامل)',
-                'hint' => 'برای پوشه‌هایی که فایل‌های اصلی بازی هم داخلشان هست (مثل common\\menu\\licence که حدود ۱۰۰۰ فایل سالم کنار چند فایل ما دارد).',
-                'placeholder' => "common\\menu\\licence\\game2dpes_perest.bin",
-            ],
-            'protected_excluded_paths' => [
-                'label' => 'استثناها (همیشه بدون رمز)',
-                'hint' => 'قبل از دو لیست بالا بررسی می‌شود. فایل‌هایی که باید plain بمانند هرچند داخل پوشه‌ی محافظت‌شده‌اند.',
-                'placeholder' => "\\pesdb\\competition.bin",
-            ],
-        ])
+        @php
+            $protectionFields = [
+                'protected_folder_markers' => [
+                    'label' => 'پوشه‌های کاملاً محافظت‌شده',
+                    'hint' => 'مثل pesdb — فقط وقتی مجاز است که همه فایل‌های داخل آن پوشه مال ما و رمزشده باشند. اگر فایل سالم بازی را در بر بگیرد، آن فایل خراب می‌شود.',
+                    'placeholder' => "pesdb",
+                ],
+                'protected_exact_paths' => [
+                    'label' => 'فایل‌های محافظت‌شده (مسیر کامل)',
+                    'hint' => 'برای پوشه‌هایی که فایل‌های اصلی بازی هم داخلشان هست (مثل common\\menu\\licence که حدود ۱۰۰۰ فایل سالم کنار چند فایل ما دارد).',
+                    'placeholder' => "common\\menu\\licence\\game2dpes_perest.bin",
+                ],
+                'protected_excluded_paths' => [
+                    'label' => 'استثناها (همیشه بدون رمز)',
+                    'hint' => 'قبل از دو لیست بالا بررسی می‌شود. فایل‌هایی که باید plain بمانند هرچند داخل پوشه‌ی محافظت‌شده‌اند.',
+                    'placeholder' => "\\pesdb\\competition.bin",
+                ],
+            ];
+        @endphp
 
         <div class="grid grid-cols-12 gap-4">
             @foreach($protectionFields as $field => $meta)
