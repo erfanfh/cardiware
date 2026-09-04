@@ -49,7 +49,7 @@
             <div data-smart-sidebar-content class="lg:col-span-7 space-y-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($posts as $post)
-                        @php $views = approximate_view(page_views($post)); @endphp
+                        @php $views = approximate_view(public_page_views($post)); @endphp
                         <article
                             class="rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-lg transition overflow-hidden group dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
                             <a class="flex flex-col h-full" href="{{ front_route('contents.detail', $post) }}">

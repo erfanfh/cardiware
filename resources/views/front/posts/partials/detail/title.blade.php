@@ -115,7 +115,7 @@
                     @include('icons.view')
 
                     <span>
-                        {{ number_format(page_views($post)) }} بازدید
+                        {{ number_format(public_page_views($post)) }} بازدید
                     </span>
                 </div>
 

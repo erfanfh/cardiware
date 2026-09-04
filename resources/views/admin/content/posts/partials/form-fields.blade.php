@@ -126,6 +126,22 @@
                     />
                 </x-admin.field>
 
+                @if($isEdit)
+                    <x-admin.field
+                        class="col-span-12"
+                        label="افزایش نمایشی بازدید"
+                    >
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $post->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
+
                 <x-admin.field
                     class="col-span-12"
                     label="وضعیت"

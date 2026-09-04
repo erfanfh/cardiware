@@ -23,6 +23,18 @@
                     <x-admin.form.date-picker name="published_at"
                                               :value="old('published_at', $video?->published_at ? jalali_date($video->published_at, 'Y/m/d H:i') : '')"/>
                 </x-admin.field>
+                @if($video)
+                    <x-admin.field label="افزایش نمایشی بازدید">
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $video->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
                 <div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-700">ویدیوی ویژه</span>
                     <x-admin.form.switch name="is_featured"
                                          :checked="old('is_featured', $video?->is_featured ?? false)"/>

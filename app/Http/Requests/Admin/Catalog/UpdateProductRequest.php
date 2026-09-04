@@ -59,6 +59,7 @@ class UpdateProductRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
+            'display_views_offset' => ['required', 'integer', 'min:0', 'max:4294967295'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],
@@ -1133,6 +1134,7 @@ class UpdateProductRequest extends FormRequest
             'store_id' => 'فروشنده',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'display_views_offset' => 'افزایش نمایشی بازدید',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
             'video_gallery_items.*.video_url' => 'لینک ویدیو',
             'video_gallery_items.*.cover.id' => 'کاور ویدیو',
@@ -1210,6 +1212,7 @@ class UpdateProductRequest extends FormRequest
         $this->merge([
             'store_id' => $defaultStoreId,
             'picture_id' => $this->input('picture.id'),
+            'display_views_offset' => $this->input('display_views_offset', 0),
             'tags' => [
                 'existing' => $existing,
                 'new' => $new,

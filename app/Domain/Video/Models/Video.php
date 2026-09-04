@@ -29,6 +29,7 @@ class Video extends Model implements PageViewableInterface, CommentableContract
         'author_id', 'title', 'slug', 'excerpt', 'body', 'status', 'source_type',
         'video_url', 'aparat_video_id', 'cover_media_file_id', 'duration_seconds',
         'is_featured', 'comments_enabled', 'guest_comments_enabled', 'published_at',
+        'display_views_offset',
     ];
 
     protected $casts = [
@@ -39,6 +40,7 @@ class Video extends Model implements PageViewableInterface, CommentableContract
         'comments_enabled' => 'boolean',
         'guest_comments_enabled' => 'boolean',
         'published_at' => 'datetime',
+        'display_views_offset' => 'integer',
     ];
 
     protected static function booted(): void

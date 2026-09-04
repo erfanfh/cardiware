@@ -49,6 +49,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'status',
         'picture_id',
         'published_at',
+        'display_views_offset',
     ];
 
     protected $casts = [
@@ -57,6 +58,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'content_type' => ProductContentTypeEnum::class,
         'structure' => ProductStructureEnum::class,
         'published_at' => 'datetime',
+        'display_views_offset' => 'integer',
     ];
 
     protected static function booted(): void

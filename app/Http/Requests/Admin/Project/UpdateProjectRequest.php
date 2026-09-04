@@ -40,6 +40,7 @@ class UpdateProjectRequest extends FormRequest
             'product_box_title' => ['nullable', 'string'],
             'product_box_subtitle' => ['nullable', 'string'],
             'product_box_button_text' => ['nullable', 'string'],
+            'display_views_offset' => ['required', 'integer', 'min:0', 'max:4294967295'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],
@@ -96,6 +97,7 @@ class UpdateProjectRequest extends FormRequest
             'platform' => 'پلتفرم',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'display_views_offset' => 'افزایش نمایشی بازدید',
 
             'roadmap' => 'نقشه راه',
             'roadmap.*.title' => 'عنوان آیتم نقشه راه',
@@ -158,6 +160,7 @@ class UpdateProjectRequest extends FormRequest
             'changelogs' => $this->normalizeArray($this->input('changelogs')),
             'released_at' => $this->input('released_at') ? gregorian_date($this->input('released_at')) : null,
             'last_updated_at' => $this->input('last_updated_at') ? gregorian_date($this->input('last_updated_at')) : null,
+            'display_views_offset' => $this->input('display_views_offset', 0),
             'tags' => [
                 'existing' => $existing,
                 'new' => $new,

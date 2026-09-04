@@ -10,7 +10,7 @@
             </div>
 
             <div class="shrink-0 text-sm font-bold text-slate-900 dark:text-white">
-                {{ number_format(page_views($product)) }}
+                {{ number_format(public_page_views($product)) }}
             </div>
         </div>
 

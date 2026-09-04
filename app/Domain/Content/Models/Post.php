@@ -41,6 +41,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'created_at',
         'updated_at',
         'type',
+        'display_views_offset',
     ];
 
     protected $casts = [
@@ -48,6 +49,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'is_pinned' => 'boolean',
         'published_at' => 'datetime',
         'updated_at' => 'datetime',
+        'display_views_offset' => 'integer',
     ];
 
     /**
