@@ -1401,6 +1401,43 @@ class UpdateProductRequest extends FormRequest
             // browser actually submitted.
             'content_key_id' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_id'), 128),
             'content_key_value' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_value'), 512),
+
+            // The content-protection-policy fields hit the EXACT SAME bug described in
+            // the comment above, just later: they were added to the admin form, to
+            // UpdateProductRequest's own rules(), and to SyncProductSaleItemManifestAction,
+            // but never to THIS explicit key list -- so prepareForValidation() silently
+            // dropped every one of them before validation ever ran, regardless of what
+            // the browser submitted, and the manifest's protected_* columns stayed NULL
+            // on every save no matter how complete the posted form data was.
+            //
+            // normalizeNullableStringInput is deliberately NOT used for the three path
+            // lists or the JSON blob: it collapses all whitespace (including newlines)
+            // into single spaces, which would merge a 19-line path list into one
+            // unparseable line before normalizeStringList ever got to split it back
+            // apart. These need their newlines/JSON structure left alone.
+            'protected_folder_markers' => $this->normalizeMultilineListInput(
+                data_get($manifest, 'protected_folder_markers')
+            ),
+            'protected_exact_paths' => $this->normalizeMultilineListInput(
+                data_get($manifest, 'protected_exact_paths')
+            ),
+            'protected_excluded_paths' => $this->normalizeMultilineListInput(
+                data_get($manifest, 'protected_excluded_paths')
+            ),
+            // protected_modules: passed through as-is for an API/artisan caller sending a
+            // real array. protected_modules_json: what the admin form actually posts (one
+            // hidden field, JSON-encoded) -- SyncProductSaleItemManifestAction prefers
+            // protected_modules when both are present and falls back to decoding this.
+            'protected_modules' => is_array(data_get($manifest, 'protected_modules'))
+                ? data_get($manifest, 'protected_modules')
+                : null,
+            'protected_modules_json' => $this->normalizeRawJsonStringInput(
+                data_get($manifest, 'protected_modules_json')
+            ),
+            'protected_strict_modules' => $this->normalizeBooleanInput(
+                data_get($manifest, 'protected_strict_modules'),
+                true
+            ),
             'cpu_compatibility' => [
                 'enabled' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'enabled'), false),
                 'default_mode' => $this->normalizeCpuCompatibilityModeInput(
@@ -1531,6 +1568,36 @@ class UpdateProductRequest extends FormRequest
         }
 
         return $value;
+    }
+
+    // Trims the value but -- unlike normalizeNullableStringInput -- never touches
+    // internal whitespace. Used for the newline-delimited protection-policy lists,
+    // where collapsing "\r\n" runs into single spaces would merge every path onto
+    // one unparseable line before normalizeStringList (in
+    // SyncProductSaleItemManifestAction) ever gets to split it back apart.
+    private function normalizeMultilineListInput(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
+    }
+
+    // Same reasoning as normalizeMultilineListInput: the JSON structure (and the
+    // digests/paths inside it) must reach json_decode byte-for-byte, so this only
+    // trims surrounding whitespace and never collapses anything internal.
+    private function normalizeRawJsonStringInput(mixed $value): ?string
+    {
+        if (!is_string($value)) {
+            return null;
+        }
+
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 
     private function normalizeArchivePasswordInput(mixed $value): ?string
