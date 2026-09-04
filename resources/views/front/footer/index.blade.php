@@ -1,5 +1,9 @@
 @php
     $footerStats = app(\App\Application\System\Actions\Footer\GetFooterStatsAction::class)->execute();
+    $column4LightImagePath = get_setting('footer', 'column4_image')->path;
+    $column4DarkImagePath = get_setting('footer', 'column4_image_dark')->path;
+    $column4LightImagePath ??= $column4DarkImagePath;
+    $column4DarkImagePath ??= $column4LightImagePath;
 @endphp
 
 <footer id="footer" dir="rtl" class="bg-white dark:bg-slate-950">
@@ -303,18 +307,33 @@
             <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-2">
                 <div class="font-extrabold mb-3 dark:text-slate-100">{{ get_setting('footer', 'column4_title') }}</div>
 
-                @if(get_setting('footer', 'column4_image')->path)
+                @if($column4LightImagePath || $column4DarkImagePath)
                     <a href="{{ route('namad') }}" target="_blank">
-                        <x-front.responsive-image
-                            :fallback="get_setting('footer', 'column4_image')->path"
-                            :alt="get_setting('footer', 'column4_title')"
-                            variant="medium"
-                            class="h-auto w-full max-w-[180px] object-contain"
-                            wrapper-class="inline-block max-w-[180px]"
-                            :lazy="true"
-                            :async="true"
-                            sizes="180px"
-                        />
+                        @if($column4LightImagePath)
+                            <x-front.responsive-image
+                                :fallback="$column4LightImagePath"
+                                :alt="get_setting('footer', 'column4_title')"
+                                variant="medium"
+                                class="h-auto w-full max-w-[180px] object-contain"
+                                wrapper-class="inline-block max-w-[180px] dark:hidden"
+                                :lazy="true"
+                                :async="true"
+                                sizes="180px"
+                            />
+                        @endif
+
+                        @if($column4DarkImagePath)
+                            <x-front.responsive-image
+                                :fallback="$column4DarkImagePath"
+                                :alt="get_setting('footer', 'column4_title')"
+                                variant="medium"
+                                class="h-auto w-full max-w-[180px] object-contain"
+                                wrapper-class="hidden max-w-[180px] dark:inline-block"
+                                :lazy="true"
+                                :async="true"
+                                sizes="180px"
+                            />
+                        @endif
                     </a>
                 @endif
             </div>

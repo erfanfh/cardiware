@@ -9,6 +9,7 @@ use App\Infrastructure\Services\Setting\BaseSettings;
 class FooterSettings extends BaseSettings
 {
     protected string $group = 'footer';
+
     protected array $allowedKeys = [
         'about',
         'copyright',
@@ -40,6 +41,7 @@ class FooterSettings extends BaseSettings
         'column3_items',
         'column4_title',
         'column4_image',
+        'column4_image_dark',
         'namad_code',
     ];
 
@@ -48,5 +50,6 @@ class FooterSettings extends BaseSettings
         'column2_items' => ArrayCast::class,
         'column3_items' => ArrayCast::class,
         'column4_image' => MediaFileCast::class,
+        'column4_image_dark' => MediaFileCast::class,
     ];
 }

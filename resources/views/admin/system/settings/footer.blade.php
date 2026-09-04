@@ -368,7 +368,7 @@
 
                         <x-admin.field
                             class="lg:col-span-2"
-                            label="تصویر نمادها"
+                            label="تصویر نمادها (حالت روشن)"
                         >
                             <x-admin.form.media-picker
                                 name="column4_image"
@@ -381,6 +381,19 @@
 
                         <x-admin.field
                             class="lg:col-span-2"
+                            label="تصویر نمادها (حالت تاریک)"
+                        >
+                            <x-admin.form.media-picker
+                                name="column4_image_dark"
+                                :value="[
+                                    'id' => old('column4_image_dark.id', get_setting('footer', 'column4_image_dark')->id),
+                                    'path' => old('column4_image_dark.path', get_setting('footer', 'column4_image_dark')->path),
+                                ]"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-4"
                             label="کد نمادها"
                         >
                             <x-admin.form.textarea
