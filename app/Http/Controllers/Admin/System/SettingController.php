@@ -11,6 +11,7 @@ use App\Domain\System\Models\BackupRun;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
@@ -291,11 +292,9 @@ class SettingController extends Controller
     }
 
     /**
-     * General settings page
-     *
-     * @return View
+     * About us settings page
      */
-    public function aboutUs()
+    public function aboutUs(): View
     {
         Gate::authorize('setting.about-us');
 
@@ -303,15 +302,21 @@ class SettingController extends Controller
     }
 
     /**
-     * Store home settings
+     * Store about us settings
      *
      * @throws BindingResolutionException
      */
-    public function storeAboutUs(Request $request): RedirectResponse
+    public function storeAboutUs(UpdateAboutUsSettingsRequest $request): RedirectResponse
     {
         Gate::authorize('setting.about-us');
 
-        $this->storeSettings($request, 'aboutUs');
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (!app(UpdateSettingAction::class)->execute('aboutUs', $field, $value)) {
+                    throw new RuntimeException('Unable to persist about us settings.');
+                }
+            }
+        });
 
         return redirect()
             ->route('admin.settings.about-us')

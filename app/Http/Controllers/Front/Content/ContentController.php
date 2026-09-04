@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Content;
 
+use App\Application\Content\Actions\GetAboutUsPageDataAction;
 use App\Application\Content\Actions\GetPageDetailDataAction;
 use App\Application\Content\Actions\GetPostDetailDataAction;
 use App\Application\Content\DTOs\ResolvedContentDTO;
@@ -17,10 +18,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final class ContentController
 {
     public function __construct(
-        private readonly StoreViewAction         $storeViewAction,
-        private readonly PageTemplateService     $pageTemplateService,
-        private readonly GetPostDetailDataAction $getPostDetailDataAction,
-        private readonly GetPageDetailDataAction $getPageDetailDataAction,
+        private readonly StoreViewAction          $storeViewAction,
+        private readonly PageTemplateService      $pageTemplateService,
+        private readonly GetAboutUsPageDataAction $getAboutUsPageDataAction,
+        private readonly GetPostDetailDataAction  $getPostDetailDataAction,
+        private readonly GetPageDetailDataAction  $getPageDetailDataAction,
     )
     {
     }
@@ -78,7 +80,16 @@ final class ContentController
             $viewName = "templates.{$page->template}";
         }
 
-        return view($viewName, compact('page'));
+        $viewData = compact('page');
+
+        if ($viewName === 'templates.about-us') {
+            $viewData = array_merge(
+                $viewData,
+                $this->getAboutUsPageDataAction->execute(),
+            );
+        }
+
+        return view($viewName, $viewData);
     }
 
     private function renderPost(Post $post): View
