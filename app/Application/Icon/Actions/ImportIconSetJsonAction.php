@@ -3,6 +3,7 @@
 namespace App\Application\Icon\Actions;
 
 use App\Application\Icon\DTOs\IconImportResult;
+use App\Application\Shared\Cache\Invalidators\NavigationCacheInvalidator;
 use App\Domain\Icon\Models\IconSet;
 use App\Infrastructure\Icon\JsonArrayObjectStream;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ class ImportIconSetJsonAction
     public function __construct(
         protected JsonArrayObjectStream $stream,
         protected SanitizeIconSvgAction $sanitizeSvg,
+        protected NavigationCacheInvalidator $navigationCacheInvalidator,
     ) {
     }
 
@@ -136,6 +138,10 @@ class ImportIconSetJsonAction
             'icons_count' => $actualCount,
             'imported_at' => now(),
         ]);
+
+        // Header navigation caches embed the sanitized SVG to avoid icon
+        // queries on frontend requests, so a changed icon set must evict them.
+        $this->navigationCacheInvalidator->flushAll();
 
         return new IconImportResult(
             setKey: $setKey,

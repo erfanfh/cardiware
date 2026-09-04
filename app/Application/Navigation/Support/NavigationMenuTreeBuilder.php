@@ -2,17 +2,27 @@
 
 namespace App\Application\Navigation\Support;
 
+use App\Application\Icon\Actions\ResolveIconSvgAction;
 use App\Domain\Navigation\Models\NavigationItem;
 use Illuminate\Support\Collection;
 
 class NavigationMenuTreeBuilder
 {
+    public function __construct(
+        private readonly ResolveIconSvgAction $resolveIconSvgAction,
+    ) {
+    }
+
     /**
      * @param Collection<int, NavigationItem> $items
      * @return array<int, array<string, mixed>>
      */
     public function buildForAdmin(Collection $items): array
     {
+        $iconSvgs = $this->resolveIconSvgAction->executeMany(
+            $items->pluck('icon')->filter()->all(),
+        );
+
         $groupedByParent = $items
             ->sortBy([
                 ['sort_order', 'asc'],
@@ -23,6 +33,7 @@ class NavigationMenuTreeBuilder
         return $this->buildChildren(
             groupedByParent: $groupedByParent,
             parentId: 0,
+            iconSvgs: $iconSvgs,
         );
     }
 
@@ -30,13 +41,17 @@ class NavigationMenuTreeBuilder
      * @param Collection<int|string, Collection<int, NavigationItem>> $groupedByParent
      * @return array<int, array<string, mixed>>
      */
-    protected function buildChildren(Collection $groupedByParent, int $parentId): array
+    protected function buildChildren(
+        Collection $groupedByParent,
+        int $parentId,
+        array $iconSvgs,
+    ): array
     {
         /** @var Collection<int, NavigationItem> $items */
         $items = $groupedByParent->get($parentId, collect());
 
         return $items
-            ->map(function (NavigationItem $item) use ($groupedByParent): array {
+            ->map(function (NavigationItem $item) use ($groupedByParent, $iconSvgs): array {
                 return [
                     'id' => $item->id,
                     'uid' => 'db-' . $item->id,
@@ -48,6 +63,7 @@ class NavigationMenuTreeBuilder
                     'isOpen' => false,
                     'target' => $item->target->value,
                     'icon' => $item->icon,
+                    'iconSvg' => $iconSvgs[$item->icon] ?? null,
                     'badge' => $item->badge,
                     'cssClass' => $item->css_class,
                     'isMegaMenu' => $item->is_mega_menu,
@@ -57,6 +73,7 @@ class NavigationMenuTreeBuilder
                     'children' => $this->buildChildren(
                         groupedByParent: $groupedByParent,
                         parentId: $item->id,
+                        iconSvgs: $iconSvgs,
                     ),
                 ];
             })

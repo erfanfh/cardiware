@@ -2,6 +2,7 @@
 
 namespace App\Application\Navigation\Actions;
 
+use App\Application\Icon\Actions\ResolveIconSvgAction;
 use App\Application\Navigation\Support\NavigationItemUrlResolver;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
@@ -14,6 +15,7 @@ class ResolveFrontendNavigationMenuAction
 {
     public function __construct(
         protected NavigationItemUrlResolver $urlResolver,
+        protected ResolveIconSvgAction $resolveIconSvgAction,
     )
     {
     }
@@ -47,20 +49,32 @@ class ResolveFrontendNavigationMenuAction
             ->orderBy('id')
             ->get();
 
-        return $this->buildTree($items);
+        $iconSvgs = $this->resolveIconSvgAction->executeMany(
+            $items->pluck('icon')->filter()->all(),
+        );
+
+        return $this->buildTree($items, iconSvgs: $iconSvgs);
     }
 
-    protected function buildTree(Collection $items, ?int $parentId = null): Collection
+    protected function buildTree(
+        Collection $items,
+        ?int $parentId = null,
+        array $iconSvgs = [],
+    ): Collection
     {
         return $items
             ->where('parent_id', $parentId)
             ->values()
-            ->map(fn(NavigationItem $item) => $this->mapItem($item, $items))
+            ->map(fn(NavigationItem $item) => $this->mapItem($item, $items, $iconSvgs))
             ->filter()
             ->values();
     }
 
-    protected function mapItem(NavigationItem $item, Collection $allItems): ?array
+    protected function mapItem(
+        NavigationItem $item,
+        Collection $allItems,
+        array $iconSvgs,
+    ): ?array
     {
         $url = $this->urlResolver->resolveForItem($item);
 
@@ -74,13 +88,14 @@ class ResolveFrontendNavigationMenuAction
             'url' => $url,
             'target' => $item->target->value,
             'icon' => $item->icon,
+            'icon_svg' => $iconSvgs[$item->icon] ?? null,
             'badge' => $item->badge,
             'css_class' => $item->css_class,
             'is_mega_menu' => $item->is_mega_menu,
             'mega_menu_title' => $item->mega_menu_title,
             'mega_menu_description' => $item->mega_menu_description,
             'mega_menu_columns' => $item->mega_menu_columns,
-            'children' => $this->buildTree($allItems, $item->id),
+            'children' => $this->buildTree($allItems, $item->id, $iconSvgs),
         ];
     }
 }

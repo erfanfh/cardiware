@@ -9,9 +9,7 @@
        class="flex items-center gap-2 rounded-xl px-2 py-1.5 text-xs font-bold text-slate-600 hover:bg-white hover:text-brand-700 transition dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-brand-300 {{ $item['css_class'] }}">
         <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 
-        @if($item['icon'])
-            <span class="text-sm">{{ $item['icon'] }}</span>
-        @endif
+        <x-front.navigation-icon :item="$item" class="h-4 w-4 text-current [&_svg]:h-4 [&_svg]:w-4" />
 
         <span class="line-clamp-1">{{ $item['title'] }}</span>
 

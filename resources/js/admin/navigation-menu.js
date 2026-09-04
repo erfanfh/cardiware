@@ -6,6 +6,8 @@ window.navigationManager = function (config = {}) {
         nextId: 100,
         sortables: [],
         treeEventsBound: false,
+        iconSelectedListener: null,
+        iconClearedListener: null,
 
         customLink: {
             title: '',
@@ -41,6 +43,7 @@ window.navigationManager = function (config = {}) {
 
         init() {
             this.normalizeInitialItems();
+            this.bindIconPickerEvents();
 
             this.$watch('activeType', (value) => {
                 if (this.isSearchableEntityType(value)) {
@@ -60,6 +63,18 @@ window.navigationManager = function (config = {}) {
             });
         },
 
+        destroy() {
+            this.destroySortables();
+
+            if (this.iconSelectedListener) {
+                window.removeEventListener('mwip-selected', this.iconSelectedListener);
+            }
+
+            if (this.iconClearedListener) {
+                window.removeEventListener('mwip-cleared', this.iconClearedListener);
+            }
+        },
+
         normalizeInitialItems() {
             this.menuItems = this.normalizeItems(this.menuItems);
             this.nextId = this.resolveNextId(this.menuItems);
@@ -77,6 +92,7 @@ window.navigationManager = function (config = {}) {
                 isOpen: !!item.isOpen,
                 target: item.target ?? '_self',
                 icon: item.icon ?? '',
+                iconSvg: item.iconSvg ?? null,
                 badge: item.badge ?? '',
                 cssClass: item.cssClass ?? '',
                 isMegaMenu: !!item.isMegaMenu,
@@ -277,6 +293,7 @@ window.navigationManager = function (config = {}) {
                 isOpen: false,
                 target: '_self',
                 icon: '',
+                iconSvg: null,
                 badge: '',
                 cssClass: '',
                 isMegaMenu: false,
@@ -299,6 +316,7 @@ window.navigationManager = function (config = {}) {
                 isOpen: !!item.isOpen,
                 target: item.target ?? '_self',
                 icon: item.icon ?? '',
+                iconSvg: item.iconSvg ?? null,
                 badge: item.badge ?? '',
                 cssClass: item.cssClass ?? '',
                 isMegaMenu: !!item.isMegaMenu,
@@ -370,6 +388,83 @@ window.navigationManager = function (config = {}) {
             this.renderTree();
         },
 
+        bindIconPickerEvents() {
+            this.iconSelectedListener = (event) => {
+                const detail = event.detail ?? {};
+                const item = this.itemFromIconPickerEvent(detail);
+
+                if (!item) {
+                    return;
+                }
+
+                item.icon = String(detail.iconTitle ?? detail.iconName ?? '').trim();
+                item.iconSvg = typeof detail.iconSvg === 'string' && detail.iconSvg.trim()
+                    ? detail.iconSvg
+                    : null;
+
+                this.fullRefresh();
+            };
+
+            this.iconClearedListener = (event) => {
+                const item = this.itemFromIconPickerEvent(event.detail ?? {});
+
+                if (!item) {
+                    return;
+                }
+
+                item.icon = '';
+                item.iconSvg = null;
+
+                this.fullRefresh();
+            };
+
+            window.addEventListener('mwip-selected', this.iconSelectedListener);
+            window.addEventListener('mwip-cleared', this.iconClearedListener);
+        },
+
+        iconPickerItemKey(uid) {
+            return `navigation-menu-item:${uid}`;
+        },
+
+        itemFromIconPickerEvent(detail) {
+            const prefix = 'navigation-menu-item:';
+            const itemKey = String(detail?.itemKey ?? '');
+
+            if (!itemKey.startsWith(prefix)) {
+                return null;
+            }
+
+            return this.findItem(itemKey.slice(prefix.length));
+        },
+
+        openIconPicker(uid) {
+            const item = this.findItem(uid);
+
+            if (!item) {
+                return;
+            }
+
+            window.dispatchEvent(new CustomEvent('mwip-open-requested', {
+                detail: {
+                    itemKey: this.iconPickerItemKey(uid),
+                    selectedIconName: item.icon || null,
+                },
+            }));
+        },
+
+        clearItemIcon(uid) {
+            const item = this.findItem(uid);
+
+            if (!item || (!item.icon && !item.iconSvg)) {
+                return false;
+            }
+
+            item.icon = '';
+            item.iconSvg = null;
+
+            return true;
+        },
+
         renderTree() {
             if (!this.$refs.treeRoot) {
                 return;
@@ -413,6 +508,11 @@ window.navigationManager = function (config = {}) {
             const isRootItem = level === 0;
             const megaHidden = item.isMegaMenu && isRootItem ? '' : 'hidden';
             const isCustomLink = item.type === 'custom_link';
+            const iconPreview = item.iconSvg
+                ? item.iconSvg
+                : (item.icon
+                    ? `<span class="text-lg">${this.escapeHtml(item.icon)}</span>`
+                    : `<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`);
 
             return `
                 <li class="sortable-item group list-none" data-uid="${item.uid}">
@@ -513,8 +613,34 @@ window.navigationManager = function (config = {}) {
                                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div>
                                             <label class="mb-2 block text-sm font-bold text-slate-700">آیکون</label>
-                                            <input type="text" data-field="icon" data-uid="${item.uid}" value="${this.escapeHtml(item.icon)}"
-                                                   class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100">
+                                            <div class="flex items-stretch gap-2">
+                                                <button type="button"
+                                                        data-action="select-icon"
+                                                        data-uid="${item.uid}"
+                                                        class="flex min-w-0 flex-1 cursor-pointer items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-right transition hover:border-brand-300 hover:bg-brand-50/40 focus:outline-none focus:ring-4 focus:ring-brand-100">
+                                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-500 [&_svg]:h-5 [&_svg]:w-5">
+                                                        ${iconPreview}
+                                                    </span>
+                                                    <span class="min-w-0 flex-1">
+                                                        <span class="block truncate text-xs font-black ${item.icon ? 'text-slate-800' : 'text-slate-500'}">
+                                                            ${item.icon ? this.escapeHtml(item.icon) : 'انتخاب از کتابخانه آیکون‌ها'}
+                                                        </span>
+                                                        <span class="mt-1 block text-[10px] text-slate-400">
+                                                            ${item.icon ? 'برای تغییر آیکون کلیک کنید' : 'اختیاری'}
+                                                        </span>
+                                                    </span>
+                                                </button>
+
+                                                ${item.icon ? `
+                                                    <button type="button"
+                                                            data-action="clear-icon"
+                                                            data-uid="${item.uid}"
+                                                            class="grid w-11 shrink-0 cursor-pointer place-items-center rounded-2xl border border-rose-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                                                            title="حذف آیکون">
+                                                        <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4"><path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                                    </button>
+                                                ` : ''}
+                                            </div>
                                         </div>
 
                                         <div>
@@ -620,6 +746,11 @@ window.navigationManager = function (config = {}) {
                 const action = actionEl.dataset.action;
                 const uid = actionEl.dataset.uid;
 
+                if (action === 'select-icon') {
+                    this.openIconPicker(uid);
+                    return;
+                }
+
                 let changed = false;
 
                 if (action === 'toggle') {
@@ -634,6 +765,8 @@ window.navigationManager = function (config = {}) {
                     changed = this.indentItem(uid);
                 } else if (action === 'outdent') {
                     changed = this.outdentItem(uid);
+                } else if (action === 'clear-icon') {
+                    changed = this.clearItemIcon(uid);
                 }
 
                 if (changed) {

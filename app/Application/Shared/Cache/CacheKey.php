@@ -60,7 +60,7 @@ final class CacheKey
 
     public static function frontendNavigation(string $slug): string
     {
-        return "navigation:frontend:{$slug}";
+        return "navigation:frontend:v2:{$slug}";
     }
 
     public static function contentSlug(string $slug): string

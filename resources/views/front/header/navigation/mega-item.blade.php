@@ -7,9 +7,7 @@
        target="{{ $item['target'] }}"
        @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
        class="inline-flex items-center gap-2 px-3 py-2 rounded-xl hover:text-slate-900 hover:bg-slate-50 transition dark:hover:bg-slate-800 dark:hover:text-slate-100 {{ $item['css_class'] }}">
-        @if($item['icon'])
-            <span class="text-base">{{ $item['icon'] }}</span>
-        @endif
+        <x-front.navigation-icon :item="$item" class="h-4 w-4 text-current [&_svg]:h-4 [&_svg]:w-4" />
 
         <span>{{ $item['title'] }}</span>
 
@@ -85,11 +83,11 @@
                                target="{{ $quickItem['target'] }}"
                                @if($quickItem['target'] === '_blank') rel="noopener noreferrer" @endif
                                class="flex items-center gap-3 rounded-2xl bg-white p-3 text-sm font-bold text-slate-700 ring-1 ring-slate-200 hover:text-slate-900 hover:shadow-md transition dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:hover:text-slate-100 dark:hover:shadow-black/20">
-                                @if($quickItem['icon'])
-                                    <span
-                                        class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base dark:bg-slate-800">
-                                        {{ $quickItem['icon'] }}
-                                    </span>
+                                @if(filled($quickItem['icon']))
+                                    <x-front.navigation-icon
+                                        :item="$quickItem"
+                                        class="h-9 w-9 rounded-xl bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300 [&_svg]:h-5 [&_svg]:w-5"
+                                    />
                                 @endif
 
                                 <span class="line-clamp-1">{{ $quickItem['title'] }}</span>
