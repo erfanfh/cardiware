@@ -48,6 +48,11 @@ return [
             'decay_seconds' => 300,
         ],
 
+        'request_account_password_change_otp' => [
+            'max_attempts' => 5,
+            'decay_seconds' => 300,
+        ],
+
         'verify_login_otp' => [
             'max_attempts' => 10,
             'decay_seconds' => 300,
@@ -59,6 +64,11 @@ return [
         ],
 
         'reset_password' => [
+            'max_attempts' => 10,
+            'decay_seconds' => 300,
+        ],
+
+        'change_account_password' => [
             'max_attempts' => 10,
             'decay_seconds' => 300,
         ],
