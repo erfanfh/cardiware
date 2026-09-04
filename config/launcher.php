@@ -61,7 +61,8 @@ return [
     // URL stays usable until the file is moved. That is an acceptable trade because
     // the URL was never the thing protecting the content -- the archive password and
     // the content key are, and neither is obtainable from the URL. Rotating the
-    // upload folder per release keeps a leaked link short-lived.
+    // upload folder per release keeps a leaked link short-lived, and setting
+    // secure_link_secret below removes the "until the file is moved" part entirely.
     'direct_download_enabled' => (bool)env('LAUNCHER_DIRECT_DOWNLOAD', false),
 
     'allowed_download_hosts' => array_values(
@@ -75,6 +76,28 @@ return [
             )
         )
     ),
+
+    // Shared secret for nginx's secure_link module on the download host. When set, a
+    // direct URL is handed out signed and time-limited instead of permanent, and
+    // carries an opaque per-user token so the download host's access log attributes
+    // every byte to an account -- which is what makes a leak actionable rather than
+    // merely regrettable. Empty (the default) leaves URLs unsigned, exactly as before.
+    //
+    // The nginx side must be configured as:
+    //     secure_link        $arg_md5,$arg_expires;
+    //     secure_link_md5    "SECRET$secure_link_expires$uri$arg_u";
+    // with SECRET being this same value. Note the deliberate absence of $remote_addr:
+    // including it is the common recipe, but it breaks resume for mobile and CGNAT
+    // users whose address changes mid-download -- and an 80 GB download on an ordinary
+    // connection lasts long enough for that to be routine, not rare.
+    'secure_link_secret' => (string)env('LAUNCHER_SECURE_LINK_SECRET', ''),
+
+    // How long a signed URL stays valid. This does not cap download duration: the
+    // launcher treats 403/410 as "refresh the link" and resumes from its existing
+    // partial file (see IsRefreshableDownloadStatus in LaravelResilientDownloadService),
+    // so a 36-hour download over a slow line simply re-signs a few times. Keep it short
+    // enough that a link pasted into a group is dead before most people click it.
+    'secure_link_ttl_minutes' => max(5, (int)env('LAUNCHER_SECURE_LINK_TTL_MINUTES', 240)),
 
     // file_name in the admin manifest must be the exact physical file name at
     // the end of the source URL. Disable only for providers with opaque URLs.
