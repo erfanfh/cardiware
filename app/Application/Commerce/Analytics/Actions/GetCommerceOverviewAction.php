@@ -74,7 +74,7 @@ class GetCommerceOverviewAction
 
     private function cacheKey(AnalyticsFilterDTO $filter): string
     {
-        return 'commerce-analytics:overview:v2:' . $filter->cacheKey();
+        return 'commerce-analytics:overview:v3:' . $filter->cacheKey();
     }
 
     /**
@@ -90,7 +90,9 @@ class GetCommerceOverviewAction
             ->selectRaw('COALESCE(SUM(subtotal_amount), 0) as gross_sales')
             ->selectRaw('COALESCE(SUM(discount_amount), 0) as discount_amount')
             ->selectRaw('COALESCE(SUM(coupon_discount_amount), 0) as coupon_discount_amount')
-            ->selectRaw('COALESCE(SUM(total_amount), 0) as net_sales')
+            ->selectRaw('COALESCE(SUM(taxable_amount), 0) as net_sales')
+            ->selectRaw('COALESCE(SUM(tax_amount), 0) as tax_amount')
+            ->selectRaw('COALESCE(SUM(total_amount), 0) as customer_paid_amount')
             ->selectRaw('COUNT(DISTINCT user_id) as unique_customers')
             ->first();
 
@@ -166,6 +168,8 @@ class GetCommerceOverviewAction
             ),
             'coupon_discount_amount' => (int)($orders->coupon_discount_amount ?? 0),
             'discount_amount' => (int)($orders->discount_amount ?? 0),
+            'tax_amount' => (int)($orders->tax_amount ?? 0),
+            'customer_paid_amount' => (int)($orders->customer_paid_amount ?? 0),
             'net_sales' => $netSales,
             'paid_orders_count' => $paidOrdersCount,
             'average_order_value' => $paidOrdersCount > 0
@@ -434,7 +438,7 @@ class GetCommerceOverviewAction
             ->selectRaw('COUNT(*) as orders_count')
             ->selectRaw('COALESCE(SUM(subtotal_amount), 0) as gross_sales')
             ->selectRaw('COALESCE(SUM(discount_amount), 0) as discount_amount')
-            ->selectRaw('COALESCE(SUM(total_amount), 0) as net_sales')
+            ->selectRaw('COALESCE(SUM(taxable_amount), 0) as net_sales')
             ->get();
     }
 

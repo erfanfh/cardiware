@@ -135,6 +135,19 @@ class CartPage extends Component
     }
 
     #[Computed]
+    public function cartTax(): int
+    {
+        return (int)($this->cart?->tax_amount ?? 0);
+    }
+
+    public function cartTaxRateLabel(): string
+    {
+        $rate = ((int)($this->cart?->tax_rate_basis_points ?? 0)) / 100;
+
+        return rtrim(rtrim(number_format($rate, 2, '.', ''), '0'), '.');
+    }
+
+    #[Computed]
     public function cartTotal(): int
     {
         return (int)(
@@ -863,6 +876,7 @@ class CartPage extends Component
         unset($this->itemsCount);
         unset($this->cartSubtotal);
         unset($this->cartDiscount);
+        unset($this->cartTax);
         unset($this->cartTotal);
 
         unset($this->walletAvailableBalance);

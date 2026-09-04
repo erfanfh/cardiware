@@ -168,7 +168,9 @@ class PayOrderWithWalletAction
                         'payment_token' => $payment->public_token,
                         'order_id' => $order->id,
                         'order_number' => $order->order_number,
+                        'tax_amount' => (int)$order->tax_amount,
                     ],
+                    taxAmount: (int)$order->tax_amount,
                 ),
             );
 

@@ -101,6 +101,11 @@
                                 - {{ number_format($order->discount_amount) }}
                             </div>
                         @endif
+                        @if((int) $order->tax_amount > 0)
+                            <div class="mt-1 text-[11px] font-bold text-amber-700">
+                                + {{ number_format($order->tax_amount) }} تومان مالیات
+                            </div>
+                        @endif
                     </a>
                 </x-admin.list.td>
 

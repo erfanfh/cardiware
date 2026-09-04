@@ -23,6 +23,7 @@ final readonly class DebitWalletDTO
         public ?Model                    $reference = null,
         public ?string                   $description = null,
         public array                     $metadata = [],
+        public int                       $taxAmount = 0,
     )
     {
     }

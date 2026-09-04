@@ -24,6 +24,8 @@ class HeaderCartDropdown extends Component
         'items_count' => 0,
         'subtotal_amount' => 0,
         'discount_amount' => 0,
+        'tax_rate_basis_points' => 0,
+        'tax_amount' => 0,
         'total_amount' => 0,
         'items' => [],
     ];
@@ -79,6 +81,8 @@ class HeaderCartDropdown extends Component
             'items_count' => (int)$cart->rootItems->sum('quantity'),
             'subtotal_amount' => (int)$cart->subtotal_amount,
             'discount_amount' => (int)$cart->discount_amount,
+            'tax_rate_basis_points' => (int)$cart->tax_rate_basis_points,
+            'tax_amount' => (int)$cart->tax_amount,
             'total_amount' => (int)$cart->total_amount,
             'items' => $cart->rootItems
                 ->sortBy('id')
@@ -370,6 +374,8 @@ class HeaderCartDropdown extends Component
             'items_count' => 0,
             'subtotal_amount' => 0,
             'discount_amount' => 0,
+            'tax_rate_basis_points' => 0,
+            'tax_amount' => 0,
             'total_amount' => 0,
             'items' => [],
         ];

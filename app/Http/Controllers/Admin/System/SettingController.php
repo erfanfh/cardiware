@@ -165,6 +165,22 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.general');
 
+        if ($request->hasAny(['tax_enabled', 'tax_rate_percent'])) {
+            $request->validate([
+                'tax_enabled' => ['required', 'boolean'],
+                'tax_rate_percent' => [
+                    'required',
+                    'numeric',
+                    $request->boolean('tax_enabled') ? 'min:0.01' : 'min:0',
+                    'max:100',
+                    'decimal:0,2',
+                ],
+            ], [
+                'tax_rate_percent.min' => 'در حالت فعال، درصد مالیات باید بیشتر از صفر باشد.',
+                'tax_rate_percent.max' => 'درصد مالیات نمی‌تواند بیشتر از ۱۰۰ باشد.',
+            ]);
+        }
+
         $this->storeSettings($request, 'general');
         $activeTab = $request->input('active_tab', 'main');
 

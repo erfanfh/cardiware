@@ -67,6 +67,9 @@ class CreateOrderFromCartAction
 
                 'subtotal_amount' => $cart->subtotal_amount,
                 'discount_amount' => $cart->discount_amount,
+                'taxable_amount' => $cart->taxable_amount,
+                'tax_rate_basis_points' => $cart->tax_rate_basis_points,
+                'tax_amount' => $cart->tax_amount,
                 'total_amount' => $cart->total_amount,
 
                 'coupon_id' => $cart->coupon_id,

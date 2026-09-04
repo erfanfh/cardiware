@@ -9,6 +9,9 @@ interface Payable
      */
     public function getPayableAmount(): int;
 
+    /** Tax already included in the payable amount. */
+    public function getPayableTaxAmount(): int;
+
     /**
      * Get payable display title.
      */

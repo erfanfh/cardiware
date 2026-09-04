@@ -293,6 +293,7 @@
                     $detailLabels = [
                         'gateway' => 'درگاه پرداخت',
                         'payment_status' => 'وضعیت پرداخت',
+                        'tax_amount' => 'مالیات',
                         'gateway_reference' => 'شناسه مرجع درگاه',
                         'gateway_transaction_id' => 'شناسه تراکنش درگاه',
                         'gateway_message' => 'پیام درگاه',
@@ -308,6 +309,7 @@
                     ];
 
                     $amountDetailKeys = [
+                        'tax_amount',
                         'wallet_amount',
                         'gateway_amount',
                         'withdrawable_amount',

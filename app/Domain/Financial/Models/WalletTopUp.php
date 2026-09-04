@@ -218,6 +218,12 @@ class WalletTopUp extends Model implements Payable
         return (int)$this->amount;
     }
 
+    /** Wallet top-ups are funding movements and are never taxed again. */
+    public function getPayableTaxAmount(): int
+    {
+        return 0;
+    }
+
     public function getPayableTitle(): string
     {
         return match ($this->purpose) {

@@ -53,6 +53,17 @@
                             class="font-extrabold text-emerald-700 dark:text-emerald-400">{{ $this->money($this->cartDiscount) }}</span>
                     </div>
 
+                    @if((int) ($this->cart?->tax_rate_basis_points ?? 0) > 0)
+                        <div class="flex items-center justify-between gap-3 text-xs">
+                            <span class="text-slate-500 dark:text-slate-400">
+                                مالیات ({{ $this->cartTaxRateLabel() }}٪)
+                            </span>
+                            <span class="font-extrabold text-amber-700 dark:text-amber-400">
+                                {{ $this->money($this->cartTax) }}
+                            </span>
+                        </div>
+                    @endif
+
                     <div class="my-3 border-t border-slate-100 dark:border-slate-800"></div>
 
                     <div class="flex items-center justify-between gap-3">

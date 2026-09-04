@@ -934,6 +934,11 @@ class GetUserFinancialActivitiesAction
                 'payment_status' =>
                     $payment->status->label(),
 
+                'tax_amount' =>
+                    (int)$payment->tax_amount > 0
+                        ? (int)$payment->tax_amount
+                        : null,
+
                 'gateway_reference' =>
                     $payment->gateway_reference,
 
@@ -1234,6 +1239,10 @@ class GetUserFinancialActivitiesAction
             balanceAfter: (int)$transaction->balance_after,
 
             details: array_filter([
+                'tax_amount' =>
+                    (int)$transaction->tax_amount > 0
+                        ? (int)$transaction->tax_amount
+                        : null,
                 'withdrawable_amount' =>
                     (int)$transaction->withdrawable_amount > 0
                         ? (int)$transaction->withdrawable_amount

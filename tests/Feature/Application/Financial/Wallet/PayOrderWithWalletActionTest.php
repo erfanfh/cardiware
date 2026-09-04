@@ -20,6 +20,47 @@ class PayOrderWithWalletActionTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_it_snapshots_order_tax_in_payment_and_wallet_ledger(): void
+    {
+        $user = User::factory()->create();
+
+        $order = Order::query()->create([
+            'user_id' => $user->id,
+            'order_number' => 'TEST-WALLET-TAX',
+            'status' => OrderStatusEnum::PENDING_PAYMENT,
+            'subtotal_amount' => 100_000,
+            'discount_amount' => 0,
+            'taxable_amount' => 100_000,
+            'tax_rate_basis_points' => 1_000,
+            'tax_amount' => 10_000,
+            'total_amount' => 110_000,
+        ]);
+
+        $wallet = app(GetOrCreateWalletAction::class)->execute($user);
+
+        app(CreditWalletAction::class)->execute(new CreditWalletDTO(
+            wallet: $wallet,
+            type: WalletTransactionTypeEnum::TOP_UP,
+            amount: 200_000,
+            idempotencyKey: 'test-wallet-tax-credit',
+            actor: $user,
+        ));
+
+        $payment = app(PayOrderWithWalletAction::class)->execute($order, $user);
+
+        $this->assertSame(110_000, $payment->amount);
+        $this->assertSame(10_000, $payment->tax_amount);
+        $this->assertSame(10_000, (int)data_get($payment->request_payload, 'tax_amount'));
+
+        $this->assertDatabaseHas('wallet_transactions', [
+            'idempotency_key' => 'order-wallet-payment:' . $order->id,
+            'amount' => 110_000,
+            'tax_amount' => 10_000,
+        ]);
+
+        $this->assertSame(90_000, $wallet->refresh()->balance);
+    }
+
     public function test_it_pays_order_completely_using_wallet(): void
     {
         $user = User::factory()->create();
