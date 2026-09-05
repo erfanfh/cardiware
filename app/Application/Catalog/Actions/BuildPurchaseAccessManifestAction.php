@@ -135,6 +135,19 @@ class BuildPurchaseAccessManifestAction
                             'file_name' => $this->fileName($file),
                             'size_bytes' => $file->size_bytes,
                             'sha256' => strtolower((string)$file->sha256),
+
+                            /*
+                             * Publisher signature over the sha256 above, made with the
+                             * offline release key. Without it the hash proves only that
+                             * the download matches what THIS server said -- which a
+                             * compromised server controls on both sides. Null for files
+                             * registered before signing existed; the launcher logs those
+                             * as unsigned and installs them anyway until every file has
+                             * been re-registered.
+                             */
+                            'sha256_signature' => $file->sha256_signature,
+                            'signature_key_id' => $file->signature_key_id,
+
                             'mime_type' => $file->mime_type,
                             'part_number' => $file->part_number,
                             'archive_group' => $file->archive_group,

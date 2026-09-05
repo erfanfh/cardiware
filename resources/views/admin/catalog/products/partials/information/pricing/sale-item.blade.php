@@ -383,6 +383,24 @@
                             />
                         </div>
 
+                        <div class="col-span-12 md:col-span-8 xl:col-span-9">
+                            <x-admin.form.input
+                                x-bind:name="`sale_items[${i}][files][${fileIndex}][sha256_signature]`"
+                                x-model="file.sha256_signature"
+                                class="direction-ltr"
+                                placeholder="امضای ناشر (از ابزار ریلیز، تب ۲)"
+                            />
+                        </div>
+
+                        <div class="col-span-12 md:col-span-4 xl:col-span-3">
+                            <x-admin.form.input
+                                x-bind:name="`sale_items[${i}][files][${fileIndex}][signature_key_id]`"
+                                x-model="file.signature_key_id"
+                                class="direction-ltr"
+                                placeholder="شناسه کلید امضا"
+                            />
+                        </div>
+
                         <div class="col-span-6 md:col-span-3 xl:col-span-2">
                             <x-admin.form.input type="number" min="1"
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][part_number]`"

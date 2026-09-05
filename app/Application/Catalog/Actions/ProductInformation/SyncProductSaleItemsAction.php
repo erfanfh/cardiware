@@ -240,6 +240,12 @@ class SyncProductSaleItemsAction
                 'size_bytes' => $this->normalizer->nullableInteger($fileItem['size_bytes'] ?? null),
                 'sha256' => filled($fileItem['sha256'] ?? null)
                     ? strtolower(trim((string)$fileItem['sha256'])) : null,
+                // Signature is stored verbatim (Base64 is case-sensitive), while the key
+                // id is lowercased to match how the launcher derives it.
+                'sha256_signature' => filled($fileItem['sha256_signature'] ?? null)
+                    ? trim((string)$fileItem['sha256_signature']) : null,
+                'signature_key_id' => filled($fileItem['signature_key_id'] ?? null)
+                    ? strtolower(trim((string)$fileItem['signature_key_id'])) : null,
                 'mime_type' => $this->normalizer->nullableString($fileItem['mime_type'] ?? null),
                 'part_number' => $this->normalizer->nullableInteger($fileItem['part_number'] ?? null),
                 'archive_group' => $this->normalizer->nullableString($fileItem['archive_group'] ?? null),

@@ -301,6 +301,11 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.files.*.file_name' => ['nullable', 'string', 'max:255', 'not_regex:/[\\\\\/]/'],
             'sale_items.*.files.*.size_bytes' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.files.*.sha256' => ['nullable', 'regex:/^[a-fA-F0-9]{64}$/'],
+            // Base64 RSA-PSS signature over the sha256 above, produced by the release
+            // tool. Length is not pinned: a bigger signing key produces a longer
+            // signature, and the launcher rejects a malformed one anyway.
+            'sale_items.*.files.*.sha256_signature' => ['nullable', 'string', 'max:2048'],
+            'sale_items.*.files.*.signature_key_id' => ['nullable', 'regex:/^[a-fA-F0-9]{64}$/'],
             'sale_items.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
             'sale_items.*.files.*.part_number' => ['nullable', 'integer', 'min:1'],
             'sale_items.*.files.*.archive_group' => ['nullable', 'string', 'max:255'],
