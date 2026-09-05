@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Schema;
  * address: it is enough to tell "different network" from "same network" and keeps this
  * table from becoming a location history of every customer.
  */
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('launcher_device_network_switches', function (Blueprint $table) {
@@ -44,10 +43,9 @@ return new class extends Migration
 
             $table->timestamp('created_at')->useCurrent();
 
-            $table->index(['launcher_device_id', 'created_at']);
-            $table->index(['user_id', 'created_at']);
-            // Drives the "rapid switches in the last N days" admin query directly.
-            $table->index(['created_at', 'seconds_since_previous']);
+            $table->index(['launcher_device_id', 'created_at'], 'lds_device_created_idx');
+            $table->index(['user_id', 'created_at'], 'lds_user_created_idx');
+            $table->index(['created_at', 'seconds_since_previous'], 'lds_switch_time_idx');
         });
     }
 
