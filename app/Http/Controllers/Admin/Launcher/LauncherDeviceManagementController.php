@@ -52,6 +52,51 @@ final class LauncherDeviceManagementController extends Controller
                 DB::raw('MAX(blocks.created_at) as last_attempt_at'),
             ]);
 
+        // Devices that keep bouncing between networks faster than one machine plausibly
+        // can. A cloned device is invisible to every protocol check -- to the server the
+        // two machines ARE the same device -- so behaviour is the only thing left that
+        // separates them: a real device settles on one network, while two machines
+        // sharing an identity take turns.
+        //
+        // The filter is on RAPID switches, not on how many networks were seen. A customer
+        // who moves house, or whose laptop hands off between wi-fi and a phone hotspot,
+        // produces a handful of switches with long gaps; two people playing the same
+        // account produce a stream of short ones. Counting distinct networks instead
+        // would flag every mobile user in the country.
+        $cloneSuspects = DB::table('launcher_device_network_switches as switches')
+            ->join('launcher_devices as devices', 'devices.id', '=', 'switches.launcher_device_id')
+            ->join('users', 'users.id', '=', 'switches.user_id')
+            ->where('switches.created_at', '>=', now()->subDays(7))
+            ->where('switches.seconds_since_previous', '<=', 300)
+            ->groupBy(
+                'switches.launcher_device_id',
+                'switches.user_id',
+                'devices.name',
+                'devices.last_seen_at',
+                'users.display_name',
+                'users.first_name',
+                'users.last_name',
+                'users.mobile',
+                'users.email'
+            )
+            ->havingRaw('COUNT(*) >= 6')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(25)
+            ->get([
+                'switches.user_id',
+                'switches.launcher_device_id',
+                'devices.name as device_name',
+                'devices.last_seen_at',
+                'users.display_name',
+                'users.first_name',
+                'users.last_name',
+                'users.mobile',
+                'users.email',
+                DB::raw('COUNT(*) as rapid_switch_count'),
+                DB::raw('COUNT(DISTINCT switches.network) as distinct_networks_count'),
+                DB::raw('MAX(switches.created_at) as last_switch_at'),
+            ]);
+
         if (!empty($validated['user_id'])) {
             $selectedUser = User::query()->findOrFail((int)$validated['user_id']);
             $selectedUserOption = [[
@@ -114,6 +159,7 @@ final class LauncherDeviceManagementController extends Controller
             'suspensionLogs',
             'transferBlockLogs',
             'watchlist',
+            'cloneSuspects',
         ));
     }
 
