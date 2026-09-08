@@ -110,6 +110,7 @@ class PermissionSeeder extends Seeder
                 'footer' => 'تنظیمات فوتر',
                 'home' => 'صفحه اصلی',
                 'about-us' => 'درباره ما',
+                'team' => 'صفحه تیم',
                 'ads' => 'تنظیمات تبلیغات',
                 'sidebar-widgets' => 'تنظیمات ابزارک های سایدبار',
                 'auth' => 'ورود/ثبت نام',

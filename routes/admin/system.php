@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\System\SettingController;
+use App\Http\Controllers\Admin\System\TeamSettingMemberSearchController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
     Route::get('backup', 'backup')->name('backup');
@@ -22,6 +23,8 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('home', 'storeHome')->name('home.store');
     Route::get('about-us', 'aboutUs')->name('about-us');
     Route::put('about-us', 'storeAboutUs')->name('about-us.store');
+    Route::get('team', 'team')->name('team');
+    Route::put('team', 'storeTeam')->name('team.store');
     Route::get('sidebar-widgets', 'sidebarWidgets')->name('sidebar-widgets');
     Route::put('sidebar-widgets', 'storeSidebarWidgets')->name('sidebar-widgets.store');
     Route::get('auth', 'auth')->name('auth');
@@ -37,3 +40,5 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::get('ticket', 'ticket')->name('ticket');
     Route::put('ticket', 'storeTicket')->name('ticket.store');
 });
+
+Route::get('settings/team/ajax-members', TeamSettingMemberSearchController::class)->name('settings.team.ajax-members');

@@ -7,14 +7,17 @@ use App\Application\System\Actions\UpdateSettingAction;
 use App\Application\System\Backup\BackupEnvironment;
 use App\Application\System\Backup\BackupRunDispatcher;
 use App\Domain\Loyalty\Models\RewardOffer;
+use App\Domain\Organization\Models\TeamMember;
 use App\Domain\System\Models\BackupRun;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
+use App\Infrastructure\Services\Setting\Groups\TeamSettings;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -337,6 +340,60 @@ class SettingController extends Controller
         return redirect()
             ->route('admin.settings.about-us')
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * Team page settings.
+     */
+    public function team(TeamSettings $settings): View
+    {
+        Gate::authorize('setting.team');
+
+        $teamSettings = $settings->values();
+        $selectedTeamMemberIds = session()->getOldInput('member_ids', $teamSettings['member_ids'] ?? []);
+        $selectedTeamMembers = TeamMember::query()
+            ->whereKey($selectedTeamMemberIds)
+            ->get()
+            ->keyBy('id');
+
+        $selectedTeamMemberOptions = collect($selectedTeamMemberIds)
+            ->map(function (mixed $id) use ($selectedTeamMembers): ?array {
+                $member = $selectedTeamMembers->get((int) $id);
+
+                if (! $member) {
+                    return null;
+                }
+
+                return [
+                    'value' => $member->getKey(),
+                    'label' => $member->full_name.($member->job_title ? " — {$member->job_title}" : ''),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        return view('admin.system.settings.team', compact(
+            'teamSettings',
+            'selectedTeamMemberOptions',
+        ));
+    }
+
+    public function storeTeam(UpdateTeamSettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('setting.team');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (! app(UpdateSettingAction::class)->execute('team', $field, $value)) {
+                    throw new RuntimeException('Unable to persist team page settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.team')
+            ->with('success', 'تنظیمات صفحه تیم با موفقیت ذخیره شد.');
     }
 
     /**

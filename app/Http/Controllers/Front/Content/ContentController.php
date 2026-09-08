@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front\Content;
 use App\Application\Content\Actions\GetAboutUsPageDataAction;
 use App\Application\Content\Actions\GetPageDetailDataAction;
 use App\Application\Content\Actions\GetPostDetailDataAction;
+use App\Application\Content\Actions\GetTeamPageDataAction;
 use App\Application\Content\DTOs\ResolvedContentDTO;
 use App\Application\Content\Services\PageTemplateService;
 use App\Application\System\Actions\StoreViewAction;
@@ -21,6 +22,7 @@ final class ContentController
         private readonly StoreViewAction          $storeViewAction,
         private readonly PageTemplateService      $pageTemplateService,
         private readonly GetAboutUsPageDataAction $getAboutUsPageDataAction,
+        private readonly GetTeamPageDataAction    $getTeamPageDataAction,
         private readonly GetPostDetailDataAction  $getPostDetailDataAction,
         private readonly GetPageDetailDataAction  $getPageDetailDataAction,
     )
@@ -86,6 +88,13 @@ final class ContentController
             $viewData = array_merge(
                 $viewData,
                 $this->getAboutUsPageDataAction->execute(),
+            );
+        }
+
+        if ($viewName === 'templates.team') {
+            $viewData = array_merge(
+                $viewData,
+                $this->getTeamPageDataAction->execute(),
             );
         }
 

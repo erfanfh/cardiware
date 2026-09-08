@@ -494,6 +494,12 @@ return [
                 'gate' => 'setting.about-us',
             ],
             [
+                'label' => 'صفحه تیم',
+                'route' => 'admin.settings.team',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.team',
+            ],
+            [
                 'label' => 'ابزارک های سایدبار',
                 'route' => 'admin.settings.sidebar-widgets',
                 'icon' => 'icons.settings-02',
