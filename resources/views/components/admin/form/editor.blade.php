@@ -9,6 +9,7 @@
     'dir' => 'rtl',
     'placeholder' => '',
     'readonly' => false,
+    'toolbarSticky' => true,
 ])
 
 @php
@@ -50,6 +51,7 @@
             data-editor-height="{{ (int) $height }}"
             data-editor-dir="{{ $dir }}"
             data-editor-readonly="{{ $readonly ? 'true' : 'false' }}"
+            data-editor-toolbar-sticky="{{ $toolbarSticky ? 'true' : 'false' }}"
             {{ $attributes->merge([
                 'class' => 'w-full min-h-[220px] rounded-lg border bg-white px-3 py-2 text-sm leading-7 text-slate-800 outline-none transition placeholder:text-slate-400 ' .
                     ($error

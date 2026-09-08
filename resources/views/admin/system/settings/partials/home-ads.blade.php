@@ -15,6 +15,7 @@
                         :value="old('ads_'.$i.'_body', get_setting('home', 'ads_'.$i.'_body'))"
                         preset="full"
                         height="500"
+                        :toolbar-sticky="false"
                         placeholder="متن نوشته ..."
                     />
                 </x-admin.field>
