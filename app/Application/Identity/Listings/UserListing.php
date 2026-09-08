@@ -57,12 +57,12 @@ class UserListing extends BaseListing
 
     protected function filterMobile(mixed $value): void
     {
-        $this->query->where('mobile', $value);
+        $this->query->where('mobile', 'like', '%' . $value . '%');
     }
 
     protected function filterEmail(mixed $value): void
     {
-        $this->query->where('email', $value);
+        $this->query->where('email', 'like', '%' . $value . '%');
     }
 
     protected function filterStatus(mixed $value): void
