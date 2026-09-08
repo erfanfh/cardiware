@@ -10,6 +10,36 @@
 @endphp
 
 <div class="space-y-6">
+    <x-admin.metabox title="پذیرش قوانین پیش از پرداخت">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <x-admin.field label="الزام پذیرش قوانین">
+                <x-admin.form.select
+                    name="checkout_terms_enabled"
+                    :options="[0 => 'غیرفعال', 1 => 'فعال']"
+                    value="{{ old('checkout_terms_enabled', (int) get_setting('general', 'checkout_terms_enabled', false)) }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="لینک صفحه قوانین">
+                <x-admin.form.input
+                    name="checkout_terms_url"
+                    type="text"
+                    dir="ltr"
+                    :value="old('checkout_terms_url', get_setting('general', 'checkout_terms_url'))"
+                />
+
+                @error('checkout_terms_url')
+                <p class="mt-2 text-xs font-bold text-rose-600">{{ $message }}</p>
+                @enderror
+            </x-admin.field>
+        </div>
+
+        <p class="mt-4 text-xs leading-6 text-slate-500">
+            با فعال‌سازی این گزینه، کاربر تا زمانی که پذیرش قوانین را در سبد خرید تأیید نکند نمی‌تواند وارد مرحله پرداخت
+            شود.
+        </p>
+    </x-admin.metabox>
+
     <x-admin.metabox title="مالیات سفارش‌ها">
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <x-admin.field label="وضعیت مالیات">
@@ -34,7 +64,8 @@
         </div>
 
         <p class="mt-4 text-xs leading-6 text-slate-500">
-            مالیات روی مبلغ خالص سفارش پس از کسر همه تخفیف‌ها محاسبه می‌شود. تغییر این تنظیم روی سفارش‌های ثبت‌شده قبلی اثری ندارد.
+            مالیات روی مبلغ خالص سفارش پس از کسر همه تخفیف‌ها محاسبه می‌شود. تغییر این تنظیم روی سفارش‌های ثبت‌شده قبلی
+            اثری ندارد.
         </p>
     </x-admin.metabox>
 

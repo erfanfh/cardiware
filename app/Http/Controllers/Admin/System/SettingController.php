@@ -23,6 +23,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -181,6 +182,34 @@ class SettingController extends Controller
             ], [
                 'tax_rate_percent.min' => 'در حالت فعال، درصد مالیات باید بیشتر از صفر باشد.',
                 'tax_rate_percent.max' => 'درصد مالیات نمی‌تواند بیشتر از ۱۰۰ باشد.',
+            ]);
+        }
+
+        if ($request->hasAny(['checkout_terms_enabled', 'checkout_terms_url'])) {
+            $request->validate([
+                'checkout_terms_enabled' => ['required', 'boolean'],
+                'checkout_terms_url' => [
+                    $request->boolean('checkout_terms_enabled') ? 'required' : 'nullable',
+                    'string',
+                    'max:2048',
+                    function (string $attribute, mixed $value, \Closure $fail): void {
+                        if ($value === null || $value === '') {
+                            return;
+                        }
+
+                        $isSafeRelativeUrl = Str::startsWith($value, '/')
+                            && !Str::startsWith($value, '//');
+                        $scheme = parse_url($value, PHP_URL_SCHEME);
+                        $isSafeAbsoluteUrl = filter_var($value, FILTER_VALIDATE_URL)
+                            && in_array(strtolower((string) $scheme), ['http', 'https'], true);
+
+                        if (!$isSafeRelativeUrl && !$isSafeAbsoluteUrl) {
+                            $fail('لینک قوانین باید یک آدرس معتبر با http/https یا یک مسیر داخلی مانند /rules باشد.');
+                        }
+                    },
+                ],
+            ], [
+                'checkout_terms_url.required' => 'در حالت فعال، وارد کردن لینک صفحه قوانین الزامی است.',
             ]);
         }
 

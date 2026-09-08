@@ -4,6 +4,8 @@
 
         paymentMethod: @js($paymentMethod),
 
+        termsAccepted: false,
+
         checkoutSubmitting: false,
 
         async submitCheckout() {
@@ -21,7 +23,8 @@
 
             try {
                 await this.$wire.checkout(
-                    selectedPaymentMethod
+                    selectedPaymentMethod,
+                    this.termsAccepted
                 );
             } finally {
                 this.checkoutSubmitting = false;
@@ -79,7 +82,7 @@
         <livewire:front.identity.auth-modal
             name="auth-modal"
             :claim-current-cart="true"
-            :open-checkout-after-auth="true"
+            :open-checkout-after-auth="! $this->checkoutTermsRequired"
         />
     @endguest
 </div>

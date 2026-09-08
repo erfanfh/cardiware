@@ -29,6 +29,7 @@ use App\Domain\Catalog\Models\Product;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use App\Domain\Financial\Models\Wallet;
+use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -59,7 +60,8 @@ class CartPage extends Component
 
     public function mount(): void
     {
-        $this->openCheckoutOnLoad = (bool)session()->pull('open_checkout_after_auth', false);
+        $this->openCheckoutOnLoad = (bool) session()->pull('open_checkout_after_auth', false)
+            && !$this->checkoutTermsRequired;
 
         $cart = app(GetCurrentActiveCartAction::class)->execute();
 
@@ -145,6 +147,20 @@ class CartPage extends Component
         $rate = ((int)($this->cart?->tax_rate_basis_points ?? 0)) / 100;
 
         return rtrim(rtrim(number_format($rate, 2, '.', ''), '0'), '.');
+    }
+
+    #[Computed]
+    public function checkoutTermsRequired(): bool
+    {
+        return (bool) app(GeneralSettings::class)->get('checkout_terms_enabled', false);
+    }
+
+    #[Computed]
+    public function checkoutTermsUrl(): ?string
+    {
+        $url = trim((string) app(GeneralSettings::class)->get('checkout_terms_url', ''));
+
+        return $url !== '' ? $url : null;
     }
 
     #[Computed]
@@ -411,10 +427,12 @@ class CartPage extends Component
 
     public function checkout(
         mixed                                        $submittedPaymentMethod,
+        mixed                                        $submittedTermsAccepted,
         EnsureCartReadyForCheckoutAction             $ensureCartReadyForCheckoutAction,
         CompleteFreeOrderAction                      $completeFreeOrderAction,
         CheckoutCartWithWalletAction                 $checkoutCartWithWalletAction,
         CheckoutCartWithWalletShortfallPaymentAction $checkoutCartWithWalletShortfallPaymentAction,
+        GeneralSettings                              $generalSettings,
     ): RedirectResponse|Redirector|null
     {
         $this->checkoutError = null;
@@ -427,6 +445,14 @@ class CartPage extends Component
 
         if (!$this->cart) {
             $this->checkoutError = 'سبد خریدی برای پرداخت یافت نشد.';
+            return null;
+        }
+
+        $termsAcceptanceRequired = (bool) $generalSettings->get('checkout_terms_enabled', false);
+        $termsAccepted = $submittedTermsAccepted === true;
+
+        if ($termsAcceptanceRequired && !$termsAccepted) {
+            $this->checkoutError = 'برای ادامه پرداخت، پذیرش قوانین سایت الزامی است.';
             return null;
         }
 
@@ -457,6 +483,14 @@ class CartPage extends Component
                 'user_agent' => request()->userAgent(),
                 'payment_method' => $paymentMethod,
             ];
+
+            if ($termsAcceptanceRequired) {
+                $metadata['terms_acceptance'] = [
+                    'accepted' => true,
+                    'accepted_at' => now()->toIso8601String(),
+                    'url' => $generalSettings->get('checkout_terms_url'),
+                ];
+            }
 
             /*
              * Free payment.
