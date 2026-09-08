@@ -21,7 +21,10 @@
             };
 
         $messages = $ticket->messages()
-            ->with('user')
+            ->with([
+                'user',
+                'attachments.variants',
+            ])
             ->oldest('created_at')
             ->oldest('id')
             ->get();
@@ -242,6 +245,8 @@
                                 <div
                                     class="relative rounded-[1.35rem] rounded-br-md bg-brand-600 px-4 py-3 text-sm font-bold leading-7 text-white shadow-lg shadow-brand-500/15 dark:bg-brand-500 dark:shadow-black/10">
                                     <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
+
+                                    <x-ticket.attachments :message="$message" tone="dark" />
                                 </div>
 
                                 <div
@@ -262,6 +267,8 @@
                                         </div>
 
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
+
+                                        <x-ticket.attachments :message="$message" />
                                     </div>
 
                                     <div
@@ -335,11 +342,14 @@
                     x-ref="replyForm"
                     method="POST"
                     action="{{ route('account.tickets.messages.store', $ticket) }}"
+                    enctype="multipart/form-data"
                     class="rounded-3xl border border-slate-200 bg-slate-50 p-2 shadow-inner shadow-slate-200/40 dark:border-slate-700 dark:bg-slate-800/70 dark:shadow-black/10"
                 >
                     @csrf
 
-                    <div class="flex items-end gap-2">
+                    <div class="flex flex-wrap items-end gap-2">
+                        <x-front.ticket-image-upload error-bag="replyTicket" mode="composer" />
+
                         <div class="flex min-w-0 flex-1">
                             <textarea
                                 x-ref="replyTextarea"
@@ -376,8 +386,11 @@
                             </svg>
                         </button>
                     </div>
+
                 </form>
             @endif
         </div>
     </section>
+
+    <x-ticket.image-lightbox />
 @endsection

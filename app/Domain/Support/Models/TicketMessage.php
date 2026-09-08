@@ -6,6 +6,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TicketMessage extends Model
 {
@@ -28,6 +29,13 @@ class TicketMessage extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(TicketMessageAttachment::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 
     public function isFromUser(): bool

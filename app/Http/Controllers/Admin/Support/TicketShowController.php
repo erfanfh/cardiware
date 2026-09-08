@@ -23,7 +23,10 @@ class TicketShowController extends Controller
         ]);
 
         $messages = $ticket->messages()
-            ->with('user')
+            ->with([
+                'user',
+                'attachments.variants',
+            ])
             ->oldest('created_at')
             ->oldest('id')
             ->get();

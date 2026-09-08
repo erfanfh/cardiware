@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Support;
 
 use App\Application\Support\Actions\CreateTicketAction;
+use App\Application\Support\Exceptions\TicketAttachmentUploadException;
 use App\Application\Support\Exceptions\TicketLimitExceededException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Support\StoreTicketRequest;
@@ -32,6 +33,7 @@ class StoreTicketController extends Controller
                 productId: filled($data['product_id'] ?? null) ? (int)$data['product_id'] : null,
                 title: $data['title'],
                 message: $data['message'],
+                attachments: $request->file('attachments', []),
             );
         } catch (TicketLimitExceededException $exception) {
             return redirect()
@@ -46,6 +48,13 @@ class StoreTicketController extends Controller
                 ->withInput()
                 ->withErrors([
                     'department_id' => $exception->getMessage(),
+                ], 'createTicket');
+        } catch (TicketAttachmentUploadException $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'attachments' => $exception->getMessage(),
                 ], 'createTicket');
         }
 

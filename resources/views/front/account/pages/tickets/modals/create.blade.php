@@ -28,6 +28,7 @@
     <form
         method="POST"
         action="{{ route('account.tickets.store') }}"
+        enctype="multipart/form-data"
         class="space-y-5"
         x-data="{
             departments: @js($departmentOptions),
@@ -253,6 +254,8 @@
             </div>
             @enderror
         </div>
+
+        <x-front.ticket-image-upload error-bag="createTicket" />
 
         <div
             class="flex flex-col-reverse gap-2 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-end dark:border-slate-800">

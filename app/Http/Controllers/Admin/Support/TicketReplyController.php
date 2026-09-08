@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Support;
 
 use App\Application\Support\Actions\CreateTicketMessageAction;
+use App\Application\Support\Exceptions\TicketAttachmentUploadException;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use App\Domain\Support\Models\Ticket;
 use App\Http\Controllers\Controller;
@@ -16,9 +17,7 @@ class TicketReplyController extends Controller
 {
     public function __construct(
         private readonly CreateTicketMessageAction $createTicketMessageAction,
-    )
-    {
-    }
+    ) {}
 
     /**
      * @throws Throwable
@@ -33,7 +32,15 @@ class TicketReplyController extends Controller
                 sender: $request->user(),
                 senderType: TicketMessageSenderTypeEnum::SUPPORT,
                 body: $request->validated('message'),
+                attachments: $request->file('attachments', []),
             );
+        } catch (TicketAttachmentUploadException $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'attachments' => $exception->getMessage(),
+                ]);
         } catch (DomainException $exception) {
             return redirect()
                 ->back()

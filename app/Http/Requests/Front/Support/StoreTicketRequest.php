@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Front\Support;
 
 use App\Application\Support\Actions\CanCreateTicketAction;
+use App\Application\Support\Support\TicketAttachmentValidationRules;
 use App\Domain\Support\Models\TicketDepartment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -35,7 +36,7 @@ class StoreTicketRequest extends FormRequest
 
             'title' => ['required', 'string', 'min:3', 'max:160'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
-        ];
+        ] + app(TicketAttachmentValidationRules::class)->rules();
     }
 
     public function attributes(): array
@@ -45,6 +46,7 @@ class StoreTicketRequest extends FormRequest
             'product_id' => 'محصول',
             'title' => 'عنوان تیکت',
             'message' => 'متن پیام',
+            'attachments' => 'تصاویر پیوست',
         ];
     }
 
@@ -67,7 +69,7 @@ class StoreTicketRequest extends FormRequest
             'message.string' => 'متن پیام باید متن معتبر باشد.',
             'message.min' => 'متن پیام باید حداقل :min کاراکتر باشد.',
             'message.max' => 'متن پیام نباید بیشتر از :max کاراکتر باشد.',
-        ];
+        ] + app(TicketAttachmentValidationRules::class)->messages();
     }
 
     public function withValidator($validator): void

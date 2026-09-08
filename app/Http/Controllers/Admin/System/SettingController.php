@@ -15,6 +15,7 @@ use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateTicketSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use App\Infrastructure\Services\Setting\Groups\TeamSettings;
@@ -583,11 +584,13 @@ class SettingController extends Controller
     /**
      * @throws BindingResolutionException
      */
-    public function storeTicket(Request $request): RedirectResponse
+    public function storeTicket(UpdateTicketSettingsRequest $request): RedirectResponse
     {
         Gate::authorize('setting.ticket');
 
-        $this->storeSettings($request, 'ticket');
+        foreach ($request->validated() as $field => $value) {
+            app(UpdateSettingAction::class)->execute('ticket', $field, $value);
+        }
 
         return redirect()
             ->route('admin.settings.ticket')
