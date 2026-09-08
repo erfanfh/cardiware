@@ -7,13 +7,16 @@ use App\Application\Promotion\Actions\Coupon\DeleteCouponAction;
 use App\Application\Promotion\Actions\Coupon\GetCouponFormDataAction;
 use App\Application\Promotion\Actions\Coupon\UpdateCouponAction;
 use App\Application\Promotion\Listings\CouponListing;
+use App\Application\Promotion\Listings\CouponRedemptionListing;
 use App\Domain\Promotion\Enums\CouponReservationStatusEnum;
 use App\Domain\Promotion\Enums\CouponScopeEnum;
 use App\Domain\Promotion\Enums\CouponStatusEnum;
 use App\Domain\Promotion\Enums\CouponTypeEnum;
 use App\Domain\Promotion\Models\Coupon;
+use App\Domain\Promotion\Models\CouponRedemption;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Promotion\IndexCouponRequest;
+use App\Http\Requests\Admin\Promotion\IndexCouponRedemptionRequest;
 use App\Http\Requests\Admin\Promotion\UpdateCouponRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
@@ -33,6 +36,7 @@ class CouponController extends Controller
                     ->withCount([
                         'users',
                         'targets',
+                        'redemptions',
                         'reservations as active_reservations_count' => function ($query) {
                             $query
                                 ->where('status', CouponReservationStatusEnum::ACTIVE)
@@ -73,6 +77,52 @@ class CouponController extends Controller
             'scopes',
             'hasActiveFilters',
             'bulkActionOptions',
+        ));
+    }
+
+    public function redemptions(
+        IndexCouponRedemptionRequest $request,
+        Coupon $coupon,
+        CouponRedemptionListing $couponRedemptionListing,
+    ): View {
+        Gate::authorize('coupon.list');
+
+        $validated = $request->validated();
+        $baseQuery = CouponRedemption::query()
+            ->where('coupon_id', $coupon->getKey());
+
+        $redemptions = $couponRedemptionListing
+            ->handle(
+                (clone $baseQuery)->with([
+                    'user' => fn ($query) => $query->withTrashed(),
+                    'order',
+                ]),
+                $validated,
+            )
+            ->paginate($couponRedemptionListing->perPage())
+            ->withQueryString();
+
+        $stats = [
+            'redemptions_count' => (clone $baseQuery)->count(),
+            'unique_users_count' => (clone $baseQuery)
+                ->whereNotNull('user_id')
+                ->distinct()
+                ->count('user_id'),
+            'discount_amount' => (int) (clone $baseQuery)->sum('discount_amount'),
+            'latest_redemption' => (clone $baseQuery)
+                ->whereNotNull('redeemed_at')
+                ->latest('redeemed_at')
+                ->first(['redeemed_at'])
+                ?->redeemed_at,
+        ];
+
+        $hasActiveFilters = $couponRedemptionListing->hasActiveFilters($validated);
+
+        return view('admin.promotion.coupons.redemptions.index', compact(
+            'coupon',
+            'redemptions',
+            'stats',
+            'hasActiveFilters',
         ));
     }
 
