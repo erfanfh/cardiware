@@ -43,10 +43,9 @@
             ->all();
     @endphp
 
-    <div
-        x-data="{
-            ...adminBulkSelection(),
-            ...adminCommentActions({
+    <div x-data="adminBulkSelection()">
+        <div
+            x-data="adminCommentActions({
                 bulkActionUrl: @js(route('admin.comments.bulk-action')),
                 csrfToken: @js(csrf_token()),
                 initialStatuses: @js($commentStatuses),
@@ -54,10 +53,9 @@
                 initialContents: @js($commentContents),
                 initialRatings: @js($commentRatings),
                 initialEditMeta: @js($commentEditMeta),
-            })
-        }"
-        class="space-y-4"
-    >
+            })"
+            class="space-y-4"
+        >
         <div class="rounded-2xl border px-4 py-2 transition-all duration-200 border-slate-200 bg-white">
             @php
                 $baseQueryParams = request()->except(['status', 'type', 'page']);
@@ -244,7 +242,8 @@
             </div>
         </div>
 
-        @include('admin.discussion.comments.partials.edit-modal')
+            @include('admin.discussion.comments.partials.edit-modal')
+        </div>
     </div>
 @endsection
 
