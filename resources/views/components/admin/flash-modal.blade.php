@@ -349,18 +349,26 @@
         function submitAction() {
             if (!pendingAction) return;
 
-            if (pendingAction.type === 'livewire' && pendingAction.event) {
+            const action = pendingAction;
+
+            closeModal();
+
+            if (action.type === 'callback' && typeof action.callback === 'function') {
+                action.callback();
+
+                return;
+            }
+
+            if (action.type === 'livewire' && action.event) {
                 window.dispatchEvent(new CustomEvent('taxonomy-list-updating-start'));
 
                 if (window.Livewire) {
                     window.Livewire.dispatch(
-                        pendingAction.event,
-                        pendingAction.payload || {}
+                        action.event,
+                        action.payload || {}
                     );
                 }
             }
-
-            closeModal();
         }
 
         window.addEventListener('admin-open-confirm', event => {
