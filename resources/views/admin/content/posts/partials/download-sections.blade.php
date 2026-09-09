@@ -78,6 +78,9 @@
                     })"
                     class="space-y-3"
                 >
+                    {{-- Empty-state sentinel for this nested repeater; it must precede its indexed entry fields. --}}
+                    <input type="hidden" x-bind:name="name" value="" data-repeater-empty-value>
+
                     <div class="flex items-center justify-between gap-3">
                         <div class="text-xs text-slate-500">
                             آیتم‌های این سکشن

@@ -19,6 +19,13 @@
     })"
     class="space-y-4"
 >
+    {{--
+        Keep this before every indexed field. When the repeater is empty it makes
+        the field present in the request; when rows exist, PHP's form parser lets
+        the later indexed inputs replace this empty scalar with the submitted array.
+    --}}
+    <input type="hidden" x-bind:name="name" value="" data-repeater-empty-value>
+
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="text-sm font-semibold text-slate-700">
             {{ $title }}
