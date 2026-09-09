@@ -138,29 +138,37 @@
 
                 @if(auth()->check())
                     <a href="{{ route('account.dashboard') }}"
-                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
-                        @include('icons.user')
-                        حساب کاربری
+                       class="header-account-action hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                     hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
+                        <span class="header-account-icon" aria-hidden="true">
+                            @include('icons.user')
+                        </span>
+                        <span>حساب کاربری</span>
                     </a>
 
                     <a href="{{ route('account.dashboard') }}"
-                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
+                       class="header-account-action sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="حساب کاربری">
-                        @include('icons.user')
+                        <span class="header-account-icon" aria-hidden="true">
+                            @include('icons.user')
+                        </span>
                     </a>
                 @else
                     <a href="{{ front_route('auth.index') }}"
-                       class="hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
-                    hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
-                        @include('icons.login-square-01')
-                        ورود / عضویت
+                       class="header-account-action hidden sm:inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-sm font-bold text-white
+                     hover:bg-brand-600 active:bg-brand-700 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:active:bg-brand-500">
+                        <span class="header-account-icon" aria-hidden="true">
+                            @include('icons.login-square-01')
+                        </span>
+                        <span>ورود / عضویت</span>
                     </a>
 
                     <a href="{{ front_route('auth.index') }}"
-                       class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
+                       class="header-account-action sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
                        aria-label="ورود / عضویت">
-                        @include('icons.login-square-01')
+                        <span class="header-account-icon" aria-hidden="true">
+                            @include('icons.login-square-01')
+                        </span>
                     </a>
                 @endif
             </div>
