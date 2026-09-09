@@ -99,7 +99,20 @@ window.navigationManager = function (config = {}) {
                 megaMenuTitle: item.megaMenuTitle ?? '',
                 megaMenuDescription: item.megaMenuDescription ?? '',
                 megaMenuColumns: String(item.megaMenuColumns ?? '4'),
+                megaMenuQuickLinks: this.normalizeMegaMenuQuickLinks(item.megaMenuQuickLinks),
                 children: this.normalizeItems(item.children ?? []),
+            }));
+        },
+
+        normalizeMegaMenuQuickLinks(links = []) {
+            if (!Array.isArray(links)) {
+                return [];
+            }
+
+            return links.slice(0, 12).map((link) => ({
+                title: String(link?.title ?? ''),
+                url: String(link?.url ?? ''),
+                target: link?.target === '_blank' ? '_blank' : '_self',
             }));
         },
 
@@ -300,6 +313,7 @@ window.navigationManager = function (config = {}) {
                 megaMenuTitle: '',
                 megaMenuDescription: '',
                 megaMenuColumns: '4',
+                megaMenuQuickLinks: [],
                 children: [],
             };
         },
@@ -323,6 +337,7 @@ window.navigationManager = function (config = {}) {
                 megaMenuTitle: item.megaMenuTitle ?? '',
                 megaMenuDescription: item.megaMenuDescription ?? '',
                 megaMenuColumns: String(item.megaMenuColumns ?? '4'),
+                megaMenuQuickLinks: this.normalizeMegaMenuQuickLinks(item.megaMenuQuickLinks),
                 children: [],
             };
         },
@@ -481,6 +496,116 @@ window.navigationManager = function (config = {}) {
             }" data-root="${isRoot ? 'true' : 'false'}">
                     ${items.map((item) => this.buildItemHtml(item, level)).join('')}
                 </ul>
+            `;
+        },
+
+        buildMegaMenuQuickLinksHtml(item) {
+            const links = item.megaMenuQuickLinks ?? [];
+            const canAdd = links.length < 12;
+
+            return `
+                <div class="mt-5 border-t border-violet-200 pt-5">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h5 class="text-sm font-black text-violet-900">لینک‌های دسترسی سریع</h5>
+                            <p class="mt-1 text-xs leading-6 text-violet-700/70">لینک‌های این بخش مستقل از زیرمنوها هستند؛ حداکثر ۱۲ لینک.</p>
+                        </div>
+
+                        <button type="button"
+                                data-action="add-mega-quick-link"
+                                data-uid="${item.uid}"
+                                ${canAdd ? '' : 'disabled'}
+                                class="inline-flex items-center gap-1.5 rounded-xl border border-violet-200 bg-white px-3 py-2 text-xs font-bold text-violet-700 transition hover:border-violet-300 hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50">
+                            <span class="text-base leading-none">+</span>
+                            افزودن لینک
+                        </button>
+                    </div>
+
+                    ${links.length === 0 ? `
+                        <div class="mt-4 rounded-2xl border border-dashed border-violet-200 bg-white/70 px-4 py-5 text-center text-xs text-violet-700/70">
+                            هنوز لینکی برای دسترسی سریع تعریف نشده است.
+                        </div>
+                    ` : `
+                        <div class="mt-4 space-y-3">
+                            ${links.map((link, index) => `
+                                <div class="rounded-2xl border border-violet-200 bg-white p-3">
+                                    <div class="mb-3 flex items-center justify-between gap-3">
+                                        <span class="text-xs font-black text-violet-900">لینک ${index + 1}</span>
+
+                                        <div class="flex items-center gap-1">
+                                            <button type="button"
+                                                    data-action="move-mega-quick-link-up"
+                                                    data-uid="${item.uid}"
+                                                    data-quick-index="${index}"
+                                                    ${index === 0 ? 'disabled' : ''}
+                                                    class="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-35"
+                                                    title="انتقال به بالا">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none"><path d="m7 14 5-5 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </button>
+
+                                            <button type="button"
+                                                    data-action="move-mega-quick-link-down"
+                                                    data-uid="${item.uid}"
+                                                    data-quick-index="${index}"
+                                                    ${index === links.length - 1 ? 'disabled' : ''}
+                                                    class="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-35"
+                                                    title="انتقال به پایین">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                            </button>
+
+                                            <button type="button"
+                                                    data-action="remove-mega-quick-link"
+                                                    data-uid="${item.uid}"
+                                                    data-quick-index="${index}"
+                                                    class="grid h-8 w-8 place-items-center rounded-lg border border-rose-200 text-rose-500 transition hover:bg-rose-50"
+                                                    title="حذف لینک">
+                                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none"><path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 gap-3 md:grid-cols-12">
+                                        <div class="md:col-span-4">
+                                            <label class="mb-1.5 block text-xs font-bold text-slate-600">عنوان</label>
+                                            <input type="text"
+                                                   data-quick-field="title"
+                                                   data-uid="${item.uid}"
+                                                   data-quick-index="${index}"
+                                                   maxlength="120"
+                                                   value="${this.escapeHtml(link.title)}"
+                                                   placeholder="مثلاً دانلودها"
+                                                   class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
+                                        </div>
+
+                                        <div class="md:col-span-5">
+                                            <label class="mb-1.5 block text-xs font-bold text-slate-600">آدرس لینک</label>
+                                            <input type="text"
+                                                   data-quick-field="url"
+                                                   data-uid="${item.uid}"
+                                                   data-quick-index="${index}"
+                                                   maxlength="2048"
+                                                   value="${this.escapeHtml(link.url)}"
+                                                   placeholder="/downloads یا https://example.com"
+                                                   dir="ltr"
+                                                   class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-left text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
+                                        </div>
+
+                                        <div class="md:col-span-3">
+                                            <label class="mb-1.5 block text-xs font-bold text-slate-600">نحوه باز شدن</label>
+                                            <select data-quick-field="target"
+                                                    data-uid="${item.uid}"
+                                                    data-quick-index="${index}"
+                                                    class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100">
+                                                <option value="_self" ${link.target === '_self' ? 'selected' : ''}>همین صفحه</option>
+                                                <option value="_blank" ${link.target === '_blank' ? 'selected' : ''}>تب جدید</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `}
+                </div>
             `;
         },
 
@@ -711,6 +836,8 @@ window.navigationManager = function (config = {}) {
                                         </select>
                                     </div>
                                 </div>
+
+                                ${this.buildMegaMenuQuickLinksHtml(item)}
                             </div>
                         </div>
                     </div>
@@ -745,6 +872,7 @@ window.navigationManager = function (config = {}) {
 
                 const action = actionEl.dataset.action;
                 const uid = actionEl.dataset.uid;
+                const quickIndex = Number(actionEl.dataset.quickIndex);
 
                 if (action === 'select-icon') {
                     this.openIconPicker(uid);
@@ -767,6 +895,14 @@ window.navigationManager = function (config = {}) {
                     changed = this.outdentItem(uid);
                 } else if (action === 'clear-icon') {
                     changed = this.clearItemIcon(uid);
+                } else if (action === 'add-mega-quick-link') {
+                    changed = this.addMegaMenuQuickLink(uid);
+                } else if (action === 'remove-mega-quick-link') {
+                    changed = this.removeMegaMenuQuickLink(uid, quickIndex);
+                } else if (action === 'move-mega-quick-link-up') {
+                    changed = this.moveMegaMenuQuickLink(uid, quickIndex, -1);
+                } else if (action === 'move-mega-quick-link-down') {
+                    changed = this.moveMegaMenuQuickLink(uid, quickIndex, 1);
                 }
 
                 if (changed) {
@@ -775,6 +911,10 @@ window.navigationManager = function (config = {}) {
             });
 
             this.$refs.treeRoot.addEventListener('input', (event) => {
+                if (this.updateMegaMenuQuickLinkFromInput(event.target)) {
+                    return;
+                }
+
                 const field = event.target.dataset.field;
                 const uid = event.target.dataset.uid;
 
@@ -794,6 +934,10 @@ window.navigationManager = function (config = {}) {
             });
 
             this.$refs.treeRoot.addEventListener('change', (event) => {
+                if (this.updateMegaMenuQuickLinkFromInput(event.target)) {
+                    return;
+                }
+
                 const field = event.target.dataset.field;
                 const uid = event.target.dataset.uid;
 
@@ -828,6 +972,75 @@ window.navigationManager = function (config = {}) {
                     this.fullRefresh();
                 }
             });
+        },
+
+        updateMegaMenuQuickLinkFromInput(input) {
+            const field = input?.dataset?.quickField;
+            const uid = input?.dataset?.uid;
+            const index = Number(input?.dataset?.quickIndex);
+
+            if (!field || !uid || !['title', 'url', 'target'].includes(field) || !Number.isInteger(index)) {
+                return false;
+            }
+
+            const item = this.findItem(uid);
+            const link = item?.megaMenuQuickLinks?.[index];
+
+            if (!link) {
+                return false;
+            }
+
+            link[field] = input.value;
+
+            return true;
+        },
+
+        addMegaMenuQuickLink(uid) {
+            const item = this.findItem(uid);
+
+            if (!item || !item.isMegaMenu || item.megaMenuQuickLinks.length >= 12) {
+                return false;
+            }
+
+            item.megaMenuQuickLinks.push({
+                title: '',
+                url: '',
+                target: '_self',
+            });
+
+            return true;
+        },
+
+        removeMegaMenuQuickLink(uid, index) {
+            const item = this.findItem(uid);
+
+            if (!item || !Number.isInteger(index) || !item.megaMenuQuickLinks[index]) {
+                return false;
+            }
+
+            item.megaMenuQuickLinks.splice(index, 1);
+
+            return true;
+        },
+
+        moveMegaMenuQuickLink(uid, index, direction) {
+            const item = this.findItem(uid);
+            const targetIndex = index + direction;
+
+            if (
+                !item ||
+                !Number.isInteger(index) ||
+                !Number.isInteger(targetIndex) ||
+                !item.megaMenuQuickLinks[index] ||
+                !item.megaMenuQuickLinks[targetIndex]
+            ) {
+                return false;
+            }
+
+            [item.megaMenuQuickLinks[index], item.megaMenuQuickLinks[targetIndex]] =
+                [item.megaMenuQuickLinks[targetIndex], item.megaMenuQuickLinks[index]];
+
+            return true;
         },
 
         getItemPositionMeta(uid) {
@@ -979,6 +1192,7 @@ window.navigationManager = function (config = {}) {
             if (item.isMegaMenu) {
                 item.isMegaMenu = false;
                 item.megaMenuTitle = '';
+                item.megaMenuQuickLinks = [];
             }
 
             return true;
@@ -1097,6 +1311,7 @@ window.navigationManager = function (config = {}) {
                     if (level > 0) {
                         cloned.isMegaMenu = false;
                         cloned.megaMenuTitle = '';
+                        cloned.megaMenuQuickLinks = [];
                     }
 
                     return cloned;
@@ -1124,6 +1339,9 @@ window.navigationManager = function (config = {}) {
                 mega_menu_title: item.megaMenuTitle ?? '',
                 mega_menu_description: item.megaMenuDescription ?? '',
                 mega_menu_columns: Number(item.megaMenuColumns ?? 4),
+                mega_menu_quick_links: item.isMegaMenu
+                    ? this.normalizeMegaMenuQuickLinks(item.megaMenuQuickLinks)
+                    : [],
                 children: this.prepareItemsForSubmit(item.children ?? []),
             }));
         },

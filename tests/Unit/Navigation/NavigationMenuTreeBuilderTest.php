@@ -17,6 +17,11 @@ class NavigationMenuTreeBuilderTest extends TestCase
             parentId: null,
             title: 'خانه',
             icon: 'lucide:home',
+            settings: [
+                'mega_menu_quick_links' => [
+                    ['title' => 'دانلودها', 'url' => '/downloads', 'target' => '_self'],
+                ],
+            ],
         );
 
         $child = $this->item(
@@ -41,6 +46,10 @@ class NavigationMenuTreeBuilderTest extends TestCase
 
         $this->assertSame('<svg data-icon="home"></svg>', $tree[0]['iconSvg']);
         $this->assertSame('<svg data-icon="folder"></svg>', $tree[0]['children'][0]['iconSvg']);
+        $this->assertSame(
+            [['title' => 'دانلودها', 'url' => '/downloads', 'target' => '_self']],
+            $tree[0]['megaMenuQuickLinks'],
+        );
     }
 
     public function test_frontend_navigation_cache_key_is_versioned_for_svg_payloads(): void
@@ -56,6 +65,7 @@ class NavigationMenuTreeBuilderTest extends TestCase
         ?int $parentId,
         string $title,
         string $icon,
+        array $settings = [],
     ): NavigationItem {
         $item = new NavigationItem([
             'parent_id' => $parentId,
@@ -68,6 +78,7 @@ class NavigationMenuTreeBuilderTest extends TestCase
             'mega_menu_columns' => 4,
             'sort_order' => $id,
             'depth' => $parentId === null ? 0 : 1,
+            'settings' => $settings,
         ]);
 
         $item->id = $id;

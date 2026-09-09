@@ -70,6 +70,7 @@ class NavigationMenuTreeBuilder
                     'megaMenuTitle' => $item->mega_menu_title,
                     'megaMenuDescription' => $item->mega_menu_description,
                     'megaMenuColumns' => (string)$item->mega_menu_columns,
+                    'megaMenuQuickLinks' => data_get($item->settings, 'mega_menu_quick_links', []),
                     'children' => $this->buildChildren(
                         groupedByParent: $groupedByParent,
                         parentId: $item->id,

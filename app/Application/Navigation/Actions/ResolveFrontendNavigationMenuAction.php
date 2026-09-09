@@ -95,7 +95,54 @@ class ResolveFrontendNavigationMenuAction
             'mega_menu_title' => $item->mega_menu_title,
             'mega_menu_description' => $item->mega_menu_description,
             'mega_menu_columns' => $item->mega_menu_columns,
+            'mega_menu_quick_links' => $this->resolveMegaMenuQuickLinks($item),
             'children' => $this->buildTree($allItems, $item->id, $iconSvgs),
         ];
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, target: string}>
+     */
+    protected function resolveMegaMenuQuickLinks(NavigationItem $item): array
+    {
+        if (!$item->is_mega_menu) {
+            return [];
+        }
+
+        return collect(data_get($item->settings, 'mega_menu_quick_links', []))
+            ->filter(fn(mixed $link): bool => is_array($link))
+            ->map(function (array $link): array {
+                $target = (string)($link['target'] ?? '_self');
+
+                return [
+                    'title' => trim((string)($link['title'] ?? '')),
+                    'url' => trim((string)($link['url'] ?? '')),
+                    'target' => in_array($target, ['_self', '_blank'], true) ? $target : '_self',
+                ];
+            })
+            ->filter(fn(array $link): bool => $link['title'] !== '' && $this->isSafeQuickLinkUrl($link['url']))
+            ->take(12)
+            ->values()
+            ->all();
+    }
+
+    protected function isSafeQuickLinkUrl(string $url): bool
+    {
+        if (str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            return true;
+        }
+
+        if (str_starts_with($url, '#') && !preg_match('/[\s\x00-\x1F]/u', $url)) {
+            return true;
+        }
+
+        $scheme = strtolower((string)parse_url($url, PHP_URL_SCHEME));
+
+        if (in_array($scheme, ['http', 'https'], true)) {
+            return filter_var($url, FILTER_VALIDATE_URL) !== false;
+        }
+
+        return in_array($scheme, ['mailto', 'tel'], true)
+            && !preg_match('/[\s\x00-\x1F]/u', $url);
     }
 }
