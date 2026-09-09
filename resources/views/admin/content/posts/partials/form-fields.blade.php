@@ -343,6 +343,7 @@
                         :value="old('information_boxes.' . $postInformationBox->value . '.body', $informationBoxes->get($postInformationBox->value)?->body)"
                         preset="full"
                         height="500"
+                        :toolbar-sticky="false"
                         placeholder="متن ..."
                     />
                 </x-admin.field>
