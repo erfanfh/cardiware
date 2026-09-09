@@ -9,6 +9,7 @@ import './repeater.js'
 import './colorpicker.js'
 import './async-select.js'
 import './editor.js'
+import './seo/readability-component.js'
 import './icon-picker.js'
 
 document.addEventListener('DOMContentLoaded', () => {
