@@ -273,8 +273,10 @@
 
         document.addEventListener('submit', event => {
             const form = event.target;
+            const spoofedMethod = form.querySelector('input[name="_method"]')?.value?.toUpperCase();
+            const isDeleteForm = spoofedMethod === 'DELETE';
 
-            if (!form.classList.contains('js-confirm')) {
+            if (!form.classList.contains('js-confirm') && !isDeleteForm) {
                 return;
             }
 

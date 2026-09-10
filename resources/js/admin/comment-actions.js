@@ -91,12 +91,17 @@ const registerAdminCommentActions = () => {
             this.rowStatuses[Number(id)] = status || 'unknown';
         },
 
-        async confirmAndRun(id, action, message) {
-            if (!window.confirm(message)) {
-                return;
-            }
-
-            await this.runAction(id, action);
+        confirmAndRun(id, action, message) {
+            window.dispatchEvent(new CustomEvent('admin-open-confirm', {
+                detail: {
+                    title: action === 'delete' ? 'حذف دیدگاه' : 'تأیید عملیات',
+                    text: message,
+                    action: {
+                        type: 'callback',
+                        callback: () => this.runAction(id, action),
+                    },
+                },
+            }));
         },
 
         async runAction(id, action) {
