@@ -14,12 +14,20 @@
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div class="space-y-2">
                         <h1 class="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-slate-900 dark:text-slate-100">
-                            نتایج جستجو برای
-                            <span class="text-brand-600 dark:text-brand-300">"{{ request()->q }}"</span>
+                            @if($searchTerm !== '')
+                                نتایج جستجو برای
+                                <span class="text-brand-600 dark:text-brand-300">"{{ $searchTerm }}"</span>
+                            @else
+                                جستجو در سایت
+                            @endif
                         </h1>
 
                         <p class="text-sm text-slate-500 dark:text-slate-400">
-                            نتایج مرتبط با جستجوی شما در بخش‌های مختلف نمایش داده شده است
+                            @if($searchTerm !== '')
+                                نتایج مرتبط در عنوان، خلاصه و متن محتوا نمایش داده شده‌اند.
+                            @else
+                                برای دیدن نوشته‌ها، محصولات، پروژه‌ها و ویدیوهای مرتبط، عبارت مورد نظرتان را وارد کنید.
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -32,7 +40,7 @@
                     class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/50 blur-xl dark:bg-brand-500/10"></div>
 
                 {{-- Posts --}}
-                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'posts']) }}"
+                <a href="{{ front_route('search', ['q' => $searchTerm, 'type' => 'posts']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'posts' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 
@@ -52,7 +60,7 @@
                 </a>
 
                 {{-- Products --}}
-                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'products']) }}"
+                <a href="{{ front_route('search', ['q' => $searchTerm, 'type' => 'products']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'products' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 
@@ -72,7 +80,7 @@
                 </a>
 
                 {{-- Projects --}}
-                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'projects']) }}"
+                <a href="{{ front_route('search', ['q' => $searchTerm, 'type' => 'projects']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'projects' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 
@@ -92,7 +100,7 @@
                 </a>
 
                 {{-- Videos --}}
-                <a href="{{ front_route('search', ['q' => request()->q, 'type' => 'videos']) }}"
+                <a href="{{ front_route('search', ['q' => $searchTerm, 'type' => 'videos']) }}"
                    class="group relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition
                     {{ $type == 'videos' ? 'bg-brand-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800' }}">
 

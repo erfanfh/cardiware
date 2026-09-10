@@ -93,6 +93,7 @@
                                 type="search"
                                 name="q"
                                 value="{{ request()->input('q') }}"
+                                maxlength="120"
                                 :placeholder="currentText"
                                 class="w-full rounded-2xl border border-slate-200 bg-slate-50
                             pr-10 pl-12 py-3 text-sm outline-none

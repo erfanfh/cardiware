@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Search;
 
+use App\Application\Search\Support\ContentSearchQuery;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
 use App\Domain\Project\Models\Project;
@@ -14,9 +15,13 @@ use Illuminate\View\View;
 
 class SearchController extends Controller
 {
+    public function __construct(
+        private readonly ContentSearchQuery $contentSearchQuery,
+    ) {}
+
     public function index(Request $request): RedirectResponse|View
     {
-        $searchTerm = trim((string) $request->q);
+        $searchTerm = $this->normalizeSearchTerm((string) $request->query('q', ''));
 
         $hasExplicitType = $request->query->has('type');
 
@@ -40,10 +45,10 @@ class SearchController extends Controller
         $productsQuery = $this->productsQuery($searchTerm);
         $videosQuery = $this->videosQuery($searchTerm);
 
-        $postsCount = (clone $postsQuery)->count();
-        $projectsCount = (clone $projectsQuery)->count();
-        $productsCount = (clone $productsQuery)->count();
-        $videosCount = (clone $videosQuery)->count();
+        $postsCount = (clone $postsQuery)->reorder()->count();
+        $projectsCount = (clone $projectsQuery)->reorder()->count();
+        $productsCount = (clone $productsQuery)->reorder()->count();
+        $videosCount = (clone $videosQuery)->reorder()->count();
 
         $type = $requestedType;
 
@@ -133,26 +138,29 @@ class SearchController extends Controller
 
     private function postsQuery(string $searchTerm): Builder
     {
-        return Post::query()
-            ->where('title', 'LIKE', '%'.$searchTerm.'%');
+        return $this->contentSearchQuery->apply(Post::query(), $searchTerm);
     }
 
     private function projectsQuery(string $searchTerm): Builder
     {
-        return Project::query()
-            ->where('title', 'LIKE', '%'.$searchTerm.'%');
+        return $this->contentSearchQuery->apply(Project::query(), $searchTerm);
     }
 
     private function productsQuery(string $searchTerm): Builder
     {
-        return Product::query()
-            ->where('title', 'LIKE', '%'.$searchTerm.'%');
+        return $this->contentSearchQuery->apply(Product::query(), $searchTerm);
     }
 
     private function videosQuery(string $searchTerm): Builder
     {
-        return Video::query()
-            ->where('title', 'LIKE', '%'.$searchTerm.'%');
+        return $this->contentSearchQuery->apply(Video::query(), $searchTerm);
+    }
+
+    private function normalizeSearchTerm(string $searchTerm): string
+    {
+        $searchTerm = trim((string) preg_replace('/\s+/u', ' ', $searchTerm));
+
+        return mb_substr($searchTerm, 0, 120);
     }
 
     private function countByType(
