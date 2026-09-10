@@ -92,6 +92,25 @@ class ProductCategoryListDataTest extends TestCase
         self::assertTrue($data['featuredProducts']->contains('id', $includedProductId));
     }
 
+    public function test_product_tag_lists_only_products_assigned_to_that_tag(): void
+    {
+        $tagId = $this->insertTag('گرافیک', 'graphics');
+        $otherTagId = $this->insertTag('گیم‌پلی', 'gameplay');
+        $includedProductId = $this->insertProduct('محصول گرافیکی', 180_000, $tagId);
+        $this->insertProduct('محصول نامرتبط', 760_000, $otherTagId);
+
+        $tag = TaxonomyTerm::query()->findOrFail($tagId);
+        $data = app(GetProductListPageDataAction::class)->execute(
+            request: Request::create('/product-tag/graphics', 'GET'),
+            fixedTag: $tag,
+        );
+
+        self::assertSame([$includedProductId], $data['products']->pluck('id')->all());
+        self::assertSame(180_000, $data['availablePriceMin']);
+        self::assertSame(180_000, $data['availablePriceMax']);
+        self::assertTrue($data['featuredProducts']->contains('id', $includedProductId));
+    }
+
     private function insertCategory(string $title, string $path, ?int $parentId = null): int
     {
         return DB::table('taxonomy_terms')->insertGetId([
@@ -100,6 +119,19 @@ class ProductCategoryListDataTest extends TestCase
             'slug' => basename(str_replace('\\', '/', $path)),
             'path' => $path,
             'parent_id' => $parentId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+
+    private function insertTag(string $title, string $path): int
+    {
+        return DB::table('taxonomy_terms')->insertGetId([
+            'taxonomy' => TaxonomyKeyEnum::PRODUCT_TAG->value,
+            'title' => $title,
+            'slug' => $path,
+            'path' => $path,
+            'parent_id' => null,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

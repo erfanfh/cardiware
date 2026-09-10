@@ -8,9 +8,12 @@
         $boxSubtitle = $categoryDescription !== ''
             ? \Illuminate\Support\Str::limit($categoryDescription, 220)
             : "جدیدترین محصولات دسته {$category->title}";
-    } elseif(request()->routeIs('products.tags') && isset($tag)){
+    } elseif(isset($tag)){
         $boxTitle = $tag->title;
-        $boxSubtitle = "جدیدترین محصولات برچسب $tag->title";
+        $tagDescription = trim(strip_tags(html_entity_decode((string) $tag->description)));
+        $boxSubtitle = $tagDescription !== ''
+            ? \Illuminate\Support\Str::limit($tagDescription, 220)
+            : "جدیدترین محصولات برچسب {$tag->title}";
     }
 @endphp
 

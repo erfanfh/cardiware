@@ -97,6 +97,16 @@ class SitemapController extends Controller
         return $this->xml("product-category-sitemap{$page}.xml");
     }
 
+    public function productTags(): Response
+    {
+        return $this->xml('product-tag-sitemap.xml');
+    }
+
+    public function paginatedProductTags(int $page): Response
+    {
+        return $this->xml("product-tag-sitemap{$page}.xml");
+    }
+
     public function videos(): Response
     {
         return $this->xml('video-sitemap.xml');

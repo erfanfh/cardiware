@@ -64,6 +64,12 @@ return [
             'include_images' => false,
         ],
 
+        'product_tag' => [
+            'enabled' => true,
+            'route_pattern' => 'product-tag-sitemap{page}.xml',
+            'include_images' => false,
+        ],
+
         'raffle' => [
             'enabled' => true,
             'route_pattern' => 'raffle-sitemap{page}.xml',

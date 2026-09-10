@@ -245,9 +245,12 @@ final class CacheKey
         return 'product:list:page:'.md5(json_encode($payload, JSON_THROW_ON_ERROR));
     }
 
-    public static function productAvailablePriceRange(int|string|null $categoryId = null): string
-    {
-        return 'product:list:available-price-range:'.($categoryId ?: 'all');
+    public static function productAvailablePriceRange(
+        int|string|null $categoryId = null,
+        int|string|null $tagId = null,
+    ): string {
+        return 'product:list:available-price-range:category:'.($categoryId ?: 'all')
+            .':tag:'.($tagId ?: 'all');
     }
 
     public static function productCategoryTree(int|string|null $parentId = null): string
@@ -255,9 +258,12 @@ final class CacheKey
         return 'product:list:category-tree:'.($parentId ?: 'root');
     }
 
-    public static function productFeatured(int|string|null $categoryId = null): string
-    {
-        return 'product:list:featured:'.($categoryId ?: 'all');
+    public static function productFeatured(
+        int|string|null $categoryId = null,
+        int|string|null $tagId = null,
+    ): string {
+        return 'product:list:featured:category:'.($categoryId ?: 'all')
+            .':tag:'.($tagId ?: 'all');
     }
 
     public static function productCategoryDescendants(array $categoryIds): string

@@ -36,12 +36,16 @@ class GetProductListPageDataAction
         int $page = 1,
         int $perPage = 12,
         ?TaxonomyTerm $fixedCategory = null,
+        ?TaxonomyTerm $fixedTag = null,
     ): array {
         $fixedCategoryIds = $fixedCategory?->selfAndDescendantIds() ?? [];
+        $fixedTagIds = $fixedTag ? [(int) $fixedTag->getKey()] : [];
 
         [$availablePriceMin, $availablePriceMax] = $this->availablePriceRange(
             categoryIds: $fixedCategoryIds,
             categoryId: $fixedCategory?->getKey(),
+            tagIds: $fixedTagIds,
+            tagId: $fixedTag?->getKey(),
         );
 
         $filters = $this->normalizeFilters(
@@ -56,6 +60,8 @@ class GetProductListPageDataAction
             perPage: $perPage,
             fixedCategoryIds: $fixedCategoryIds,
             fixedCategoryId: $fixedCategory?->getKey(),
+            fixedTagIds: $fixedTagIds,
+            fixedTagId: $fixedTag?->getKey(),
         )->withQueryString();
 
         return [
@@ -65,6 +71,8 @@ class GetProductListPageDataAction
             'featuredProducts' => $this->featuredProducts(
                 categoryIds: $fixedCategoryIds,
                 categoryId: $fixedCategory?->getKey(),
+                tagIds: $fixedTagIds,
+                tagId: $fixedTag?->getKey(),
             ),
 
             'priceMin' => $filters['priceMin'],
@@ -135,6 +143,8 @@ class GetProductListPageDataAction
         int $perPage,
         array $fixedCategoryIds = [],
         int|string|null $fixedCategoryId = null,
+        array $fixedTagIds = [],
+        int|string|null $fixedTagId = null,
     ): LengthAwarePaginator {
         $payload = [
             'page' => $page,
@@ -143,6 +153,7 @@ class GetProductListPageDataAction
             'priceMax' => $filters['priceMax'],
             'selectedCategories' => $filters['selectedCategories'],
             'fixedCategoryId' => $fixedCategoryId,
+            'fixedTagId' => $fixedTagId,
             'sort' => $filters['sort'],
         ];
 
@@ -159,6 +170,7 @@ class GetProductListPageDataAction
                 page: $page,
                 perPage: $perPage,
                 fixedCategoryIds: $fixedCategoryIds,
+                fixedTagIds: $fixedTagIds,
             )
         );
     }
@@ -176,6 +188,7 @@ class GetProductListPageDataAction
         int $page,
         int $perPage,
         array $fixedCategoryIds = [],
+        array $fixedTagIds = [],
     ): LengthAwarePaginator {
         $query = Product::query()
             ->with([
@@ -190,6 +203,7 @@ class GetProductListPageDataAction
 
         $this->applyPublishedScope($query);
         $this->applyCategoryConstraint($query, $fixedCategoryIds);
+        $this->applyTagConstraint($query, $fixedTagIds);
 
         $query->whereHas('saleItems', function (Builder $query) use ($filters): void {
             $query
@@ -220,20 +234,25 @@ class GetProductListPageDataAction
     /**
      * @return array{0: int, 1: int}
      */
-    private function availablePriceRange(array $categoryIds = [], int|string|null $categoryId = null): array
-    {
+    private function availablePriceRange(
+        array $categoryIds = [],
+        int|string|null $categoryId = null,
+        array $tagIds = [],
+        int|string|null $tagId = null,
+    ): array {
         return Cache::tags([
             CacheTag::PRODUCTS,
             CacheTag::PRODUCT_LISTS,
             CacheTag::PRODUCT_FILTERS,
         ])->remember(
-            CacheKey::productAvailablePriceRange($categoryId),
+            CacheKey::productAvailablePriceRange($categoryId, $tagId),
             CacheTtl::medium(),
-            function () use ($categoryIds): array {
+            function () use ($categoryIds, $tagIds): array {
                 $row = ProductSaleItem::query()
-                    ->whereHas('product', function (Builder $query) use ($categoryIds): void {
+                    ->whereHas('product', function (Builder $query) use ($categoryIds, $tagIds): void {
                         $this->applyPublishedScope($query);
                         $this->applyCategoryConstraint($query, $categoryIds);
+                        $this->applyTagConstraint($query, $tagIds);
                     })
                     ->selectRaw('MIN(base_price) as min_price, MAX(base_price) as max_price')
                     ->first();
@@ -289,15 +308,17 @@ class GetProductListPageDataAction
     private function featuredProducts(
         array $categoryIds = [],
         int|string|null $categoryId = null,
+        array $tagIds = [],
+        int|string|null $tagId = null,
     ): Collection {
         return Cache::tags([
             CacheTag::PRODUCTS,
             CacheTag::PRODUCT_LISTS,
             CacheTag::PRODUCT_FEATURED,
         ])->remember(
-            CacheKey::productFeatured($categoryId),
+            CacheKey::productFeatured($categoryId, $tagId),
             CacheTtl::medium(),
-            function () use ($categoryIds) {
+            function () use ($categoryIds, $tagIds) {
                 $query = Product::query()
                     ->with([
                         'picture.primaryVariant',
@@ -308,6 +329,7 @@ class GetProductListPageDataAction
 
                 $this->applyPublishedScope($query);
                 $this->applyCategoryConstraint($query, $categoryIds);
+                $this->applyTagConstraint($query, $tagIds);
 
                 return $query->get();
             }
@@ -362,6 +384,20 @@ class GetProductListPageDataAction
 
         return $query->whereHas('categories', function (Builder $query) use ($categoryIds): void {
             $query->whereIn('taxonomy_terms.id', $categoryIds);
+        });
+    }
+
+    /**
+     * @param  array<int>  $tagIds
+     */
+    private function applyTagConstraint(Builder $query, array $tagIds): Builder
+    {
+        if ($tagIds === []) {
+            return $query;
+        }
+
+        return $query->whereHas('tags', function (Builder $query) use ($tagIds): void {
+            $query->whereIn('taxonomy_terms.id', $tagIds);
         });
     }
 }
