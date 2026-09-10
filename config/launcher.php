@@ -37,6 +37,14 @@ return [
 
     'force_update' => env('LAUNCHER_FORCE_UPDATE', false),
 
+    // Release metadata is shared by every bootstrap request for a platform/channel.
+    // Model events invalidate it immediately; this TTL is a safety net for changes
+    // made outside Eloquent (for example, a manual database update).
+    'bootstrap_cache_ttl_seconds' => max(
+        1,
+        (int) env('LAUNCHER_BOOTSTRAP_CACHE_TTL_SECONDS', 3600)
+    ),
+
     'download_url_ttl_minutes' => env(
         'LAUNCHER_DOWNLOAD_URL_TTL_MINUTES',
         60

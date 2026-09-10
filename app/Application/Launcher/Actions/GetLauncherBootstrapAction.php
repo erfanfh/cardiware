@@ -2,18 +2,17 @@
 
 namespace App\Application\Launcher\Actions;
 
-use App\Domain\Launcher\Models\LauncherRelease;
+use App\Application\Launcher\Support\LauncherReleaseCache;
 use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Schema;
 use RuntimeException;
 
 class GetLauncherBootstrapAction
 {
     public function __construct(
         private readonly GeneralSettings $settings,
-    ) {
-    }
+        private readonly LauncherReleaseCache $releaseCache,
+    ) {}
 
     /**
      * @return array<string, mixed>
@@ -22,36 +21,31 @@ class GetLauncherBootstrapAction
         string $currentVersion,
         string $platform,
         string $channel,
-    ): array
-    {
+    ): array {
         $configuration = config(
             "launcher.{$platform}.{$channel}"
         );
 
-        if (!is_array($configuration)) {
+        if (! is_array($configuration)) {
             throw new RuntimeException(
                 'Launcher configuration was not found.'
             );
         }
 
-        $publishedReleases = Schema::hasTable('launcher_releases')
-            ? LauncherRelease::query()
-                ->published()
-                ->where('platform', $platform)
-                ->where('channel', $channel)
-                ->get()
-                ->sort(static fn(LauncherRelease $left, LauncherRelease $right): int =>
-                    version_compare($left->version, $right->version))
-                ->values()
-            : collect();
+        $now = Carbon::now();
+        $publishedReleases = collect($this->releaseCache->get($platform, $channel))
+            ->filter(static fn (array $candidate): bool => is_int($candidate['published_at_timestamp'] ?? null)
+                && $candidate['published_at_timestamp'] <= $now->getTimestamp())
+            ->sort(static fn (array $left, array $right): int => version_compare($left['version'], $right['version']))
+            ->values();
 
-        /** @var LauncherRelease|null $release */
+        /** @var array<string, mixed>|null $release */
         $release = $publishedReleases->last();
 
-        $latestVersion = $release?->version
-            ?: (string)$configuration['latest_version'];
-        $minimumSupportedVersion = $release?->minimum_supported_version
-            ?: (string)$configuration['minimum_supported_version'];
+        $latestVersion = ($release['version'] ?? null)
+            ?: (string) $configuration['latest_version'];
+        $minimumSupportedVersion = ($release['minimum_supported_version'] ?? null)
+            ?: (string) $configuration['minimum_supported_version'];
 
         $updateAvailable = version_compare(
             $currentVersion,
@@ -66,19 +60,18 @@ class GetLauncherBootstrapAction
         );
 
         $mandatoryReleasePending = $publishedReleases->contains(
-            static fn(LauncherRelease $candidate): bool =>
-                $candidate->is_mandatory
-                && version_compare($currentVersion, $candidate->version, '<')
+            static fn (array $candidate): bool => $candidate['is_mandatory']
+                && version_compare($currentVersion, $candidate['version'], '<')
         );
 
-        $forceUpdate = ((bool)config('launcher.force_update', false) && $updateAvailable)
+        $forceUpdate = ((bool) config('launcher.force_update', false) && $updateAvailable)
             || $mandatoryReleasePending
             || $minimumVersionNotSatisfied;
 
         // Admin panel ("مدیریت آپدیت لانچر") controls this at runtime via the settings table;
         // the LAUNCHER_MAINTENANCE_* env vars only serve as the fallback for a deployment where
         // nobody has touched this panel yet.
-        $maintenanceEnabled = (bool)$this->settings->get(
+        $maintenanceEnabled = (bool) $this->settings->get(
             'launcher_maintenance_enabled',
             config('launcher.maintenance.enabled', false)
         );
@@ -103,23 +96,23 @@ class GetLauncherBootstrapAction
                 'message' => $maintenanceEnabled ? $maintenanceMessage : null,
             ],
 
-            'download_url' => $release?->download_url
+            'download_url' => ($release['download_url'] ?? null)
                 ?: ($configuration['download_url'] ?? null),
-            'file_name' => $release?->file_name
+            'file_name' => ($release['file_name'] ?? null)
                 ?: ($configuration['file_name'] ?? null),
-            'file_size_bytes' => $release?->size_bytes
+            'file_size_bytes' => ($release['size_bytes'] ?? null)
                 ?: ($configuration['file_size_bytes'] ?? null),
-            'sha256' => $release?->sha256
+            'sha256' => ($release['sha256'] ?? null)
                 ?: ($configuration['sha256'] ?? null),
-            'signature' => $release?->signature
+            'signature' => ($release['signature'] ?? null)
                 ?: ($configuration['signature'] ?? null),
-            'signature_key_id' => $release?->signature_key_id
+            'signature_key_id' => ($release['signature_key_id'] ?? null)
                 ?: ($configuration['signature_key_id'] ?? null),
-            'release_notes' => $release?->release_notes
+            'release_notes' => ($release['release_notes'] ?? null)
                 ?: ($configuration['release_notes'] ?? null),
-            'release_published_at' => $release?->published_at?->toISOString(),
+            'release_published_at' => $release['published_at'] ?? null,
 
-            'server_time' => Carbon::now()->toISOString(),
+            'server_time' => $now->toISOString(),
         ];
     }
 }
