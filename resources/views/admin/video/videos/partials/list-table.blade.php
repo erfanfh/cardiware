@@ -48,7 +48,23 @@
                 </x-admin.list.td>
                 <x-admin.list.td><x-admin.badge color="slate" size="md">{{ $video->source_type->label() }}</x-admin.badge></x-admin.list.td>
                 <x-admin.list.td><x-admin.badge :color="$video->status === \App\Domain\Video\Enums\VideoStatusEnum::ACTIVE ? 'green' : 'red'">{{ $video->status->label() }}</x-admin.badge></x-admin.list.td>
-                <x-admin.list.td><div class="flex flex-wrap gap-2">@forelse($video->categories as $category)<x-admin.badge size="md" class="whitespace-nowrap">{{ $category->title }}</x-admin.badge>@empty<span class="text-xs text-slate-400">---</span>@endforelse</div></x-admin.list.td>
+                <x-admin.list.td>
+                    <div class="flex flex-wrap gap-2">
+                        @forelse($video->categories as $category)
+                            <a
+                                href="{{ route('admin.videos.index', ['category_ids' => [$category->id]]) }}"
+                                title="نمایش ویدیوهای دسته «{{ $category->title }}»"
+                                class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+                            >
+                                <x-admin.badge size="md" class="cursor-pointer whitespace-nowrap">
+                                    {{ $category->title }}
+                                </x-admin.badge>
+                            </a>
+                        @empty
+                            <span class="text-xs text-slate-400">---</span>
+                        @endforelse
+                    </div>
+                </x-admin.list.td>
                 <x-admin.list.td><a href="{{ route('admin.comments.index', ['commentable_type' => 'video']) }}"><x-admin.badge size="md">{{ $video->comments_count }}</x-admin.badge></a></x-admin.list.td>
                 <x-admin.list.td><x-admin.badge size="md">{{ page_views($video) }}</x-admin.badge></x-admin.list.td>
                 <x-admin.list.td><x-admin.seo.score-indicator :score="$video->seoAnalysis?->score"/></x-admin.list.td>

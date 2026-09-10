@@ -237,12 +237,15 @@
                     <x-admin.list.td>
                         <div class="flex flex-wrap gap-2">
                             @forelse($product->categories as $category)
-                                <x-admin.badge
-                                    size="md"
-                                    class="whitespace-nowrap"
+                                <a
+                                    href="{{ route('admin.products.index', ['category_ids' => [$category->id]]) }}"
+                                    title="نمایش محصولات دسته «{{ $category->title }}»"
+                                    class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                                 >
-                                    {{ $category->title }}
-                                </x-admin.badge>
+                                    <x-admin.badge size="md" class="cursor-pointer whitespace-nowrap">
+                                        {{ $category->title }}
+                                    </x-admin.badge>
+                                </a>
                             @empty
                                 <span class="text-xs text-slate-400">---</span>
                             @endforelse
@@ -252,12 +255,15 @@
                     <x-admin.list.td>
                         <div class="flex flex-wrap gap-2">
                             @forelse($product->tags as $tag)
-                                <x-admin.badge
-                                    size="md"
-                                    class="whitespace-nowrap"
+                                <a
+                                    href="{{ route('admin.products.index', ['tag_ids' => [$tag->id]]) }}"
+                                    title="نمایش محصولات برچسب «{{ $tag->title }}»"
+                                    class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                                 >
-                                    {{ $tag->title }}
-                                </x-admin.badge>
+                                    <x-admin.badge size="md" class="cursor-pointer whitespace-nowrap">
+                                        {{ $tag->title }}
+                                    </x-admin.badge>
+                                </a>
                             @empty
                                 <span class="text-xs text-slate-400">---</span>
                             @endforelse
