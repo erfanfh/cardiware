@@ -50,27 +50,11 @@ return [
         60
     ),
 
-    // Hand the launcher the download host's own URL instead of a signed URL that
-    // streams through this server.
-    //
-    // With proxying, every byte of every product download passes through PHP: each
-    // of the launcher's 8 parallel range requests holds one PHP-FPM worker for the
-    // whole transfer. A few hundred people downloading an 80 GB product at once
-    // needs thousands of concurrent workers, which no ordinary VPS has -- and
-    // because that worker pool also serves the website, exhausting it takes the
-    // entire site down, not just downloads. The bandwidth is the second problem:
-    // the same traffic would have to leave this VPS as well as arrive at it.
-    //
-    // Going direct removes both. Authorization is unchanged and still happens here
-    // before any URL is issued (ownership, device, session, manifest revision); only
-    // the byte transfer moves off this server.
-    //
-    // What it gives up: the real URL becomes visible to the launcher, and a leaked
-    // URL stays usable until the file is moved. That is an acceptable trade because
-    // the URL was never the thing protecting the content -- the archive password and
-    // the content key are, and neither is obtainable from the URL. Rotating the
-    // upload folder per release keeps a leaked link short-lived, and setting
-    // secure_link_secret below removes the "until the file is moved" part entirely.
+    // For mods/updates, return the download host URL from prepare immediately.
+    // When disabled, the signed session endpoint revalidates access and redirects
+    // to that host. Product downloads always use the signed session endpoint.
+    // File bytes are served by the download host in both modes.
+    // Without secure_link_secret, the destination URL remains usable until moved.
     'direct_download_enabled' => (bool)env('LAUNCHER_DIRECT_DOWNLOAD', false),
 
     'allowed_download_hosts' => array_values(
