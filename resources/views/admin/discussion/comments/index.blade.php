@@ -26,6 +26,12 @@
             ])
             ->all();
 
+        $commentRenderedContents = $comments
+            ->mapWithKeys(fn($comment) => [
+                $comment->id => $comment->safe_content,
+            ])
+            ->all();
+
         $commentRatings = $comments
             ->mapWithKeys(fn($comment) => [
                 $comment->id => $comment->isRoot() ? $comment->rating_stars : null,
@@ -51,6 +57,7 @@
                 initialStatuses: @js($commentStatuses),
                 initialPins: @js($commentPinnedStates),
                 initialContents: @js($commentContents),
+                initialRenderedContents: @js($commentRenderedContents),
                 initialRatings: @js($commentRatings),
                 initialEditMeta: @js($commentEditMeta),
             })"

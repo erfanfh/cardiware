@@ -269,7 +269,45 @@ class Comment extends Model
 
     public function getSafeContentAttribute(): string
     {
-        return nl2br(e((string)$this->content));
+        $tokens = preg_split(
+            '/(<[^>]*>)/u',
+            (string) $this->content,
+            -1,
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY,
+        );
+
+        if ($tokens === false) {
+            return nl2br(e((string) $this->content));
+        }
+
+        return collect($tokens)
+            ->map(static function (string $token): string {
+                if (preg_match('/^<\s*\/\s*(ul|ol|li)\s*>$/iu', $token, $matches)) {
+                    return '</'.mb_strtolower($matches[1]).'>';
+                }
+
+                if (preg_match('/^<\s*(ul|ol|li)\b[^>]*>$/iu', $token, $matches)) {
+                    return '<'.mb_strtolower($matches[1]).'>';
+                }
+
+                if (trim($token) === '' && preg_match('/[\r\n]/', $token)) {
+                    return '';
+                }
+
+                return nl2br(e($token));
+            })
+            ->implode('');
+    }
+
+    public function getPlainContentAttribute(): string
+    {
+        $content = preg_replace(
+            '/<\s*\/?\s*(?:ul|ol|li)\b[^>]*>/iu',
+            ' ',
+            (string) $this->content,
+        ) ?? (string) $this->content;
+
+        return trim(preg_replace('/\s+/u', ' ', strip_tags($content)) ?? $content);
     }
 
     protected function resolveUserDisplayName(User $user): string

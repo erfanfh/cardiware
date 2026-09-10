@@ -103,6 +103,31 @@
     margin-bottom: 0.5rem;
 }
 
+/* Compact lists inside user comments. */
+.tinymce-content.comment-content ul,
+.tinymce-content.comment-content ol {
+    margin: 0.5rem 0;
+    padding-right: 1.25rem;
+}
+
+.tinymce-content.comment-content li {
+    margin-bottom: 0.25rem;
+}
+
+.tinymce-content.comment-content li:last-child {
+    margin-bottom: 0;
+}
+
+.tinymce-content.comment-content ul li {
+    position: static;
+    padding-right: 0;
+    list-style: disc;
+}
+
+.tinymce-content.comment-content ul li::before {
+    display: none;
+}
+
 /* Blockquote */
 .tinymce-content blockquote {
     margin-bottom: 1rem;

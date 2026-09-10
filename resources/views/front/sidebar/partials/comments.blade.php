@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="mt-1 text-xs text-slate-500 leading-6 line-clamp-2 dark:text-slate-400">
-                    {{ $comment->content }}
+                    {{ $comment->plain_content }}
                 </div>
 
                 <div
