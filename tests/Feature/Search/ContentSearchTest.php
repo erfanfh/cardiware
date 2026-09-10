@@ -129,7 +129,7 @@ class ContentSearchTest extends TestCase
         self::assertSame('آموزش نصب', $results->first()->title);
     }
 
-    public function test_an_empty_search_does_not_return_the_entire_catalog(): void
+    public function test_an_empty_search_returns_the_entire_public_catalog(): void
     {
         DB::table('posts')->insert([
             'title' => 'نوشته تست',
@@ -143,6 +143,6 @@ class ContentSearchTest extends TestCase
             ->apply(Post::query(), '   ')
             ->count();
 
-        self::assertSame(0, $count);
+        self::assertSame(1, $count);
     }
 }

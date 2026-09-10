@@ -31,9 +31,18 @@ class GetProductListPageDataAction
      *     sort: string
      * }
      */
-    public function execute(Request $request, int $page = 1, int $perPage = 12): array
-    {
-        [$availablePriceMin, $availablePriceMax] = $this->availablePriceRange();
+    public function execute(
+        Request $request,
+        int $page = 1,
+        int $perPage = 12,
+        ?TaxonomyTerm $fixedCategory = null,
+    ): array {
+        $fixedCategoryIds = $fixedCategory?->selfAndDescendantIds() ?? [];
+
+        [$availablePriceMin, $availablePriceMax] = $this->availablePriceRange(
+            categoryIds: $fixedCategoryIds,
+            categoryId: $fixedCategory?->getKey(),
+        );
 
         $filters = $this->normalizeFilters(
             request: $request,
@@ -44,14 +53,19 @@ class GetProductListPageDataAction
         $products = $this->products(
             filters: $filters,
             page: $page,
-            perPage: $perPage
+            perPage: $perPage,
+            fixedCategoryIds: $fixedCategoryIds,
+            fixedCategoryId: $fixedCategory?->getKey(),
         )->withQueryString();
 
         return [
             'products' => $products,
 
-            'categories' => $this->categoryTree(),
-            'featuredProducts' => $this->featuredProducts(),
+            'categories' => $this->categoryTree($fixedCategory),
+            'featuredProducts' => $this->featuredProducts(
+                categoryIds: $fixedCategoryIds,
+                categoryId: $fixedCategory?->getKey(),
+            ),
 
             'priceMin' => $filters['priceMin'],
             'priceMax' => $filters['priceMax'],
@@ -72,12 +86,11 @@ class GetProductListPageDataAction
      */
     private function normalizeFilters(
         Request $request,
-        int     $availablePriceMin,
-        int     $availablePriceMax
-    ): array
-    {
-        $priceMin = (int)$request->query('priceMin', $availablePriceMin);
-        $priceMax = (int)$request->query('priceMax', $availablePriceMax);
+        int $availablePriceMin,
+        int $availablePriceMax
+    ): array {
+        $priceMin = (int) $request->query('priceMin', $availablePriceMin);
+        $priceMax = (int) $request->query('priceMax', $availablePriceMax);
 
         $priceMin = max($priceMin, $availablePriceMin);
         $priceMax = min($priceMax, $availablePriceMax);
@@ -86,17 +99,17 @@ class GetProductListPageDataAction
             [$priceMin, $priceMax] = [$priceMax, $priceMin];
         }
 
-        $selectedCategories = collect((array)$request->query('categories', []))
-            ->filter(fn($id) => filled($id))
-            ->map(fn($id) => (int)$id)
-            ->filter(fn(int $id) => $id > 0)
+        $selectedCategories = collect((array) $request->query('categories', []))
+            ->filter(fn ($id) => filled($id))
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
             ->unique()
             ->values()
             ->all();
 
-        $sort = (string)$request->query('sort', 'latest');
+        $sort = (string) $request->query('sort', 'latest');
 
-        if (!in_array($sort, ['latest', 'oldest', 'price_asc', 'price_desc'], true)) {
+        if (! in_array($sort, ['latest', 'oldest', 'price_asc', 'price_desc'], true)) {
             $sort = 'latest';
         }
 
@@ -116,14 +129,20 @@ class GetProductListPageDataAction
      *     sort: string
      * } $filters
      */
-    private function products(array $filters, int $page, int $perPage): LengthAwarePaginator
-    {
+    private function products(
+        array $filters,
+        int $page,
+        int $perPage,
+        array $fixedCategoryIds = [],
+        int|string|null $fixedCategoryId = null,
+    ): LengthAwarePaginator {
         $payload = [
             'page' => $page,
             'perPage' => $perPage,
             'priceMin' => $filters['priceMin'],
             'priceMax' => $filters['priceMax'],
             'selectedCategories' => $filters['selectedCategories'],
+            'fixedCategoryId' => $fixedCategoryId,
             'sort' => $filters['sort'],
         ];
 
@@ -135,10 +154,11 @@ class GetProductListPageDataAction
         ])->remember(
             CacheKey::productListPage($payload),
             CacheTtl::medium(),
-            fn() => $this->queryProducts(
+            fn () => $this->queryProducts(
                 filters: $filters,
                 page: $page,
-                perPage: $perPage
+                perPage: $perPage,
+                fixedCategoryIds: $fixedCategoryIds,
             )
         );
     }
@@ -151,8 +171,12 @@ class GetProductListPageDataAction
      *     sort: string
      * } $filters
      */
-    private function queryProducts(array $filters, int $page, int $perPage): LengthAwarePaginator
-    {
+    private function queryProducts(
+        array $filters,
+        int $page,
+        int $perPage,
+        array $fixedCategoryIds = [],
+    ): LengthAwarePaginator {
         $query = Product::query()
             ->with([
                 'picture.primaryVariant',
@@ -165,6 +189,7 @@ class GetProductListPageDataAction
             ->withMax('saleItems as max_price', 'base_price');
 
         $this->applyPublishedScope($query);
+        $this->applyCategoryConstraint($query, $fixedCategoryIds);
 
         $query->whereHas('saleItems', function (Builder $query) use ($filters): void {
             $query
@@ -172,10 +197,10 @@ class GetProductListPageDataAction
                 ->where('base_price', '<=', $filters['priceMax']);
         });
 
-        if (!empty($filters['selectedCategories'])) {
+        if (! empty($filters['selectedCategories'])) {
             $categoryIds = $this->categoryIdsIncludingDescendants($filters['selectedCategories']);
 
-            if (!empty($categoryIds)) {
+            if (! empty($categoryIds)) {
                 $query->whereHas('categories', function (Builder $query) use ($categoryIds): void {
                     $query->whereIn('taxonomy_terms.id', $categoryIds);
                 });
@@ -195,23 +220,26 @@ class GetProductListPageDataAction
     /**
      * @return array{0: int, 1: int}
      */
-    private function availablePriceRange(): array
+    private function availablePriceRange(array $categoryIds = [], int|string|null $categoryId = null): array
     {
         return Cache::tags([
             CacheTag::PRODUCTS,
             CacheTag::PRODUCT_LISTS,
             CacheTag::PRODUCT_FILTERS,
         ])->remember(
-            CacheKey::productAvailablePriceRange(),
+            CacheKey::productAvailablePriceRange($categoryId),
             CacheTtl::medium(),
-            function (): array {
+            function () use ($categoryIds): array {
                 $row = ProductSaleItem::query()
-                    ->whereHas('product', fn(Builder $query) => $this->applyPublishedScope($query))
+                    ->whereHas('product', function (Builder $query) use ($categoryIds): void {
+                        $this->applyPublishedScope($query);
+                        $this->applyCategoryConstraint($query, $categoryIds);
+                    })
                     ->selectRaw('MIN(base_price) as min_price, MAX(base_price) as max_price')
                     ->first();
 
-                $min = max((int)($row?->min_price ?? 0), 0);
-                $max = max((int)($row?->max_price ?? 0), 0);
+                $min = max((int) ($row?->min_price ?? 0), 0);
+                $max = max((int) ($row?->max_price ?? 0), 0);
 
                 if ($max <= 0) {
                     $max = 1000000;
@@ -234,36 +262,42 @@ class GetProductListPageDataAction
             ->where('published_at', '<=', now());
     }
 
-    private function categoryTree(): Collection
+    private function categoryTree(?TaxonomyTerm $fixedCategory = null): Collection
     {
         return Cache::tags([
             CacheTag::PRODUCTS,
             CacheTag::PRODUCT_LISTS,
             CacheTag::CATEGORIES,
         ])->remember(
-            CacheKey::productCategoryTree(),
+            CacheKey::productCategoryTree($fixedCategory?->getKey()),
             CacheTtl::long(),
-            fn() => TaxonomyTerm::query()
+            fn () => TaxonomyTerm::query()
                 ->forTaxonomy(TaxonomyKeyEnum::PRODUCT_CATEGORY)
-                ->whereNull('parent_id')
+                ->when(
+                    $fixedCategory,
+                    fn (Builder $query) => $query->where('parent_id', $fixedCategory->getKey()),
+                    fn (Builder $query) => $query->whereNull('parent_id'),
+                )
                 ->with([
-                    'childrenRecursive' => fn($query) => $query->orderBy('title'),
+                    'childrenRecursive' => fn ($query) => $query->orderBy('title'),
                 ])
                 ->orderBy('title')
                 ->get()
         );
     }
 
-    private function featuredProducts(): Collection
-    {
+    private function featuredProducts(
+        array $categoryIds = [],
+        int|string|null $categoryId = null,
+    ): Collection {
         return Cache::tags([
             CacheTag::PRODUCTS,
             CacheTag::PRODUCT_LISTS,
             CacheTag::PRODUCT_FEATURED,
         ])->remember(
-            CacheKey::productFeatured(),
+            CacheKey::productFeatured($categoryId),
             CacheTtl::medium(),
-            function () {
+            function () use ($categoryIds) {
                 $query = Product::query()
                     ->with([
                         'picture.primaryVariant',
@@ -273,6 +307,7 @@ class GetProductListPageDataAction
                     ->limit(5);
 
                 $this->applyPublishedScope($query);
+                $this->applyCategoryConstraint($query, $categoryIds);
 
                 return $query->get();
             }
@@ -280,14 +315,14 @@ class GetProductListPageDataAction
     }
 
     /**
-     * @param array<int> $selectedCategories
+     * @param  array<int>  $selectedCategories
      * @return array<int>
      */
     private function categoryIdsIncludingDescendants(array $selectedCategories): array
     {
         $selectedCategories = collect($selectedCategories)
-            ->map(fn($id) => (int)$id)
-            ->filter(fn(int $id) => $id > 0)
+            ->map(fn ($id) => (int) $id)
+            ->filter(fn (int $id) => $id > 0)
             ->unique()
             ->values()
             ->all();
@@ -303,16 +338,30 @@ class GetProductListPageDataAction
         ])->remember(
             CacheKey::productCategoryDescendants($selectedCategories),
             CacheTtl::long(),
-            fn() => TaxonomyTerm::query()
+            fn () => TaxonomyTerm::query()
                 ->whereIn('id', $selectedCategories)
                 ->forTaxonomy(TaxonomyKeyEnum::PRODUCT_CATEGORY)
                 ->with('childrenRecursive')
                 ->get()
-                ->flatMap(fn(TaxonomyTerm $term) => $term->selfAndDescendantIds())
-                ->map(fn($id) => (int)$id)
+                ->flatMap(fn (TaxonomyTerm $term) => $term->selfAndDescendantIds())
+                ->map(fn ($id) => (int) $id)
                 ->unique()
                 ->values()
                 ->all()
         );
+    }
+
+    /**
+     * @param  array<int>  $categoryIds
+     */
+    private function applyCategoryConstraint(Builder $query, array $categoryIds): Builder
+    {
+        if ($categoryIds === []) {
+            return $query;
+        }
+
+        return $query->whereHas('categories', function (Builder $query) use ($categoryIds): void {
+            $query->whereIn('taxonomy_terms.id', $categoryIds);
+        });
     }
 }

@@ -10,9 +10,7 @@ class SitemapController extends Controller
 {
     public function __construct(
         private readonly SitemapStorage $storage,
-    )
-    {
-    }
+    ) {}
 
     public function index(): Response
     {
@@ -87,6 +85,16 @@ class SitemapController extends Controller
     public function paginatedProducts(int $page): Response
     {
         return $this->xml("product-sitemap{$page}.xml");
+    }
+
+    public function productCategories(): Response
+    {
+        return $this->xml('product-category-sitemap.xml');
+    }
+
+    public function paginatedProductCategories(int $page): Response
+    {
+        return $this->xml("product-category-sitemap{$page}.xml");
     }
 
     public function videos(): Response

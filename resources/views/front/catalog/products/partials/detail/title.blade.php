@@ -77,11 +77,12 @@
             <div
                 class="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-200/70 pt-3 dark:border-slate-800">
                 @foreach($product->categories as $category)
-                    <span
-                        class="inline-flex items-center rounded-xl border bg-brand-50 border-brand-200/80 px-2.5 py-1 text-[0.6875rem] font-extrabold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300"
+                    <a
+                        href="{{ front_route('products.categories', ['path' => $category->path]) }}"
+                        class="inline-flex items-center rounded-xl border border-brand-200/80 bg-brand-50 px-2.5 py-1 text-[0.6875rem] font-extrabold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:border-brand-500/40 dark:hover:bg-brand-500/15 dark:hover:text-brand-200"
                     >
-                            {{ $category->title }}
-                        </span>
+                        {{ $category->title }}
+                    </a>
                 @endforeach
             </div>
         @endif

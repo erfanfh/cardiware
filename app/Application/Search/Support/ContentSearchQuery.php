@@ -17,7 +17,11 @@ final class ContentSearchQuery
         $searchTerm = $this->normalize($searchTerm);
         $tokens = $this->tokens($searchTerm);
 
-        if ($searchTerm === '' || $tokens === []) {
+        if ($searchTerm === '') {
+            return $query;
+        }
+
+        if ($tokens === []) {
             return $query->whereRaw('1 = 0');
         }
 
