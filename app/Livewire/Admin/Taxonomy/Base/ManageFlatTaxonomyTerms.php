@@ -60,6 +60,7 @@ abstract class ManageFlatTaxonomyTerms extends ManageTaxonomyTerms
         $this->resetValidation();
 
         $this->dispatch('taxonomy-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     /**

@@ -12,6 +12,31 @@ import './editor.js'
 import './seo/readability-component.js'
 import './icon-picker.js'
 
+window.addEventListener('admin-inline-edit-started', () => {
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            const editForm = document.querySelector('[data-admin-inline-edit-form]');
+
+            if (!editForm) {
+                return;
+            }
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            editForm.scrollIntoView({
+                behavior: reduceMotion ? 'auto' : 'smooth',
+                block: 'start',
+            });
+
+            const firstField = editForm.querySelector(
+                'input:not([type="hidden"]):not([disabled]), textarea:not([disabled]), select:not([disabled])'
+            );
+
+            firstField?.focus({preventScroll: true});
+        });
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('Sidebar');
     const toggleBtn = document.getElementById('SidebarToggle');

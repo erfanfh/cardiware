@@ -1,15 +1,7 @@
 <div
+    class="scroll-mt-20"
+    data-admin-inline-edit-form
     wire:key="ticket-department-sidebar-{{ $editingId ? 'edit-' . $editingId : 'create' }}"
-    x-data
-    x-on:ticket-department-edit-started.window="
-        if (window.innerWidth < 1280) {
-            $el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-
-        $nextTick(() => {
-            setTimeout(() => $refs.ticketDepartmentTitleInput?.focus(), 120)
-        })
-    "
 >
     <x-admin.metabox :collapsible="false" title="اطلاعات دپارتمان">
         <div class="space-y-5">

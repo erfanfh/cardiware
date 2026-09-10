@@ -187,6 +187,7 @@ class ManageProductAttributes extends Component
         $this->resetValidation();
 
         $this->dispatch('product-attribute-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     public function cancelEditing(): void
