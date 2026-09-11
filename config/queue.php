@@ -73,6 +73,15 @@ return [
             'after_commit' => false,
         ],
 
+        'redis-download-integrity' => [
+            'driver' => 'redis',
+            'connection' => env('REDIS_DOWNLOAD_INTEGRITY_CONNECTION', 'default'),
+            'queue' => env('REDIS_DOWNLOAD_INTEGRITY_QUEUE', 'download-integrity'),
+            'retry_after' => (int)env('REDIS_DOWNLOAD_INTEGRITY_RETRY_AFTER', 1860),
+            'block_for' => null,
+            'after_commit' => false,
+        ],
+
         'redis-raffle' => [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),

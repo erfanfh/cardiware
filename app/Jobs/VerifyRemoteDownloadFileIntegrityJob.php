@@ -23,7 +23,12 @@ class VerifyRemoteDownloadFileIntegrityJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public const CONNECTION = 'redis-download-integrity';
+
+    public const QUEUE = 'download-integrity';
+
     public int $timeout = 1800;
+
     public int $tries = 1;
 
     /**
@@ -36,10 +41,27 @@ class VerifyRemoteDownloadFileIntegrityJob implements ShouldQueue
         public readonly string $url,
         public readonly string $lockKey,
     ) {
+        $this->onConnection(self::CONNECTION);
+        $this->onQueue(self::QUEUE);
     }
 
     public function handle(RemoteDownloadFileMetadataResolver $resolver): void
     {
+        // Jobs already serialized before this queue was split still point at
+        // the default queue. Move them without starting the remote download so
+        // the existing backlog stops occupying workers used by notifications.
+        if ($this->job !== null && $this->job->getQueue() !== self::QUEUE) {
+            self::dispatch(
+                $this->sourceType,
+                $this->fileClass,
+                $this->fileId,
+                $this->url,
+                $this->lockKey,
+            );
+
+            return;
+        }
+
         try {
             $file = $this->fileClass::find($this->fileId);
             if (!$file instanceof Model) {
