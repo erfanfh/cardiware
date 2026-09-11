@@ -265,12 +265,12 @@ class PreparePurchaseAccessFileDownloadAction
             throw new PurchaseAccessDownloadSessionExpiredException();
         }
 
-        if (
-            (int) $download->manifest_revision !== $manifestRevision
-            || !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
+        $fileIdentityChanged =
+            !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
             || (int) $download->file_size_bytes !== $metadata['size_bytes']
-            || !hash_equals((string) $download->file_name, $this->resolveFileName($file))
-        ) {
+            || !hash_equals((string) $download->file_name, $this->resolveFileName($file));
+
+        if ($fileIdentityChanged) {
             $download->forceFill([
                 'invalidated_at' => now(),
                 'session_expires_at' => now(),
@@ -278,7 +278,14 @@ class PreparePurchaseAccessFileDownloadAction
             throw new LauncherManifestChangedException($manifestRevision);
         }
 
+        // manifest_revision alone moved (any qualifying admin edit of the sale item bumps
+        // it -- see the *Observer classes calling BumpLauncherManifestRevisionAction) while
+        // THIS file's sha256/size/name are identical. Not a content change: the session
+        // simply follows the new revision. Previously this shared the branch above and
+        // made the launcher wipe a customer's partial download for a file that never
+        // changed. Same fix as PrepareLauncherContentDownloadAction.
         $download->forceFill([
+            'manifest_revision' => $manifestRevision,
             'session_expires_at' => $this->newSessionLeaseExpiration(),
             'last_prepared_at' => now(),
             'prepare_count' => max(1, (int)$download->prepare_count) + 1,
@@ -351,9 +358,11 @@ class PreparePurchaseAccessFileDownloadAction
         ?int $expectedSizeBytes,
         ?string $expectedSha256,
     ): void {
+        // $expectedManifestRevision is intentionally not compared: if the file the client
+        // asks for still has the same name/size/sha256, its manifest is accurate for this
+        // download no matter how many unrelated admin edits bumped the revision since.
         if (
-            ($expectedManifestRevision !== null && $expectedManifestRevision !== $manifestRevision)
-            || ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
+            ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
             || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
             || ($expectedSha256 !== null
                 && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])))
