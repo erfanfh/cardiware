@@ -61,6 +61,13 @@ return [
     ],
 
     [
+        'label' => 'رسانه‌ها',
+        'route' => 'admin.media.index',
+        'icon' => 'icons.image-03',
+        'gate' => 'media.list',
+    ],
+
+    [
         'label' => 'مودینگ تی‌وی',
         'route' => 'admin.videos.index',
         'icon' => 'icons.video-01',

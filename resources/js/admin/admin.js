@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const select = document.querySelector('#category-select');
 
+    if (!select) return;
+
     const ts = new TomSelect(select, {
         valueField: 'id',
         labelField: 'title',
@@ -128,6 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const parentSelect = document.querySelector('#parent-category-select');
+
+    if (!parentSelect) return;
 
     const ts = new TomSelect(parentSelect, {
         valueField: 'id',
@@ -159,6 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
 Livewire.on('init-category-select', () => {
 
     const el = document.getElementById('category-select');
+
+    if (!el) return;
 
     if (el.tomselect) {
         el.tomselect.destroy();
@@ -194,6 +200,8 @@ Livewire.on('init-category-select', () => {
 document.addEventListener('DOMContentLoaded', () => {
     const select = document.querySelector('#tag-select');
 
+    if (!select) return;
+
     const ts = new TomSelect(select, {
         valueField: 'id',
         labelField: 'title',
@@ -223,6 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const select = document.querySelector('#author-select');
+
+    if (!select) return;
 
     const ts = new TomSelect(select, {
         valueField: 'id',
@@ -397,7 +407,9 @@ window.mwWpSlugEditor = function (opts) {
 
 // --- Form confirmation befor closing ---
 let formChanged = false;
-document.querySelector('.confirmationForm').addEventListener("input", function () {
+const confirmationForm = document.querySelector('.confirmationForm');
+
+confirmationForm?.addEventListener("input", function () {
     formChanged = true;
 });
 window.addEventListener("beforeunload", function (event) {
@@ -406,7 +418,7 @@ window.addEventListener("beforeunload", function (event) {
         event.returnValue = "";
     }
 });
-document.querySelector('.confirmationForm').addEventListener("submit", function () {
+confirmationForm?.addEventListener("submit", function () {
     formChanged = false;
 });
 /*** ================== End Form confirmation befor closing ================== ***/
