@@ -210,17 +210,32 @@ class PrepareLauncherContentDownloadAction
                 throw new PurchaseAccessDownloadSessionExpiredException();
             }
 
-            if ($download && (
-                (int) $download->manifest_revision !== $manifestRevision
-                || !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
-                || (int) $download->file_size_bytes !== $metadata['size_bytes']
-                || !hash_equals((string) $download->file_name, $fileName)
-            )) {
-                $download->forceFill([
-                    'invalidated_at' => now(),
-                    'session_expires_at' => now(),
-                ])->save();
-                throw new LauncherManifestChangedException($manifestRevision);
+            if ($download) {
+                $fileIdentityChanged =
+                    !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
+                    || (int) $download->file_size_bytes !== $metadata['size_bytes']
+                    || !hash_equals((string) $download->file_name, $fileName);
+
+                if ($fileIdentityChanged) {
+                    $download->forceFill([
+                        'invalidated_at' => now(),
+                        'session_expires_at' => now(),
+                    ])->save();
+                    throw new LauncherManifestChangedException($manifestRevision);
+                }
+
+                // The owning sale item's manifest_revision moved (any qualifying
+                // admin edit -- title, an install-size estimate, an unrelated
+                // file, a newly published update -- bumps it; see the *Observer
+                // classes that call BumpLauncherManifestRevisionAction) but THIS
+                // file's sha256/size/name above are byte-for-byte identical. That
+                // is not a content change, so the session simply follows the new
+                // revision. Previously this was folded into the branch above and
+                // forced a full wipe-and-restart-from-zero for a file that never
+                // changed.
+                if ((int) $download->manifest_revision !== $manifestRevision) {
+                    $download->forceFill(['manifest_revision' => $manifestRevision]);
+                }
             }
 
             $reusedSession = $download instanceof LauncherDownloadSession;
@@ -387,15 +402,21 @@ class PrepareLauncherContentDownloadAction
         ?int $expectedSizeBytes,
         ?string $expectedSha256,
     ): void {
-        if (
-            ($expectedManifestRevision !== null && $expectedManifestRevision !== $manifestRevision)
-            || ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
+        $fileIdentityChanged =
+            ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
             || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
             || ($expectedSha256 !== null
-                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])))
-        ) {
+                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])));
+
+        if ($fileIdentityChanged) {
             throw new LauncherManifestChangedException($manifestRevision);
         }
+
+        // $expectedManifestRevision is intentionally not compared. The client
+        // sends the revision its manifest was fetched with; if the file it is
+        // asking for still has the same name/size/sha256, that manifest is
+        // accurate for this download regardless of how many unrelated admin
+        // edits bumped the revision since (see execute()'s matching branch).
     }
 
     private function newSessionLeaseExpiration(): CarbonInterface

@@ -99,6 +99,23 @@ final class LauncherReleaseController extends Controller
     {
         Gate::authorize('launcher-device.manage');
 
+        // Values pasted from a PowerShell console (the signing tool's own output)
+        // routinely arrive with hard line breaks at the console's wrap width, even
+        // though they are meant to be a single token. Strip that whitespace before
+        // validating -- previously the format regexes below rejected the whole
+        // submission in that case, and because no field in the view renders
+        // $errors, the form just looked like it silently did nothing.
+        $strip = fn (?string $value): ?string => filled($value) ? preg_replace('/\s+/', '', $value) : $value;
+        $trim = fn (?string $value): ?string => filled($value) ? trim($value) : $value;
+        $request->merge([
+            'version' => $trim($request->input('version')),
+            'minimum_supported_version' => $trim($request->input('minimum_supported_version')),
+            'download_url' => $trim($request->input('download_url')),
+            'sha256' => $strip($request->input('sha256')),
+            'signature' => $strip($request->input('signature')),
+            'signature_key_id' => $strip($request->input('signature_key_id')),
+        ]);
+
         $validated = $request->validate($this->rules($request), $this->messages());
         if (filled($validated['minimum_supported_version'] ?? null)
             && version_compare(
