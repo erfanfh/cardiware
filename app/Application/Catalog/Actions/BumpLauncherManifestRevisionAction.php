@@ -54,47 +54,10 @@ final class BumpLauncherManifestRevisionAction
                     'updated_at' => now(),
                 ]);
 
-            // Integrity metadata is keyed by file ID and can otherwise remain valid for days.
-            // Clear every file snapshot owned by this sale item so replacing a remote file at
-            // the same URL cannot keep an old size or checksum alive.
-            DB::table('launcher_download_file_integrities')
-                ->where(function ($query) use ($saleItemId): void {
-                    $query->where(function ($productFiles) use ($saleItemId): void {
-                        $productFiles->where('source_type', 'product')
-                            ->whereIn('source_file_id', function ($files) use ($saleItemId): void {
-                                $files->select('id')
-                                    ->from('product_sale_item_files')
-                                    ->where('product_sale_item_id', $saleItemId);
-                            });
-                    })->orWhere(function ($updateFiles) use ($saleItemId): void {
-                        $updateFiles->where('source_type', 'update')
-                            ->whereIn('source_file_id', function ($files) use ($saleItemId): void {
-                                $files->select('launcher_update_files.id')
-                                    ->from('launcher_update_files')
-                                    ->join(
-                                        'launcher_updates',
-                                        'launcher_updates.id',
-                                        '=',
-                                        'launcher_update_files.launcher_update_id'
-                                    )
-                                    ->where('launcher_updates.product_sale_item_id', $saleItemId);
-                            });
-                    })->orWhere(function ($modFiles) use ($saleItemId): void {
-                        $modFiles->where('source_type', 'mod')
-                            ->whereIn('source_file_id', function ($files) use ($saleItemId): void {
-                                $files->select('launcher_mod_files.id')
-                                    ->from('launcher_mod_files')
-                                    ->join(
-                                        'launcher_mods',
-                                        'launcher_mods.id',
-                                        '=',
-                                        'launcher_mod_files.launcher_mod_id'
-                                    )
-                                    ->where('launcher_mods.product_sale_item_id', $saleItemId);
-                            });
-                    });
-                })
-                ->delete();
+            // Integrity snapshots are deliberately NOT deleted here any more. The resolver
+            // now validates a snapshot against the file record's registered size/sha256
+            // (RemoteDownloadFileMetadataResolver::canReuseVerifiedMetadata), so a replaced
+            // file is detected without re-verifying every untouched part after each save.
 
             // The launcher APIs do not cache manifests themselves, but catalog pages may.
             // Versioned keys prevent stale data even when the cache store has no tag support.

@@ -118,6 +118,15 @@ return [
         10080
     ),
 
+    /*
+     * When false (default), background verification is a single HEAD request that checks
+     * the remote size against the registered one and records the registered SHA-256.
+     * When true, every file is streamed in full through the web server and hashed --
+     * minutes per multi-gigabyte part and the whole archive's worth of traffic per run.
+     * Only enable temporarily to audit registered checksums.
+     */
+    'download_integrity_full_hash' => (bool)env('LAUNCHER_DOWNLOAD_INTEGRITY_FULL_HASH', false),
+
     'remote_download_connect_timeout_seconds' => (int)env(
         'LAUNCHER_REMOTE_DOWNLOAD_CONNECT_TIMEOUT_SECONDS',
         15
