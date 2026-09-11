@@ -9,6 +9,11 @@ final class CacheKey
         return "settings:group:{$group}";
     }
 
+    public static function launcherBootstrapReleases(string $platform, string $channel): string
+    {
+        return "launcher:bootstrap:releases:{$platform}:{$channel}";
+    }
+
     public static function organizationLogo(int|string $mediaId): string
     {
         return "seo:organization-logo:{$mediaId}";

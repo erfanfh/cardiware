@@ -27,20 +27,14 @@ class PrepareLauncherContentDownloadAction
     public function __construct(
         private readonly RemoteDownloadFileMetadataResolver $metadataResolver,
         private readonly GenerateTemporaryLauncherDownloadUrlAction $generateTemporaryDownloadUrlAction,
+        private readonly SignDirectLauncherDownloadUrlAction $signDirectDownloadUrlAction,
     ) {
     }
 
     /**
-     * Chooses between handing back the download host's own URL and a signed URL that
-     * proxies through this server (see launcher.direct_download_enabled for why the
-     * direct form exists and what it trades away).
-     *
-     * Direct mode still refuses anything that is not HTTPS on an allow-listed host.
-     * Those two checks already run when an administrator saves a file, but they are
-     * repeated here because this is the moment the value is handed to a client: a URL
-     * stored before the allow-list was tightened, or edited directly in the database,
-     * must not slip out just because it passed validation once. Falling back to the
-     * proxy on failure keeps the download working rather than breaking it.
+     * Direct mode returns the download host URL immediately. Otherwise, the signed
+     * session URL revalidates access before redirecting to the same download host.
+     * Neither path transfers the file through the application server.
      */
     private function resolveDownloadUrl(
         Model $file,
@@ -51,11 +45,12 @@ class PrepareLauncherContentDownloadAction
         string $downloadSessionId,
         int $manifestRevision,
         CarbonInterface $signedUrlExpiresAt,
+        User $user,
     ): string {
         if ((bool)config('launcher.direct_download_enabled', false)) {
             $directUrl = trim((string)$file->getAttribute('url'));
             if ($this->isDeliverableDirectUrl($directUrl)) {
-                return $directUrl;
+                return $this->signDirectDownloadUrlAction->execute($directUrl, $user);
             }
 
             Log::warning('launcher.direct_download.url_rejected', [
@@ -215,17 +210,32 @@ class PrepareLauncherContentDownloadAction
                 throw new PurchaseAccessDownloadSessionExpiredException();
             }
 
-            if ($download && (
-                (int) $download->manifest_revision !== $manifestRevision
-                || !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
-                || (int) $download->file_size_bytes !== $metadata['size_bytes']
-                || !hash_equals((string) $download->file_name, $fileName)
-            )) {
-                $download->forceFill([
-                    'invalidated_at' => now(),
-                    'session_expires_at' => now(),
-                ])->save();
-                throw new LauncherManifestChangedException($manifestRevision);
+            if ($download) {
+                $fileIdentityChanged =
+                    !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
+                    || (int) $download->file_size_bytes !== $metadata['size_bytes']
+                    || !hash_equals((string) $download->file_name, $fileName);
+
+                if ($fileIdentityChanged) {
+                    $download->forceFill([
+                        'invalidated_at' => now(),
+                        'session_expires_at' => now(),
+                    ])->save();
+                    throw new LauncherManifestChangedException($manifestRevision);
+                }
+
+                // The owning sale item's manifest_revision moved (any qualifying
+                // admin edit -- title, an install-size estimate, an unrelated
+                // file, a newly published update -- bumps it; see the *Observer
+                // classes that call BumpLauncherManifestRevisionAction) but THIS
+                // file's sha256/size/name above are byte-for-byte identical. That
+                // is not a content change, so the session simply follows the new
+                // revision. Previously this was folded into the branch above and
+                // forced a full wipe-and-restart-from-zero for a file that never
+                // changed.
+                if ((int) $download->manifest_revision !== $manifestRevision) {
+                    $download->forceFill(['manifest_revision' => $manifestRevision]);
+                }
             }
 
             $reusedSession = $download instanceof LauncherDownloadSession;
@@ -273,6 +283,7 @@ class PrepareLauncherContentDownloadAction
                     downloadSessionId: (string)$download->download_session_id,
                     manifestRevision: $manifestRevision,
                     signedUrlExpiresAt: $signedUrlExpiresAt,
+                    user: $user,
                 ),
                 'file_name' => $fileName,
                 'size_bytes' => $metadata['size_bytes'],
@@ -391,15 +402,21 @@ class PrepareLauncherContentDownloadAction
         ?int $expectedSizeBytes,
         ?string $expectedSha256,
     ): void {
-        if (
-            ($expectedManifestRevision !== null && $expectedManifestRevision !== $manifestRevision)
-            || ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
+        $fileIdentityChanged =
+            ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
             || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
             || ($expectedSha256 !== null
-                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])))
-        ) {
+                && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])));
+
+        if ($fileIdentityChanged) {
             throw new LauncherManifestChangedException($manifestRevision);
         }
+
+        // $expectedManifestRevision is intentionally not compared. The client
+        // sends the revision its manifest was fetched with; if the file it is
+        // asking for still has the same name/size/sha256, that manifest is
+        // accurate for this download regardless of how many unrelated admin
+        // edits bumped the revision since (see execute()'s matching branch).
     }
 
     private function newSessionLeaseExpiration(): CarbonInterface

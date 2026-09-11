@@ -7,6 +7,7 @@ use App\Domain\Launcher\Models\LauncherDownloadFileIntegrity;
 use App\Jobs\VerifyRemoteDownloadFileIntegrityJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class RemoteDownloadFileMetadataResolver
 {
@@ -40,7 +41,7 @@ class RemoteDownloadFileMetadataResolver
             ->where('source_file_id', $file->getKey())
             ->first();
 
-        if ($this->canReuseVerifiedMetadata($integrity, $urlHash)) {
+        if ($this->canReuseVerifiedMetadata($integrity, $urlHash, $file)) {
             return $this->metadataFromIntegrity($integrity);
         }
 
@@ -62,7 +63,15 @@ class RemoteDownloadFileMetadataResolver
         string $url,
     ): array {
         $urlHash = hash('sha256', $url);
-        $metadata = $this->inspectRemoteFile($url);
+        $metadata = $this->shouldStreamFullFile($file)
+            ? $this->inspectRemoteFile($url)
+            : $this->inspectRemoteFileHead($url, $file);
+        if ($metadata === null) {
+            // Size on the download host does not match the registered file. Do not mark
+            // anything verified; the admin-entered values keep being served and the
+            // launcher's own SHA-256 check will refuse the archive if it is really wrong.
+            return $this->metadataFromAdminEnteredValues($file);
+        }
 
         $integrity = LauncherDownloadFileIntegrity::query()->updateOrCreate(
             [
@@ -203,6 +212,7 @@ class RemoteDownloadFileMetadataResolver
     private function canReuseVerifiedMetadata(
         ?LauncherDownloadFileIntegrity $integrity,
         string $urlHash,
+        ?Model $file = null,
     ): bool {
         if (!$integrity instanceof LauncherDownloadFileIntegrity) {
             return false;
@@ -210,6 +220,22 @@ class RemoteDownloadFileMetadataResolver
 
         if (!hash_equals((string)$integrity->source_url_hash, $urlHash)) {
             return false;
+        }
+
+        // A snapshot is only good for the file record it was taken against. If the admin
+        // has since changed the registered size or checksum, re-verify instead of serving
+        // the old snapshot. This replaces the blanket delete of every snapshot on each
+        // manifest-revision bump (which re-streamed ~57 GB of parts through the web server
+        // after every panel save).
+        if ($file !== null) {
+            $adminSize = (int)$file->getAttribute('size_bytes');
+            $adminSha = strtolower(trim((string)$file->getAttribute('sha256')));
+            if ($adminSize > 0 && (int)$integrity->size_bytes !== $adminSize) {
+                return false;
+            }
+            if ($adminSha !== '' && !hash_equals(strtolower((string)$integrity->sha256), $adminSha)) {
+                return false;
+            }
         }
 
         if (
@@ -239,6 +265,84 @@ class RemoteDownloadFileMetadataResolver
             'size_bytes' => (int)$integrity->size_bytes,
             'sha256' => strtolower((string)$integrity->sha256),
             'mime_type' => $integrity->mime_type ?: null,
+        ];
+    }
+
+    /**
+     * Full stream+hash is only worth its cost (a multi-gigabyte download through the web
+     * server per file, minutes of a queue worker) when there is no administrator checksum
+     * to compare against, or when explicitly enabled. The launcher re-verifies SHA-256 on
+     * the customer's machine anyway, so the server-side hash is a convenience, not a gate.
+     */
+    private function shouldStreamFullFile(Model $file): bool
+    {
+        if ((bool)config('launcher.download_integrity_full_hash', false)) {
+            return true;
+        }
+
+        return preg_match('/^[a-fA-F0-9]{64}$/', trim((string)$file->getAttribute('sha256'))) !== 1
+            || (int)$file->getAttribute('size_bytes') <= 0;
+    }
+
+    /**
+     * Cheap verification: one HEAD request. Confirms the object exists and its size matches
+     * what the admin registered; the registered SHA-256 is then recorded as the verified
+     * checksum. Returns null when the size does not match (nothing is persisted).
+     *
+     * @return array{size_bytes:int,sha256:string,mime_type:?string}|null
+     */
+    private function inspectRemoteFileHead(string $url, Model $file): ?array
+    {
+        if (!function_exists('curl_init')) {
+            throw new PurchaseAccessFileUnavailableException();
+        }
+
+        $handle = curl_init($url);
+        if ($handle === false) {
+            throw new PurchaseAccessFileUnavailableException();
+        }
+
+        curl_setopt_array($handle, [
+            CURLOPT_NOBODY => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_CONNECTTIMEOUT => max(
+                1,
+                (int)config('launcher.remote_download_connect_timeout_seconds', 15)
+            ),
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_NOSIGNAL => true,
+            CURLOPT_PROTOCOLS => CURLPROTO_HTTPS,
+            CURLOPT_HTTPHEADER => ['Accept-Encoding: identity'],
+        ]);
+
+        curl_exec($handle);
+        $statusCode = (int)curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+        $length = (float)curl_getinfo($handle, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+        $contentType = trim((string)curl_getinfo($handle, CURLINFO_CONTENT_TYPE));
+        $curlError = curl_error($handle);
+        curl_close($handle);
+
+        if ($curlError !== '' || $statusCode < 200 || $statusCode >= 300 || $length <= 0) {
+            throw new PurchaseAccessFileUnavailableException();
+        }
+
+        $adminSize = (int)$file->getAttribute('size_bytes');
+        if ((int)$length !== $adminSize) {
+            Log::warning('launcher.download_integrity.size_mismatch', [
+                'url_host' => (string)parse_url($url, PHP_URL_HOST),
+                'file_id' => $file->getKey(),
+                'registered_size_bytes' => $adminSize,
+                'remote_size_bytes' => (int)$length,
+            ]);
+
+            return null;
+        }
+
+        return [
+            'size_bytes' => (int)$length,
+            'sha256' => strtolower(trim((string)$file->getAttribute('sha256'))),
+            'mime_type' => $contentType !== '' ? $contentType : null,
         ];
     }
 

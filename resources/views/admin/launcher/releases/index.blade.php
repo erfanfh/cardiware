@@ -105,58 +105,62 @@
 
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
                     <div class="md:col-span-3">
-                        <x-admin.field label="نسخه" hint="مانند 1.2.0">
+                        <x-admin.field label="نسخه" hint="مانند 1.2.0" :error="$errors->first('version')">
                             <x-admin.form.input name="version" dir="ltr" required
                                                 value="{{ old('version', $formRelease?->version) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-3">
-                        <x-admin.field label="حداقل نسخه مجاز" hint="نسخه‌های پایین‌تر مجبور به آپدیت می‌شوند.">
+                        <x-admin.field label="حداقل نسخه مجاز" hint="نسخه‌های پایین‌تر مجبور به آپدیت می‌شوند."
+                                       :error="$errors->first('minimum_supported_version')">
                             <x-admin.form.input name="minimum_supported_version" dir="ltr"
                                                 value="{{ old('minimum_supported_version', $formRelease?->minimum_supported_version) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-3">
-                        <x-admin.field label="نام فایل ZIP">
+                        <x-admin.field label="نام فایل ZIP" :error="$errors->first('file_name')">
                             <x-admin.form.input name="file_name" dir="ltr" required
                                                 placeholder="MWLauncher-1.2.0.zip"
                                                 value="{{ old('file_name', $formRelease?->file_name) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-3">
-                        <x-admin.field label="حجم فایل به بایت">
+                        <x-admin.field label="حجم فایل به بایت" :error="$errors->first('size_bytes')">
                             <x-admin.form.input name="size_bytes" type="number" min="1" dir="ltr" required
                                                 value="{{ old('size_bytes', $formRelease?->size_bytes) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-12">
-                        <x-admin.field label="لینک مستقیم HTTPS فایل">
+                        <x-admin.field label="لینک مستقیم HTTPS فایل" :error="$errors->first('download_url')">
                             <x-admin.form.input name="download_url" type="url" dir="ltr" required
                                                 placeholder="https://download.example.com/MWLauncher-1.2.0.zip"
                                                 value="{{ old('download_url', $formRelease?->download_url) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-12">
-                        <x-admin.field label="SHA-256 فایل ZIP">
+                        <x-admin.field label="SHA-256 فایل ZIP" :error="$errors->first('sha256')">
                             <x-admin.form.input name="sha256" dir="ltr" required maxlength="64"
                                                 value="{{ old('sha256', $formRelease?->sha256) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-8">
                         <x-admin.field label="امضای مستقل بسته (Base64)"
-                                       hint="خروجی Signature ابزار publish-update؛ برای انتشار امن هر دو فیلد امضا را ثبت کنید.">
+                                       hint="خروجی Signature ابزار publish-update؛ برای انتشار امن هر دو فیلد امضا را ثبت کنید."
+                                       :error="$errors->first('signature')">
                             <x-admin.form.textarea name="signature" rows="3" dir="ltr"
                                                    :value="old('signature', $formRelease?->signature)" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-4">
-                        <x-admin.field label="شناسه کلید امضا" hint="Signature key id خروجی ابزار ساخت بسته">
+                        <x-admin.field label="شناسه کلید امضا" hint="Signature key id خروجی ابزار ساخت بسته"
+                                       :error="$errors->first('signature_key_id')">
                             <x-admin.form.input name="signature_key_id" dir="ltr" maxlength="64"
                                                 value="{{ old('signature_key_id', $formRelease?->signature_key_id) }}" />
                         </x-admin.field>
                     </div>
                     <div class="md:col-span-4">
-                        <x-admin.field label="تاریخ انتشار" hint="اگر فعال باشد و خالی بماند، زمان فعلی ثبت می‌شود.">
+                        <x-admin.field label="تاریخ انتشار" hint="اگر فعال باشد و خالی بماند، زمان فعلی ثبت می‌شود."
+                                       :error="$errors->first('published_at')">
                             <x-admin.form.input name="published_at" dir="ltr" placeholder="2026-08-13 12:00:00"
                                                 value="{{ old('published_at', $formRelease?->published_at?->format('Y-m-d H:i:s')) }}" />
                         </x-admin.field>

@@ -37,31 +37,24 @@ return [
 
     'force_update' => env('LAUNCHER_FORCE_UPDATE', false),
 
+    // Release metadata is shared by every bootstrap request for a platform/channel.
+    // Model events invalidate it immediately; this TTL is a safety net for changes
+    // made outside Eloquent (for example, a manual database update).
+    'bootstrap_cache_ttl_seconds' => max(
+        1,
+        (int) env('LAUNCHER_BOOTSTRAP_CACHE_TTL_SECONDS', 3600)
+    ),
+
     'download_url_ttl_minutes' => env(
         'LAUNCHER_DOWNLOAD_URL_TTL_MINUTES',
         60
     ),
 
-    // Hand the launcher the download host's own URL instead of a signed URL that
-    // streams through this server.
-    //
-    // With proxying, every byte of every product download passes through PHP: each
-    // of the launcher's 8 parallel range requests holds one PHP-FPM worker for the
-    // whole transfer. A few hundred people downloading an 80 GB product at once
-    // needs thousands of concurrent workers, which no ordinary VPS has -- and
-    // because that worker pool also serves the website, exhausting it takes the
-    // entire site down, not just downloads. The bandwidth is the second problem:
-    // the same traffic would have to leave this VPS as well as arrive at it.
-    //
-    // Going direct removes both. Authorization is unchanged and still happens here
-    // before any URL is issued (ownership, device, session, manifest revision); only
-    // the byte transfer moves off this server.
-    //
-    // What it gives up: the real URL becomes visible to the launcher, and a leaked
-    // URL stays usable until the file is moved. That is an acceptable trade because
-    // the URL was never the thing protecting the content -- the archive password and
-    // the content key are, and neither is obtainable from the URL. Rotating the
-    // upload folder per release keeps a leaked link short-lived.
+    // For mods/updates, return the download host URL from prepare immediately.
+    // When disabled, the signed session endpoint revalidates access and redirects
+    // to that host. Product downloads always use the signed session endpoint.
+    // File bytes are served by the download host in both modes.
+    // Without secure_link_secret, the destination URL remains usable until moved.
     'direct_download_enabled' => (bool)env('LAUNCHER_DIRECT_DOWNLOAD', false),
 
     'allowed_download_hosts' => array_values(
@@ -75,6 +68,28 @@ return [
             )
         )
     ),
+
+    // Shared secret for nginx's secure_link module on the download host. When set, a
+    // direct URL is handed out signed and time-limited instead of permanent, and
+    // carries an opaque per-user token so the download host's access log attributes
+    // every byte to an account -- which is what makes a leak actionable rather than
+    // merely regrettable. Empty (the default) leaves URLs unsigned, exactly as before.
+    //
+    // The nginx side must be configured as:
+    //     secure_link        $arg_md5,$arg_expires;
+    //     secure_link_md5    "SECRET$secure_link_expires$uri$arg_u";
+    // with SECRET being this same value. Note the deliberate absence of $remote_addr:
+    // including it is the common recipe, but it breaks resume for mobile and CGNAT
+    // users whose address changes mid-download -- and an 80 GB download on an ordinary
+    // connection lasts long enough for that to be routine, not rare.
+    'secure_link_secret' => (string)env('LAUNCHER_SECURE_LINK_SECRET', ''),
+
+    // How long a signed URL stays valid. This does not cap download duration: the
+    // launcher treats 403/410 as "refresh the link" and resumes from its existing
+    // partial file (see IsRefreshableDownloadStatus in LaravelResilientDownloadService),
+    // so a 36-hour download over a slow line simply re-signs a few times. Keep it short
+    // enough that a link pasted into a group is dead before most people click it.
+    'secure_link_ttl_minutes' => max(5, (int)env('LAUNCHER_SECURE_LINK_TTL_MINUTES', 240)),
 
     // file_name in the admin manifest must be the exact physical file name at
     // the end of the source URL. Disable only for providers with opaque URLs.
@@ -102,6 +117,15 @@ return [
         'LAUNCHER_DOWNLOAD_INTEGRITY_CACHE_TTL_MINUTES',
         10080
     ),
+
+    /*
+     * When false (default), background verification is a single HEAD request that checks
+     * the remote size against the registered one and records the registered SHA-256.
+     * When true, every file is streamed in full through the web server and hashed --
+     * minutes per multi-gigabyte part and the whole archive's worth of traffic per run.
+     * Only enable temporarily to audit registered checksums.
+     */
+    'download_integrity_full_hash' => (bool)env('LAUNCHER_DOWNLOAD_INTEGRITY_FULL_HASH', false),
 
     'remote_download_connect_timeout_seconds' => (int)env(
         'LAUNCHER_REMOTE_DOWNLOAD_CONNECT_TIMEOUT_SECONDS',

@@ -9,6 +9,7 @@ class LauncherConfigurationTest extends TestCase
     public function test_security_defaults_are_safe(): void
     {
         $this->assertSame(2, config('launcher.max_active_devices_per_user'));
+        $this->assertGreaterThanOrEqual(1, config('launcher.bootstrap_cache_ttl_seconds'));
         $this->assertGreaterThanOrEqual(1, config('launcher.download_url_ttl_minutes'));
         $this->assertGreaterThan(
             config('launcher.download_url_ttl_minutes'),

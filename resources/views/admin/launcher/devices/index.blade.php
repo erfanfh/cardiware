@@ -86,6 +86,55 @@
             </section>
         @endif
 
+        @if(!$selectedUser && $cloneSuspects->isNotEmpty())
+            <section class="rounded-2xl border border-rose-200 bg-rose-50/40 shadow-sm">
+                <div class="border-b border-rose-100 px-5 py-4">
+                    <h2 class="text-sm font-black text-rose-800">دستگاه‌های مشکوک به کلون شدن</h2>
+                    <p class="mt-1 text-xs font-bold leading-6 text-rose-700">
+                        دستگاه‌هایی که در ۷ روز اخیر حداقل ۶ بار با فاصله‌ی کمتر از ۵ دقیقه بین دو شبکه‌ی متفاوت جابه‌جا شده‌اند.
+                        یک دستگاه واقعی روی یک شبکه ثابت می‌ماند؛ این الگو یعنی احتمالاً دو کامپیوتر با یک شناسه‌ی یکسان نوبتی کار می‌کنند.
+                        قبل از هر اقدامی حساب را باز کنید و ببینید الگو منطقی است یا نه.
+                    </p>
+                </div>
+                <div class="divide-y divide-rose-100">
+                    @foreach($cloneSuspects as $row)
+                        @php
+                            $rowName = $row->display_name ?: trim(($row->first_name ?? '') . ' ' . ($row->last_name ?? ''));
+                        @endphp
+                        <a
+                            href="{{ route('admin.launcher-devices.index', ['user_id' => $row->user_id]) }}"
+                            class="flex flex-wrap items-center justify-between gap-3 p-4 transition hover:bg-rose-50"
+                        >
+                            <div>
+                                <div class="text-xs font-black text-slate-900">
+                                    {{ $rowName ?: 'بدون نام' }}
+                                    <span class="mr-2 text-[11px] font-bold text-slate-400">#{{ $row->user_id }}</span>
+                                </div>
+                                <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold text-slate-500">
+                                    <span dir="ltr">{{ $row->mobile }}</span>
+                                    @if($row->email)
+                                        <span dir="ltr">{{ $row->email }}</span>
+                                    @endif
+                                    @if($row->device_name)
+                                        <span>{{ $row->device_name }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-[11px] font-black">
+                                <span class="rounded-lg bg-rose-100 px-2 py-1 text-rose-800">
+                                    {{ $row->rapid_switch_count }} جابه‌جایی سریع
+                                </span>
+                                <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600">
+                                    {{ $row->distinct_networks_count }} شبکه‌ی متفاوت
+                                </span>
+                                <span class="text-slate-400">آخرین مورد: {{ jalali_date($row->last_switch_at) }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         @if($selectedUser)
             @php
                 $activeDevice = $devices->first(fn($device) =>

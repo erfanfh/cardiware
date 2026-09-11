@@ -61,6 +61,18 @@ return Application::configure(basePath: dirname(__DIR__))
             ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Expected launcher control-flow responses, not faults: each one used to be written
+        // to laravel.log as production.ERROR with a ~50-frame stack trace, thousands of times
+        // an hour during a release. The client handles all of them (refreshes the session,
+        // restarts the file, shows the purchase page).
+        $exceptions->dontReport([
+            \App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException::class,
+            \App\Application\Commerce\Exceptions\LauncherManifestChangedException::class,
+            \App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException::class,
+            \App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException::class,
+            \App\Application\Launcher\Exceptions\DeviceRevokedException::class,
+        ]);
+
         $exceptions->shouldRenderJsonWhen(
             function (Request $request, Throwable $exception): bool {
                 return $request->is('api/*')

@@ -98,6 +98,7 @@ return [
 
     'waits' => [
         'redis:default' => 60,
+        'redis-download-integrity:download-integrity' => 300,
     ],
 
     /*
@@ -224,6 +225,19 @@ return [
             'nice' => 5,
         ],
 
+        'supervisor-download-integrity' => [
+            'connection' => 'redis-download-integrity',
+            'queue' => ['download-integrity'],
+            'balance' => 'simple',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 1800,
+            'nice' => 10,
+        ],
+
         'supervisor-backup' => [
             'connection' => 'redis-backup',
             'queue' => ['backups'],
@@ -248,6 +262,9 @@ return [
             'supervisor-raffle' => [
                 'maxProcesses' => 1,
             ],
+            'supervisor-download-integrity' => [
+                'maxProcesses' => 1,
+            ],
             'supervisor-backup' => [
                 'maxProcesses' => 1,
             ],
@@ -258,6 +275,9 @@ return [
                 'maxProcesses' => 3,
             ],
             'supervisor-raffle' => [
+                'maxProcesses' => 1,
+            ],
+            'supervisor-download-integrity' => [
                 'maxProcesses' => 1,
             ],
             'supervisor-backup' => [

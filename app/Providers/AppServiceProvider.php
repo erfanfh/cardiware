@@ -8,6 +8,7 @@ use App\Application\Catalog\Observers\ProductSaleItemManifestObserver;
 use App\Application\Catalog\Observers\ProductSaleItemObserver;
 use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Identity\Observers\UserObserver;
+use App\Application\Launcher\Observers\LauncherReleaseObserver;
 use App\Application\Support\Observers\TicketObserver;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
@@ -20,6 +21,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
 use App\Domain\Launcher\Models\LauncherModGroup;
+use App\Domain\Launcher\Models\LauncherRelease;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
 use App\Domain\Support\Models\Ticket;
@@ -148,6 +150,7 @@ class AppServiceProvider extends ServiceProvider
         LauncherModGroup::observe(LauncherContentManifestRevisionObserver::class);
         LauncherMod::observe(LauncherContentManifestRevisionObserver::class);
         LauncherModFile::observe(LauncherContentManifestRevisionObserver::class);
+        LauncherRelease::observe(LauncherReleaseObserver::class);
 
         User::observe(UserObserver::class);
     }

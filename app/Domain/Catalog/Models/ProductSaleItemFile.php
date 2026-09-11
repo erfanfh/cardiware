@@ -19,6 +19,8 @@ class ProductSaleItemFile extends Model
         'url',
         'size_bytes',
         'sha256',
+        'sha256_signature',
+        'signature_key_id',
         'mime_type',
         'part_number',
         'archive_group',
