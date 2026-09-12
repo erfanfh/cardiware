@@ -2,7 +2,6 @@
 
 namespace App\Application\Launcher\Actions\Security;
 
-use App\Application\Launcher\Exceptions\OfflineLicenseTransferCooldownException;
 use App\Application\Launcher\Exceptions\DeviceRevokedException;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Identity\Models\User;
@@ -36,15 +35,37 @@ final class IssueOfflineLicenseAction
             ->where('id', '!=', $device->getKey())
             ->max('offline_license_expires_at');
         $availableAt = $previousExpiry === null ? null : CarbonImmutable::parse($previousExpiry);
-        if ($availableAt !== null && $availableAt->isFuture()) {
-            throw new OfflineLicenseTransferCooldownException($availableAt);
-        }
 
         [$privateKey, $publicKey] = $this->loadOrCreateSigningKey();
         $issuedAt = now()->utc();
         $expiresAt = $issuedAt->copy()->addDays(
             min(7, max(1, (int)config('launcher_security.offline_license_days', 7)))
         );
+
+        // Device transfer while the previous device's licence is still valid. This used to
+        // throw OfflineLicenseTransferCooldownException, on the assumption that only OFFLINE
+        // play needs the licence -- but the licence is also the only carrier of the content
+        // keys, so an ONLINE launch on the new (active) device failed too, for up to 7 days
+        // ("اطلاعات لازم برای اجرای این بازی در دسترس نیست"). Issue the licence now, capped
+        // so it cannot outlive the previous one: the total window in which two devices could
+        // hold a valid licence is unchanged, and the old device is already deactivated for
+        // any online use.
+        if ($availableAt !== null && $availableAt->isFuture()) {
+            $cappedExpiry = $availableAt->setTimezone('UTC');
+            if ($cappedExpiry->lessThan($issuedAt->copy()->addHours(1))) {
+                // Nearly over: a licence that expires within the hour would only bounce the
+                // launcher straight back here; keep the normal window instead.
+                $cappedExpiry = null;
+            }
+            if ($cappedExpiry !== null) {
+                Log::info('launcher.offline_license.issued_during_transfer_cooldown', [
+                    'user_id' => (int)$user->getKey(),
+                    'device_id' => (int)$device->getKey(),
+                    'capped_expires_at' => $cappedExpiry->toISOString(),
+                ]);
+                $expiresAt = $cappedExpiry;
+            }
+        }
 
         $usableAccesses = $user->purchaseAccesses()
             ->launcherUsable()
