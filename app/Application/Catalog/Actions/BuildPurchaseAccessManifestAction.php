@@ -19,7 +19,9 @@ class BuildPurchaseAccessManifestAction
     ): array
     {
         $purchaseAccess->loadMissing([
-            'product:id,title,slug',
+            'product' => fn($relation) => $relation
+                ->withoutGlobalScope(\App\Domain\Catalog\Scopes\ActiveProductScope::class)
+                ->select(['id', 'title', 'slug']),
             'productSaleItem:id,product_id,sku,title,edition_key,version,manifest_revision,launcher_title,launcher_excerpt',
             'productSaleItem.manifest',
             'productSaleItem.files' => function (

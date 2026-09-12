@@ -4,6 +4,7 @@ namespace App\Application\Commerce\Actions\Access;
 
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
+use App\Domain\Catalog\Scopes\ActiveProductScope;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Identity\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -77,7 +78,9 @@ class GetUserLibraryAction
             )
             ->with([
                 'order:id,metadata',
-                'product:id,title,slug,picture_id',
+                'product' => fn($relation) => $relation
+                    ->withoutGlobalScope(ActiveProductScope::class)
+                    ->select(['id', 'title', 'slug', 'picture_id']),
 
                 'productSaleItem:id,product_id,sku,title,edition_key,version,description,launcher_enabled,launcher_free_claim_enabled,launcher_title,launcher_excerpt',
 

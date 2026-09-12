@@ -23,7 +23,7 @@ class LibraryItemResource extends JsonResource
             'last_downloaded_at' => $this->last_downloaded_at?->toISOString(),
 
             'product' => $this->when(
-                $this->relationLoaded('product'),
+                $this->relationLoaded('product') && $this->product !== null,
                 fn(): array => [
                     'id' => $this->product->id,
                     'title' => $this->product->title,
@@ -33,7 +33,7 @@ class LibraryItemResource extends JsonResource
             ),
 
             'sale_item' => $this->when(
-                $this->relationLoaded('productSaleItem'),
+                $this->relationLoaded('productSaleItem') && $this->productSaleItem !== null,
                 fn(): array => [
                     'id' => $this->productSaleItem->id,
                     'sku' => $this->productSaleItem->sku,
