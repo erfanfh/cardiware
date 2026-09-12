@@ -5,7 +5,10 @@ namespace App\Http\Middleware;
 use App\Application\Launcher\Exceptions\DeviceRevokedException;
 use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Launcher\Models\LauncherDeviceNetworkSwitch;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
 use Closure;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureLauncherDeviceIsActive
 {
+    /** How stale last_seen_at may get before a request refreshes it (see handle()). */
+    private const LAST_SEEN_WRITE_INTERVAL_MINUTES = 5;
+
     public function handle(Request $request, Closure $next): Response
     {
         $token = $request->user()?->currentAccessToken();
@@ -22,12 +28,20 @@ class EnsureLauncherDeviceIsActive
         }
 
         $deviceId = $token->getAttribute('launcher_device_id');
+        // The device row is read on every launcher request. Cached briefly and flushed by
+        // LauncherCacheObserver on any update to the row (revocation, slot change), so a
+        // revoke still takes effect on the very next request.
         $device = $deviceId
-            ? LauncherDevice::query()
-                ->whereKey($deviceId)
-                ->where('user_id', $request->user()->getKey())
-                ->first()
+            ? Cache::tags([CacheTag::LAUNCHER, CacheTag::LAUNCHER_DEVICES, CacheTag::launcherDevice($deviceId)])
+                ->remember(
+                    CacheKey::launcherDevice($deviceId),
+                    now()->addMinutes(2),
+                    static fn(): ?LauncherDevice => LauncherDevice::query()->whereKey($deviceId)->first(),
+                )
             : null;
+        if ($device instanceof LauncherDevice && (int) $device->user_id !== (int) $request->user()->getKey()) {
+            $device = null;
+        }
 
         if (!$device instanceof LauncherDevice || !$device->isActive()) {
             $token->delete();
@@ -54,11 +68,24 @@ class EnsureLauncherDeviceIsActive
 
         $this->recordNetworkSwitch($device, $request->ip());
 
-        $device->forceFill([
-            'last_seen_at' => now(),
-            'last_ip' => $request->ip(),
-            'app_version' => $request->header('X-Launcher-Version', $device->app_version),
-        ])->save();
+        // This ran an UPDATE on launcher_devices for every single launcher request (with a
+        // few hundred launchers open: hundreds of row-locking writes a minute for a value
+        // nobody reads at sub-minute precision). Write only when something the rest of the
+        // system depends on changed: the IP (clone detection keys off the previous last_ip),
+        // the app version (admin device list), or when last_seen_at is older than the
+        // interval ("seen in the last N minutes" is all the admin UI needs).
+        $requestIp = $request->ip();
+        $appVersion = $request->header('X-Launcher-Version', $device->app_version);
+        $seenIsStale = $device->last_seen_at === null
+            || $device->last_seen_at->lt(now()->subMinutes(self::LAST_SEEN_WRITE_INTERVAL_MINUTES));
+
+        if ($seenIsStale || $device->last_ip !== $requestIp || $device->app_version !== $appVersion) {
+            $device->forceFill([
+                'last_seen_at' => now(),
+                'last_ip' => $requestIp,
+                'app_version' => $appVersion,
+            ])->save();
+        }
 
         $request->attributes->set('launcher_device', $device);
 

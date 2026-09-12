@@ -8,7 +8,13 @@ use App\Application\Catalog\Observers\ProductSaleItemManifestObserver;
 use App\Application\Catalog\Observers\ProductSaleItemObserver;
 use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Identity\Observers\UserObserver;
+use App\Application\Launcher\Observers\LauncherCacheObserver;
 use App\Application\Launcher\Observers\LauncherReleaseObserver;
+use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Launcher\Models\LauncherDevice;
+use App\Domain\Launcher\Models\LauncherGuide;
+use App\Domain\Launcher\Models\LauncherNotification;
+use App\Domain\Launcher\Models\LauncherSlide;
 use App\Application\Support\Observers\TicketObserver;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Catalog\Models\ProductAddon;
@@ -151,6 +157,14 @@ class AppServiceProvider extends ServiceProvider
         LauncherMod::observe(LauncherContentManifestRevisionObserver::class);
         LauncherModFile::observe(LauncherContentManifestRevisionObserver::class);
         LauncherRelease::observe(LauncherReleaseObserver::class);
+
+        // Launcher API read cache -- models whose change is not already a manifest bump.
+        LauncherSlide::observe(LauncherCacheObserver::class);
+        LauncherNotification::observe(LauncherCacheObserver::class);
+        LauncherGuide::observe(LauncherCacheObserver::class);
+        LauncherDevice::observe(LauncherCacheObserver::class);
+        PurchaseAccess::observe(LauncherCacheObserver::class);
+        Product::observe(LauncherCacheObserver::class);
 
         User::observe(UserObserver::class);
     }

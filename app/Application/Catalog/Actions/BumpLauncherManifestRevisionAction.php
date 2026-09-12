@@ -5,6 +5,7 @@ namespace App\Application\Catalog\Actions;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\PurchaseAccessDownload;
 use App\Domain\Launcher\Models\LauncherDownloadSession;
+use App\Application\Shared\Cache\Invalidators\LauncherCacheInvalidator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -63,6 +64,10 @@ final class BumpLauncherManifestRevisionAction
             // Versioned keys prevent stale data even when the cache store has no tag support.
             Cache::forget("launcher:sale-item:{$saleItemId}:manifest");
             Cache::forget("launcher:sale-item:{$saleItemId}:catalog");
+
+            // Launcher API read cache (catalog pages/items, manifest, update+mod lists,
+            // library rows) for this sale item -- see LauncherCacheInvalidator.
+            app(LauncherCacheInvalidator::class)->flushSaleItem($saleItemId);
 
             return $revision;
         });

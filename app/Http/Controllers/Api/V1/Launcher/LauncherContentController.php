@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\V1\Launcher;
 
 use App\Application\Launcher\Actions\GetLauncherModsAction;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use Illuminate\Support\Facades\Cache;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Http\Controllers\Controller;
@@ -16,8 +19,34 @@ class LauncherContentController extends Controller
     {
         $access = $this->access($request, $purchaseAccess);
 
+        // The list depends only on the sale item (and its manifest revision, which every
+        // update/file edit bumps through LauncherContentManifestRevisionObserver). Short
+        // TTL because published() is a "published_at <= now()" window: a scheduled
+        // publish must appear within minutes even without an edit.
+        $saleItemId = (int) $access->product_sale_item_id;
+        $revision = (int) $access->productSaleItem()->value('manifest_revision');
+        $updates = Cache::tags([
+            CacheTag::LAUNCHER,
+            CacheTag::LAUNCHER_CONTENT,
+            CacheTag::launcherSaleItem($saleItemId),
+        ])->remember(
+            CacheKey::launcherUpdates($saleItemId, $revision),
+            now()->addMinutes(5),
+            fn(): array => $this->buildUpdates($saleItemId),
+        );
+
+        return response()->json([
+            'data' => $updates,
+        ])->header('Cache-Control', 'private, no-store, max-age=0');
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildUpdates(int $saleItemId): array
+    {
         $updates = LauncherUpdate::query()
-            ->where('product_sale_item_id', $access->product_sale_item_id)
+            ->where('product_sale_item_id', $saleItemId)
             ->published()
             ->with('files')
             ->get()
@@ -64,9 +93,7 @@ class LauncherContentController extends Controller
                 ];
             });
 
-        return response()->json([
-            'data' => $updates->all(),
-        ])->header('Cache-Control', 'private, no-store, max-age=0');
+        return $updates->all();
     }
 
     public function mods(
@@ -76,8 +103,20 @@ class LauncherContentController extends Controller
     ): JsonResponse {
         $access = $this->access($request, $purchaseAccess);
 
+        $saleItemId = (int) $access->product_sale_item_id;
+        $revision = (int) $access->productSaleItem()->value('manifest_revision');
+        $mods = Cache::tags([
+            CacheTag::LAUNCHER,
+            CacheTag::LAUNCHER_CONTENT,
+            CacheTag::launcherSaleItem($saleItemId),
+        ])->remember(
+            CacheKey::launcherMods($saleItemId, $revision),
+            now()->addMinutes(5),
+            fn(): array => $action->execute($access),
+        );
+
         return response()->json([
-            'data' => $action->execute($access),
+            'data' => $mods,
         ])->header('Cache-Control', 'private, no-store, max-age=0');
     }
 

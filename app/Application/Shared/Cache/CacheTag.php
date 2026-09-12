@@ -76,6 +76,17 @@ final class CacheTag
     public const STORE_STATS = 'store-stats';
 
     public const PRODUCT_FILTERS = 'product-filters';
+
+    // Launcher API layer. Everything a launcher client reads (catalog pages, manifests,
+    // update/mod lists, portal content, per-user library) is served from here and
+    // flushed by LauncherCacheInvalidator; see that class for which event flushes what.
+    public const LAUNCHER = 'launcher';
+    public const LAUNCHER_CATALOG = 'launcher:catalog';
+    public const LAUNCHER_MANIFEST = 'launcher:manifest';
+    public const LAUNCHER_CONTENT = 'launcher:content';
+    public const LAUNCHER_PORTAL = 'launcher:portal';
+    public const LAUNCHER_LIBRARY = 'launcher:library';
+    public const LAUNCHER_DEVICES = 'launcher:devices';
     public const PRODUCT_FEATURED = 'product-featured';
 
     public static function post(int|string $postId): string
@@ -141,5 +152,20 @@ final class CacheTag
     public static function commentable(string $type, int|string $id): string
     {
         return "commentable:{$type}:{$id}";
+    }
+
+    public static function launcherSaleItem(int|string $saleItemId): string
+    {
+        return "launcher:sale-item:{$saleItemId}";
+    }
+
+    public static function launcherUser(int|string $userId): string
+    {
+        return "launcher:user:{$userId}";
+    }
+
+    public static function launcherDevice(int|string $deviceId): string
+    {
+        return "launcher:device:{$deviceId}";
     }
 }

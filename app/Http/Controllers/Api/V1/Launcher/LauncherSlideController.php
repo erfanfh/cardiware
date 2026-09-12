@@ -4,11 +4,30 @@ namespace App\Http\Controllers\Api\V1\Launcher;
 
 use App\Domain\Launcher\Models\LauncherSlide;
 use App\Http\Controllers\Controller;
+use App\Application\Shared\Cache\CacheKey;
+use App\Application\Shared\Cache\CacheTag;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 final class LauncherSlideController extends Controller
 {
     public function __invoke(): JsonResponse
+    {
+        // Global content; flushed by LauncherCacheObserver on any slide change. The
+        // visibility window (starts_at/ends_at) is time-based, hence the short TTL.
+        $slides = Cache::tags([CacheTag::LAUNCHER, CacheTag::LAUNCHER_PORTAL])->remember(
+            CacheKey::launcherSlides(),
+            now()->addMinutes(5),
+            fn(): array => $this->buildSlides(),
+        );
+
+        return response()->json(['data' => $slides]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function buildSlides(): array
     {
         $slides = LauncherSlide::query()
             ->visible()
@@ -42,6 +61,6 @@ final class LauncherSlideController extends Controller
             })
             ->values();
 
-        return response()->json(['data' => $slides]);
+        return $slides->all();
     }
 }

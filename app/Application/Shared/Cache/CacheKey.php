@@ -279,6 +279,56 @@ final class CacheKey
         return 'product:category-descendants:' . md5(json_encode($categoryIds, JSON_THROW_ON_ERROR));
     }
 
+    public static function launcherCatalogPage(string $search, int $page, int $perPage): string
+    {
+        return 'launcher:catalog:page:' . md5($search) . ":{$page}:{$perPage}";
+    }
+
+    public static function launcherCatalogItem(int|string $saleItemId, int $manifestRevision): string
+    {
+        return "launcher:catalog:item:{$saleItemId}:r{$manifestRevision}";
+    }
+
+    public static function launcherManifest(int|string $saleItemId, int $manifestRevision): string
+    {
+        return "launcher:manifest:{$saleItemId}:r{$manifestRevision}";
+    }
+
+    public static function launcherUpdates(int|string $saleItemId, int $manifestRevision): string
+    {
+        return "launcher:updates:{$saleItemId}:r{$manifestRevision}";
+    }
+
+    public static function launcherMods(int|string $saleItemId, int $manifestRevision): string
+    {
+        return "launcher:mods:{$saleItemId}:r{$manifestRevision}";
+    }
+
+    public static function launcherSlides(): string
+    {
+        return 'launcher:portal:slides';
+    }
+
+    public static function launcherNotifications(): string
+    {
+        return 'launcher:portal:notifications';
+    }
+
+    public static function launcherGuides(): string
+    {
+        return 'launcher:portal:guides';
+    }
+
+    public static function launcherLibrary(int|string $userId, int $page, int $perPage): string
+    {
+        return "launcher:library:{$userId}:{$page}:{$perPage}";
+    }
+
+    public static function launcherDevice(int|string $deviceId): string
+    {
+        return "launcher:device:{$deviceId}";
+    }
+
     public static function productBuyBoxData(int|string $productId, int $productUpdatedAt): string
     {
         return "product:{$productId}:buy-box-data:{$productUpdatedAt}";
