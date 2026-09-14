@@ -27,8 +27,32 @@ final class LauncherDeviceManagementController extends Controller
         $selectedUserOption = [];
         $devices = collect();
         $resetLogs = collect();
+        $resetStats = null;
         $suspensionLogs = collect();
         $transferBlockLogs = collect();
+
+        // Accounts that keep asking for device resets. One reset is a new laptop; five in a
+        // month is an account being passed around. Listed before any search, like the
+        // other watchlists, so the pattern is visible without already suspecting someone.
+        $resetFrequent = DB::table('launcher_device_reset_logs as logs')
+            ->join('users', 'users.id', '=', 'logs.target_user_id')
+            ->where('logs.created_at', '>=', now()->subDays(90))
+            ->groupBy('logs.target_user_id', 'users.display_name', 'users.first_name', 'users.last_name', 'users.mobile', 'users.email')
+            ->havingRaw('COUNT(*) >= 2')
+            ->orderByRaw('COUNT(*) DESC')
+            ->limit(25)
+            ->get([
+                'logs.target_user_id as user_id',
+                'users.display_name',
+                'users.first_name',
+                'users.last_name',
+                'users.mobile',
+                'users.email',
+                DB::raw('COUNT(*) as reset_count'),
+                DB::raw('SUM(CASE WHEN logs.created_at >= \'' . now()->subDays(30)->toDateTimeString() . '\' THEN 1 ELSE 0 END) as reset_count_30d'),
+                DB::raw('MAX(logs.created_at) as last_reset_at'),
+                DB::raw('MIN(logs.created_at) as first_reset_at'),
+            ]);
 
         // Proactive discovery: accounts with 2+ blocked third-device attempts in the last
         // 30 days, most-frequent first, shown even before any user is searched -- so staff
@@ -109,6 +133,16 @@ final class LauncherDeviceManagementController extends Controller
                 ->latest('id')
                 ->get();
 
+            $resetStats = (object) [
+                'total' => DB::table('launcher_device_reset_logs')
+                    ->where('target_user_id', $selectedUser->getKey())->count(),
+                'last_30_days' => DB::table('launcher_device_reset_logs')
+                    ->where('target_user_id', $selectedUser->getKey())
+                    ->where('created_at', '>=', now()->subDays(30))->count(),
+                'last_at' => DB::table('launcher_device_reset_logs')
+                    ->where('target_user_id', $selectedUser->getKey())->max('created_at'),
+            ];
+
             $resetLogs = DB::table('launcher_device_reset_logs as logs')
                 ->leftJoin('users as admins', 'admins.id', '=', 'logs.admin_user_id')
                 ->where('logs.target_user_id', $selectedUser->getKey())
@@ -156,6 +190,8 @@ final class LauncherDeviceManagementController extends Controller
             'selectedUserOption',
             'devices',
             'resetLogs',
+            'resetStats',
+            'resetFrequent',
             'suspensionLogs',
             'transferBlockLogs',
             'watchlist',
