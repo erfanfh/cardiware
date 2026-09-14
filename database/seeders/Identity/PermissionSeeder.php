@@ -23,6 +23,11 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش نوشته',
                 'delete' => 'حذف نوشته',
             ],
+            'media' => [
+                'list' => 'مشاهده کتابخانه رسانه',
+                'create' => 'آپلود رسانه',
+                'edit' => 'ویرایش اطلاعات رسانه',
+            ],
             'poll' => [
                 'list' => 'لیست نظرسنجی‌ها',
                 'create' => 'ایجاد نظرسنجی',

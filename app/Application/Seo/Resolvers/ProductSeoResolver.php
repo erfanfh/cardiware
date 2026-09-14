@@ -39,6 +39,7 @@ class ProductSeoResolver implements SeoResolverInterface
             CacheTag::SCHEMA,
             CacheTag::PRODUCTS,
             CacheTag::product($product->id),
+            CacheTag::commentable($product->getMorphClass(), $product->getKey()),
         ])->remember(
             CacheKey::productSeoData(
                 productId: $product->id,

@@ -2,6 +2,7 @@
 
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
+use App\Application\Discussion\Actions\GetCommentableRatingSummaryAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
@@ -11,8 +12,9 @@ use App\Domain\Content\Models\Post;
 final class BuildPostSchemaContextAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction $getSeoDefaultsAction,
-        protected SchemaIdGenerator    $schemaIdGenerator,
+        protected GetSeoDefaultsAction              $getSeoDefaultsAction,
+        protected SchemaIdGenerator                 $schemaIdGenerator,
+        protected GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
     )
     {
     }
@@ -20,6 +22,7 @@ final class BuildPostSchemaContextAction
     public function execute(Post $post, ResolvedSeoPayloadDTO $payload): SchemaContextDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
+        $ratingSummary = $this->getCommentableRatingSummaryAction->execute($post);
 
         $siteName = $defaults['site_name'] ?? null;
         $siteUrl = $defaults['site_url'] ?? null;
@@ -74,11 +77,13 @@ final class BuildPostSchemaContextAction
             authorUrl: $payload->authorUrl,
             authorIdentifier: $payload->authorIdentifier,
             authorSameAs: $payload->authorSameAs,
+
+            averageRating: $ratingSummary->averageRating,
+            ratingCount: $ratingSummary->ratingCount,
         );
     }
 
     /**
-     * @param mixed $value
      * @return array<int, string>
      */
     protected function normalizeSameAs(mixed $value): array

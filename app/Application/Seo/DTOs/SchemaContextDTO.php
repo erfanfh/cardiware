@@ -55,6 +55,9 @@ final class SchemaContextDTO
         public readonly ?string $authorUrl = null,
         public readonly ?string $authorIdentifier = null,
         public readonly array   $authorSameAs = [],
+
+        public readonly ?float  $averageRating = null,
+        public readonly int     $ratingCount = 0,
     )
     {
     }

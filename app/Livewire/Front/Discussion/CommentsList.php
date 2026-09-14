@@ -26,6 +26,10 @@ class CommentsList extends Component
 
     public Model $commentable;
 
+    public ?float $averageRating = null;
+
+    public int $ratingCount = 0;
+
     public bool $isOpen = false;
 
     public string $sort = 'new';
@@ -34,11 +38,17 @@ class CommentsList extends Component
 
     protected string $paginationTheme = 'front';
 
-    public function mount(Model $commentable): void
+    public function mount(
+        Model $commentable,
+        ?float $averageRating = null,
+        int $ratingCount = 0,
+    ): void
     {
         $this->commentable = $commentable;
         $this->commentableId = (int)$commentable->getKey();
         $this->commentableType = $commentable->getMorphClass();
+        $this->averageRating = $averageRating;
+        $this->ratingCount = $ratingCount;
     }
 
     public function openComments(): void

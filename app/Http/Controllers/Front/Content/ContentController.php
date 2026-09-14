@@ -8,6 +8,7 @@ use App\Application\Content\Actions\GetPostDetailDataAction;
 use App\Application\Content\Actions\GetTeamPageDataAction;
 use App\Application\Content\DTOs\ResolvedContentDTO;
 use App\Application\Content\Services\PageTemplateService;
+use App\Application\Discussion\Actions\GetCommentableRatingSummaryAction;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
@@ -19,12 +20,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 final class ContentController
 {
     public function __construct(
-        private readonly StoreViewAction          $storeViewAction,
-        private readonly PageTemplateService      $pageTemplateService,
-        private readonly GetAboutUsPageDataAction $getAboutUsPageDataAction,
-        private readonly GetTeamPageDataAction    $getTeamPageDataAction,
-        private readonly GetPostDetailDataAction  $getPostDetailDataAction,
-        private readonly GetPageDetailDataAction  $getPageDetailDataAction,
+        private readonly StoreViewAction                   $storeViewAction,
+        private readonly PageTemplateService               $pageTemplateService,
+        private readonly GetAboutUsPageDataAction          $getAboutUsPageDataAction,
+        private readonly GetTeamPageDataAction             $getTeamPageDataAction,
+        private readonly GetPostDetailDataAction           $getPostDetailDataAction,
+        private readonly GetPageDetailDataAction           $getPageDetailDataAction,
+        private readonly GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
     )
     {
     }
@@ -34,11 +36,11 @@ final class ContentController
         $resolvedContent = $request->route('slug');
 
         if (!$resolvedContent instanceof ResolvedContentDTO) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
 
         if ($resolvedContent->isNotFound()) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException;
         }
 
         if ($resolvedContent->shouldRedirect()) {
@@ -49,7 +51,7 @@ final class ContentController
             $page = $resolvedContent->getPage();
 
             if (!$page instanceof Page) {
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException;
             }
 
             $this->storeViewAction->execute($page);
@@ -61,7 +63,7 @@ final class ContentController
             $post = $resolvedContent->getPost();
 
             if (!$post instanceof Post) {
-                throw new NotFoundHttpException();
+                throw new NotFoundHttpException;
             }
 
             $this->storeViewAction->execute($post);
@@ -69,7 +71,7 @@ final class ContentController
             return $this->renderPost($post);
         }
 
-        throw new NotFoundHttpException();
+        throw new NotFoundHttpException;
     }
 
     private function renderPage(Page $page): View
@@ -104,12 +106,14 @@ final class ContentController
     private function renderPost(Post $post): View
     {
         $data = $this->getPostDetailDataAction->execute($post);
+        $ratingSummary = $this->getCommentableRatingSummaryAction->execute($data['post']);
 
         return view('front.posts.detail', [
             'layoutData' => $data['layoutData'],
             'post' => $data['post'],
             'features' => $data['features'],
             'relatedPosts' => $data['relatedPosts'],
+            'ratingSummary' => $ratingSummary,
         ]);
     }
 }

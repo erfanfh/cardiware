@@ -28,13 +28,18 @@
                 </span>
 
                 <div class="min-w-0">
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <h2 class="text-base font-extrabold dark:text-slate-100">دیدگاه‌ها</h2>
 
                         <span
                             class="inline-flex h-7 min-w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-100 px-2 text-xs font-extrabold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                             {{ $this->totalComments }}
                         </span>
+
+                        @include('front.partials.rating-summary', [
+                            'averageRating' => $averageRating,
+                            'ratingCount' => $ratingCount,
+                        ])
                     </div>
 
                     <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">

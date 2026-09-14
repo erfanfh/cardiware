@@ -54,6 +54,7 @@ class PostSeoResolver implements SeoResolverInterface
             CacheTag::SCHEMA,
             CacheTag::POSTS,
             CacheTag::post($post->id),
+            CacheTag::commentable($post->getMorphClass(), $post->getKey()),
         ])->remember(
             CacheKey::postSeoData(
                 postId: $post->id,
