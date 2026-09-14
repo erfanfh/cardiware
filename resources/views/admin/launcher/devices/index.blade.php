@@ -42,7 +42,7 @@
             </form>
         </section>
 
-        @if(!$selectedUser && isset($resetFrequent) && $resetFrequent->isNotEmpty())
+        @if(!$selectedUser && $resetFrequent->isNotEmpty())
             <section class="rounded-2xl border border-orange-200 bg-orange-50/40 shadow-sm">
                 <div class="border-b border-orange-100 px-5 py-4">
                     <h2 class="text-sm font-black text-orange-800">حساب‌هایی با Reset مکرر</h2>
@@ -448,7 +448,7 @@
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-5 py-4">
                     <h2 class="text-sm font-black text-slate-900">۲۰ Reset آخر این حساب</h2>
-                    @if(!empty($resetStats))
+                    @if($resetStats)
                         <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black">
                             <span class="rounded-lg px-2 py-1 {{ $resetStats->total >= 3 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700' }}">
                                 مجموع Reset: {{ $resetStats->total }}
