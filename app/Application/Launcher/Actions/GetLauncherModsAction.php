@@ -2,7 +2,9 @@
 
 namespace App\Application\Launcher\Actions;
 
+use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
+use Illuminate\Support\Facades\Log;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Launcher\Models\LauncherMod;
@@ -36,12 +38,31 @@ class GetLauncherModsAction
             ->orderBy('priority')
             ->orderBy('id')
             ->get()
-            ->map(fn (LauncherMod $mod): array => $this->modPayload(
-                $mod,
-                $baseVersion,
-                $updateState['current_version'],
-                $updateState['versions'],
-            ))
+            ->map(function (LauncherMod $mod) use ($baseVersion, $updateState): ?array {
+                try {
+                    return $this->modPayload(
+                        $mod,
+                        $baseVersion,
+                        $updateState['current_version'],
+                        $updateState['versions'],
+                    );
+                } catch (PurchaseAccessFileUnavailableException $exception) {
+                    // One mod with a bad file row (URL with a space, host not in the allow
+                    // list, file_name != URL basename) used to turn the WHOLE list into a
+                    // 503 -- and the launcher shows that as "0 mods" for every product.
+                    // Skip just that mod and say which one in the log.
+                    Log::warning('launcher.mods.skipped_unavailable_file', [
+                        'mod_id' => $mod->id,
+                        'slug' => $mod->slug,
+                        'files' => $mod->files->map(fn (LauncherModFile $f): array => [
+                            'file_name' => $f->file_name,
+                            'url' => $f->url,
+                        ])->all(),
+                    ]);
+                    return null;
+                }
+            })
+            ->filter()
             ->values()
             ->all();
     }
