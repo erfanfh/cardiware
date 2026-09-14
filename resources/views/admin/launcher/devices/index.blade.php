@@ -42,6 +42,50 @@
             </form>
         </section>
 
+        @if(!$selectedUser && $resetFrequent->isNotEmpty())
+            <section class="rounded-2xl border border-orange-200 bg-orange-50/40 shadow-sm">
+                <div class="border-b border-orange-100 px-5 py-4">
+                    <h2 class="text-sm font-black text-orange-800">حساب‌هایی با Reset مکرر</h2>
+                    <p class="mt-1 text-xs font-bold leading-6 text-orange-700">
+                        حساب‌هایی که در ۹۰ روز اخیر حداقل ۲ بار Reset دستگاه شده‌اند؛ بر اساس تعداد Reset مرتب شده‌اند.
+                    </p>
+                </div>
+                <div class="divide-y divide-orange-100">
+                    @foreach($resetFrequent as $row)
+                        @php
+                            $rowName = $row->display_name ?: trim(($row->first_name ?? '') . ' ' . ($row->last_name ?? ''));
+                        @endphp
+                        <a
+                            href="{{ route('admin.launcher-devices.index', ['user_id' => $row->user_id]) }}"
+                            class="flex flex-wrap items-center justify-between gap-3 p-4 transition hover:bg-orange-50"
+                        >
+                            <div>
+                                <div class="text-xs font-black text-slate-900">
+                                    {{ $rowName ?: 'بدون نام' }}
+                                    <span class="mr-2 text-[11px] font-bold text-slate-400">#{{ $row->user_id }}</span>
+                                </div>
+                                <div class="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-bold text-slate-500">
+                                    <span dir="ltr">{{ $row->mobile }}</span>
+                                    @if($row->email)
+                                        <span dir="ltr">{{ $row->email }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2 text-[11px] font-black">
+                                <span class="rounded-lg bg-orange-100 px-2 py-1 text-orange-800">
+                                    {{ $row->reset_count }} Reset در ۹۰ روز
+                                </span>
+                                <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600">
+                                    {{ $row->reset_count_30d }} در ۳۰ روز اخیر
+                                </span>
+                                <span class="text-slate-400">آخرین: {{ jalali_date($row->last_reset_at) }}</span>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         @if(!$selectedUser && $watchlist->isNotEmpty())
             <section class="rounded-2xl border border-amber-200 bg-amber-50/40 shadow-sm">
                 <div class="border-b border-amber-100 px-5 py-4">
@@ -404,6 +448,22 @@
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-5 py-4">
                     <h2 class="text-sm font-black text-slate-900">۲۰ Reset آخر این حساب</h2>
+                    @if($resetStats)
+                        <div class="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black">
+                            <span class="rounded-lg px-2 py-1 {{ $resetStats->total >= 3 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700' }}">
+                                مجموع Reset: {{ $resetStats->total }}
+                            </span>
+                            <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600">
+                                ۳۰ روز اخیر: {{ $resetStats->last_30_days }}
+                            </span>
+                            @if($resetStats->last_at)
+                                <span class="text-slate-400">آخرین Reset: {{ jalali_date($resetStats->last_at) }}</span>
+                            @endif
+                            @if($resetStats->total >= 3)
+                                <span class="text-rose-700">این حساب بیش از حد معمول Reset شده — قبل از Reset بعدی مالکیت را دوباره بررسی کنید.</span>
+                            @endif
+                        </div>
+                    @endif
                 </div>
                 @if($resetLogs->isEmpty())
                     <div class="px-5 py-8 text-center text-sm font-bold text-slate-500">سابقه‌ای ثبت نشده است.</div>
