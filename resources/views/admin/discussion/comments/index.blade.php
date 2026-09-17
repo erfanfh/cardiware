@@ -152,9 +152,9 @@
                 x-transition:leave="transition ease-in duration-150"
                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                 x-transition:leave-end="opacity-0 translate-y-3 scale-95"
-                class="relative z-10 w-full max-w-2xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
+                class="relative z-10 flex max-h-[calc(100vh-3rem)] w-full max-w-2xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl"
             >
-                <div class="border-b border-slate-100 bg-slate-50/80 px-5 py-4">
+                <div class="shrink-0 border-b border-slate-100 bg-slate-50/80 px-5 py-4">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <h3 class="text-base font-bold text-slate-800">
@@ -177,14 +177,14 @@
                     </div>
                 </div>
 
-                <div class="space-y-4 p-5">
+                <div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div class="mb-2 text-xs font-bold text-slate-500">
                             متن دیدگاه
                         </div>
 
                         <div
-                            class="line-clamp-4 text-sm leading-7 text-slate-700"
+                            class="whitespace-pre-wrap break-words text-sm leading-7 text-slate-700"
                             x-text="replyModal.parentContent"
                         ></div>
                     </div>
@@ -218,7 +218,7 @@
                 </div>
 
                 <div
-                    class="flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/80 px-5 py-4"
+                    class="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/80 px-5 py-4"
                 >
                     <x-admin.form.button
                         type="button"
