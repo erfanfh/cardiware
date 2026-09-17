@@ -8,6 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @if(request()->routeIs('preview.*'))
+        <title>پیشنمایش</title>
         <meta name="robots" content="noindex,nofollow,noarchive">
     @endif
     {!! seo_head() !!}
@@ -22,7 +23,8 @@
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 @include('front.header.index')
 @if(request()->routeIs('preview.*'))
-    <div class="sticky top-0 z-[60] border-y border-amber-300 bg-amber-100 px-4 py-2 text-center text-xs font-black text-amber-950 shadow-sm">
+    <div
+        class="sticky top-0 z-10 border-y border-amber-300 bg-amber-100 px-4 py-2 text-center text-xs font-black text-amber-950 shadow-sm">
         حالت پیش‌نمایش مدیریتی — این محتوا در مسیر عمومی سایت قابل مشاهده نیست.
     </div>
 @endif
@@ -33,7 +35,7 @@
 <x-front.scroll-to-top/>
 <x-front.registration-gift-toast/>
 <x-front.loyalty-earned-toast/>
-<livewire:front.promotion.floating-coupon-box />
+<livewire:front.promotion.floating-coupon-box/>
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts
