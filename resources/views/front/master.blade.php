@@ -7,6 +7,9 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if(request()->routeIs('preview.*'))
+        <meta name="robots" content="noindex,nofollow,noarchive">
+    @endif
     {!! seo_head() !!}
     <x-favicons/>
     @include('front.scripts.dark-light')
@@ -18,6 +21,11 @@
 
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 @include('front.header.index')
+@if(request()->routeIs('preview.*'))
+    <div class="sticky top-0 z-[60] border-y border-amber-300 bg-amber-100 px-4 py-2 text-center text-xs font-black text-amber-950 shadow-sm">
+        حالت پیش‌نمایش مدیریتی — این محتوا در مسیر عمومی سایت قابل مشاهده نیست.
+    </div>
+@endif
 @yield('content')
 @include('front.partials.admin-bar')
 @include('front.footer.index')

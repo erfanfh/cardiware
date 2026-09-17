@@ -99,7 +99,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
      */
     public function isPubliclyVisible(): bool
     {
-        return $this->status === PostStatusEnum::ACTIVE;
+        return $this->status === PostStatusEnum::ACTIVE && (bool)$this->published_at?->lte(now());
     }
 
     /**

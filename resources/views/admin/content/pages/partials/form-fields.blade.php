@@ -1,6 +1,10 @@
 @php
     use App\Domain\Content\Enums\PageStatusEnum;
     $isEdit = isset($page) && $page;
+    $itemUrl = $isEdit
+        ? ($page->isPubliclyVisible() ? $page->url : route('preview.pages', $page->id))
+        : null;
+    $itemUrlLabel = $isEdit && $page->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
     $statuses = [];
     foreach (PageStatusEnum::cases() as $status){
         $statuses[$status->value] = $status->label();
@@ -78,7 +82,8 @@
         basePath="{{ route('home') }}/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
         :currentId="$page->id ?? null"
-        :itemUrl="$page?->url"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">

@@ -7,10 +7,11 @@
                     'title' => $page->title,
                     'slug' => $page->slug,
                     'urls' => [
-                        'detail' => front_route('contents.detail', $page->slug),
+                        'detail' => $page->isPubliclyVisible() ? $page->url : route('preview.pages', $page->id),
                         'edit' => route('admin.pages.edit', $page),
                         'destroy' => route('admin.pages.destroy', $page),
                     ],
+                    'detail_label' => $page->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $page->status?->value,
                         'label' => $page->status?->label() ?? 'نامشخص',
@@ -130,9 +131,8 @@
                                         tag="a"
                                         ::href="rows[{{ $page->id }}]?.urls?.detail"
                                         target="_blank"
-                                    >
-                                        مشاهده
-                                    </x-admin.list.action>
+                                        x-text="rows[{{ $page->id }}]?.detail_label"
+                                    />
 
                                     <span class="text-slate-300">|</span>
 

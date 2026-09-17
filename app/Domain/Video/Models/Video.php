@@ -85,7 +85,7 @@ class Video extends Model implements PageViewableInterface, CommentableContract
 
     public function isPubliclyVisible(): bool
     {
-        return $this->status === VideoStatusEnum::ACTIVE && (bool)$this->published_at?->isPast();
+        return $this->status === VideoStatusEnum::ACTIVE && (bool)$this->published_at?->lte(now());
     }
 
     public function getUrlAttribute(): string

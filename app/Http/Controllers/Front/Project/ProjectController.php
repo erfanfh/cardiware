@@ -8,20 +8,18 @@ use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Project\Models\Project;
+use App\Domain\Project\Scopes\ActiveProjectScope;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
-    /**
-     * @param StoreViewAction $storeViewAction
-     */
     public function __construct(private readonly StoreViewAction $storeViewAction)
     {
-
     }
 
     /**
@@ -49,20 +47,35 @@ class ProjectController extends Controller
         }
 
         /** @var Project $project */
-        $project = $getProjectDetailAction->execute($resolvedSlug->model);
+        $project = $resolvedSlug->model;
+
+        $view = $this->renderDetail($project, $getProjectDetailAction);
 
         $this->storeViewAction->execute($project);
+
+        return $view;
+    }
+
+    public function preview(int $project, GetProjectDetailAction $getProjectDetailAction): View
+    {
+        Gate::authorize('project.edit');
+
+        $projectModel = Project::query()
+            ->withoutGlobalScope(ActiveProjectScope::class)
+            ->findOrFail($project);
+
+        return $this->renderDetail($projectModel, $getProjectDetailAction);
+    }
+
+    private function renderDetail(Project $project, GetProjectDetailAction $getProjectDetailAction): View
+    {
+        $project = $getProjectDetailAction->execute($project);
 
         return view('front.projects.detail', compact('project'));
     }
 
     /**
      * Project list
-     *
-     * @param Request $request
-     * @param GetProjectListPageDataAction $action
-     * @param int|null $page
-     * @return View|RedirectResponse
      */
     public function list(
         Request                      $request,

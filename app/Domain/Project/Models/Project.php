@@ -63,6 +63,11 @@ class Project extends Model implements PageViewableInterface
         return 'slug';
     }
 
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === ProjectStatusEnum::ACTIVE;
+    }
+
     /**
      * @return BelongsTo
      */

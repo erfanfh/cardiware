@@ -9,12 +9,14 @@ use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Video\Models\Video;
+use App\Domain\Video\Scopes\ActiveVideoScope;
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class VideoController extends Controller
@@ -52,6 +54,23 @@ class VideoController extends Controller
 
         /** @var Video $video */
         $video = $resolved->model;
+
+        return $this->renderDetail($video, $storeView);
+    }
+
+    public function preview(int $video): View
+    {
+        Gate::authorize('video.list');
+
+        $videoModel = Video::query()
+            ->withoutGlobalScope(ActiveVideoScope::class)
+            ->findOrFail($video);
+
+        return $this->renderDetail($videoModel);
+    }
+
+    private function renderDetail(Video $video, ?StoreViewAction $storeView = null): View
+    {
         $video->load([
             'cover.primaryVariant',
             'cover.variants',
@@ -60,7 +79,8 @@ class VideoController extends Controller
             'tags',
             'seoMeta',
         ])->loadCount('approvedComments');
-        $storeView->execute($video);
+
+        $storeView?->execute($video);
 
         $relatedVideos = $this->relatedVideos($video);
         $sidebarCategories = TaxonomyTerm::query()

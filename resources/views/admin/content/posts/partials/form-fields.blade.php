@@ -4,6 +4,10 @@
 
     $isEdit = isset($post) && $post;
     $quickUrl = $isEdit ? route('posts.detail.quick', $post->id) : null;
+    $itemUrl = $isEdit
+        ? ($post->isPubliclyVisible() ? $post->url : route('preview.posts', $post->id))
+        : null;
+    $itemUrlLabel = $isEdit && $post->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
 
     $statuses = [];
     foreach (PostStatusEnum::cases() as $status){
@@ -266,7 +270,8 @@
         basePath="{{ route('home') }}/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
         :currentId="$post->id ?? null"
-        :itemUrl="$post?->url"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">

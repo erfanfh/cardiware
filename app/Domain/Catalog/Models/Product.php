@@ -76,6 +76,11 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         return front_route('products.detail', $this->slug);
     }
 
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === ProductStatusEnum::ACTIVE && (bool)$this->published_at?->lte(now());
+    }
+
     public function displaySetting(): HasOne
     {
         return $this->hasOne(ProductDisplaySetting::class);

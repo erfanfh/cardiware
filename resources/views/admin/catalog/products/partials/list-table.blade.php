@@ -61,6 +61,10 @@
 
                     $minPrice = $salePrices->min();
                     $maxPrice = $salePrices->max();
+                    $itemUrl = $product->isPubliclyVisible()
+                        ? $product->url
+                        : route('preview.products', $product->id);
+                    $itemUrlLabel = $product->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
                 @endphp
 
                 <x-admin.list.tr
@@ -88,7 +92,7 @@
                     <x-admin.list.td>
                         <div class="min-w-[280px]">
                             <a
-                                href="{{ $product->url }}"
+                                href="{{ $itemUrl }}"
                                 target="_blank"
                                 class="inline-block leading-6 text-sm font-bold text-slate-800 transition hover:text-brand-600"
                             >
@@ -128,10 +132,10 @@
 
                                 <x-admin.list.action
                                     tag="a"
-                                    href="{{ $product->url }}"
+                                    href="{{ $itemUrl }}"
                                     target="_blank"
                                 >
-                                    مشاهده
+                                    {{ $itemUrlLabel }}
                                 </x-admin.list.action>
 
                                 <span class="text-slate-300">|</span>

@@ -26,9 +26,6 @@ class QuickUpdateProjectController extends Controller
     }
 
     /**
-     * @param QuickUpdateProjectRequest $request
-     * @param Project $project
-     * @return JsonResponse|RedirectResponse
      * @throws Throwable
      */
     public function __invoke(QuickUpdateProjectRequest $request, Project $project): JsonResponse|RedirectResponse
@@ -70,10 +67,13 @@ class QuickUpdateProjectController extends Controller
                     'title' => $project->title,
                     'slug' => $project->slug,
                     'urls' => [
-                        'detail' => front_route('projects.detail', $project),
+                        'detail' => $project->isPubliclyVisible()
+                            ? front_route('projects.detail', $project)
+                            : route('preview.projects', $project->id),
                         'edit' => route('admin.projects.edit', $project),
                         'destroy' => route('admin.projects.destroy', $project),
                     ],
+                    'detail_label' => $project->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $project->status?->value,
                         'label' => $project->status?->label() ?? 'نامشخص',
@@ -97,7 +97,6 @@ class QuickUpdateProjectController extends Controller
     }
 
     /**
-     * @param string|null $value
      * @return array<int, string>
      */
     protected function extractTagTitles(?string $value): array

@@ -11,11 +11,13 @@ use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Scopes\ActiveProductScope;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Gate;
 
 class ProductDetailController extends Controller
 {
@@ -44,7 +46,54 @@ class ProductDetailController extends Controller
             return redirect()->to($resolvedSlug->redirectTo, 301);
         }
 
-        $product = $getProductDetailAction->execute($resolvedSlug->model);
+        /** @var Product $product */
+        $product = $resolvedSlug->model;
+
+        $view = $this->renderDetail(
+            product: $product,
+            getProductDetailAction: $getProductDetailAction,
+            getProductDetailStatsAction: $getProductDetailStatsAction,
+            getRelatedProductsAction: $getRelatedProductsAction,
+            getCommentableRatingSummaryAction: $getCommentableRatingSummaryAction,
+        );
+
+        $storeViewAction->execute($product);
+
+        return $view;
+    }
+
+    public function preview(
+        int                               $product,
+        GetProductDetailAction            $getProductDetailAction,
+        GetProductDetailStatsAction       $getProductDetailStatsAction,
+        GetRelatedProductsAction          $getRelatedProductsAction,
+        GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
+    ): View
+    {
+        Gate::authorize('product.list');
+
+        $productModel = Product::query()
+            ->withoutGlobalScope(ActiveProductScope::class)
+            ->findOrFail($product);
+
+        return $this->renderDetail(
+            product: $productModel,
+            getProductDetailAction: $getProductDetailAction,
+            getProductDetailStatsAction: $getProductDetailStatsAction,
+            getRelatedProductsAction: $getRelatedProductsAction,
+            getCommentableRatingSummaryAction: $getCommentableRatingSummaryAction,
+        );
+    }
+
+    private function renderDetail(
+        Product                           $product,
+        GetProductDetailAction            $getProductDetailAction,
+        GetProductDetailStatsAction       $getProductDetailStatsAction,
+        GetRelatedProductsAction          $getRelatedProductsAction,
+        GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
+    ): View
+    {
+        $product = $getProductDetailAction->execute($product);
 
         $ratingSummary = $getCommentableRatingSummaryAction->execute($product);
         $averageRating = $product->displaySetting->show_average_rating
@@ -56,8 +105,6 @@ class ProductDetailController extends Controller
         $relatedProducts = $getRelatedProductsAction->execute($product);
 
         $commentsCount = app(GetApprovedCommentsCountAction::class)->execute($product);
-
-        $storeViewAction->execute($product);
 
         return view('front.catalog.products.detail', [
             'product' => $product,

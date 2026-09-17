@@ -19,6 +19,12 @@
 
     <x-admin.list.tbody>
         @forelse($videos as $video)
+            @php
+                $itemUrl = $video->isPubliclyVisible()
+                    ? $video->url
+                    : route('preview.videos', $video->id);
+                $itemUrlLabel = $video->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
+            @endphp
             <x-admin.list.tr ::class="{ 'bg-slate-50/90': isSelected({{ $video->id }}) }">
                 <x-admin.list.td align="center">
                     <x-admin.list.bulk-checkbox name="ids[]" :value="$video->id" x-bind:checked="isSelected({{ $video->id }})" x-on:change="toggleSelection({{ $video->id }})"/>
@@ -26,12 +32,12 @@
                 <x-admin.list.td><x-admin.list.thumbnail :src="$video->cover?->url" :alt="$video->title" size="md"/></x-admin.list.td>
                 <x-admin.list.td>
                     <div class="min-w-[280px]">
-                        <a href="{{ $video->url }}" target="_blank" class="inline-block text-sm font-bold leading-6 text-slate-800 transition hover:text-brand-600">{{ $video->title }}</a>
+                        <a href="{{ $itemUrl }}" target="_blank" class="inline-block text-sm font-bold leading-6 text-slate-800 transition hover:text-brand-600">{{ $video->title }}</a>
                         <div class="mt-1 flex items-center gap-2 text-xs text-slate-500"><span>#{{ $video->id }}</span>@if($video->slug)<span class="pb-1 text-slate-300">•</span><span dir="ltr">{{ $video->slug }}</span>@endif</div>
                         <x-admin.list.row-actions>
                             <x-admin.list.action tag="a" href="{{ route('admin.videos.edit', $video) }}" variant="primary">ویرایش</x-admin.list.action>
                             <span class="text-slate-300">|</span>
-                            <x-admin.list.action tag="a" href="{{ $video->url }}" target="_blank">مشاهده</x-admin.list.action>
+                            <x-admin.list.action tag="a" href="{{ $itemUrl }}" target="_blank">{{ $itemUrlLabel }}</x-admin.list.action>
                             <span class="text-slate-300">|</span>
                             <x-admin.form action="{{ route('admin.videos.destroy', $video) }}" method="delete" class="js-confirm" data-confirm-title="حذف ویدیو" data-confirm-text="آیا از حذف ویدیوی «{{ $video->title }}» مطمئن هستید؟">
                                 <x-admin.list.action tag="button" type="submit" variant="danger">حذف</x-admin.list.action>

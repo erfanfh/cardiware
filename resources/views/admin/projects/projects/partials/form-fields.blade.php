@@ -3,6 +3,10 @@
     use App\Domain\Project\Enums\ProjectStatusEnum;
 
     $isEdit = isset($project) && $project;
+    $itemUrl = $isEdit
+        ? ($project->isPubliclyVisible() ? front_route('projects.detail', $project) : route('preview.projects', $project->id))
+        : null;
+    $itemUrlLabel = $isEdit && $project->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
 
     $statuses = [];
     foreach (ProjectStatusEnum::cases() as $status){
@@ -209,7 +213,8 @@
         basePath="{{ route('home') }}/projects/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::PROJECT"
         :currentId="$project->id ?? null"
-        :itemUrl="$project ? front_route('projects.detail', $project) : null"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">

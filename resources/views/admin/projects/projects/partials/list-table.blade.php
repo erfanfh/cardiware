@@ -7,10 +7,13 @@
                     'title' => $project->title,
                     'slug' => $project->slug,
                     'urls' => [
-                        'detail' => front_route('projects.detail', $project),
+                        'detail' => $project->isPubliclyVisible()
+                            ? front_route('projects.detail', $project)
+                            : route('preview.projects', $project->id),
                         'edit' => route('admin.projects.edit', $project),
                         'destroy' => route('admin.projects.destroy', $project),
                     ],
+                    'detail_label' => $project->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $project->status?->value,
                         'label' => $project->status?->label() ?? 'نامشخص',
@@ -150,9 +153,8 @@
                                         tag="a"
                                         ::href="rows[{{ $project->id }}]?.urls?.detail"
                                         target="_blank"
-                                    >
-                                        مشاهده
-                                    </x-admin.list.action>
+                                        x-text="rows[{{ $project->id }}]?.detail_label"
+                                    />
 
                                     <span class="text-slate-300">|</span>
 
