@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductUpdateProgress extends Model
 {
+    public const DEFAULT_TITLE = 'درصد پیشرفت آپدیت محصول';
+
+    public const DEFAULT_DESCRIPTION = 'پیشرفت تا زمان انتشار آپدیت بعدی';
+
     protected $table = 'product_update_progresses';
 
     protected $fillable = [
         'product_id',
         'is_visible',
+        'title',
+        'description',
         'progress_percentage',
         'started_at',
         'release_at',
@@ -32,5 +38,19 @@ class ProductUpdateProgress extends Model
     public function isPublished(): bool
     {
         return $this->progress_percentage >= 100;
+    }
+
+    public function getDisplayTitleAttribute(): string
+    {
+        $title = trim((string) $this->title);
+
+        return $title !== '' ? $title : self::DEFAULT_TITLE;
+    }
+
+    public function getDisplayDescriptionAttribute(): string
+    {
+        $description = trim((string) $this->description);
+
+        return $description !== '' ? $description : self::DEFAULT_DESCRIPTION;
     }
 }

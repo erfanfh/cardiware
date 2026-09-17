@@ -29,6 +29,16 @@ class SyncProductUpdateProgressAction
                     FILTER_VALIDATE_BOOL
                 ),
 
+                'title' => $this->normalizeText(
+                    $data['title'] ?? null,
+                    ProductUpdateProgress::DEFAULT_TITLE
+                ),
+
+                'description' => $this->normalizeText(
+                    $data['description'] ?? null,
+                    ProductUpdateProgress::DEFAULT_DESCRIPTION
+                ),
+
                 'progress_percentage' => $progressPercentage,
 
                 /*
@@ -44,5 +54,12 @@ class SyncProductUpdateProgressAction
                     : null,
             ]
         );
+    }
+
+    private function normalizeText(mixed $value, string $default): string
+    {
+        $value = trim((string) $value);
+
+        return $value !== '' ? $value : $default;
     }
 }
