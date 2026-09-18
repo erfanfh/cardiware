@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Support;
 
+use App\Application\Support\Support\TicketAttachmentValidationRules;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ReplyTicketRequest extends FormRequest
@@ -15,13 +16,14 @@ class ReplyTicketRequest extends FormRequest
     {
         return [
             'message' => ['required', 'string', 'min:2', 'max:5000'],
-        ];
+        ] + app(TicketAttachmentValidationRules::class)->rules();
     }
 
     public function attributes(): array
     {
         return [
             'message' => 'متن پاسخ',
+            'attachments' => 'تصاویر پیوست',
         ];
     }
 
@@ -31,6 +33,6 @@ class ReplyTicketRequest extends FormRequest
             'message.required' => 'لطفاً متن پاسخ را وارد کنید.',
             'message.min' => 'متن پاسخ باید حداقل :min کاراکتر باشد.',
             'message.max' => 'متن پاسخ نباید بیشتر از :max کاراکتر باشد.',
-        ];
+        ] + app(TicketAttachmentValidationRules::class)->messages();
     }
 }

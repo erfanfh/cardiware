@@ -23,6 +23,11 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش نوشته',
                 'delete' => 'حذف نوشته',
             ],
+            'media' => [
+                'list' => 'مشاهده کتابخانه رسانه',
+                'create' => 'آپلود رسانه',
+                'edit' => 'ویرایش اطلاعات رسانه',
+            ],
             'poll' => [
                 'list' => 'لیست نظرسنجی‌ها',
                 'create' => 'ایجاد نظرسنجی',
@@ -110,6 +115,7 @@ class PermissionSeeder extends Seeder
                 'footer' => 'تنظیمات فوتر',
                 'home' => 'صفحه اصلی',
                 'about-us' => 'درباره ما',
+                'team' => 'صفحه تیم',
                 'ads' => 'تنظیمات تبلیغات',
                 'sidebar-widgets' => 'تنظیمات ابزارک های سایدبار',
                 'auth' => 'ورود/ثبت نام',

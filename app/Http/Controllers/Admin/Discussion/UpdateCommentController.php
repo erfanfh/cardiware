@@ -30,6 +30,7 @@ class UpdateCommentController extends Controller
             'comment' => [
                 'id' => (int)$comment->getKey(),
                 'content' => $comment->content,
+                'rendered_content' => $comment->safe_content,
                 'rating_percent' => $comment->rating_percent,
                 'rating_stars' => $comment->rating_stars,
             ],

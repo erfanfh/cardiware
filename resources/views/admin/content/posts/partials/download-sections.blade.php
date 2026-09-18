@@ -78,12 +78,15 @@
                     })"
                     class="space-y-3"
                 >
+                    {{-- Empty-state sentinel for this nested repeater; it must precede its indexed entry fields. --}}
+                    <input type="hidden" x-bind:name="name" value="" data-repeater-empty-value>
+
                     <div class="flex items-center justify-between gap-3">
                         <div class="text-xs text-slate-500">
                             آیتم‌های این سکشن
                         </div>
 
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center justify-end gap-2">
                             <button
                                 type="button"
                                 class="text-xs text-slate-500 hover:text-slate-700"
@@ -104,9 +107,18 @@
                                 type="button"
                                 variant="soft"
                                 size="sm"
-                                @click="add()"
+                                @click="add('start')"
                             >
-                                + افزودن آیتم
+                                + افزودن بالا
+                            </x-admin.form.button>
+
+                            <x-admin.form.button
+                                type="button"
+                                variant="soft"
+                                size="sm"
+                                @click="add('end')"
+                            >
+                                + افزودن پایین
                             </x-admin.form.button>
                         </div>
                     </div>

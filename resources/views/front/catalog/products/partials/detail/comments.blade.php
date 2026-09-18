@@ -1,10 +1,19 @@
 <x-front.cart id="comments" class="relative border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <x-front.cart-title
-            title="دیدگاه‌ها"
-            subtitle="کاربران درباره این محصول چه می‌گویند"
-            iconName="comment-add-01"
-        />
+        <div class="min-w-0">
+            <x-front.cart-title
+                title="دیدگاه‌ها"
+                subtitle="کاربران درباره این محصول چه می‌گویند"
+                iconName="comment-add-01"
+            />
+
+            <div class="-mt-3 mr-12">
+                @include('front.partials.rating-summary', [
+                    'averageRating' => isset($ratingSummary) ? $ratingSummary->averageRating : null,
+                    'ratingCount' => isset($ratingSummary) ? $ratingSummary->ratingCount : 0,
+                ])
+            </div>
+        </div>
 
         <button
             type="button"

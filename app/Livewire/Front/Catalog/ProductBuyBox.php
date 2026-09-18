@@ -110,6 +110,7 @@ class ProductBuyBox extends Component
                     ->count(),
                 'subtotal_amount' => (int)$cart->subtotal_amount,
                 'discount_amount' => (int)$cart->discount_amount,
+                'taxable_amount' => (int)$cart->taxable_amount,
                 'total_amount' => (int)$cart->total_amount,
             ];
 

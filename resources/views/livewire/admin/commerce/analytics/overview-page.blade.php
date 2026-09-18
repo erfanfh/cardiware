@@ -3,7 +3,7 @@
         [
             'key' => 'net_sales',
             'title' => 'فروش خالص',
-            'description' => 'مبلغ نهایی سفارش‌های پرداخت‌شده پس از همه تخفیف‌ها',
+            'description' => 'مبلغ خالص سفارش‌های پرداخت‌شده پس از تخفیف و بدون مالیات',
             'format' => 'money',
             'icon' => 'icons.chart-03',
         ],
@@ -45,6 +45,16 @@
     ];
 
     $secondaryMetrics = [
+        [
+            'key' => 'tax_amount',
+            'title' => 'مالیات وصول‌شده',
+            'format' => 'money',
+        ],
+        [
+            'key' => 'customer_paid_amount',
+            'title' => 'کل مبلغ پرداختی سفارش‌ها با مالیات',
+            'format' => 'money',
+        ],
         [
             'key' => 'discount_amount',
             'title' => 'کل تخفیف',

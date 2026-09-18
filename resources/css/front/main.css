@@ -5,6 +5,99 @@
     display: none !important;
 }
 
+.header-account-action {
+    position: relative;
+    isolation: isolate;
+    transition-property: color, background-color, border-color, box-shadow, transform;
+    transition-duration: 220ms;
+    transition-timing-function: cubic-bezier(.22, 1, .36, 1);
+}
+
+.header-account-action:is(:hover, :focus-visible) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(249, 115, 22, .22);
+}
+
+.header-account-icon {
+    position: relative;
+    z-index: 1;
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+    transform-origin: center;
+    animation: header-account-icon-arrive 620ms cubic-bezier(.22, 1, .36, 1);
+    transition: transform 260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.header-account-icon::before {
+    content: "";
+    position: absolute;
+    inset: -.28rem;
+    z-index: -1;
+    border: 1px solid rgba(255, 255, 255, .5);
+    border-radius: .65rem;
+    opacity: 0;
+    transform: scale(.68);
+    pointer-events: none;
+}
+
+.header-account-action:is(:hover, :focus-visible) .header-account-icon {
+    transform: translateY(-1px) scale(1.06);
+}
+
+.header-account-action:is(:hover, :focus-visible) .header-account-icon::before {
+    animation: header-account-icon-halo 620ms cubic-bezier(.22, 1, .36, 1);
+}
+
+@keyframes header-account-icon-arrive {
+    0% {
+        opacity: .2;
+        transform: translateY(3px) scale(.88);
+    }
+
+    58% {
+        opacity: 1;
+        transform: translateY(-1px) scale(1.07);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes header-account-icon-halo {
+    0% {
+        opacity: .55;
+        transform: scale(.68);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.55);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .header-account-action,
+    .header-account-icon {
+        animation: none;
+        transition-duration: 1ms;
+    }
+
+    .header-account-action:is(:hover, :focus-visible) {
+        transform: none;
+    }
+
+    .header-account-action:is(:hover, :focus-visible) .header-account-icon {
+        transform: none;
+    }
+
+    .header-account-action:is(:hover, :focus-visible) .header-account-icon::before {
+        animation: none;
+    }
+}
+
 .loyalty-earned-toast-card {
     opacity: 0;
     transform: translate3d(0, 18px, 0) scale(.96);

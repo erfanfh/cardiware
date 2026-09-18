@@ -28,9 +28,17 @@ class SaveVideoRequest extends FormRequest
             'guest_comments_enabled' => ['nullable'],
             'published_at' => ['nullable'],
             'author_id' => ['nullable'],
+            'display_views_offset' => ['required', 'integer', 'min:0', 'max:4294967295'],
             'category_ids' => ['nullable'],
             'tags' => ['nullable'],
             'seo' => ['nullable'],
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'display_views_offset' => 'افزایش نمایشی بازدید',
         ];
     }
 
@@ -52,6 +60,7 @@ class SaveVideoRequest extends FormRequest
             'cover_media_file_id' => is_numeric($coverId) && (int)$coverId > 0 ? (int)$coverId : null,
             'duration_seconds' => is_numeric($duration) && (int)$duration > 0 ? (int)$duration : null,
             'author_id' => $this->route('video')?->author_id ?? auth()->id(),
+            'display_views_offset' => $this->input('display_views_offset', 0),
             'published_at' => is_scalar($publishedAt) && filled($publishedAt) ? gregorian_date((string)$publishedAt) : now(),
             'is_featured' => $this->boolean('is_featured'),
             'comments_enabled' => $this->boolean('comments_enabled'),

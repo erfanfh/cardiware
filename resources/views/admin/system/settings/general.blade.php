@@ -10,7 +10,7 @@
                     'main' => 'اصلی',
                     'goftino' => 'گفتینو',
                     'sms-panel' => 'پنل پیامکی',
-                    'payment-gateway' => 'درگاه پرداخت',
+                    'payment-gateway' => 'پرداخت و مالیات',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >

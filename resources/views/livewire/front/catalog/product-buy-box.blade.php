@@ -829,7 +829,7 @@
 
                             <div
                                 class="mt-2 whitespace-nowrap text-base font-black text-brand-700 dark:text-brand-400"
-                                x-text="formatPrice(modal.totalAmount)"
+                                x-text="formatPrice(modal.amountBeforeTax)"
                             ></div>
                         </div>
                     </div>

@@ -26,6 +26,9 @@ class Order extends Model implements Payable
         'status',
         'subtotal_amount',
         'discount_amount',
+        'taxable_amount',
+        'tax_rate_basis_points',
+        'tax_amount',
         'total_amount',
         'description',
         'paid_at',
@@ -41,6 +44,9 @@ class Order extends Model implements Payable
         'status' => OrderStatusEnum::class,
         'subtotal_amount' => 'integer',
         'discount_amount' => 'integer',
+        'taxable_amount' => 'integer',
+        'tax_rate_basis_points' => 'integer',
+        'tax_amount' => 'integer',
         'total_amount' => 'integer',
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
@@ -48,6 +54,20 @@ class Order extends Model implements Payable
         'coupon_eligible_amount' => 'integer',
         'coupon_discount_amount' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        // Preserve compatibility for internal/manual order creators that do not
+        // yet send the explicit tax snapshot fields.
+        static::creating(function (Order $order): void {
+            if (!array_key_exists('taxable_amount', $order->getAttributes())) {
+                $order->taxable_amount = max(
+                    0,
+                    (int)$order->subtotal_amount - (int)$order->discount_amount,
+                );
+            }
+        });
+    }
 
     public function getRouteKeyName(): string
     {
@@ -129,6 +149,11 @@ class Order extends Model implements Payable
     public function getPayableAmount(): int
     {
         return (int)$this->total_amount;
+    }
+
+    public function getPayableTaxAmount(): int
+    {
+        return (int) $this->tax_amount;
     }
 
     /**

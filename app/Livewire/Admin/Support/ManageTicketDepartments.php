@@ -183,6 +183,7 @@ class ManageTicketDepartments extends Component
         $this->resetValidation();
 
         $this->dispatch('ticket-department-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     public function cancelEditing(): void

@@ -37,10 +37,12 @@ class Project extends Model implements PageViewableInterface
         'product_box_title',
         'product_box_subtitle',
         'product_box_button_text',
+        'display_views_offset',
     ];
 
     protected $casts = [
         'status' => ProjectStatusEnum::class,
+        'display_views_offset' => 'integer',
     ];
 
     /**
@@ -59,6 +61,11 @@ class Project extends Model implements PageViewableInterface
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function isPubliclyVisible(): bool
+    {
+        return $this->status === ProjectStatusEnum::ACTIVE;
     }
 
     /**

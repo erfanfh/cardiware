@@ -63,6 +63,14 @@
                                     <span class="font-extrabold text-white">{{ $project->current_version }}</span>
                                 </span>
                             @endif
+
+                            <span
+                                class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
+                                <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.view')</span>
+                                <span class="font-extrabold text-white">
+                                    {{ number_format(public_page_views($project)) }} بازدید
+                                </span>
+                            </span>
                         </div>
                     </div>
 

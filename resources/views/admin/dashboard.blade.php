@@ -500,7 +500,7 @@
                                 </div>
 
                                 <p class="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
-                                    {{ $comment->content }}
+                                    {{ $comment->plain_content }}
                                 </p>
                             </div>
                         @empty

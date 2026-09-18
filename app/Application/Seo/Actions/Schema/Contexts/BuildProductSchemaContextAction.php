@@ -2,6 +2,7 @@
 
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
+use App\Application\Discussion\Actions\GetCommentableRatingSummaryAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ProductSchemaContextDTO;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
@@ -16,9 +17,10 @@ use Illuminate\Support\Str;
 final class BuildProductSchemaContextAction
 {
     public function __construct(
-        protected GetSeoDefaultsAction $getSeoDefaultsAction,
-        protected SchemaIdGenerator    $schemaIdGenerator,
-        protected SchemaMoneyFormatter $schemaMoneyFormatter,
+        protected GetSeoDefaultsAction              $getSeoDefaultsAction,
+        protected SchemaIdGenerator                 $schemaIdGenerator,
+        protected SchemaMoneyFormatter              $schemaMoneyFormatter,
+        protected GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
     )
     {
     }
@@ -26,6 +28,7 @@ final class BuildProductSchemaContextAction
     public function execute(Product $product, ResolvedSeoPayloadDTO $payload): ProductSchemaContextDTO
     {
         $defaults = $this->getSeoDefaultsAction->execute();
+        $ratingSummary = $this->getCommentableRatingSummaryAction->execute($product);
 
         $siteName = $defaults['site_name'] ?? null;
         $siteUrl = $defaults['site_url'] ?? null;
@@ -71,6 +74,9 @@ final class BuildProductSchemaContextAction
             publishedTime: $payload->publishedTime ?: $product->published_at?->toAtomString(),
             modifiedTime: $payload->modifiedTime ?: $product->updated_at?->toAtomString(),
             keywords: $payload->keywords,
+
+            averageRating: $ratingSummary->averageRating,
+            ratingCount: $ratingSummary->ratingCount,
         );
 
         $primaryCategory = $product->categories->first();
@@ -192,7 +198,6 @@ final class BuildProductSchemaContextAction
     }
 
     /**
-     * @param mixed $value
      * @return array<int, string>
      */
     protected function normalizeSameAs(mixed $value): array

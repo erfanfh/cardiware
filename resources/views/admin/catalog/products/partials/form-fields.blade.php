@@ -5,6 +5,10 @@
 
     $isEdit = isset($product) && $product;
     $quickUrl = $isEdit ? route('products.detail.quick', $product->id) : null;
+    $itemUrl = $isEdit
+        ? ($product->isPubliclyVisible() ? $product->url : route('preview.products', $product->id))
+        : null;
+    $itemUrlLabel = $isEdit && $product->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
 
     $statuses = [];
     foreach (ProductStatusEnum::cases() as $status){
@@ -211,6 +215,19 @@
 
         <x-admin.metabox title="تنظیمات نمایشی">
             <div class="flex flex-col gap-4">
+                @if($isEdit)
+                    <x-admin.field label="افزایش نمایشی بازدید">
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $product->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
+
                 <x-admin.field
                     class="col-span-12"
                     label="نمایش تعداد فروش"
@@ -260,7 +277,8 @@
         basePath="{{ route('home') }}/products/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::PRODUCT"
         :currentId="$product->id ?? null"
-        :itemUrl="$product ? route('products.detail', $product) : null"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">

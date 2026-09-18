@@ -73,7 +73,7 @@ final class BuildVideoObjectSchemaAction
             'interactionStatistic' => [
                 '@type' => 'InteractionCounter',
                 'interactionType' => ['@type' => 'WatchAction'],
-                'userInteractionCount' => page_views($video),
+                'userInteractionCount' => public_page_views($video),
             ],
             'potentialAction' => [
                 '@type' => 'WatchAction',

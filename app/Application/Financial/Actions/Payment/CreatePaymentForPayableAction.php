@@ -51,8 +51,12 @@ class CreatePaymentForPayableAction
                 'gateway' => $gateway,
                 'status' => PaymentStatusEnum::INITIATED,
                 'amount' => $amount,
+                'tax_amount' => $payable->getPayableTaxAmount(),
                 'tracking_code' => $this->generatePaymentTrackingCodeAction->execute(),
-                'request_payload' => $requestPayload,
+                'request_payload' => array_merge($requestPayload, [
+                    'amount' => $amount,
+                    'tax_amount' => $payable->getPayableTaxAmount(),
+                ]),
             ]);
         });
     }

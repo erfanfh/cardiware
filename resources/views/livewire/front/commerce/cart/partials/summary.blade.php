@@ -53,6 +53,17 @@
                             class="font-extrabold text-emerald-700 dark:text-emerald-400">{{ $this->money($this->cartDiscount) }}</span>
                     </div>
 
+                    @if((int) ($this->cart?->tax_rate_basis_points ?? 0) > 0)
+                        <div class="flex items-center justify-between gap-3 text-xs">
+                            <span class="text-slate-500 dark:text-slate-400">
+                                مالیات ({{ $this->cartTaxRateLabel() }}٪)
+                            </span>
+                            <span class="font-extrabold text-amber-700 dark:text-amber-400">
+                                {{ $this->money($this->cartTax) }}
+                            </span>
+                        </div>
+                    @endif
+
                     <div class="my-3 border-t border-slate-100 dark:border-slate-800"></div>
 
                     <div class="flex items-center justify-between gap-3">
@@ -149,6 +160,36 @@
                     @endif
                 </div>
 
+                @if($this->checkoutTermsRequired)
+                    <label
+                        class="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs leading-6 text-slate-600 transition hover:border-brand-200 hover:bg-brand-50/60 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:border-brand-800 dark:hover:bg-brand-900/10"
+                    >
+                        <input
+                            type="checkbox"
+                            x-model="termsAccepted"
+                            class="mt-1 h-4 w-4 shrink-0 cursor-pointer rounded border-slate-300 text-brand-500 focus:ring-brand-400 dark:border-slate-600 dark:bg-slate-900"
+                        />
+
+                        <span>
+                            با
+                            @if($this->checkoutTermsUrl)
+                                <a
+                                    href="{{ $this->checkoutTermsUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="font-extrabold text-brand-700 underline decoration-brand-300 underline-offset-4 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300"
+                                    @click.stop
+                                >
+                                    قوانین و مقررات سایت
+                                </a>
+                            @else
+                                <span class="font-extrabold text-slate-800 dark:text-slate-100">قوانین و مقررات سایت</span>
+                            @endif
+                            موافقم.
+                        </span>
+                    </label>
+                @endif
+
                 <button
                     type="button"
                     @auth
@@ -156,7 +197,7 @@
                     @else
                         @click="$dispatch('open-modal', 'auth-modal')"
                     @endauth
-                    @disabled($this->mainCartItems->isEmpty() || $cartNeedsRefresh)
+                    :disabled="@js($this->mainCartItems->isEmpty() || $cartNeedsRefresh) || (@js(auth()->check() && $this->checkoutTermsRequired) && !termsAccepted)"
                     class="mt-5 inline-flex h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 active:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-50
                     dark:shadow-none dark:hover:bg-brand-600"
                 >

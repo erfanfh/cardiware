@@ -7,18 +7,24 @@ use App\Application\System\Actions\UpdateSettingAction;
 use App\Application\System\Backup\BackupEnvironment;
 use App\Application\System\Backup\BackupRunDispatcher;
 use App\Domain\Loyalty\Models\RewardOffer;
+use App\Domain\Organization\Models\TeamMember;
 use App\Domain\System\Models\BackupRun;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateTicketSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
+use App\Infrastructure\Services\Setting\Groups\TeamSettings;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
 
@@ -164,6 +170,50 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.general');
 
+        if ($request->hasAny(['tax_enabled', 'tax_rate_percent'])) {
+            $request->validate([
+                'tax_enabled' => ['required', 'boolean'],
+                'tax_rate_percent' => [
+                    'required',
+                    'numeric',
+                    $request->boolean('tax_enabled') ? 'min:0.01' : 'min:0',
+                    'max:100',
+                    'decimal:0,2',
+                ],
+            ], [
+                'tax_rate_percent.min' => 'در حالت فعال، درصد مالیات باید بیشتر از صفر باشد.',
+                'tax_rate_percent.max' => 'درصد مالیات نمی‌تواند بیشتر از ۱۰۰ باشد.',
+            ]);
+        }
+
+        if ($request->hasAny(['checkout_terms_enabled', 'checkout_terms_url'])) {
+            $request->validate([
+                'checkout_terms_enabled' => ['required', 'boolean'],
+                'checkout_terms_url' => [
+                    $request->boolean('checkout_terms_enabled') ? 'required' : 'nullable',
+                    'string',
+                    'max:2048',
+                    function (string $attribute, mixed $value, \Closure $fail): void {
+                        if ($value === null || $value === '') {
+                            return;
+                        }
+
+                        $isSafeRelativeUrl = Str::startsWith($value, '/')
+                            && !Str::startsWith($value, '//');
+                        $scheme = parse_url($value, PHP_URL_SCHEME);
+                        $isSafeAbsoluteUrl = filter_var($value, FILTER_VALIDATE_URL)
+                            && in_array(strtolower((string) $scheme), ['http', 'https'], true);
+
+                        if (!$isSafeRelativeUrl && !$isSafeAbsoluteUrl) {
+                            $fail('لینک قوانین باید یک آدرس معتبر با http/https یا یک مسیر داخلی مانند /rules باشد.');
+                        }
+                    },
+                ],
+            ], [
+                'checkout_terms_url.required' => 'در حالت فعال، وارد کردن لینک صفحه قوانین الزامی است.',
+            ]);
+        }
+
         $this->storeSettings($request, 'general');
         $activeTab = $request->input('active_tab', 'main');
 
@@ -291,11 +341,9 @@ class SettingController extends Controller
     }
 
     /**
-     * General settings page
-     *
-     * @return View
+     * About us settings page
      */
-    public function aboutUs()
+    public function aboutUs(): View
     {
         Gate::authorize('setting.about-us');
 
@@ -303,19 +351,79 @@ class SettingController extends Controller
     }
 
     /**
-     * Store home settings
+     * Store about us settings
      *
      * @throws BindingResolutionException
      */
-    public function storeAboutUs(Request $request): RedirectResponse
+    public function storeAboutUs(UpdateAboutUsSettingsRequest $request): RedirectResponse
     {
         Gate::authorize('setting.about-us');
 
-        $this->storeSettings($request, 'aboutUs');
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (!app(UpdateSettingAction::class)->execute('aboutUs', $field, $value)) {
+                    throw new RuntimeException('Unable to persist about us settings.');
+                }
+            }
+        });
 
         return redirect()
             ->route('admin.settings.about-us')
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * Team page settings.
+     */
+    public function team(TeamSettings $settings): View
+    {
+        Gate::authorize('setting.team');
+
+        $teamSettings = $settings->values();
+        $selectedTeamMemberIds = session()->getOldInput('member_ids', $teamSettings['member_ids'] ?? []);
+        $selectedTeamMembers = TeamMember::query()
+            ->whereKey($selectedTeamMemberIds)
+            ->get()
+            ->keyBy('id');
+
+        $selectedTeamMemberOptions = collect($selectedTeamMemberIds)
+            ->map(function (mixed $id) use ($selectedTeamMembers): ?array {
+                $member = $selectedTeamMembers->get((int) $id);
+
+                if (! $member) {
+                    return null;
+                }
+
+                return [
+                    'value' => $member->getKey(),
+                    'label' => $member->full_name.($member->job_title ? " — {$member->job_title}" : ''),
+                ];
+            })
+            ->filter()
+            ->values()
+            ->all();
+
+        return view('admin.system.settings.team', compact(
+            'teamSettings',
+            'selectedTeamMemberOptions',
+        ));
+    }
+
+    public function storeTeam(UpdateTeamSettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('setting.team');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (! app(UpdateSettingAction::class)->execute('team', $field, $value)) {
+                    throw new RuntimeException('Unable to persist team page settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.team')
+            ->with('success', 'تنظیمات صفحه تیم با موفقیت ذخیره شد.');
     }
 
     /**
@@ -476,11 +584,13 @@ class SettingController extends Controller
     /**
      * @throws BindingResolutionException
      */
-    public function storeTicket(Request $request): RedirectResponse
+    public function storeTicket(UpdateTicketSettingsRequest $request): RedirectResponse
     {
         Gate::authorize('setting.ticket');
 
-        $this->storeSettings($request, 'ticket');
+        foreach ($request->validated() as $field => $value) {
+            app(UpdateSettingAction::class)->execute('ticket', $field, $value);
+        }
 
         return redirect()
             ->route('admin.settings.ticket')

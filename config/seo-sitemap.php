@@ -58,6 +58,18 @@ return [
             'include_images' => true,
         ],
 
+        'product_category' => [
+            'enabled' => true,
+            'route_pattern' => 'product-category-sitemap{page}.xml',
+            'include_images' => false,
+        ],
+
+        'product_tag' => [
+            'enabled' => true,
+            'route_pattern' => 'product-tag-sitemap{page}.xml',
+            'include_images' => false,
+        ],
+
         'raffle' => [
             'enabled' => true,
             'route_pattern' => 'raffle-sitemap{page}.xml',

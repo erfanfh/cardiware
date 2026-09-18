@@ -61,6 +61,13 @@ return [
     ],
 
     [
+        'label' => 'رسانه‌ها',
+        'route' => 'admin.media.index',
+        'icon' => 'icons.image-03',
+        'gate' => 'media.list',
+    ],
+
+    [
         'label' => 'مودینگ تی‌وی',
         'route' => 'admin.videos.index',
         'icon' => 'icons.video-01',
@@ -492,6 +499,12 @@ return [
                 'route' => 'admin.settings.about-us',
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.about-us',
+            ],
+            [
+                'label' => 'صفحه تیم',
+                'route' => 'admin.settings.team',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.team',
             ],
             [
                 'label' => 'ابزارک های سایدبار',

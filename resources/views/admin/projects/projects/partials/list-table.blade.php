@@ -7,10 +7,13 @@
                     'title' => $project->title,
                     'slug' => $project->slug,
                     'urls' => [
-                        'detail' => front_route('projects.detail', $project),
+                        'detail' => $project->isPubliclyVisible()
+                            ? front_route('projects.detail', $project)
+                            : route('preview.projects', $project->id),
                         'edit' => route('admin.projects.edit', $project),
                         'destroy' => route('admin.projects.destroy', $project),
                     ],
+                    'detail_label' => $project->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $project->status?->value,
                         'label' => $project->status?->label() ?? 'نامشخص',
@@ -21,6 +24,7 @@
                         ->map(fn($tag) => [
                             'id' => $tag->id,
                             'title' => $tag->title,
+                            'filter_url' => route('admin.projects.index', ['tag_ids' => [$tag->id]]),
                         ])
                         ->values()
                         ->all(),
@@ -149,9 +153,8 @@
                                         tag="a"
                                         ::href="rows[{{ $project->id }}]?.urls?.detail"
                                         target="_blank"
-                                    >
-                                        مشاهده
-                                    </x-admin.list.action>
+                                        x-text="rows[{{ $project->id }}]?.detail_label"
+                                    />
 
                                     <span class="text-slate-300">|</span>
 
@@ -218,11 +221,17 @@
                             <div class="flex flex-wrap gap-2">
                                 <template x-if="rows[{{ $project->id }}]?.tags?.length">
                                     <template x-for="tag in rows[{{ $project->id }}].tags" :key="tag.id">
-                                        <x-admin.badge
-                                            x-text="tag.title"
-                                            size="md"
-                                            class="whitespace-nowrap"
-                                        ></x-admin.badge>
+                                        <a
+                                            :href="tag.filter_url"
+                                            :title="`نمایش پروژه‌های برچسب «${tag.title}»`"
+                                            class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+                                        >
+                                            <x-admin.badge
+                                                x-text="tag.title"
+                                                size="md"
+                                                class="cursor-pointer whitespace-nowrap"
+                                            ></x-admin.badge>
+                                        </a>
                                     </template>
                                 </template>
 

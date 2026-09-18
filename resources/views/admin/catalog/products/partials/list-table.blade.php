@@ -61,6 +61,10 @@
 
                     $minPrice = $salePrices->min();
                     $maxPrice = $salePrices->max();
+                    $itemUrl = $product->isPubliclyVisible()
+                        ? $product->url
+                        : route('preview.products', $product->id);
+                    $itemUrlLabel = $product->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
                 @endphp
 
                 <x-admin.list.tr
@@ -88,7 +92,7 @@
                     <x-admin.list.td>
                         <div class="min-w-[280px]">
                             <a
-                                href="{{ $product->url }}"
+                                href="{{ $itemUrl }}"
                                 target="_blank"
                                 class="inline-block leading-6 text-sm font-bold text-slate-800 transition hover:text-brand-600"
                             >
@@ -128,10 +132,10 @@
 
                                 <x-admin.list.action
                                     tag="a"
-                                    href="{{ $product->url }}"
+                                    href="{{ $itemUrl }}"
                                     target="_blank"
                                 >
-                                    مشاهده
+                                    {{ $itemUrlLabel }}
                                 </x-admin.list.action>
 
                                 <span class="text-slate-300">|</span>
@@ -237,12 +241,15 @@
                     <x-admin.list.td>
                         <div class="flex flex-wrap gap-2">
                             @forelse($product->categories as $category)
-                                <x-admin.badge
-                                    size="md"
-                                    class="whitespace-nowrap"
+                                <a
+                                    href="{{ route('admin.products.index', ['category_ids' => [$category->id]]) }}"
+                                    title="نمایش محصولات دسته «{{ $category->title }}»"
+                                    class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                                 >
-                                    {{ $category->title }}
-                                </x-admin.badge>
+                                    <x-admin.badge size="md" class="cursor-pointer whitespace-nowrap">
+                                        {{ $category->title }}
+                                    </x-admin.badge>
+                                </a>
                             @empty
                                 <span class="text-xs text-slate-400">---</span>
                             @endforelse
@@ -252,12 +259,15 @@
                     <x-admin.list.td>
                         <div class="flex flex-wrap gap-2">
                             @forelse($product->tags as $tag)
-                                <x-admin.badge
-                                    size="md"
-                                    class="whitespace-nowrap"
+                                <a
+                                    href="{{ route('admin.products.index', ['tag_ids' => [$tag->id]]) }}"
+                                    title="نمایش محصولات برچسب «{{ $tag->title }}»"
+                                    class="rounded-full transition hover:opacity-75 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                                 >
-                                    {{ $tag->title }}
-                                </x-admin.badge>
+                                    <x-admin.badge size="md" class="cursor-pointer whitespace-nowrap">
+                                        {{ $tag->title }}
+                                    </x-admin.badge>
+                                </a>
                             @empty
                                 <span class="text-xs text-slate-400">---</span>
                             @endforelse

@@ -24,6 +24,7 @@ class WalletTransaction extends Model
         'type',
         'direction',
         'amount',
+        'tax_amount',
         'withdrawable_amount',
         'balance_before',
         'balance_after',
@@ -42,6 +43,7 @@ class WalletTransaction extends Model
         'direction' => WalletTransactionDirectionEnum::class,
 
         'amount' => 'integer',
+        'tax_amount' => 'integer',
         'withdrawable_amount' => 'integer',
 
         'balance_before' => 'integer',

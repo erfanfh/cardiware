@@ -8,7 +8,7 @@
     $coverUrl = $video->cover?->url;
     $excerpt = trim(strip_tags((string) $video->excerpt));
     $description = filled($video->body) ? $video->body : null;
-    $views = approximate_view(page_views($video));
+    $views = approximate_view(public_page_views($video));
     $authorName = $video->author?->display_name
         ?: trim((string) $video->author?->full_name)
         ?: $video->author?->username
@@ -253,7 +253,7 @@
                                             <div class="min-w-0 flex-1 py-0.5">
                                                 <h3 class="line-clamp-2 text-xs font-black leading-6 text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">{{ $relatedVideo->title }}</h3>
                                                 <div class="mt-1.5 flex items-center gap-2 text-[9px] font-bold text-slate-400">
-                                                    <span>{{ approximate_view(page_views($relatedVideo)) }} بازدید</span>
+                                                    <span>{{ approximate_view(public_page_views($relatedVideo)) }} بازدید</span>
                                                     @if($relatedVideo->published_at)
                                                         <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                                                         <span>{{ jalali_date($relatedVideo->published_at, 'Y/m/d') }}</span>

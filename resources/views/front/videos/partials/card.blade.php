@@ -62,7 +62,7 @@
             <div class="flex min-w-0 items-center gap-2">
                 <span class="shrink-0">{{ jalali_date($video->published_at, 'Y/m/d') }}</span>
                 <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                <span class="truncate">{{ approximate_view(page_views($video)) }} بازدید</span>
+                <span class="truncate">{{ approximate_view(public_page_views($video)) }} بازدید</span>
             </div>
             <a href="{{ $video->url }}"
                class="shrink-0 font-black text-brand-700 transition group-hover:text-brand-800 dark:text-brand-300 dark:group-hover:text-brand-200">تماشا

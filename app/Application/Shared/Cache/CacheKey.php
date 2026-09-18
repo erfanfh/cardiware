@@ -26,7 +26,7 @@ final class CacheKey
 
     public static function homeFreePostsTab(array $payload): string
     {
-        return 'home:free-posts:tab:' . md5(json_encode($payload));
+        return 'home:free-posts:tab:'.md5(json_encode($payload));
     }
 
     public static function homeVideosBlock(): string
@@ -46,10 +46,9 @@ final class CacheKey
 
     public static function userAccessAbility(
         int|string $userId,
-        string     $group,
-        string     $action
-    ): string
-    {
+        string $group,
+        string $action
+    ): string {
         return "identity:user-access:{$userId}:{$group}:{$action}";
     }
 
@@ -63,14 +62,14 @@ final class CacheKey
         return "layout:page:{$key}:render";
     }
 
-    public static function frontendNavigation(string $slug): string
+    public static function frontendNavigation(string $slug, int|string $revision): string
     {
-        return "navigation:frontend:{$slug}";
+        return "navigation:frontend:v3:{$slug}:revision:{$revision}";
     }
 
     public static function contentSlug(string $slug): string
     {
-        return 'content:slug:' . trim($slug);
+        return 'content:slug:'.trim($slug);
     }
 
     public static function storedPageViews(string $modelClass, int|string $id): string
@@ -80,9 +79,8 @@ final class CacheKey
 
     public static function postSeoData(
         int|string $postId,
-        int        $postUpdatedAt,
-    ): string
-    {
+        int $postUpdatedAt,
+    ): string {
         return "seo-data:post:{$postId}:{$postUpdatedAt}";
     }
 
@@ -118,17 +116,15 @@ final class CacheKey
 
     public static function projectSeoData(
         int|string $projectId,
-        int        $projectUpdatedAt
-    ): string
-    {
+        int $projectUpdatedAt
+    ): string {
         return "seo-data:project:{$projectId}:{$projectUpdatedAt}";
     }
 
     public static function projectDetail(
         int|string $projectId,
-        int        $updatedAt
-    ): string
-    {
+        int $updatedAt
+    ): string {
         return "project:detail:{$projectId}:{$updatedAt}";
     }
 
@@ -144,15 +140,14 @@ final class CacheKey
 
     public static function productSeoData(
         int|string $productId,
-        int        $productUpdatedAt
-    ): string
-    {
+        int $productUpdatedAt
+    ): string {
         return "seo-data:product:{$productId}:{$productUpdatedAt}";
     }
 
     public static function productSlug(string $slug): string
     {
-        return 'product:slug:' . trim($slug);
+        return 'product:slug:'.trim($slug);
     }
 
     public static function pageSeoData(int|string $pageId, int $pageUpdatedAt): string
@@ -167,9 +162,8 @@ final class CacheKey
 
     public static function storeSeoData(
         int|string $storeId,
-        int        $storeUpdatedAt,
-    ): string
-    {
+        int $storeUpdatedAt,
+    ): string {
         return "seo-data:post:{$storeId}:{$storeUpdatedAt}";
     }
 
@@ -180,7 +174,7 @@ final class CacheKey
 
     public static function seoRedirect(string $version, string $path): string
     {
-        return 'seo:redirect:' . $version . ':' . md5($path);
+        return 'seo:redirect:'.$version.':'.md5($path);
     }
 
     public static function seoRedirectsVersion(): string
@@ -196,6 +190,11 @@ final class CacheKey
     public static function commentableAverageRating(string $type, int|string $id): string
     {
         return "commentable:{$type}:{$id}:average_rating";
+    }
+
+    public static function commentableRatingSummary(string $type, int|string $id): string
+    {
+        return "commentable:{$type}:{$id}:rating_summary";
     }
 
     public static function dashboardYesterdayTopPosts(string $date, int $limit): string
@@ -240,10 +239,9 @@ final class CacheKey
 
     public static function storeProducts(
         int|string $storeId,
-        int        $page,
-        int        $perPage
-    ): string
-    {
+        int $page,
+        int $perPage
+    ): string {
         return "store:{$storeId}:products:page:{$page}:per-page:{$perPage}";
     }
 
@@ -254,29 +252,35 @@ final class CacheKey
 
     public static function productListPage(array $payload): string
     {
-        return 'product:list:page:' . md5(json_encode($payload, JSON_THROW_ON_ERROR));
+        return 'product:list:page:'.md5(json_encode($payload, JSON_THROW_ON_ERROR));
     }
 
-    public static function productAvailablePriceRange(): string
-    {
-        return 'product:list:available-price-range';
+    public static function productAvailablePriceRange(
+        int|string|null $categoryId = null,
+        int|string|null $tagId = null,
+    ): string {
+        return 'product:list:available-price-range:category:'.($categoryId ?: 'all')
+            .':tag:'.($tagId ?: 'all');
     }
 
-    public static function productCategoryTree(): string
+    public static function productCategoryTree(int|string|null $parentId = null): string
     {
-        return 'product:list:category-tree';
+        return 'product:list:category-tree:'.($parentId ?: 'root');
     }
 
-    public static function productFeatured(): string
-    {
-        return 'product:list:featured';
+    public static function productFeatured(
+        int|string|null $categoryId = null,
+        int|string|null $tagId = null,
+    ): string {
+        return 'product:list:featured:category:'.($categoryId ?: 'all')
+            .':tag:'.($tagId ?: 'all');
     }
 
     public static function productCategoryDescendants(array $categoryIds): string
     {
         sort($categoryIds);
 
-        return 'product:category-descendants:' . md5(json_encode($categoryIds, JSON_THROW_ON_ERROR));
+        return 'product:category-descendants:'.md5(json_encode($categoryIds, JSON_THROW_ON_ERROR));
     }
 
     public static function launcherCatalogPage(string $search, int $page, int $perPage): string

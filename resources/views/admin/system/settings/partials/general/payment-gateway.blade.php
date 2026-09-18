@@ -10,6 +10,65 @@
 @endphp
 
 <div class="space-y-6">
+    <x-admin.metabox title="پذیرش قوانین پیش از پرداخت">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <x-admin.field label="الزام پذیرش قوانین">
+                <x-admin.form.select
+                    name="checkout_terms_enabled"
+                    :options="[0 => 'غیرفعال', 1 => 'فعال']"
+                    value="{{ old('checkout_terms_enabled', (int) get_setting('general', 'checkout_terms_enabled', false)) }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="لینک صفحه قوانین">
+                <x-admin.form.input
+                    name="checkout_terms_url"
+                    type="text"
+                    dir="ltr"
+                    :value="old('checkout_terms_url', get_setting('general', 'checkout_terms_url'))"
+                />
+
+                @error('checkout_terms_url')
+                <p class="mt-2 text-xs font-bold text-rose-600">{{ $message }}</p>
+                @enderror
+            </x-admin.field>
+        </div>
+
+        <p class="mt-4 text-xs leading-6 text-slate-500">
+            با فعال‌سازی این گزینه، کاربر تا زمانی که پذیرش قوانین را در سبد خرید تأیید نکند نمی‌تواند وارد مرحله پرداخت
+            شود.
+        </p>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="مالیات سفارش‌ها">
+        <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <x-admin.field label="وضعیت مالیات">
+                <x-admin.form.select
+                    name="tax_enabled"
+                    :options="[0 => 'غیرفعال', 1 => 'فعال']"
+                    value="{{ old('tax_enabled', (int) get_setting('general', 'tax_enabled', false)) }}"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="درصد مالیات">
+                <x-admin.form.input
+                    name="tax_rate_percent"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    dir="ltr"
+                    :value="old('tax_rate_percent', get_setting('general', 'tax_rate_percent', 0))"
+                />
+            </x-admin.field>
+        </div>
+
+        <p class="mt-4 text-xs leading-6 text-slate-500">
+            مالیات روی مبلغ خالص سفارش پس از کسر همه تخفیف‌ها محاسبه می‌شود. تغییر این تنظیم روی سفارش‌های ثبت‌شده قبلی
+            اثری ندارد.
+        </p>
+    </x-admin.metabox>
+
     <x-admin.metabox title="درگاه‌های پرداخت">
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <x-admin.field

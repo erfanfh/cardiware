@@ -24,11 +24,11 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                    درصد پیشرفت آپدیت محصول
+                    {{ $update->display_title }}
                 </div>
 
-                <div class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                    پیشرفت تا زمان انتشار آپدیت بعدی
+                <div class="mt-1 whitespace-pre-line text-xs leading-6 text-slate-500 dark:text-slate-400">
+                    {{ $update->display_description }}
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
             <div
                     class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
                     role="progressbar"
-                    aria-label="درصد پیشرفت آپدیت محصول"
+                    aria-label="{{ $update->display_title }}"
                     aria-valuemin="0"
                     aria-valuemax="100"
                     aria-valuenow="{{ $progress }}"

@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Readability DOM tests</title>
+<p>Run the Vite development server and open /tests/Browser/readability.html on that server.</p>
+<pre id="results"></pre>
+<script type="module">
+    import {analyzeReadability, extractReadabilityBlocks} from '../../resources/js/admin/seo/readability.js';
+
+    const results = [];
+    function check(label, html, expected) {
+        const actual = analyzeReadability(extractReadabilityBlocks(html));
+        for (const [key, value] of Object.entries(expected)) {
+            if (actual[key] !== value) throw new Error(`${label}: ${key}=${actual[key]}, expected ${value}`);
+        }
+        results.push(`PASS: ${label}`);
+    }
+    try {
+        check('Nested HTML and half-spaces', '<div><h2>شروع نصب</h2><p>می‌توان <strong>بازی</strong> را نصب کرد.</p><p>بسیار آسان است؟</p></div>', {words: 10, paragraphs: 2, sentences: 2});
+        check('Entities and BR boundaries', '<p>سلام&nbsp;دنیا<br>خداحافظ دنیا</p>', {words: 4, paragraphs: 2, sentences: 2});
+        check('Ignore hidden content, code and media', '<script>bad text<\/script><style>bad text</style><pre>bad text</pre><p hidden>bad text</p><p aria-hidden="true">bad text</p><div data-more-marker>ادامه مطلب</div><p><img alt="bad text"><br></p><video>bad text</video>', {words: 0, state: 'empty'});
+        check('Nested lists and tables do not duplicate text', '<ul><li><p>اولین مورد</p><ul><li>زیر مجموعه</li></ul></li><li>دومین مورد</li></ul><table><tr><td>الف ب</td><td>ج د</td></tr></table>', {words: 10, paragraphs: 0});
+        check('Adjacent block text stays separate', '<div>اول دوم</div><div>سوم چهارم</div>', {words: 4, paragraphs: 2});
+        check('English and Persian sentence endings', '<p>Hello world! خوب است؟ پایان.</p>', {words: 5, sentences: 3});
+        check('Removing inline code preserves word boundaries', '<p>قبل<code>ignore</code>بعد</p>', {words: 2});
+        check('Malformed HTML is parsed like editor content', '<p>یک دو<p>سه چهار', {words: 4, paragraphs: 2});
+    } catch (error) {
+        results.push(`FAIL: ${error.message}`);
+    }
+    document.getElementById('results').textContent = results.join('\n');
+</script>

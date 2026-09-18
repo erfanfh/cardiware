@@ -206,6 +206,13 @@
                                             </div>
                                         @endif
 
+                                        @if((int) $order->tax_amount > 0)
+                                            <div class="mt-3 flex items-center justify-between gap-3">
+                                                <span>مالیات ({{ rtrim(rtrim(number_format($order->tax_rate_basis_points / 100, 2, '.', ''), '0'), '.') }}٪)</span>
+                                                <span class="font-black text-amber-700 dark:text-amber-300">{{ $this->money($order->tax_amount) }}</span>
+                                            </div>
+                                        @endif
+
                                         <div class="mt-3 flex items-center justify-between gap-3">
                                             <span class="text-slate-900 dark:text-white">مبلغ نهایی</span>
                                             <span

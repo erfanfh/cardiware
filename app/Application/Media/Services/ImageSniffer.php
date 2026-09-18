@@ -48,6 +48,10 @@ class ImageSniffer
             throw new RuntimeException('Invalid image structure (getimagesize failed).');
         }
 
+        if (!hash_equals(strtolower($mime), strtolower((string) $info['mime']))) {
+            throw new RuntimeException('Detected MIME type does not match the decoded image structure.');
+        }
+
         return [
             'mime' => $mime,
             'width' => (int)$info[0],

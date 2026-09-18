@@ -35,6 +35,7 @@ class UpdatePostRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
+            'display_views_offset' => ['required', 'integer', 'min:0', 'max:4294967295'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],
@@ -101,6 +102,7 @@ class UpdatePostRequest extends FormRequest
             'status' => 'وضعیت',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'display_views_offset' => 'افزایش نمایشی بازدید',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
             'video_gallery_items.*.video_url' => 'لینک ویدیو',
             'video_gallery_items.*.cover.id' => 'کاور ویدیو',
@@ -154,6 +156,7 @@ class UpdatePostRequest extends FormRequest
             ],
             'author_id' => $this->route('post')?->author_id ?? auth()->id(),
             'published_at' => $this->input('published_at') ? gregorian_date($this->input('published_at')) : date('Y-m-d H:i:s'),
+            'display_views_offset' => $this->input('display_views_offset', 0),
         ]);
     }
 }

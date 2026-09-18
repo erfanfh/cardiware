@@ -1,5 +1,6 @@
 @php
     $columns = max(1, min((int) $item['mega_menu_columns'], 5));
+    $quickLinks = collect($item['mega_menu_quick_links'] ?? []);
 @endphp
 
 <div class="relative group flex items-center">
@@ -7,9 +8,7 @@
        target="{{ $item['target'] }}"
        @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
        class="inline-flex items-center gap-2 px-3 py-2 rounded-xl hover:text-slate-900 hover:bg-slate-50 transition dark:hover:bg-slate-800 dark:hover:text-slate-100 {{ $item['css_class'] }}">
-        @if($item['icon'])
-            <span class="text-base">{{ $item['icon'] }}</span>
-        @endif
+        <x-front.navigation-icon :item="$item" class="h-4 w-4 text-current [&_svg]:h-4 [&_svg]:w-4" />
 
         <span>{{ $item['title'] }}</span>
 
@@ -39,7 +38,10 @@
             class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30">
             <div class="grid grid-cols-12">
 
-                <div class="col-span-12 lg:col-span-9 p-6">
+                <div @class([
+                    'col-span-12 p-6',
+                    'lg:col-span-9' => $quickLinks->isNotEmpty(),
+                ])>
                     <div class="mb-5 flex items-center justify-between gap-4">
                         <div>
                             <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
@@ -73,30 +75,31 @@
                     </div>
                 </div>
 
-                <div
-                    class="col-span-12 lg:col-span-3 border-t border-slate-200 bg-slate-50/80 p-6 lg:border-r lg:border-t-0 dark:border-slate-700 dark:bg-slate-950/60">
-                    <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                        دسترسی سریع
-                    </div>
+                @if($quickLinks->isNotEmpty())
+                    <div
+                        class="col-span-12 border-t border-slate-200 bg-slate-50/80 p-6 lg:col-span-3 lg:border-r lg:border-t-0 dark:border-slate-700 dark:bg-slate-950/60">
+                        <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                            دسترسی سریع
+                        </div>
 
-                    <div class="mt-4 space-y-2">
-                        @foreach($item['children']->take(4) as $quickItem)
-                            <a href="{{ $quickItem['url'] }}"
-                               target="{{ $quickItem['target'] }}"
-                               @if($quickItem['target'] === '_blank') rel="noopener noreferrer" @endif
-                               class="flex items-center gap-3 rounded-2xl bg-white p-3 text-sm font-bold text-slate-700 ring-1 ring-slate-200 hover:text-slate-900 hover:shadow-md transition dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:hover:text-slate-100 dark:hover:shadow-black/20">
-                                @if($quickItem['icon'])
-                                    <span
-                                        class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base dark:bg-slate-800">
-                                        {{ $quickItem['icon'] }}
+                        <div class="mt-4 space-y-2">
+                            @foreach($quickLinks as $quickItem)
+                                <a href="{{ $quickItem['url'] }}"
+                                   target="{{ $quickItem['target'] }}"
+                                   @if($quickItem['target'] === '_blank') rel="noopener noreferrer" @endif
+                                   class="group/quick-link flex items-center gap-3 rounded-2xl bg-white p-3 text-sm font-bold text-slate-700 ring-1 ring-slate-200 transition hover:text-slate-900 hover:shadow-md dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:hover:text-slate-100 dark:hover:shadow-black/20">
+                                    <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-slate-500 transition group-hover/quick-link:bg-brand-50 group-hover/quick-link:text-brand-600 dark:bg-slate-800 dark:text-slate-400 dark:group-hover/quick-link:bg-brand-500/10 dark:group-hover/quick-link:text-brand-300">
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="M8 16 16 8M10 8h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
                                     </span>
-                                @endif
 
-                                <span class="line-clamp-1">{{ $quickItem['title'] }}</span>
-                            </a>
-                        @endforeach
+                                    <span class="line-clamp-1">{{ $quickItem['title'] }}</span>
+                                </a>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
 
             </div>
         </div>

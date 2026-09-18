@@ -171,6 +171,7 @@ class ManageProductInformationFields extends Component
         $this->resetValidation();
 
         $this->dispatch('product-information-field-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     public function cancelEditing(): void

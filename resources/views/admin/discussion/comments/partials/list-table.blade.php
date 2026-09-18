@@ -118,7 +118,8 @@
                                 @php
                                     $parent = $comment->parent;
                                     $parentAuthor = $parent?->display_name ?? 'کاربر';
-                                    $parentContent = $parent?->content ?? 'دیدگاه والد در دسترس نیست.';
+                                    $parentRenderedContent = $parent?->safe_content
+                                        ?? e('دیدگاه والد در دسترس نیست.');
                                 @endphp
 
                                 <div class="mb-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
@@ -135,7 +136,7 @@
                                         است
                                     </span>
 
-                                    <span
+                                    <div
                                         x-data="{
                                             open: false,
                                             position: 'right',
@@ -179,7 +180,7 @@
                                             ?
                                         </button>
 
-                                        <span
+                                        <div
                                             x-ref="tooltip"
                                             x-show="open"
                                             x-transition:enter="transition ease-out duration-150"
@@ -199,11 +200,11 @@
                                                 متن دیدگاه والد:
                                             </span>
 
-                                            <span>
-                                                {!! nl2br(htmlspecialchars(e($parentContent))) !!}
-                                            </span>
-                                        </span>
-                                    </span>
+                                            <div class="tinymce-content comment-content">
+                                                {!! $parentRenderedContent !!}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
 
@@ -247,9 +248,9 @@
                             @endif
 
                             <div
-                                class="whitespace-pre-line text-sm leading-7 text-slate-700"
-                                x-text="commentContent({{ $comment->id }})"
-                            >{{ $comment->content }}</div>
+                                class="tinymce-content comment-content text-sm leading-7 text-slate-700"
+                                x-html="commentRenderedContent({{ $comment->id }})"
+                            >{!! $comment->safe_content !!}</div>
 
                             <x-admin.list.row-actions x-cloak class="mt-4">
                                 <x-admin.list.action

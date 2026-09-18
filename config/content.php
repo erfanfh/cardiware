@@ -31,5 +31,6 @@ return [
         'q',
         'launcher',
         'loyalty',
+        'preview',
     ],
 ];

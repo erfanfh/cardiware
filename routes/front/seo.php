@@ -55,5 +55,19 @@ Route::get('/product-sitemap{page}.xml', [SitemapController::class, 'paginatedPr
     ->whereNumber('page')
     ->name('sitemap.products.paginated');
 
+Route::get('/product-category-sitemap.xml', [SitemapController::class, 'productCategories'])
+    ->name('sitemap.product-categories');
+
+Route::get('/product-category-sitemap{page}.xml', [SitemapController::class, 'paginatedProductCategories'])
+    ->whereNumber('page')
+    ->name('sitemap.product-categories.paginated');
+
+Route::get('/product-tag-sitemap.xml', [SitemapController::class, 'productTags'])
+    ->name('sitemap.product-tags');
+
+Route::get('/product-tag-sitemap{page}.xml', [SitemapController::class, 'paginatedProductTags'])
+    ->whereNumber('page')
+    ->name('sitemap.product-tags.paginated');
+
 Route::get('/video-sitemap.xml', [SitemapController::class, 'videos'])->name('sitemap.videos');
 Route::get('/video-sitemap{page}.xml', [SitemapController::class, 'paginatedVideos'])->whereNumber('page')->name('sitemap.videos.paginated');

@@ -67,15 +67,19 @@
         <div class="border-t border-slate-100 p-4 dark:border-slate-800">
             @if(auth()->check())
                 <a href="{{ route('account.dashboard') }}"
-                   class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
-                    @include('icons.user')
-                    حساب کاربری
+                   class="header-account-action flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
+                    <span class="header-account-icon" aria-hidden="true">
+                        @include('icons.user')
+                    </span>
+                    <span>حساب کاربری</span>
                 </a>
             @else
                 <a href="{{ front_route('auth.index') }}"
-                   class="flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
-                    @include('icons.login-square-01')
-                    ورود / عضویت
+                   class="header-account-action flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition dark:hover:bg-brand-400">
+                    <span class="header-account-icon" aria-hidden="true">
+                        @include('icons.login-square-01')
+                    </span>
+                    <span>ورود / عضویت</span>
                 </a>
             @endif
         </div>

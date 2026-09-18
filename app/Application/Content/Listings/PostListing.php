@@ -61,6 +61,19 @@ class PostListing extends BaseListing
         });
     }
 
+    protected function filterCategoryIds(mixed $value): void
+    {
+        $categoryIds = array_filter((array)$value, static fn($id) => filled($id));
+
+        if ($categoryIds === []) {
+            return;
+        }
+
+        $this->query->whereHas('categories', function ($query) use ($categoryIds) {
+            $query->whereIn('taxonomy_terms.id', $categoryIds);
+        });
+    }
+
     protected function filterPublishedAtFrom(mixed $value): void
     {
         $this->query->whereDate('published_at', '>=', $value);

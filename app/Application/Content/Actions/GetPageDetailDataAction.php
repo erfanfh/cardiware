@@ -22,13 +22,12 @@ class GetPageDetailDataAction
                 pageUpdatedAt: $page->updated_at?->timestamp ?? 0,
             ),
             CacheTtl::long(),
-            fn() => Page::query()
-                ->with([
+            fn() => $page
+                ->load([
                     'picture.primaryVariant',
                     'picture.variants',
-                    'author'
+                    'author',
                 ])
-                ->findOrFail($page->id)
         );
     }
 }

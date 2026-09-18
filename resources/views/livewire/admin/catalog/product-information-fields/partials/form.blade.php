@@ -1,15 +1,7 @@
 <div
+        class="scroll-mt-20"
+        data-admin-inline-edit-form
         wire:key="product-information-field-sidebar-{{ $editingId ? 'edit-' . $editingId : 'create' }}"
-        x-data
-        x-on:product-information-field-edit-started.window="
-        if (window.innerWidth < 1280) {
-            $el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-
-        $nextTick(() => {
-            setTimeout(() => $refs.productInformationFieldTitleInput?.focus(), 120)
-        })
-    "
 >
     <x-admin.metabox :collapsible="false" title="اطلاعات فیلد محصول">
         <div class="space-y-5">

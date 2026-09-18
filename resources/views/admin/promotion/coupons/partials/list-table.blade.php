@@ -141,6 +141,16 @@
                             <x-admin.list.row-actions>
                                 <x-admin.list.action
                                     tag="a"
+                                    href="{{ route('admin.coupons.redemptions.index', $coupon) }}"
+                                    variant="primary"
+                                >
+                                    گزارش استفاده ({{ number_format((int) ($coupon->redemptions_count ?? 0)) }})
+                                </x-admin.list.action>
+
+                                <span class="text-slate-300">|</span>
+
+                                <x-admin.list.action
+                                    tag="a"
                                     href="{{ route('admin.coupons.edit', $coupon) }}"
                                     variant="primary"
                                 >

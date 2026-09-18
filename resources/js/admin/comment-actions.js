@@ -6,6 +6,7 @@ const registerAdminCommentActions = () => {
             initialStatuses = {},
             initialPins = {},
             initialContents = {},
+            initialRenderedContents = {},
             initialRatings = {},
             initialEditMeta = {},
         }
@@ -35,6 +36,12 @@ const registerAdminCommentActions = () => {
 
         rowContents: Object.fromEntries(
             Object.entries(initialContents).map(
+                ([id, content]) => [Number(id), String(content || '')]
+            )
+        ),
+
+        rowRenderedContents: Object.fromEntries(
+            Object.entries(initialRenderedContents).map(
                 ([id, content]) => [Number(id), String(content || '')]
             )
         ),
@@ -71,8 +78,13 @@ const registerAdminCommentActions = () => {
             return this.rowContents[Number(id)] || '';
         },
 
-        setCommentContent(id, content) {
+        commentRenderedContent(id) {
+            return this.rowRenderedContents[Number(id)] || '';
+        },
+
+        setCommentContent(id, content, renderedContent = '') {
             this.rowContents[Number(id)] = String(content || '');
+            this.rowRenderedContents[Number(id)] = String(renderedContent || '');
         },
 
         commentRating(id) {
@@ -91,12 +103,17 @@ const registerAdminCommentActions = () => {
             this.rowStatuses[Number(id)] = status || 'unknown';
         },
 
-        async confirmAndRun(id, action, message) {
-            if (!window.confirm(message)) {
-                return;
-            }
-
-            await this.runAction(id, action);
+        confirmAndRun(id, action, message) {
+            window.dispatchEvent(new CustomEvent('admin-open-confirm', {
+                detail: {
+                    title: action === 'delete' ? 'حذف دیدگاه' : 'تأیید عملیات',
+                    text: message,
+                    action: {
+                        type: 'callback',
+                        callback: () => this.runAction(id, action),
+                    },
+                },
+            }));
         },
 
         async runAction(id, action) {
@@ -417,7 +434,11 @@ const registerAdminCommentActions = () => {
                     );
                 }
 
-                this.setCommentContent(id, data.comment?.content || content);
+                this.setCommentContent(
+                    id,
+                    data.comment?.content || content,
+                    data.comment?.rendered_content || ''
+                );
                 this.setCommentRating(id, data.comment?.rating_stars ?? null);
                 this.notifySuccess(data.message || 'دیدگاه با موفقیت ویرایش شد.');
                 this.closeEditModal(true);

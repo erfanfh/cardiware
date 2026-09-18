@@ -286,6 +286,17 @@
                                 </div>
                             @endif
 
+                            @if(($summary['tax_rate_basis_points'] ?? 0) > 0)
+                                <div class="flex items-center justify-between gap-3 text-xs">
+                                    <span class="text-slate-500 dark:text-slate-400">
+                                        مالیات ({{ rtrim(rtrim(number_format($summary['tax_rate_basis_points'] / 100, 2, '.', ''), '0'), '.') }}٪)
+                                    </span>
+                                    <span class="font-extrabold text-amber-700 dark:text-amber-400">
+                                        {{ number_format($summary['tax_amount']) }} تومان
+                                    </span>
+                                </div>
+                            @endif
+
                             <div
                                 class="flex items-center justify-between border-t border-slate-200 pt-3 dark:border-slate-800">
                                 <span class="text-sm font-extrabold text-slate-800 dark:text-slate-100">

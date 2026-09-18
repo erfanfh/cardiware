@@ -39,6 +39,10 @@ class SyncNavigationMenuItemsAction
                 depth: 0,
             );
 
+            // The revision is committed with the menu changes. A frontend request that
+            // started before this point can only repopulate its old revision's key.
+            $menu->increment('cache_revision');
+
             DB::afterCommit(function () use ($menu) {
                 $this->navigationCacheInvalidator->flushForMenu($menu);
             });
@@ -76,7 +80,9 @@ class SyncNavigationMenuItemsAction
                 'mega_menu_columns' => $validatedItem['mega_menu_columns'],
                 'sort_order' => $sortOrder,
                 'depth' => $depth,
-                'settings' => null,
+                'settings' => $validatedItem['mega_menu_quick_links'] === []
+                    ? null
+                    : ['mega_menu_quick_links' => $validatedItem['mega_menu_quick_links']],
             ]);
 
             $children = $validatedItem['children'] ?? [];
@@ -150,6 +156,11 @@ class SyncNavigationMenuItemsAction
             );
         }
 
+        $isMegaMenu = (bool)($item['is_mega_menu'] ?? false);
+        $megaMenuQuickLinks = $isMegaMenu
+            ? $this->validateMegaMenuQuickLinks($item['mega_menu_quick_links'] ?? [])
+            : [];
+
         return [
             'type' => $type,
             'title' => $title,
@@ -160,12 +171,91 @@ class SyncNavigationMenuItemsAction
             'icon' => $this->nullableTrimmedString($item['icon'] ?? null),
             'badge' => $this->nullableTrimmedString($item['badge'] ?? null),
             'css_class' => $this->nullableTrimmedString($item['css_class'] ?? null),
-            'is_mega_menu' => (bool)($item['is_mega_menu'] ?? false),
+            'is_mega_menu' => $isMegaMenu,
             'mega_menu_title' => $this->nullableTrimmedString($item['mega_menu_title'] ?? null),
             'mega_menu_description' => $this->nullableTrimmedString($item['mega_menu_description'] ?? null),
             'mega_menu_columns' => max(1, (int)($item['mega_menu_columns'] ?? 4)),
+            'mega_menu_quick_links' => $megaMenuQuickLinks,
             'children' => is_array($item['children'] ?? null) ? $item['children'] : [],
         ];
+    }
+
+    /**
+     * @return array<int, array{title: string, url: string, target: string}>
+     */
+    protected function validateMegaMenuQuickLinks(mixed $links): array
+    {
+        if (!is_array($links)) {
+            throw ValidationException::withMessages([
+                'items_payload' => 'ساختار لینک‌های دسترسی سریع معتبر نیست.',
+            ]);
+        }
+
+        if (count($links) > 12) {
+            throw ValidationException::withMessages([
+                'items_payload' => 'برای هر مگامنو حداکثر ۱۲ لینک دسترسی سریع قابل ثبت است.',
+            ]);
+        }
+
+        $normalized = [];
+
+        foreach ($links as $link) {
+            if (!is_array($link)) {
+                throw ValidationException::withMessages([
+                    'items_payload' => 'ساختار یکی از لینک‌های دسترسی سریع معتبر نیست.',
+                ]);
+            }
+
+            $title = trim((string)($link['title'] ?? ''));
+            $url = trim((string)($link['url'] ?? ''));
+            $target = (string)($link['target'] ?? NavigationItemTargetEnum::SELF->value);
+
+            if ($title === '' && $url === '') {
+                continue;
+            }
+
+            if ($title === '' || mb_strlen($title) > 120) {
+                throw ValidationException::withMessages([
+                    'items_payload' => 'عنوان لینک دسترسی سریع الزامی است و نباید بیشتر از ۱۲۰ کاراکتر باشد.',
+                ]);
+            }
+
+            if ($url === '' || mb_strlen($url) > 2048 || !$this->isSafeQuickLinkUrl($url)) {
+                throw ValidationException::withMessages([
+                    'items_payload' => 'آدرس یکی از لینک‌های دسترسی سریع معتبر نیست.',
+                ]);
+            }
+
+            if (!in_array($target, NavigationItemTargetEnum::values(), true)) {
+                throw ValidationException::withMessages([
+                    'items_payload' => 'نحوه باز شدن یکی از لینک‌های دسترسی سریع معتبر نیست.',
+                ]);
+            }
+
+            $normalized[] = compact('title', 'url', 'target');
+        }
+
+        return $normalized;
+    }
+
+    protected function isSafeQuickLinkUrl(string $url): bool
+    {
+        if (str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            return true;
+        }
+
+        if (str_starts_with($url, '#') && !preg_match('/[\s\x00-\x1F]/u', $url)) {
+            return true;
+        }
+
+        $scheme = strtolower((string)parse_url($url, PHP_URL_SCHEME));
+
+        if (in_array($scheme, ['http', 'https'], true)) {
+            return filter_var($url, FILTER_VALIDATE_URL) !== false;
+        }
+
+        return in_array($scheme, ['mailto', 'tel'], true)
+            && !preg_match('/[\s\x00-\x1F]/u', $url);
     }
 
     protected function resolveReferenceTypeByItemType(string $type): ?string

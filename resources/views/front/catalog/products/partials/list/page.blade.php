@@ -2,12 +2,18 @@
     $boxTitle = get_setting('products', 'first_box_title') ?: 'جدیدترین محصولات';
     $boxSubtitle = get_setting('products', 'first_box_subtitle');
 
-    if(request()->routeIs('products.categories') && isset($category)){
+    if(isset($category)){
         $boxTitle = $category->title;
-        $boxSubtitle = "جدیدترین محصولات دسته $category->title";
-    } elseif(request()->routeIs('products.tags') && isset($tag)){
+        $categoryDescription = trim(strip_tags(html_entity_decode((string) $category->description)));
+        $boxSubtitle = $categoryDescription !== ''
+            ? \Illuminate\Support\Str::limit($categoryDescription, 220)
+            : "جدیدترین محصولات دسته {$category->title}";
+    } elseif(isset($tag)){
         $boxTitle = $tag->title;
-        $boxSubtitle = "جدیدترین محصولات برچسب $tag->title";
+        $tagDescription = trim(strip_tags(html_entity_decode((string) $tag->description)));
+        $boxSubtitle = $tagDescription !== ''
+            ? \Illuminate\Support\Str::limit($tagDescription, 220)
+            : "جدیدترین محصولات برچسب {$tag->title}";
     }
 @endphp
 
@@ -120,7 +126,7 @@
                     </p>
                 </div>
 
-                <form method="GET" action="{{ front_route('products.list') }}"
+                <form method="GET" action="{{ $productListUrl }}"
                       class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
                     @foreach((array) request('categories', []) as $categoryId)
                         <input type="hidden" name="categories[]" value="{{ $categoryId }}">
@@ -176,7 +182,7 @@
                             </p>
 
                             <a
-                                href="{{ front_route('products.list') }}"
+                                href="{{ $productListUrl }}"
                                 class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-600 px-5 text-sm font-black text-white transition hover:bg-brand-700 sm:w-auto
                                 dark:bg-brand-500 dark:hover:bg-brand-600"
                             >
@@ -188,7 +194,12 @@
 
                 @if($products->hasPages())
                     <div class="mt-5 sm:mt-6">
-                        {{ $products->links() }}
+                        <x-front.list.path-pagination
+                            :model="$products"
+                            :base-route="$productListRoute"
+                            :page-route="$productListPageRoute"
+                            :route-parameters="$productListRouteParameters"
+                        />
                     </div>
                 @endif
             </div>

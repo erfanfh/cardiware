@@ -30,9 +30,10 @@ class CreateTicketAction
         ?int   $productId,
         string $title,
         string $message,
+        array  $attachments = [],
     ): Ticket
     {
-        return DB::transaction(function () use ($user, $departmentId, $productId, $title, $message) {
+        return DB::transaction(function () use ($user, $departmentId, $productId, $title, $message, $attachments) {
             $department = TicketDepartment::query()
                 ->active()
                 ->find($departmentId);
@@ -80,6 +81,7 @@ class CreateTicketAction
                 senderType: TicketMessageSenderTypeEnum::USER,
                 body: $message,
                 enforceUserReplyLimits: false,
+                attachments: $attachments,
             );
 
             return $ticket->refresh()->load([

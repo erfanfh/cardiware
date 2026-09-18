@@ -26,9 +26,6 @@ class QuickUpdatePostController extends Controller
     }
 
     /**
-     * @param QuickUpdatePostRequest $request
-     * @param Post $post
-     * @return JsonResponse|RedirectResponse
      * @throws Throwable
      */
     public function __invoke(QuickUpdatePostRequest $request, Post $post): JsonResponse|RedirectResponse
@@ -70,10 +67,11 @@ class QuickUpdatePostController extends Controller
                     'title' => $post->title,
                     'slug' => $post->slug,
                     'urls' => [
-                        'detail' => front_route('contents.detail', $post->slug),
+                        'detail' => $post->isPubliclyVisible() ? $post->url : route('preview.posts', $post->id),
                         'edit' => route('admin.posts.edit', $post),
                         'destroy' => route('admin.posts.destroy', $post),
                     ],
+                    'detail_label' => $post->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $post->status?->value,
                         'label' => $post->status?->label() ?? 'نامشخص',
@@ -96,7 +94,6 @@ class QuickUpdatePostController extends Controller
     }
 
     /**
-     * @param string|null $value
      * @return array<int, string>
      */
     protected function extractTagTitles(?string $value): array

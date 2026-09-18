@@ -1,5 +1,7 @@
 @php
     $productUpdateProgress = $product?->updateProgress;
+    $defaultTitle = \App\Domain\Catalog\Models\ProductUpdateProgress::DEFAULT_TITLE;
+    $defaultDescription = \App\Domain\Catalog\Models\ProductUpdateProgress::DEFAULT_DESCRIPTION;
 @endphp
 
 <div class="grid grid-cols-12 gap-5">
@@ -17,6 +19,37 @@
                 'update_progress.is_visible',
                 (int) ($productUpdateProgress?->is_visible ?? false)
             )"
+        />
+    </x-admin.field>
+
+    <x-admin.field
+        class="col-span-12"
+        label="عنوان باکس"
+        hint="این عنوان در صفحه همین محصول نمایش داده می‌شود."
+    >
+        <x-admin.form.input
+            name="update_progress[title]"
+            :value="old(
+                'update_progress.title',
+                $productUpdateProgress?->title ?: $defaultTitle
+            )"
+            maxlength="255"
+        />
+    </x-admin.field>
+
+    <x-admin.field
+        class="col-span-12"
+        label="توضیحات باکس"
+        hint="متن کوتاه زیر عنوان باکس"
+    >
+        <x-admin.form.textarea
+            name="update_progress[description]"
+            :value="old(
+                'update_progress.description',
+                $productUpdateProgress?->description ?: $defaultDescription
+            )"
+            rows="3"
+            maxlength="1000"
         />
     </x-admin.field>
 

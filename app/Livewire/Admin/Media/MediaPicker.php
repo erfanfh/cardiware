@@ -11,6 +11,7 @@ use App\Domain\Media\Enums\MediaFileVariantEnum;
 use App\Domain\Media\Enums\MediaFileVisibilityEnum;
 use App\Domain\Media\Models\MediaFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -23,6 +24,8 @@ class MediaPicker extends Component
 {
     use WithPagination;
     use WithFileUploads;
+
+    private const MAX_UPLOAD_FILES = 20;
 
     public ?string $itemKey = null;
     public bool $opened = false;
@@ -46,8 +49,8 @@ class MediaPicker extends Component
     public string $search = '';
     public int $perPage = 24;
 
-    /** @var TemporaryUploadedFile|null */
-    public $upload = null;
+    /** @var array<int, TemporaryUploadedFile> */
+    public $upload = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -218,52 +221,91 @@ class MediaPicker extends Component
 
     public function updatedUpload(): void
     {
-        $this->resetErrorBag('upload');
+        $this->resetErrorBag();
 
-        if (!$this->upload) {
+        if (empty($this->upload)) {
             return;
         }
-
-        $this->validate([
-            'upload' => 'required|file|max:5120|mimes:jpg,jpeg,png,webp',
-        ]);
 
         $this->saveUpload();
     }
 
     public function saveUpload(): void
     {
-        $this->validate([
-            'upload' => 'required|file|max:5120|mimes:jpg,jpeg,png,webp',
-        ]);
-
         try {
-            $media = app(UploadImageToLibraryAction::class)->execute(
-                file: $this->upload,
-                createdBy: auth()->id(),
-                visibility: MediaFileVisibilityEnum::PUBLIC,
-                disk: MediaFileDiskEnum::PUBLIC
+            $this->validate([
+                'upload' => ['required', 'array', 'min:1', 'max:'.self::MAX_UPLOAD_FILES],
+                'upload.*' => ['required', 'file', 'max:5120', 'mimes:jpg,jpeg,png,webp'],
+            ], [
+                'upload.max' => 'در هر نوبت حداکثر '.self::MAX_UPLOAD_FILES.' تصویر قابل آپلود است.',
+                'upload.*.file' => 'یکی از موارد انتخاب‌شده فایل معتبری نیست.',
+                'upload.*.max' => 'حجم هر تصویر باید حداکثر ۵ مگابایت باشد.',
+                'upload.*.mimes' => 'فرمت تصاویر باید jpg، jpeg، png یا webp باشد.',
+            ]);
+        } catch (ValidationException $e) {
+            $this->dispatch('mfip-upload-failed');
+
+            throw $e;
+        }
+
+        $uploadedMedia = [];
+        $failedUploads = [];
+
+        foreach ($this->upload as $file) {
+            try {
+                $uploadedMedia[] = $this->uploadImage($file);
+            } catch (Throwable $e) {
+                $failedUploads[] = $file->getClientOriginalName().': '.$e->getMessage();
+            }
+        }
+
+        $this->clearUpload();
+
+        if ($uploadedMedia !== []) {
+            /** @var MediaFile $media */
+            $media = end($uploadedMedia);
+            $this->selectUploadedMedia($media);
+        }
+
+        if ($failedUploads !== []) {
+            $this->addError(
+                'upload',
+                'آپلود بعضی تصاویر انجام نشد: '.implode('، ', $failedUploads)
             );
-
-            $this->clearUpload();
-
-            $this->selectedMediaFileId = $media->id;
-            $this->pendingMediaFileId = $media->id;
-            $this->refreshSelected();
-            $this->resetPage();
-
+        } elseif ($uploadedMedia !== []) {
             $this->activeTab = 'library';
 
             $this->dispatch('mfip-switch-tab', tab: 'library');
-            $this->dispatch('mfip-upload-saved');
-        } catch (Throwable $e) {
-            $this->addError('upload', $e->getMessage());
         }
+
+        $this->dispatch(
+            'mfip-upload-saved',
+            uploadedCount: count($uploadedMedia),
+            failedCount: count($failedUploads),
+        );
+    }
+
+    protected function uploadImage(TemporaryUploadedFile $file): MediaFile
+    {
+        return app(UploadImageToLibraryAction::class)->execute(
+            file: $file,
+            createdBy: auth()->id(),
+            visibility: MediaFileVisibilityEnum::PUBLIC,
+            disk: MediaFileDiskEnum::PUBLIC
+        );
+    }
+
+    protected function selectUploadedMedia(MediaFile $media): void
+    {
+        $this->selectedMediaFileId = $media->id;
+        $this->pendingMediaFileId = $media->id;
+        $this->refreshSelected();
+        $this->resetPage();
     }
 
     public function clearUpload(): void
     {
-        $this->upload = null;
+        $this->upload = [];
         $this->resetErrorBag('upload');
     }
 

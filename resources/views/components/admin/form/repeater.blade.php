@@ -19,12 +19,19 @@
     })"
     class="space-y-4"
 >
+    {{--
+        Keep this before every indexed field. When the repeater is empty it makes
+        the field present in the request; when rows exist, PHP's form parser lets
+        the later indexed inputs replace this empty scalar with the submitted array.
+    --}}
+    <input type="hidden" x-bind:name="name" value="" data-repeater-empty-value>
+
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="text-sm font-semibold text-slate-700">
             {{ $title }}
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center justify-end gap-2">
             <x-admin.form.button
                 type="button"
                 variant="secondary"
@@ -55,12 +62,28 @@
                 type="button"
                 variant="soft"
                 size="sm"
-                @click="add()"
+                @click="add('start')"
+                title="{{ $addText }} به بالای لیست"
+                aria-label="{{ $addText }} به بالای لیست"
             >
                 <span class="[&_svg]:w-3 [&_svg]:h-3">
                     @include('icons.plus-sign')
                 </span>
-                <span>{{ $addText }}</span>
+                <span>افزودن بالا</span>
+            </x-admin.form.button>
+
+            <x-admin.form.button
+                type="button"
+                variant="soft"
+                size="sm"
+                @click="add('end')"
+                title="{{ $addText }} به پایین لیست"
+                aria-label="{{ $addText }} به پایین لیست"
+            >
+                <span class="[&_svg]:w-3 [&_svg]:h-3">
+                    @include('icons.plus-sign')
+                </span>
+                <span>افزودن پایین</span>
             </x-admin.form.button>
         </div>
     </div>

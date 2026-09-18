@@ -22,15 +22,14 @@ class GetProjectDetailAction
                 updatedAt: $project->updated_at?->timestamp ?? 0,
             ),
             CacheTtl::long(),
-            fn() => Project::query()
-                ->with([
+            fn () => $project
+                ->load([
                     'cover.primaryVariant',
                     'roadmapItems',
                     'changelogs',
                     'features',
                     'tags',
                 ])
-                ->findOrFail($project->id)
         );
     }
 }

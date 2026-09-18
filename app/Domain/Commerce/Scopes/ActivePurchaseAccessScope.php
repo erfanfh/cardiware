@@ -13,8 +13,7 @@ class ActivePurchaseAccessScope implements Scope
     {
         if (request()->routeIs(['admin.*', 'livewire.*']))
             return;
-        else
-            $builder
-                ->where('status', PurchaseAccessStatusEnum::ACTIVE);
+
+        $builder->where('status', PurchaseAccessStatusEnum::ACTIVE);
     }
 }

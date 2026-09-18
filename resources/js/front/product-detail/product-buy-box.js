@@ -21,7 +21,7 @@ export default function productBuyBox(config) {
             itemsCount: 0,
             subtotalAmount: 0,
             discountAmount: 0,
-            totalAmount: 0,
+            amountBeforeTax: 0,
             selectedAddons: [],
             type: 'success',
         },
@@ -543,14 +543,21 @@ export default function productBuyBox(config) {
         },
 
         openSuccessModal(result) {
+            const subtotalAmount = Number(result.cart?.subtotal_amount ?? 0);
+            const discountAmount = Number(result.cart?.discount_amount ?? 0);
+            const amountBeforeTax = Number(
+                result.cart?.taxable_amount
+                ?? Math.max(0, subtotalAmount - discountAmount),
+            );
+
             this.modal = {
                 type: 'success',
                 title: 'محصول به سبد خرید اضافه شد',
                 message: result.message ?? 'انتخاب شما با موفقیت در سبد خرید ذخیره شد.',
                 itemsCount: result.cart?.items_count ?? 0,
-                subtotalAmount: result.cart?.subtotal_amount ?? 0,
-                discountAmount: result.cart?.discount_amount ?? 0,
-                totalAmount: result.cart?.total_amount ?? 0,
+                subtotalAmount,
+                discountAmount,
+                amountBeforeTax,
                 selectedAddons: this.selectedAddons,
             };
 
@@ -565,7 +572,7 @@ export default function productBuyBox(config) {
                 itemsCount: 0,
                 subtotalAmount: 0,
                 discountAmount: 0,
-                totalAmount: 0,
+                amountBeforeTax: 0,
                 selectedAddons: [],
             };
 

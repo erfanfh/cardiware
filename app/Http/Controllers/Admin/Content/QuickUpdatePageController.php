@@ -24,9 +24,6 @@ class QuickUpdatePageController extends Controller
     }
 
     /**
-     * @param QuickUpdatePageRequest $request
-     * @param Page $page
-     * @return JsonResponse|RedirectResponse
      * @throws Throwable
      */
     public function __invoke(QuickUpdatePageRequest $request, Page $page): JsonResponse|RedirectResponse
@@ -62,10 +59,11 @@ class QuickUpdatePageController extends Controller
                     'title' => $page->title,
                     'slug' => $page->slug,
                     'urls' => [
-                        'detail' => front_route('contents.detail', $page->slug),
+                        'detail' => $page->isPubliclyVisible() ? $page->url : route('preview.pages', $page->id),
                         'edit' => route('admin.pages.edit', $page),
                         'destroy' => route('admin.pages.destroy', $page),
                     ],
+                    'detail_label' => $page->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش',
                     'status' => [
                         'value' => $page->status?->value,
                         'label' => $page->status?->label() ?? 'نامشخص',

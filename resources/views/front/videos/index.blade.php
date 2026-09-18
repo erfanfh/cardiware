@@ -160,7 +160,7 @@
                                     @endif
                                     <div
                                         class="mt-auto flex items-center justify-between gap-3 pt-4 text-[10px] font-bold text-slate-400">
-                                        <span>{{ approximate_view(page_views($displayFeatured)) }} بازدید</span>
+                                        <span>{{ approximate_view(public_page_views($displayFeatured)) }} بازدید</span>
                                         <span class="font-black text-brand-200">مشاهده ویدیو ←</span>
                                     </div>
                                 </div>
@@ -211,7 +211,7 @@
                                             <h3 class="line-clamp-2 text-xs font-black leading-6 text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">{{ $trending->title }}</h3>
                                             <div
                                                 class="mt-1.5 flex items-center gap-2 text-[9px] font-bold text-slate-400">
-                                                <span>{{ approximate_view(page_views($trending)) }} بازدید</span>
+                                                <span>{{ approximate_view(public_page_views($trending)) }} بازدید</span>
                                                 <span
                                                     class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                                                 <span>{{ jalali_date($trending->published_at, 'Y/m/d') }}</span>

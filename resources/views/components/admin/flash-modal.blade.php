@@ -273,8 +273,10 @@
 
         document.addEventListener('submit', event => {
             const form = event.target;
+            const spoofedMethod = form.querySelector('input[name="_method"]')?.value?.toUpperCase();
+            const isDeleteForm = spoofedMethod === 'DELETE';
 
-            if (!form.classList.contains('js-confirm')) {
+            if (!form.classList.contains('js-confirm') && !isDeleteForm) {
                 return;
             }
 
@@ -349,18 +351,26 @@
         function submitAction() {
             if (!pendingAction) return;
 
-            if (pendingAction.type === 'livewire' && pendingAction.event) {
+            const action = pendingAction;
+
+            closeModal();
+
+            if (action.type === 'callback' && typeof action.callback === 'function') {
+                action.callback();
+
+                return;
+            }
+
+            if (action.type === 'livewire' && action.event) {
                 window.dispatchEvent(new CustomEvent('taxonomy-list-updating-start'));
 
                 if (window.Livewire) {
                     window.Livewire.dispatch(
-                        pendingAction.event,
-                        pendingAction.payload || {}
+                        action.event,
+                        action.payload || {}
                     );
                 }
             }
-
-            closeModal();
         }
 
         window.addEventListener('admin-open-confirm', event => {

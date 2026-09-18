@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Support;
 
 use App\Application\Support\Actions\CreateTicketMessageAction;
+use App\Application\Support\Exceptions\TicketAttachmentUploadException;
 use App\Application\Support\Exceptions\TicketLimitExceededException;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use App\Domain\Support\Models\Ticket;
@@ -35,6 +36,7 @@ class StoreTicketMessageController extends Controller
                 sender: $user,
                 senderType: TicketMessageSenderTypeEnum::USER,
                 body: $request->validated('message'),
+                attachments: $request->file('attachments', []),
             );
         } catch (TicketLimitExceededException|DomainException $exception) {
             return redirect()
@@ -42,6 +44,13 @@ class StoreTicketMessageController extends Controller
                 ->withInput()
                 ->withErrors([
                     'message' => $exception->getMessage(),
+                ], 'replyTicket');
+        } catch (TicketAttachmentUploadException $exception) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'attachments' => $exception->getMessage(),
                 ], 'replyTicket');
         }
 

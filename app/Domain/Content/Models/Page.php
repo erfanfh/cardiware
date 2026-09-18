@@ -75,7 +75,7 @@ class Page extends Model implements PageViewableInterface
      */
     public function isPubliclyVisible(): bool
     {
-        return $this->status === PageStatusEnum::ACTIVE;
+        return $this->status === PageStatusEnum::ACTIVE && (bool)$this->published_at?->lte(now());
     }
 
     /**

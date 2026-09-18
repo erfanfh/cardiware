@@ -9,7 +9,7 @@
 
     $formMethod = $method === 'get' ? 'get' : 'post';
 
-    $baseAttributes = $attributes->class([]);
+    $baseAttributes = $attributes->class('confirmationForm');
 
     if (filled($bindAction)) {
         $baseAttributes = $baseAttributes->merge([
@@ -20,10 +20,18 @@
             'action' => $action,
         ]);
     }
+
+    if ($method === 'delete') {
+        $baseAttributes = $baseAttributes
+            ->class('js-confirm')
+            ->merge([
+                'data-confirm-title' => 'تأیید حذف',
+                'data-confirm-text' => 'آیا از حذف این مورد مطمئن هستید؟ این عملیات قابل بازگشت نیست.',
+            ]);
+    }
 @endphp
 
 <form
-    class="confirmationForm"
     method="{{ $formMethod }}"
     {{ $baseAttributes }}
     x-data

@@ -2,6 +2,10 @@
     use App\Domain\Video\Enums\VideoSourceTypeEnum;
     use App\Domain\Video\Enums\VideoStatusEnum;
     $video = $video ?? null;
+    $itemUrl = $video
+        ? ($video->isPubliclyVisible() ? $video->url : route('preview.videos', $video->id))
+        : null;
+    $itemUrlLabel = $video?->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
     $selectedTags = $selectedTags ?? [];
     $oldExistingIds = collect(old('tags.existing', []))->filter()->map(fn ($id) => (int)$id);
     $oldExistingTags = \App\Domain\Taxonomy\Models\TaxonomyTerm::query()->whereIn('id', $oldExistingIds)->get(['id','title'])->map(fn ($tag) => ['id' => $tag->id, 'name' => $tag->title]);
@@ -23,14 +27,25 @@
                     <x-admin.form.date-picker name="published_at"
                                               :value="old('published_at', $video?->published_at ? jalali_date($video->published_at, 'Y/m/d H:i') : '')"/>
                 </x-admin.field>
+                @if($video)
+                    <x-admin.field label="افزایش نمایشی بازدید">
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $video->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
                 <div class="flex items-center justify-between"><span class="text-xs font-bold text-slate-700">ویدیوی ویژه</span>
                     <x-admin.form.switch name="is_featured"
                                          :checked="old('is_featured', $video?->is_featured ?? false)"/>
                 </div>
-                @if($video?->isPubliclyVisible())
-                    <a href="{{ $video->url }}" target="_blank"
-                       class="flex justify-center rounded-xl bg-brand-50 px-3 py-2 text-xs font-black text-brand-700">مشاهده
-                        در سایت</a>
+                @if($video)
+                    <a href="{{ $itemUrl }}" target="_blank"
+                       class="flex justify-center rounded-xl bg-brand-50 px-3 py-2 text-xs font-black text-brand-700">{{ $itemUrlLabel }}</a>
                 @endif
             </div>
         </x-admin.metabox>
@@ -69,7 +84,8 @@
     <x-admin.form.wp-title-slug titleName="title" slugName="slug" :titleValue="$video?->title ?? ''"
                                 :slugValue="$video?->slug ?? ''" :basePath="url('/videos').'/'"
                                 :scope="\App\Domain\Slug\Enums\SlugScopeEnum::VIDEO" :currentId="$video?->id"
-                                :itemUrl="$video?->url"/>
+                                :itemUrl="$itemUrl"
+                                :itemUrlLabel="$itemUrlLabel"/>
 
     <x-admin.metabox title="منبع و پخش ویدیو">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-3">

@@ -790,6 +790,7 @@ function buildEditorConfig(element) {
     const height = Number(element.dataset.editorHeight || 400);
     const dir = element.dataset.editorDir || 'rtl';
     const readonly = element.dataset.editorReadonly === 'true';
+    const toolbarSticky = element.dataset.editorToolbarSticky !== 'false';
 
     const presetConfig = getPresetConfig(preset);
 
@@ -835,8 +836,8 @@ function buildEditorConfig(element) {
         relative_urls: false,
         remove_script_host: false,
 
-        toolbar_sticky: true,
-        toolbar_sticky_offset: 64,
+        toolbar_sticky: toolbarSticky,
+        toolbar_sticky_offset: toolbarSticky ? 64 : 0,
 
         autoresize_bottom_margin: 16,
 

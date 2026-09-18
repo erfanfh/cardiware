@@ -14,6 +14,8 @@
         optimisticInfo: null,
         uploading: false,
         uploadProgress: 0,
+        uploadFailed: false,
+        uploadQueue: [],
 
         get previewInfo(){
             return this.optimisticInfo ?? this.selectedInfo ?? null;
@@ -46,7 +48,10 @@
             });
 
             this.$watch('open', (v) => {
-                if (!v) return;
+                if (!v) {
+                    if (!this.uploading) this.clearUploadQueue();
+                    return;
+                }
 
                 this.$nextTick(() => {
                     this.refreshGridThumbs();
@@ -241,6 +246,48 @@
             this.$wire.confirmSelection();
         },
 
+        prepareUploads(event) {
+            const files = Array.from(event?.target?.files ?? []);
+            if (files.length === 0) return;
+
+            this.clearUploadQueue();
+            this.uploadFailed = false;
+            this.uploadProgress = 0;
+            this.uploadQueue = files.map((file, index) => ({
+                key: `${file.name}-${file.size}-${file.lastModified}-${index}`,
+                name: file.name,
+                size: this.formatBytes(file.size),
+                previewUrl: file.type.startsWith('image/') ? URL.createObjectURL(file) : null,
+            }));
+            this.tab = 'library';
+        },
+
+        clearUploadQueue() {
+            this.uploadQueue.forEach((file) => {
+                if (file.previewUrl) URL.revokeObjectURL(file.previewUrl);
+            });
+            this.uploadQueue = [];
+            this.uploadFailed = false;
+        },
+
+        formatBytes(bytes) {
+            if (!Number.isFinite(bytes) || bytes <= 0) return '۰ بایت';
+            if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+            return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        },
+
+        finishUploads(detail) {
+            this.uploading = false;
+            this.uploadProgress = 0;
+            this.clearUploadQueue();
+        },
+
+        failUploads() {
+            this.uploading = false;
+            this.uploadProgress = 0;
+            this.uploadFailed = true;
+        },
+
         refreshPreviewSlot() {
             this.$nextTick(() => {
                 const slot = this.$refs.previewSlot;
@@ -356,12 +403,13 @@
     "
     x-on:mfip-close-modal.window="open = false"
     x-on:mfip-switch-tab.window="tab = $event.detail.tab"
-    x-on:mfip-upload-saved.window="uploading = false; uploadProgress = 0"
+    x-on:mfip-upload-saved.window="finishUploads($event.detail)"
+    x-on:mfip-upload-failed.window="failUploads()"
 
     x-on:livewire-upload-start.window="uploading = true; uploadProgress = 0"
     x-on:livewire-upload-progress.window="uploadProgress = $event.detail.progress"
     x-on:livewire-upload-finish.window="uploadProgress = 100"
-    x-on:livewire-upload-error.window="uploading = false; uploadProgress = 0"
+    x-on:livewire-upload-error.window="failUploads()"
 >
     <!-- Modal -->
     <div
@@ -418,11 +466,15 @@
                                 </div>
 
                                 <!-- Upload progress bar (WP-like top bar) -->
-                                <div class="mfip-uploadBar" x-show="uploading || $wire.__instance?.isLoading" x-cloak>
+                                <div class="mfip-uploadBar" x-show="uploading" x-cloak>
                                     <div class="mfip-uploadBarTop">
                                         <div class="mfip-uploadBarTitle">
                                             <span class="mfip-dot"></span>
-                                            در حال آپلود...
+                                            <span
+                                                x-text="uploadProgress >= 100
+                                                    ? `در حال پردازش ${uploadQueue.length} تصویر...`
+                                                    : `در حال آپلود ${uploadQueue.length} تصویر...`"
+                                            ></span>
                                         </div>
                                         <div class="mfip-uploadBarPct" x-text="uploadProgress + '%'"></div>
                                     </div>
@@ -436,8 +488,42 @@
                                     </div>
                                 </div>
 
+                                @if($errors->has('upload') || $errors->has('upload.*'))
+                                    <div class="mfip-error">
+                                        {{ $errors->first('upload') ?: $errors->first('upload.*') }}
+                                    </div>
+                                @endif
+
                                 <div class="mfip-gridWrap">
                                     <div class="mfip-grid">
+                                        <template x-for="file in uploadQueue" :key="file.key">
+                                            <div class="mfip-tile mfip-uploadTile" :class="uploadFailed ? 'is-error' : ''">
+                                                <div class="mfip-square mfip-tileAspect">
+                                                    <template x-if="file.previewUrl">
+                                                        <img :src="file.previewUrl" class="mfip-imgCover" alt="">
+                                                    </template>
+                                                    <template x-if="!file.previewUrl">
+                                                        <div class="mfip-noPreview">بدون پیش‌نمایش</div>
+                                                    </template>
+
+                                                    <div class="mfip-uploadTileState">
+                                                        <span class="mfip-uploadSpinner" x-show="!uploadFailed"></span>
+                                                        <span
+                                                            class="mfip-uploadTileStatus"
+                                                            x-text="uploadFailed
+                                                                ? 'ناموفق'
+                                                                : (uploadProgress >= 100 ? 'در حال پردازش' : `${uploadProgress}%`)"
+                                                        ></span>
+                                                    </div>
+
+                                                    <div class="mfip-uploadTileMeta">
+                                                        <span class="mfip-uploadTileName" x-text="file.name"></span>
+                                                        <span class="mfip-uploadTileSize" x-text="file.size"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+
                                         @forelse ($library as $media)
                                             @php
                                                 $url = $media->primaryVariant
@@ -486,7 +572,7 @@
                                                 </div>
                                             </button>
                                         @empty
-                                            <div class="mfip-emptyState">چیزی پیدا نشد.</div>
+                                            <div class="mfip-emptyState" x-show="uploadQueue.length === 0">چیزی پیدا نشد.</div>
                                         @endforelse
                                     </div>
                                 </div>
@@ -528,13 +614,14 @@
                                             type="file"
                                             class="mfip-hiddenInput"
                                             accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                            multiple
                                             wire:model="upload"
-                                            @change="tab = 'library'"
+                                            @change="prepareUploads($event)"
                                         >
                                         <div class="mfip-dropzoneContent">
-                                            <div class="mfip-dropzoneTitle">آپلود تصویر</div>
-                                            <div class="mfip-dropzoneHint">فایل را بکش و رها کن یا کلیک کن</div>
-                                            <div class="mfip-dropzoneHint">jpg / png / webp — حداکثر ۵MB</div>
+                                            <div class="mfip-dropzoneTitle">آپلود تصاویر</div>
+                                            <div class="mfip-dropzoneHint">فایل‌ها را بکش و رها کن یا برای انتخاب چند تصویر کلیک کن</div>
+                                            <div class="mfip-dropzoneHint">jpg / png / webp — هر فایل حداکثر ۵MB — حداکثر ۲۰ تصویر</div>
                                         </div>
                                     </label>
 

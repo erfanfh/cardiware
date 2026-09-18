@@ -1,11 +1,11 @@
 <div
     class="group/card rounded-3xl border border-slate-100 bg-slate-50 p-4 hover:bg-white hover:shadow-md hover:border-slate-200 transition dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-slate-700 dark:hover:bg-slate-800 dark:hover:shadow-black/20 {{ $item['css_class'] }}">
     <div class="flex items-start gap-3">
-        @if($item['icon'])
-            <span
-                class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-lg ring-1 ring-slate-200 group-hover/card:ring-brand-100 transition dark:bg-slate-900 dark:ring-slate-700 dark:group-hover/card:ring-brand-500/30">
-                {{ $item['icon'] }}
-            </span>
+        @if(filled($item['icon']))
+            <x-front.navigation-icon
+                :item="$item"
+                class="h-11 w-11 rounded-2xl bg-white text-slate-600 ring-1 ring-slate-200 transition group-hover/card:text-brand-600 group-hover/card:ring-brand-100 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:group-hover/card:text-brand-300 dark:group-hover/card:ring-brand-500/30 [&_svg]:h-6 [&_svg]:w-6"
+            />
         @endif
 
         <div class="min-w-0 flex-1">

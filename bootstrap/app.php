@@ -1,9 +1,14 @@
 <?php
 
+use App\Application\Commerce\Exceptions\LauncherManifestChangedException;
+use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
+use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
+use App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException;
+use App\Application\Launcher\Exceptions\DeviceRevokedException;
 use App\Http\Middleware\EnsureAuthenticatedUserIsActive;
-use App\Http\Middleware\ResolveOptionalSanctumUser;
-use App\Http\Middleware\EnsureLauncherDeviceIsActive;
 use App\Http\Middleware\EnsureLauncherAccountIsAllowed;
+use App\Http\Middleware\EnsureLauncherDeviceIsActive;
+use App\Http\Middleware\ResolveOptionalSanctumUser;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         then: function () {
             require base_path('routes/admin.php');
+            require base_path('routes/preview.php');
             require base_path('routes/front.php');
         }
     )
@@ -66,11 +72,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // an hour during a release. The client handles all of them (refreshes the session,
         // restarts the file, shows the purchase page).
         $exceptions->dontReport([
-            \App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException::class,
-            \App\Application\Commerce\Exceptions\LauncherManifestChangedException::class,
-            \App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException::class,
-            \App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException::class,
-            \App\Application\Launcher\Exceptions\DeviceRevokedException::class,
+            PurchaseAccessDownloadSessionExpiredException::class,
+            LauncherManifestChangedException::class,
+            PurchaseAccessIsNotUsableException::class,
+            PurchaseAccessFileUnavailableException::class,
+            DeviceRevokedException::class,
         ]);
 
         $exceptions->shouldRenderJsonWhen(

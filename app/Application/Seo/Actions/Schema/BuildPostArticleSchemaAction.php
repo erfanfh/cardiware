@@ -8,7 +8,8 @@ use App\Application\Seo\Support\SchemaIdGenerator;
 final class BuildPostArticleSchemaAction
 {
     public function __construct(
-        protected SchemaIdGenerator $schemaIdGenerator,
+        protected SchemaIdGenerator                $schemaIdGenerator,
+        protected BuildAggregateRatingSchemaAction $buildAggregateRatingSchemaAction,
     )
     {
     }
@@ -59,6 +60,7 @@ final class BuildPostArticleSchemaAction
             'thumbnailUrl' => $context->pageImageUrl,
             'keywords' => $context->keywords,
             'articleSection' => $context->articleSections,
+            'aggregateRating' => $this->buildAggregateRatingSchemaAction->execute($context),
             'inLanguage' => $context->inLanguage,
             'potentialAction' => [
                 [

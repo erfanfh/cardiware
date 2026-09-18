@@ -3,6 +3,10 @@
     use App\Domain\Project\Enums\ProjectStatusEnum;
 
     $isEdit = isset($project) && $project;
+    $itemUrl = $isEdit
+        ? ($project->isPubliclyVisible() ? front_route('projects.detail', $project) : route('preview.projects', $project->id))
+        : null;
+    $itemUrlLabel = $isEdit && $project->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
 
     $statuses = [];
     foreach (ProjectStatusEnum::cases() as $status){
@@ -87,6 +91,22 @@
 
         <x-admin.metabox title="اطلاعات پروژه">
             <div class="grid grid-cols-12 gap-5">
+                @if($isEdit)
+                    <x-admin.field
+                        class="col-span-12"
+                        label="افزایش نمایشی بازدید"
+                    >
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $project->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
+
                 <x-admin.field
                     class="col-span-12"
                     label="درصد پیشرفت (0 تا 100)"
@@ -193,7 +213,8 @@
         basePath="{{ route('home') }}/projects/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::PROJECT"
         :currentId="$project->id ?? null"
-        :itemUrl="$project ? front_route('projects.detail', $project) : null"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">

@@ -219,6 +219,7 @@ class ManageProductMedals extends Component
         $this->resetValidation();
 
         $this->dispatch('product-medal-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     public function cancelEditing(): void

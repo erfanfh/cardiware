@@ -118,6 +118,8 @@
                                     <div
                                         class="rounded-[1.35rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 shadow-sm">
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
+
+                                        <x-ticket.attachments :message="$message" :dark-mode="false" />
                                     </div>
 
                                     <div class="mt-1 px-1 text-left text-xs font-bold text-slate-400">
@@ -135,6 +137,8 @@
                                     <div
                                         class="rounded-[1.35rem] rounded-br-md bg-brand-600 px-4 py-3 text-sm font-bold leading-7 text-white shadow-lg shadow-brand-500/15">
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
+
+                                        <x-ticket.attachments :message="$message" tone="dark" :dark-mode="false" />
                                     </div>
 
                                     <div class="mt-1 px-1 text-right text-xs font-bold text-slate-400">
@@ -161,7 +165,12 @@
                         این تیکت بسته شده است. برای ارسال پاسخ، ابتدا تیکت را مجدداً باز کنید.
                     </div>
                 @else
-                    <form method="POST" action="{{ route('admin.tickets.reply', $ticket) }}" class="space-y-3">
+                    <form
+                        method="POST"
+                        action="{{ route('admin.tickets.reply', $ticket) }}"
+                        enctype="multipart/form-data"
+                        class="space-y-3"
+                    >
                         @csrf
 
                         <div>
@@ -169,24 +178,39 @@
                                 پاسخ پشتیبانی
                             </label>
 
-                            <textarea
-                                name="message"
-                                rows="5"
-                                class="block w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-brand-300 focus:ring-4 focus:ring-brand-100/60"
-                                placeholder="پاسخ خود را بنویسید..."
-                            >{{ old('message') }}</textarea>
+                            <div class="grid grid-cols-[minmax(0,1fr)_auto] gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2 transition focus-within:border-brand-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-brand-100/60">
+                                <x-front.ticket-image-upload
+                                    mode="composer"
+                                    layout="stacked-actions"
+                                    :dark-mode="false"
+                                />
+
+                                <textarea
+                                    name="message"
+                                    rows="3"
+                                    class="col-start-1 row-span-2 row-start-1 min-h-[6.5rem] min-w-0 resize-none border-0 bg-transparent px-2 py-2 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-0"
+                                    placeholder="پاسخ خود را بنویسید..."
+                                >{{ old('message') }}</textarea>
+
+                                <button
+                                    type="submit"
+                                    class="col-start-2 row-start-2 grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-2xl bg-brand-600 text-white shadow-sm shadow-brand-500/20 transition hover:bg-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100"
+                                    aria-label="ارسال پاسخ"
+                                    title="ارسال پاسخ"
+                                >
+                                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M21 12 3 20l3.2-8L3 4l18 8Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                        <path d="M6.5 12H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </button>
+                            </div>
 
                             @error('message')
                             <div class="mt-2 text-sm font-bold text-rose-600">
                                 {{ $message }}
                             </div>
                             @enderror
-                        </div>
 
-                        <div class="flex justify-end">
-                            <x-admin.form.button type="submit" variant="solid">
-                                ارسال پاسخ
-                            </x-admin.form.button>
                         </div>
                     </form>
                 @endif
@@ -390,4 +414,6 @@
             </x-admin.metabox>
         </aside>
     </div>
+
+    <x-ticket.image-lightbox />
 @endsection

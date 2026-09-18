@@ -12,11 +12,11 @@
            target="{{ $item['target'] }}"
            @if($item['target'] === '_blank') rel="noopener noreferrer" @endif
            class="flex min-w-0 flex-1 items-center gap-3 rounded-2xl px-3 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100 {{ $item['css_class'] }}">
-            @if($item['icon'])
-                <span
-                    class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-50 text-base ring-1 ring-slate-100 dark:bg-slate-800 dark:ring-slate-700">
-                    {{ $item['icon'] }}
-                </span>
+            @if(filled($item['icon']))
+                <x-front.navigation-icon
+                    :item="$item"
+                    class="h-9 w-9 rounded-xl bg-slate-50 text-slate-600 ring-1 ring-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 [&_svg]:h-5 [&_svg]:w-5"
+                />
             @endif
 
             <span class="min-w-0 flex-1 line-clamp-1">

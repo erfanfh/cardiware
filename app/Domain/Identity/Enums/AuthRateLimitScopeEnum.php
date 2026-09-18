@@ -14,9 +14,13 @@ enum AuthRateLimitScopeEnum: string
 
     case REQUEST_PASSWORD_RESET_OTP = 'request_password_reset_otp';
 
+    case REQUEST_ACCOUNT_PASSWORD_CHANGE_OTP = 'request_account_password_change_otp';
+
     case VERIFY_LOGIN_OTP = 'verify_login_otp';
 
     case REGISTER = 'register';
 
     case RESET_PASSWORD = 'reset_password';
+
+    case CHANGE_ACCOUNT_PASSWORD = 'change_account_password';
 }

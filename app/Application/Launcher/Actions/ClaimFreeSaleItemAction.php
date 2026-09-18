@@ -3,6 +3,7 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessForOrderItemAction;
+use App\Application\Commerce\Actions\Order\GenerateOrderNumberAction;
 use App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction;
 use App\Application\Launcher\Exceptions\LauncherCommerceException;
 use App\Domain\Catalog\Models\ProductSaleItem;
@@ -12,13 +13,13 @@ use App\Domain\Commerce\Models\OrderItem;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Identity\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ClaimFreeSaleItemAction
 {
     public function __construct(
         private readonly ResolvePurchasablePriceAction $resolvePrice,
         private readonly GrantPurchaseAccessForOrderItemAction $grantAccess,
+        private readonly GenerateOrderNumberAction $generateOrderNumber,
     ) {}
 
     public function execute(User $user, int $saleItemId, string $idempotencyKey): PurchaseAccess
@@ -39,7 +40,7 @@ class ClaimFreeSaleItemAction
                 ->get();
 
             $usableAccess = $existingAccesses
-                ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
+                ->first(fn (PurchaseAccess $access): bool => $access->isUsableForLauncher());
 
             if ($usableAccess instanceof PurchaseAccess) {
                 return $usableAccess;
@@ -49,15 +50,14 @@ class ClaimFreeSaleItemAction
                 throw LauncherCommerceException::alreadyOwned();
             }
 
-            if (!(bool) $saleItem->launcher_free_claim_enabled
-                || !$saleItem->isPurchasableAvailable()
+            if (! (bool) $saleItem->launcher_free_claim_enabled
+                || ! $saleItem->isPurchasableAvailable()
                 || $this->resolvePrice->execute($saleItem)->finalPrice !== 0) {
                 throw LauncherCommerceException::notFree();
             }
 
             $order = Order::query()->create([
                 'user_id' => $user->getKey(),
-                'order_number' => 'LF-' . Str::upper(Str::random(20)),
                 'status' => OrderStatusEnum::PAID,
                 'subtotal_amount' => 0,
                 'discount_amount' => 0,
@@ -67,6 +67,10 @@ class ClaimFreeSaleItemAction
                     'source' => 'launcher_free_claim',
                     'idempotency_key' => $idempotencyKey,
                 ],
+            ]);
+
+            $order->update([
+                'order_number' => $this->generateOrderNumber->execute($order),
             ]);
 
             $orderItem = OrderItem::query()->create([

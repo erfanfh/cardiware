@@ -4,6 +4,7 @@
 
 <div
     x-data="seoBox(@js($config))"
+    @readability-updated="readabilityIssueCount = $event.detail"
     @title-changed.window="
         entityTitle = $event.detail;
         if (primaryTitleToken) {
@@ -586,14 +587,62 @@
 
     {{-- Tab: Readability --}}
     <section
+        x-data="seoReadability(@js($config['readabilityField'] ?? 'body'))"
         x-show="activeTab === 'readability' && readabilityEnabled"
         x-transition.opacity.duration.200ms
         class="rounded-2xl border border-slate-200 bg-white p-5"
     >
-        <div
-            class="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-center text-sm font-semibold text-amber-700">
-            به زودی!
+        <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <h3 class="text-sm font-semibold text-slate-800">خوانایی متن اصلی</h3>
+                <p class="mt-1 text-xs leading-6 text-slate-500">با ویرایش متن، نتیجه خودکار به‌روز می‌شود؛ نیازی به ذخیره نیست.</p>
+            </div>
+            <span class="rounded-full border px-3 py-1 text-xs font-semibold" role="status"
+                  :class="readabilityColor(readability.status)"
+                  x-text="readability.state === 'short' ? 'متن کوتاه' : readabilityLabel(readability.status)"></span>
         </div>
+
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <template x-for="stat in [
+                {label: 'کلمه', value: readability.words},
+                {label: 'جمله', value: readability.sentences},
+                {label: 'پاراگراف', value: readability.paragraphs},
+                {label: 'دقیقه مطالعهٔ تقریبی', value: readability.readingMinutes}
+            ]" :key="stat.label">
+                <div class="rounded-xl bg-slate-50 p-3 text-center">
+                    <div class="text-lg font-bold text-slate-800" x-text="stat.value.toLocaleString('fa-IR')"></div>
+                    <div class="mt-1 text-xs text-slate-500" x-text="stat.label"></div>
+                </div>
+            </template>
+        </div>
+
+        <p x-show="readability.state !== 'ready'" class="mt-4 rounded-xl bg-slate-50 p-4 text-sm leading-7 text-slate-600"
+           x-text="readability.state === 'empty'
+               ? 'برای شروع تحلیل، متن اصلی محتوا را وارد کنید. تصویر، ویدیو و کد به‌تنهایی متن قابل تحلیل محسوب نمی‌شوند.'
+               : 'برای ارزیابی قابل اتکاتر، دست‌کم ۵۰ کلمه لازم است. کوتاه بودن توضیحات به‌خودی‌خود ایراد نیست؛ آمار متن فعلی در بالا نمایش داده می‌شود.'"></p>
+
+        <div class="mt-4 space-y-3">
+            <template x-for="check in readability.checks" :key="check.key">
+                <div class="rounded-xl border p-4" :class="readabilityColor(check.status)">
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-sm font-semibold">
+                        <span x-text="check.title"></span>
+                        <span class="text-xs" x-text="readabilityLabel(check.status)"></span>
+                    </div>
+                    <p class="mt-2 text-xs leading-6" x-text="check.description"></p>
+                    <template x-if="check.examples.length">
+                        <details class="mt-3 text-xs">
+                            <summary class="cursor-pointer font-medium">نمونه‌های قابل اصلاح از متن</summary>
+                            <ul class="mt-2 space-y-2">
+                                <template x-for="(example, index) in check.examples" :key="index">
+                                    <li class="break-words rounded-lg bg-white p-3 leading-6 text-slate-600" x-text="example"></li>
+                                </template>
+                            </ul>
+                        </details>
+                    </template>
+                </div>
+            </template>
+        </div>
+        <p class="mt-4 text-xs leading-6 text-slate-500">این معیارها راهنمای نگارش‌اند و سختی واژگان یا کیفیت معنایی متن را نمی‌سنجند. زمان مطالعه بر پایهٔ حدود ۲۰۰ کلمه در دقیقه است؛ عنوان، خلاصه و توضیح متا در این تحلیل محاسبه نمی‌شوند.</p>
     </section>
 </div>
 
@@ -635,6 +684,7 @@
 
                 analysisEnabled: config.analysisEnabled ?? false,
                 readabilityEnabled: config.readabilityEnabled ?? false,
+                readabilityIssueCount: null,
                 showFocusKeyword: config.showFocusKeyword ?? true,
 
                 faviconUrl: config.faviconUrl ?? '/favicon/favicon-32x32.webp',
@@ -674,7 +724,7 @@
                         tabs.push({
                             key: 'readability',
                             label: 'آنالیز خوانایی',
-                            badge: 0,
+                            badge: this.readabilityIssueCount,
                         });
                     }
 

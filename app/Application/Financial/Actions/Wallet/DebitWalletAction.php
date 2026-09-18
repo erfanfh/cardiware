@@ -125,6 +125,8 @@ class DebitWalletAction
 
                     'amount' => $data->amount,
 
+                    'tax_amount' => $data->taxAmount,
+
                     /*
                      * For debit transactions, this represents
                      * the amount removed from withdrawable balance.
@@ -199,6 +201,12 @@ class DebitWalletAction
         if ($data->amount <= 0) {
             throw new InvalidArgumentException(
                 'Wallet debit amount must be greater than zero.'
+            );
+        }
+
+        if ($data->taxAmount < 0 || $data->taxAmount > $data->amount) {
+            throw new InvalidArgumentException(
+                'Wallet debit tax amount is invalid.'
             );
         }
 

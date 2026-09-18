@@ -9,6 +9,7 @@ final class BuildProductSchemaAction
     public function __construct(
         protected BuildProductOfferSchemaAction          $buildProductOfferSchemaAction,
         protected BuildProductAggregateOfferSchemaAction $buildProductAggregateOfferSchemaAction,
+        protected BuildAggregateRatingSchemaAction       $buildAggregateRatingSchemaAction,
     )
     {
     }
@@ -43,6 +44,7 @@ final class BuildProductSchemaAction
             'mainEntityOfPage' => [
                 '@id' => $context->base->pageUrl,
             ],
+            'aggregateRating' => $this->buildAggregateRatingSchemaAction->execute($context->base),
             'offers' => $offers,
             'additionalProperty' => $context->additionalProperties,
         ];

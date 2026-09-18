@@ -159,7 +159,20 @@ document.addEventListener('alpine:init', () => {
                 return;
             }
 
-            formEl.submit();
+            const requiresConfirmation = this.bulkAction === 'delete';
+
+            formEl.classList.toggle('js-confirm', requiresConfirmation);
+
+            if (requiresConfirmation) {
+                formEl.dataset.confirmTitle = 'تأیید حذف گروهی';
+                formEl.dataset.confirmText =
+                    `آیا از حذف ${this.selectedCount} مورد انتخاب‌شده مطمئن هستید؟ این عملیات قابل بازگشت نیست.`;
+            } else {
+                delete formEl.dataset.confirmTitle;
+                delete formEl.dataset.confirmText;
+            }
+
+            formEl.requestSubmit();
         },
     }));
 });

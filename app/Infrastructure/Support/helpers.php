@@ -234,6 +234,18 @@ if (!function_exists('page_views')) {
     }
 }
 
+if (!function_exists('public_page_views')) {
+    /**
+     * Return the public-facing view count without changing stored analytics.
+     */
+    function public_page_views(PageViewableInterface $model): int
+    {
+        $offset = max(0, (int)($model->display_views_offset ?? 0));
+
+        return page_views($model) + $offset;
+    }
+}
+
 if (!function_exists('first_filled')) {
     function first_filled(...$values): string
     {

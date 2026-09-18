@@ -266,6 +266,7 @@ class ManageRedirects extends Component
         $this->resetValidation();
 
         $this->dispatch('redirect-edit-started');
+        $this->dispatch('admin-inline-edit-started');
     }
 
     public function cancelEditing(): void

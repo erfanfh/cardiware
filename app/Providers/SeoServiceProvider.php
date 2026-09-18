@@ -8,7 +8,9 @@ use App\Application\Seo\Generators\Sitemap\AuthorStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\CategoryStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\PageStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\PostStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\ProductCategoryStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProductStaticSitemapGenerator;
+use App\Application\Seo\Generators\Sitemap\ProductTagStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\ProjectStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\RaffleStaticSitemapGenerator;
 use App\Application\Seo\Generators\Sitemap\TagStaticSitemapGenerator;
@@ -22,8 +24,10 @@ use App\Application\Seo\Resolvers\PostCategorySeoResolver;
 use App\Application\Seo\Resolvers\PostListSeoResolver;
 use App\Application\Seo\Resolvers\PostSeoResolver;
 use App\Application\Seo\Resolvers\PostTagSeoResolver;
+use App\Application\Seo\Resolvers\ProductCategorySeoResolver;
 use App\Application\Seo\Resolvers\ProductListSeoResolver;
 use App\Application\Seo\Resolvers\ProductSeoResolver;
+use App\Application\Seo\Resolvers\ProductTagSeoResolver;
 use App\Application\Seo\Resolvers\ProjectListSeoResolver;
 use App\Application\Seo\Resolvers\ProjectSeoResolver;
 use App\Application\Seo\Resolvers\RaffleSeoResolver;
@@ -69,6 +73,8 @@ class SeoServiceProvider extends ServiceProvider
                 $app->make(AuthorSeoResolver::class),
                 $app->make(PostTagSeoResolver::class),
                 $app->make(PostCategorySeoResolver::class),
+                $app->make(ProductCategorySeoResolver::class),
+                $app->make(ProductTagSeoResolver::class),
 
                 $app->make(StoreSeoResolver::class),
                 $app->make(ProjectSeoResolver::class),
@@ -95,6 +101,8 @@ class SeoServiceProvider extends ServiceProvider
             TagStaticSitemapGenerator::class,
             AuthorStaticSitemapGenerator::class,
             ProductStaticSitemapGenerator::class,
+            ProductCategoryStaticSitemapGenerator::class,
+            ProductTagStaticSitemapGenerator::class,
             RaffleStaticSitemapGenerator::class,
             VideoStaticSitemapGenerator::class,
         ], StaticSitemapGeneratorInterface::class);

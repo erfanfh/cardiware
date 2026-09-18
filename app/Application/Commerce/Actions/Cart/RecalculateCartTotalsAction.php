@@ -2,6 +2,7 @@
 
 namespace App\Application\Commerce\Actions\Cart;
 
+use App\Application\Commerce\Support\TaxCalculator;
 use App\Application\Promotion\Actions\Coupon\ApplyCouponDiscountToCartItemsAction;
 use App\Application\Promotion\Actions\Coupon\CalculateCouponDiscountForCartAction;
 use App\Domain\Commerce\Models\Cart;
@@ -15,6 +16,7 @@ class RecalculateCartTotalsAction
         private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
         private readonly CalculateCouponDiscountForCartAction $calculateCouponDiscountForCartAction,
         private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
+        private readonly TaxCalculator                         $taxCalculator,
     )
     {
     }
@@ -91,12 +93,17 @@ class RecalculateCartTotalsAction
         $allocatedCouponDiscountAmount = (int)$items->sum('coupon_discount_amount');
 
         $discountAmount = $productDiscountAmount + $allocatedCouponDiscountAmount;
-        $totalAmount = (int)$items->sum('final_total_amount');
+        $tax = $this->taxCalculator->calculate(
+            (int)$items->sum('final_total_amount'),
+        );
 
         $cart->forceFill([
             'subtotal_amount' => $subtotalAmount,
             'discount_amount' => $discountAmount,
-            'total_amount' => max(0, $totalAmount),
+            'taxable_amount' => $tax->taxableAmount,
+            'tax_rate_basis_points' => $tax->rateBasisPoints,
+            'tax_amount' => $tax->taxAmount,
+            'total_amount' => $tax->totalAmount,
 
             'coupon_id' => $couponId,
             'coupon_code' => $couponCode,

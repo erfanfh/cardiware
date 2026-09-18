@@ -5,7 +5,7 @@
 
             <form
                 method="GET"
-                action="{{ front_route('products.list') }}"
+                action="{{ $productListUrl }}"
                 x-data="{
                     min: {{ $priceMin }},
                     max: {{ $priceMax }},
@@ -53,7 +53,7 @@
                         </h3>
 
                         <a
-                            href="{{ front_route('products.list') }}"
+                            href="{{ $productListUrl }}"
                             class="cursor-pointer text-xs font-bold text-brand-600 transition hover:text-brand-700
                             dark:text-brand-400 dark:hover:text-brand-300"
                         >

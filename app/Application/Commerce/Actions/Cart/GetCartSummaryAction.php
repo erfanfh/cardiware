@@ -30,6 +30,10 @@ class GetCartSummaryAction
             'items_count' => $cart->items->count(),
             'subtotal_amount' => $cart->subtotal_amount,
             'discount_amount' => $cart->discount_amount,
+            'taxable_amount' => $cart->taxable_amount,
+            'tax_rate_basis_points' => $cart->tax_rate_basis_points,
+            'tax_rate_percent' => $cart->tax_rate_basis_points / 100,
+            'tax_amount' => $cart->tax_amount,
             'total_amount' => $cart->total_amount,
             'items' => $rootItems
                 ->map(fn($item) => $this->mapCartItem($item))

@@ -38,6 +38,10 @@ class GeneralSettings extends BaseSettings
         'author_posts_count_settings',
 
         'default_payment_gateway',
+        'tax_enabled',
+        'tax_rate_percent',
+        'checkout_terms_enabled',
+        'checkout_terms_url',
         'zibal_sandbox',
         'zibal_merchant_id',
         'zarinpal_merchant_id',
@@ -67,6 +71,8 @@ class GeneralSettings extends BaseSettings
         'zarinpal_sandbox' => BooleanCast::class,
         'payping_sandbox' => BooleanCast::class,
         'aqayepardakht_sandbox' => BooleanCast::class,
+        'tax_enabled' => BooleanCast::class,
+        'checkout_terms_enabled' => BooleanCast::class,
         'launcher_maintenance_enabled' => BooleanCast::class,
     ];
 }

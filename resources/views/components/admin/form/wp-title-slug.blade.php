@@ -8,6 +8,7 @@
     'scope', // SlugScopeEnum
     'currentId' => null,
     'itemUrl' => null,
+    'itemUrlLabel' => 'مشاهده',
 ])
 
 <div
@@ -78,7 +79,7 @@
                    x-show="!editingSlug"
                    x-cloak
                 >
-                    مشاهده
+                    {{ $itemUrlLabel }}
                 </a>
             @endif
 

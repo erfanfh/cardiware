@@ -4,6 +4,10 @@
 
     $isEdit = isset($post) && $post;
     $quickUrl = $isEdit ? route('posts.detail.quick', $post->id) : null;
+    $itemUrl = $isEdit
+        ? ($post->isPubliclyVisible() ? $post->url : route('preview.posts', $post->id))
+        : null;
+    $itemUrlLabel = $isEdit && $post->isPubliclyVisible() ? 'مشاهده' : 'پیش‌نمایش';
 
     $statuses = [];
     foreach (PostStatusEnum::cases() as $status){
@@ -125,6 +129,22 @@
                         :value="old('is_pinned', $post?->is_pinned)"
                     />
                 </x-admin.field>
+
+                @if($isEdit)
+                    <x-admin.field
+                        class="col-span-12"
+                        label="افزایش نمایشی بازدید"
+                    >
+                        <x-admin.form.input
+                            name="display_views_offset"
+                            type="number"
+                            min="0"
+                            max="4294967295"
+                            step="1"
+                            :value="old('display_views_offset', $post->display_views_offset ?? 0)"
+                        />
+                    </x-admin.field>
+                @endif
 
                 <x-admin.field
                     class="col-span-12"
@@ -250,7 +270,8 @@
         basePath="{{ route('home') }}/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::CONTENT"
         :currentId="$post->id ?? null"
-        :itemUrl="$post?->url"
+        :itemUrl="$itemUrl"
+        :itemUrlLabel="$itemUrlLabel"
     />
 
     <x-admin.metabox title="توضیحات">
@@ -327,6 +348,7 @@
                         :value="old('information_boxes.' . $postInformationBox->value . '.body', $informationBoxes->get($postInformationBox->value)?->body)"
                         preset="full"
                         height="500"
+                        :toolbar-sticky="false"
                         placeholder="متن ..."
                     />
                 </x-admin.field>

@@ -14,6 +14,8 @@
 
     $subtotalAmount = (int) ($order->subtotal_amount ?? 0);
     $discountAmount = (int) ($order->discount_amount ?? 0);
+    $taxAmount = (int) ($order->tax_amount ?? 0);
+    $taxRate = rtrim(rtrim(number_format(((int) ($order->tax_rate_basis_points ?? 0)) / 100, 2, '.', ''), '0'), '.');
     $totalAmount = (int) ($order->total_amount ?? max(0, $subtotalAmount - $discountAmount));
 
     $status = $order->status;
@@ -73,7 +75,7 @@
                     </a>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-4">
+                <div class="grid grid-cols-1 gap-4 p-5 md:grid-cols-2 xl:grid-cols-5">
                     <div class="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm">
                         <div class="text-xs font-bold text-slate-500">مبلغ اصلی</div>
                         <div class="mt-2 text-lg font-black text-slate-900">
@@ -92,6 +94,13 @@
                         <div class="text-xs font-bold text-emerald-700">مبلغ پرداختی کاربر</div>
                         <div class="mt-2 text-lg font-black text-emerald-800">
                             {{ $money($totalAmount) }}
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-amber-100 bg-amber-50/60 p-4 shadow-sm">
+                        <div class="text-xs font-bold text-amber-700">مالیات{{ $taxRate !== '0' ? " ({$taxRate}٪)" : '' }}</div>
+                        <div class="mt-2 text-lg font-black text-amber-800">
+                            {{ $money($taxAmount) }}
                         </div>
                     </div>
 
