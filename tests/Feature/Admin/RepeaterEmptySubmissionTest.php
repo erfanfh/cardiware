@@ -31,4 +31,16 @@ class RepeaterEmptySubmissionTest extends TestCase
         self::assertArrayHasKey('links', $emptyPayload);
         self::assertSame('', $emptyPayload['links']);
     }
+
+    public function test_shared_repeater_renders_short_add_buttons_for_both_ends(): void
+    {
+        $html = Blade::render(<<<'BLADE'
+            <x-admin.form.repeater name="links" addText="افزودن لینک" :items="[]" />
+        BLADE);
+
+        self::assertStringContainsString('@click="add(\'start\')"', $html);
+        self::assertStringContainsString('@click="add(\'end\')"', $html);
+        self::assertStringContainsString('افزودن بالا', $html);
+        self::assertStringContainsString('افزودن پایین', $html);
+    }
 }

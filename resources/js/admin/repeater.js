@@ -79,14 +79,18 @@ window.mwRepeater = function (opts = {}) {
             })
         },
 
-        add() {
+        add(position = 'end') {
             const item = deepClone(this.defaultItem || {})
 
             item.__key = makeKey()
             item._open = true
-            item.sort_order = this.items.length
 
-            this.items.push(item)
+            if (position === 'start') {
+                this.items.unshift(item)
+            } else {
+                this.items.push(item)
+            }
+
             this.reorder()
             this.refreshDom()
         },
