@@ -56,6 +56,7 @@ class GeneralSettings extends BaseSettings
         // Public installer shown on /launcher and launcher bridge pages.
         // This is intentionally separate from launcher update packages.
         'launcher_public_download_url',
+        'launcher_download_max_connections',
 
         // Remote kill switch: when enabled, the Windows launcher blocks login/session-restore
         // and shows launcher_maintenance_message instead. Falls back to the LAUNCHER_MAINTENANCE_*
