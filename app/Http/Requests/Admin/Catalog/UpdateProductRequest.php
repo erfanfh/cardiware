@@ -59,7 +59,6 @@ class UpdateProductRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
-            'display_views_offset' => ['required', 'integer', 'min:0', 'max:4294967295'],
 
             'tags' => ['nullable', 'array'],
             'tags.existing' => ['nullable', 'array'],
@@ -398,8 +397,6 @@ class UpdateProductRequest extends FormRequest
 
             'update_progress' => ['nullable', 'array'],
             'update_progress.is_visible' => ['nullable', 'boolean'],
-            'update_progress.title' => ['nullable', 'string', 'max:255'],
-            'update_progress.description' => ['nullable', 'string', 'max:1000'],
             'update_progress.progress_percentage' => ['nullable', 'integer'],
             'update_progress.started_at' => ['nullable', 'date'],
             'update_progress.release_at' => ['nullable', 'date'],
@@ -1142,7 +1139,6 @@ class UpdateProductRequest extends FormRequest
             'store_id' => 'فروشنده',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
-            'display_views_offset' => 'افزایش نمایشی بازدید',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
             'video_gallery_items.*.video_url' => 'لینک ویدیو',
             'video_gallery_items.*.cover.id' => 'کاور ویدیو',
@@ -1156,8 +1152,6 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.discount.show_special_box' => 'نمایش باکس تخفیف ویژه',
             'sale_items.*.discount.special_box_title' => 'عنوان باکس تخفیف ویژه',
             'sale_items.*.discount.special_box_description' => 'توضیحات باکس تخفیف ویژه',
-            'update_progress.title' => 'عنوان باکس پیشرفت آپدیت',
-            'update_progress.description' => 'توضیحات باکس پیشرفت آپدیت',
             'sale_items.*.manifest.download_type' => 'نوع دانلود',
             'sale_items.*.manifest.archive_format' => 'فرمت آرشیو',
             'sale_items.*.manifest.assembled_file_name' => 'نام آرشیو نهایی',
@@ -1222,7 +1216,6 @@ class UpdateProductRequest extends FormRequest
         $this->merge([
             'store_id' => $defaultStoreId,
             'picture_id' => $this->input('picture.id'),
-            'display_views_offset' => $this->input('display_views_offset', 0),
             'tags' => [
                 'existing' => $existing,
                 'new' => $new,
