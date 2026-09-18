@@ -26,6 +26,15 @@
                                         value="{{ old('launcher_public_download_url', $publicDownloadUrl) }}" />
                 </x-admin.field>
 
+                <div class="mt-4">
+                    <x-admin.field label="حداکثر اتصال هم‌زمان هر فایل در دانلود (۱ تا ۸)"
+                                   hint="هاست‌های اشتراکی با اتصال‌های زیاد سرویس را مسدود می‌کنند؛ برای dl4 مقدار ۲ یا ۳ پیشنهاد می‌شود. تغییر بدون نیاز به نسخهٔ جدید لانچر و برای دانلودهای بعدی اعمال می‌شود.">
+                        <x-admin.form.input name="launcher_download_max_connections" type="number" dir="ltr"
+                                            min="1" max="8"
+                                            value="{{ old('launcher_download_max_connections', $downloadMaxConnections) }}" />
+                    </x-admin.field>
+                </div>
+
                 <div class="mt-5 flex flex-wrap items-center gap-3">
                     <x-admin.form.button type="submit" variant="dark" size="lg">
                         ذخیره لینک دانلود عمومی

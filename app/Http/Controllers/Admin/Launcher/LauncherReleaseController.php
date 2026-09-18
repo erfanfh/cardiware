@@ -31,6 +31,7 @@ final class LauncherReleaseController extends Controller
             'launcher_public_download_url',
             config('launcher.public_download_url')
         ));
+        $downloadMaxConnections = max(1, min(8, (int)$settings->get('launcher_download_max_connections', 8)));
 
         $maintenanceEnabled = (bool)$settings->get(
             'launcher_maintenance_enabled',
@@ -45,6 +46,7 @@ final class LauncherReleaseController extends Controller
             'releases',
             'editingRelease',
             'publicDownloadUrl',
+            'downloadMaxConnections',
             'maintenanceEnabled',
             'maintenanceMessage'
         ));
@@ -83,12 +85,16 @@ final class LauncherReleaseController extends Controller
 
         $validated = $request->validate([
             'launcher_public_download_url' => ['nullable', 'url:https', 'max:2048'],
+            'launcher_download_max_connections' => ['nullable', 'integer', 'min:1', 'max:8'],
         ], [
             'launcher_public_download_url.url' => 'لینک دانلود عمومی لانچر باید کامل و با HTTPS باشد.',
+            'launcher_download_max_connections.integer' => 'تعداد اتصال باید عدد بین ۱ تا ۸ باشد.',
         ]);
 
         $url = trim((string)($validated['launcher_public_download_url'] ?? ''));
         $settings->set('launcher_public_download_url', $url !== '' ? $url : null);
+        $settings->set('launcher_download_max_connections',
+            max(1, min(8, (int)($validated['launcher_download_max_connections'] ?? 8))));
 
         return redirect()->route('admin.launcher-releases.index')
             ->with('success', 'لینک دانلود عمومی لانچر با موفقیت ذخیره شد.')

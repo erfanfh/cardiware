@@ -112,6 +112,21 @@ class GetLauncherBootstrapAction
                 ?: ($configuration['release_notes'] ?? null),
             'release_published_at' => $release['published_at'] ?? null,
 
+            // Public full-installer link (admin "launcher public download URL"). The launcher
+            // offers it as a fallback when its in-place updater cannot run (antivirus etc.).
+            'setup_download_url' => trim((string) $this->settings->get(
+                'launcher_public_download_url',
+                config('launcher.public_download_url')
+            )) ?: null,
+            // Per-file parallel connection cap for product/update/mod downloads. Shared
+            // download hosts (cPanel/LiteSpeed) count concurrent connections per vhost and
+            // suspend the account when hundreds of long-lived range requests pile up --
+            // 8 per user was enough to get dl4 blocked. Tunable from the panel without a
+            // launcher release; the launcher clamps it to 1..8.
+            'download_max_connections' => max(1, min(8, (int) $this->settings->get(
+                'launcher_download_max_connections',
+                8
+            ))),
             'server_time' => $now->toISOString(),
         ];
     }
