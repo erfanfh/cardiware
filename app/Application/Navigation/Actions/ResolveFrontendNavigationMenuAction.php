@@ -15,34 +15,40 @@ class ResolveFrontendNavigationMenuAction
 {
     public function __construct(
         protected NavigationItemUrlResolver $urlResolver,
-        protected ResolveIconSvgAction $resolveIconSvgAction,
+        protected ResolveIconSvgAction      $resolveIconSvgAction,
     )
     {
     }
 
     public function execute(string $slug): Collection
     {
-        return Cache::tags([
-            CacheTag::NAVIGATION,
-            CacheTag::navigationMenu($slug),
-        ])->rememberForever(
-            CacheKey::frontendNavigation($slug),
-            fn() => $this->resolve($slug)
-        );
-    }
-
-    protected function resolve(string $slug): Collection
-    {
-        $menu = NavigationMenu::query()
-            ->where('slug', $slug)
-            ->first();
+        $menu = $this->findMenu($slug);
 
         if (!$menu) {
             return collect();
         }
 
+        return Cache::tags([
+            CacheTag::NAVIGATION,
+            CacheTag::navigationMenu($slug),
+        ])->rememberForever(
+            CacheKey::frontendNavigation($slug, $menu->cache_revision),
+            fn() => $this->resolve($menu->id)
+        );
+    }
+
+    protected function findMenu(string $slug): ?NavigationMenu
+    {
+        return NavigationMenu::query()
+            ->select(['id', 'cache_revision'])
+            ->where('slug', $slug)
+            ->first();
+    }
+
+    protected function resolve(int $menuId): Collection
+    {
         $items = NavigationItem::query()
-            ->where('menu_id', $menu->id)
+            ->where('menu_id', $menuId)
             ->with('reference')
             ->orderBy('parent_id')
             ->orderBy('sort_order')
@@ -58,8 +64,8 @@ class ResolveFrontendNavigationMenuAction
 
     protected function buildTree(
         Collection $items,
-        ?int $parentId = null,
-        array $iconSvgs = [],
+        ?int       $parentId = null,
+        array      $iconSvgs = [],
     ): Collection
     {
         return $items
@@ -72,8 +78,8 @@ class ResolveFrontendNavigationMenuAction
 
     protected function mapItem(
         NavigationItem $item,
-        Collection $allItems,
-        array $iconSvgs,
+        Collection     $allItems,
+        array          $iconSvgs,
     ): ?array
     {
         $url = $this->urlResolver->resolveForItem($item);

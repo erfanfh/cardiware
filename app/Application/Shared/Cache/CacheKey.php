@@ -62,9 +62,9 @@ final class CacheKey
         return "layout:page:{$key}:render";
     }
 
-    public static function frontendNavigation(string $slug): string
+    public static function frontendNavigation(string $slug, int|string $revision): string
     {
-        return "navigation:frontend:v2:{$slug}";
+        return "navigation:frontend:v3:{$slug}:revision:{$revision}";
     }
 
     public static function contentSlug(string $slug): string

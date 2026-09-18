@@ -39,6 +39,10 @@ class SyncNavigationMenuItemsAction
                 depth: 0,
             );
 
+            // The revision is committed with the menu changes. A frontend request that
+            // started before this point can only repopulate its old revision's key.
+            $menu->increment('cache_revision');
+
             DB::afterCommit(function () use ($menu) {
                 $this->navigationCacheInvalidator->flushForMenu($menu);
             });

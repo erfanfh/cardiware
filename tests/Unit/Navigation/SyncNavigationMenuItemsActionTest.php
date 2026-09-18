@@ -5,6 +5,9 @@ namespace Tests\Unit\Navigation;
 use App\Application\Navigation\Actions\SyncNavigationMenuItemsAction;
 use App\Application\Navigation\Support\NavigationItemUrlResolver;
 use App\Application\Shared\Cache\Invalidators\NavigationCacheInvalidator;
+use App\Domain\Navigation\Models\NavigationMenu;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
@@ -47,12 +50,37 @@ class SyncNavigationMenuItemsActionTest extends TestCase
         ]);
     }
 
+    public function test_it_bumps_the_menu_cache_revision_and_flushes_after_commit(): void
+    {
+        $items = \Mockery::mock(HasMany::class);
+        $items->shouldReceive('delete')->once();
+
+        $menu = \Mockery::mock(NavigationMenu::class)->shouldAllowMockingProtectedMethods();
+        $menu->shouldReceive('items')->once()->andReturn($items);
+        $menu->shouldReceive('increment')->once()->with('cache_revision');
+
+        $invalidator = $this->createMock(NavigationCacheInvalidator::class);
+        $invalidator->expects($this->once())->method('flushForMenu')->with($menu);
+
+        DB::shouldReceive('transaction')
+            ->once()
+            ->andReturnUsing(fn (callable $callback) => $callback());
+        DB::shouldReceive('afterCommit')
+            ->once()
+            ->andReturnUsing(fn (callable $callback) => $callback());
+
+        $action = new SyncNavigationMenuItemsAction(
+            $this->createMock(NavigationItemUrlResolver::class),
+            $invalidator,
+        );
+
+        $action->execute($menu, []);
+    }
+
     private function action(): object
     {
-        return new class(
-            $this->createMock(NavigationItemUrlResolver::class),
-            $this->createMock(NavigationCacheInvalidator::class),
-        ) extends SyncNavigationMenuItemsAction {
+        return new class($this->createMock(NavigationItemUrlResolver::class), $this->createMock(NavigationCacheInvalidator::class)) extends SyncNavigationMenuItemsAction
+        {
             /** @return array<string, mixed> */
             public function validateNodeForTest(array $item): array
             {

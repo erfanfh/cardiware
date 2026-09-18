@@ -52,11 +52,11 @@ class NavigationMenuTreeBuilderTest extends TestCase
         );
     }
 
-    public function test_frontend_navigation_cache_key_is_versioned_for_svg_payloads(): void
+    public function test_frontend_navigation_cache_key_contains_the_menu_revision(): void
     {
         $this->assertSame(
-            'navigation:frontend:v2:header',
-            CacheKey::frontendNavigation('header'),
+            'navigation:frontend:v3:header:revision:42',
+            CacheKey::frontendNavigation('header', 42),
         );
     }
 

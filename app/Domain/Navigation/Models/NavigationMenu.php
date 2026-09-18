@@ -25,6 +25,7 @@ class NavigationMenu extends Model
      */
     protected $casts = [
         'settings' => 'array',
+        'cache_revision' => 'integer',
     ];
 
     public function getRouteKeyName(): string
