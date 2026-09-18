@@ -110,6 +110,13 @@ class SyncLauncherSaleItemContentAction
                 )
                     ? $data['install_target']
                     : LauncherModInstallTargetEnum::PRODUCT_ROOT->value,
+                'install_mode' => in_array(
+                    $data['install_mode'] ?? null,
+                    \App\Domain\Launcher\Enums\LauncherModInstallModeEnum::values(),
+                    true
+                )
+                    ? $data['install_mode']
+                    : \App\Domain\Launcher\Enums\LauncherModInstallModeEnum::TOGGLE->value,
                 'image_media_id' => filled($data['image_media_id'] ?? null) ? (int)$data['image_media_id'] : null,
                 'size_bytes' => filled($data['size_bytes'] ?? null) ? (int)$data['size_bytes'] : null,
                 'priority' => (int)($data['priority'] ?? $index),

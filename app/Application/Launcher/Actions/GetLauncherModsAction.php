@@ -186,6 +186,10 @@ class GetLauncherModsAction
                 'archive_password' => $mod->archive_password,
                 'merge_mode' => 'merge_to_product_root',
                 'install_target' => ($mod->install_target ?? LauncherModInstallTargetEnum::PRODUCT_ROOT)->value,
+                // 'toggle' (enable/ + disable/, cached, switchable) or 'permanent' (enable/ only,
+                // moved into the game folder once, launcher hides the disable action). Launchers
+                // older than 1.21.56 ignore this key and treat every mod as toggle.
+                'install_mode' => ($mod->install_mode ?? \App\Domain\Launcher\Enums\LauncherModInstallModeEnum::TOGGLE)->value,
                 'total_size_bytes' => $totalSizeBytes,
                 'files' => $files->all(),
             ],

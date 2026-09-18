@@ -667,6 +667,7 @@
                             install_target: ['product_root', 'windows_documents'].includes(item.install_target)
                                 ? item.install_target
                                 : 'product_root',
+                            install_mode: item.install_mode === 'permanent' ? 'permanent' : 'toggle',
                             group_key: item.group_key ?? '',
                             short_description: item.short_description ?? '',
                             description: item.description ?? '',

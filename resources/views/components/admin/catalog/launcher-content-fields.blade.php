@@ -721,6 +721,20 @@
                                 </x-admin.form.select>
                             </x-admin.field>
 
+                            <x-admin.field
+                                label="نوع نصب"
+                                hint="قابل تعویض: بسته باید پوشه enable و disable داشته باشد و کاربر می‌تواند غیرفعال کند. نصب دائمی: فقط پوشه enable؛ فایل‌ها یک‌بار داخل بازی نصب می‌شوند، نسخه پشتیبان نگه داشته نمی‌شود و گزینه غیرفعال‌سازی نمایش داده نمی‌شود (برای مگافیس‌پک و استادیوم‌سرور). نیاز به لانچر 1.21.56 یا بالاتر."
+                                class="col-span-12 md:col-span-3"
+                            >
+                                <x-admin.form.select
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][install_mode]`"
+                                    x-model="mod.install_mode"
+                                >
+                                    <option value="toggle">قابل فعال/غیرفعال‌سازی (toggle)</option>
+                                    <option value="permanent">نصب دائمی — بدون غیرفعال‌سازی (permanent)</option>
+                                </x-admin.form.select>
+                            </x-admin.field>
+
                             <x-admin.field label="کلید گروه" class="col-span-6 md:col-span-2">
                                 <x-admin.form.input
                                     class="direction-ltr"

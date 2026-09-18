@@ -348,6 +348,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_mods.*.slug' => ['required_with:sale_items.*.launcher_mods', 'alpha_dash', 'max:255'],
             'sale_items.*.launcher_mods.*.version' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:50'],
             'sale_items.*.launcher_mods.*.install_target' => ['required_with:sale_items.*.launcher_mods', Rule::enum(LauncherModInstallTargetEnum::class)],
+            'sale_items.*.launcher_mods.*.install_mode' => ['nullable', 'in:toggle,permanent'],
             'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
             'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_mods.*.description' => ['nullable', 'string'],
@@ -1304,6 +1305,9 @@ class UpdateProductRequest extends FormRequest
                         $mod['install_target'] = $this->normalizeLauncherModInstallTarget(
                             $mod['install_target'] ?? null
                         );
+                        $mod['install_mode'] = strtolower(trim((string)($mod['install_mode'] ?? ''))) === 'permanent'
+                            ? 'permanent'
+                            : 'toggle';
                         $mod['compatible_base_versions'] = $this->versionList(
                             $mod['compatible_base_versions_text'] ?? $mod['compatible_base_versions'] ?? []
                         );
