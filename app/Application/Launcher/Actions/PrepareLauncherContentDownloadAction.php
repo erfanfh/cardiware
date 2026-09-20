@@ -424,6 +424,21 @@ class PrepareLauncherContentDownloadAction
             || ($expectedSha256 !== null
                 && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])));
 
+        // TEMPORARY diagnostic for the 2026-09-20 mod-download 409 loop -- remove once the
+        // root cause is confirmed. Logs every comparison, not just failures, so a passing
+        // request for a DIFFERENT file can be compared too.
+        \Illuminate\Support\Facades\Log::info('launcher.download.assert_expected_manifest', [
+            'changed' => $fileIdentityChanged,
+            'server_file_name' => $fileName,
+            'client_file_name' => $expectedFileName,
+            'server_size_bytes' => $metadata['size_bytes'],
+            'client_size_bytes' => $expectedSizeBytes,
+            'server_sha256' => $metadata['sha256'],
+            'client_sha256' => $expectedSha256,
+            'server_manifest_revision' => $manifestRevision,
+            'client_manifest_revision' => $expectedManifestRevision,
+        ]);
+
         if ($fileIdentityChanged) {
             throw new LauncherManifestChangedException($manifestRevision);
         }
