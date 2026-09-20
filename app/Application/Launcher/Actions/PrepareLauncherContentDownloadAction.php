@@ -133,6 +133,7 @@ class PrepareLauncherContentDownloadAction
             contentType: $contentType,
             contentId: $contentId,
             fileId: $fileId,
+            expectedFileName: $expectedFileName,
         );
 
         $sourceUrl = (string)$fileSnapshot->url;
@@ -175,6 +176,7 @@ class PrepareLauncherContentDownloadAction
                 type: $contentType,
                 contentId: $contentId,
                 fileId: $fileId,
+                expectedFileName: $expectedFileName,
             );
 
             if (
@@ -301,11 +303,12 @@ class PrepareLauncherContentDownloadAction
      * @return array{0:PurchaseAccess,1:Model,2:Model}
      */
     private function resolveAccessContentAndFile(
-        User   $user,
-        int    $accessId,
-        string $contentType,
-        int    $contentId,
-        int    $fileId,
+        User    $user,
+        int     $accessId,
+        string  $contentType,
+        int     $contentId,
+        int     $fileId,
+        ?string $expectedFileName = null,
     ): array
     {
         $access = PurchaseAccess::query()
@@ -327,6 +330,7 @@ class PrepareLauncherContentDownloadAction
             type: $contentType,
             contentId: $contentId,
             fileId: $fileId,
+            expectedFileName: $expectedFileName,
         );
 
         return [$access, $content, $file];
@@ -336,10 +340,11 @@ class PrepareLauncherContentDownloadAction
      * @return array{0:Model,1:Model}
      */
     private function resolveContentAndFile(
-        int    $saleItemId,
-        string $type,
-        int    $contentId,
-        int    $fileId,
+        int     $saleItemId,
+        string  $type,
+        int     $contentId,
+        int     $fileId,
+        ?string $expectedFileName = null,
     ): array
     {
         if ($type === 'update') {
@@ -350,10 +355,11 @@ class PrepareLauncherContentDownloadAction
                 ->first();
 
             $file = $content
-                ? LauncherUpdateFile::query()
-                    ->whereKey($fileId)
-                    ->where('launcher_update_id', $content->getKey())
-                    ->first()
+                ? $this->resolveContentFile(
+                    LauncherUpdateFile::query()->where('launcher_update_id', $content->getKey()),
+                    $fileId,
+                    $expectedFileName,
+                )
                 : null;
         } elseif ($type === 'mod') {
             $content = LauncherMod::query()
@@ -363,20 +369,77 @@ class PrepareLauncherContentDownloadAction
                 ->first();
 
             $file = $content
-                ? LauncherModFile::query()
-                    ->whereKey($fileId)
-                    ->where('launcher_mod_id', $content->getKey())
-                    ->first()
+                ? $this->resolveContentFile(
+                    LauncherModFile::query()->where('launcher_mod_id', $content->getKey()),
+                    $fileId,
+                    $expectedFileName,
+                )
                 : null;
         } else {
             $content = $file = null;
         }
 
         if (!$content instanceof Model || !$file instanceof Model) {
+            // TEMPORARY diagnostic for the 2026-09-20 recurring 404 -- remove once root
+            // cause is confirmed. warning(), not info(): LOG_LEVEL=warning in production
+            // silently drops info().
+            Log::warning('launcher.download.content_not_found', [
+                'type' => $type,
+                'sale_item_id' => $saleItemId,
+                'content_id' => $contentId,
+                'file_id' => $fileId,
+                'content_found' => $content instanceof Model,
+                'content_actual_sale_item_id' => $content instanceof Model ? $content->product_sale_item_id : null,
+                'content_published_at' => $content instanceof Model ? (string)$content->published_at : null,
+                'content_is_enabled' => $content instanceof Model ? (bool)$content->is_enabled : null,
+                'file_found' => $file instanceof Model,
+            ]);
             throw new NotFoundHttpException('فایل محتوای لانچر پیدا نشد.');
         }
 
         return [$content, $file];
+    }
+
+    /**
+     * Picks the row the launcher actually asked for, out of the files belonging to a
+     * content record the caller is already proven to own.
+     *
+     * The file name wins over the id on purpose. Launcher builds up to 1.21.62 put the
+     * CONTENT's id in the {file} path segment instead of the file's own id -- invisible
+     * for years because early rows were created in lockstep, so launcher_mods.id and
+     * launcher_mod_files.id happened to collide. Once those sequences drifted apart the
+     * same request started resolving to a sibling row (megaface part 2 asking for id 13
+     * and getting part 1) or to nothing at all (update 19 asking for file 19 when its
+     * file is 23) -- i.e. the 2026-09-20 "بسته روی سرور تغییر کرده" reset loop and the
+     * 404 storm. Scoping is unchanged: the query is already restricted to this content's
+     * files, so trusting the client-sent name grants access to nothing new.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<covariant Model> $query
+     */
+    private function resolveContentFile(
+        \Illuminate\Database\Eloquent\Builder $query,
+        int                                   $fileId,
+        ?string                               $expectedFileName,
+    ): ?Model
+    {
+        $files = $query->get();
+
+        $wanted = basename(str_replace('\\', '/', trim((string)$expectedFileName)));
+        if ($wanted !== '') {
+            $byName = $files->first(
+                fn(Model $candidate): bool => basename(
+                        str_replace('\\', '/', (string)$candidate->getAttribute('file_name'))
+                    ) === $wanted
+            );
+
+            if ($byName instanceof Model) {
+                return $byName;
+            }
+        }
+
+        return $files->first(
+            fn(Model $candidate): bool => (int)$candidate->getKey() === $fileId
+        );
     }
 
     private function resolveFileName(Model $file): string
@@ -424,23 +487,15 @@ class PrepareLauncherContentDownloadAction
             || ($expectedSha256 !== null
                 && !hash_equals(strtolower($expectedSha256), strtolower($metadata['sha256'])));
 
-        // TEMPORARY diagnostic for the 2026-09-20 mod-download 409 loop -- remove once the
-        // root cause is confirmed. Logs every comparison, not just failures, so a passing
-        // request for a DIFFERENT file can be compared too. warning(), not info(): this
-        // deployment's LOG_LEVEL=warning silently drops info() entirely.
-        \Illuminate\Support\Facades\Log::warning('launcher.download.assert_expected_manifest', [
-            'changed' => $fileIdentityChanged,
-            'server_file_name' => $fileName,
-            'client_file_name' => $expectedFileName,
-            'server_size_bytes' => $metadata['size_bytes'],
-            'client_size_bytes' => $expectedSizeBytes,
-            'server_sha256' => $metadata['sha256'],
-            'client_sha256' => $expectedSha256,
-            'server_manifest_revision' => $manifestRevision,
-            'client_manifest_revision' => $expectedManifestRevision,
-        ]);
-
         if ($fileIdentityChanged) {
+            Log::warning('launcher.download.manifest_changed', [
+                'server_file_name' => $fileName,
+                'client_file_name' => $expectedFileName,
+                'server_size_bytes' => $metadata['size_bytes'],
+                'client_size_bytes' => $expectedSizeBytes,
+                'server_sha256' => $metadata['sha256'],
+                'client_sha256' => $expectedSha256,
+            ]);
             throw new LauncherManifestChangedException($manifestRevision);
         }
 
