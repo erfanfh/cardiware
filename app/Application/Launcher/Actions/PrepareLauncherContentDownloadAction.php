@@ -2,12 +2,12 @@
 
 namespace App\Application\Launcher\Actions;
 
-use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
 use App\Application\Commerce\Exceptions\LauncherManifestChangedException;
+use App\Application\Commerce\Exceptions\PurchaseAccessDownloadSessionExpiredException;
 use App\Application\Commerce\Exceptions\PurchaseAccessIsNotUsableException;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
-use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Identity\Models\User;
 use App\Domain\Launcher\Models\LauncherDevice;
@@ -25,10 +25,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PrepareLauncherContentDownloadAction
 {
     public function __construct(
-        private readonly RemoteDownloadFileMetadataResolver $metadataResolver,
+        private readonly RemoteDownloadFileMetadataResolver         $metadataResolver,
         private readonly GenerateTemporaryLauncherDownloadUrlAction $generateTemporaryDownloadUrlAction,
-        private readonly SignDirectLauncherDownloadUrlAction $signDirectDownloadUrlAction,
-    ) {
+        private readonly SignDirectLauncherDownloadUrlAction        $signDirectDownloadUrlAction,
+    )
+    {
     }
 
     /**
@@ -37,16 +38,17 @@ class PrepareLauncherContentDownloadAction
      * Neither path transfers the file through the application server.
      */
     private function resolveDownloadUrl(
-        Model $file,
-        Model $access,
-        Model $content,
-        string $contentType,
-        int $fileId,
-        string $downloadSessionId,
-        int $manifestRevision,
+        Model           $file,
+        Model           $access,
+        Model           $content,
+        string          $contentType,
+        int             $fileId,
+        string          $downloadSessionId,
+        int             $manifestRevision,
         CarbonInterface $signedUrlExpiresAt,
-        User $user,
-    ): string {
+        User            $user,
+    ): string
+    {
         if ((bool)config('launcher.direct_download_enabled', false)) {
             $directUrl = trim((string)$file->getAttribute('url'));
             if ($this->isDeliverableDirectUrl($directUrl)) {
@@ -112,18 +114,19 @@ class PrepareLauncherContentDownloadAction
      * @return array{download_session_id:string,session_expires_at:string,url:string,file_name:string,size_bytes:int,sha256:string}
      */
     public function execute(
-        User $user,
+        User           $user,
         LauncherDevice $device,
-        int $accessId,
-        string $contentType,
-        int $contentId,
-        int $fileId,
-        string $sessionId,
-        ?int $expectedManifestRevision = null,
-        ?string $expectedFileName = null,
-        ?int $expectedSizeBytes = null,
-        ?string $expectedSha256 = null,
-    ): array {
+        int            $accessId,
+        string         $contentType,
+        int            $contentId,
+        int            $fileId,
+        string         $sessionId,
+        ?int           $expectedManifestRevision = null,
+        ?string        $expectedFileName = null,
+        ?int           $expectedSizeBytes = null,
+        ?string        $expectedSha256 = null,
+    ): array
+    {
         [$accessSnapshot, $contentSnapshot, $fileSnapshot] = $this->resolveAccessContentAndFile(
             user: $user,
             accessId: $accessId,
@@ -182,7 +185,7 @@ class PrepareLauncherContentDownloadAction
                 throw new NotFoundHttpException('فایل محتوای لانچر پیدا نشد.');
             }
 
-            $manifestRevision = (int) ProductSaleItem::query()
+            $manifestRevision = (int)ProductSaleItem::query()
                 ->withTrashed()
                 ->whereKey($access->product_sale_item_id)
                 ->value('manifest_revision');
@@ -212,9 +215,9 @@ class PrepareLauncherContentDownloadAction
 
             if ($download) {
                 $fileIdentityChanged =
-                    !hash_equals(strtolower((string) $download->file_sha256), strtolower($metadata['sha256']))
-                    || (int) $download->file_size_bytes !== $metadata['size_bytes']
-                    || !hash_equals((string) $download->file_name, $fileName);
+                    !hash_equals(strtolower((string)$download->file_sha256), strtolower($metadata['sha256']))
+                    || (int)$download->file_size_bytes !== $metadata['size_bytes']
+                    || !hash_equals((string)$download->file_name, $fileName);
 
                 if ($fileIdentityChanged) {
                     $download->forceFill([
@@ -233,7 +236,7 @@ class PrepareLauncherContentDownloadAction
                 // revision. Previously this was folded into the branch above and
                 // forced a full wipe-and-restart-from-zero for a file that never
                 // changed.
-                if ((int) $download->manifest_revision !== $manifestRevision) {
+                if ((int)$download->manifest_revision !== $manifestRevision) {
                     $download->forceFill(['manifest_revision' => $manifestRevision]);
                 }
             }
@@ -298,12 +301,13 @@ class PrepareLauncherContentDownloadAction
      * @return array{0:PurchaseAccess,1:Model,2:Model}
      */
     private function resolveAccessContentAndFile(
-        User $user,
-        int $accessId,
+        User   $user,
+        int    $accessId,
         string $contentType,
-        int $contentId,
-        int $fileId,
-    ): array {
+        int    $contentId,
+        int    $fileId,
+    ): array
+    {
         $access = PurchaseAccess::query()
             ->withoutGlobalScope(ActivePurchaseAccessScope::class)
             ->whereKey($accessId)
@@ -332,11 +336,12 @@ class PrepareLauncherContentDownloadAction
      * @return array{0:Model,1:Model}
      */
     private function resolveContentAndFile(
-        int $saleItemId,
+        int    $saleItemId,
         string $type,
-        int $contentId,
-        int $fileId,
-    ): array {
+        int    $contentId,
+        int    $fileId,
+    ): array
+    {
         if ($type === 'update') {
             $content = LauncherUpdate::query()
                 ->whereKey($contentId)
@@ -376,10 +381,20 @@ class PrepareLauncherContentDownloadAction
 
     private function resolveFileName(Model $file): string
     {
+        // Must match GetLauncherModsAction::filePayload() / the equivalent update-file
+        // payload builder byte-for-byte: the launcher reads file_name from THAT list,
+        // sends it back here as expectedFileName, and this action 409s
+        // (launcher_manifest_changed) on any difference. Those builders always run the
+        // raw column through basename(str_replace('\\','/', ...)); this one used to
+        // return the raw column untouched, so any stored value that wasn't already a
+        // clean basename (a leading path, a stray backslash) made every download-prepare
+        // call fail against the very manifest the launcher had just fetched -- 100%
+        // reproducible, not a race, see launcher DOWNLOAD_RESET reason=source_changed
+        // spinning at 0 bytes forever on 2026-09-20.
         $explicit = trim((string)($file->getAttribute('file_name') ?? ''));
 
         if ($explicit !== '') {
-            return $explicit;
+            return basename(str_replace('\\', '/', $explicit));
         }
 
         $path = (string)parse_url((string)$file->getAttribute('url'), PHP_URL_PATH);
@@ -394,14 +409,15 @@ class PrepareLauncherContentDownloadAction
      * @param array{size_bytes:int,sha256:string,mime_type:?string} $metadata
      */
     private function assertExpectedManifest(
-        int $manifestRevision,
-        string $fileName,
-        array $metadata,
-        ?int $expectedManifestRevision,
+        int     $manifestRevision,
+        string  $fileName,
+        array   $metadata,
+        ?int    $expectedManifestRevision,
         ?string $expectedFileName,
-        ?int $expectedSizeBytes,
+        ?int    $expectedSizeBytes,
         ?string $expectedSha256,
-    ): void {
+    ): void
+    {
         $fileIdentityChanged =
             ($expectedFileName !== null && !hash_equals($expectedFileName, $fileName))
             || ($expectedSizeBytes !== null && $expectedSizeBytes !== $metadata['size_bytes'])
