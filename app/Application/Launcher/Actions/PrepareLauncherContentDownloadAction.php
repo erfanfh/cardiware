@@ -426,8 +426,9 @@ class PrepareLauncherContentDownloadAction
 
         // TEMPORARY diagnostic for the 2026-09-20 mod-download 409 loop -- remove once the
         // root cause is confirmed. Logs every comparison, not just failures, so a passing
-        // request for a DIFFERENT file can be compared too.
-        \Illuminate\Support\Facades\Log::info('launcher.download.assert_expected_manifest', [
+        // request for a DIFFERENT file can be compared too. warning(), not info(): this
+        // deployment's LOG_LEVEL=warning silently drops info() entirely.
+        \Illuminate\Support\Facades\Log::warning('launcher.download.assert_expected_manifest', [
             'changed' => $fileIdentityChanged,
             'server_file_name' => $fileName,
             'client_file_name' => $expectedFileName,
