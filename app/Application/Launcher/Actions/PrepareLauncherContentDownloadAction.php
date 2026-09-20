@@ -373,6 +373,20 @@ class PrepareLauncherContentDownloadAction
         }
 
         if (!$content instanceof Model || !$file instanceof Model) {
+            // TEMPORARY diagnostic for the 2026-09-20 recurring 404 -- remove once root
+            // cause is confirmed. warning(), not info(): LOG_LEVEL=warning in production
+            // silently drops info().
+            Log::warning('launcher.download.content_not_found', [
+                'type' => $type,
+                'sale_item_id' => $saleItemId,
+                'content_id' => $contentId,
+                'file_id' => $fileId,
+                'content_found' => $content instanceof Model,
+                'content_actual_sale_item_id' => $content instanceof Model ? $content->product_sale_item_id : null,
+                'content_published_at' => $content instanceof Model ? (string)$content->published_at : null,
+                'content_is_enabled' => $content instanceof Model ? (bool)$content->is_enabled : null,
+                'file_found' => $file instanceof Model,
+            ]);
             throw new NotFoundHttpException('فایل محتوای لانچر پیدا نشد.');
         }
 
