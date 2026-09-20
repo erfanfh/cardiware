@@ -32,7 +32,8 @@ class SyncLauncherSaleItemContentAction
         $kept = [];
         foreach (array_values($items) as $index => $data) {
             if (!is_array($data) || blank($data['version'] ?? null) || blank($data['title'] ?? null)) continue;
-            $update = $this->resolve($existing, $data, LauncherUpdate::class);
+            $update = $this->resolve($existing, $data, LauncherUpdate::class,
+                fn($item) => trim((string)$item->version) === trim((string)$data['version']));
             $update->fill([
                 'product_sale_item_id' => $saleItem->id,
                 'version' => trim((string)$data['version']),
@@ -67,7 +68,8 @@ class SyncLauncherSaleItemContentAction
         $kept = [];
         foreach (array_values($items) as $index => $data) {
             if (!is_array($data) || blank($data['key'] ?? null) || blank($data['title'] ?? null)) continue;
-            $group = $this->resolve($existing, $data, LauncherModGroup::class);
+            $group = $this->resolve($existing, $data, LauncherModGroup::class,
+                fn($item) => trim((string)$item->key) === trim((string)$data['key']));
             $group->fill([
                 'product_sale_item_id' => $saleItem->id,
                 'key' => trim((string)$data['key']),
@@ -91,7 +93,8 @@ class SyncLauncherSaleItemContentAction
         foreach (array_values($items) as $index => $data) {
             if (!is_array($data) || blank($data['name'] ?? null)
                 || blank($data['slug'] ?? null) || blank($data['version'] ?? null)) continue;
-            $mod = $this->resolve($existing, $data, LauncherMod::class);
+            $mod = $this->resolve($existing, $data, LauncherMod::class,
+                fn($item) => trim((string)$item->slug) === trim((string)$data['slug']));
             $mod->fill([
                 'product_sale_item_id' => $saleItem->id,
                 'launcher_mod_group_id' => $groups->get($data['group_key'] ?? '')?->id,
@@ -145,7 +148,8 @@ class SyncLauncherSaleItemContentAction
         $kept = [];
         foreach (array_values($items) as $index => $data) {
             if (!is_array($data) || blank($data['url'] ?? null) || blank($data['file_name'] ?? null)) continue;
-            $file = $this->resolve($existing, $data, $model);
+            $file = $this->resolve($existing, $data, $model,
+                fn($item) => trim((string)$item->file_name) === trim((string)$data['file_name']));
             $file->fill([
                 $foreignKey => $foreignId,
                 'title' => $data['title'] ?? null,
@@ -166,10 +170,27 @@ class SyncLauncherSaleItemContentAction
             ->each(static fn($file) => $file->delete());
     }
 
-    private function resolve(Collection $existing, array $data, string $model): mixed
+    /**
+     * Matches the admin-submitted row to an existing DB record, preferring the row's
+     * own id but falling back to a natural-key match ($fallbackMatch). Without the
+     * fallback, any save where the frontend forgot to include the id for an
+     * already-existing row (a stale form state, a partial re-render, etc.) would look
+     * like a brand-new item: it gets INSERTed here, and the original row -- untouched,
+     * still carrying whatever was being "fixed" -- gets deleted a few lines down because
+     * it is no longer in $kept. That is exactly what produced the duplicate
+     * launcher_mods/launcher_updates rows found in production on 2026-09-20 (some
+     * pointing at the wrong product_sale_item_id), and why editing an update while
+     * keeping its version string the same silently appeared to do nothing.
+     */
+    private function resolve(Collection $existing, array $data, string $model, \Closure $fallbackMatch): mixed
     {
         $id = filled($data['id'] ?? null) ? (int)$data['id'] : null;
         $item = $id ? $existing->firstWhere('id', $id) : null;
+        if (!$item instanceof $model) {
+            $item = $existing->first(
+                fn($candidate) => $candidate instanceof $model && $fallbackMatch($candidate)
+            );
+        }
         return $item instanceof $model ? $item : new $model();
     }
 }
