@@ -197,6 +197,16 @@ class BuildPurchaseAccessManifestAction
                 'run_sider_as_administrator' => $manifest->run_sider_as_administrator,
 
                 /*
+                 * DLL injection launch: an alternative to Sider for products whose
+                 * helper is loaded directly into the game process (e.g. a FIFA-style
+                 * live editor) rather than run as a side-loaded companion exe.
+                 * Independent of requires_sider -- a product sets at most one today,
+                 * but nothing enforces mutual exclusivity.
+                 */
+                'requires_injection' => $manifest->requires_injection,
+                'inject_dll_path' => $manifest->inject_dll_path,
+
+                /*
                  * Opaque, versioned identifier only -- never the key value itself. The
                  * launcher looks this up against the content_keys map inside the signed
                  * offline-license payload (see IssueOfflineLicenseAction), which is only
@@ -335,6 +345,12 @@ class BuildPurchaseAccessManifestAction
                     'Sider is supported, but its working directory is missing.'
                 );
             }
+        }
+
+        if (($capabilities['supports_injection'] ?? false) && blank($manifest->inject_dll_path)) {
+            throw new ProductManifestUnavailableException(
+                'Injection is supported, but the DLL path is missing.'
+            );
         }
 
         foreach ($files as $file) {

@@ -41,6 +41,10 @@ final class LauncherReleaseController extends Controller
             'launcher_maintenance_message',
             config('launcher.maintenance.message')
         );
+        $maintenanceBypassMobiles = (string)$settings->get(
+            'launcher_maintenance_bypass_mobiles',
+            ''
+        );
 
         return view('admin.launcher.releases.index', compact(
             'releases',
@@ -48,7 +52,8 @@ final class LauncherReleaseController extends Controller
             'publicDownloadUrl',
             'downloadMaxConnections',
             'maintenanceEnabled',
-            'maintenanceMessage'
+            'maintenanceMessage',
+            'maintenanceBypassMobiles'
         ));
     }
 
@@ -59,15 +64,19 @@ final class LauncherReleaseController extends Controller
         $validated = $request->validate([
             'launcher_maintenance_enabled' => ['nullable', 'boolean'],
             'launcher_maintenance_message' => ['nullable', 'string', 'max:1000'],
+            'launcher_maintenance_bypass_mobiles' => ['nullable', 'string', 'max:5000'],
         ], [
             'launcher_maintenance_message.max' => 'پیام حالت تعمیر نباید بیشتر از ۱۰۰۰ کاراکتر باشد.',
+            'launcher_maintenance_bypass_mobiles.max' => 'فهرست شماره‌های استثنا خیلی بزرگ است.',
         ]);
 
         $enabled = $request->boolean('launcher_maintenance_enabled');
         $message = trim((string)($validated['launcher_maintenance_message'] ?? ''));
+        $bypassMobiles = trim((string)($validated['launcher_maintenance_bypass_mobiles'] ?? ''));
 
         $settings->set('launcher_maintenance_enabled', $enabled);
         $settings->set('launcher_maintenance_message', $message !== '' ? $message : null);
+        $settings->set('launcher_maintenance_bypass_mobiles', $bypassMobiles !== '' ? $bypassMobiles : null);
 
         return redirect()->route('admin.launcher-releases.index')
             ->with(

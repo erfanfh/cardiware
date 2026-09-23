@@ -50,11 +50,24 @@ class SyncProductSaleItemManifestAction
             Arr::get($data, 'capabilities.supports_sider', $requiresSider)
         ) || $requiresSider;
 
+        $requiresInjection = $this->toBoolean(
+            Arr::get($data, 'requires_injection', false)
+        );
+
+        $injectDllPath = $this->nullableString(
+            Arr::get($data, 'inject_dll_path')
+        );
+
+        $supportsInjection = $this->toBoolean(
+            Arr::get($data, 'capabilities.supports_injection', $requiresInjection)
+        ) || $requiresInjection;
+
         $capabilities = $this->normalizeCapabilities(
             value: Arr::get($data, 'capabilities'),
             hasFiles: $saleItem->files->isNotEmpty(),
             mainExecutablePath: $mainExecutablePath,
             supportsSider: $supportsSider,
+            supportsInjection: $supportsInjection,
         );
 
         $contentKeyId = $this->nullableString(
@@ -161,6 +174,10 @@ class SyncProductSaleItemManifestAction
                             false
                         )
                     ),
+
+                'requires_injection' => $requiresInjection,
+
+                'inject_dll_path' => $injectDllPath,
 
                 // Validated properly (format, uniqueness, exact 32-byte key length,
                 // vault-password grant) in UpdateProductRequest -- this method only
@@ -406,6 +423,7 @@ class SyncProductSaleItemManifestAction
         bool    $hasFiles,
         ?string $mainExecutablePath,
         bool    $supportsSider,
+        bool    $supportsInjection,
     ): array
     {
         $value = is_array($value) ? $value : [];
@@ -424,6 +442,7 @@ class SyncProductSaleItemManifestAction
             'supports_install' => $supportsInstall,
             'supports_launch' => $supportsLaunch,
             'supports_sider' => $supportsSider,
+            'supports_injection' => $supportsInjection,
 
             'supports_verify' => $hasFiles,
             'supports_repair' => false,

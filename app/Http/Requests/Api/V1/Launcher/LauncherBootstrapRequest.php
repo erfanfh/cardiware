@@ -33,6 +33,14 @@ class LauncherBootstrapRequest extends FormRequest
                 'string',
                 Rule::in(['stable']),
             ],
+
+            // Optional and not authentication: a returning launcher sends its own
+            // locally-generated device id (see DeviceIdentityService on the client)
+            // so a maintenance-bypassed tester's build can be told apart from
+            // everyone else's, without requiring the login this endpoint runs
+            // before. A missing/unrecognized value just means "no bypass applies",
+            // same as an old launcher build that never sends it at all.
+            'device_id' => ['sometimes', 'nullable', 'string', 'max:255'],
         ];
     }
 
@@ -42,6 +50,7 @@ class LauncherBootstrapRequest extends FormRequest
             'version' => 'نسخه لانچر',
             'platform' => 'پلتفرم',
             'channel' => 'کانال انتشار',
+            'device_id' => 'شناسه دستگاه',
         ];
     }
 

@@ -31,6 +31,9 @@
         'sider_arguments' => null,
         'run_sider_as_administrator' => false,
 
+        'requires_injection' => false,
+        'inject_dll_path' => null,
+
         'content_key_id' => null,
         'content_key_value' => null,
         'content_key_configured' => false,
@@ -53,6 +56,7 @@
             'supports_install' => true,
             'supports_launch' => true,
             'supports_sider' => false,
+            'supports_injection' => false,
             'supports_settings' => false,
             'supports_profiles' => false,
             'supports_update' => false,
@@ -709,6 +713,128 @@
                         </span>
                     </span>
                 </label>
+            </div>
+        </div>
+    </div>
+
+    {{-- DLL Injection (e.g. FIFA-style live editor, in place of Sider) --}}
+    <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <div class="mb-3">
+            <div class="text-xs font-bold text-slate-800">
+                تنظیمات تزریق DLL (Injection)
+            </div>
+
+            <div class="mt-1 text-[11px] leading-5 text-slate-500">
+                برای محصولاتی که به‌جای اجرای Sider، یک DLL کمکی مستقیماً داخل پردازش بازی تزریق می‌شود (مثل PGL FIFA23).
+            </div>
+        </div>
+
+        @if($isSimple)
+            <input
+                type="hidden"
+                name="{{ $staticName('capabilities.supports_injection') }}"
+                x-bind:value="{{ $state }}.capabilities.supports_injection ? 1 : 0"
+            >
+            <input
+                type="hidden"
+                name="{{ $staticName('requires_injection') }}"
+                x-bind:value="{{ $state }}.requires_injection ? 1 : 0"
+            >
+        @else
+            <input
+                type="hidden"
+                x-bind:name="{{ $dynamicName('capabilities.supports_injection') }}"
+                x-bind:value="{{ $state }}.capabilities.supports_injection ? 1 : 0"
+            >
+            <input
+                type="hidden"
+                x-bind:name="{{ $dynamicName('requires_injection') }}"
+                x-bind:value="{{ $state }}.requires_injection ? 1 : 0"
+            >
+        @endif
+
+        <div class="grid grid-cols-12 gap-3">
+            <div class="col-span-12 md:col-span-6">
+                <label
+                    class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200">
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.capabilities.supports_injection"
+                        x-on:change="
+                            if (!{{ $state }}.capabilities.supports_injection) {
+                                {{ $state }}.requires_injection = false;
+                            }
+                        "
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                    >
+
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            پشتیبانی از تزریق DLL
+                        </span>
+
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            لانچر می‌تواند DLL این نسخه را هنگام اجرا تزریق کند. این گزینه به معنی اجباری بودن آن نیست.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                <label
+                    class="flex h-full cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 bg-white p-3 transition hover:border-orange-200"
+                    x-bind:class="!{{ $state }}.capabilities.supports_injection ? 'opacity-60' : ''"
+                >
+                    <input
+                        type="checkbox"
+                        x-model="{{ $state }}.requires_injection"
+                        x-bind:disabled="!{{ $state }}.capabilities.supports_injection"
+                        class="mt-1 h-4 w-4 cursor-pointer rounded border-slate-300 text-orange-600 focus:ring-orange-500 disabled:cursor-not-allowed"
+                    >
+
+                    <span>
+                        <span class="block text-xs font-bold text-slate-800">
+                            تزریق DLL اجباری است
+                        </span>
+
+                        <span class="mt-1 block text-[11px] leading-5 text-slate-500">
+                            فقط وقتی فعال کنید که محصول بدون تزریق موفق DLL نباید توسط لانچر اجرا شود.
+                        </span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div
+            class="mt-4 grid grid-cols-12 gap-4"
+            x-show="{{ $state }}.capabilities.supports_injection || {{ $state }}.requires_injection"
+            x-cloak
+        >
+            <div class="col-span-12 md:col-span-6">
+                @if($isSimple)
+                    <input
+                        type="hidden"
+                        name="{{ $staticName('inject_dll_path') }}"
+                        x-bind:value="{{ $state }}.inject_dll_path"
+                    >
+                @else
+                    <input
+                        type="hidden"
+                        x-bind:name="{{ $dynamicName('inject_dll_path') }}"
+                        x-bind:value="{{ $state }}.inject_dll_path"
+                    >
+                @endif
+
+                <x-admin.field label="مسیر فایل DLL تزریق">
+                    <x-admin.form.input
+                        x-model="{{ $state }}.inject_dll_path"
+                        class="direction-ltr"
+                        placeholder="dbdata.dll"
+                    />
+                </x-admin.field>
+                <p class="mt-1 text-[11px] text-slate-500">
+                    مسیر نسبی به پوشه نصب محصول؛ وقتی تزریق برای این نسخه فعال است، این مسیر الزامی است.
+                </p>
             </div>
         </div>
     </div>

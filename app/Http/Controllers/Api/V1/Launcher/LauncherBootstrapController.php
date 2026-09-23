@@ -34,6 +34,7 @@ class LauncherBootstrapController extends Controller
             currentVersion: $data['version'],
             platform: $data['platform'],
             channel: $data['channel'],
+            deviceId: $data['device_id'] ?? null,
         );
 
         return response()->json([

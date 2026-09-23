@@ -3,6 +3,7 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Application\Launcher\Support\LauncherReleaseCache;
+use App\Domain\Launcher\Models\LauncherDevice;
 use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use Illuminate\Support\Carbon;
 use RuntimeException;
@@ -21,6 +22,7 @@ class GetLauncherBootstrapAction
         string $currentVersion,
         string $platform,
         string $channel,
+        ?string $deviceId = null,
     ): array {
         $configuration = config(
             "launcher.{$platform}.{$channel}"
@@ -80,6 +82,17 @@ class GetLauncherBootstrapAction
             config('launcher.maintenance.message')
         );
 
+        // A device whose owning account is on the bypass list keeps normal access
+        // even while maintenance is on -- lets the team run a real build against the
+        // real server before lifting maintenance for everyone. $deviceId is not a
+        // credential (see DeviceIdentityService on the client): it only identifies
+        // WHICH already-registered device is asking, never authenticates it, so this
+        // can only ever narrow a block, never grant anything beyond "see the normal
+        // bootstrap response instead of the maintenance message."
+        if ($maintenanceEnabled && $this->deviceBypassesMaintenance($deviceId)) {
+            $maintenanceEnabled = false;
+        }
+
         return [
             'platform' => $platform,
             'channel' => $channel,
@@ -129,5 +142,56 @@ class GetLauncherBootstrapAction
             ))),
             'server_time' => $now->toISOString(),
         ];
+    }
+
+    private function deviceBypassesMaintenance(?string $deviceId): bool
+    {
+        $deviceId = trim((string) $deviceId);
+
+        if ($deviceId === '') {
+            return false;
+        }
+
+        $bypassMobiles = $this->parseBypassMobiles(
+            (string) $this->settings->get('launcher_maintenance_bypass_mobiles', '')
+        );
+
+        if ($bypassMobiles === []) {
+            return false;
+        }
+
+        $device = LauncherDevice::query()
+            ->where('device_id', $deviceId)
+            ->whereNull('revoked_at')
+            ->with('user:id,mobile')
+            ->first();
+
+        $mobile = $device?->user?->mobile;
+
+        return $mobile !== null && in_array($mobile, $bypassMobiles, true);
+    }
+
+    /**
+     * One mobile number per line in the admin textarea. Silently drops blank/
+     * malformed lines rather than rejecting the whole list -- this is a small,
+     * low-stakes admin-typed field (see the protected_* path lists on the
+     * product manifest for the same normalize-don't-reject convention), and a
+     * typo'd line should not block the ones that are fine.
+     *
+     * @return list<string>
+     */
+    private function parseBypassMobiles(string $raw): array
+    {
+        $numbers = [];
+
+        foreach (preg_split('/\R/', $raw) ?: [] as $line) {
+            $line = (string) normalize_number(trim($line));
+
+            if (preg_match('/^09\d{9}$/', $line) === 1) {
+                $numbers[] = $line;
+            }
+        }
+
+        return array_values(array_unique($numbers));
     }
 }

@@ -182,6 +182,14 @@ class UpdateProductRequest extends FormRequest
 
             /*
             |--------------------------------------------------------------------------
+            | DLL injection launch (e.g. a FIFA-style live editor, in place of Sider)
+            |--------------------------------------------------------------------------
+            */
+            'sale_items.*.manifest.requires_injection' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.inject_dll_path' => ['nullable', 'string', 'max:500'],
+
+            /*
+            |--------------------------------------------------------------------------
             | Content key (encrypted database protection)
             |--------------------------------------------------------------------------
             | content_key_id is an opaque, versioned identifier (e.g. "pgl6-db-2026-01"),
@@ -263,6 +271,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.capabilities.supports_install' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_launch' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_sider' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.capabilities.supports_injection' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_settings' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_profiles' => ['nullable', 'boolean'],
             'sale_items.*.manifest.capabilities.supports_update' => ['nullable', 'boolean'],
@@ -702,6 +711,23 @@ class UpdateProductRequest extends FormRequest
                     );
                 }
 
+                $requiresInjection = filter_var(
+                    $manifest['requires_injection'] ?? false,
+                    FILTER_VALIDATE_BOOLEAN
+                );
+
+                $supportsInjection = filter_var(
+                        data_get($manifest, 'capabilities.supports_injection', $requiresInjection),
+                        FILTER_VALIDATE_BOOLEAN
+                    ) || $requiresInjection;
+
+                if ($supportsInjection && blank($manifest['inject_dll_path'] ?? null)) {
+                    $validator->errors()->add(
+                        "{$prefix}.manifest.inject_dll_path",
+                        'وقتی تزریق DLL برای این نسخه فعال است، مسیر فایل DLL الزامی است.'
+                    );
+                }
+
                 $this->validateContentKey(
                     validator: $validator,
                     manifest: $manifest,
@@ -762,6 +788,7 @@ class UpdateProductRequest extends FormRequest
                              'working_directory',
                              'sider_executable_path',
                              'sider_working_directory',
+                             'inject_dll_path',
                          ] as $pathField) {
                     $path = $manifest[$pathField] ?? null;
 
@@ -1162,6 +1189,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.sider_executable_path' => 'مسیر فایل اجرایی Sider',
             'sale_items.*.manifest.sider_working_directory' => 'پوشه اجرای Sider',
             'sale_items.*.manifest.sider_arguments' => 'آرگومان‌های Sider',
+            'sale_items.*.manifest.inject_dll_path' => 'مسیر فایل DLL تزریق',
             'sale_items.*.manifest.content_key_id' => 'شناسه کلید محتوا',
             'sale_items.*.manifest.content_key_value' => 'مقدار کلید محتوا',
             'sale_items.*.manifest.cpu_compatibility.default_mode' => 'حالت پیش‌فرض CPU Compatibility',
@@ -1334,10 +1362,19 @@ class UpdateProductRequest extends FormRequest
                     false
                 );
 
-                $item['launcher_usage_guide_content'] = $this->normalizeNullableStringInput(
-                    data_get($item, 'launcher_usage_guide_content'),
+                // normalizeNullableStringInput collapses '\s+' (including every '\n') into a
+                // single space -- fine for a title, fatal for multi-line admin-authored text:
+                // every line break the admin typed was destroyed before the launcher's
+                // RichTextParser ever saw the string, which is why it rendered as one run-on
+                // line. normalizeMultilineListInput only trims the edges, same fix already
+                // used for the protection-policy path lists.
+                $item['launcher_usage_guide_content'] = mb_substr(
+                    (string)($this->normalizeMultilineListInput(
+                        data_get($item, 'launcher_usage_guide_content')
+                    ) ?? ''),
+                    0,
                     20000
-                );
+                ) ?: null;
 
                 return $item;
             })

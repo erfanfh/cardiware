@@ -24,6 +24,7 @@ class ProductSaleItemManifest extends Model
         'supports_install' => true,
         'supports_launch' => true,
         'supports_sider' => false,
+        'supports_injection' => false,
         'supports_verify' => false,
         'supports_repair' => false,
         'supports_update' => false,
@@ -73,6 +74,8 @@ class ProductSaleItemManifest extends Model
         'sider_working_directory',
         'sider_arguments',
         'run_sider_as_administrator',
+        'requires_injection',
+        'inject_dll_path',
         'content_key_id',
         'content_key_value',
         'protected_folder_markers',
@@ -97,6 +100,7 @@ class ProductSaleItemManifest extends Model
         'has_option_file' => 'boolean',
         'requires_sider' => 'boolean',
         'run_sider_as_administrator' => 'boolean',
+        'requires_injection' => 'boolean',
         // Same treatment as archive_password on this table: encrypted at rest, Laravel
         // transparently decrypts on read. The stored value is the exact Base64 string
         // the launcher expects -- never re-encoded on the way out.
@@ -134,6 +138,10 @@ class ProductSaleItemManifest extends Model
 
         if ($this->requires_sider) {
             $capabilities['supports_sider'] = true;
+        }
+
+        if ($this->requires_injection) {
+            $capabilities['supports_injection'] = true;
         }
 
         return $capabilities;

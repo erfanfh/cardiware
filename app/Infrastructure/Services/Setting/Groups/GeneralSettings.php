@@ -64,6 +64,14 @@ class GeneralSettings extends BaseSettings
         // keep working without needing this row populated.
         'launcher_maintenance_enabled',
         'launcher_maintenance_message',
+        // One mobile number per line. A device whose owning account matches one of
+        // these numbers keeps normal access while maintenance is on -- lets the team
+        // test a build against the real server before lifting maintenance for
+        // everyone. Checked by GetLauncherBootstrapAction against the device_id the
+        // launcher already sends with every bootstrap call (see DeviceIdentityService
+        // on the client -- not a secret, just the same locally-generated id already
+        // used at login).
+        'launcher_maintenance_bypass_mobiles',
     ];
 
     protected array $casts = [

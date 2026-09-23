@@ -31,7 +31,7 @@
                                    hint="هاست‌های اشتراکی با اتصال‌های زیاد سرویس را مسدود می‌کنند؛ برای dl4 مقدار ۲ یا ۳ پیشنهاد می‌شود. تغییر بدون نیاز به نسخهٔ جدید لانچر و برای دانلودهای بعدی اعمال می‌شود.">
                         <x-admin.form.input name="launcher_download_max_connections" type="number" dir="ltr"
                                             min="1" max="8"
-                                            value="{{ old('launcher_download_max_connections', $downloadMaxConnections) }}" />
+                                            value="{{ old('launcher_download_max_connections', $downloadMaxConnections ?? 8) }}" />
                     </x-admin.field>
                 </div>
 
@@ -58,6 +58,8 @@
                             وقتی فعال باشد، هیچ کاربری — حتی با نشست ذخیره‌شده معتبر — نمی‌تواند وارد لانچر شود؛
                             به‌جای آن همین پیام زیر را می‌بیند. این بررسی فقط موقع باز شدن لانچر یا زدن دکمه
                             «بررسی مجدد اتصال» انجام می‌شود، نه لحظه‌ای روی نشست‌های از قبل بازِ کاربران.
+                            شماره‌های داخل «استثنا» زیر از این قطعی مستثنا هستند و می‌توانند لانچر را عادی
+                            تست کنند.
                         </p>
                     </div>
                     <span class="rounded-xl px-3 py-2 text-xs font-black {{ $maintenanceEnabled ? 'bg-red-100 text-red-800' : 'bg-emerald-100 text-emerald-800' }}">
@@ -81,6 +83,23 @@
                                            placeholder="سرویس موقتاً در دسترس نیست."
                                            :value="old('launcher_maintenance_message', $maintenanceMessage)" />
                     @error('launcher_maintenance_message')
+                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="mb-2 block text-xs font-black text-slate-700">
+                        شماره‌های استثنا (دسترسی آزمایشی حتی وقتی حالت تعمیر فعال است)
+                    </label>
+                    <x-admin.form.textarea name="launcher_maintenance_bypass_mobiles" rows="3"
+                                           placeholder="09120000000&#10;09350000000"
+                                           class="direction-ltr text-left"
+                                           :value="old('launcher_maintenance_bypass_mobiles', $maintenanceBypassMobiles)" />
+                    <p class="mt-2 text-xs leading-6 text-slate-500">
+                        یک شماره موبایل در هر خط. فقط دستگاهی که قبلاً با این شماره وارد لانچر شده کار می‌کند
+                        (یعنی این کاربر باید حداقل یک‌بار قبل از حالت تعمیر، از همان سیستم لاگین کرده باشد).
+                    </p>
+                    @error('launcher_maintenance_bypass_mobiles')
                         <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
