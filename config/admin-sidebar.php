@@ -209,6 +209,12 @@ return [
                 'gate' => 'launcher-device.manage',
             ],
             [
+                'label' => 'رصد امنیتی لانچر',
+                'route' => 'admin.launcher-security.index',
+                'icon' => 'icons.computer-check',
+                'gate' => 'launcher-device.manage',
+            ],
+            [
                 'label' => 'آپدیت لانچر',
                 'route' => 'admin.launcher-releases.index',
                 'icon' => 'icons.arrow-reload-horizontal',

@@ -237,6 +237,7 @@ class SyncProductSaleItemsAction
                 'title' => $this->normalizer->nullableString($fileItem['title'] ?? null),
                 'file_name' => $fileName,
                 'url' => $url,
+                'mirror_url' => $this->normalizer->nullableString($fileItem['mirror_url'] ?? null),
                 'size_bytes' => $this->normalizer->nullableInteger($fileItem['size_bytes'] ?? null),
                 'sha256' => filled($fileItem['sha256'] ?? null)
                     ? strtolower(trim((string)$fileItem['sha256'])) : null,

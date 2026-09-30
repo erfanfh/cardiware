@@ -161,6 +161,7 @@
         'protected_excluded_paths' => '',
         'protected_modules' => [],
         'protected_strict_modules' => true,
+        'protected_enforce_native_dlls' => false,
 
         'cpu_compatibility' => [
             'enabled' => false,
@@ -217,6 +218,7 @@
                     ? (json_decode($json, true) ?: [])
                     : [],
                 'protected_strict_modules' => (bool)$old('protected_strict_modules', 1),
+                'protected_enforce_native_dlls' => (bool)$old('protected_enforce_native_dlls', 0),
             ]);
         }
 
@@ -298,6 +300,8 @@
                     : ($manifest->protected_modules ?? []),
                 'protected_strict_modules' => (bool)$old('protected_strict_modules',
                     (int)($manifest->protected_strict_modules ?? true)),
+                'protected_enforce_native_dlls' => (bool)$old('protected_enforce_native_dlls',
+                    (int)($manifest->protected_enforce_native_dlls ?? false)),
 
                 'cpu_compatibility' => $manifest->resolvedCpuCompatibility(),
 
@@ -394,6 +398,7 @@
                         'title' => $file->title,
                         'file_name' => $file->file_name,
                         'url' => $file->url,
+                        'mirror_url' => $file->mirror_url,
                         'size_bytes' => $file->size_bytes,
                         'sha256' => $file->sha256,
                         'sha256_signature' => $file->sha256_signature,

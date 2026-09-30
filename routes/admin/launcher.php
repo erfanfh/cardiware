@@ -18,6 +18,14 @@ Route::prefix('launcher-devices')
         Route::post('/restore', [LauncherDeviceManagementController::class, 'restore'])->name('restore');
     });
 
+Route::get('launcher-security', [LauncherSecurityMonitorController::class, 'index'])
+    ->name('launcher-security.index');
+Route::post('launcher-security/allowed-dlls', [LauncherSecurityMonitorController::class, 'allowDll'])
+    ->name('launcher-security.allowed-dlls.store');
+Route::delete('launcher-security/allowed-dlls/{allowedDll}', [LauncherSecurityMonitorController::class, 'revokeDll'])
+    ->whereNumber('allowedDll')
+    ->name('launcher-security.allowed-dlls.destroy');
+
 Route::prefix('launcher-releases')
     ->name('launcher-releases.')
     ->group(function (): void {

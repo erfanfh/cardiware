@@ -246,6 +246,7 @@ class UpdateProductRequest extends FormRequest
                 'required', 'regex:/\A[a-fA-F0-9]{64}\z/',
             ],
             'sale_items.*.manifest.protected_strict_modules' => ['nullable', 'boolean'],
+            'sale_items.*.manifest.protected_enforce_native_dlls' => ['nullable', 'boolean'],
 
             /*
             |--------------------------------------------------------------------------
@@ -314,6 +315,9 @@ class UpdateProductRequest extends FormRequest
             // tool. Length is not pinned: a bigger signing key produces a longer
             // signature, and the launcher rejects a malformed one anyway.
             'sale_items.*.files.*.sha256_signature' => ['nullable', 'string', 'max:2048'],
+            // IDM mirror on a separate host. Without a rule here validated() would drop it
+            // silently on save (the same trap that ate content_key_id in 2026-08).
+            'sale_items.*.files.*.mirror_url' => ['nullable', 'url:https,http', 'max:2048'],
             'sale_items.*.files.*.signature_key_id' => ['nullable', 'regex:/^[a-fA-F0-9]{64}$/'],
             'sale_items.*.files.*.mime_type' => ['nullable', 'string', 'max:255'],
             'sale_items.*.files.*.part_number' => ['nullable', 'integer', 'min:1'],
@@ -1483,6 +1487,10 @@ class UpdateProductRequest extends FormRequest
             'protected_strict_modules' => $this->normalizeBooleanInput(
                 data_get($manifest, 'protected_strict_modules'),
                 true
+            ),
+            'protected_enforce_native_dlls' => $this->normalizeBooleanInput(
+                data_get($manifest, 'protected_enforce_native_dlls'),
+                false
             ),
             'cpu_compatibility' => [
                 'enabled' => $this->normalizeBooleanInput(data_get($cpuCompatibility, 'enabled'), false),
