@@ -11,6 +11,7 @@
     $rootItems = $order->rootItems ?? collect();
     $user = $order->user;
     $latestPayment = $order->latestPayment;
+    $refund = $order->refund;
 
     $subtotalAmount = (int) ($order->subtotal_amount ?? 0);
     $discountAmount = (int) ($order->discount_amount ?? 0);
@@ -45,6 +46,12 @@
             @if(session('error'))
                 <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
                     {{ session('error') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700">
+                    {{ session('success') }}
                 </div>
             @endif
 
@@ -236,6 +243,7 @@
                         </div>
 
                         <form method="POST" action="{{ route('admin.orders.update', $order) }}"
+                              x-data="{ selectedStatus: @js(old('status', $order->status->value)), refundMethod: @js(old('refund_method', '')) }"
                               class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end">
                             @csrf
                             @method('PUT')
@@ -247,10 +255,12 @@
 
                                 <select id="status"
                                         name="status"
+                                        x-model="selectedStatus"
                                         class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
                                     @foreach($statuses as $value => $label)
                                         <option
-                                            value="{{ $value }}" @selected(old('status', $order->status->value) === $value)>
+                                            value="{{ $value }}" @selected(old('status', $order->status->value) === $value)
+                                            @disabled($refund && $order->status === \App\Domain\Commerce\Enums\OrderStatusEnum::REFUNDED && $value === 'paid')>
                                             {{ $label }}
                                         </option>
                                     @endforeach
@@ -261,6 +271,36 @@
                                 @enderror
                             </div>
 
+                            @if($order->status === \App\Domain\Commerce\Enums\OrderStatusEnum::PAID && $totalAmount > 0)
+                                <div class="lg:col-span-12 rounded-2xl border border-sky-200 bg-sky-50 p-4"
+                                     x-show="selectedStatus === 'refunded'" x-cloak>
+                                    <label for="refund_method" class="mb-2 block text-xs font-extrabold text-slate-700">
+                                        روش استرداد مبلغ {{ $money($totalAmount) }}
+                                    </label>
+                                    <select id="refund_method" name="refund_method" x-model="refundMethod"
+                                            x-bind:disabled="selectedStatus !== 'refunded'"
+                                            x-bind:required="selectedStatus === 'refunded'"
+                                            class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
+                                        <option value="">انتخاب روش استرداد</option>
+                                        <option value="wallet">بازگشت خودکار به کیف پول</option>
+                                        <option value="manual_bank_transfer">واریز دستی به حساب کاربر</option>
+                                    </select>
+                                    @error('refund_method')
+                                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                                    @enderror
+
+                                    <p class="mt-3 text-xs leading-6 text-slate-600" x-show="refundMethod === 'wallet'" x-cloak>
+                                        با ثبت وضعیت، کل مبلغ سفارش به موجودی کیف پول کاربر افزوده می‌شود و برای خرید قابل استفاده خواهد بود.
+                                    </p>
+
+                                    <div class="mt-4" x-show="refundMethod === 'manual_bank_transfer'" x-cloak>
+                                        <p class="text-xs leading-6 text-slate-600">
+                                            واریز به حساب کاربر به‌صورت دستی و خارج از سامانه انجام می‌شود. این انتخاب موجودی کیف پول را تغییر نمی‌دهد.
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="lg:col-span-7">
                                 <button type="submit"
                                         class="cursor-pointer inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:bg-slate-800 lg:w-auto">
@@ -268,6 +308,23 @@
                                 </button>
                             </div>
                         </form>
+
+                        @if($refund)
+                            <div class="mt-5 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm text-sky-900">
+                                <div class="font-black">استرداد ثبت‌شده</div>
+                                <div class="mt-2">روش: {{ $refund->method->label() }}</div>
+                                <div>مبلغ: {{ $money($refund->amount) }}</div>
+                                <div>تاریخ: {{ jalali_date($refund->created_at) }}</div>
+                                @if($refund->walletTransaction)
+                                    <div>شناسه تراکنش کیف پول: {{ $refund->walletTransaction->public_token }}</div>
+                                @endif
+                                @if($refund->manual_reference)
+                                    <div>شماره پیگیری: {{ $refund->manual_reference }}</div>
+                                @endif
+                            </div>
+                        @elseif($order->status === \App\Domain\Commerce\Enums\OrderStatusEnum::REFUNDED)
+                            <p class="mt-5 text-xs text-slate-500">روش استرداد این سفارش در سوابق قدیمی ثبت نشده است.</p>
+                        @endif
                     </div>
                 </div>
 
@@ -277,26 +334,47 @@
                         <div class="mb-5">
                             <h2 class="text-base font-black text-slate-900">توضیحات سفارش</h2>
                             <p class="mt-1 text-sm leading-7 text-slate-500">
-                                یادداشت ها و توضیحات سفارش
+                                هر توضیح به‌صورت جداگانه ثبت می‌شود و برای خریدار قابل مشاهده است.
                             </p>
                         </div>
 
-                        <form method="POST" action="{{ route('admin.orders.update.description', $order) }}">
+                        <form method="POST" action="{{ route('admin.orders.descriptions.store', $order) }}">
                             @csrf
-                            @method('PUT')
 
                             <x-admin.form.textarea
                                 name="description"
-                                :value="old('description', $order->description)"
+                                :value="old('description', '')"
+                                placeholder="توضیح جدید را بنویسید..."
+                                required
                             />
 
-                            <div class="flex flex-row-reverse">
+                            @error('description')
+                                <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+
+                            <div class="mt-3 flex flex-row-reverse">
                                 <button type="submit"
                                         class="cursor-pointer inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-5 text-sm font-extrabold text-white transition hover:bg-slate-800 lg:w-auto">
-                                    ذخیره توضیحات
+                                    افزودن توضیح
                                 </button>
                             </div>
                         </form>
+
+                        <div class="mt-5 space-y-3 border-t border-slate-100 pt-5">
+                            @forelse($order->descriptions as $description)
+                                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                                    <div class="text-xs font-bold text-slate-500">
+                                        {{ jalali_date($description->created_at, 'Y/m/d H:i') }}
+                                        @if($description->is_legacy)
+                                            <span class="mr-1">(تاریخ تقریبی؛ توضیح قدیمی)</span>
+                                        @endif
+                                    </div>
+                                    <div class="mt-2 whitespace-pre-wrap break-words text-sm leading-7 text-slate-800">{{ $description->body }}</div>
+                                </div>
+                            @empty
+                                <p class="text-xs text-slate-500">هنوز توضیحی برای این سفارش ثبت نشده است.</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>

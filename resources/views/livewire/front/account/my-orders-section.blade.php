@@ -147,13 +147,23 @@
                                 </div>
                             </div>
 
-                            @if($order->description)
+                            @if($order->descriptions->isNotEmpty())
                                 <div
                                     class="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-800/80">
-                                    <div class="mb-3 text-sm font-black text-slate-900 dark:text-white">توضیحات</div>
+                                    <div class="mb-3 text-sm font-black text-slate-900 dark:text-white">توضیحات سفارش</div>
 
-                                    <div class="text-[0.8rem] text-slate-700 dark:text-gray-100">
-                                        {!! nl2br(htmlspecialchars(e($order->description))) !!}
+                                    <div class="space-y-3">
+                                        @foreach($order->descriptions as $description)
+                                            <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+                                                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                                                    {{ $this->dateTimeLabel($description->created_at) }}
+                                                    @if($description->is_legacy)
+                                                        <span class="mr-1">(تاریخ تقریبی؛ توضیح قدیمی)</span>
+                                                    @endif
+                                                </div>
+                                                <div class="mt-2 whitespace-pre-wrap break-words text-[0.8rem] leading-7 text-slate-700 dark:text-gray-100">{{ $description->body }}</div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             @endif

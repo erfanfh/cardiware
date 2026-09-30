@@ -197,4 +197,16 @@ class Order extends Model implements Payable
     {
         return $this->hasMany(WalletTopUp::class);
     }
+
+    public function refund(): HasOne
+    {
+        return $this->hasOne(OrderRefund::class);
+    }
+
+    public function descriptions(): HasMany
+    {
+        return $this->hasMany(OrderDescription::class)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id');
+    }
 }

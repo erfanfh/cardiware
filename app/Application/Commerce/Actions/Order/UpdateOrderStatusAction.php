@@ -5,9 +5,12 @@ namespace App\Application\Commerce\Actions\Order;
 use App\Application\Shared\Cache\Invalidators\OrderCacheInvalidator;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
+use App\Domain\Commerce\Enums\OrderRefundMethodEnum;
 use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Identity\Models\User;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -17,6 +20,7 @@ class UpdateOrderStatusAction
         private readonly OrderStatusTransitionGuard               $orderStatusTransitionGuard,
         private readonly ChangeOrderStatusAction                  $changeOrderStatusAction,
         private readonly SyncPurchaseAccessesForOrderStatusAction $syncPurchaseAccessesForOrderStatusAction,
+        private readonly RecordOrderRefundAction                   $recordOrderRefundAction,
     )
     {
     }
@@ -24,9 +28,14 @@ class UpdateOrderStatusAction
     /**
      * @throws Throwable
      */
-    public function execute(Order $order, OrderStatusEnum $newStatus): Order
+    public function execute(
+        Order $order,
+        OrderStatusEnum $newStatus,
+        ?OrderRefundMethodEnum $refundMethod = null,
+        ?User $admin = null,
+    ): Order
     {
-        return DB::transaction(function () use ($order, $newStatus): Order {
+        return DB::transaction(function () use ($order, $newStatus, $refundMethod, $admin): Order {
             /** @var Order $order */
             $order = Order::query()
                 ->whereKey($order->id)
@@ -44,6 +53,28 @@ class UpdateOrderStatusAction
                 newStatus: $newStatus,
             );
 
+            if ($oldStatus === OrderStatusEnum::REFUNDED && $order->refund()->exists()) {
+                throw new DomainException('Refunded order cannot be marked as paid again.');
+            }
+
+            if ($newStatus === OrderStatusEnum::REFUNDED && $oldStatus === OrderStatusEnum::PAID) {
+                if ($order->refund()->exists()) {
+                    throw new DomainException('This order has already been refunded.');
+                }
+
+                if ((int) $order->getPayableAmount() > 0) {
+                    if ($refundMethod === null) {
+                        throw new DomainException('Refund method is required.');
+                    }
+
+                    $this->recordOrderRefundAction->execute(
+                        order: $order,
+                        method: $refundMethod,
+                        admin: $admin,
+                    );
+                }
+            }
+
             $transitionedAt = now(config('app.timezone'))->toImmutable();
 
             $order = $this->changeOrderStatusAction->execute(
@@ -58,7 +89,7 @@ class UpdateOrderStatusAction
                 newStatus: $newStatus,
             );
 
-            app(UserCacheInvalidator::class)->flushForUser($order->user);
+            app(UserCacheInvalidator::class)->flushForUser((int) $order->user_id);
             app(OrderCacheInvalidator::class)->flushSuccessfulPayment();
 
             $orderId = (int)$order->getKey();

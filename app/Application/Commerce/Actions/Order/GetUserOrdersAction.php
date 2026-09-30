@@ -19,6 +19,7 @@ class GetUserOrdersAction
                 'rootItems.purchasable',
                 'latestPayment',
                 'purchaseAccesses',
+                'descriptions',
             ])
             ->latest('id')
             ->paginate($perPage);

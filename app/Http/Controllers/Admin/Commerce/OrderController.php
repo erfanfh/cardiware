@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Commerce;
 
-use App\Application\Commerce\Actions\Order\UpdateOrderDescriptionAction;
+use App\Application\Commerce\Actions\Order\AddOrderDescriptionAction;
 use App\Application\Commerce\Actions\Order\UpdateOrderStatusAction;
 use App\Application\Commerce\Listings\OrderListing;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
+use App\Domain\Commerce\Enums\OrderRefundMethodEnum;
 use App\Domain\Commerce\Models\Order;
 use App\Http\Requests\Admin\Commerce\IndexOrderRequest;
 use App\Http\Requests\Admin\Commerce\UpdateOrderDescriptionRequest;
@@ -45,6 +46,8 @@ class OrderController
         $order->load([
             'user' => fn($query) => $query->withTrashed(),
             'latestPayment',
+            'refund.walletTransaction',
+            'descriptions',
             'rootItems.children',
             'rootItems.purchasable',
             'rootItems.children.purchasable',
@@ -74,6 +77,10 @@ class OrderController
             $updateOrderStatusAction->execute(
                 order: $order,
                 newStatus: OrderStatusEnum::from($request->validated('status')),
+                refundMethod: $request->validated('refund_method')
+                    ? OrderRefundMethodEnum::from($request->validated('refund_method'))
+                    : null,
+                admin: $request->user(),
             );
 
             return redirect()
@@ -85,6 +92,10 @@ class OrderController
                 ->withInput()
                 ->with('error', match ($exception->getMessage()) {
                     'Order status transition is not allowed.' => 'تغییر وضعیت انتخاب‌شده برای این سفارش مجاز نیست.',
+                    'This order has already been refunded.' => 'این سفارش قبلاً مسترد شده است.',
+                    'Refunded order cannot be marked as paid again.' => 'سفارش مستردشده را نمی‌توان دوباره پرداخت‌شده کرد.',
+                    'The user wallet is unavailable.' => 'کیف پول کاربر فعال نیست. روش واریز دستی را انتخاب کنید.',
+                    'Refund method is required.' => 'روش استرداد را انتخاب کنید.',
                     default => 'امکان تغییر وضعیت سفارش وجود ندارد.',
                 });
         } catch (Throwable $exception) {
@@ -100,18 +111,19 @@ class OrderController
     public function updateDescription(
         UpdateOrderDescriptionRequest $request,
         Order                         $order,
-        UpdateOrderDescriptionAction  $updateOrderDescriptionAction,
+        AddOrderDescriptionAction     $addOrderDescriptionAction,
     ): RedirectResponse
     {
         Gate::authorize('order.edit');
 
-        $updateOrderDescriptionAction->execute(
+        $addOrderDescriptionAction->execute(
             order: $order,
-            description: $request->description,
+            description: $request->validated('description'),
+            admin: $request->user(),
         );
 
         return redirect()
             ->route('admin.orders.edit', $order)
-            ->with('success', 'وضعیت سفارش با موفقیت به‌روزرسانی شد.');
+            ->with('success', 'توضیح جدید برای سفارش ثبت شد.');
     }
 }

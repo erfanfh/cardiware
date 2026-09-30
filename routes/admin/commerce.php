@@ -26,3 +26,4 @@ Route::prefix('purchase-download-resets')
 
 Route::resource('orders', OrderController::class)->only(['index', 'edit', 'update']);
 Route::put('orders/{order}/description', [OrderController::class, 'updateDescription'])->name('orders.update.description');
+Route::post('orders/{order}/descriptions', [OrderController::class, 'updateDescription'])->name('orders.descriptions.store');
