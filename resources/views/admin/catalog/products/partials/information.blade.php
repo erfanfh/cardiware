@@ -162,6 +162,7 @@
         'protected_modules' => [],
         'protected_strict_modules' => true,
         'protected_enforce_native_dlls' => false,
+        'protected_watermark_sites' => '',
 
         'cpu_compatibility' => [
             'enabled' => false,
@@ -213,6 +214,7 @@
                 'content_key_id' => $old('content_key_id', ''),
                 'protected_folder_markers' => $old('protected_folder_markers', ''),
                 'protected_exact_paths' => $old('protected_exact_paths', ''),
+                'protected_watermark_sites' => $old('protected_watermark_sites', ''),
                 'protected_excluded_paths' => $old('protected_excluded_paths', ''),
                 'protected_modules' => ($json = $old('protected_modules_json'))
                     ? (json_decode($json, true) ?: [])
@@ -289,6 +291,8 @@
                     implode("\n", $manifest->protected_folder_markers ?? [])),
                 'protected_exact_paths' => $old('protected_exact_paths',
                     implode("\n", $manifest->protected_exact_paths ?? [])),
+                'protected_watermark_sites' => $old('protected_watermark_sites',
+                    implode("\n", $manifest->protected_watermark_sites ?? [])),
                 'protected_excluded_paths' => $old('protected_excluded_paths',
                     implode("\n", $manifest->protected_excluded_paths ?? [])),
                 // protected_modules itself is never posted as a field (see the blade

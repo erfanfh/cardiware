@@ -44,6 +44,7 @@
         'protected_modules' => [],
         'protected_strict_modules' => true,
         'protected_enforce_native_dlls' => false,
+        'protected_watermark_sites' => '',
 
         'cpu_compatibility' => [
             'enabled' => false,
@@ -1087,6 +1088,11 @@
                     'label' => 'استثناها (همیشه بدون رمز)',
                     'hint' => 'قبل از دو لیست بالا بررسی می‌شود. فایل‌هایی که باید plain بمانند هرچند داخل پوشه‌ی محافظت‌شده‌اند.',
                     'placeholder' => "\\pesdb\\competition.bin",
+                ],
+                'protected_watermark_sites' => [
+                    'label' => 'محل واترمارک خریدار (اختیاری)',
+                    'hint' => 'هر خط: «آفست طول مسیر». sider بعد از رمزگشایی، همین بایت‌ها را فقط در حافظه با کد اختصاصی خریدار جایگزین می‌کند (فایل روی دیسک عوض نمی‌شود). فقط جایی را بدهید که مطمئنید تغییرش اثری در بازی ندارد و بعد بازی را تست کنید. خالی = خاموش.',
+                    'placeholder' => "4096 8 common\\etc\\pesdb\\Player.bin",
                 ],
             ];
         @endphp

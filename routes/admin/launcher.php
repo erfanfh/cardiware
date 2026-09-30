@@ -20,6 +20,8 @@ Route::prefix('launcher-devices')
 
 Route::get('launcher-security', [LauncherSecurityMonitorController::class, 'index'])
     ->name('launcher-security.index');
+Route::get('launcher-security/watermark-lookup', [LauncherSecurityMonitorController::class, 'watermarkLookup'])
+    ->name('launcher-security.watermark-lookup');
 Route::post('launcher-security/allowed-dlls', [LauncherSecurityMonitorController::class, 'allowDll'])
     ->name('launcher-security.allowed-dlls.store');
 Route::delete('launcher-security/allowed-dlls/{allowedDll}', [LauncherSecurityMonitorController::class, 'revokeDll'])

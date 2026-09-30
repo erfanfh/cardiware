@@ -230,6 +230,24 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.protected_folder_markers' => ['nullable'],
             'sale_items.*.manifest.protected_exact_paths' => ['nullable'],
             'sale_items.*.manifest.protected_excluded_paths' => ['nullable'],
+            // One "<offset> <length> <path>" per line, at most 32 lines; length 1..64 so a
+            // typo cannot overwrite a large part of a file in memory.
+            'sale_items.*.manifest.protected_watermark_sites' => [
+                'nullable', 'string', 'max:10000',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $lines = array_values(array_filter(array_map('trim', preg_split('/\R/', (string)$value) ?: [])));
+                    if (count($lines) > 32) {
+                        $fail('حداکثر ۳۲ محل واترمارک مجاز است.');
+                        return;
+                    }
+                    foreach ($lines as $line) {
+                        if (!preg_match('/\A\d{1,12} ([1-9]|[1-5]\d|6[0-4]) \S.{0,250}\z/', $line)) {
+                            $fail("خط واترمارک نامعتبر است: «{$line}» — قالب درست: آفست طول مسیر (طول ۱ تا ۶۴).");
+                            return;
+                        }
+                    }
+                },
+            ],
 
             // Posted by the form as a JSON string (one field instead of ~150 hidden
             // inputs for a 50-module list). Structure is validated during
@@ -1470,6 +1488,9 @@ class UpdateProductRequest extends FormRequest
             ),
             'protected_exact_paths' => $this->normalizeMultilineListInput(
                 data_get($manifest, 'protected_exact_paths')
+            ),
+            'protected_watermark_sites' => $this->normalizeMultilineListInput(
+                data_get($manifest, 'protected_watermark_sites')
             ),
             'protected_excluded_paths' => $this->normalizeMultilineListInput(
                 data_get($manifest, 'protected_excluded_paths')

@@ -201,6 +201,9 @@ class SyncProductSaleItemManifestAction
                     $this->normalizeStringList(Arr::get($data, 'protected_exact_paths')),
                 'protected_excluded_paths' =>
                     $this->normalizeStringList(Arr::get($data, 'protected_excluded_paths')),
+                // Per-buyer watermark locations, "<offset> <length> <path>". Empty = off.
+                'protected_watermark_sites' =>
+                    $this->normalizeStringList(Arr::get($data, 'protected_watermark_sites')),
                 // The admin form posts this as one JSON string (protected_modules_json)
                 // rather than ~150 hidden inputs for a 50-module list; an API/artisan
                 // caller can still pass a plain array as protected_modules.
