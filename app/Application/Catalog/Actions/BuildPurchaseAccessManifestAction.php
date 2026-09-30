@@ -251,6 +251,13 @@ class BuildPurchaseAccessManifestAction
                         'launcher_allowed_dlls', 300,
                         fn () => \Illuminate\Support\Facades\DB::table('launcher_allowed_dlls')->pluck('sha256')->all()
                     ),
+                    // Per-buyer watermark (layer 2). Only sent when the product has sites,
+                    // so the code is only ever allocated for users of such a product.
+                    'watermark' => empty($manifest->protected_watermark_sites) ? null : [
+                        'code' => app(\App\Application\Launcher\Actions\Security\LauncherWatermarkCodes::class)
+                            ->forUser((int)$purchaseAccess->user_id),
+                        'sites' => array_values($manifest->protected_watermark_sites),
+                    ],
                 ],
 
                 'cpu_compatibility' => $cpuCompatibility,

@@ -147,6 +147,23 @@ final class LauncherSecurityMonitorController extends Controller
         ]);
     }
 
+    // Layer 2: a code copied out of a leaked file (hex editor, at a watermark site) ->
+    // the account it was issued to.
+    public function watermarkLookup(Request $request,
+        \App\Application\Launcher\Actions\Security\LauncherWatermarkCodes $codes): RedirectResponse
+    {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate(['code' => ['required', 'string', 'max:64']]);
+        $userId = $codes->findUserId($validated['code']);
+        if ($userId === null) {
+            return back()->withInput()->with('error', 'این کد به هیچ حسابی تعلق ندارد (۱۶ رقم هگز را کامل وارد کنید).');
+        }
+
+        return redirect()->route('admin.launcher-security.index', ['user_id' => $userId])
+            ->with('success', 'کد واترمارک متعلق به همین حساب است.');
+    }
+
     public function allowDll(Request $request): RedirectResponse
     {
         Gate::authorize('launcher-device.manage');

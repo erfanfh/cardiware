@@ -18,6 +18,18 @@
                 <a class="font-bold text-brand-700 underline" href="{{ route('admin.launcher-devices.index') }}">دستگاه‌های لانچر</a>
                 انجام می‌شود.
             </p>
+            <form method="GET" action="{{ route('admin.launcher-security.watermark-lookup') }}" class="mt-4 flex flex-wrap items-center gap-2">
+                <span class="text-xs font-bold text-slate-700">پیدا کردن صاحب فایل لو رفته (کد واترمارک):</span>
+                <input name="code" value="{{ old('code') }}" required dir="ltr" placeholder="مثلاً 3f a2 91 0c 5e 77 d1 08"
+                       class="w-72 rounded-lg border border-slate-200 px-3 py-1.5 font-mono text-xs">
+                <button class="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white">جستجو</button>
+            </form>
+            @if (session('error'))
+                <p class="mt-2 text-xs font-bold text-rose-700">{{ session('error') }}</p>
+            @endif
+            @if (session('success'))
+                <p class="mt-2 text-xs font-bold text-emerald-700">{{ session('success') }}</p>
+            @endif
         </section>
 
         @if ($selectedUser)
