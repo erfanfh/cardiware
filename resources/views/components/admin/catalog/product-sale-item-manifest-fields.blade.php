@@ -43,6 +43,7 @@
         'protected_excluded_paths' => '',
         'protected_modules' => [],
         'protected_strict_modules' => true,
+        'protected_enforce_native_dlls' => false,
 
         'cpu_compatibility' => [
             'enabled' => false,
@@ -1183,6 +1184,24 @@
             @else
                 <input type="hidden" x-bind:name="{{ $dynamicName('protected_strict_modules') }}"
                        x-bind:value="{{ $state }}.protected_strict_modules ? 1 : 0">
+            @endif
+
+            <label class="mt-3 flex cursor-pointer items-start gap-3 rounded-xl border border-rose-200 bg-rose-50 p-3">
+                <input type="checkbox" x-model="{{ $state }}.protected_enforce_native_dlls" class="mt-1 h-4 w-4">
+                <span class="text-[11px] leading-5 text-slate-700">
+                    <span class="font-bold">جلوگیری از اجرا با DLL ناشناس یا دستکاری‌شده</span>
+                    — اگر یکی از DLLهای پوشه modules با لیست modules.json بالا نخواند، یا کنار exe بازی DLL/ASI
+                    باشد که در «رصد امنیتی لانچر ← DLLهای مجاز» نیست، بازی اجرا نمی‌شود.
+                    <span class="font-bold text-rose-700">قبل از روشن کردن:</span> مطمئن شوید modules.json همین نسخه آپلود شده
+                    و DLLهای رایج کاربران (ReShade و ...) در لیست مجاز هستند.
+                </span>
+            </label>
+            @if($isSimple)
+                <input type="hidden" name="{{ $staticName('protected_enforce_native_dlls') }}"
+                       x-bind:value="{{ $state }}.protected_enforce_native_dlls ? 1 : 0">
+            @else
+                <input type="hidden" x-bind:name="{{ $dynamicName('protected_enforce_native_dlls') }}"
+                       x-bind:value="{{ $state }}.protected_enforce_native_dlls ? 1 : 0">
             @endif
         </div>
     </div>

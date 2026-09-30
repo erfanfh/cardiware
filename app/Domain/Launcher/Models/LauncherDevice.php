@@ -23,6 +23,7 @@ class LauncherDevice extends Model
         'app_version',
         'last_ip',
         'last_seen_at',
+        'last_security_report_at',
         'revoked_at',
     ];
 
@@ -30,6 +31,7 @@ class LauncherDevice extends Model
 
     protected $casts = [
         'last_seen_at' => 'datetime',
+        'last_security_report_at' => 'datetime',
         'revoked_at' => 'datetime',
         'device_slot' => 'integer',
         'offline_license_expires_at' => 'datetime',

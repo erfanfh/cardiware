@@ -61,6 +61,13 @@ return Application::configure(basePath: dirname(__DIR__))
             ->withoutOverlapping(30)
             ->onOneServer();
 
+        // Security findings not seen again for 180 days are history, not signal.
+        $schedule->call(fn () => \Illuminate\Support\Facades\DB::table('launcher_security_events')
+            ->where('last_seen_at', '<', now()->subDays(180))->delete())
+            ->name('launcher-security-events-prune')
+            ->dailyAt('04:40')
+            ->onOneServer();
+
         $schedule->command('backups:cleanup')
             ->dailyAt('04:10')
             ->withoutOverlapping(180)

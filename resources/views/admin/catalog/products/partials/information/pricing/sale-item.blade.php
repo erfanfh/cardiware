@@ -357,6 +357,19 @@
                             />
                         </div>
 
+                        {{-- Mirror on a SEPARATE host for users who download with IDM.
+                             Never the launcher's host: shared mirror links must not eat
+                             the launcher's bandwidth. Same file bytes as `url` above
+                             (identical name/size/SHA-256), so the launcher can verify it. --}}
+                        <div class="col-span-12">
+                            <x-admin.form.input
+                                x-bind:name="`sale_items[${i}][files][${fileIndex}][mirror_url]`"
+                                x-model="file.mirror_url"
+                                class="direction-ltr"
+                                placeholder="لینک مستقیم IDM روی سرور جداگانه (اختیاری) — https://..."
+                            />
+                        </div>
+
                         <div class="col-span-12 md:col-span-6 xl:col-span-4">
                             <x-admin.form.input
                                 x-bind:name="`sale_items[${i}][files][${fileIndex}][file_name]`"

@@ -214,6 +214,10 @@ class SyncProductSaleItemManifestAction
                 'protected_strict_modules' =>
                     $this->toBoolean(Arr::get($data, 'protected_strict_modules', true)),
 
+                // Off unless explicitly switched on (see add_native_dll_enforcement).
+                'protected_enforce_native_dlls' =>
+                    $this->toBoolean(Arr::get($data, 'protected_enforce_native_dlls', false)),
+
                 'cpu_compatibility' =>
                     $this->normalizeCpuCompatibility(
                         Arr::get($data, 'cpu_compatibility')

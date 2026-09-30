@@ -17,6 +17,7 @@ class ProductSaleItemFile extends Model
         'title',
         'file_name',
         'url',
+        'mirror_url',
         'size_bytes',
         'sha256',
         'sha256_signature',
@@ -29,7 +30,7 @@ class ProductSaleItemFile extends Model
         'sort_order',
     ];
 
-    protected $hidden = ['url'];
+    protected $hidden = ['url', 'mirror_url'];
 
     protected $casts = [
         'size_bytes' => 'integer',

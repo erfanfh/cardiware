@@ -150,6 +150,15 @@ class BuildPurchaseAccessManifestAction
                             'sha256_signature' => $file->sha256_signature,
                             'signature_key_id' => $file->signature_key_id,
 
+                            /*
+                             * The one deliberate URL in this manifest: an optional mirror on a
+                             * SEPARATE host for users downloading with IDM. The launcher's own
+                             * downloads still go through the prepare API above; this is only
+                             * shown in the "direct links" dialog, and only to entitled users
+                             * (this manifest is behind purchase access). Null = not offered.
+                             */
+                            'mirror_url' => filled($file->mirror_url) ? $file->mirror_url : null,
+
                             'mime_type' => $file->mime_type,
                             'part_number' => $file->part_number,
                             'archive_group' => $file->archive_group,
@@ -233,6 +242,15 @@ class BuildPurchaseAccessManifestAction
                     'excluded_paths' => array_values($manifest->protected_excluded_paths ?? []),
                     'modules' => array_values($manifest->protected_modules ?? []),
                     'strict_modules' => (bool)($manifest->protected_strict_modules ?? true),
+                    // Refuse to launch with an unknown/modified native DLL in the game
+                    // (see add_native_dll_enforcement migration). The allowlist is global
+                    // and always sent, so reports carry allowed=yes even while enforcement
+                    // is still off -- that is how the list gets verified before switching on.
+                    'enforce_native_dlls' => (bool)($manifest->protected_enforce_native_dlls ?? false),
+                    'allowed_game_dlls' => \Illuminate\Support\Facades\Cache::remember(
+                        'launcher_allowed_dlls', 300,
+                        fn () => \Illuminate\Support\Facades\DB::table('launcher_allowed_dlls')->pluck('sha256')->all()
+                    ),
                 ],
 
                 'cpu_compatibility' => $cpuCompatibility,

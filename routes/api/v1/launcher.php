@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\Launcher\LauncherSlideController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherPortalContentController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCommerceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherContentController;
+use App\Http\Controllers\Api\V1\Launcher\LauncherSecurityEventController;
 use App\Http\Controllers\Api\V1\Launcher\OfflineLicenseController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,11 @@ Route::middleware([
             ->name('launcher.devices.destroy');
         Route::post('launcher/offline-license', OfflineLicenseController::class)
             ->name('launcher.offline-license');
+        // Tamper-signal reports. Own tight throttle: a launcher sends one batch per game
+        // launch, so anything faster is a script, not a customer.
+        Route::post('launcher/security-events', LauncherSecurityEventController::class)
+            ->middleware('throttle:20,1')
+            ->name('launcher.security-events');
 
         Route::prefix('launcher')->name('launcher.')->group(function (): void {
             Route::get('slides', LauncherSlideController::class)
