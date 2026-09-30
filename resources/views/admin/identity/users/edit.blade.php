@@ -10,4 +10,11 @@
 
         <x-admin.form.save-button label="ذخیره"/>
     </x-admin.form>
+    @can('wallet.adjust')
+        <div class="mt-5">
+            <x-admin.form.button tag="a" href="{{ route('admin.users.wallet.show', $user) }}" variant="secondary">
+                مدیریت موجودی کیف پول
+            </x-admin.form.button>
+        </div>
+    @endcan
 @endsection

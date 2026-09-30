@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Identity\RoleController;
 use App\Http\Controllers\Admin\Identity\UserBulkActionController;
 use App\Http\Controllers\Admin\Identity\UserController;
 use App\Http\Controllers\Admin\Identity\UserSearchController;
+use App\Http\Controllers\Admin\Identity\UserWalletController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('roles', RoleController::class);
@@ -15,6 +16,8 @@ Route::prefix('roles')->name('roles.')->group(function () {
 
 Route::resource('users', UserController::class)->except('show');
 Route::prefix('users')->name('users.')->group(function () {
+    Route::get('{user}/wallet', [UserWalletController::class, 'show'])->name('wallet.show');
+    Route::post('{user}/wallet', [UserWalletController::class, 'adjust'])->name('wallet.adjust');
     Route::post('bulk-action', UserBulkActionController::class)->name('bulk-action');
 
     Route::get('fetch', [UserController::class, 'usersFetch'])->name('fetch');

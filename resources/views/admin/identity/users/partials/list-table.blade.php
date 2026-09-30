@@ -84,6 +84,13 @@
                                         ویرایش
                                     </x-admin.list.action>
 
+                                    @can('wallet.adjust')
+                                        <span class="text-slate-300">|</span>
+                                        <x-admin.list.action tag="a" href="{{ route('admin.users.wallet.show', $user) }}" variant="primary">
+                                            کیف پول
+                                        </x-admin.list.action>
+                                    @endcan
+
                                     <span class="text-slate-300">|</span>
 
                                     <x-admin.form

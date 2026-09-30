@@ -8,6 +8,7 @@ use App\Application\Financial\Support\WalletBalanceCalculator;
 use App\Application\Financial\Support\WalletTransactionFingerprint;
 use App\Application\Financial\Support\WalletTransactionIdempotencyGuard;
 use App\Domain\Financial\Enums\WalletTransactionDirectionEnum;
+use App\Domain\Financial\Enums\WalletTransactionTypeEnum;
 use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransaction;
 use Illuminate\Database\QueryException;
@@ -80,7 +81,9 @@ class DebitWalletAction
                     ]);
                 }
 
-                if (!$wallet->allowsUserTransactions()) {
+                // Administrators may correct a blocked wallet; user debits remain blocked.
+                if (!$wallet->allowsUserTransactions()
+                    && $data->type !== WalletTransactionTypeEnum::ADMIN_DEBIT) {
                     throw new WalletUnavailableException(
                         'Wallet is not available for debit operations.'
                     );
