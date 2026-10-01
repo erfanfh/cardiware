@@ -7,6 +7,7 @@ use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Identity\Actions\HydrateAccountUserAction;
 use App\Application\Loyalty\Actions\GetAudienceClubOverviewAction;
 use App\Application\Loyalty\Actions\GetAudienceClubDashboardCardAction;
+use App\Domain\Financial\Models\WalletWithdrawal;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
@@ -90,8 +91,13 @@ class AccountController extends Controller
         $user = $this->getHydratedUser();
 
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);
+        $withdrawals = WalletWithdrawal::query()
+            ->where('user_id', $user->id)
+            ->latest('id')
+            ->paginate(5, ['*'], 'withdrawals_page')
+            ->fragment('wallet-withdrawal-history');
 
-        return view('front.account.pages.wallet', compact('user', 'wallet'));
+        return view('front.account.pages.wallet', compact('user', 'wallet', 'withdrawals'));
     }
 
     public function loyalty(

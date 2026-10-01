@@ -116,7 +116,7 @@
                         {{-- Top-up button --}}
                         <a
                             href="#wallet-topup"
-                            class="group flex w-full items-center justify-center gap-2 rounded-2xl
+                            class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl
                            bg-brand-500 px-5 py-3.5 text-sm font-black text-white
                            shadow-lg shadow-brand-500/20 transition
                            hover:bg-brand-600 hover:shadow-brand-500/30
@@ -140,10 +140,15 @@
                             افزایش موجودی
                         </a>
 
+                        {{-- Withdrawal button --}}
+                        <a href="{{ get_setting('financial', 'withdrawal_enabled', false) ? '#wallet-withdrawal' : '#wallet-withdrawal-history' }}" class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:bg-emerald-400/20 focus:outline-none focus:ring-4 focus:ring-emerald-400/10">
+                            {{ get_setting('financial', 'withdrawal_enabled', false) ? 'برداشت وجه' : 'سوابق برداشت' }}
+                        </a>
+
                         {{-- Transfer button --}}
                         <a
                             href="#wallet-transfer"
-                            class="group flex w-full items-center justify-center gap-2 rounded-2xl
+                            class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl
                            border border-white/10 bg-white/5 px-5 py-3.5
                            text-sm font-black text-white transition
                            hover:border-white/20 hover:bg-white/10
@@ -176,7 +181,7 @@
                         @if(get_setting('loyalty', 'point_conversion_enabled', false))
                             <a
                                 href="{{ route('account.loyalty') }}#convert-points"
-                                class="group flex w-full items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:border-emerald-300/30 hover:bg-emerald-400/15 focus:outline-none focus:ring-4 focus:ring-emerald-400/10"
+                                class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:border-emerald-300/30 hover:bg-emerald-400/15 focus:outline-none focus:ring-4 focus:ring-emerald-400/10"
                             >
                                 <span class="[&_svg]:h-5 [&_svg]:w-5">@include('icons.award-03')</span>
                                 تبدیل امتیاز به موجودی
@@ -185,7 +190,7 @@
                     </div>
 
                     <p class="mt-3 text-center text-xs leading-6 text-slate-500">
-                        افزایش موجودی یا انتقال اعتبار به کاربران دیگر
+                        افزایش موجودی، انتقال اعتبار و بررسی درخواست‌های برداشت
                     </p>
                 </div>
             </div>
@@ -230,8 +235,7 @@
                     </p>
 
                     <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300/80">
-                        موجودی رزرو شده مربوط به پرداخت یا سفارش در حال پردازش است و پس از
-                        تعیین وضعیت نهایی، آزاد یا مصرف خواهد شد.
+                        موجودی رزرو شده ممکن است مربوط به پرداخت، سفارش یا درخواست برداشت در حال بررسی باشد و پس از تعیین وضعیت نهایی، آزاد یا مصرف خواهد شد.
                     </p>
                 </div>
             </section>
@@ -240,5 +244,7 @@
         <livewire:front.account.wallet.top-up-form/>
 
         <livewire:front.account.wallet.transfer-form/>
+
+        @include('front.account.partials.wallet-withdrawal')
     </div>
 @endsection

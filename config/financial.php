@@ -107,6 +107,10 @@ return [
     ],
 
     'wallet' => [
+        'withdrawal' => [
+            'minimum_amount' => 50_000,
+            'maximum_amount' => 20_000_000,
+        ],
         'top_up' => [
             /*
              * مبالغ برحسب تومان هستند.

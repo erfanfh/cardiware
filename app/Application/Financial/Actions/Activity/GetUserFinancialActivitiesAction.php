@@ -609,6 +609,7 @@ class GetUserFinancialActivitiesAction
                     WalletTransactionTypeEnum::ORDER_REFUND->value,
                     WalletTransactionTypeEnum::ADMIN_CREDIT->value,
                     WalletTransactionTypeEnum::ADMIN_DEBIT->value,
+                    WalletTransactionTypeEnum::WITHDRAWAL->value,
                     WalletTransactionTypeEnum::BONUS->value,
                     WalletTransactionTypeEnum::LOYALTY_CONVERSION->value,
                 ],

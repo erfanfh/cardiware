@@ -4,6 +4,7 @@ use App\Http\Controllers\Front\Identity\AccountController;
 use App\Http\Controllers\Front\Identity\AuthController;
 use App\Http\Controllers\Front\Loyalty\ConvertPointsToWalletController;
 use App\Http\Controllers\Front\Loyalty\RedeemRewardOfferController;
+use App\Http\Controllers\Front\Financial\WalletWithdrawalController;
 use App\Http\Middleware\ForceTrailingSlash;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,9 @@ Route::redirect('login', '/auth')->name('login');
 Route::middleware('auth')->post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 Route::prefix('account')->middleware('auth')->name('account.')->group(function () {
+    Route::get('wallet/withdrawals', [WalletWithdrawalController::class, 'index'])->name('wallet.withdrawals.index');
+    Route::post('wallet/withdrawals', [WalletWithdrawalController::class, 'store'])
+        ->middleware('throttle:5,1')->name('wallet.withdrawals.store');
     Route::controller(AccountController::class)->group(function () {
         Route::get('dashboard', 'dashboard')->name('dashboard');
         Route::get('downloads', 'downloads')->name('downloads');

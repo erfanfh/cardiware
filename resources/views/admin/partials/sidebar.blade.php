@@ -8,6 +8,11 @@
         'open_tickets' => \App\Domain\Support\Models\Ticket::query()
             ->where('status', \App\Domain\Support\Enums\TicketStatusEnum::OPEN)
             ->count(),
+        'unresolved_wallet_withdrawals' => \Illuminate\Support\Facades\Gate::allows('wallet.withdrawals')
+            ? \App\Domain\Financial\Models\WalletWithdrawal::query()
+                ->unresolved()
+                ->count()
+            : 0,
     ];
 @endphp
 

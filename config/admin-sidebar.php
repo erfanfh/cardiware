@@ -171,6 +171,7 @@ return [
     [
         'label' => 'فروشگاه',
         'icon' => 'icons.store-01',
+        'badge' => 'unresolved_wallet_withdrawals',
         'children' => [
             [
                 'label' => 'سفارش ها',
@@ -183,6 +184,13 @@ return [
                 'route' => 'admin.abandoned-carts.index',
                 'icon' => 'icons.shopping-cart-02',
                 'gate' => 'cart.abandoned',
+            ],
+            [
+                'label' => 'درخواست وجه',
+                'route' => 'admin.wallet-withdrawals.index',
+                'icon' => 'icons.wallet-03',
+                'gate' => 'wallet.withdrawals',
+                'badge' => 'unresolved_wallet_withdrawals',
             ],
             [
                 'label' => 'کدهای تخفیف',

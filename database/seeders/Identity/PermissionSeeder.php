@@ -191,6 +191,8 @@ class PermissionSeeder extends Seeder
             ],
             'wallet' => [
                 'adjust' => 'افزایش و کاهش دستی موجودی کیف پول کاربران',
+                'withdrawals' => 'بررسی و ثبت واریز درخواست‌های برداشت کیف پول',
+                'settings' => 'فعال و غیرفعال کردن درخواست برداشت کیف پول',
             ],
             'loyalty-reward' => [
                 'list' => 'لیست پاداش‌های باشگاه',

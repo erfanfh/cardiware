@@ -93,6 +93,11 @@ class Wallet extends Model
         return $this->hasMany(WalletHold::class);
     }
 
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(WalletWithdrawal::class);
+    }
+
     /**
      * Get wallet top-up requests.
      */

@@ -20,6 +20,11 @@ enum FinancialActivityTypeEnum: string
     case WALLET_TRANSFER = 'wallet_transfer';
 
     /**
+     * Completed payout from withdrawable wallet balance.
+     */
+    case WITHDRAWAL = 'withdrawal';
+
+    /**
      * Returning an order payment to the wallet.
      */
     case ORDER_REFUND = 'order_refund';
@@ -50,6 +55,7 @@ enum FinancialActivityTypeEnum: string
             self::ORDER_PAYMENT => 'پرداخت سفارش',
             self::WALLET_TOP_UP => 'شارژ کیف پول',
             self::WALLET_TRANSFER => 'انتقال موجودی',
+            self::WITHDRAWAL => 'برداشت وجه',
             self::ORDER_REFUND => 'بازگشت مبلغ سفارش',
             self::ADMIN_CREDIT => 'افزایش موجودی توسط مدیر',
             self::ADMIN_DEBIT => 'کاهش موجودی توسط مدیر',
