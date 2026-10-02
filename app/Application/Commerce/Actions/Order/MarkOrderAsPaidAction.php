@@ -11,6 +11,10 @@ use Throwable;
 
 class MarkOrderAsPaidAction
 {
+    public function __construct(
+        private readonly SnapshotOrderItemCommissionsAction $snapshotCommissions,
+    ) {}
+
     /** @throws Throwable */
     public function execute(Order $order): Order
     {
@@ -34,6 +38,8 @@ class MarkOrderAsPaidAction
                 'status' => OrderStatusEnum::PAID,
                 'paid_at' => $transitionedAt,
             ])->save();
+
+            $this->snapshotCommissions->execute($order);
 
             $orderId = (int) $order->getKey();
 

@@ -81,7 +81,14 @@ class UpdateProductAction
                 $productData['update_progress'],
                 $productData['action_links'],
                 $productData['medal_assignments'],
+                $productData['seller_commission_percent'],
             );
+
+            if (array_key_exists('seller_commission_percent', $data)) {
+                $productData['seller_commission_basis_points'] = (int) round(
+                    ((float) $data['seller_commission_percent']) * 100
+                );
+            }
 
             $product->update($productData);
 

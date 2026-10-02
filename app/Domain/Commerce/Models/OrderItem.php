@@ -26,6 +26,11 @@ class OrderItem extends Model
         'total_amount',
         'coupon_discount_amount',
         'final_total_amount',
+        'seller_commission_basis_points',
+        'platform_commission_basis_points',
+        'seller_commission_amount',
+        'platform_commission_amount',
+        'commission_snapshotted_at',
         'snapshot',
         'metadata',
     ];
@@ -40,6 +45,11 @@ class OrderItem extends Model
         'total_amount' => 'integer',
         'coupon_discount_amount' => 'integer',
         'final_total_amount' => 'integer',
+        'seller_commission_basis_points' => 'integer',
+        'platform_commission_basis_points' => 'integer',
+        'seller_commission_amount' => 'integer',
+        'platform_commission_amount' => 'integer',
+        'commission_snapshotted_at' => 'datetime',
         'snapshot' => 'array',
         'metadata' => 'array',
     ];
@@ -109,5 +119,26 @@ class OrderItem extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function sellerCommissionAmount(): int
+    {
+        return (int) ($this->seller_commission_amount ?? 0);
+    }
+
+    public function platformCommissionAmount(): int
+    {
+        // Legacy paid items have no snapshot and belong entirely to the platform.
+        return (int) ($this->platform_commission_amount ?? $this->final_total_amount);
+    }
+
+    public function sellerCommissionBasisPoints(): int
+    {
+        return (int) ($this->seller_commission_basis_points ?? 0);
+    }
+
+    public function platformCommissionBasisPoints(): int
+    {
+        return (int) ($this->platform_commission_basis_points ?? 10000);
     }
 }

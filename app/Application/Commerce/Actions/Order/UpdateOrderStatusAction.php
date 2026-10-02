@@ -21,6 +21,7 @@ class UpdateOrderStatusAction
         private readonly ChangeOrderStatusAction                  $changeOrderStatusAction,
         private readonly SyncPurchaseAccessesForOrderStatusAction $syncPurchaseAccessesForOrderStatusAction,
         private readonly RecordOrderRefundAction                   $recordOrderRefundAction,
+        private readonly SnapshotOrderItemCommissionsAction        $snapshotCommissions,
     )
     {
     }
@@ -82,6 +83,10 @@ class UpdateOrderStatusAction
                 newStatus: $newStatus,
                 transitionedAt: $transitionedAt,
             );
+
+            if (!$oldStatus->isPaid() && $newStatus->isPaid()) {
+                $this->snapshotCommissions->execute($order);
+            }
 
             $this->syncPurchaseAccessesForOrderStatusAction->execute(
                 order: $order,

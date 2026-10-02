@@ -77,7 +77,7 @@
         </x-admin.field>
     </x-admin.metabox>
 
-    <x-admin.metabox title="فروشندگان">
+    <x-admin.metabox title="فروشندگان" class="overflow-visible">
         <input type="hidden" name="seller_user_ids_submitted" value="1">
         <x-admin.form.async-select
             name="seller_user_ids"

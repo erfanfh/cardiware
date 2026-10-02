@@ -4,6 +4,7 @@ namespace App\Application\Launcher\Actions;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessForOrderItemAction;
 use App\Application\Commerce\Actions\Order\GenerateOrderNumberAction;
+use App\Application\Commerce\Actions\Order\SnapshotOrderItemCommissionsAction;
 use App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction;
 use App\Application\Launcher\Exceptions\LauncherCommerceException;
 use App\Domain\Catalog\Models\ProductSaleItem;
@@ -20,6 +21,7 @@ class ClaimFreeSaleItemAction
         private readonly ResolvePurchasablePriceAction $resolvePrice,
         private readonly GrantPurchaseAccessForOrderItemAction $grantAccess,
         private readonly GenerateOrderNumberAction $generateOrderNumber,
+        private readonly SnapshotOrderItemCommissionsAction $snapshotCommissions,
     ) {}
 
     public function execute(User $user, int $saleItemId, string $idempotencyKey): PurchaseAccess
@@ -91,6 +93,8 @@ class ClaimFreeSaleItemAction
             ]);
 
             $orderItem->setRelation('purchasable', $saleItem);
+
+            $this->snapshotCommissions->execute($order);
 
             return $this->grantAccess->execute($order, $orderItem);
         });

@@ -38,6 +38,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
 
     protected $fillable = [
         'store_id',
+        'seller_commission_basis_points',
         'title',
         'slug',
         'sku',
@@ -59,6 +60,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'structure' => ProductStructureEnum::class,
         'published_at' => 'datetime',
         'display_views_offset' => 'integer',
+        'seller_commission_basis_points' => 'integer',
     ];
 
     protected static function booted(): void

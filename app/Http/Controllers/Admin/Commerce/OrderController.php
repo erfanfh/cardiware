@@ -49,6 +49,7 @@ class OrderController
             'refund.walletTransaction',
             'descriptions',
             'rootItems.children',
+            'items',
             'rootItems.purchasable',
             'rootItems.children.purchasable',
             'rootItems.product',

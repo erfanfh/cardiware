@@ -75,5 +75,9 @@ class ClaimFreeSaleItemOrderNumberTest extends TestCase
             app(GenerateOrderNumberAction::class)->execute($freeOrder),
             $freeOrder->order_number,
         );
+        $freeItem = $freeOrder->items()->firstOrFail();
+        $this->assertNotNull($freeItem->commission_snapshotted_at);
+        $this->assertSame(0, $freeItem->sellerCommissionAmount());
+        $this->assertSame(0, $freeItem->platformCommissionAmount());
     }
 }

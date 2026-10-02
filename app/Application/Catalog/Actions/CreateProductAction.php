@@ -82,6 +82,11 @@ class CreateProductAction
                 $productData['update_progress'],
                 $productData['action_links'],
                 $productData['medal_assignments'],
+                $productData['seller_commission_percent'],
+            );
+
+            $productData['seller_commission_basis_points'] = (int) round(
+                ((float) ($data['seller_commission_percent'] ?? 0)) * 100
             );
 
             $product = Product::create($productData);

@@ -169,6 +169,28 @@
             />
         </x-admin.metabox>
 
+        <x-admin.metabox title="تقسیم درآمد محصول">
+            <div
+                x-data="{ sellerPercent: @js(old('seller_commission_percent', number_format(($product?->seller_commission_basis_points ?? 0) / 100, 2, '.', ''))) }"
+                class="space-y-3">
+                <x-admin.field label="سهم فروشگاه از فروش (درصد)">
+                    <x-admin.form.input
+                        name="seller_commission_percent"
+                        type="number"
+                        min="0"
+                        max="100"
+                        :value="old('seller_commission_percent', number_format(($product?->seller_commission_basis_points ?? 0) / 100, 2, '.', ''))"
+                        x-model="sellerPercent"
+                    />
+                </x-admin.field>
+                <p class="text-sm text-slate-600">سهم پلتفرم: <strong
+                        x-text="Number.isFinite(Number(sellerPercent)) ? Math.max(0, 100 - Number(sellerPercent)).toFixed(2) + '٪' : '—'">۱۰۰٪</strong>
+                </p>
+                <p class="text-xs text-slate-500">سهم فروشگاه و پلتفرم از مبلغ نهایی هر آیتم پس از تخفیف محاسبه می‌شود.
+                    تغییر این درصد فقط بر پرداخت‌های بعدی اثر دارد.</p>
+            </div>
+        </x-admin.metabox>
+
         <x-admin.metabox title="برچسب‌ها" class="!overflow-visible">
             @php
                 $oldExistingIds = collect(old('tags.existing', []))

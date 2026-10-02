@@ -380,6 +380,19 @@
             </div>
 
             {{-- Items --}}
+            @if(in_array($statusValue, ['paid', 'refunded'], true))
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h2 class="text-base font-black text-slate-900">تقسیم درآمد سفارش</h2>
+                    <p class="mt-1 text-xs text-slate-500">بر اساس مبلغ نهایی آیتم‌ها پس از تخفیف، بدون مالیات؛ سفارش‌های قدیمی با سهم ۱۰۰٪ پلتفرم نمایش داده می‌شوند.</p>
+                    @if($statusValue === 'refunded')
+                        <p class="mt-2 text-xs font-bold text-rose-600">این سفارش مسترد شده و سهم نمایش‌داده‌شده قابل پرداخت نیست.</p>
+                    @endif
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div class="rounded-xl bg-slate-50 p-4 text-sm font-bold text-slate-700">سهم پلتفرم: {{ $money($order->items->sum(fn ($item) => $item->platformCommissionAmount())) }}</div>
+                        <div class="rounded-xl bg-emerald-50 p-4 text-sm font-bold text-emerald-800">سهم فروشگاه‌ها: {{ $money($order->items->sum(fn ($item) => $item->sellerCommissionAmount())) }}</div>
+                    </div>
+                </div>
+            @endif
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm">
                 <div
                     class="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -487,6 +500,14 @@
                                                     </div>
                                                 @endif
 
+                                                @if(in_array($statusValue, ['paid', 'refunded'], true))
+                                                    <div class="mt-2 text-xs font-bold text-slate-600">
+                                                        سهم فروشگاه {{ number_format($item->sellerCommissionBasisPoints() / 100, 2) }}٪: {{ $money($item->sellerCommissionAmount()) }}
+                                                        <span class="mx-1 text-slate-300">|</span>
+                                                        سهم پلتفرم {{ number_format($item->platformCommissionBasisPoints() / 100, 2) }}٪: {{ $money($item->platformCommissionAmount()) }}
+                                                    </div>
+                                                @endif
+
                                                 @if($children->isNotEmpty())
                                                     <div class="mt-3 space-y-2">
                                                         @foreach($children as $child)
@@ -527,6 +548,10 @@
 
                                                                         <span
                                                                             class="font-black">جمع: {{ $money($childTotal) }}</span>
+                                                                        @if(in_array($statusValue, ['paid', 'refunded'], true))
+                                                                            <span>سهم فروشگاه {{ number_format($child->sellerCommissionBasisPoints() / 100, 2) }}٪: {{ $money($child->sellerCommissionAmount()) }}</span>
+                                                                            <span>سهم پلتفرم {{ number_format($child->platformCommissionBasisPoints() / 100, 2) }}٪: {{ $money($child->platformCommissionAmount()) }}</span>
+                                                                        @endif
                                                                     </div>
                                                                 </div>
                                                             </div>
