@@ -31,6 +31,9 @@ class UpdateStoreRequest extends FormRequest
             'body' => ['nullable', 'string'],
             'activity_field' => ['nullable', 'string'],
 
+            'seller_user_ids' => ['sometimes', 'array'],
+            'seller_user_ids.*' => ['required', 'integer', 'distinct', Rule::exists('users', 'id')->whereNull('deleted_at')],
+
             'seo' => ['nullable', 'array'],
         ];
     }
@@ -45,6 +48,7 @@ class UpdateStoreRequest extends FormRequest
             'slug' => 'اسلاگ',
             'status' => 'وضعیت',
             'body' => 'توضیحات',
+            'seller_user_ids' => 'فروشندگان',
         ];
     }
 
@@ -60,6 +64,10 @@ class UpdateStoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->boolean('seller_user_ids_submitted') && !$this->has('seller_user_ids')) {
+            $this->merge(['seller_user_ids' => []]);
+        }
+
         $this->merge([
             'picture_id' => $this->input('picture.id'),
         ]);

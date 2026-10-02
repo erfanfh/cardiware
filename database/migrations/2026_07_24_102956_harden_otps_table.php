@@ -28,10 +28,12 @@ return new class extends Migration {
         /*
          * حذف ON UPDATE CURRENT_TIMESTAMP از expired_at
          */
-        DB::statement(
-            'ALTER TABLE `otps`
-             MODIFY `expired_at` TIMESTAMP NOT NULL'
-        );
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                'ALTER TABLE `otps`
+                 MODIFY `expired_at` TIMESTAMP NOT NULL'
+            );
+        }
     }
 
     public function down(): void

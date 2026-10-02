@@ -11,6 +11,7 @@ use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Marketplace\Models\Store;
 use App\Domain\Notification\Models\UserNotification;
 use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Loyalty\Models\PointAccount;
@@ -116,6 +117,13 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function role(): BelongsTo
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function stores(): BelongsToMany
+    {
+        return $this->belongsToMany(Store::class, 'store_users')
+            ->withPivot('joined_at')
+            ->withTimestamps();
     }
 
     /**

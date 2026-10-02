@@ -12,27 +12,31 @@ return new class extends Migration {
          *
          * زمان انقضا فقط توسط Application تعیین می‌شود.
          */
-        DB::statement(
-            'ALTER TABLE `otps`
-             MODIFY COLUMN `expired_at` DATETIME NOT NULL'
-        );
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                'ALTER TABLE `otps`
+                 MODIFY COLUMN `expired_at` DATETIME NOT NULL'
+            );
 
-        DB::statement(
-            'ALTER TABLE `otps`
-             MODIFY COLUMN `resend_available_at` DATETIME NULL DEFAULT NULL'
-        );
+            DB::statement(
+                'ALTER TABLE `otps`
+                 MODIFY COLUMN `resend_available_at` DATETIME NULL DEFAULT NULL'
+            );
+        }
     }
 
     public function down(): void
     {
-        DB::statement(
-            'ALTER TABLE `otps`
-             MODIFY COLUMN `expired_at` TIMESTAMP NOT NULL'
-        );
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement(
+                'ALTER TABLE `otps`
+                 MODIFY COLUMN `expired_at` TIMESTAMP NOT NULL'
+            );
 
-        DB::statement(
-            'ALTER TABLE `otps`
-             MODIFY COLUMN `resend_available_at` TIMESTAMP NULL DEFAULT NULL'
-        );
+            DB::statement(
+                'ALTER TABLE `otps`
+                 MODIFY COLUMN `resend_available_at` TIMESTAMP NULL DEFAULT NULL'
+            );
+        }
     }
 };

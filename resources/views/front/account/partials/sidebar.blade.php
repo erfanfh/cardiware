@@ -1,4 +1,5 @@
 @php($unreadNotificationCount = $user->userNotifications()->whereNull('read_at')->count())
+@php($hasSellerStores = $user->stores()->exists())
 
 <aside class="lg:col-span-4 xl:col-span-3 space-y-6">
     @include('front.account.partials.sidebar-wallet')

@@ -77,6 +77,20 @@
         </x-admin.field>
     </x-admin.metabox>
 
+    <x-admin.metabox title="فروشندگان">
+        <input type="hidden" name="seller_user_ids_submitted" value="1">
+        <x-admin.form.async-select
+            name="seller_user_ids"
+            label="کاربران فروشنده"
+            :value="$sellerUserIds"
+            :selected-options="$selectedSellerOptions"
+            :multiple="true"
+            :search-url="route('admin.stores.seller-search')"
+            placeholder="جستجو و انتخاب کاربران..."
+            hint="فقط کاربران انتخاب‌شده به پنل این فروشگاه دسترسی خواهند داشت."
+        />
+    </x-admin.metabox>
+
     <x-admin.metabox
         title="سئو"
         storageKey="seo-section"

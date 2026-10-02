@@ -32,6 +32,9 @@
                     ['route' => 'account.information', 'label' => 'اطلاعات', 'icon' => 'icons.user-edit-01'],
                     ['route' => 'account.security', 'label' => 'امنیت', 'icon' => 'icons.lock-password'],
                 ];
+                if ($hasSellerStores) {
+                    $items[] = ['route' => 'seller.dashboard', 'label' => 'فروشندگی', 'icon' => 'icons.store-01'];
+                }
             @endphp
 
             @foreach($items as $item)

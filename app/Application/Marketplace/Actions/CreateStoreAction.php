@@ -33,9 +33,9 @@ class CreateStoreAction
      */
     public function execute(array $data): Store
     {
-        $data['title'] = $data['title'] ?: 'بدون عنوان';
-        $data['body'] = $data['body'] ?: '';
-        $data['slug'] = $data['slug'] ?: 'untitled-page';
+        $data['title'] = ($data['title'] ?? null) ?: 'بدون عنوان';
+        $data['body'] = ($data['body'] ?? null) ?: '';
+        $data['slug'] = ($data['slug'] ?? null) ?: 'untitled-page';
 
         $store = DB::transaction(function () use ($data) {
             $storeData = $data;
@@ -43,9 +43,12 @@ class CreateStoreAction
             unset(
                 $storeData['slug'],
                 $storeData['seo'],
+                $storeData['seller_user_ids'],
             );
 
             $store = Store::create($storeData);
+
+            $store->sellers()->sync($data['seller_user_ids'] ?? []);
 
             $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 

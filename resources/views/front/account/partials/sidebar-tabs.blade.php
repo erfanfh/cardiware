@@ -14,6 +14,9 @@
             ['route' => 'account.information', 'label' => 'اطلاعات حساب', 'icon' => 'icons.user-edit-01', 'end' => 'arrow'],
             ['route' => 'account.security', 'label' => 'تنظیمات امنیت', 'icon' => 'icons.lock-password', 'end' => 'arrow'],
         ];
+        if ($hasSellerStores) {
+            $links[] = ['route' => 'seller.dashboard', 'label' => 'پنل فروشندگان', 'icon' => 'icons.store-01', 'end' => 'arrow'];
+        }
     @endphp
 
     @foreach($links as $link)

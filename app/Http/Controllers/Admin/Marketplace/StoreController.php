@@ -8,6 +8,7 @@ use App\Application\Marketplace\Actions\UpdateStoreAction;
 use App\Application\Marketplace\Listings\StoreListing;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Marketplace\Models\Store;
+use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Marketplace\IndexStoreRequest;
 use App\Http\Requests\Admin\Marketplace\UpdateStoreRequest;
@@ -73,7 +74,9 @@ class StoreController extends Controller
     {
         Gate::authorize('store.create');
 
-        return view('admin.marketplace.stores.create');
+        [$sellerUserIds, $selectedSellerOptions] = $this->sellerSelection(null);
+
+        return view('admin.marketplace.stores.create', compact('sellerUserIds', 'selectedSellerOptions'));
     }
 
     /**
@@ -104,7 +107,9 @@ class StoreController extends Controller
     {
         Gate::authorize('store.edit');
 
-        return view('admin.marketplace.stores.edit', compact('store'));
+        [$sellerUserIds, $selectedSellerOptions] = $this->sellerSelection($store);
+
+        return view('admin.marketplace.stores.edit', compact('store', 'sellerUserIds', 'selectedSellerOptions'));
     }
 
     /**
@@ -142,5 +147,26 @@ class StoreController extends Controller
         return redirect()
             ->route('admin.stores.index')
             ->with('success', 'فروشنده با موفقیت حذف شد.');
+    }
+
+    private function sellerSelection(?Store $store): array
+    {
+        $sellerUserIds = old('seller_user_ids', $store?->sellers()->pluck('users.id')->all() ?? []);
+        $sellerUserIds = is_array($sellerUserIds) ? $sellerUserIds : [];
+
+        $selectedSellerOptions = User::query()
+            ->whereIn('id', $sellerUserIds)
+            ->get(['id', 'display_name', 'first_name', 'last_name', 'mobile', 'email'])
+            ->map(function (User $user): array {
+                $name = $user->display_name ?: trim($user->first_name . ' ' . $user->last_name);
+
+                return [
+                    'value' => $user->id,
+                    'label' => "{$name} ({$user->mobile} | " . ($user->email ?: 'بدون ایمیل') . ')',
+                ];
+            })
+            ->all();
+
+        return [$sellerUserIds, $selectedSellerOptions];
     }
 }

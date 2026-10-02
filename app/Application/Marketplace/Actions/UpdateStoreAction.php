@@ -32,9 +32,9 @@ class UpdateStoreAction
      */
     public function execute(Store $store, array $data): Store
     {
-        $data['title'] = $data['title'] ?: 'بدون عنوان';
-        $data['body'] = $data['body'] ?: '';
-        $data['slug'] = $data['slug'] ?: 'untitled-page';
+        $data['title'] = ($data['title'] ?? null) ?: 'بدون عنوان';
+        $data['body'] = ($data['body'] ?? null) ?: '';
+        $data['slug'] = ($data['slug'] ?? null) ?: 'untitled-page';
 
         $store = DB::transaction(function () use ($store, $data) {
             $storeData = $data;
@@ -42,9 +42,14 @@ class UpdateStoreAction
             unset(
                 $storeData['slug'],
                 $storeData['seo'],
+                $storeData['seller_user_ids'],
             );
 
             $store->update($storeData);
+
+            if (array_key_exists('seller_user_ids', $data)) {
+                $store->sellers()->sync($data['seller_user_ids']);
+            }
 
             $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 

@@ -17,7 +17,7 @@ abstract class AdminSearchController extends Controller
 
     public function __invoke(Request $request): JsonResponse
     {
-        Gate::authorize($this->permissionName());
+        $this->authorizeSearch();
 
         $query = trim((string)$request->string('q'));
 
@@ -44,6 +44,11 @@ abstract class AdminSearchController extends Controller
         return response()->json([
             'items' => $items,
         ]);
+    }
+
+    protected function authorizeSearch(): void
+    {
+        Gate::authorize($this->permissionName());
     }
 
     protected function baseQuery(): Builder
