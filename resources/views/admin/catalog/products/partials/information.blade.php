@@ -513,6 +513,9 @@
             'title' => $addon->title,
             'description' => $addon->description,
             'price' => $addon->price,
+            'seller_commission_percent' => $addon->seller_commission_basis_points === null
+                ? null
+                : number_format($addon->seller_commission_basis_points / 100, 2, '.', ''),
             'is_active' => (string) (bool) $addon->is_active,
             'sort_order' => (int) $addon->sort_order,
         ])

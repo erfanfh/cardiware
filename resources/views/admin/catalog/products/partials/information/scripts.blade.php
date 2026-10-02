@@ -1068,6 +1068,7 @@
                                 title: item.title ?? '',
                                 description: item.description ?? '',
                                 price: item.price ?? 0,
+                                seller_commission_percent: item.seller_commission_percent ?? '',
                                 is_active: this.normalizeBoolean(item.is_active, true),
                                 sort_order: item.sort_order ?? 0,
                                 _open: this.normalizeBoolean(item._open, false),

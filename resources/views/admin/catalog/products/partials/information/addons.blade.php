@@ -25,6 +25,7 @@
             'title' => '',
             'description' => '',
             'price' => 0,
+            'seller_commission_percent' => '',
             'is_active' => true,
             'sort_order' => 0,
             '_open' => true,
@@ -78,6 +79,25 @@
                         />
                     </x-admin.field>
                 </div>
+            </div>
+
+            <div>
+                <x-admin.field label="سهم فروشگاه از این خدمت افزوده (درصد)">
+                    <x-admin.form.input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        x-bind:name="field(i, 'seller_commission_percent')"
+                        x-model="it.seller_commission_percent"
+                        placeholder="مطابق درصد محصول"
+                        class="direction-ltr"
+                    />
+                    <p class="mt-1 text-xs text-slate-500">خالی بماند: درصد محصول اعمال می‌شود. مقدار ۰ یعنی کل درآمد این خدمت برای پلتفرم است.</p>
+                    <p class="mt-1 text-xs font-bold text-slate-700"
+                       x-text="it.seller_commission_percent === '' || it.seller_commission_percent === null ? 'سهم پلتفرم: مطابق محصول' : 'سهم پلتفرم: ' + Math.max(0, 100 - Number(it.seller_commission_percent)).toFixed(2) + '٪'"
+                    >سهم پلتفرم: مطابق محصول</p>
+                </x-admin.field>
             </div>
 
             <div>

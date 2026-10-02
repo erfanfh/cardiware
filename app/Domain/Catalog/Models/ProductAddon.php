@@ -18,6 +18,7 @@ class ProductAddon extends Model implements Purchasable, ProductReportablePurcha
         'title',
         'description',
         'price',
+        'seller_commission_basis_points',
         'is_active',
         'sort_order',
         'metadata',
@@ -26,6 +27,7 @@ class ProductAddon extends Model implements Purchasable, ProductReportablePurcha
     protected $casts = [
         'product_id' => 'integer',
         'price' => 'integer',
+        'seller_commission_basis_points' => 'integer',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
         'metadata' => 'array',

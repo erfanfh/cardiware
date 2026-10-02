@@ -414,6 +414,7 @@ class UpdateProductRequest extends FormRequest
             'addons.*.title' => ['required', 'string', 'max:255'],
             'addons.*.description' => ['nullable', 'string'],
             'addons.*.price' => ['required', 'integer', 'min:0'],
+            'addons.*.seller_commission_percent' => ['nullable', 'numeric', 'between:0,100', 'decimal:0,2'],
             'addons.*.is_active' => ['nullable', 'boolean'],
             'addons.*.sort_order' => ['nullable', 'integer', 'min:0'],
             'addons.*.metadata' => ['nullable', 'array'],
@@ -1188,6 +1189,7 @@ class UpdateProductRequest extends FormRequest
             'status' => 'وضعیت',
             'store_id' => 'فروشنده',
             'seller_commission_percent' => 'درصد سهم فروشگاه',
+            'addons.*.seller_commission_percent' => 'درصد سهم فروشگاه از خدمت افزوده',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
@@ -1265,6 +1267,17 @@ class UpdateProductRequest extends FormRequest
 
         $saleItems = $this->normalizeSaleItemsForValidation();
 
+        $submittedPublishedAt = trim((string) $this->input('published_at', ''));
+        $existingPublishedAt = $product?->published_at;
+        $publishedAt = match (true) {
+            $submittedPublishedAt === '' && $product !== null => $existingPublishedAt?->format('Y-m-d H:i:s'),
+            $submittedPublishedAt === '' => now()->format('Y-m-d H:i:s'),
+            $existingPublishedAt !== null
+                && $submittedPublishedAt === jalali_date($existingPublishedAt)
+                => $existingPublishedAt->format('Y-m-d H:i:s'),
+            default => gregorian_date($submittedPublishedAt),
+        };
+
         $this->merge([
             'store_id' => $defaultStoreId,
             'picture_id' => $this->input('picture.id'),
@@ -1273,9 +1286,7 @@ class UpdateProductRequest extends FormRequest
                 'new' => $new,
             ],
             'sale_items' => $saleItems,
-            'published_at' => $this->input('published_at')
-                ? gregorian_date($this->input('published_at'))
-                : date('Y-m-d H:i:s'),
+            'published_at' => $publishedAt,
             'update_progress.started_at' => $this->input('update_progress.started_at')
                 ? gregorian_date($this->input('update_progress.started_at'))
                 : null,

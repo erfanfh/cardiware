@@ -66,7 +66,7 @@ class SyncProductAddonsAction
      */
     private function makePayload(array $addonData, int $index): array
     {
-        return [
+        $payload = [
             'title' => trim((string)Arr::get($addonData, 'title')),
             'description' => filled(Arr::get($addonData, 'description'))
                 ? trim((string)Arr::get($addonData, 'description'))
@@ -76,6 +76,15 @@ class SyncProductAddonsAction
             'sort_order' => $index,
             'metadata' => Arr::get($addonData, 'metadata'),
         ];
+
+        if (array_key_exists('seller_commission_percent', $addonData)) {
+            $percent = $addonData['seller_commission_percent'];
+            $payload['seller_commission_basis_points'] = $percent === null || $percent === ''
+                ? null
+                : (int) round(((float) $percent) * 100);
+        }
+
+        return $payload;
     }
 
     /**

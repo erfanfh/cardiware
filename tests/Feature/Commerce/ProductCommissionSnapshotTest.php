@@ -8,6 +8,7 @@ use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Models\Order;
@@ -103,6 +104,36 @@ class ProductCommissionSnapshotTest extends TestCase
         $this->assertSame(50, $order->items->sum(fn (OrderItem $item) => $item->platformCommissionAmount()));
     }
 
+    public function test_addon_override_is_independent_and_only_changes_future_payments(): void
+    {
+        $product = $this->product();
+        $product->update(['seller_commission_basis_points' => 4000]);
+        $addon = $product->addons()->create(['title' => 'Installation', 'price' => 100]);
+        $this->assertNull($addon->seller_commission_basis_points);
+
+        $inheritedOrder = $this->orderWithItem($product, 100);
+        $inheritedItem = $this->addAddonItem($inheritedOrder, $product, $addon);
+        app(MarkOrderAsPaidAction::class)->execute($inheritedOrder);
+        $this->assertSame(40, $inheritedItem->fresh()->sellerCommissionAmount());
+
+        $addon->update(['seller_commission_basis_points' => 7000]);
+        $overriddenOrder = $this->orderWithItem($product, 100);
+        $overriddenItem = $this->addAddonItem($overriddenOrder, $product, $addon);
+        app(MarkOrderAsPaidAction::class)->execute($overriddenOrder);
+
+        $this->assertSame(40, $overriddenOrder->items()->firstOrFail()->sellerCommissionAmount());
+        $this->assertSame(70, $overriddenItem->fresh()->sellerCommissionAmount());
+        $this->assertSame(30, $overriddenItem->fresh()->platformCommissionAmount());
+        $this->assertSame(40, $inheritedItem->fresh()->sellerCommissionAmount());
+
+        $addon->update(['seller_commission_basis_points' => 0]);
+        $zeroOrder = $this->orderWithItem($product, 100);
+        $zeroItem = $this->addAddonItem($zeroOrder, $product, $addon);
+        app(MarkOrderAsPaidAction::class)->execute($zeroOrder);
+        $this->assertSame(0, $zeroItem->fresh()->sellerCommissionAmount());
+        $this->assertSame(100, $zeroItem->fresh()->platformCommissionAmount());
+    }
+
     public function test_historical_paid_item_without_snapshot_remains_platform_owned(): void
     {
         $product = $this->product();
@@ -174,6 +205,55 @@ class ProductCommissionSnapshotTest extends TestCase
         $this->assertSame(3725, $product->fresh()->seller_commission_basis_points);
     }
 
+    public function test_admin_can_set_preserve_and_clear_an_addon_override(): void
+    {
+        $product = $this->product();
+        $addon = $product->addons()->create(['title' => 'Installation', 'price' => 100]);
+        $role = Role::factory()->create(['is_super_admin' => true]);
+        $admin = User::factory()->create(['role_id' => $role->id]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.products.edit', $product))
+            ->assertOk()
+            ->assertSee('سهم فروشگاه از این خدمت افزوده');
+
+        $payload = [
+            'title' => $product->title,
+            'body' => '',
+            'slug' => $product->slug,
+            'store_id' => $product->store_id,
+            'type' => ProductTypeEnum::DIGITAL->value,
+            'structure' => ProductStructureEnum::SIMPLE->value,
+            'status' => ProductStatusEnum::ACTIVE->value,
+            'addons' => [[
+                'id' => $addon->id,
+                'title' => $addon->title,
+                'price' => 100,
+                'seller_commission_percent' => '12.75',
+            ]],
+        ];
+
+        $this->put(route('admin.products.update', $product), $payload)->assertRedirect();
+        $this->assertSame(1275, $addon->fresh()->seller_commission_basis_points);
+
+        $withoutRate = $payload;
+        unset($withoutRate['addons'][0]['seller_commission_percent']);
+        $this->put(route('admin.products.update', $product), $withoutRate)->assertRedirect();
+        $this->assertSame(1275, $addon->fresh()->seller_commission_basis_points);
+
+        $this->put(route('admin.products.update', $product), [
+            ...$payload,
+            'addons' => [[...$payload['addons'][0], 'seller_commission_percent' => '100.01']],
+        ])->assertSessionHasErrors('addons.0.seller_commission_percent');
+        $this->assertSame(1275, $addon->fresh()->seller_commission_basis_points);
+
+        $this->put(route('admin.products.update', $product), [
+            ...$payload,
+            'addons' => [[...$payload['addons'][0], 'seller_commission_percent' => '']],
+        ])->assertRedirect();
+        $this->assertNull($addon->fresh()->seller_commission_basis_points);
+    }
+
     private function product(): Product
     {
         $store = Store::query()->create([
@@ -218,5 +298,27 @@ class ProductCommissionSnapshotTest extends TestCase
         ]);
 
         return $order;
+    }
+
+    private function addAddonItem(Order $order, Product $product, ProductAddon $addon): OrderItem
+    {
+        $order->update([
+            'subtotal_amount' => (int) $order->subtotal_amount + $addon->price,
+            'total_amount' => (int) $order->total_amount + $addon->price,
+        ]);
+
+        return OrderItem::query()->create([
+            'order_id' => $order->id,
+            'parent_order_item_id' => $order->items()->firstOrFail()->id,
+            'purchasable_type' => $addon->getMorphClass(),
+            'purchasable_id' => $addon->id,
+            'product_id' => $product->id,
+            'store_id' => $product->store_id,
+            'quantity' => 1,
+            'unit_price' => $addon->price,
+            'subtotal_amount' => $addon->price,
+            'total_amount' => $addon->price,
+            'final_total_amount' => $addon->price,
+        ]);
     }
 }
