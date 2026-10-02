@@ -18,6 +18,15 @@ final class LauncherSecurityEventController extends Controller
         // itself, and nobody can file events against another customer.
         $device = $request->attributes->get('launcher_device');
 
+        // Forward compatible: an event type this server does not know yet is dropped
+        // instead of failing the whole batch, so a launcher released before the server is
+        // updated does not lose every other report along with it.
+        $known = array_keys(RecordLauncherSecurityEventsAction::TYPES);
+        $request->merge(['events' => array_values(array_filter(
+            (array)$request->input('events', []),
+            fn ($event) => is_array($event) && in_array($event['type'] ?? null, $known, true),
+        ))]);
+
         $validated = $request->validate([
             'app_version' => ['nullable', 'string', 'max:32', 'regex:/^[0-9A-Za-z.\-+]+$/'],
             'events' => ['present', 'array', 'max:50'],

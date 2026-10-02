@@ -42,12 +42,16 @@
             </form>
         </section>
 
+        @if(!$selectedUser)
+            @include('admin.launcher.devices.partials.list-filter', ['prefix' => 'r', 'title' => 'حساب‌هایی با Reset مکرر', 'minLabel' => 'حداقل تعداد Reset', 'count' => $resetFrequent->count()])
+        @endif
         @if(!$selectedUser && isset($resetFrequent) && $resetFrequent->isNotEmpty())
             <section class="rounded-2xl border border-orange-200 bg-orange-50/40 shadow-sm">
                 <div class="border-b border-orange-100 px-5 py-4">
                     <h2 class="text-sm font-black text-orange-800">حساب‌هایی با Reset مکرر</h2>
                     <p class="mt-1 text-xs font-bold leading-6 text-orange-700">
-                        حساب‌هایی که در ۹۰ روز اخیر حداقل ۲ بار Reset دستگاه شده‌اند؛ بر اساس تعداد Reset مرتب شده‌اند.
+                        حساب‌هایی که در {{ $listFilters['r']['days'] }} روز اخیر حداقل {{ $listFilters['r']['min'] }} بار Reset دستگاه شده‌اند؛
+                        مرتب‌شده بر اساس {{ $listFilters['r']['sort'] === 'latest' ? 'جدیدترین' : 'تعداد Reset' }}.
                     </p>
                 </div>
                 <div class="divide-y divide-orange-100">
@@ -86,12 +90,16 @@
             </section>
         @endif
 
+        @if(!$selectedUser)
+            @include('admin.launcher.devices.partials.list-filter', ['prefix' => 'w', 'title' => 'حساب‌های مشکوک به اشتراک‌گذاری', 'minLabel' => 'حداقل تلاش مسدود', 'count' => $watchlist->count()])
+        @endif
         @if(!$selectedUser && $watchlist->isNotEmpty())
             <section class="rounded-2xl border border-amber-200 bg-amber-50/40 shadow-sm">
                 <div class="border-b border-amber-100 px-5 py-4">
                     <h2 class="text-sm font-black text-amber-800">حساب‌های مشکوک به اشتراک‌گذاری</h2>
                     <p class="mt-1 text-xs font-bold leading-6 text-amber-700">
-                        حساب‌هایی که در ۳۰ روز اخیر حداقل ۲ بار تلاش برای ورود از دستگاه سوم آن‌ها مسدود شده است؛ بر اساس تعداد تلاش مرتب شده‌اند.
+                        حساب‌هایی که در {{ $listFilters['w']['days'] }} روز اخیر حداقل {{ $listFilters['w']['min'] }} بار تلاش برای ورود از دستگاه سوم آن‌ها مسدود شده است؛
+                        مرتب‌شده بر اساس {{ $listFilters['w']['sort'] === 'latest' ? 'جدیدترین' : 'تعداد تلاش' }}.
                     </p>
                 </div>
                 <div class="divide-y divide-amber-100">
@@ -130,12 +138,15 @@
             </section>
         @endif
 
+        @if(!$selectedUser)
+            @include('admin.launcher.devices.partials.list-filter', ['prefix' => 'c', 'title' => 'دستگاه‌های مشکوک به کلون شدن', 'minLabel' => 'حداقل جابه‌جایی شبکه', 'count' => $cloneSuspects->count()])
+        @endif
         @if(!$selectedUser && $cloneSuspects->isNotEmpty())
             <section class="rounded-2xl border border-rose-200 bg-rose-50/40 shadow-sm">
                 <div class="border-b border-rose-100 px-5 py-4">
                     <h2 class="text-sm font-black text-rose-800">دستگاه‌های مشکوک به کلون شدن</h2>
                     <p class="mt-1 text-xs font-bold leading-6 text-rose-700">
-                        دستگاه‌هایی که در ۷ روز اخیر حداقل ۶ بار با فاصله‌ی کمتر از ۵ دقیقه بین دو شبکه‌ی متفاوت جابه‌جا شده‌اند.
+                        دستگاه‌هایی که در {{ $listFilters['c']['days'] }} روز اخیر حداقل {{ $listFilters['c']['min'] }} بار با فاصله‌ی کمتر از ۵ دقیقه بین دو شبکه‌ی متفاوت جابه‌جا شده‌اند.
                         یک دستگاه واقعی روی یک شبکه ثابت می‌ماند؛ این الگو یعنی احتمالاً دو کامپیوتر با یک شناسه‌ی یکسان نوبتی کار می‌کنند.
                         قبل از هر اقدامی حساب را باز کنید و ببینید الگو منطقی است یا نه.
                     </p>

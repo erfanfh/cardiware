@@ -23,6 +23,25 @@ final class LauncherDeviceManagementController extends Controller
             'user_id' => ['nullable', 'integer', Rule::exists('users', 'id')],
         ]);
 
+        // Per-list controls (r_ = repeated resets, w_ = shared-account watchlist,
+        // c_ = clone suspects): period, minimum count, sort and how many rows. Each list
+        // keeps the original fixed values as its defaults, so the page looks the same
+        // until an admin opens a list up.
+        $listFilters = [];
+        foreach (['r' => [90, 2], 'w' => [30, 2], 'c' => [7, 6]] as $prefix => [$defaultDays, $defaultMin]) {
+            $listFilters[$prefix] = [
+                'days' => in_array((int)$request->query("{$prefix}_days"), [7, 30, 90, 180, 365], true)
+                    ? (int)$request->query("{$prefix}_days") : $defaultDays,
+                'min' => max(1, min(1000, (int)($request->query("{$prefix}_min") ?: $defaultMin))),
+                'sort' => $request->query("{$prefix}_sort") === 'latest' ? 'latest' : 'count',
+                'limit' => in_array((int)$request->query("{$prefix}_limit"), [25, 100, 500], true)
+                    ? (int)$request->query("{$prefix}_limit") : 25,
+            ];
+        }
+        $r = $listFilters['r'];
+        $w = $listFilters['w'];
+        $c = $listFilters['c'];
+
         $selectedUser = null;
         $selectedUserOption = [];
         $devices = collect();
@@ -36,11 +55,11 @@ final class LauncherDeviceManagementController extends Controller
         // other watchlists, so the pattern is visible without already suspecting someone.
         $resetFrequent = DB::table('launcher_device_reset_logs as logs')
             ->join('users', 'users.id', '=', 'logs.target_user_id')
-            ->where('logs.created_at', '>=', now()->subDays(90))
+            ->where('logs.created_at', '>=', now()->subDays($r['days']))
             ->groupBy('logs.target_user_id', 'users.display_name', 'users.first_name', 'users.last_name', 'users.mobile', 'users.email')
-            ->havingRaw('COUNT(*) >= 2')
-            ->orderByRaw('COUNT(*) DESC')
-            ->limit(25)
+            ->havingRaw('COUNT(*) >= ?', [$r['min']])
+            ->orderByRaw($r['sort'] === 'latest' ? 'MAX(logs.created_at) DESC' : 'COUNT(*) DESC')
+            ->limit($r['limit'] + 1)
             ->get([
                 'logs.target_user_id as user_id',
                 'users.display_name',
@@ -59,11 +78,11 @@ final class LauncherDeviceManagementController extends Controller
         // can spot likely-shared accounts without already suspecting a specific person.
         $watchlist = DB::table('launcher_device_transfer_blocks as blocks')
             ->join('users', 'users.id', '=', 'blocks.user_id')
-            ->where('blocks.created_at', '>=', now()->subDays(30))
+            ->where('blocks.created_at', '>=', now()->subDays($w['days']))
             ->groupBy('blocks.user_id', 'users.display_name', 'users.first_name', 'users.last_name', 'users.mobile', 'users.email')
-            ->havingRaw('COUNT(*) >= 2')
-            ->orderByRaw('COUNT(*) DESC')
-            ->limit(25)
+            ->havingRaw('COUNT(*) >= ?', [$w['min']])
+            ->orderByRaw($w['sort'] === 'latest' ? 'MAX(blocks.created_at) DESC' : 'COUNT(*) DESC')
+            ->limit($w['limit'] + 1)
             ->get([
                 'blocks.user_id',
                 'users.display_name',
@@ -90,7 +109,7 @@ final class LauncherDeviceManagementController extends Controller
         $cloneSuspects = DB::table('launcher_device_network_switches as switches')
             ->join('launcher_devices as devices', 'devices.id', '=', 'switches.launcher_device_id')
             ->join('users', 'users.id', '=', 'switches.user_id')
-            ->where('switches.created_at', '>=', now()->subDays(7))
+            ->where('switches.created_at', '>=', now()->subDays($c['days']))
             ->where('switches.seconds_since_previous', '<=', 300)
             ->groupBy(
                 'switches.launcher_device_id',
@@ -103,9 +122,9 @@ final class LauncherDeviceManagementController extends Controller
                 'users.mobile',
                 'users.email'
             )
-            ->havingRaw('COUNT(*) >= 6')
-            ->orderByRaw('COUNT(*) DESC')
-            ->limit(25)
+            ->havingRaw('COUNT(*) >= ?', [$c['min']])
+            ->orderByRaw($c['sort'] === 'latest' ? 'MAX(switches.created_at) DESC' : 'COUNT(*) DESC')
+            ->limit($c['limit'] + 1)
             ->get([
                 'switches.user_id',
                 'switches.launcher_device_id',
@@ -185,7 +204,19 @@ final class LauncherDeviceManagementController extends Controller
                 ->get();
         }
 
+        // One extra row was fetched per list only to know whether a "show more" exists.
+        $listHasMore = [
+            'r' => $resetFrequent->count() > $r['limit'],
+            'w' => $watchlist->count() > $w['limit'],
+            'c' => $cloneSuspects->count() > $c['limit'],
+        ];
+        $resetFrequent = $resetFrequent->take($r['limit'])->values();
+        $watchlist = $watchlist->take($w['limit'])->values();
+        $cloneSuspects = $cloneSuspects->take($c['limit'])->values();
+
         return view('admin.launcher.devices.index', compact(
+            'listFilters',
+            'listHasMore',
             'selectedUser',
             'selectedUserOption',
             'devices',

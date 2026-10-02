@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Launcher\LauncherDeviceManagementController;
 use App\Http\Controllers\Admin\Launcher\LauncherDeviceUserSearchController;
 use App\Http\Controllers\Admin\Launcher\LauncherReleaseController;
+use App\Http\Controllers\Admin\Launcher\LauncherSecurityMonitorController;
 use App\Http\Controllers\Admin\Launcher\LauncherSlideController;
 use App\Http\Controllers\Admin\Launcher\LauncherNotificationController;
 use App\Http\Controllers\Admin\Launcher\LauncherGuideController;
@@ -36,6 +37,10 @@ Route::prefix('launcher-releases')
             ->name('public-download');
         Route::put('/maintenance', [LauncherReleaseController::class, 'updateMaintenance'])
             ->name('maintenance');
+        Route::put('/emergency-offline', [LauncherReleaseController::class, 'updateEmergencyOffline'])
+            ->name('emergency-offline');
+        Route::put('/vpn-policy', [LauncherReleaseController::class, 'updateVpnPolicy'])
+            ->name('vpn-policy');
         Route::post('/', [LauncherReleaseController::class, 'store'])->name('store');
         Route::delete('/{launcherRelease}', [LauncherReleaseController::class, 'destroy'])->name('destroy');
     });

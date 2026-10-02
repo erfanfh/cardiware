@@ -23,6 +23,7 @@ class GetLauncherBootstrapAction
         string $platform,
         string $channel,
         ?string $deviceId = null,
+        ?string $clientIp = null,
     ): array {
         $configuration = config(
             "launcher.{$platform}.{$channel}"
@@ -93,6 +94,16 @@ class GetLauncherBootstrapAction
             $maintenanceEnabled = false;
         }
 
+        // VPN / non-Iranian IP check (panel: «مدیریت آپدیت لانچر» -> VPN). "warn" only
+        // tells the launcher to show a notice; "block" reuses the maintenance response, so
+        // even launchers that predate this feature stop at the login screen with the VPN
+        // message. Unknown (no IP list yet, unparsable IP) never warns or blocks.
+        $network = $this->networkCheck($clientIp, $deviceId);
+        if ($network['blocked'] && !$maintenanceEnabled) {
+            $maintenanceEnabled = true;
+            $maintenanceMessage = $network['message'];
+        }
+
         return [
             'platform' => $platform,
             'channel' => $channel,
@@ -107,6 +118,13 @@ class GetLauncherBootstrapAction
             'maintenance' => [
                 'enabled' => $maintenanceEnabled,
                 'message' => $maintenanceEnabled ? $maintenanceMessage : null,
+            ],
+
+            'network' => [
+                'outside_iran' => $network['outside_iran'],
+                'blocked' => $network['blocked'],
+                // Shown by the launcher as a notice when set (warn mode).
+                'warning' => $network['outside_iran'] && !$network['blocked'] ? $network['message'] : null,
             ],
 
             'download_url' => ($release['download_url'] ?? null)
@@ -142,6 +160,35 @@ class GetLauncherBootstrapAction
             ))),
             'server_time' => $now->toISOString(),
         ];
+    }
+
+    /** @return array{outside_iran: bool, blocked: bool, message: string} */
+    private function networkCheck(?string $clientIp, ?string $deviceId): array
+    {
+        $policy = (string)$this->settings->get('launcher_vpn_policy', 'off');
+        $message = trim((string)$this->settings->get('launcher_vpn_message', ''))
+            ?: 'به نظر می‌رسد VPN یا فیلترشکن شما روشن است. لطفاً برای اجرای درست لانچر، دانلود سریع‌تر و جلوگیری از '
+             . 'مشکل در فعال‌سازی، VPN را خاموش کنید و دوباره تلاش کنید.';
+
+        $result = ['outside_iran' => false, 'blocked' => false, 'message' => $message];
+        if (!in_array($policy, ['warn', 'block'], true)) {
+            return $result;
+        }
+
+        $iranian = app(\App\Application\Launcher\Support\IranIpRanges::class)->isIranian(
+            $clientIp,
+            (string)$this->settings->get('launcher_vpn_extra_ranges', ''),
+        );
+        if ($iranian !== false) {
+            return $result;
+        }
+
+        $result['outside_iran'] = true;
+        // The maintenance bypass list doubles as the VPN-block exception list (team members
+        // abroad, testers), so there is one place to manage "this account may always in".
+        $result['blocked'] = $policy === 'block' && !$this->deviceBypassesMaintenance($deviceId);
+
+        return $result;
     }
 
     private function deviceBypassesMaintenance(?string $deviceId): bool

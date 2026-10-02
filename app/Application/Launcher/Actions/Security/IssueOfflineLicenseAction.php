@@ -38,9 +38,9 @@ final class IssueOfflineLicenseAction
 
         [$privateKey, $publicKey] = $this->loadOrCreateSigningKey();
         $issuedAt = now()->utc();
-        $expiresAt = $issuedAt->copy()->addDays(
-            min(7, max(1, (int)config('launcher_security.offline_license_days', 7)))
-        );
+        // Normally 7 days; 8..30 while emergency-offline mode is on.
+        $licenceDays = app(\App\Application\Launcher\Support\LauncherEmergencyOffline::class)->licenceDays();
+        $expiresAt = $issuedAt->copy()->addDays($licenceDays);
 
         // Device transfer while the previous device's licence is still valid. This used to
         // throw OfflineLicenseTransferCooldownException, on the assumption that only OFFLINE
@@ -118,7 +118,7 @@ final class IssueOfflineLicenseAction
             'signature' => $this->base64UrlEncode($signature),
             'public_key' => $publicKey,
             'expires_at' => $expiresAt->toISOString(),
-            'max_offline_days' => min(7, max(1, (int)config('launcher_security.offline_license_days', 7))),
+            'max_offline_days' => $licenceDays,
         ];
         });
     }

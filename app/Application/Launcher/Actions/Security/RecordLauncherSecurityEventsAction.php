@@ -33,6 +33,10 @@ final class RecordLauncherSecurityEventsAction
         // Any other DLL/ASI next to the game (hook/ASI loaders pick these up) that is not
         // on the admin allowlist.
         'game_dll_unlisted' => 1,
+        // A protected file (database, titlepressstart...) sitting in a livecpk folder
+        // WITHOUT encryption: sider serves it with or without the launcher. Either an
+        // update shipped it in the clear or the user installed a leaked copy.
+        'protected_plaintext_present' => 2,
     ];
 
     /**

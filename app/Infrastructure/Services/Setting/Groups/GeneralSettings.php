@@ -72,6 +72,13 @@ class GeneralSettings extends BaseSettings
         // on the client -- not a secret, just the same locally-generated id already
         // used at login).
         'launcher_maintenance_bypass_mobiles',
+        // Emergency offline mode before an internet shutdown -- see LauncherEmergencyOffline.
+        'launcher_emergency_offline_enabled',
+        'launcher_emergency_offline_days',
+        // VPN / non-Iranian IP check -- see GetLauncherBootstrapAction::networkCheck.
+        'launcher_vpn_policy',
+        'launcher_vpn_message',
+        'launcher_vpn_extra_ranges',
     ];
 
     protected array $casts = [
@@ -83,5 +90,6 @@ class GeneralSettings extends BaseSettings
         'tax_enabled' => BooleanCast::class,
         'checkout_terms_enabled' => BooleanCast::class,
         'launcher_maintenance_enabled' => BooleanCast::class,
+        'launcher_emergency_offline_enabled' => BooleanCast::class,
     ];
 }
