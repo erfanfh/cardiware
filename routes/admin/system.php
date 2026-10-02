@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\System\SettingController;
+use App\Http\Controllers\Admin\System\NotificationEventSettingController;
 use App\Http\Controllers\Admin\System\TeamSettingMemberSearchController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
@@ -42,3 +43,6 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
 });
 
 Route::get('settings/team/ajax-members', TeamSettingMemberSearchController::class)->name('settings.team.ajax-members');
+
+Route::get('settings/notifications', [NotificationEventSettingController::class, 'index'])->name('settings.notifications');
+Route::put('settings/notifications', [NotificationEventSettingController::class, 'update'])->name('settings.notifications.update');

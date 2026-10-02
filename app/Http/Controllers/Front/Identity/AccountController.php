@@ -9,6 +9,8 @@ use App\Application\Loyalty\Actions\GetAudienceClubOverviewAction;
 use App\Application\Loyalty\Actions\GetAudienceClubDashboardCardAction;
 use App\Domain\Financial\Models\WalletWithdrawal;
 use App\Domain\Identity\Models\User;
+use App\Domain\Notification\Models\UserNotification;
+use App\Domain\Notification\NotificationEvents;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
 
@@ -97,7 +99,15 @@ class AccountController extends Controller
             ->paginate(5, ['*'], 'withdrawals_page')
             ->fragment('wallet-withdrawal-history');
 
-        return view('front.account.pages.wallet', compact('user', 'wallet', 'withdrawals'));
+        $withdrawalNotificationIds = UserNotification::query()
+            ->where('user_id', $user->id)
+            ->where('event_key', NotificationEvents::WITHDRAWAL_RESOLVED)
+            ->where('subject_type', (new WalletWithdrawal)->getMorphClass())
+            ->whereIn('subject_id', $withdrawals->getCollection()->pluck('id'))
+            ->whereNull('read_at')
+            ->pluck('id', 'subject_id');
+
+        return view('front.account.pages.wallet', compact('user', 'wallet', 'withdrawals', 'withdrawalNotificationIds'));
     }
 
     public function loyalty(

@@ -9,6 +9,7 @@ final readonly class CommentApprovedEvent
     public function __construct(
         public int $commentId,
         public CarbonImmutable $occurredAt,
+        public bool $approvedOnCreation = false,
     ) {
     }
 }

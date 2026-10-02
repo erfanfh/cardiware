@@ -1,8 +1,12 @@
 @php
-    $notifications = collect(get_setting('header', 'notifications') ?: [])
+    $notifications = collect($personalHeaderNotifications ?? [])
+        ->concat(get_setting('header', 'notifications') ?: [])
         ->concat($raffleHeaderNotifications ?? collect())
         ->values()
         ->all();
+    $notificationBadgeCount = ($personalUnreadCount ?? 0)
+        + count(get_setting('header', 'notifications') ?: [])
+        + count($raffleHeaderNotifications ?? []);
 @endphp
 <div
     x-data="{ open: false }"
@@ -17,7 +21,7 @@
     >
         @include('icons.notification-01')
 
-        @if(count($notifications) > 0)
+        @if($notificationBadgeCount > 0)
             {{-- Outer pulse halo --}}
             <span
                 class="pointer-events-none absolute -top-1 -left-1 h-5 w-5 rounded-full bg-brand-500/35 animate-[notificationPing_1.8s_ease-out_infinite]"
@@ -32,7 +36,7 @@
             <span
                 class="absolute -top-1 -left-1 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-brand-500 text-white text-[10px] font-bold leading-none grid place-items-center border-2 border-white shadow-lg shadow-brand-500/30 dark:border-slate-900 animate-[badgePop_1.8s_ease-in-out_infinite]"
             >
-            {{ count($notifications) > 9 ? '9+' : count($notifications) }}
+            {{ $notificationBadgeCount > 9 ? '9+' : $notificationBadgeCount }}
         </span>
         @endif
     </button>
@@ -62,8 +66,20 @@
                     $hasSubtitle = !empty($notification['subtitle']);
                 @endphp
 
+                @if(!empty($notification['id']))
+                    <form method="post" action="{{ route('account.notifications.read', $notification['id']) }}" class="border-b border-slate-100 last:border-b-0 dark:border-slate-800">
+                        @csrf
+                        <button type="submit" class="group flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-right transition hover:bg-slate-50 dark:hover:bg-slate-800/70 {{ empty($notification['read_at']) ? 'bg-brand-50/50 dark:bg-brand-500/10' : '' }}">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">@include('icons.notification-01')</span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300">{{ $notification['title'] }}</span>
+                                @if($hasSubtitle)<span class="mt-1 block text-[0.7rem] text-slate-500 dark:text-slate-400">{{ $notification['subtitle'] }}</span>@endif
+                            </span>
+                        </button>
+                    </form>
+                @else
                 <a
-                    href="{{ $hasLink ? $notification['url'] : 'javascript:void(0)' }}"
+                    href="{{ $hasLink ? $notification['url'] : '#' }}"
                     @if(!$hasLink) @click.prevent @endif
                     class="group flex {{ $hasSubtitle ? 'items-start' : 'items-center' }} gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0
                    hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/70
@@ -85,6 +101,7 @@
                         @endif
                     </div>
                 </a>
+                @endif
             @empty
                 <div class="px-4 py-10 text-center">
                     <div
@@ -102,5 +119,8 @@
                 </div>
             @endforelse
         </div>
+        @auth
+            <a href="{{ route('account.notifications.index') }}" class="block cursor-pointer border-t border-slate-100 px-4 py-3 text-center text-sm font-bold text-brand-600 dark:border-slate-800">مشاهده همه اعلان‌های من</a>
+        @endauth
     </div>
 </div>

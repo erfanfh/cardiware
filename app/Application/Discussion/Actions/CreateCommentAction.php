@@ -6,6 +6,7 @@ use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Domain\Discussion\Contracts\CommentableContract;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Events\CommentApprovedEvent;
+use App\Domain\Discussion\Events\CommentCreatedEvent;
 use App\Domain\Discussion\Models\Comment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -64,8 +65,10 @@ class CreateCommentAction
                 $comment->save();
             }
 
+            $commentId = (int) $comment->getKey();
+            DB::afterCommit(fn () => event(new CommentCreatedEvent($commentId)));
+
             if ($comment->isApproved()) {
-                $commentId = (int)$comment->getKey();
                 $occurredAt = $comment->approved_at?->toImmutable()
                     ?? now(config('app.timezone'))->toImmutable();
 
@@ -74,6 +77,7 @@ class CreateCommentAction
                         new CommentApprovedEvent(
                             commentId: $commentId,
                             occurredAt: $occurredAt,
+                            approvedOnCreation: true,
                         )
                     )
                 );

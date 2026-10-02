@@ -5,6 +5,7 @@ namespace App\Application\Financial\Actions\Wallet;
 use App\Domain\Financial\Enums\WalletHoldStatusEnum;
 use App\Domain\Financial\Enums\WalletHoldTypeEnum;
 use App\Domain\Financial\Enums\WalletWithdrawalStatusEnum;
+use App\Domain\Financial\Events\WalletWithdrawalResolvedEvent;
 use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletWithdrawal;
 use App\Domain\Identity\Models\User;
@@ -76,7 +77,12 @@ class ResolveWalletWithdrawalAction
         return DB::transaction(function () use ($withdrawal, $callback): WalletWithdrawal {
             Wallet::query()->whereKey($withdrawal->wallet_id)->lockForUpdate()->firstOrFail();
             $current = WalletWithdrawal::query()->whereKey($withdrawal->id)->lockForUpdate()->firstOrFail();
+            $oldStatus = $current->status;
             $callback($current);
+            if ($oldStatus !== $current->status && in_array($current->status, [WalletWithdrawalStatusEnum::PAID, WalletWithdrawalStatusEnum::REJECTED], true)) {
+                $withdrawalId = (int) $current->getKey();
+                DB::afterCommit(fn () => event(new WalletWithdrawalResolvedEvent($withdrawalId)));
+            }
             return $current->refresh();
         }, 3);
     }

@@ -3,6 +3,7 @@
     @php
         $links = [
             ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12', 'end' => 'arrow'],
+            ['route' => 'account.notifications.index', 'label' => 'اعلان‌های من', 'icon' => 'icons.notification-01', 'end' => 'arrow', 'unreadBadge' => $unreadNotificationCount],
             ['route' => 'account.downloads', 'label' => 'دانلودهای من', 'icon' => 'icons.cloud-download', 'end' => $user->purchase_accesses_count],
             ['route' => 'account.orders', 'label' => 'سفارش‌های من', 'icon' => 'icons.shopping-basket-03', 'end' => $user->paid_orders_count],
             ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
@@ -35,7 +36,9 @@
             </span>
 
             <span class="text-slate-400 dark:text-slate-500 [&_svg]:!h-4 [&_svg]:!w-4">
-                @if($link['end'] === 'arrow')
+                @if(($link['unreadBadge'] ?? 0) > 0)
+                    <span class="inline-flex min-w-6 items-center justify-center rounded-full bg-brand-500 px-1.5 py-0.5 text-[11px] font-black text-white" aria-label="{{ $link['unreadBadge'] }} اعلان خوانده‌نشده">{{ $link['unreadBadge'] > 99 ? '99+' : $link['unreadBadge'] }}</span>
+                @elseif($link['end'] === 'arrow')
                     @include('icons.arrow-left-02')
                 @else
                     {{ $link['end'] }}

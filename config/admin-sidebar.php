@@ -437,6 +437,12 @@ return [
                 'gate' => 'setting.general',
             ],
             [
+                'label' => 'اعلان‌ها',
+                'route' => 'admin.settings.notifications',
+                'icon' => 'icons.notification-01',
+                'gate' => 'setting.general',
+            ],
+            [
                 'label' => 'بک‌آپ خودکار',
                 'route' => 'admin.settings.backup',
                 'icon' => 'icons.arrow-reload-horizontal',

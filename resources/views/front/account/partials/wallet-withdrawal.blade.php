@@ -155,7 +155,8 @@
 
     <div class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
         @forelse($withdrawals as $withdrawal)
-            <div class="py-3 first:pt-0 last:pb-0">
+            @php($unreadNotificationId = $withdrawalNotificationIds[$withdrawal->id] ?? null)
+            <div id="wallet-withdrawal-{{ $withdrawal->id }}" class="scroll-mt-36 py-3 first:pt-0 last:pb-0 {{ $unreadNotificationId ? 'rounded-xl bg-brand-50/60 px-3 dark:bg-brand-500/10' : '' }}">
                 <div class="flex flex-wrap items-start justify-between gap-2">
                     <div>
                         <strong class="text-sm font-black text-slate-900 dark:text-white">{{ number_format($withdrawal->amount) }} تومان</strong>
@@ -176,6 +177,14 @@
                 @endif
                 @if($withdrawal->payment_reference)
                     <p class="mt-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">شناسه پیگیری واریز: <span dir="ltr">{{ $withdrawal->payment_reference }}</span></p>
+                @endif
+                @if($unreadNotificationId)
+                    <form method="post" action="{{ route('account.notifications.read', $unreadNotificationId) }}" class="mt-2">
+                        @csrf
+                        <input type="hidden" name="return_to" value="wallet">
+                        <input type="hidden" name="withdrawals_page" value="{{ $withdrawals->currentPage() }}">
+                        <button type="submit" class="rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-bold text-white">نتیجه جدید · علامت‌گذاری به‌عنوان خوانده‌شده</button>
+                    </form>
                 @endif
             </div>
         @empty

@@ -1,5 +1,13 @@
 <div
     x-data="{
+        notificationTargetId: @js($notificationTargetCommentId),
+        scrollToNotificationTarget() {
+            if (!this.notificationTargetId) return;
+            this.$nextTick(() => {
+                const target = document.getElementById('discussion-comment-' + this.notificationTargetId);
+                target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        },
         scrollToCommentsTop() {
             this.$refs.productCommentsTop?.scrollIntoView({
                 behavior: 'smooth',
@@ -14,6 +22,7 @@
             this.scrollToCommentsTop();
         }
     }"
+    x-init="scrollToNotificationTarget()"
     x-on:product-comments-refresh-requested.window="
         $nextTick(() => {
             scrollToCommentsTop();
@@ -145,6 +154,7 @@
                             :level="0"
                             :show-replies="true"
                             :allow-reply-submission="false"
+                            :notification-target-path="$notificationTargetPath"
                             :key="'product-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort.'-show-1-submit-0'"
                         />
                     @endforeach

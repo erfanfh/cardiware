@@ -3,6 +3,7 @@
 namespace App\Livewire\Front\Discussion;
 
 use App\Application\Discussion\Support\PendingCommentSessionStore;
+use App\Application\Notification\ResolveCommentNotificationTarget;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
@@ -36,6 +37,12 @@ class CommentsList extends Component
 
     public ?int $pendingScrollToCommentId = null;
 
+    public ?int $notificationTargetRootId = null;
+
+    public ?int $notificationTargetCommentId = null;
+
+    public array $notificationTargetPath = [];
+
     protected string $paginationTheme = 'front';
 
     public function mount(
@@ -49,6 +56,21 @@ class CommentsList extends Component
         $this->commentableType = $commentable->getMorphClass();
         $this->averageRating = $averageRating;
         $this->ratingCount = $ratingCount;
+
+        if (request()->query('show_comments') === '1') {
+            $this->isOpen = true;
+        }
+
+        $path = app(ResolveCommentNotificationTarget::class)
+            ->execute($commentable, request()->query('notification_comment'));
+        if (!$path) {
+            return;
+        }
+
+        $this->notificationTargetPath = $path;
+        $this->notificationTargetRootId = $path[0];
+        $this->notificationTargetCommentId = end($path);
+        $this->isOpen = true;
     }
 
     public function openComments(): void
@@ -127,6 +149,10 @@ class CommentsList extends Component
             ->forCommentable($this->commentable)
             ->visibleForFrontend($this->guestPendingCommentIds)
             ->root()
+            ->when(
+                $this->notificationTargetRootId,
+                fn (Builder $query) => $query->orderByRaw('CASE WHEN comments.id = ? THEN 0 ELSE 1 END', [$this->notificationTargetRootId])
+            )
             ->pinnedFirst()
             ->with('user.avatar')
             ->withCount('approvedReplies')

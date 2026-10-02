@@ -28,7 +28,7 @@ class WalletWithdrawalFlowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        foreach (['wallet_withdrawals', 'wallet_holds', 'wallet_transactions', 'wallets', 'settings', 'users', 'roles'] as $table) {
+        foreach (['user_notifications', 'notification_event_settings', 'wallet_withdrawals', 'wallet_holds', 'wallet_transactions', 'wallets', 'settings', 'users', 'roles'] as $table) {
             Schema::dropIfExists($table);
         }
         Schema::create('roles', function (Blueprint $table): void {
@@ -82,6 +82,7 @@ class WalletWithdrawalFlowTest extends TestCase
         });
         (require database_path('migrations/2026_09_30_120000_create_wallet_withdrawals_table.php'))->up();
         (require database_path('migrations/2026_10_02_120000_add_card_number_to_wallet_withdrawals_table.php'))->up();
+        (require database_path('migrations/2026_10_02_130000_create_in_app_notifications_tables.php'))->up();
         app(FinancialSettings::class)->forgetCache();
         $this->withoutMiddleware(EnsureUserIsAdmin::class);
         $this->withoutMiddleware(ThrottleRequests::class);
@@ -147,6 +148,15 @@ class WalletWithdrawalFlowTest extends TestCase
         $this->assertSame(WalletHoldStatusEnum::CAPTURED, $withdrawal->hold->fresh()->status);
         $this->assertDatabaseCount('wallet_transactions', 1);
         $this->assertSame($admin->id, $withdrawal->fresh()->paid_by_user_id);
+        $this->assertDatabaseHas('user_notifications', ['user_id' => $user->id, 'event_key' => 'withdrawal.resolved', 'subject_id' => $withdrawal->id]);
+        $this->assertDatabaseCount('user_notifications', 1);
+        $this->withoutMiddleware(HandleSeoRedirectsMiddleware::class);
+        $this->actingAs($user);
+        $notificationId = (int) DB::table('user_notifications')->value('id');
+        $this->post(route('account.notifications.read', $notificationId), [
+            'return_to' => 'wallet', 'withdrawals_page' => 1,
+        ])->assertRedirect(route('account.wallet').'#wallet-withdrawal-history');
+        $this->assertNotNull(DB::table('user_notifications')->value('read_at'));
     }
 
     public function test_rejection_releases_hold_and_disabling_only_blocks_new_requests(): void
@@ -173,6 +183,7 @@ class WalletWithdrawalFlowTest extends TestCase
         $this->assertSame(200000, $wallet->fresh()->balance);
         $this->assertSame(WalletHoldStatusEnum::RELEASED, $withdrawal->hold->fresh()->status);
         $this->assertDatabaseCount('wallet_transactions', 0);
+        $this->assertDatabaseHas('user_notifications', ['user_id' => $user->id, 'event_key' => 'withdrawal.resolved', 'subject_id' => $withdrawal->id]);
     }
 
     public function test_invalid_iban_and_insufficient_balance_do_not_create_a_hold(): void
@@ -328,7 +339,8 @@ class WalletWithdrawalFlowTest extends TestCase
         $errors = new \Illuminate\Support\ViewErrorBag();
         $errors->put('default', new \Illuminate\Support\MessageBag(['amount' => 'خطای فرم شارژ']));
         $errors->put('walletWithdrawal', new \Illuminate\Support\MessageBag(['iban' => 'خطای فرم برداشت']));
-        $html = view('front.account.partials.wallet-withdrawal', compact('user', 'wallet', 'withdrawals', 'errors'))->render();
+        $withdrawalNotificationIds = collect([$withdrawal->id => 123]);
+        $html = view('front.account.partials.wallet-withdrawal', compact('user', 'wallet', 'withdrawals', 'errors', 'withdrawalNotificationIds'))->render();
 
         $this->assertStringContainsString('id="wallet-withdrawal"', $html);
         $this->assertStringContainsString('id="wallet-withdrawal-history"', $html);
@@ -341,6 +353,7 @@ class WalletWithdrawalFlowTest extends TestCase
         $this->assertStringNotContainsString(' required', $html);
         $this->assertStringNotContainsString(' maxlength=', $html);
         $this->assertStringContainsString($withdrawal->maskedIban(), $html);
+        $this->assertStringContainsString('نتیجه جدید', $html);
         $this->assertStringContainsString($withdrawal->maskedCardNumber(), $html);
         $this->assertStringContainsString('در انتظار بررسی', $html);
         $this->assertStringContainsString('خطای فرم برداشت', $html);

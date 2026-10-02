@@ -57,6 +57,8 @@ class CommentItem extends Component
 
     public bool $allowReplySubmission = true;
 
+    public array $notificationTargetPath = [];
+
     public function mount(
         int    $commentId,
         string $commentableType,
@@ -64,6 +66,7 @@ class CommentItem extends Component
         int    $level = 0,
         bool   $showReplies = true,
         bool   $allowReplySubmission = true,
+        array  $notificationTargetPath = [],
     ): void
     {
         $this->commentId = $commentId;
@@ -72,6 +75,11 @@ class CommentItem extends Component
         $this->level = $level;
         $this->showReplies = $showReplies;
         $this->allowReplySubmission = $allowReplySubmission;
+        $this->notificationTargetPath = $notificationTargetPath;
+        if ($showReplies && in_array($commentId, $notificationTargetPath, true)) {
+            $this->repliesOpen = true;
+            $this->repliesLoaded = true;
+        }
     }
 
     public function toggleReplies(): void

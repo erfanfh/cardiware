@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Application\Notification;
+
+use App\Domain\Catalog\Models\Product;
+use App\Domain\Content\Models\Post;
+use App\Domain\Discussion\Models\Comment;
+use App\Domain\Financial\Enums\WalletWithdrawalStatusEnum;
+use App\Domain\Financial\Models\WalletWithdrawal;
+use App\Domain\Notification\Models\UserNotification;
+use App\Domain\Notification\NotificationEvents;
+use Illuminate\Support\Facades\DB;
+
+class SendInAppNotification
+{
+    public function commentCreated(int $commentId): void
+    {
+        $comment = Comment::query()->with(['parent', 'commentable'])->find($commentId);
+        if (!$comment) {
+            return;
+        }
+
+        if ($comment->isReply()) {
+            $recipientId = $comment->parent?->user_id;
+            if ($recipientId && (int) $recipientId !== (int) $comment->user_id) {
+                $this->send(
+                    NotificationEvents::COMMENT_REPLIED, (int) $recipientId,
+                    $comment, 'پاسخ تازه به دیدگاه شما',
+                    $comment->isApproved()
+                        ? 'پاسخی برای دیدگاه شما منتشر شد.'
+                        : 'پاسخی برای دیدگاه شما ثبت شد و پس از تأیید نمایش داده می‌شود.',
+                    $this->commentUrl($comment),
+                );
+            }
+            return;
+        }
+
+        $post = $comment->commentable;
+        if ($post instanceof Post && $post->author_id && (int) $post->author_id !== (int) $comment->user_id) {
+            $this->send(
+                NotificationEvents::COMMENT_CREATED, (int) $post->author_id,
+                $comment, 'دیدگاه تازه برای مطلب شما',
+                $comment->isApproved()
+                    ? 'برای «'.$post->title.'» دیدگاه تازه‌ای منتشر شد.'
+                    : 'برای «'.$post->title.'» دیدگاهی ثبت شد و پس از تأیید نمایش داده می‌شود.',
+                $this->adminCommentUrl($comment),
+            );
+        }
+    }
+
+    public function commentApproved(int $commentId): void
+    {
+        $comment = Comment::query()->with('commentable')->find($commentId);
+        if (!$comment || !$comment->isApproved() || !$comment->user_id) {
+            return;
+        }
+
+        $this->send(
+            NotificationEvents::COMMENT_APPROVED, (int) $comment->user_id,
+            $comment, 'دیدگاه شما تأیید شد',
+            'دیدگاه شما منتشر شد.', $this->commentUrl($comment),
+        );
+    }
+
+    public function withdrawalResolved(int $withdrawalId): void
+    {
+        $withdrawal = WalletWithdrawal::query()->find($withdrawalId);
+        if (!$withdrawal || !in_array($withdrawal->status, [WalletWithdrawalStatusEnum::PAID, WalletWithdrawalStatusEnum::REJECTED], true)) {
+            return;
+        }
+
+        $paid = $withdrawal->status === WalletWithdrawalStatusEnum::PAID;
+        $this->send(
+            NotificationEvents::WITHDRAWAL_RESOLVED, (int) $withdrawal->user_id,
+            $withdrawal, $paid ? 'درخواست برداشت واریز شد' : 'درخواست برداشت رد شد',
+            $paid ? 'واریز درخواست برداشت شما ثبت شد.' : 'درخواست برداشت شما رد شد. جزئیات را در کیف پول ببینید.',
+            parse_url(route('account.wallet'), PHP_URL_PATH).'#wallet-withdrawal',
+        );
+    }
+
+    private function commentUrl(Comment $comment): ?string
+    {
+        $commentable = $comment->commentable;
+        if ((!$commentable instanceof Post && !$commentable instanceof Product)
+            || !$commentable->isPubliclyVisible()) {
+            return null;
+        }
+
+        $path = parse_url($commentable->url, PHP_URL_PATH);
+        if (!is_string($path)) {
+            return null;
+        }
+
+        $targetId = $comment->isApproved()
+            ? $comment->id
+            : ($comment->parent_id ?: null);
+
+        $query = $targetId ? '?notification_comment='.$targetId : '?show_comments=1';
+
+        return $path.$query.($commentable instanceof Post ? '#discussion-comments' : '#comments');
+    }
+
+    private function adminCommentUrl(Comment $comment): string
+    {
+        return route('admin.comments.index', ['id' => $comment->id], false).'#comment-'.$comment->id;
+    }
+
+    private function send(string $eventKey, int $userId, object $subject, string $title, string $body, ?string $url): void
+    {
+        if (!array_key_exists($eventKey, NotificationEvents::LABELS)) {
+            return;
+        }
+        $enabled = DB::table('notification_event_settings')->where('event_key', $eventKey)->value('is_enabled');
+        if ($enabled !== null && !(bool) $enabled) {
+            return;
+        }
+
+        UserNotification::query()->firstOrCreate(
+            [
+                'user_id' => $userId,
+                'event_key' => $eventKey,
+                'subject_type' => $subject->getMorphClass(),
+                'subject_id' => $subject->getKey(),
+            ],
+            ['title' => $title, 'body' => $body, 'url' => $url, 'sent_at' => now()],
+        );
+    }
+}

@@ -74,7 +74,9 @@
                 @endphp
 
                 <x-admin.list.tr
+                    id="comment-{{ $comment->id }}"
                     data-comment-row="{{ $comment->id }}"
+                    class="scroll-mt-24"
                     x-show="!isHidden({{ $comment->id }})"
                     x-transition.opacity.duration.200ms
                     :class="$rowClass"

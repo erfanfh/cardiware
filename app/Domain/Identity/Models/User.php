@@ -11,6 +11,7 @@ use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Notification\Models\UserNotification;
 use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Support\Models\Ticket;
@@ -123,6 +124,11 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'author_id');
+    }
+
+    public function userNotifications(): HasMany
+    {
+        return $this->hasMany(UserNotification::class);
     }
 
     /**

@@ -21,6 +21,7 @@
             @php
                 $items = [
                     ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12'],
+                    ['route' => 'account.notifications.index', 'label' => 'اعلان‌ها', 'icon' => 'icons.notification-01', 'badge' => $unreadNotificationCount > 0 ? ($unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount) : null],
                     ['route' => 'account.downloads', 'label' => 'دانلودها', 'icon' => 'icons.cloud-download', 'badge' => $user->purchase_accesses_count, 'badgeColor' => 'emerald'],
                     ['route' => 'account.orders', 'label' => 'سفارش‌ها', 'icon' => 'icons.shopping-basket-03', 'badge' => $user->paid_orders_count, 'badgeColor' => 'brand'],
                     ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'badge' => $user->open_tickets_count, 'badgeColor' => 'cyan'],

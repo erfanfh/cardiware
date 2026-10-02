@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Application\Navigation\Actions\ResolveFrontendNavigationMenuAction;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Models\DrawWinner;
+use App\Domain\Notification\Models\UserNotification;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,7 +28,20 @@ class NavigationServiceProvider extends ServiceProvider
             $items = app(ResolveFrontendNavigationMenuAction::class)->execute('header');
 
             $raffleHeaderNotifications = collect();
+            $personalHeaderNotifications = collect();
+            $personalUnreadCount = 0;
             if (auth()->check()) {
+                $personalUnreadCount = UserNotification::query()->where('user_id', auth()->id())->whereNull('read_at')->count();
+                $personalHeaderNotifications = UserNotification::query()
+                    ->where('user_id', auth()->id())
+                    ->orderByDesc('sent_at')->orderByDesc('id')->limit(5)->get()
+                    ->map(fn (UserNotification $notification): array => [
+                        'id' => $notification->id,
+                        'title' => $notification->title,
+                        'subtitle' => $notification->body,
+                        'read_at' => $notification->read_at,
+                        'url' => $notification->url,
+                    ]);
                 $raffleHeaderNotifications = DrawWinner::query()
                     ->where('user_id', auth()->id())
                     ->where('status', DrawWinnerStatusEnum::PENDING->value)
@@ -50,6 +64,8 @@ class NavigationServiceProvider extends ServiceProvider
             $view->with([
                 'headerNavigationItems' => $items,
                 'raffleHeaderNotifications' => $raffleHeaderNotifications,
+                'personalHeaderNotifications' => $personalHeaderNotifications,
+                'personalUnreadCount' => $personalUnreadCount,
             ]);
         });
     }

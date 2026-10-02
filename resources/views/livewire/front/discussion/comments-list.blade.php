@@ -1,5 +1,15 @@
 <div
+    id="discussion-comments"
+    class="scroll-mt-36"
     x-data="{
+        notificationTargetId: @js($notificationTargetCommentId),
+        scrollToNotificationTarget() {
+            if (!this.notificationTargetId) return;
+            this.$nextTick(() => {
+                const target = document.getElementById('discussion-comment-' + this.notificationTargetId);
+                target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        },
         scrollToCommentsTop() {
             this.$refs.commentsListTop?.scrollIntoView({
                 behavior: 'smooth',
@@ -16,6 +26,7 @@
             this.scrollToCommentsTop();
         }
     }"
+    x-init="scrollToNotificationTarget()"
 >
     <x-front.cart>
         <div class="scroll-mt-40" x-ref="commentsListTop"></div>
@@ -242,6 +253,7 @@
                             :commentable-type="$this->commentableType"
                             :commentable-id="$this->commentableId"
                             :level="0"
+                            :notification-target-path="$notificationTargetPath"
                             :key="'discussion-root-comment-'.$comment->id.'-'.$this->comments->currentPage().'-'.$sort"
                         />
                     @endforeach

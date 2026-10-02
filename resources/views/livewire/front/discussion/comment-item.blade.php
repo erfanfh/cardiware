@@ -26,7 +26,8 @@
         }
     }"
     @class([
-        'group rounded-2xl border p-3.5 transition sm:p-5',
+        'group scroll-mt-40 rounded-2xl border p-3.5 transition sm:p-5',
+        'ring-2 ring-brand-400 ring-offset-2 dark:ring-offset-slate-950' => $notificationTargetPath && end($notificationTargetPath) === (int) $this->comment->id,
         'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700' => ! $this->isPendingVisibleToCurrentViewer(),
         'border-amber-200 bg-amber-50/40 dark:border-amber-500/20 dark:bg-amber-500/10' => $this->isPendingVisibleToCurrentViewer(),
         'mt-3' => $level > 0,
@@ -406,6 +407,7 @@
                                     :level="$level + 1"
                                     :show-replies="$showReplies"
                                     :allow-reply-submission="$allowReplySubmission"
+                                    :notification-target-path="$notificationTargetPath"
                                     :key="'discussion-reply-'.$reply->id.'-parent-'.$this->comment->id.'-show-'.(int) $showReplies.'-submit-'.(int) $allowReplySubmission"
                                 />
                             @endforeach

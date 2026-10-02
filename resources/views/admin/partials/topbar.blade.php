@@ -39,16 +39,16 @@
             <!-- Notifications -->
             <div class="relative">
                 <button
+                    type="button"
                     @click="toggleNotifications()"
+                    aria-label="اعلان‌ها"
                     class="cursor-pointer [&_svg]:w-[18px] [&_svg]:h-[18px] relative inline-flex items-center justify-center h-10 w-10 rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
                 >
                     @include('icons.notification-01')
 
-                    <!-- Counter -->
-                    <span
-                        class="absolute -top-1 -right-1 text-[10px] bg-brand-500 text-white px-1.5 py-[1px] rounded-full font-bold">
-                    0
-                </span>
+                    @if($adminHeaderUnreadCount > 0)
+                        <span class="absolute -top-1 -right-1 rounded-full bg-brand-500 px-1.5 py-[1px] text-[10px] font-bold text-white" aria-label="{{ $adminHeaderUnreadCount }} اعلان خوانده‌نشده">{{ $adminHeaderUnreadCount > 99 ? '99+' : $adminHeaderUnreadCount }}</span>
+                    @endif
                 </button>
 
                 <!-- Dropdown -->
@@ -57,11 +57,26 @@
                     x-show="notificationsOpen"
                     @click.outside="notificationsOpen = false"
                     x-transition
-                    class="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 rounded-2xl py-6 px-3 z-50"
+                    class="absolute left-0 top-full mt-2 w-80 max-w-[calc(100vw-1rem)] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl z-50"
                 >
-                    <div class="text-xs text-slate-500  text-center">
-                        در حال حاضر اعلان جدیدی برای شما وجود ندارد!
+                    <div class="border-b border-slate-100 px-4 py-3 text-sm font-bold text-slate-900">
+                        اعلان‌ها @if($adminHeaderUnreadCount > 0)<span class="mr-1 text-xs text-brand-600">{{ $adminHeaderUnreadCount }} خوانده‌نشده</span>@endif
                     </div>
+                    <div class="max-h-80 overflow-y-auto">
+                        @forelse($adminHeaderNotifications as $notification)
+                            <form method="post" action="{{ route('account.notifications.read', $notification) }}" class="border-b border-slate-100 last:border-b-0">
+                                @csrf
+                                <button type="submit" class="w-full cursor-pointer px-4 py-3 text-right transition hover:bg-slate-50 {{ $notification->read_at ? '' : 'bg-brand-50/60' }}">
+                                    <span class="block text-sm font-semibold text-slate-800">{{ $notification->title }}</span>
+                                    @if($notification->body)<span class="mt-1 block text-xs leading-5 text-slate-500">{{ $notification->body }}</span>@endif
+                                    <span class="mt-1 block text-[11px] text-slate-400">{{ jalali_date($notification->sent_at, 'Y/m/d H:i') }}</span>
+                                </button>
+                            </form>
+                        @empty
+                            <p class="px-4 py-8 text-center text-xs text-slate-500">در حال حاضر اعلانی برای شما وجود ندارد.</p>
+                        @endforelse
+                    </div>
+                    <a href="{{ route('account.notifications.index') }}" class="block cursor-pointer border-t border-slate-100 px-4 py-3 text-center text-xs font-bold text-brand-600 transition hover:bg-slate-50">مشاهده همه اعلان‌ها</a>
                 </div>
             </div>
 
