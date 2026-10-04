@@ -74,7 +74,7 @@ class GetCommerceOverviewAction
 
     private function cacheKey(AnalyticsFilterDTO $filter): string
     {
-        return 'commerce-analytics:overview:v3:' . $filter->cacheKey();
+        return 'commerce-analytics:overview:v4:' . $filter->cacheKey();
     }
 
     /**
@@ -108,6 +108,11 @@ class GetCommerceOverviewAction
             ->selectRaw(
                 'COALESCE(SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END), 0) as addons_sold',
                 [$this->morphType(ProductAddon::class)],
+            )
+            ->selectRaw('COALESCE(SUM(order_items.final_total_amount), 0) as commissionable_sales')
+            ->selectRaw('COALESCE(SUM(order_items.seller_commission_amount), 0) as seller_share')
+            ->selectRaw(
+                'COALESCE(SUM(COALESCE(order_items.platform_commission_amount, order_items.final_total_amount - COALESCE(order_items.seller_commission_amount, 0))), 0) as platform_net_revenue',
             )
             ->first();
 
@@ -171,6 +176,9 @@ class GetCommerceOverviewAction
             'tax_amount' => (int)($orders->tax_amount ?? 0),
             'customer_paid_amount' => (int)($orders->customer_paid_amount ?? 0),
             'net_sales' => $netSales,
+            'commissionable_sales' => (int)($items->commissionable_sales ?? 0),
+            'seller_share' => (int)($items->seller_share ?? 0),
+            'platform_net_revenue' => (int)($items->platform_net_revenue ?? 0),
             'paid_orders_count' => $paidOrdersCount,
             'average_order_value' => $paidOrdersCount > 0
                 ? (int)round($netSales / $paidOrdersCount)
