@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Front\Marketplace;
 
+use App\Application\Marketplace\Actions\GetSellerProductSalesAction;
 use App\Application\Support\Actions\CreateTicketMessageAction;
 use App\Application\Support\Exceptions\TicketAttachmentUploadException;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\ProductAddon;
 use App\Domain\Catalog\Scopes\ActiveProductScope;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Discussion\Models\Comment;
@@ -40,12 +42,29 @@ class SellerStoreController extends Controller
             ->select('order_items.product_id')
             ->selectRaw('COUNT(DISTINCT orders.id) AS orders_count')
             ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS units_count', ['product_sale_item'])
+            ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS addon_units_count', [(new ProductAddon())->getMorphClass()])
             ->selectRaw('COALESCE(SUM(order_items.seller_commission_amount), 0) AS seller_amount')
             ->groupBy('order_items.product_id')
             ->get()
             ->keyBy('product_id');
 
         return view('front.marketplace.seller.products', compact('store', 'products', 'sales', 'search'));
+    }
+
+    public function productSales(Request $request, Store $store, int $productId, GetSellerProductSalesAction $salesAction): View
+    {
+        $product = Product::withoutGlobalScope(ActiveProductScope::class)
+            ->where('store_id', $store->getKey())
+            ->findOrFail($productId);
+
+        $period = (string) $request->query('period', 'all');
+        if (! in_array($period, ['all', '7', '30', '90'], true)) {
+            $period = 'all';
+        }
+
+        $report = $salesAction->execute($store, $product, $period);
+
+        return view('front.marketplace.seller.product-sales', compact('store', 'product', 'report'));
     }
 
     public function comments(Request $request, Store $store): View

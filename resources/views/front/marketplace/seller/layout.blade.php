@@ -27,7 +27,7 @@
                 ['route' => 'seller.stores.comments', 'label' => 'دیدگاه‌ها'],
                 ['route' => 'seller.stores.tickets', 'label' => 'تیکت‌ها'],
             ] as $tab)
-                @php($active = request()->routeIs($tab['route']) || ($tab['route'] === 'seller.stores.tickets' && request()->routeIs('seller.stores.tickets.*')))
+                @php($active = request()->routeIs($tab['route']) || ($tab['route'] === 'seller.stores.products' && request()->routeIs('seller.stores.products.*')) || ($tab['route'] === 'seller.stores.tickets' && request()->routeIs('seller.stores.tickets.*')))
                 <a href="{{ route($tab['route'], $store) }}" @if($active) aria-current="page" @endif class="inline-flex shrink-0 items-center gap-2 rounded-xl px-5 py-3 text-sm font-extrabold transition {{ $active ? 'bg-brand-600 text-white shadow-lg shadow-brand-600/20' : 'border border-slate-200 bg-white text-slate-600 hover:border-brand-200 hover:text-brand-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300' }}">
                     {{ $tab['label'] }}
                     @if($tab['route'] === 'seller.stores.tickets')

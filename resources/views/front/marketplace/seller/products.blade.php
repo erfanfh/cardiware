@@ -26,10 +26,12 @@
                             <span>کمیسیون فروشگاه: {{ number_format($product->seller_commission_basis_points / 100, 2) }}٪</span>
                             <span>سفارش: {{ number_format((int) ($sale->orders_count ?? 0)) }}</span>
                             <span>تعداد فروش: {{ number_format((int) ($sale->units_count ?? 0)) }}</span>
+                            <span>افزونه فروخته‌شده: {{ number_format((int) ($sale->addon_units_count ?? 0)) }}</span>
                         </div>
                     </div>
                     <div class="flex items-center justify-between gap-5 sm:justify-end">
-                        <div><div class="text-[11px] text-slate-500">سهم فروشگاه</div><div class="mt-1 text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format((int) ($sale->seller_amount ?? 0)) }} تومان</div></div>
+                        <div><div class="text-[11px] text-slate-500">سهم فروشگاه از محصول و افزونه</div><div class="mt-1 text-sm font-black text-emerald-600 dark:text-emerald-400">{{ number_format((int) ($sale->seller_amount ?? 0)) }} تومان</div></div>
+                        <a href="{{ route('seller.stores.products.sales', [$store, $product->id]) }}" class="rounded-xl bg-brand-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-700">جزئیات فروش</a>
                         @if($product->isPubliclyVisible())
                             <a href="{{ $product->url }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-bold text-brand-600 hover:border-brand-300 dark:border-slate-700 dark:text-brand-300">نمایش محصول</a>
                         @endif

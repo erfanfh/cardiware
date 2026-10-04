@@ -3,6 +3,7 @@
 namespace Tests\Feature\Marketplace;
 
 use App\Application\Marketplace\Actions\GetSellerStoreReportAction;
+use App\Application\Marketplace\Actions\GetSellerProductSalesAction;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -25,6 +26,75 @@ use Tests\TestCase;
 class SellerStorePanelTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_product_sales_show_paid_product_and_addon_details_from_commission_snapshots(): void
+    {
+        $seller = User::factory()->create();
+        $store = $this->store('my-store');
+        $store->sellers()->attach($seller);
+        $product = $this->product($store, 'My product', ProductStatusEnum::INACTIVE);
+
+        $paid = $this->order($product, OrderStatusEnum::PAID, 100, 30, 'product_sale_item');
+        $this->orderItem($paid, $product, 50, 20, 'product_addon');
+        $paid->items()->where('purchasable_type', 'product_addon')->firstOrFail()
+            ->update(['snapshot' => ['product_addon_title' => 'Historical addon']]);
+        $this->order($product, OrderStatusEnum::REFUNDED, 200, 100, 'product_sale_item');
+        $this->order($product, OrderStatusEnum::PENDING_PAYMENT, 300, 150, 'product_sale_item');
+
+        $product->update(['seller_commission_basis_points' => 9000]);
+        $report = app(GetSellerProductSalesAction::class)->execute($store, $product, 'all');
+        $this->assertSame(1, $report['summary']['orders_count']);
+        $this->assertSame(150, $report['summary']['net_amount']);
+        $this->assertSame(50, $report['summary']['seller_amount']);
+        $this->assertSame(100, $report['summary']['platform_amount']);
+        $this->assertSame(1, $report['summary']['product_units']);
+        $this->assertSame(1, $report['summary']['addon_units']);
+        $this->assertSame(30, $report['summary']['product_seller_amount']);
+        $this->assertSame(20, $report['summary']['addon_seller_amount']);
+        $this->assertSame('Historical addon', $report['addons']->first()['title']);
+        $this->assertSame(40.0, $report['addons']->first()['effective_seller_percent']);
+        $this->assertSame(2, $report['recent_items']->total());
+
+        $this->actingAs($seller)->get(route('seller.stores.products', $store))
+            ->assertOk()->assertSee('جزئیات فروش');
+        $this->get(route('seller.stores.products.sales', [$store, $product->id]))
+            ->assertOk()->assertSee('Historical addon')->assertSee('50 تومان');
+    }
+
+    public function test_product_sales_are_scoped_to_store_and_date_range(): void
+    {
+        $seller = User::factory()->create();
+        $own = $this->store('own');
+        $other = $this->store('other');
+        $own->sellers()->attach($seller);
+        $ownProduct = $this->product($own, 'Own');
+        $otherProduct = $this->product($other, 'Other');
+        $this->order($ownProduct, OrderStatusEnum::PAID, 100, 40, 'product_sale_item');
+        $old = $this->order($ownProduct, OrderStatusEnum::PAID, 200, 80, 'product_sale_item');
+        $old->update(['paid_at' => now()->subDays(120)]);
+        $this->order($otherProduct, OrderStatusEnum::PAID, 900, 450, 'product_sale_item');
+
+        $report = app(GetSellerProductSalesAction::class)->execute($own, $ownProduct, '30');
+        $this->assertSame(100, $report['summary']['net_amount']);
+        $this->assertSame(40, $report['summary']['seller_amount']);
+        $this->assertSame(1, $report['recent_items']->total());
+        $this->assertSame(300, app(GetSellerProductSalesAction::class)->execute($own, $ownProduct, 'all')['summary']['net_amount']);
+
+        $this->actingAs($seller)
+            ->get(route('seller.stores.products.sales', [$own, $ownProduct->id, 'period' => '30']))
+            ->assertOk()
+            ->assertViewHas('report', fn (array $value) => $value['summary']['net_amount'] === 100);
+
+        $emptyProduct = $this->product($own, 'Empty');
+        $this->get(route('seller.stores.products.sales', [$own, $emptyProduct->id]))
+            ->assertOk()
+            ->assertSee('هنوز فروشی برای افزونه‌های این محصول ثبت نشده است.');
+
+        $this->get(route('seller.stores.products.sales', [$own, $otherProduct->id]))
+            ->assertNotFound();
+        $this->get(route('seller.stores.products.sales', [$other, $otherProduct->id]))
+            ->assertForbidden();
+    }
 
     public function test_report_uses_paid_order_snapshots_including_addons_and_excludes_refunds(): void
     {
@@ -206,6 +276,8 @@ class SellerStorePanelTest extends TestCase
             'unit_price' => $total, 'subtotal_amount' => $total, 'total_amount' => $total,
             'final_total_amount' => $total, 'seller_commission_amount' => $seller,
             'platform_commission_amount' => $total - $seller,
+            'seller_commission_basis_points' => $total > 0 ? (int) round(10000 * $seller / $total) : 0,
+            'platform_commission_basis_points' => $total > 0 ? 10000 - (int) round(10000 * $seller / $total) : 10000,
         ]);
     }
 
