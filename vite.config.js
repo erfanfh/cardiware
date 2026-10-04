@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/js/front/main.js',
                 'resources/js/front/home/index.js',
                 'resources/js/front/post-detail/index.js',
+                'resources/js/front/seller-dashboard.js',
 
                 'resources/css/app.css',
 

@@ -2,6 +2,7 @@
     'message',
     'tone' => 'light',
     'darkMode' => true,
+    'openInNewTab' => false,
 ])
 
 @if($message->attachments->isNotEmpty())
@@ -23,16 +24,17 @@
                 $imageTitle = $attachment->original_name ?: 'تصویر پیوست تیکت';
             @endphp
 
-            <button
-                type="button"
-                x-on:click="$dispatch('ticket-image-open', { url: @js($originalUrl), title: @js($imageTitle) })"
+            @if($openInNewTab)
+                <a href="{{ $originalUrl }}" target="_blank" rel="noopener noreferrer" aria-label="باز کردن تصویر {{ $loop->iteration }} در تب جدید"
+            @else
+                <button type="button" x-on:click="$dispatch('ticket-image-open', { url: @js($originalUrl), title: @js($imageTitle) })" aria-label="نمایش تصویر {{ $loop->iteration }}"
+            @endif
                 @class([
                     'group relative h-[4.5rem] w-[4.5rem] shrink-0 cursor-zoom-in overflow-hidden rounded-xl border bg-slate-100 text-right transition focus:outline-none focus:ring-4 sm:h-20 sm:w-20',
                     'border-white/20 focus:ring-white/20' => $isDarkTone,
                     'border-slate-200 focus:ring-brand-100' => !$isDarkTone,
                     'dark:border-slate-600 dark:focus:ring-brand-500/20' => !$isDarkTone && $darkMode,
                 ])
-                aria-label="نمایش تصویر {{ $loop->iteration }}"
             >
                 <img
                     src="{{ $thumbnailUrl }}"
@@ -49,7 +51,7 @@
                         <path d="m15 15 5 5m-2-8a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                 </span>
-            </button>
+            @if($openInNewTab)</a>@else</button>@endif
         @endforeach
     </div>
 @endif

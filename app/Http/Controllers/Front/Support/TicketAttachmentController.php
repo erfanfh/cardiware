@@ -7,6 +7,7 @@ use App\Domain\Support\Models\TicketMessageAttachment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -32,8 +33,17 @@ class TicketAttachmentController extends Controller
         $isAuthorizedAdmin = ! $isOwner
             && Gate::forUser($user)->allows('admin.display')
             && Gate::forUser($user)->allows('ticket.show');
+        $isAssignedSeller = ! $isOwner && ! $isAuthorizedAdmin && $ticket?->product_id
+            && DB::table('products')
+                ->join('store_users', 'store_users.store_id', '=', 'products.store_id')
+                ->join('stores', 'stores.id', '=', 'products.store_id')
+                ->where('products.id', $ticket->product_id)
+                ->whereNull('products.deleted_at')
+                ->whereNull('stores.deleted_at')
+                ->where('store_users.user_id', $user->getKey())
+                ->exists();
 
-        abort_unless($ticket && ($isOwner || $isAuthorizedAdmin), 404);
+        abort_unless($ticket && ($isOwner || $isAuthorizedAdmin || $isAssignedSeller), 404);
 
         $variantEnum = TicketAttachmentVariantEnum::tryFrom($variant);
         abort_unless($variantEnum, 404);
