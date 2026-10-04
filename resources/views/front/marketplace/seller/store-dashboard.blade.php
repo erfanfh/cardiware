@@ -15,8 +15,8 @@
         ] as $card)
             <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <p class="text-xs font-bold text-slate-500 dark:text-slate-400">{{ $card['label'] }}</p>
-                <div class="mt-4 text-2xl font-black {{ $card['color'] }}">{{ $card['value'] }}</div>
-                <p class="mt-2 text-xs text-slate-400">{{ $card['detail'] }}</p>
+                <div class="mt-4 break-all text-xl font-black sm:text-2xl {{ $card['color'] }}">{{ $card['value'] }}</div>
+                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $card['detail'] }}</p>
             </div>
         @endforeach
     </div>
@@ -46,8 +46,8 @@
             <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">کارهای روزمرهٔ فروشگاه</p>
             <div class="mt-5 rounded-2xl bg-slate-900 p-4 text-white dark:bg-slate-800">
                 <div class="text-[11px] font-bold text-slate-300">درآمد فروشگاه از ابتدا</div>
-                <div class="mt-1 text-xl font-black">{{ number_format($report['lifetime']['seller']) }} تومان</div>
-                <div class="mt-1 text-[11px] text-slate-400">از {{ number_format($report['lifetime']['orders']) }} سفارش پرداخت‌شده</div>
+                <div class="mt-1 break-all text-xl font-black">{{ number_format($report['lifetime']['seller']) }} تومان</div>
+                <div class="mt-1 text-[11px] text-slate-300">از {{ number_format($report['lifetime']['orders']) }} سفارش پرداخت‌شده</div>
             </div>
             <div class="mt-5 space-y-3">
                 @foreach([
@@ -55,9 +55,9 @@
                     ['route' => 'seller.stores.comments', 'title' => 'دیدگاه‌های محصولات', 'count' => $commentsCount, 'tone' => 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300'],
                     ['route' => 'seller.stores.tickets', 'title' => 'تیکت‌های نیازمند پاسخ', 'count' => $sellerUnansweredTicketCount, 'tone' => 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'],
                 ] as $item)
-                    <a href="{{ route($item['route'], $store) }}" class="flex items-center justify-between rounded-2xl border border-slate-100 p-4 transition hover:border-brand-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
-                        <span class="text-sm font-bold">{{ $item['title'] }}</span>
-                        <span class="rounded-lg px-2.5 py-1 text-xs font-black {{ $item['tone'] }}">{{ number_format($item['count']) }}</span>
+                    <a href="{{ route($item['route'], $store) }}" class="flex items-center justify-between gap-3 rounded-2xl border border-slate-100 p-4 transition hover:border-brand-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
+                        <span class="min-w-0 text-sm font-bold">{{ $item['title'] }}</span>
+                        <span class="shrink-0 rounded-lg px-2.5 py-1 text-xs font-black {{ $item['tone'] }}">{{ number_format($item['count']) }}</span>
                     </a>
                 @endforeach
             </div>
@@ -69,7 +69,7 @@
         <div class="mt-5 grid gap-3 lg:grid-cols-2">
             @forelse($report['top_products'] as $topProduct)
                 <div class="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-                    <div class="flex flex-wrap items-center justify-between gap-2"><span class="text-sm font-bold">{{ $topProduct->title }}</span><strong class="text-sm text-emerald-600 dark:text-emerald-400">{{ number_format((int) $topProduct->seller_amount) }} تومان</strong></div>
+                    <div class="flex flex-wrap items-center justify-between gap-2"><span class="min-w-0 break-words text-sm font-bold">{{ $topProduct->title }}</span><strong class="break-all text-sm text-emerald-600 dark:text-emerald-400">{{ number_format((int) $topProduct->seller_amount) }} تومان</strong></div>
                     <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700"><div class="h-full rounded-full bg-emerald-500" style="width: {{ $report['top_products']->first()->seller_amount > 0 ? round(100 * $topProduct->seller_amount / $report['top_products']->first()->seller_amount) : 0 }}%"></div></div>
                     <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{{ number_format((int) $topProduct->units_count) }} فروش محصول</p>
                 </div>
@@ -84,7 +84,7 @@
         <div class="mt-4 divide-y divide-slate-100 dark:divide-slate-800">
             @forelse($recentTickets as $ticket)
                 <a href="{{ route('seller.stores.tickets.show', [$store, $ticket]) }}" class="flex flex-wrap items-center justify-between gap-3 py-4 hover:text-brand-600 dark:hover:text-brand-300">
-                    <span class="text-sm font-bold">{{ $ticket->title }}</span>
+                    <span class="min-w-0 break-words text-sm font-bold">{{ $ticket->title }}</span>
                     <span class="text-xs text-slate-500 dark:text-slate-400">{{ $ticket->status->label() }} · {{ $ticket->last_message_at ? jalali_date($ticket->last_message_at, 'Y/m/d') : 'بدون پیام' }}</span>
                 </a>
             @empty

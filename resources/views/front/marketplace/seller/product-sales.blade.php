@@ -24,8 +24,8 @@
         ] as $card)
             <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                 <div class="text-xs font-bold text-slate-500 dark:text-slate-400">{{ $card['label'] }}</div>
-                <div class="mt-4 text-2xl font-black {{ $card['tone'] }}">{{ $card['value'] }}</div>
-                <div class="mt-2 text-xs text-slate-400">{{ $card['detail'] }}</div>
+                <div class="mt-4 break-all text-xl font-black sm:text-2xl {{ $card['tone'] }}">{{ $card['value'] }}</div>
+                <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">{{ $card['detail'] }}</div>
             </div>
         @endforeach
     </div>
@@ -37,9 +37,9 @@
         ] as $typeCard)
             <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
                 <div class="flex items-center justify-between gap-3"><h2 class="text-base font-black">{{ $typeCard['label'] }}</h2><span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600 dark:bg-slate-800 dark:text-slate-300">{{ number_format($typeCard['units']) }} عدد</span></div>
-                <div class="mt-5 flex flex-wrap justify-between gap-4 text-sm"><div><div class="text-xs text-slate-500">مبلغ فروش</div><strong class="mt-1 block">{{ number_format($typeCard['net']) }} تومان</strong></div><div><div class="text-xs text-slate-500">درآمد فروشگاه</div><strong class="mt-1 block text-emerald-600 dark:text-emerald-400">{{ number_format($typeCard['seller']) }} تومان</strong></div></div>
+                <div class="mt-5 flex flex-wrap justify-between gap-4 text-sm"><div class="min-w-0"><div class="text-xs text-slate-500 dark:text-slate-400">مبلغ فروش</div><strong class="mt-1 block break-all">{{ number_format($typeCard['net']) }} تومان</strong></div><div class="min-w-0"><div class="text-xs text-slate-500 dark:text-slate-400">درآمد فروشگاه</div><strong class="mt-1 block break-all text-emerald-600 dark:text-emerald-400">{{ number_format($typeCard['seller']) }} تومان</strong></div></div>
                 <div class="mt-4 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-full rounded-full {{ $typeCard['color'] }}" style="width: {{ $report['summary']['net_amount'] > 0 ? round(100 * $typeCard['net'] / $report['summary']['net_amount']) : 0 }}%"></div></div>
-                <p class="mt-2 text-[11px] text-slate-400">سهم از مبلغ فروش خالص این محصول</p>
+                <p class="mt-2 text-[11px] text-slate-500 dark:text-slate-400">سهم از مبلغ فروش خالص این محصول</p>
             </div>
         @endforeach
     </div>
@@ -55,7 +55,7 @@
                 @if($section['items']->isEmpty())
                     <p class="p-8 text-center text-sm text-slate-500 dark:text-slate-400">{{ $section['empty'] }}</p>
                 @else
-                    <div class="overflow-x-auto">
+                    <div class="overflow-x-auto" tabindex="0" role="region" aria-label="{{ $section['title'] }}؛ جدول قابل پیمایش افقی">
                         <table class="w-full min-w-[850px] text-right text-sm">
                             <thead class="bg-slate-50 text-xs font-bold text-slate-500 dark:bg-slate-800/60 dark:text-slate-400"><tr><th scope="col" class="px-5 py-3 sm:px-7">آیتم</th><th scope="col" class="px-4 py-3">سفارش</th><th scope="col" class="px-4 py-3">تعداد</th><th scope="col" class="px-4 py-3">فروش خالص</th><th scope="col" class="px-4 py-3">درآمد فروشگاه</th><th scope="col" class="px-4 py-3">نرخ مؤثر</th><th scope="col" class="px-4 py-3">سهم پلتفرم</th></tr></thead>
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -75,7 +75,7 @@
         @if($report['recent_items']->isEmpty())
             <p class="p-8 text-center text-sm text-slate-500 dark:text-slate-400">در این بازه فروشی ثبت نشده است.</p>
         @else
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto" tabindex="0" role="region" aria-label="ریز فروش‌های پرداخت‌شده؛ جدول قابل پیمایش افقی">
                 <table class="w-full min-w-[850px] text-right text-sm">
                     <thead class="bg-slate-50 text-xs font-bold text-slate-500 dark:bg-slate-800/60 dark:text-slate-400"><tr><th scope="col" class="px-5 py-3 sm:px-7">سفارش / تاریخ</th><th scope="col" class="px-4 py-3">آیتم</th><th scope="col" class="px-4 py-3">تعداد</th><th scope="col" class="px-4 py-3">مبلغ فروش</th><th scope="col" class="px-4 py-3">درصد فروشگاه</th><th scope="col" class="px-4 py-3">درآمد فروشگاه</th></tr></thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">

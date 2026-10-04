@@ -11,22 +11,21 @@
     </div>
 
     <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-        <div class="border-b border-slate-100 px-5 py-4 text-xs text-slate-500 sm:px-7 dark:border-slate-800 dark:text-slate-400">
-            محصول: <strong class="text-slate-800 dark:text-slate-200">{{ $ticket->product?->title ?? 'نامشخص' }}</strong>
-            <span class="mx-3 text-slate-300">|</span>
-            مشتری: <strong class="text-slate-800 dark:text-slate-200">{{ $ticket->user?->display_name ?? 'کاربر' }}</strong>
+        <div class="flex flex-wrap gap-x-5 gap-y-1 border-b border-slate-100 px-5 py-4 text-xs text-slate-500 sm:px-7 dark:border-slate-800 dark:text-slate-400">
+            <span class="min-w-0 break-words">محصول: <strong class="text-slate-800 dark:text-slate-200">{{ $ticket->product?->title ?? 'نامشخص' }}</strong></span>
+            <span class="min-w-0 break-words">مشتری: <strong class="text-slate-800 dark:text-slate-200">{{ $ticket->user?->display_name ?? 'کاربر' }}</strong></span>
         </div>
         <div class="max-h-[680px] space-y-5 overflow-y-auto bg-slate-50/60 px-4 py-6 sm:px-7 dark:bg-slate-950/30">
             @foreach($ticket->messages as $message)
                 @php($fromSeller = $message->isFromSupport())
                 <div class="flex {{ $fromSeller ? 'justify-start' : 'justify-end' }}">
-                    <div class="max-w-[90%] sm:max-w-[75%]">
+                    <div class="min-w-0 max-w-[90%] sm:max-w-[75%]">
                         <div class="mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ $fromSeller ? 'پاسخ پشتیبانی · ' . ($message->user?->display_name ?? 'پشتیبانی') : ($message->isSystemMessage() ? 'سیستم' : ($ticket->user?->display_name ?? 'مشتری')) }}</div>
                         <div class="rounded-2xl px-4 py-3 text-sm leading-8 shadow-sm {{ $fromSeller ? 'rounded-tr-sm bg-brand-600 text-white' : 'rounded-tl-sm border border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100' }}">
                             <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
                             <x-ticket.attachments :message="$message" :tone="$fromSeller ? 'dark' : 'light'" :open-in-new-tab="true" />
                         </div>
-                        <div class="mt-1 text-[11px] text-slate-400">{{ jalali_date($message->created_at, 'Y/m/d H:i') }}</div>
+                        <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{{ jalali_date($message->created_at, 'Y/m/d H:i') }}</div>
                     </div>
                 </div>
             @endforeach
@@ -62,7 +61,7 @@
                 @error('message')<p class="mt-2 text-xs font-bold text-rose-600 dark:text-rose-300">{{ $message }}</p>@enderror
             </form>
         @else
-            <div class="border-t border-slate-100 p-5 text-center text-sm text-slate-500 dark:border-slate-800">این تیکت بسته شده و امکان پاسخ ندارد.</div>
+            <div class="border-t border-slate-100 p-5 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">این تیکت بسته شده و امکان پاسخ ندارد.</div>
         @endif
     </section>
 

@@ -11,10 +11,10 @@
             <div class="pointer-events-none absolute -left-12 -top-20 h-64 w-64 rounded-full bg-brand-500/20 blur-3xl"></div>
             <div class="pointer-events-none absolute bottom-0 right-1/3 h-28 w-72 rounded-full bg-sky-500/10 blur-3xl"></div>
             <div class="relative flex flex-wrap items-center justify-between gap-5">
-                <div>
-                    <div class="text-xs font-bold tracking-wide text-brand-300">پنل فروشندگان / {{ $store->title }}</div>
-                    <h1 class="mt-2 text-2xl font-black sm:text-3xl">@yield('seller-heading', $store->title)</h1>
-                    <p class="mt-2 text-sm leading-7 text-slate-300">@yield('seller-description', 'مدیریت فروش، دیدگاه‌ها و گفتگوهای فروشگاه')</p>
+                <div class="min-w-0">
+                    <div class="break-words text-xs font-bold tracking-wide text-brand-300">پنل فروشندگان / {{ $store->title }}</div>
+                    <h1 class="mt-2 break-words text-2xl font-black sm:text-3xl">@yield('seller-heading', $store->title)</h1>
+                    <p class="mt-2 break-words text-sm leading-7 text-slate-300">@yield('seller-description', 'مدیریت فروش، دیدگاه‌ها و گفتگوهای فروشگاه')</p>
                 </div>
                 <a href="{{ route('seller.dashboard') }}" class="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold transition hover:bg-white/20">تغییر فروشگاه</a>
             </div>
