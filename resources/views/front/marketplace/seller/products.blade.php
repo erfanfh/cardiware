@@ -10,7 +10,7 @@
             <div><h2 class="text-lg font-black">فهرست محصولات</h2><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ number_format($products->total()) }} محصول</p></div>
             <form method="get" class="flex w-full gap-2 sm:w-auto">
                 <input name="q" value="{{ $search }}" type="search" placeholder="جست‌وجوی نام محصول" aria-label="جست‌وجوی محصول" class="min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none focus:border-brand-400 sm:w-64 dark:border-slate-700 dark:bg-slate-800">
-                <button class="rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-bold text-white">جست‌وجو</button>
+                <button class="cursor-pointer rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-bold text-white">جست‌وجو</button>
             </form>
         </div>
         <div class="divide-y divide-slate-100 dark:divide-slate-800">

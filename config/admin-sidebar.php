@@ -171,7 +171,7 @@ return [
     [
         'label' => 'فروشگاه',
         'icon' => 'icons.store-01',
-        'badge' => 'unresolved_wallet_withdrawals',
+        'badge' => 'pending_financial_requests',
         'children' => [
             [
                 'label' => 'سفارش ها',
@@ -203,6 +203,13 @@ return [
                 'route' => 'admin.stores.index',
                 'icon' => 'icons.user-multiple-02',
                 'gate' => 'store.list',
+            ],
+            [
+                'label' => 'درخواست وجه فروشگاه‌ها',
+                'route' => 'admin.store-withdrawals.index',
+                'icon' => 'icons.wallet-03',
+                'gate' => 'store.withdrawals',
+                'badge' => 'pending_store_withdrawals',
             ],
             [
                 'label' => 'بازسازی دانلودها',

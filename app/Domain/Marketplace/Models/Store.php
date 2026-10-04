@@ -63,4 +63,9 @@ class Store extends Model implements PageViewableInterface
     {
         return $this->hasMany(Product::class);
     }
+
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(StoreWithdrawal::class);
+    }
 }

@@ -24,6 +24,7 @@
             @foreach([
                 ['route' => 'seller.stores.dashboard', 'label' => 'نمای کلی'],
                 ['route' => 'seller.stores.products', 'label' => 'محصولات'],
+                ['route' => 'seller.stores.withdrawals', 'label' => 'درخواست وجه'],
                 ['route' => 'seller.stores.comments', 'label' => 'دیدگاه‌ها'],
                 ['route' => 'seller.stores.tickets', 'label' => 'تیکت‌ها'],
             ] as $tab)

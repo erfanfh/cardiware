@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\Marketplace\SellerDashboardController;
 use App\Http\Controllers\Front\Marketplace\SellerStoreController;
+use App\Http\Controllers\Front\Marketplace\StoreWithdrawalController;
 use App\Http\Middleware\EnsureSellerStoreAccess;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +13,8 @@ Route::middleware('auth')->prefix('seller')->name('seller.')->group(function ():
         Route::get('products', [SellerStoreController::class, 'products'])->name('products');
         Route::get('products/{productId}/sales', [SellerStoreController::class, 'productSales'])->whereNumber('productId')->name('products.sales');
         Route::get('comments', [SellerStoreController::class, 'comments'])->name('comments');
+        Route::get('withdrawals', [StoreWithdrawalController::class, 'index'])->name('withdrawals');
+        Route::post('withdrawals', [StoreWithdrawalController::class, 'store'])->middleware('throttle:5,1')->name('withdrawals.store');
         Route::get('tickets', [SellerStoreController::class, 'tickets'])->name('tickets');
         Route::get('tickets/{ticket}', [SellerStoreController::class, 'showTicket'])->name('tickets.show');
         Route::post('tickets/{ticket}/reply', [SellerStoreController::class, 'replyTicket'])->middleware('throttle:10,1')->name('tickets.reply');

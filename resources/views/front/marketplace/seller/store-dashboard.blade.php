@@ -49,6 +49,10 @@
                 <div class="mt-1 break-all text-xl font-black">{{ number_format($report['lifetime']['seller']) }} تومان</div>
                 <div class="mt-1 text-[11px] text-slate-300">از {{ number_format($report['lifetime']['orders']) }} سفارش پرداخت‌شده</div>
             </div>
+            <a href="{{ route('seller.stores.withdrawals', $store) }}" class="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 transition hover:border-emerald-400 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:hover:border-emerald-400/40">
+                <span class="text-xs font-bold text-slate-700 dark:text-slate-200">ماندهٔ قابل درخواست وجه</span>
+                <strong class="break-all text-sm text-emerald-700 dark:text-emerald-300">{{ number_format($withdrawalBalance['available']) }} تومان ←</strong>
+            </a>
             <div class="mt-5 space-y-3">
                 @foreach([
                     ['route' => 'seller.stores.products', 'title' => 'محصولات فروشگاه', 'count' => $productsCount, 'tone' => 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300'],

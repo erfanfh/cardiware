@@ -13,7 +13,13 @@
                 ->unresolved()
                 ->count()
             : 0,
+        'pending_store_withdrawals' => \Illuminate\Support\Facades\Gate::allows('store.withdrawals')
+            ? \App\Domain\Marketplace\Models\StoreWithdrawal::query()
+                ->where('status', \App\Domain\Marketplace\Enums\StoreWithdrawalStatusEnum::PENDING)
+                ->count()
+            : 0,
     ];
+    $sidebarBadges['pending_financial_requests'] = $sidebarBadges['unresolved_wallet_withdrawals'] + $sidebarBadges['pending_store_withdrawals'];
 @endphp
 
 <aside

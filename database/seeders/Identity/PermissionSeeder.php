@@ -61,6 +61,7 @@ class PermissionSeeder extends Seeder
                 'create' => 'ایجاد فروشنده',
                 'edit' => 'ویرایش فروشنده',
                 'delete' => 'حذف فروشنده',
+                'withdrawals' => 'بررسی درخواست‌های وجه فروشگاه‌ها',
             ],
             'product' => [
                 'list' => 'لیست محصولات',
