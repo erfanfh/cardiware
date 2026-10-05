@@ -16,8 +16,10 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Vip\Models\VipPlan;
 use App\Domain\Vip\Models\VipSubscription;
 use App\Http\Middleware\ForceTrailingSlash;
+use App\Livewire\Front\Commerce\Cart\HeaderCartDropdown;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class VipCheckoutTest extends TestCase
@@ -70,12 +72,17 @@ class VipCheckoutTest extends TestCase
         $this->post(route('vip.cart.add', $plan))->assertRedirect(route('cart.index'));
         $this->post(route('vip.cart.add', $plan))->assertRedirect(route('cart.index'));
         $this->assertDatabaseCount('cart_items', 1);
+        $cartItem = Cart::query()->active()->firstOrFail()->items()->firstOrFail();
+        $this->assertSame('اشتراک VIP - پلن ماهانه', data_get($cartItem->snapshot, 'title'));
+        $this->assertSame(VipPlan::IMAGE_URL, data_get($cartItem->snapshot, 'image_url'));
 
         $firstOrder = $this->createAndPayCurrentCart();
         $firstItem = $firstOrder->items()->firstOrFail();
         $firstSubscription = VipSubscription::query()->where('order_item_id', $firstItem->id)->firstOrFail();
         $this->assertSame('vip_plan', $firstItem->purchasable_type);
         $this->assertSame(30, data_get($firstItem->snapshot, 'duration_days'));
+        $this->assertSame('اشتراک VIP - پلن ماهانه', data_get($firstItem->snapshot, 'title'));
+        $this->assertSame(VipPlan::IMAGE_URL, data_get($firstItem->snapshot, 'image_url'));
         $this->assertTrue($user->hasActiveVipSubscription());
         $this->withoutMiddleware(ForceTrailingSlash::class)
             ->get(route('vip.index'))
@@ -200,8 +207,51 @@ class VipCheckoutTest extends TestCase
 
         $this->get(route('payment.result', $payment->public_token))
             ->assertOk()
+            ->assertSee('اشتراک VIP - پلن ماهانه')
+            ->assertSee(VipPlan::IMAGE_URL)
             ->assertSee('اعتبار اشتراک VIP')
             ->assertSee('مشاهده اشتراک VIP')
             ->assertDontSee('مشاهده دانلودها');
+    }
+
+    public function test_legacy_vip_items_show_the_new_title_and_image_everywhere(): void
+    {
+        $this->actingAs(User::factory()->create());
+        $plan = $this->plan(['price_toman' => 0]);
+        $this->post(route('vip.cart.add', $plan));
+
+        $cart = Cart::query()->active()->firstOrFail();
+        $cartItem = $cart->items()->firstOrFail();
+        $legacySnapshot = $cartItem->snapshot;
+        $legacySnapshot['title'] = 'اشتراک VIP پلن ماهانه';
+        unset($legacySnapshot['plan_title'], $legacySnapshot['image_url']);
+        $cartItem->update(['snapshot' => $legacySnapshot]);
+
+        $this->withoutMiddleware(ForceTrailingSlash::class)
+            ->get(route('cart.index'))
+            ->assertOk()
+            ->assertSee('اشتراک VIP - پلن ماهانه')
+            ->assertSee(VipPlan::IMAGE_URL);
+
+        Livewire::test(HeaderCartDropdown::class)
+            ->call('reloadCart', false)
+            ->assertSet('summary.items.0.title', 'اشتراک VIP - پلن ماهانه')
+            ->assertSet('summary.items.0.image_url', VipPlan::IMAGE_URL);
+
+        $order = app(CreateOrderFromCartAction::class)->execute($cart);
+        $order->items()->firstOrFail()->update(['snapshot' => $legacySnapshot]);
+        $payment = app(CompleteFreeOrderAction::class)->execute($order);
+
+        $this->withoutMiddleware(ForceTrailingSlash::class)
+            ->get(route('payment.result', $payment->public_token))
+            ->assertOk()
+            ->assertSee('اشتراک VIP - پلن ماهانه')
+            ->assertSee(VipPlan::IMAGE_URL);
+
+        $this->withoutMiddleware(ForceTrailingSlash::class)
+            ->get(route('account.orders'))
+            ->assertOk()
+            ->assertSee('اشتراک VIP - پلن ماهانه')
+            ->assertSee(VipPlan::IMAGE_URL);
     }
 }

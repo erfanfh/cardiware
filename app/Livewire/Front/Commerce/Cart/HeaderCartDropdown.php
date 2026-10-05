@@ -328,6 +328,10 @@ class HeaderCartDropdown extends Component
     {
         $snapshot = $item->snapshot ?? [];
 
+        if (Arr::get($snapshot, 'type') === 'vip_plan') {
+            return VipPlan::titleFromSnapshot($snapshot);
+        }
+
         return Arr::get($snapshot, 'title')
             ?? Arr::get($snapshot, 'product_title')
             ?? Arr::get($snapshot, 'product.title')
@@ -359,6 +363,10 @@ class HeaderCartDropdown extends Component
     private function itemImageUrl(CartItem $item): ?string
     {
         $snapshot = $item->snapshot ?? [];
+
+        if (Arr::get($snapshot, 'type') === 'vip_plan') {
+            return VipPlan::IMAGE_URL;
+        }
 
         return Arr::get($snapshot, 'image_url')
             ?? Arr::get($snapshot, 'picture_url')

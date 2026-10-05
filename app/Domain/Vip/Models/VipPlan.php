@@ -12,6 +12,8 @@ class VipPlan extends Model implements Purchasable
 {
     use SoftDeletes;
 
+    public const IMAGE_URL = '/images/vip-subscription-gaming.webp';
+
     protected $fillable = [
         'code',
         'title',
@@ -41,7 +43,19 @@ class VipPlan extends Model implements Purchasable
 
     public function getPurchasableTitle(): string
     {
-        return 'اشتراک VIP '.$this->title;
+        return 'اشتراک VIP - '.$this->title;
+    }
+
+    public static function titleFromSnapshot(array $snapshot): string
+    {
+        $planTitle = trim((string) ($snapshot['plan_title'] ?? ''));
+
+        if ($planTitle === '') {
+            $legacyTitle = trim((string) ($snapshot['title'] ?? ''));
+            $planTitle = trim((string) preg_replace('/^اشتراک VIP(?:\s*-\s*|\s+)/u', '', $legacyTitle));
+        }
+
+        return 'اشتراک VIP - '.($planTitle !== '' ? $planTitle : 'پلن ویژه');
     }
 
     public function getPurchasablePrice(): int
@@ -79,6 +93,8 @@ class VipPlan extends Model implements Purchasable
         return [
             'type' => 'vip_plan',
             'title' => $this->getPurchasableTitle(),
+            'plan_title' => $this->title,
+            'image_url' => self::IMAGE_URL,
             'vip_plan_id' => $this->getKey(),
             'code' => $this->code,
             'duration_days' => (int) $this->duration_days,

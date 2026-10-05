@@ -16,7 +16,14 @@
             >
                 <button type="button" @click="open = !open" class="block w-full cursor-pointer p-3 text-right sm:p-4">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <div class="min-w-0">
+                        <div class="flex min-w-0 items-center gap-3">
+                            @if($order->rootItems->first() && $this->orderItemImage($order->rootItems->first()))
+                                <img src="{{ $this->orderItemImage($order->rootItems->first()) }}"
+                                     alt="{{ $this->orderItemTitle($order->rootItems->first()) }}"
+                                     class="h-16 w-16 shrink-0 rounded-2xl object-cover sm:h-20 sm:w-20"
+                                     loading="lazy" decoding="async">
+                            @endif
+                            <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span
                                     class="rounded-xl border px-2 py-1 text-[10px] font-extrabold sm:text-[11px] {{ $this->orderStatusClass($order) }}">
@@ -45,6 +52,7 @@
                                     class="line-clamp-2 text-xs font-extrabold leading-6 text-slate-700 sm:text-sm sm:leading-7 dark:text-slate-300">
                                     {{ $this->orderTitle($order) }}
                                 </div>
+                            </div>
                             </div>
                         </div>
 
@@ -80,7 +88,14 @@
                                              class="rounded-2xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900/60">
                                             <div
                                                 class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                                                <div class="min-w-0">
+                                                <div class="flex min-w-0 items-start gap-3">
+                                                    @if($this->orderItemImage($item))
+                                                        <img src="{{ $this->orderItemImage($item) }}"
+                                                             alt="{{ $this->orderItemTitle($item) }}"
+                                                             class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+                                                             loading="lazy" decoding="async">
+                                                    @endif
+                                                    <div class="min-w-0">
                                                     <div
                                                         class="text-sm font-extrabold leading-7 text-slate-900 dark:text-white">
                                                         {{ $this->orderItemTitle($item) }}
@@ -110,6 +125,7 @@
                                                                 تخفیف: {{ $this->money($item->discount_amount) }}
                                                             </span>
                                                         @endif
+                                                    </div>
                                                     </div>
                                                 </div>
 

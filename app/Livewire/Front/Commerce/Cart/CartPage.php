@@ -31,6 +31,7 @@ use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use App\Domain\Financial\Models\Wallet;
+use App\Domain\Vip\Models\VipPlan;
 use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use DomainException;
 use Illuminate\Contracts\View\View;
@@ -797,6 +798,10 @@ class CartPage extends Component
 
     public function itemTitle(CartItem $item): string
     {
+        if (data_get($item->snapshot, 'type') === 'vip_plan') {
+            return VipPlan::titleFromSnapshot($item->snapshot ?? []);
+        }
+
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
@@ -839,6 +844,10 @@ class CartPage extends Component
 
     public function itemImage(CartItem $item): string
     {
+        if (data_get($item->snapshot, 'type') === 'vip_plan') {
+            return VipPlan::IMAGE_URL;
+        }
+
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 

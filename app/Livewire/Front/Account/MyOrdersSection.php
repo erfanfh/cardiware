@@ -6,6 +6,7 @@ use App\Application\Commerce\Actions\Order\GetUserOrdersAction;
 use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\OrderItem;
+use App\Domain\Vip\Models\VipPlan;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Computed;
@@ -157,10 +158,21 @@ class MyOrdersSection extends Component
             return 'آیتم سفارش';
         }
 
+        if (data_get($item->snapshot, 'type') === 'vip_plan') {
+            return VipPlan::titleFromSnapshot($item->snapshot ?? []);
+        }
+
         return data_get($item->snapshot, 'title')
             ?? data_get($item->snapshot, 'product_title')
             ?? data_get($item->snapshot, 'name')
             ?? 'آیتم سفارش';
+    }
+
+    public function orderItemImage(OrderItem $item): ?string
+    {
+        return data_get($item->snapshot, 'type') === 'vip_plan'
+            ? VipPlan::IMAGE_URL
+            : null;
     }
 
     public function orderItemDescription(OrderItem $item): ?string

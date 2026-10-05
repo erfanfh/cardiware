@@ -16,6 +16,10 @@
         : ($payment->failed_at?->format('Y/m/d H:i') ?? $payment->updated_at?->format('Y/m/d H:i') ?? now()->format('Y/m/d H:i'));
 
     $itemImage = function ($item) {
+        if (data_get($item->snapshot, 'type') === 'vip_plan') {
+            return \App\Domain\Vip\Models\VipPlan::IMAGE_URL;
+        }
+
         $purchasable = $item->purchasable;
         $product = $purchasable?->product ?? null;
 
@@ -24,6 +28,10 @@
             ?? $product?->picture?->url
             ?? asset('front/assets/images/placeholder.webp');
     };
+
+    $itemTitle = fn ($item): string => data_get($item->snapshot, 'type') === 'vip_plan'
+        ? \App\Domain\Vip\Models\VipPlan::titleFromSnapshot($item->snapshot ?? [])
+        : (data_get($item->snapshot, 'title') ?? 'آیتم سفارش');
 
     $statusBadgeClasses = $isPaid
         ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300'
@@ -210,21 +218,21 @@
                                     <x-front.responsive-image
                                         :media="$item->purchasable?->product?->picture"
                                         :fallback="$itemImage($item)"
-                                        :alt="data_get($item->snapshot, 'title', 'محصول سفارش')"
-                                        :title="data_get($item->snapshot, 'title', 'محصول سفارش')"
+                                        :alt="$itemTitle($item)"
+                                        :title="$itemTitle($item)"
                                         variant="thumbnail"
-                                        class="aspect-video w-full rounded-2xl object-cover sm:h-24 sm:w-32 sm:shrink-0"
-                                        wrapper-class="aspect-video w-full rounded-2xl sm:h-24 sm:w-32 sm:shrink-0"
+                                        :class="data_get($item->snapshot, 'type') === 'vip_plan' ? 'h-24 w-24 rounded-2xl object-cover' : 'aspect-video w-full rounded-2xl object-cover sm:h-24 sm:w-32 sm:shrink-0'"
+                                        :wrapper-class="data_get($item->snapshot, 'type') === 'vip_plan' ? 'h-24 w-24 shrink-0 rounded-2xl' : 'aspect-video w-full rounded-2xl sm:h-24 sm:w-32 sm:shrink-0'"
                                         :skeleton="true"
                                         loading="lazy"
                                         decoding="async"
-                                        sizes="(max-width: 640px) 100vw, 128px"
+                                        :sizes="data_get($item->snapshot, 'type') === 'vip_plan' ? '96px' : '(max-width: 640px) 100vw, 128px'"
                                     />
 
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
                                             <h4 class="line-clamp-2 text-sm font-extrabold leading-7 text-slate-900 sm:line-clamp-1 dark:text-slate-100">
-                                                {{ data_get($item->snapshot, 'title', 'آیتم سفارش') }}
+                                                {{ $itemTitle($item) }}
                                             </h4>
 
                                             @if($isPaid)
