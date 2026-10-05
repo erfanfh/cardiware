@@ -32,5 +32,6 @@ return [
         'launcher',
         'loyalty',
         'preview',
+        'vip',
     ],
 ];

@@ -39,9 +39,17 @@ class UserController extends Controller
     {
         Gate::authorize('user.list');
 
+        $vipNow = now();
+
         $users = $userListing
             ->handle(User::query()->with(['wallet']), $request->validated())
             ->withCount('posts')
+            ->withExists(['vipSubscriptions as has_active_vip' => fn ($query) => $query
+                ->whereNull('revoked_at')
+                ->where('starts_at', '<=', $vipNow)
+                ->where('expires_at', '>', $vipNow)])
+            ->withMax(['vipSubscriptions as vip_expires_at' => fn ($query) => $query
+                ->whereNull('revoked_at')], 'expires_at')
             ->paginate($userListing->perPage())
             ->withQueryString();
 
@@ -57,7 +65,7 @@ class UserController extends Controller
 
         $bulkActionOptions = DefaultBulkActions::set()->toOptions();
 
-        return view('admin.identity.users.index', compact('users', 'roles', 'bulkActionOptions', 'hasActiveFilters', 'statuses'));
+        return view('admin.identity.users.index', compact('users', 'roles', 'bulkActionOptions', 'hasActiveFilters', 'statuses', 'vipNow'));
     }
 
     /**

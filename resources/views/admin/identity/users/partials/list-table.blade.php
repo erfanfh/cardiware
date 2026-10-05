@@ -25,6 +25,8 @@
 
                 <x-admin.list.th>وضعیت</x-admin.list.th>
 
+                <x-admin.list.th width="150px">اشتراک VIP</x-admin.list.th>
+
                 <x-admin.list.th>نقش</x-admin.list.th>
 
                 <x-admin.list.th>نوشته‌ها</x-admin.list.th>
@@ -160,6 +162,24 @@
                         </x-admin.list.td>
 
                         <x-admin.list.td>
+                            @if($user->has_active_vip && $user->vip_expires_at)
+                                @php
+                                    $vipExpiresAt = \Illuminate\Support\Carbon::parse($user->vip_expires_at);
+                                    $vipDaysRemaining = max(1, (int) ceil(($vipExpiresAt->getTimestamp() - $vipNow->getTimestamp()) / 86400));
+                                @endphp
+                                <div class="flex flex-col items-start gap-1.5 whitespace-nowrap"
+                                     title="پایان اعتبار: {{ jalali_date($vipExpiresAt, 'j F Y H:i') }}">
+                                    <x-admin.badge color="brand">VIP فعال</x-admin.badge>
+                                    <span class="text-xs font-semibold text-slate-600">
+                                        {{ number_format($vipDaysRemaining) }} روز باقی‌مانده
+                                    </span>
+                                </div>
+                            @else
+                                <span class="text-xs text-slate-400">—</span>
+                            @endif
+                        </x-admin.list.td>
+
+                        <x-admin.list.td>
                             <div class="text-xs leading-6">
                                 <div class="whitespace-nowrap">{{ $user->role->title }}</div>
                             </div>
@@ -186,7 +206,7 @@
                 @endforeach
             @else
                 <x-admin.list.empty
-                    colspan="9"
+                    colspan="13"
                     title="کاربر‌ی برای نمایش وجود ندارد"
                     description="هنوز هیچ کاربر‌ی ایجاد نشده یا نتیجه‌ای با فیلترهای فعلی پیدا نشده است."
                     action-text="افزودن کاربر جدید"
