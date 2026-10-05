@@ -80,6 +80,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Relation::morphMap([
+            'vip_plan' => \App\Domain\Vip\Models\VipPlan::class,
             'product' => Product::class,
             'product_sale_item' => ProductSaleItem::class,
             'product_addon' => ProductAddon::class,

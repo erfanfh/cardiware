@@ -7,6 +7,7 @@ use App\Domain\Vip\Models\VipPlan;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Vip\IndexVipPlanRequest;
 use App\Http\Requests\Admin\Vip\SaveVipPlanRequest;
+use App\Infrastructure\Services\Setting\Groups\VipSettings;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
@@ -36,6 +37,7 @@ class VipPlanController extends Controller
             'hasActiveFilters' => $listing->hasActiveFilters($filters),
             'bulkActionOptions' => DefaultBulkActions::set()->only($allowedActions)->toOptions(),
             'hasBulkActions' => $allowedActions !== [],
+            'featuredPlanId' => app(VipSettings::class)->get('featured_plan_id'),
         ]);
     }
 

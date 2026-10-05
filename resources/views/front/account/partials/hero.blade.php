@@ -27,7 +27,7 @@
                         @include('icons.waving-hand-02')
                     </h1>
 
-                    @if(false)
+                    @if($user->hasActiveVipSubscription())
                         <span
                             class="rounded-xl border border-emerald-100 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-800 sm:text-[11px] dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                             کاربر VIP

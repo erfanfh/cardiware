@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Front\Financial;
 use App\Application\Financial\Actions\Payment\FinalizeVerifiedPaymentAction;
 use App\Application\Financial\Actions\Payment\VerifyPaymentAction;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Catalog\Models\ProductAddon;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Financial\Enums\PaymentStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
@@ -14,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Domain\Launcher\Models\LauncherCheckoutSession;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 use Throwable;
@@ -187,14 +190,14 @@ class PaymentResultController extends Controller
     {
         $order->load([
             'rootItems.children',
-            'rootItems.purchasable',
-            'rootItems.children.purchasable',
-
-            'rootItems.purchasable.product.picture.primaryVariant',
-            'rootItems.purchasable.product.picture.variants',
-
-            'rootItems.children.purchasable.product.picture.primaryVariant',
-            'rootItems.children.purchasable.product.picture.variants',
+            'rootItems.purchasable' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                ProductSaleItem::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+                ProductAddon::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+            ]),
+            'rootItems.children.purchasable' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                ProductSaleItem::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+                ProductAddon::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+            ]),
         ]);
 
         return view(

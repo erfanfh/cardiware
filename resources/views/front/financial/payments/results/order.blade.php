@@ -2,6 +2,8 @@
 
 @php
     $rootItems = $order->rootItems ?? collect();
+    $hasVipItems = $rootItems->contains(fn ($item) => data_get($item->snapshot, 'type') === 'vip_plan');
+    $hasProductItems = $rootItems->contains(fn ($item) => data_get($item->snapshot, 'type') !== 'vip_plan');
 
     $isPaid = $isPaid ?? $payment->isPaid();
 
@@ -42,7 +44,10 @@
     };
 
     $mainDescription = match (true) {
-        $isFreePayment => 'سفارش شما بدون نیاز به پرداخت تایید شد و دسترسی به محصولات فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.',
+        $isFreePayment && $hasVipItems && !$hasProductItems => 'سفارش شما تایید شد و اعتبار اشتراک VIP در حساب کاربری فعال شده است.',
+        $isFreePayment => 'سفارش شما بدون نیاز به پرداخت تایید شد و دسترسی‌های خریداری‌شده فعال شده است.',
+        $isPaid && $hasVipItems && !$hasProductItems => 'پرداخت تایید شد و اعتبار اشتراک VIP در حساب کاربری فعال شده است.',
+        $isPaid && $hasVipItems => 'پرداخت تایید شد و اشتراک VIP و دسترسی به محصولات خریداری‌شده فعال شده‌اند.',
         $isPaid => 'سفارش شما تایید شد و دسترسی به محصولات خریداری‌شده فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.',
         default => 'تراکنش شما تایید نشد و مبلغی برای این سفارش ثبت نشده است. می‌توانید دوباره پرداخت را انجام دهید یا به سبد خرید برگردید.',
     };
@@ -53,7 +58,7 @@
         default => 'پرداخت ناموفق بود',
     };
 
-    $itemsTitle = $isPaid ? 'محصولات خریداری‌شده' : 'محصولات داخل سفارش';
+    $itemsTitle = $isPaid ? 'آیتم‌های خریداری‌شده' : 'آیتم‌های سفارش';
 
     $amountTitle = match (true) {
         $isFreePayment => 'مبلغ قابل پرداخت',
@@ -103,7 +108,7 @@
                     </h1>
 
                     <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                        {{ $isPaid ? 'جزئیات پرداخت موفق و محصولات خریداری‌شده' : 'جزئیات پرداخت ناموفق و وضعیت سفارش' }}
+                        {{ $isPaid ? 'جزئیات پرداخت موفق و آیتم‌های خریداری‌شده' : 'جزئیات پرداخت ناموفق و وضعیت سفارش' }}
                     </p>
                 </div>
 
@@ -188,7 +193,7 @@
 
                             <span
                                 class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[11px] font-extrabold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-            {{ $rootItems->count() }} محصول
+            {{ $rootItems->count() }} آیتم
         </span>
                         </div>
 
@@ -225,7 +230,7 @@
                                             @if($isPaid)
                                                 <span
                                                     class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300">
-                                فعال
+                                {{ data_get($item->snapshot, 'type') === 'vip_plan' ? 'اعتبار ثبت شد' : 'فعال' }}
                             </span>
                                             @else
                                                 <span
@@ -236,7 +241,9 @@
                                         </div>
 
                                         <p class="mt-1 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                            @if($isPaid)
+                                            @if($hasVipItems && data_get($item->snapshot, 'type') === 'vip_plan')
+                                                {{ number_format((int) data_get($item->snapshot, 'duration_days')) }} روز اعتبار VIP {{ $isPaid ? 'به حساب شما اضافه شد.' : 'پس از پرداخت به حساب شما اضافه می‌شود.' }}
+                                            @elseif($isPaid)
                                                 فایل محصول و راهنمای نصب برای دانلود آماده است.
                                             @else
                                                 بعد از پرداخت موفق، دسترسی دانلود این محصول فعال می‌شود.
@@ -362,10 +369,19 @@
                                     باز کردن محصول در MW Launcher
                                 </a>
                             @endif
-                            <a href="{{ $downloadsUrl }}"
-                               class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
-                                مشاهده دانلودها
-                            </a>
+                            @if($hasProductItems)
+                                <a href="{{ $downloadsUrl }}"
+                                   class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
+                                    مشاهده دانلودها
+                                </a>
+                            @endif
+
+                            @if($hasVipItems)
+                                <a href="{{ route('vip.index') }}"
+                                   class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-amber-400 px-5 text-sm font-extrabold text-slate-950 transition hover:bg-amber-300">
+                                    مشاهده اشتراک VIP
+                                </a>
+                            @endif
 
                             <a href="{{ $productsUrl }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
@@ -417,7 +433,7 @@
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">جمع محصولات</span>
+                                <span class="text-slate-500 dark:text-slate-400">جمع آیتم‌ها</span>
                                 <span class="text-left font-extrabold text-slate-900 dark:text-slate-100">
                     {{ $money((int) $order->subtotal_amount) }}
                 </span>
@@ -478,7 +494,7 @@
                                 <h3 class="text-xs font-extrabold text-red-900 dark:text-red-300">سفارش هنوز پرداخت نشده
                                     است</h3>
                                 <p class="mt-1 text-xs leading-6 text-red-800 dark:text-red-400">
-                                    برای فعال شدن دانلودها، پرداخت را دوباره انجام دهید.
+                                    برای فعال شدن آیتم‌های سفارش، پرداخت را دوباره انجام دهید.
                                 </p>
                             </div>
                         @endif

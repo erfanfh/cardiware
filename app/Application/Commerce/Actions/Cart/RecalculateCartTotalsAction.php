@@ -37,9 +37,7 @@ class RecalculateCartTotalsAction
 
         $cart->load([
             'items.purchasable',
-            'items.purchasable.product',
             'items.parent.purchasable',
-            'items.parent.purchasable.product',
             'user',
         ]);
 

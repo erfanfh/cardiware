@@ -9,6 +9,7 @@ use App\Application\Commerce\Actions\Cart\SyncCartIfStaleAction;
 use App\Application\Commerce\Actions\Cart\UpdateCartItemQuantityAction;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
+use App\Domain\Vip\Models\VipPlan;
 use App\Livewire\Front\Catalog\ProductBuyBox;
 use DomainException;
 use Illuminate\Support\Arr;
@@ -281,7 +282,7 @@ class HeaderCartDropdown extends Component
             'id' => $item->id,
             'title' => $this->itemTitle($item),
             'subtitle' => $this->itemSubtitle($item),
-            'url' => $item->url,
+            'url' => $item->purchasable instanceof VipPlan ? route('vip.index') : $item->url,
             'image_url' => $this->itemImageUrl($item),
             'quantity' => $quantity,
             'unit_price' => (int)$item->unit_price,
@@ -339,6 +340,10 @@ class HeaderCartDropdown extends Component
     private function itemSubtitle(CartItem $item): ?string
     {
         $snapshot = $item->snapshot ?? [];
+
+        if ($item->purchasable instanceof VipPlan) {
+            return number_format((int) Arr::get($snapshot, 'duration_days')) . ' روز اعتبار VIP';
+        }
 
         $parts = array_filter([
             Arr::get($snapshot, 'sku'),

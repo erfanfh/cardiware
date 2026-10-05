@@ -10,6 +10,8 @@ use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Models\User;
+use App\Application\Vip\Actions\GrantVipSubscriptionsForOrderAction;
+use App\Application\Vip\Actions\RevokeVipSubscriptionsForOrderAction;
 use DomainException;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -22,6 +24,8 @@ class UpdateOrderStatusAction
         private readonly SyncPurchaseAccessesForOrderStatusAction $syncPurchaseAccessesForOrderStatusAction,
         private readonly RecordOrderRefundAction                   $recordOrderRefundAction,
         private readonly SnapshotOrderItemCommissionsAction        $snapshotCommissions,
+        private readonly GrantVipSubscriptionsForOrderAction       $grantVipSubscriptions,
+        private readonly RevokeVipSubscriptionsForOrderAction      $revokeVipSubscriptions,
     )
     {
     }
@@ -93,6 +97,12 @@ class UpdateOrderStatusAction
                 oldStatus: $oldStatus,
                 newStatus: $newStatus,
             );
+
+            if (!$oldStatus->isPaid() && $newStatus->isPaid()) {
+                $this->grantVipSubscriptions->execute($order);
+            } elseif ($oldStatus->isPaid() && !$newStatus->isPaid()) {
+                $this->revokeVipSubscriptions->execute($order);
+            }
 
             app(UserCacheInvalidator::class)->flushForUser((int) $order->user_id);
             app(OrderCacheInvalidator::class)->flushSuccessfulPayment();

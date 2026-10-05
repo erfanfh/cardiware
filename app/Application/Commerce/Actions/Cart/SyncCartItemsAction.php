@@ -43,9 +43,7 @@ class SyncCartItemsAction
 
             $cart->load([
                 'items.purchasable',
-                'items.purchasable.product',
                 'items.children.purchasable',
-                'items.children.purchasable.product',
             ]);
 
             $changedItems = [];
@@ -89,7 +87,6 @@ class SyncCartItemsAction
 
             $cart->load([
                 'items.purchasable',
-                'items.purchasable.product',
                 'items.parent',
             ]);
 

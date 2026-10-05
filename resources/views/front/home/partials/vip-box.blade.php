@@ -8,7 +8,7 @@
                 class="text-xs text-slate-600 dark:text-slate-400">{{ get_setting('home', 'subscription_subtitle') }}</div>
         </div>
     </div>
-    <a href="{{ get_setting('home', 'subscription_button_url') }}"
+    <a href="{{ in_array(get_setting('home', 'subscription_button_url'), [null, '', '#'], true) ? route('vip.index') : get_setting('home', 'subscription_button_url') }}"
        class="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-brand-500 py-3 text-sm font-extrabold text-white hover:bg-brand-600 transition shadow-lg dark:shadow-black/20 dark:hover:bg-brand-400">
         {{ get_setting('home', 'subscription_button_title') }}
     </a>

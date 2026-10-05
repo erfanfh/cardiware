@@ -35,6 +35,7 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         require __DIR__ . '/front/seo.php';
         require __DIR__ . '/front/catalog.php';
         require __DIR__ . '/front/commerce.php';
+        require __DIR__ . '/front/vip.php';
         require __DIR__ . '/front/marketplace.php';
         require __DIR__ . '/front/seller.php';
         require __DIR__ . '/front/financial.php';

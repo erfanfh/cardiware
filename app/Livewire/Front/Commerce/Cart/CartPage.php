@@ -26,6 +26,8 @@ use App\Application\Promotion\Actions\Coupon\ReleaseCouponReservationForOrderAct
 use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
 use App\Application\Promotion\Exceptions\CouponMinimumOrderAmountNotMetException;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\ProductAddon;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use App\Domain\Financial\Models\Wallet;
@@ -33,6 +35,7 @@ use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use DomainException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Livewire\Attributes\Computed;
@@ -84,9 +87,10 @@ class CartPage extends Component
 
         $cart->loadMissing([
             'items.children',
-            'items.purchasable',
-            'items.purchasable.product.picture.primaryVariant',
-            'items.purchasable.product.picture.variants',
+            'items.purchasable' => fn (MorphTo $morphTo) => $morphTo->morphWith([
+                ProductSaleItem::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+                ProductAddon::class => ['product.picture.primaryVariant', 'product.picture.variants'],
+            ]),
         ]);
 
         return $cart;
@@ -806,6 +810,10 @@ class CartPage extends Component
 
     public function itemLink(CartItem $item): string
     {
+        if ($item->purchasable instanceof \App\Domain\Vip\Models\VipPlan) {
+            return route('vip.index');
+        }
+
         $product = $item->purchasable?->product ?? null;
 
         if ($product instanceof Product) {
@@ -817,6 +825,10 @@ class CartPage extends Component
 
     public function itemDescription(CartItem $item): string
     {
+        if ($item->purchasable instanceof \App\Domain\Vip\Models\VipPlan) {
+            return number_format((int) data_get($item->snapshot, 'duration_days')) . ' روز اعتبار اشتراک ویژه';
+        }
+
         return $item->purchasable?->product?->excerpt() ?? '';
     }
 
@@ -841,6 +853,10 @@ class CartPage extends Component
     public function itemBadge(CartItem $item): string
     {
         $type = data_get($item->snapshot, 'type');
+
+        if ($type === 'vip_plan') {
+            return 'اشتراک VIP';
+        }
 
         if ($type === 'product_addon') {
             return '+ خدمت افزوده';

@@ -48,6 +48,9 @@
                             <div class="mt-2 flex items-center gap-2">
                                 <x-admin.badge color="dark" size="sm" class="max-w-[180px] truncate font-bold tracking-wider"
                                                dir="ltr" title="{{ $plan->code }}">{{ $plan->code }}</x-admin.badge>
+                                @if((int) $featuredPlanId === (int) $plan->id)
+                                    <x-admin.badge color="yellow" size="sm">پلن ویژه</x-admin.badge>
+                                @endif
                                 <span class="text-[11px] text-slate-400">#{{ $plan->id }}</span>
                             </div>
 

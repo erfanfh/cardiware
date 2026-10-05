@@ -16,6 +16,7 @@ use App\Domain\Notification\Models\UserNotification;
 use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Support\Models\Ticket;
+use App\Domain\Vip\Models\VipSubscription;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -171,6 +172,35 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function purchaseAccesses(): HasMany
     {
         return $this->hasMany(PurchaseAccess::class);
+    }
+
+    public function vipSubscriptions(): HasMany
+    {
+        return $this->hasMany(VipSubscription::class);
+    }
+
+    public function hasActiveVipSubscription(): bool
+    {
+        $now = now();
+
+        return $this->vipSubscriptions()
+            ->whereNull('revoked_at')
+            ->where('starts_at', '<=', $now)
+            ->where('expires_at', '>', $now)
+            ->exists();
+    }
+
+    public function vipExpiresAt(): ?\Illuminate\Support\Carbon
+    {
+        if (!$this->hasActiveVipSubscription()) {
+            return null;
+        }
+
+        $expiresAt = $this->vipSubscriptions()
+            ->whereNull('revoked_at')
+            ->max('expires_at');
+
+        return $expiresAt ? \Illuminate\Support\Carbon::parse($expiresAt) : null;
     }
 
     public function launcherDevices(): HasMany

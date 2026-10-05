@@ -13,6 +13,7 @@ use App\Domain\Promotion\Enums\CouponScopeEnum;
 use App\Domain\Promotion\Enums\CouponTypeEnum;
 use App\Domain\Promotion\Models\Coupon;
 use App\Domain\Promotion\Models\CouponTarget;
+use App\Domain\Vip\Models\VipPlan;
 use DomainException;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
@@ -28,9 +29,7 @@ class CalculateCouponDiscountForCartAction
     {
         $cart->loadMissing([
             'items.purchasable',
-            'items.purchasable.product',
             'items.parent.purchasable',
-            'items.parent.purchasable.product',
         ]);
 
         $coupon->loadMissing([
@@ -142,11 +141,16 @@ class CalculateCouponDiscountForCartAction
     private function cartAmountAfterProductDiscount(Cart $cart): int
     {
         return (int)$cart->items
+            ->reject(fn (CartItem $item): bool => $item->purchasable instanceof VipPlan)
             ->sum(fn(CartItem $item): int => max(0, (int)$item->total_amount));
     }
 
     private function isEligibleItem(CartItem $item, Coupon $coupon): bool
     {
+        if ($item->purchasable instanceof VipPlan) {
+            return false;
+        }
+
         if ($item->isChild() && !$coupon->applies_to_addons) {
             return false;
         }

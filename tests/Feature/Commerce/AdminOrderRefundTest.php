@@ -180,7 +180,7 @@ class AdminOrderRefundTest extends TestCase
 
     private function createTables(): void
     {
-        foreach (['order_refunds', 'purchase_accesses', 'wallet_transactions', 'wallets', 'orders', 'users', 'roles'] as $table) {
+        foreach (['order_refunds', 'purchase_accesses', 'order_items', 'wallet_transactions', 'wallets', 'orders', 'users', 'roles'] as $table) {
             Schema::dropIfExists($table);
         }
 
@@ -222,6 +222,13 @@ class AdminOrderRefundTest extends TestCase
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();
+        });
+
+        Schema::create('order_items', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('order_id');
+            $table->string('purchasable_type');
+            $table->unsignedBigInteger('purchasable_id');
         });
 
         Schema::create('wallets', function (Blueprint $table): void {

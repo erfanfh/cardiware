@@ -2,6 +2,11 @@
     <x-admin.filters.panel :open="$hasActiveFilters">
         <x-admin.filters.header title="مدیریت و جستجوی پلن‌های VIP">
             <x-slot:actions>
+                @can('vip-plan.edit')
+                    <x-admin.form.button tag="a" href="{{ route('admin.vip-plans.page-settings') }}" variant="secondary">
+                        تنظیمات صفحه VIP
+                    </x-admin.form.button>
+                @endcan
                 @can('vip-plan.create')
                     <x-admin.form.button tag="a" href="{{ route('admin.vip-plans.create') }}" variant="solid">
                         + افزودن پلن جدید

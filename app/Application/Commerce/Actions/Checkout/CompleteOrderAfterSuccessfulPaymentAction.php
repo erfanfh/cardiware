@@ -6,6 +6,7 @@ use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
 use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
 use App\Application\Promotion\Actions\Coupon\RedeemCouponForOrderAction;
 use App\Domain\Commerce\Models\Order;
+use App\Application\Vip\Actions\GrantVipSubscriptionsForOrderAction;
 use Throwable;
 
 class CompleteOrderAfterSuccessfulPaymentAction
@@ -14,6 +15,7 @@ class CompleteOrderAfterSuccessfulPaymentAction
         private readonly MarkOrderAsPaidAction               $markOrderAsPaidAction,
         private readonly GrantPurchaseAccessesForOrderAction $grantPurchaseAccessesForOrderAction,
         private readonly RedeemCouponForOrderAction          $redeemCouponForOrderAction,
+        private readonly GrantVipSubscriptionsForOrderAction $grantVipSubscriptionsForOrderAction,
     )
     {
     }
@@ -30,6 +32,7 @@ class CompleteOrderAfterSuccessfulPaymentAction
         $this->redeemCouponForOrderAction->execute($order);
 
         $this->grantPurchaseAccessesForOrderAction->execute($order);
+        $this->grantVipSubscriptionsForOrderAction->execute($order);
 
         return $order->refresh();
     }
