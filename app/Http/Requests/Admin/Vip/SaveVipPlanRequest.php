@@ -17,9 +17,9 @@ class SaveVipPlanRequest extends FormRequest
         $plan = $this->route('vip_plan');
 
         return [
-            'code' => [
+            'code' => $plan ? ['prohibited'] : [
                 'required', 'string', 'max:80', 'regex:/^[a-z0-9][a-z0-9._-]*$/',
-                Rule::unique('vip_plans', 'code')->ignore($plan?->getKey()),
+                Rule::unique('vip_plans', 'code'),
             ],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
@@ -45,13 +45,20 @@ class SaveVipPlanRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge([
-            'code' => is_string($this->input('code')) ? strtolower(trim($this->input('code'))) : $this->input('code'),
+        $data = [
             'title' => is_string($this->input('title')) ? trim($this->input('title')) : $this->input('title'),
             'description' => is_string($this->input('description')) && trim($this->input('description')) === ''
                 ? null : $this->input('description'),
             'is_active' => $this->boolean('is_active'),
             'sort_order' => $this->input('sort_order', 0),
-        ]);
+        ];
+
+        if (! $this->route('vip_plan')) {
+            $data['code'] = is_string($this->input('code'))
+                ? strtolower(trim($this->input('code')))
+                : $this->input('code');
+        }
+
+        $this->merge($data);
     }
 }

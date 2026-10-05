@@ -9,9 +9,11 @@
                 <x-admin.form.input name="title" :value="old('title', $plan?->title)" required placeholder="مثلاً VIP سه‌ماهه"/>
             </x-admin.field>
 
-            <x-admin.field required label="کد یکتای پلن" hint="شناسه داخلی پایدار برای اتصال خرید و دسترسی در مراحل بعد؛ فقط حروف کوچک انگلیسی، عدد، نقطه، خط تیره و زیرخط. پس از استفاده در خریدها تغییرش ندهید." :error="$errors->first('code')">
-                <x-admin.form.input name="code" dir="ltr" :value="old('code', $plan?->code)" required placeholder="vip-90-days"/>
-            </x-admin.field>
+            @if(!$plan)
+                <x-admin.field required label="کد یکتای پلن" hint="شناسه داخلی پایدار برای اتصال خرید و دسترسی؛ فقط حروف کوچک انگلیسی، عدد، نقطه، خط تیره و زیرخط. این کد پس از ایجاد قابل تغییر نیست." :error="$errors->first('code')">
+                    <x-admin.form.input name="code" dir="ltr" :value="old('code')" required placeholder="vip-90-days"/>
+                </x-admin.field>
+            @endif
 
             <x-admin.field required label="مدت اعتبار (روز)" :error="$errors->first('duration_days')">
                 <x-admin.form.input name="duration_days" type="number" min="1" max="36500" dir="ltr" :value="old('duration_days', $plan?->duration_days)" required/>

@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\Vip\IndexVipPlanRequest;
 use App\Http\Requests\Admin\Vip\SaveVipPlanRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -65,7 +66,7 @@ class VipPlanController extends Controller
     {
         Gate::authorize('vip-plan.edit');
 
-        $vipPlan->update($request->validated());
+        $vipPlan->update(Arr::except($request->validated(), ['code']));
 
         return back()->with('success', 'پلن VIP به‌روزرسانی شد.');
     }

@@ -7,6 +7,7 @@ use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Domain\Vip\Models\VipPlan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class VipPlanManagementTest extends TestCase
@@ -38,7 +39,7 @@ class VipPlanManagementTest extends TestCase
         $this->actingAs($this->admin());
 
         $this->get(route('admin.vip-plans.index'))->assertOk();
-        $this->get(route('admin.vip-plans.create'))->assertOk();
+        $this->get(route('admin.vip-plans.create'))->assertOk()->assertSee('name="code"', false);
 
         $this->post(route('admin.vip-plans.store'), $this->fields(['code' => ' VIP-90 ']))
             ->assertRedirect();
@@ -48,15 +49,16 @@ class VipPlanManagementTest extends TestCase
         $this->assertSame(90, $plan->duration_days);
         $this->assertTrue($plan->is_active);
 
-        $this->get(route('admin.vip-plans.edit', $plan))->assertOk();
-        $this->put(route('admin.vip-plans.update', $plan), $this->fields([
+        $this->get(route('admin.vip-plans.edit', $plan))->assertOk()->assertDontSee('name="code"', false);
+        $this->put(route('admin.vip-plans.update', $plan), Arr::except($this->fields([
             'title' => 'VIP شش‌ماهه',
             'duration_days' => 180,
             'is_active' => '0',
-        ]))->assertRedirect();
+        ]), ['code']))->assertRedirect();
 
         $this->assertSame('VIP شش‌ماهه', $plan->fresh()->title);
         $this->assertFalse($plan->fresh()->is_active);
+        $this->assertSame('vip-90', $plan->fresh()->code);
         $this->assertSame(0, VipPlan::available()->count());
 
         $this->delete(route('admin.vip-plans.destroy', $plan))->assertRedirect();
@@ -74,6 +76,20 @@ class VipPlanManagementTest extends TestCase
         ]))->assertSessionHasErrors(['code', 'duration_days', 'price_toman']);
 
         $this->assertSame(1, VipPlan::query()->count());
+    }
+
+    public function test_code_cannot_be_changed_through_an_update_request(): void
+    {
+        $this->actingAs($this->admin());
+        $plan = VipPlan::query()->create($this->fields());
+
+        $this->put(route('admin.vip-plans.update', $plan), $this->fields([
+            'code' => 'vip-renamed',
+            'title' => 'عنوان جدید',
+        ]))->assertSessionHasErrors('code');
+
+        $this->assertSame('vip-90', $plan->fresh()->code);
+        $this->assertSame('VIP سه‌ماهه', $plan->fresh()->title);
     }
 
     public function test_user_without_vip_plan_permissions_cannot_manage_plans(): void
