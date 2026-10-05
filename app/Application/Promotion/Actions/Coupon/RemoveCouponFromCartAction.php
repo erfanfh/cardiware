@@ -3,6 +3,7 @@
 namespace App\Application\Promotion\Actions\Coupon;
 
 use App\Application\Commerce\Actions\Cart\RecalculateCartItemTotalsAction;
+use App\Application\Commerce\Support\TaxCalculator;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use DomainException;
@@ -14,6 +15,7 @@ class RemoveCouponFromCartAction
     public function __construct(
         private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
         private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
+        private readonly TaxCalculator                         $taxCalculator,
     )
     {
     }
@@ -53,7 +55,7 @@ class RemoveCouponFromCartAction
 
             $subtotalAmount = (int)$items->sum('subtotal_amount');
             $productDiscountAmount = (int)$items->sum('discount_amount');
-            $totalAmount = (int)$items->sum('final_total_amount');
+            $tax = $this->taxCalculator->calculate((int)$items->sum('final_total_amount'));
 
             $cart->forceFill([
                 'coupon_id' => null,
@@ -64,7 +66,10 @@ class RemoveCouponFromCartAction
 
                 'subtotal_amount' => $subtotalAmount,
                 'discount_amount' => $productDiscountAmount,
-                'total_amount' => max(0, $totalAmount),
+                'taxable_amount' => $tax->taxableAmount,
+                'tax_rate_basis_points' => $tax->rateBasisPoints,
+                'tax_amount' => $tax->taxAmount,
+                'total_amount' => $tax->totalAmount,
             ])->save();
 
             return $cart->refresh();

@@ -18,7 +18,7 @@ class SyncCouponTargetsAction
             ? $data['scope']->value
             : $data['scope'];
 
-        if ($scope === CouponScopeEnum::ORDER->value) {
+        if (in_array($scope, [CouponScopeEnum::ORDER->value, CouponScopeEnum::VIP->value], true)) {
             return;
         }
 

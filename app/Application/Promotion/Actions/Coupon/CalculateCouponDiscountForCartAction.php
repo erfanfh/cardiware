@@ -98,15 +98,15 @@ class CalculateCouponDiscountForCartAction
             throw new DomainException('Coupon usage limit reached.');
         }
 
-        $cartAmountAfterProductDiscount = $this->cartAmountAfterProductDiscount($cart);
+        $minimumOrderBase = $this->minimumOrderAmountBase($cart, $coupon);
 
         if (
             $coupon->minimum_order_amount !== null
-            && $cartAmountAfterProductDiscount < (int)$coupon->minimum_order_amount
+            && $minimumOrderBase < (int)$coupon->minimum_order_amount
         ) {
             throw new CouponMinimumOrderAmountNotMetException(
                 minimumOrderAmount: (int)$coupon->minimum_order_amount,
-                currentAmount: $cartAmountAfterProductDiscount,
+                currentAmount: $minimumOrderBase,
             );
         }
 
@@ -138,16 +138,22 @@ class CalculateCouponDiscountForCartAction
         }
     }
 
-    private function cartAmountAfterProductDiscount(Cart $cart): int
+    private function minimumOrderAmountBase(Cart $cart, Coupon $coupon): int
     {
         return (int)$cart->items
-            ->reject(fn (CartItem $item): bool => $item->purchasable instanceof VipPlan)
+            ->filter(fn (CartItem $item): bool => $coupon->scope === CouponScopeEnum::VIP
+                ? $item->purchasable instanceof VipPlan
+                : !($item->purchasable instanceof VipPlan))
             ->sum(fn(CartItem $item): int => max(0, (int)$item->total_amount));
     }
 
     private function isEligibleItem(CartItem $item, Coupon $coupon): bool
     {
         if ($item->purchasable instanceof VipPlan) {
+            return $coupon->scope === CouponScopeEnum::VIP;
+        }
+
+        if ($coupon->scope === CouponScopeEnum::VIP) {
             return false;
         }
 
@@ -159,6 +165,7 @@ class CalculateCouponDiscountForCartAction
             CouponScopeEnum::ORDER => true,
             CouponScopeEnum::PRODUCTS => $this->isEligibleProductItem($item, $coupon),
             CouponScopeEnum::STORE => $this->isEligibleStoreItem($item, $coupon),
+            CouponScopeEnum::VIP => false,
         };
     }
 

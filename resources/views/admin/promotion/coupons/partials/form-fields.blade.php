@@ -340,7 +340,16 @@
             >
                 <div
                     class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-600">
-                    این کدتخفیف روی کل سفارش اعمال می‌شود و محدود به محصول یا فروشنده خاصی نیست.
+                    این کدتخفیف روی محصولات سفارش اعمال می‌شود و اشتراک VIP را شامل نمی‌شود.
+                </div>
+            </div>
+
+            <div
+                id="vip_scope_hint"
+                class="@if($selectedScope !== \App\Domain\Promotion\Enums\CouponScopeEnum::VIP->value) hidden @endif"
+            >
+                <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-7 text-slate-600">
+                    این کدتخفیف فقط روی اشتراک‌های VIP اعمال می‌شود؛ محصولات دیگر سبد خرید شامل آن نیستند.
                 </div>
             </div>
 
@@ -442,6 +451,7 @@
             const scopeSelect = document.getElementById('coupon_scope');
 
             const orderScopeHint = document.getElementById('order_scope_hint');
+            const vipScopeHint = document.getElementById('vip_scope_hint');
             const productsScopeBox = document.getElementById('products_scope_box');
             const storeScopeBox = document.getElementById('store_scope_box');
 
@@ -453,6 +463,7 @@
                 const selectedScope = scopeSelect.value;
 
                 orderScopeHint?.classList.toggle('hidden', selectedScope !== 'order');
+                vipScopeHint?.classList.toggle('hidden', selectedScope !== 'vip');
                 productsScopeBox?.classList.toggle('hidden', selectedScope !== 'products');
                 storeScopeBox?.classList.toggle('hidden', selectedScope !== 'store');
             }
