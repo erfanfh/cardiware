@@ -2,21 +2,39 @@
 
 namespace App\Http\Controllers\Admin\Vip;
 
+use App\Application\Vip\Listings\VipPlanListing;
 use App\Domain\Vip\Models\VipPlan;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Vip\IndexVipPlanRequest;
 use App\Http\Requests\Admin\Vip\SaveVipPlanRequest;
+use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class VipPlanController extends Controller
 {
-    public function index(): View
+    public function index(IndexVipPlanRequest $request, VipPlanListing $listing): View
     {
         Gate::authorize('vip-plan.list');
 
+        $filters = $request->validated();
+        $allowedActions = [];
+
+        if (Gate::allows('vip-plan.edit')) {
+            $allowedActions = ['activate', 'deactivate'];
+        }
+
+        if (Gate::allows('vip-plan.delete')) {
+            $allowedActions[] = 'delete';
+        }
+
         return view('admin.vip.plans.index', [
-            'plans' => VipPlan::query()->orderBy('sort_order')->orderBy('id')->paginate(20),
+            'plans' => $listing->handle(VipPlan::query(), $filters)
+                ->paginate($listing->perPage())->withQueryString(),
+            'hasActiveFilters' => $listing->hasActiveFilters($filters),
+            'bulkActionOptions' => DefaultBulkActions::set()->only($allowedActions)->toOptions(),
+            'hasBulkActions' => $allowedActions !== [],
         ]);
     }
 

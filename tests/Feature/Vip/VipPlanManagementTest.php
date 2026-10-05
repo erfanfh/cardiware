@@ -98,9 +98,67 @@ class VipPlanManagementTest extends TestCase
         $user = User::factory()->create(['role_id' => $role->id]);
         $this->actingAs($user);
 
-        $this->get(route('admin.vip-plans.index'))->assertOk();
+        $this->get(route('admin.vip-plans.index'))
+            ->assertOk()
+            ->assertDontSee('اعمال عملیات گروهی');
         $this->get(route('admin.vip-plans.create'))->assertForbidden();
         $this->post(route('admin.vip-plans.store'), $this->fields())->assertForbidden();
+        $this->post(route('admin.vip-plans.bulk-action'), [
+            'bulk_action' => 'activate', 'ids' => [1],
+        ])->assertForbidden();
         $this->assertDatabaseCount('vip_plans', 0);
+    }
+
+    public function test_list_filters_and_sorts_plans(): void
+    {
+        $this->actingAs($this->admin());
+        VipPlan::query()->create($this->fields([
+            'code' => 'vip-short', 'title' => 'پلن کوتاه', 'duration_days' => 30,
+            'price_toman' => 100000, 'is_active' => true, 'sort_order' => 20,
+        ]));
+        VipPlan::query()->create($this->fields([
+            'code' => 'vip-long', 'title' => 'پلن بلند', 'duration_days' => 180,
+            'price_toman' => 500000, 'is_active' => false, 'sort_order' => 10,
+        ]));
+
+        $this->get(route('admin.vip-plans.index', [
+            'is_active' => '0', 'duration_days_min' => 90,
+            'price_toman_max' => 600000,
+        ]))->assertOk()->assertSee('پلن بلند')->assertDontSee('پلن کوتاه');
+
+        $this->get(route('admin.vip-plans.index', [
+            'code' => 'short', 'title' => 'کوتاه',
+        ]))->assertOk()->assertSee('vip-short')->assertDontSee('vip-long');
+
+        $this->get(route('admin.vip-plans.index', [
+            'sort' => 'price_toman', 'direction' => 'asc',
+        ]))->assertOk()->assertSeeInOrder(['پلن کوتاه', 'پلن بلند']);
+    }
+
+    public function test_bulk_actions_change_status_and_soft_delete_selected_plans(): void
+    {
+        $this->actingAs($this->admin());
+        $first = VipPlan::query()->create($this->fields(['code' => 'vip-first', 'is_active' => false]));
+        $second = VipPlan::query()->create($this->fields(['code' => 'vip-second', 'is_active' => false]));
+
+        $this->post(route('admin.vip-plans.bulk-action'), [
+            'bulk_action' => 'activate', 'ids' => [$first->id, $second->id],
+        ])->assertRedirect(route('admin.vip-plans.index'));
+        $this->assertSame(2, VipPlan::available()->count());
+
+        $this->post(route('admin.vip-plans.bulk-action'), [
+            'bulk_action' => 'deactivate', 'ids' => [$first->id],
+        ])->assertRedirect(route('admin.vip-plans.index'));
+        $this->assertSame(1, VipPlan::available()->count());
+
+        $this->post(route('admin.vip-plans.bulk-action'), [
+            'bulk_action' => 'delete', 'ids' => [$first->id],
+        ])->assertRedirect(route('admin.vip-plans.index'));
+        $this->assertSoftDeleted('vip_plans', ['id' => $first->id]);
+        $this->assertNotSoftDeleted('vip_plans', ['id' => $second->id]);
+
+        $this->post(route('admin.vip-plans.bulk-action'), [
+            'bulk_action' => 'delete', 'ids' => [$first->id],
+        ])->assertSessionHasErrors('ids.0');
     }
 }
