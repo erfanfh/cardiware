@@ -32,7 +32,7 @@ class VipPlanController extends Controller
         }
 
         return view('admin.vip.plans.index', [
-            'plans' => $listing->handle(VipPlan::query(), $filters)
+            'plans' => $listing->handle(VipPlan::query()->withCount('subscriptions'), $filters)
                 ->paginate($listing->perPage())->withQueryString(),
             'hasActiveFilters' => $listing->hasActiveFilters($filters),
             'bulkActionOptions' => DefaultBulkActions::set()->only($allowedActions)->toOptions(),

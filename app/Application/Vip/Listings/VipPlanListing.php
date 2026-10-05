@@ -22,6 +22,7 @@ class VipPlanListing extends BaseListing
             'sort_order' => 'sort_order',
             'duration_days' => 'duration_days',
             'price_toman' => 'price_toman',
+            'purchases_count' => 'subscriptions_count',
             'created_at' => 'created_at',
             'id' => 'id',
         ];

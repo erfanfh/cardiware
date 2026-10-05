@@ -15,6 +15,8 @@
                              :current-sort="request('sort')" :current-direction="request('direction', 'desc')"/>
             <x-admin.list.th width="160px" label="قیمت" sortable sortKey="price_toman"
                              :current-sort="request('sort')" :current-direction="request('direction', 'desc')"/>
+            <x-admin.list.th width="120px" label="تعداد خرید" sortable sortKey="purchases_count"
+                             :current-sort="request('sort')" :current-direction="request('direction', 'desc')"/>
             <x-admin.list.th width="130px">وضعیت</x-admin.list.th>
             <x-admin.list.th width="100px" label="ترتیب" sortable sortKey="sort_order"
                              :current-sort="request('sort')" :current-direction="request('direction', 'desc')"/>
@@ -54,17 +56,21 @@
                                 <span class="text-[11px] text-slate-400">#{{ $plan->id }}</span>
                             </div>
 
-                            @if(Gate::allows('vip-plan.edit') || Gate::allows('vip-plan.delete'))
-                                <x-admin.list.row-actions>
+                            <x-admin.list.row-actions>
+                                    <x-admin.list.action tag="a" href="{{ route('admin.vip-plans.purchases.index', $plan) }}" variant="primary">
+                                        مشاهده خریدها
+                                    </x-admin.list.action>
+
                                     @can('vip-plan.edit')
+                                        <span class="text-slate-300">|</span>
                                         <x-admin.list.action tag="a" href="{{ route('admin.vip-plans.edit', $plan) }}" variant="primary">
                                             ویرایش
                                         </x-admin.list.action>
                                     @endcan
 
-                                    @if(Gate::allows('vip-plan.edit') && Gate::allows('vip-plan.delete'))
+                                    @can('vip-plan.delete')
                                         <span class="text-slate-300">|</span>
-                                    @endif
+                                    @endcan
 
                                     @can('vip-plan.delete')
                                         <x-admin.form action="{{ route('admin.vip-plans.destroy', $plan) }}" method="delete"
@@ -73,13 +79,17 @@
                                             <x-admin.list.action tag="button" type="submit" variant="danger">حذف</x-admin.list.action>
                                         </x-admin.form>
                                     @endcan
-                                </x-admin.list.row-actions>
-                            @endif
+                            </x-admin.list.row-actions>
                         </div>
                     </x-admin.list.td>
 
                     <x-admin.list.td>{{ number_format($plan->duration_days) }} روز</x-admin.list.td>
                     <x-admin.list.td>{{ number_format($plan->price_toman) }} تومان</x-admin.list.td>
+                    <x-admin.list.td>
+                        <a href="{{ route('admin.vip-plans.purchases.index', $plan) }}" class="font-extrabold text-brand-700 transition hover:text-brand-900">
+                            {{ number_format($plan->subscriptions_count) }}
+                        </a>
+                    </x-admin.list.td>
                     <x-admin.list.td>
                         <x-admin.badge :color="$plan->is_active ? 'green' : 'slate'" size="md">
                             {{ $plan->is_active ? 'فعال' : 'غیرفعال' }}
