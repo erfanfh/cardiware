@@ -45,12 +45,31 @@
             </div>
 
             @if($vipExpiresAt)
-                <div class="mx-auto mt-10 flex max-w-3xl flex-col gap-3 rounded-3xl border border-emerald-200 bg-emerald-50 p-5 text-sm text-emerald-950 sm:flex-row sm:items-center sm:justify-between dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                    <div class="flex items-center gap-3">
-                        <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-emerald-500 text-white">✓</span>
-                        <div><div class="font-black">اشتراک VIP شما فعال است</div><div class="mt-1 text-xs">با خرید پلن دیگر، اعتبار شما تمدید می‌شود.</div></div>
+                <div class="relative mx-auto mt-10 max-w-4xl overflow-hidden rounded-[2rem] border border-emerald-200/80 bg-gradient-to-br from-emerald-50 via-white to-teal-50 p-5 shadow-xl shadow-emerald-900/5 sm:p-7 dark:border-emerald-400/20 dark:from-emerald-950/70 dark:via-slate-900 dark:to-teal-950/70 dark:shadow-black/20">
+                    <div class="pointer-events-none absolute -left-12 -top-20 h-44 w-44 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-400/10"></div>
+                    <div class="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-start gap-4">
+                            <span class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 dark:bg-emerald-400 dark:text-emerald-950 [&_svg]:h-7 [&_svg]:w-7">@include('icons.crown-03')</span>
+                            <div>
+                                <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-[11px] font-black text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300">
+                                    <span class="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.15)]"></span>
+                                    وضعیت فعال
+                                </span>
+                                <h3 class="mt-3 text-lg font-black text-slate-900 sm:text-xl dark:text-white">اشتراک VIP شما فعال است</h3>
+                                <p class="mt-2 text-xs leading-6 text-slate-600 sm:text-sm dark:text-slate-300">با انتخاب پلن جدید، روزهای آن به پایان اعتبار فعلی شما اضافه می‌شود.</p>
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-emerald-200/80 bg-white/80 px-5 py-4 shadow-sm sm:min-w-64 dark:border-emerald-400/20 dark:bg-white/5">
+                            <div class="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                تاریخ و ساعت پایان اعتبار
+                            </div>
+                            <time datetime="{{ $vipExpiresAt->toIso8601String() }}" class="mt-2 block text-base font-black leading-7 text-slate-900 sm:text-lg dark:text-white">
+                                {{ jalali_date($vipExpiresAt, 'j F Y') }} ساعت {{ jalali_date($vipExpiresAt, 'H:i') }}
+                            </time>
+                        </div>
                     </div>
-                    <span class="font-black">معتبر تا {{ jalali_date($vipExpiresAt, 'Y/m/d H:i') }}</span>
                 </div>
             @endif
 

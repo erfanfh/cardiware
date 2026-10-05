@@ -77,6 +77,11 @@ class VipCheckoutTest extends TestCase
         $this->assertSame('vip_plan', $firstItem->purchasable_type);
         $this->assertSame(30, data_get($firstItem->snapshot, 'duration_days'));
         $this->assertTrue($user->hasActiveVipSubscription());
+        $this->withoutMiddleware(ForceTrailingSlash::class)
+            ->get(route('vip.index'))
+            ->assertOk()
+            ->assertSee('تاریخ و ساعت پایان اعتبار')
+            ->assertSee(jalali_date($firstSubscription->expires_at, 'j F Y').' ساعت '.jalali_date($firstSubscription->expires_at, 'H:i'));
 
         $this->post(route('vip.cart.add', $plan))->assertRedirect(route('cart.index'));
         $secondCart = Cart::query()->active()->latest('id')->firstOrFail();
