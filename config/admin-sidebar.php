@@ -288,6 +288,26 @@ return [
     ],
 
     [
+        'label' => 'اشتراک VIP',
+        'route' => 'admin.vip-plans.index',
+        'icon' => 'icons.award-03',
+        'children' => [
+            [
+                'label' => 'پلن‌های VIP',
+                'route' => 'admin.vip-plans.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'vip-plan.list',
+            ],
+            [
+                'label' => 'ایجاد پلن',
+                'route' => 'admin.vip-plans.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'vip-plan.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'محصولات',
         'route' => 'admin.products.index',
         'icon' => 'icons.shopping-bag-03',

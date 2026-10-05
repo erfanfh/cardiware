@@ -201,6 +201,12 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش پاداش باشگاه',
                 'delete' => 'حذف پاداش باشگاه',
             ],
+            'vip-plan' => [
+                'list' => 'لیست پلن‌های VIP',
+                'create' => 'ایجاد پلن VIP',
+                'edit' => 'ویرایش پلن VIP',
+                'delete' => 'حذف پلن VIP',
+            ],
             'ticket' => [
                 'list' => 'لیست تیکت‌ها',
                 'show' => 'مشاهده و پاسخ تیکت',
