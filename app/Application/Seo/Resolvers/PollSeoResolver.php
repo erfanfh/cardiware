@@ -26,11 +26,15 @@ final class PollSeoResolver implements SeoResolverInterface
 
     public function supports(SeoContext $context): bool
     {
-        return $context->routeIs('polls.show');
+        return $context->routeIs('polls.index', 'polls.show');
     }
 
     public function resolve(SeoContext $context): SeoDataDTO
     {
+        if ($context->routeIs('polls.index')) {
+            return $this->resolveIndex();
+        }
+
         $poll = $context->request->attributes->get('poll');
 
         if (! $poll instanceof Poll) {
@@ -73,6 +77,44 @@ final class PollSeoResolver implements SeoResolverInterface
             schemaJson: $this->renderSchemaGraphAction->execute(
                 $this->schemaGraphAction->execute($poll, $canonicalUrl, $pageName, $description),
             ),
+        );
+    }
+
+    private function resolveIndex(): SeoDataDTO
+    {
+        $defaults = $this->defaultsAction->execute();
+        $title = 'نظرسنجی‌ها | '.$defaults['site_name'];
+        $description = 'نظرسنجی‌های مودینگ‌وی را ببینید، در موضوعات مورد علاقه خود رأی دهید و نظر جامعه را دنبال کنید.';
+        $url = $this->canonicalUrlAction->execute(fallbackUrl: route('polls.index'));
+        $image = $defaults['organization_logo']?->url;
+
+        return new SeoDataDTO(
+            robots: $defaults['robots'],
+            title: $title,
+            description: $description,
+            canonicalUrl: $url,
+            openGraph: new OpenGraphDataDTO(
+                type: OgTypeEnum::WEBSITE,
+                title: 'نظرسنجی‌ها',
+                description: $description,
+                url: $url,
+                siteName: $defaults['site_name'],
+                locale: $defaults['og_locale'],
+                image: $image,
+            ),
+            twitter: new TwitterCardDataDTO(
+                card: $defaults['twitter_card'],
+                title: 'نظرسنجی‌ها',
+                description: $description,
+                image: $image,
+            ),
+            schemaJson: $this->renderSchemaGraphAction->execute([
+                '@context' => 'https://schema.org',
+                '@type' => 'CollectionPage',
+                'name' => 'نظرسنجی‌ها',
+                'url' => $url,
+                'description' => $description,
+            ]),
         );
     }
 

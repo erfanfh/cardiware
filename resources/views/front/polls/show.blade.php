@@ -18,7 +18,8 @@
 
         <div class="relative mx-auto max-w-5xl px-4 py-7 sm:py-10 lg:py-14">
             <nav class="mb-5 flex items-center gap-2 text-[11px] font-bold text-slate-400 sm:text-xs"><a
-                    href="{{ route('home') }}" class="transition hover:text-brand-600">خانه</a><span>—</span><span
+                    href="{{ route('home') }}" class="transition hover:text-brand-600">خانه</a><span>—</span><a
+                    class="transition hover:text-brand-600" href="{{ route('polls.index') }}">نظرسنجی‌ها</a><span>—</span><span
                     class="max-w-[250px] truncate text-slate-600 dark:text-slate-300">{{ $poll->title }}</span></nav>
 
             <section

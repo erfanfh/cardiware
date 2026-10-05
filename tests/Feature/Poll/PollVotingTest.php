@@ -9,6 +9,7 @@ use App\Domain\Poll\Enums\PollAudienceEnum;
 use App\Domain\Poll\Enums\PollResultsVisibilityEnum;
 use App\Domain\Poll\Enums\PollStatusEnum;
 use App\Domain\Poll\Models\Poll;
+use App\Http\Middleware\ForceTrailingSlash;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -65,19 +66,21 @@ class PollVotingTest extends TestCase
         app(SubmitPollVoteAction::class)->execute($poll, PollVoterIdentity::resolve(null, '203.0.113.13'), [$first->id]);
     }
 
-    public function test_public_page_and_widget_api_expose_published_poll_without_list_route(): void
+    public function test_public_page_and_widget_api_expose_published_poll(): void
     {
+        $this->withoutMiddleware(ForceTrailingSlash::class);
         [$poll] = $this->makePoll();
 
         $this->get(route('polls.show', $poll->slug))->assertOk()->assertSee($poll->title);
         $this->getJson(route('api.v1.polls.show', $poll->slug))
             ->assertOk()->assertJsonPath('slug', $poll->slug)->assertJsonCount(2, 'options');
 
-        $this->assertFalse(app('router')->getRoutes()->hasNamedRoute('polls.index'));
+        $this->assertTrue(app('router')->getRoutes()->hasNamedRoute('polls.index'));
     }
 
     public function test_public_poll_page_renders_complete_unique_seo_metadata_and_schema(): void
     {
+        $this->withoutMiddleware(ForceTrailingSlash::class);
         [$poll] = $this->makePoll([
             'title' => 'بهترین بازی نقش‌آفرینی سال',
             'question' => '<p>به نظر شما کدام بازی نقش‌آفرینی شایسته انتخاب شدن است؟</p>',
