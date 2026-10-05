@@ -154,6 +154,9 @@
                             sider_working_directory: '.',
                             sider_arguments: '',
                             run_sider_as_administrator: false,
+                            requires_injection: false,
+                            inject_dll_path: '',
+                            monitor_process_name: '',
 
                             cpu_compatibility: {
                                 enabled: false,
@@ -167,6 +170,7 @@
                                 supports_install: true,
                                 supports_launch: true,
                                 supports_sider: false,
+                                supports_injection: false,
                                 supports_settings: false,
                                 supports_profiles: false,
                                 supports_update: false,
@@ -267,6 +271,14 @@
                                     false
                                 ),
 
+                            requires_injection: this.normalizeBoolean(
+                                source.requires_injection,
+                                false
+                            ),
+
+                            inject_dll_path: source.inject_dll_path ?? '',
+                            monitor_process_name: source.monitor_process_name ?? '',
+
                             cpu_compatibility: {
                                 enabled: this.normalizeBoolean(
                                     cpuCompatibility.enabled,
@@ -309,6 +321,12 @@
                                         capabilities.supports_sider,
                                         this.normalizeBoolean(source.requires_sider, false)
                                     ) || this.normalizeBoolean(source.requires_sider, false),
+
+                                supports_injection:
+                                    this.normalizeBoolean(
+                                        capabilities.supports_injection,
+                                        this.normalizeBoolean(source.requires_injection, false)
+                                    ) || this.normalizeBoolean(source.requires_injection, false),
 
                                 supports_settings:
                                     this.normalizeBoolean(

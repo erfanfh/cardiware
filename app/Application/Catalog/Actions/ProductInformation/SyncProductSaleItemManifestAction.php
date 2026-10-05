@@ -58,6 +58,10 @@ class SyncProductSaleItemManifestAction
             Arr::get($data, 'inject_dll_path')
         );
 
+        $monitorProcessName = $this->nullableString(
+            Arr::get($data, 'monitor_process_name')
+        );
+
         $supportsInjection = $this->toBoolean(
             Arr::get($data, 'capabilities.supports_injection', $requiresInjection)
         ) || $requiresInjection;
@@ -178,6 +182,7 @@ class SyncProductSaleItemManifestAction
                 'requires_injection' => $requiresInjection,
 
                 'inject_dll_path' => $injectDllPath,
+                'monitor_process_name' => $monitorProcessName,
 
                 // Validated properly (format, uniqueness, exact 32-byte key length,
                 // vault-password grant) in UpdateProductRequest -- this method only

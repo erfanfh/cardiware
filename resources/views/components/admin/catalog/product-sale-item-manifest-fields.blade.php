@@ -33,6 +33,7 @@
 
         'requires_injection' => false,
         'inject_dll_path' => null,
+        'monitor_process_name' => null,
 
         'content_key_id' => null,
         'content_key_value' => null,
@@ -460,6 +461,33 @@
                     <x-admin.form.input
                         x-model="{{ $state }}.main_executable_path"
                         class="direction-ltr"
+                    />
+                </x-admin.field>
+            </div>
+
+            <div class="col-span-12 md:col-span-6">
+                @if($isSimple)
+                    <input
+                        type="hidden"
+                        name="{{ $staticName('monitor_process_name') }}"
+                        x-bind:value="{{ $state }}.monitor_process_name"
+                    >
+                @else
+                    <input
+                        type="hidden"
+                        x-bind:name="{{ $dynamicName('monitor_process_name') }}"
+                        x-bind:value="{{ $state }}.monitor_process_name"
+                    >
+                @endif
+
+                <x-admin.field
+                    label="نام پراسس بازی برای پایش (اختیاری)"
+                    hint="فقط وقتی فایل اجرایی اصلی یک لانچر/بوت‌استرپر است که بازی را به‌صورت پراسس جدا بالا می‌آورد (مثل Launcher.exe لایو ادیتور فیفا که FIFA23.exe را اجرا می‌کند). لانچر منتظر این پراسس می‌ماند و همان را برای CPU Fix و بستنِ خودکار پایش می‌کند. خالی = همان فایل اجراشده خودِ بازی است."
+                >
+                    <x-admin.form.input
+                        x-model="{{ $state }}.monitor_process_name"
+                        class="direction-ltr"
+                        placeholder="FIFA23.exe"
                     />
                 </x-admin.field>
             </div>
