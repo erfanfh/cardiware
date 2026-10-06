@@ -33,5 +33,6 @@ return [
         'loyalty',
         'preview',
         'vip',
+        'vip-products',
     ],
 ];

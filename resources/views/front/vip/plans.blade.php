@@ -27,6 +27,9 @@
                     <a href="#vip-plans" class="mt-8 inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-amber-400 px-7 py-3.5 text-sm font-black text-slate-950 shadow-xl shadow-amber-500/20 transition hover:-translate-y-0.5 hover:bg-amber-300">
                         {{ $hero['hero_button'] }} <span aria-hidden="true">↓</span>
                     </a>
+                    <a href="{{ front_route('vip.products.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-amber-300/80 bg-white/70 px-7 py-3.5 text-sm font-black text-slate-800 transition hover:bg-white dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:mr-3 sm:mt-8">
+                        مشاهده محصولات VIP <span aria-hidden="true">←</span>
+                    </a>
                 </div>
 
                 <div class="mx-auto mt-14 grid max-w-3xl gap-3 text-center text-xs font-bold text-slate-700 dark:text-slate-200 sm:grid-cols-3">
