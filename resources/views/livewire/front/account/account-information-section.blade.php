@@ -175,20 +175,38 @@
             </div>
 
             <div
-                class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div class="min-w-0">
-                        <div class="text-sm font-extrabold text-slate-900 dark:text-white">نوع حساب</div>
-                        <div class="mt-1 text-xs font-bold leading-5 text-slate-500 dark:text-slate-400">
-                            با ارتقا به VIP امکانات بیشتری فعال می‌شود.
+                @class([
+                    'rounded-2xl border p-4',
+                    'border-amber-200 bg-amber-50/70 dark:border-amber-500/25 dark:bg-amber-500/5' => $this->vipExpiresAt,
+                    'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70' => ! $this->vipExpiresAt,
+                ])>
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 items-start gap-3">
+                        <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 [&_svg]:size-5">@include('icons.crown-03')</span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-extrabold text-slate-900 dark:text-white">نوع حساب</div>
+                            <p class="mt-1 text-xs leading-6 text-slate-600 dark:text-slate-400">
+                                {{ $this->vipExpiresAt ? 'اشتراک VIP شما فعال است.' : 'هنوز اشتراک VIP فعالی ندارید.' }}
+                            </p>
                         </div>
                     </div>
 
-                    <span
-                        class="inline-flex w-fit shrink-0 rounded-xl border px-2.5 py-1 text-[11px] font-extrabold {{ $this->accountTypeClass() }}">
-                            {{ $this->accountTypeLabel() }}
-                        </span>
+                    <span class="inline-flex w-fit shrink-0 rounded-xl border px-2.5 py-1 text-[11px] font-extrabold {{ $this->accountTypeClass() }}">
+                        {{ $this->accountTypeLabel() }}
+                    </span>
                 </div>
+
+                @if($this->vipExpiresAt)
+                    <div class="mt-3 border-t border-amber-200 pt-3 text-xs leading-6 text-amber-900 dark:border-amber-500/20 dark:text-amber-200">
+                        معتبر تا <time datetime="{{ $this->vipExpiresAt->toIso8601String() }}" class="font-extrabold">{{ jalali_date($this->vipExpiresAt, 'j F Y') }} ساعت {{ jalali_date($this->vipExpiresAt, 'H:i') }}</time>
+                    </div>
+                @else
+                    <p class="mt-3 text-xs leading-6 text-slate-600 dark:text-slate-400">با VIP به نسخه‌های منتخب محصولات بدون خرید جداگانه دسترسی بگیرید و کنار دیدگاه‌ها نشان ویژه داشته باشید.</p>
+                    <a href="{{ route('vip.index') }}" class="mt-3 inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2.5 text-xs font-extrabold text-slate-950 transition hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800">
+                        مشاهده پلن‌های VIP
+                        <span aria-hidden="true">←</span>
+                    </a>
+                @endif
             </div>
 
             <div

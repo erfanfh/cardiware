@@ -5,8 +5,10 @@ namespace App\Livewire\Front\Account;
 use App\Domain\Identity\Models\User;
 use App\Rules\MobileRule;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Computed;
 use Livewire\Component;
 use Morilog\Jalali\Jalalian;
 use Throwable;
@@ -198,7 +200,7 @@ class AccountInformationSection extends Component
      */
     public function accountTypeLabel(): string
     {
-        return 'کاربر عادی';
+        return $this->vipExpiresAt ? 'کاربر VIP' : 'کاربر عادی';
     }
 
     /**
@@ -206,8 +208,15 @@ class AccountInformationSection extends Component
      */
     public function accountTypeClass(): string
     {
-        return 'border border-slate-300 bg-slate-50 text-slate-800
-            dark:border-slate-600 dark:bg-slate-800/70 dark:text-slate-200';
+        return $this->vipExpiresAt
+            ? 'border-amber-300 bg-amber-100 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300'
+            : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300';
+    }
+
+    #[Computed]
+    public function vipExpiresAt(): ?Carbon
+    {
+        return auth()->user()?->vipExpiresAt();
     }
 
     /**
