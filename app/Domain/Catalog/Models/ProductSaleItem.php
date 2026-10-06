@@ -12,6 +12,7 @@ use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModGroup;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Media\Models\MediaFile;
+use App\Domain\Vip\Models\VipSaleItemClaim;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -34,6 +35,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'manifest_revision',
         'launcher_enabled',
         'launcher_free_claim_enabled',
+        'vip_access_enabled',
         'launcher_title',
         'launcher_excerpt',
         'launcher_cover_media_id',
@@ -55,6 +57,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'manifest_revision' => 'integer',
         'launcher_enabled' => 'boolean',
         'launcher_free_claim_enabled' => 'boolean',
+        'vip_access_enabled' => 'boolean',
         'launcher_sort_order' => 'integer',
         'launcher_support_enabled' => 'boolean',
         'launcher_usage_guide_enabled' => 'boolean',
@@ -95,6 +98,11 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     {
         return $this->hasMany(ProductSaleItemFile::class)
             ->orderBy('sort_order');
+    }
+
+    public function vipClaims(): HasMany
+    {
+        return $this->hasMany(VipSaleItemClaim::class);
     }
 
     /**

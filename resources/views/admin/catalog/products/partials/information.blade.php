@@ -366,6 +366,7 @@
                     : $saleItem->status,
                 'download_limit' => $saleItem->download_limit,
                 'download_expires_in_days' => $saleItem->download_expires_in_days,
+                'vip_access_enabled' => (bool) $saleItem->vip_access_enabled,
                 'max_quantity_per_order' => $saleItem->max_quantity_per_order,
                 'description' => $saleItem->description,
                 'launcher_enabled' => (bool) $saleItem->launcher_enabled,

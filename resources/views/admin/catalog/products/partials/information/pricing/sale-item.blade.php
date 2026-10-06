@@ -170,6 +170,19 @@
                     </x-admin.field>
                 </div>
 
+                <div class="col-span-12">
+                    <input type="hidden" x-bind:name="`sale_items[${i}][vip_access_enabled]`" value="0">
+                    <label class="flex cursor-pointer items-start gap-3 rounded-2xl border border-violet-200 bg-violet-50/60 p-4">
+                        <input type="checkbox" x-bind:name="`sale_items[${i}][vip_access_enabled]`" value="1"
+                               x-model="item.vip_access_enabled"
+                               class="mt-1 rounded border-violet-300 text-violet-600 focus:ring-violet-200">
+                        <span>
+                            <span class="block text-sm font-bold text-slate-800">دسترسی با اشتراک VIP</span>
+                            <span class="mt-1 block text-xs leading-6 text-slate-600">برای نسخه‌های دارای دانلود مستقیم: کاربر با اشتراک فعال این نسخه را به دانلودهای خود اضافه می‌کند. با پایان اشتراک، دانلود قطع می‌شود و سابقه انتخاب باقی می‌ماند.</span>
+                        </span>
+                    </label>
+                </div>
+
                 <div class="col-span-12 md:col-span-6 xl:col-span-4">
                     <x-admin.field label="محدودیت دانلود (تعداد)" hint="برای نامحدود، خالی بگذارید.">
                         <x-admin.form.input

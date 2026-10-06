@@ -2,6 +2,7 @@
 
 namespace App\Application\Identity\Actions;
 
+use App\Application\Vip\Actions\GetVipDownloadableSaleItemsAction;
 use App\Domain\Identity\Models\User;
 
 class HydrateAccountUserAction
@@ -9,6 +10,7 @@ class HydrateAccountUserAction
     public function __construct(
         private readonly GetAccountUserStatsAction $getAccountUserStatsAction,
         private readonly GetUserAvatarAction       $getUserAvatarAction,
+        private readonly GetVipDownloadableSaleItemsAction $getVipDownloadableSaleItemsAction,
     )
     {
     }
@@ -19,7 +21,13 @@ class HydrateAccountUserAction
         $avatar = $this->getUserAvatarAction->execute($user);
 
         $user->setAttribute('paid_orders_count', $stats['paid_orders_count']);
-        $user->setAttribute('purchase_accesses_count', $stats['purchase_accesses_count']);
+        $vipDownloadCount = $user->hasActiveVipSubscription()
+            ? $user->vipSaleItemClaims()
+                ->whereIn('product_sale_item_id', $this->getVipDownloadableSaleItemsAction
+                    ->query()->select('product_sale_items.id'))
+                ->count()
+            : 0;
+        $user->setAttribute('purchase_accesses_count', $stats['purchase_accesses_count'] + $vipDownloadCount);
         $user->setAttribute('favorite_products_count', $stats['favorite_products_count']);
         $user->setAttribute('tickets_count', $stats['tickets_count']);
         $user->setAttribute('open_tickets_count', $stats['open_tickets_count']);

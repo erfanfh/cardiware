@@ -39,7 +39,7 @@ final class GetProductBuyBoxDataAction
             CacheKey::productBuyBoxData(
                 productId: $product->getKey(),
                 productUpdatedAt: $product->updated_at?->timestamp ?? 0,
-            ),
+            ).':vip-claim-v3',
             $this->smartExpiresAt($product),
             fn() => $this->resolve($product)
         );
@@ -143,6 +143,10 @@ final class GetProductBuyBoxDataAction
             'id' => $saleItem->id,
             'title' => $this->makeSaleItemTitle($saleItem),
             'description' => $saleItem->description,
+            'vip_access_enabled' => (bool) ($saleItem->vip_access_enabled
+                && ! $saleItem->launcher_enabled
+                && $saleItem->files()->where('is_active', true)
+                    ->whereNotNull('url')->where('url', '<>', '')->exists()),
 
             // قیمت قابل پرداخت؛ این مقدار باید برای totalPrice استفاده شود.
             'price' => $pricing['final_price'],

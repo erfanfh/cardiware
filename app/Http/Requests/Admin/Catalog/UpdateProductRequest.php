@@ -129,6 +129,7 @@ class UpdateProductRequest extends FormRequest
                 'nullable',
                 Rule::in(array_column(ProductSaleItemStatusEnum::cases(), 'value')),
             ],
+            'sale_items.*.vip_access_enabled' => ['nullable', 'boolean'],
             'sale_items.*.download_limit' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.download_expires_in_days' => ['nullable', 'integer', 'min:0'],
             'sale_items.*.max_quantity_per_order' => ['nullable', 'integer', 'min:1'],
@@ -457,6 +458,14 @@ class UpdateProductRequest extends FormRequest
         $validator->after(function ($validator): void {
             foreach ((array)$this->input('sale_items', []) as $index => $item) {
                 $prefix = "sale_items.{$index}";
+
+                if (filter_var($item['vip_access_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                    && filter_var($item['launcher_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                    $validator->errors()->add(
+                        "{$prefix}.vip_access_enabled",
+                        'دسترسی VIP این بخش فقط برای فایل‌های دانلود مستقیم قابل فعال‌سازی است.'
+                    );
+                }
 
                 if (
                     filter_var(

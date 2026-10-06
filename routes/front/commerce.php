@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Front\Commerce\CartController;
 use App\Http\Controllers\Front\Commerce\DownloadPurchasedFileController;
+use App\Http\Controllers\Front\Commerce\DownloadVipSaleItemFileController;
 use App\Http\Controllers\Front\Commerce\DownloadLauncherContentFileController;
 use App\Http\Controllers\Front\Commerce\StreamLauncherDownloadController;
 use App\Http\Middleware\ForceTrailingSlash;
@@ -13,6 +14,12 @@ Route::middleware(ForceTrailingSlash::class)->group(function () {
 Route::get('/accesses/{purchaseAccess}/files/{file}', DownloadPurchasedFileController::class)
     ->middleware(['signed', 'throttle:120,1'])
     ->name('downloads.purchase-access.file');
+
+Route::get('/vip-sale-items/{saleItem}/files/{file}', DownloadVipSaleItemFileController::class)
+    ->middleware(['auth', 'signed', 'throttle:120,1'])
+    ->whereNumber('saleItem')
+    ->whereNumber('file')
+    ->name('downloads.vip-sale-item.file');
 
 Route::get(
     '/accesses/{purchaseAccess}/{contentType}/{content}/files/{file}',

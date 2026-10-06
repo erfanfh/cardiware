@@ -179,6 +179,11 @@ class User extends Authenticatable implements HasDiscussionOwner
         return $this->hasMany(VipSubscription::class);
     }
 
+    public function vipSaleItemClaims(): HasMany
+    {
+        return $this->hasMany(\App\Domain\Vip\Models\VipSaleItemClaim::class);
+    }
+
     public function hasActiveVipSubscription(): bool
     {
         $now = now();

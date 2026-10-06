@@ -5,12 +5,18 @@ namespace App\Livewire\Front\Account;
 use App\Application\Commerce\Actions\Access\GeneratePurchaseAccessDownloadUrlAction;
 use App\Application\Commerce\Actions\Access\GetUserPurchaseAccessesAction;
 use App\Application\Commerce\Actions\Access\HasPurchaseAccessFileReachedDownloadLimitAction;
+use App\Application\Vip\Actions\GetVipDownloadableSaleItemsAction;
+use App\Application\Vip\Actions\GenerateVipSaleItemDownloadUrlAction;
+use App\Application\Vip\Actions\TrackVipSaleItemFileDownloadAction;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Catalog\Models\ProductSaleItemFile;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Vip\Models\VipSaleItemClaim;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -19,6 +25,9 @@ class MyDownloadsSection extends Component
     use WithPagination;
 
     public int $perPage = 5;
+
+    #[Url]
+    public ?int $vipItem = null;
 
     /**
      * Get current user's purchase accesses.
@@ -38,6 +47,53 @@ class MyDownloadsSection extends Component
         );
     }
 
+    /** @return Collection<int, VipSaleItemClaim> */
+    #[Computed]
+    public function vipSaleItems(): Collection
+    {
+        if (! auth()->check()) {
+            return collect();
+        }
+
+        return auth()->user()->vipSaleItemClaims()
+            ->with([
+                'saleItem.product.picture',
+                'saleItem.product.installationSteps',
+                'saleItem.files' => fn ($query) => $query
+                    ->where('is_active', true)
+                    ->whereNotNull('url')
+                    ->where('url', '<>', ''),
+            ])
+            ->latest('id')
+            ->get();
+    }
+
+    public function vipClaimIsUsable(VipSaleItemClaim $claim): bool
+    {
+        return auth()->user()?->hasActiveVipSubscription()
+            && $claim->saleItem !== null
+            && app(GetVipDownloadableSaleItemsAction::class)->query()
+                ->whereKey($claim->product_sale_item_id)->exists();
+    }
+
+    public function vipFileRemainingDownloadsLabel(VipSaleItemClaim $claim, ProductSaleItemFile $file): string
+    {
+        $remaining = app(TrackVipSaleItemFileDownloadAction::class)->remaining($claim, $file);
+
+        return $remaining === null ? 'دانلود نامحدود' : $remaining . ' دانلود باقی‌مانده';
+    }
+
+    public function vipFileIsUsable(VipSaleItemClaim $claim, ProductSaleItemFile $file): bool
+    {
+        if (! $this->vipClaimIsUsable($claim)) {
+            return false;
+        }
+
+        $remaining = app(TrackVipSaleItemFileDownloadAction::class)->remaining($claim, $file);
+
+        return $remaining === null || $remaining > 0;
+    }
+
     /**
      * Generate signed download URL for a file.
      */
@@ -52,6 +108,15 @@ class MyDownloadsSection extends Component
 
         return app(GeneratePurchaseAccessDownloadUrlAction::class)->execute(
             purchaseAccess: $purchaseAccess,
+            file: $file,
+            expiresInMinutes: 10,
+        );
+    }
+
+    public function vipDownloadUrl(ProductSaleItem $saleItem, ProductSaleItemFile $file): string
+    {
+        return app(GenerateVipSaleItemDownloadUrlAction::class)->execute(
+            saleItem: $saleItem,
             file: $file,
             expiresInMinutes: 10,
         );

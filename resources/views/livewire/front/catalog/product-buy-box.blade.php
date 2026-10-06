@@ -123,6 +123,12 @@
                                             >
                                                 انتخاب شده
                                             </span>
+
+                                            <span
+                                                x-show="saleItem.vip_access_enabled"
+                                                x-cloak
+                                                class="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-extrabold text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+                                            >با اشتراک VIP</span>
                                         </div>
                                     </div>
 
@@ -203,6 +209,33 @@
                     </div>
                 </div>
             </template>
+
+            <section
+                x-show="selectedSaleItem?.vip_access_enabled"
+                x-data="{ claimedVipIds: @js($claimedVipSaleItemIds), ownedIds: @js($ownedSaleItemIds) }"
+                x-cloak
+                class="mt-5 rounded-2xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-500/25 dark:bg-violet-500/5"
+                aria-label="دسترسی با اشتراک VIP"
+            >
+                <div class="flex flex-col gap-4">
+                    <div class="space-y-1.5 text-right">
+                        <div class="text-sm font-black text-violet-900 dark:text-violet-200">دسترسی با اشتراک VIP</div>
+                        <p class="text-xs leading-6 text-slate-600 dark:text-slate-400">این نسخه را بدون هزینهٔ جداگانه به دانلودهای خود اضافه کنید.</p>
+                    </div>
+                    @if($hasActiveVip)
+                        <button type="button" x-show="!claimedVipIds.includes(Number(selectedSaleItemId)) && !ownedIds.includes(Number(selectedSaleItemId))" x-cloak x-on:click="$wire.claimVipSaleItem(Number(selectedSaleItemId))" wire:loading.attr="disabled" wire:target="claimVipSaleItem" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-violet-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:opacity-60">
+                            افزودن به دانلودها
+                        </button>
+                        <a x-show="claimedVipIds.includes(Number(selectedSaleItemId)) || ownedIds.includes(Number(selectedSaleItemId))" x-cloak :href="'{{ route('account.downloads') }}' + (ownedIds.includes(Number(selectedSaleItemId)) ? '' : '?vipItem=' + selectedSaleItemId)" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-extrabold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100 dark:border-violet-500/25 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-violet-500/10">
+                            مشاهده دانلودها <span aria-hidden="true">←</span>
+                        </a>
+                    @else
+                        <a href="{{ route('vip.index') }}" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-extrabold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100 dark:border-violet-500/25 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-violet-500/10">
+                            مشاهده پلن‌های VIP <span aria-hidden="true">←</span>
+                        </a>
+                    @endif
+                </div>
+            </section>
 
             <template x-if="shouldShowSpecialOfferBox">
                 <section class="mt-4">
@@ -439,7 +472,7 @@
             <template x-if="hasAvailableSaleItems">
                 <div
                     class="rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900 p-4"
-                    :class="(shouldShowSaleItemSelector || addons.length > 0 || isSimpleProductWithAddons) ? 'mt-6' : ''"
+                    :class="(shouldShowSaleItemSelector || addons.length > 0 || isSimpleProductWithAddons || selectedSaleItem?.vip_access_enabled) ? 'mt-6' : ''"
                 >
                     <div class="flex items-center justify-between gap-3">
                         <div class="min-w-0">

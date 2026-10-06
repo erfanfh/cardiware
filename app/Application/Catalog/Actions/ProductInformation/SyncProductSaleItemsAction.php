@@ -75,6 +75,7 @@ class SyncProductSaleItemsAction
                 'version' => $this->resolveVersion($item['version'] ?? null),
                 'launcher_enabled' => (bool)($item['launcher_enabled'] ?? false),
                 'launcher_free_claim_enabled' => (bool)($item['launcher_free_claim_enabled'] ?? false),
+                'vip_access_enabled' => (bool)($item['vip_access_enabled'] ?? false),
                 'launcher_title' => $this->normalizer->nullableString($item['launcher_title'] ?? null),
                 'launcher_excerpt' => $this->normalizer->nullableString($item['launcher_excerpt'] ?? null),
                 'launcher_cover_media_id' => $this->normalizer->nullableInteger($item['launcher_cover_media_id'] ?? null),
