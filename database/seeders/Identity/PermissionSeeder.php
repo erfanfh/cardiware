@@ -179,6 +179,12 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش کدتخفیف',
                 'delete' => 'حذف کدتخفیف',
             ],
+            'popup' => [
+                'list' => 'لیست پاپ‌آپ‌ها',
+                'create' => 'ایجاد پاپ‌آپ',
+                'edit' => 'ویرایش پاپ‌آپ',
+                'delete' => 'حذف پاپ‌آپ',
+            ],
             'loyalty-rule' => [
                 'list' => 'لیست قوانین امتیاز',
                 'create' => 'ایجاد قانون امتیاز',

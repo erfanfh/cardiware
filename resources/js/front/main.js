@@ -1,4 +1,5 @@
 import './lightbox-gallery.js';
+import './popups.js';
 import typingPlaceholder from './typing-placeholder.js';
 import './old-toggle-box.js';
 import './sticky-columns.js';

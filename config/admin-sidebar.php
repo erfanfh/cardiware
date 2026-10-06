@@ -263,6 +263,26 @@ return [
     ],
 
     [
+        'label' => 'اطلاع‌رسانی',
+        'route' => 'admin.popups.index',
+        'icon' => 'icons.notification-01',
+        'children' => [
+            [
+                'label' => 'پاپ‌آپ‌ها',
+                'route' => 'admin.popups.index',
+                'icon' => 'icons.menu-01',
+                'gate' => 'popup.list',
+            ],
+            [
+                'label' => 'ایجاد پاپ‌آپ',
+                'route' => 'admin.popups.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'popup.create',
+            ],
+        ],
+    ],
+
+    [
         'label' => 'باشگاه مخاطبان',
         'icon' => 'icons.medal-06',
         'children' => [

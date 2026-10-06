@@ -36,6 +36,16 @@
 <x-front.registration-gift-toast/>
 <x-front.loyalty-earned-toast/>
 <livewire:front.promotion.floating-coupon-box/>
+@unless(request()->routeIs('preview.*'))
+    @php
+        $popupTargetType = isset($post) ? 'post' : (isset($page) ? 'page' : (isset($product) ? 'product' : (request()->routeIs('home') ? 'home' : 'other')));
+        $popupTargetId = isset($post) ? $post->getKey() : (isset($page) ? $page->getKey() : (isset($product) ? $product->getKey() : null));
+    @endphp
+    @include('front.notification.popups', [
+        'popups' => app(\App\Application\Notification\GetVisiblePopupsAction::class)
+            ->execute($popupTargetType, $popupTargetId, auth()->user()),
+    ])
+@endunless
 @vite(['resources/js/front/main.js'])
 @stack('scripts')
 @livewireScripts
