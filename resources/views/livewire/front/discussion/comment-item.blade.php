@@ -35,7 +35,12 @@
 >
     <div class="flex items-start gap-3 sm:hidden">
         <div
-            class="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black dark:border-slate-700 {{ $this->avatarColor() }}"
+            @class([
+                'grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-2xl border text-sm font-black',
+                $this->avatarColor(),
+                'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-[0_0_12px_rgba(245,158,11,0.18)] dark:border-amber-400 dark:ring-amber-400 dark:ring-offset-slate-900' => $this->isVipAuthor,
+                'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
+            ])
         >
             @if($this->comment->user?->avatar)
                 <img
@@ -59,6 +64,10 @@
                         :badge="$badge"
                     />
                 @endforeach
+
+                @if($this->isVipAuthor)
+                    <x-front.discussion.comment-vip-badge />
+                @endif
 
                 @if($this->comment->is_pinned)
                     <x-front.discussion.comment-pinned-badge/>
@@ -91,7 +100,12 @@
 
     <div class="hidden gap-4 sm:flex">
         <div
-            class="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-200 text-sm font-black dark:border-slate-700 {{ $this->avatarColor() }}"
+            @class([
+                'grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl border text-sm font-black',
+                $this->avatarColor(),
+                'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-[0_0_12px_rgba(245,158,11,0.18)] dark:border-amber-400 dark:ring-amber-400 dark:ring-offset-slate-900' => $this->isVipAuthor,
+                'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
+            ])
         >
             @if($this->comment->user?->avatar)
                 <img
@@ -117,6 +131,10 @@
                                 :badge="$badge"
                             />
                         @endforeach
+
+                        @if($this->isVipAuthor)
+                            <x-front.discussion.comment-vip-badge />
+                        @endif
 
                         @if($this->comment->is_pinned)
                             <x-front.discussion.comment-pinned-badge/>

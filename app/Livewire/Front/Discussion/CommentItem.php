@@ -237,6 +237,12 @@ class CommentItem extends Component
                 'viewer_reaction_type' => $this->viewerReactionSubquery(),
             ])
             ->with([
+                'user' => fn ($query) => $query->withExists([
+                    'vipSubscriptions as has_active_vip_subscription' => fn ($subscriptions) => $subscriptions
+                        ->whereNull('revoked_at')
+                        ->where('starts_at', '<=', now())
+                        ->where('expires_at', '>', now()),
+                ]),
                 'user.avatar.primaryVariant',
                 'user.role',
             ])
@@ -316,6 +322,12 @@ class CommentItem extends Component
             comment: $this->comment,
             commentable: $this->commentable,
         );
+    }
+
+    #[Computed]
+    public function isVipAuthor(): bool
+    {
+        return (bool) $this->comment->user?->getAttribute('has_active_vip_subscription');
     }
 
     #[Computed]
