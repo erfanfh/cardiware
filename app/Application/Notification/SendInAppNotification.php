@@ -9,6 +9,7 @@ use App\Domain\Financial\Enums\WalletWithdrawalStatusEnum;
 use App\Domain\Financial\Models\WalletWithdrawal;
 use App\Domain\Notification\Models\UserNotification;
 use App\Domain\Notification\NotificationEvents;
+use App\Domain\Video\Models\Video;
 use Illuminate\Support\Facades\DB;
 
 class SendInAppNotification
@@ -35,16 +36,44 @@ class SendInAppNotification
             return;
         }
 
-        $post = $comment->commentable;
-        if ($post instanceof Post && $post->author_id && (int) $post->author_id !== (int) $comment->user_id) {
+        $commentable = $comment->commentable;
+        if ($commentable instanceof Post && $commentable->author_id && (int) $commentable->author_id !== (int) $comment->user_id) {
             $this->send(
-                NotificationEvents::COMMENT_CREATED, (int) $post->author_id,
+                NotificationEvents::COMMENT_CREATED, (int) $commentable->author_id,
                 $comment, 'دیدگاه تازه برای مطلب شما',
                 $comment->isApproved()
-                    ? 'برای «'.$post->title.'» دیدگاه تازه‌ای منتشر شد.'
-                    : 'برای «'.$post->title.'» دیدگاهی ثبت شد و پس از تأیید نمایش داده می‌شود.',
+                    ? 'برای «'.$commentable->title.'» دیدگاه تازه‌ای منتشر شد.'
+                    : 'برای «'.$commentable->title.'» دیدگاهی ثبت شد و پس از تأیید نمایش داده می‌شود.',
                 $this->adminCommentUrl($comment),
             );
+        }
+
+        if ($commentable instanceof Video && $commentable->author_id && (int) $commentable->author_id !== (int) $comment->user_id) {
+            $this->send(
+                NotificationEvents::VIDEO_COMMENT_CREATED, (int) $commentable->author_id,
+                $comment, 'دیدگاه تازه برای ویدیوی شما',
+                $comment->isApproved()
+                    ? 'برای «'.$commentable->title.'» دیدگاه تازه‌ای منتشر شد.'
+                    : 'برای «'.$commentable->title.'» دیدگاهی ثبت شد و پس از تأیید نمایش داده می‌شود.',
+                $this->adminCommentUrl($comment),
+            );
+        }
+
+        if ($commentable instanceof Product && $commentable->store) {
+            foreach ($commentable->store->sellers()->pluck('users.id') as $sellerId) {
+                if ((int) $sellerId === (int) $comment->user_id) {
+                    continue;
+                }
+
+                $this->send(
+                    NotificationEvents::PRODUCT_COMMENT_CREATED, (int) $sellerId,
+                    $comment, 'دیدگاه تازه برای محصول شما',
+                    $comment->isApproved()
+                        ? 'برای «'.$commentable->title.'» دیدگاه تازه‌ای منتشر شد.'
+                        : 'برای «'.$commentable->title.'» دیدگاهی ثبت شد و پس از تأیید نمایش داده می‌شود.',
+                    route('seller.stores.comments', [$commentable->store, 'comment' => $comment->id], false).'#comment-'.$comment->id,
+                );
+            }
         }
     }
 
@@ -81,7 +110,7 @@ class SendInAppNotification
     private function commentUrl(Comment $comment): ?string
     {
         $commentable = $comment->commentable;
-        if ((!$commentable instanceof Post && !$commentable instanceof Product)
+        if ((!$commentable instanceof Post && !$commentable instanceof Product && !$commentable instanceof Video)
             || !$commentable->isPubliclyVisible()) {
             return null;
         }

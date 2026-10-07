@@ -7,13 +7,16 @@ use App\Application\Discussion\Actions\ChangeCommentStatusAction;
 use App\Application\Discussion\DTOs\CreateCommentDataDTO;
 use App\Application\Discussion\Listings\CommentListing;
 use App\Application\Notification\SendInAppNotification;
+use App\Http\Controllers\Front\Marketplace\SellerStoreController;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Models\Post;
 use App\Domain\Discussion\Enums\CommentStatusEnum;
 use App\Domain\Discussion\Models\Comment;
 use App\Domain\Identity\Models\User;
+use App\Domain\Marketplace\Models\Store;
 use App\Domain\Notification\Models\UserNotification;
 use App\Domain\Notification\NotificationEvents;
+use App\Domain\Video\Models\Video;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
 use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use App\Http\Middleware\RedirectToCanonicalUrl;
@@ -21,6 +24,8 @@ use App\Livewire\Front\Discussion\CommentsList;
 use App\Livewire\Front\Discussion\CommentItem;
 use App\Livewire\Front\Discussion\ProductCommentsList;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -31,7 +36,7 @@ class InAppNotificationTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['user_notifications', 'notification_event_settings', 'comments', 'posts', 'products', 'wallet_withdrawals', 'users', 'roles'] as $table) {
+        foreach (['user_notifications', 'notification_event_settings', 'comments', 'posts', 'products', 'videos', 'store_users', 'stores', 'vip_subscriptions', 'wallet_withdrawals', 'users', 'roles'] as $table) {
             Schema::dropIfExists($table);
         }
         Schema::create('roles', function (Blueprint $table): void {
@@ -74,9 +79,31 @@ class InAppNotificationTest extends TestCase
             $table->timestamps(); $table->softDeletes();
         });
         Schema::create('products', function (Blueprint $table): void {
-            $table->id(); $table->string('title'); $table->string('slug');
+            $table->id(); $table->unsignedBigInteger('store_id')->nullable(); $table->string('title'); $table->string('slug');
             $table->string('status'); $table->timestamp('published_at');
             $table->timestamps(); $table->softDeletes();
+        });
+        Schema::create('videos', function (Blueprint $table): void {
+            $table->id(); $table->unsignedBigInteger('author_id')->nullable();
+            $table->string('title'); $table->string('slug'); $table->string('status');
+            $table->string('source_type'); $table->string('video_url');
+            $table->boolean('comments_enabled')->default(true);
+            $table->boolean('guest_comments_enabled')->default(true);
+            $table->timestamp('published_at'); $table->timestamps(); $table->softDeletes();
+        });
+        Schema::create('stores', function (Blueprint $table): void {
+            $table->id(); $table->string('title'); $table->string('slug');
+            $table->string('status'); $table->timestamps(); $table->softDeletes();
+        });
+        Schema::create('store_users', function (Blueprint $table): void {
+            $table->id(); $table->unsignedBigInteger('store_id');
+            $table->unsignedBigInteger('user_id'); $table->timestamp('joined_at')->nullable();
+            $table->timestamps();
+        });
+        Schema::create('vip_subscriptions', function (Blueprint $table): void {
+            $table->id(); $table->unsignedBigInteger('user_id');
+            $table->timestamp('starts_at'); $table->timestamp('expires_at');
+            $table->timestamp('revoked_at')->nullable();
         });
         Schema::create('wallet_withdrawals', function (Blueprint $table): void {
             $table->id(); $table->string('public_token')->nullable();
@@ -157,6 +184,105 @@ class InAppNotificationTest extends TestCase
         ]);
         $this->assertDatabaseCount('user_notifications', 1);
         $this->assertStringContainsString('notification_comment='.$comment->id, UserNotification::query()->first()->url);
+    }
+
+    public function test_video_comment_notifies_its_author_once_and_respects_its_setting(): void
+    {
+        $author = $this->user('video-author');
+        $commenter = $this->user('video-commenter');
+        $videoId = DB::table('videos')->insertGetId([
+            'author_id' => $author->id, 'title' => 'ویدیوی آزمایشی',
+            'slug' => 'notification-video', 'status' => 'active',
+            'source_type' => 'direct', 'video_url' => 'https://example.test/video.mp4',
+            'published_at' => now()->subDay(), 'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $video = Video::query()->findOrFail($videoId);
+
+        $comment = $this->createCommentFor($video, $commenter->id, null, 'دیدگاه ویدیو');
+        $notification = UserNotification::query()->firstOrFail();
+        $this->assertSame($author->id, $notification->user_id);
+        $this->assertSame(NotificationEvents::VIDEO_COMMENT_CREATED, $notification->event_key);
+        $this->assertSame(route('admin.comments.index', ['id' => $comment->id], false).'#comment-'.$comment->id, $notification->url);
+        app(SendInAppNotification::class)->commentCreated($comment->id);
+        $this->assertDatabaseCount('user_notifications', 1);
+
+        $this->createCommentFor($video, $author->id, null, 'نظر نویسنده');
+        $this->createCommentFor($video, $author->id, $comment->id, 'پاسخ نویسنده');
+        $this->assertDatabaseCount('user_notifications', 2);
+        $this->assertDatabaseHas('user_notifications', [
+            'user_id' => $commenter->id, 'event_key' => NotificationEvents::COMMENT_REPLIED,
+        ]);
+        $this->assertStringContainsString(
+            'notification_comment='.$comment->id.'#comments',
+            UserNotification::query()->where('event_key', NotificationEvents::COMMENT_REPLIED)->value('url'),
+        );
+
+        $comment->forceFill(['status' => CommentStatusEnum::APPROVED, 'approved_at' => now()])->save();
+        app(SendInAppNotification::class)->commentApproved($comment->id);
+        $this->assertStringContainsString(
+            'notification_comment='.$comment->id.'#comments',
+            UserNotification::query()->where('event_key', NotificationEvents::COMMENT_APPROVED)->value('url'),
+        );
+
+        DB::table('notification_event_settings')->insert([
+            'event_key' => NotificationEvents::VIDEO_COMMENT_CREATED, 'is_enabled' => false,
+        ]);
+        $this->createCommentFor($video, $commenter->id, null, 'دیدگاه دیگر');
+        $this->assertDatabaseCount('user_notifications', 3);
+    }
+
+    public function test_product_comment_notifies_all_other_sellers_with_private_comment_links(): void
+    {
+        $seller = $this->user('seller-one');
+        $secondSeller = $this->user('seller-two');
+        $commenter = $this->user('product-buyer');
+        $storeId = DB::table('stores')->insertGetId([
+            'title' => 'فروشگاه آزمایشی', 'slug' => 'notification-store', 'status' => 'active',
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $store = Store::query()->findOrFail($storeId);
+        foreach ([$seller, $secondSeller] as $member) {
+            DB::table('store_users')->insert([
+                'store_id' => $storeId, 'user_id' => $member->id,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+        }
+        $productId = DB::table('products')->insertGetId([
+            'store_id' => $storeId, 'title' => 'محصول فروشنده', 'slug' => 'seller-product',
+            'status' => 'active', 'published_at' => now()->subDay(),
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+        $product = Product::query()->findOrFail($productId);
+
+        $comment = $this->createCommentFor($product, $commenter->id, null, 'دیدگاه محصول فروشنده');
+        $this->assertDatabaseCount('user_notifications', 2);
+        foreach ([$seller, $secondSeller] as $member) {
+            $notification = UserNotification::query()->where('user_id', $member->id)->firstOrFail();
+            $this->assertSame(NotificationEvents::PRODUCT_COMMENT_CREATED, $notification->event_key);
+            $this->assertSame(
+                route('seller.stores.comments', [$store, 'comment' => $comment->id], false).'#comment-'.$comment->id,
+                $notification->url,
+            );
+        }
+        app(SendInAppNotification::class)->commentCreated($comment->id);
+        $this->assertDatabaseCount('user_notifications', 2);
+
+        $sellerComment = $this->createCommentFor($product, $seller->id, null, 'نظر فروشنده');
+        $this->assertDatabaseCount('user_notifications', 3);
+        $this->assertDatabaseMissing('user_notifications', [
+            'user_id' => $seller->id, 'subject_id' => $sellerComment->id,
+        ]);
+
+        $view = app(SellerStoreController::class)->comments(
+            Request::create('/', 'GET', ['comment' => $comment->id]), $store,
+        );
+        $this->assertSame([$comment->id], $view->getData()['comments']->pluck('id')->all());
+
+        DB::table('notification_event_settings')->insert([
+            'event_key' => NotificationEvents::PRODUCT_COMMENT_CREATED, 'is_enabled' => false,
+        ]);
+        $this->createCommentFor($product, $commenter->id, null, 'دیدگاه سوم');
+        $this->assertDatabaseCount('user_notifications', 3);
     }
 
     public function test_automatically_approved_admin_comment_does_not_notify_its_author(): void
@@ -408,10 +534,16 @@ class InAppNotificationTest extends TestCase
 
     private function createComment(Post $post, int $userId, ?int $parentId, string $content): Comment
     {
+        return $this->createCommentFor($post, $userId, $parentId, $content);
+    }
+
+    private function createCommentFor(Model $commentable, int $userId, ?int $parentId, string $content): Comment
+    {
         return app(CreateCommentAction::class)->execute(new CreateCommentDataDTO(
-            commentable: $post, parentId: $parentId, userId: $userId,
+            commentable: $commentable, parentId: $parentId, userId: $userId,
             authorName: null, authorEmail: null, content: $content,
-            ratingPercent: $parentId ? null : 80, ipAddress: null, userAgent: null,
+            ratingPercent: $parentId || !$commentable->requiresCommentRating() ? null : 80,
+            ipAddress: null, userAgent: null,
             allowReplyToUnapprovedParent: true, bypassCooldown: true,
         ));
     }

@@ -17,7 +17,7 @@
         <div class="mt-5 grid gap-3">
             @forelse($comments as $comment)
                 @php($state = match ($comment->status->value) { 'approved' => 'تأییدشده', 'pending' => 'در انتظار', default => 'ردشده' })
-                <article class="rounded-2xl border border-slate-100 bg-slate-50/60 p-5 dark:border-slate-800 dark:bg-slate-800/40">
+                <article id="comment-{{ $comment->id }}" class="scroll-mt-28 rounded-2xl border border-slate-100 bg-slate-50/60 p-5 dark:border-slate-800 dark:bg-slate-800/40">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="min-w-0 break-words text-sm font-black">{{ $comment->display_name }} <span class="mx-1 font-normal text-slate-300 dark:text-slate-500">/</span> <span class="text-brand-600 dark:text-brand-300">{{ $productNames[$comment->commentable_id] ?? 'محصول' }}</span></div>
                         <span class="rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-200">{{ $state }}</span>

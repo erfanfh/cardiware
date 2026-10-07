@@ -78,6 +78,7 @@ class SellerStoreController extends Controller
         $comments = Comment::query()
             ->where('commentable_type', (new Product())->getMorphClass())
             ->whereIn('commentable_id', $this->productIds($store))
+            ->when($request->integer('comment') > 0, fn (Builder $query) => $query->whereKey($request->integer('comment')))
             ->when($status !== 'all', fn (Builder $query) => $query->where('status', $status))
             ->with('user')
             ->latestFirst()
