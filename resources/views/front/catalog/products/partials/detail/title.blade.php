@@ -25,7 +25,7 @@
     <div class="relative z-10 overflow-hidden bg-slate-100 dark:bg-slate-950">
         <div
             style="aspect-ratio: {{ $aspectRatio }};"
-            class="w-full min-h-[260px] overflow-hidden sm:min-h-[320px] lg:min-h-0"
+            class="w-full overflow-hidden"
         >
             <x-front.responsive-image
                 :media="$product->picture"
@@ -33,8 +33,10 @@
                 :alt="$product->title"
                 :title="$product->title"
                 variant="large"
-                class="h-full w-full object-cover transition-transform duration-700 hover:scale-[1.02]"
-                wrapper-class="h-full w-full"
+                class="block h-auto w-full object-contain"
+                wrapper-class="w-full"
+                :width="$product->picture?->primaryVariant?->width"
+                :height="$product->picture?->primaryVariant?->height"
                 :lazy="false"
                 :async="false"
                 :skeleton="true"
