@@ -268,6 +268,57 @@
                     </div>
                 </x-admin.metabox>
 
+                <x-admin.metabox title="باکس تیتر اخبار فوتر">
+                    <div class="space-y-5">
+                        <p class="text-sm leading-7 text-slate-500">
+                            اگر تیتر دستی ثبت نشده باشد، تازه‌ترین نوشته‌های منتشرشده سایت نمایش داده می‌شوند.
+                            لینک هر تیتر دستی اختیاری است. حداکثر ۸ تیتر می‌توانید ثبت کنید.
+                        </p>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <x-admin.field label="نمایش باکس اخبار" class="switch-field">
+                                <x-admin.form.switch
+                                    name="news_enabled"
+                                    :checked="old('news_enabled', get_setting('footer', 'news_enabled', 1))"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field label="عنوان باکس">
+                                <x-admin.form.input
+                                    name="news_title"
+                                    maxlength="100"
+                                    :value="old('news_title', get_setting('footer', 'news_title', 'تیتر اخبار'))"
+                                />
+                            </x-admin.field>
+                        </div>
+
+                        <x-admin.form.repeater
+                            :items="old('news_items', get_setting('footer', 'news_items', []))"
+                            name="news_items"
+                            title="تیترهای دستی"
+                            addText="افزودن تیتر"
+                            emptyText="تیتر دستی ثبت نشده است؛ تازه‌ترین نوشته‌ها نمایش داده می‌شوند."
+                            :defaultItem="['title' => '', 'url' => '']"
+                        >
+                            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                <x-admin.field label="تیتر" required>
+                                    <x-admin.form.input x-model="it.title" x-bind:name="field(i, 'title')"
+                                                        maxlength="180"/>
+                                </x-admin.field>
+
+                                <x-admin.field label="لینک (اختیاری)">
+                                    <x-admin.form.input
+                                        x-model="it.url"
+                                        x-bind:name="field(i, 'url')"
+                                        class="direction-ltr"
+                                        dir="ltr"
+                                    />
+                                </x-admin.field>
+                            </div>
+                        </x-admin.form.repeater>
+                    </div>
+                </x-admin.metabox>
+
                 <x-admin.metabox title="ستون 2 - خدمات و محصولات">
                     <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
                         <x-admin.field

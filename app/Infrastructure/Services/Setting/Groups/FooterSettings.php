@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
 use App\Infrastructure\Casts\MediaFileCast;
+use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
 class FooterSettings extends BaseSettings
@@ -35,6 +36,9 @@ class FooterSettings extends BaseSettings
         'address_2',
         'address_3',
         'address_4',
+        'news_enabled',
+        'news_title',
+        'news_items',
         'column2_title',
         'column2_items',
         'column3_title',
@@ -49,6 +53,7 @@ class FooterSettings extends BaseSettings
         'logo' => MediaFileCast::class,
         'column2_items' => ArrayCast::class,
         'column3_items' => ArrayCast::class,
+        'news_items' => RepeaterArrayCast::class,
         'column4_image' => MediaFileCast::class,
         'column4_image_dark' => MediaFileCast::class,
     ];

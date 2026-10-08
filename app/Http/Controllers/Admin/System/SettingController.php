@@ -329,6 +329,14 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.footer');
 
+        $request->validate([
+            'news_enabled' => ['required', 'boolean'],
+            'news_title' => ['nullable', 'string', 'max:100'],
+            'news_items' => ['nullable', 'array', 'max:8'],
+            'news_items.*.title' => ['required', 'string', 'max:180'],
+            'news_items.*.url' => ['nullable', 'string', 'max:2048', 'regex:~^(?:https?://[^\s<>]+|/(?!/)[^\s<>]*)$~i'],
+        ]);
+
         $this->storeSettings($request, 'footer');
 
         return redirect()

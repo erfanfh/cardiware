@@ -4,6 +4,10 @@
     $column4DarkImagePath = get_setting('footer', 'column4_image_dark')->path;
     $column4LightImagePath ??= $column4DarkImagePath;
     $column4DarkImagePath ??= $column4LightImagePath;
+    $footerNewsEnabled = (bool) get_setting('footer', 'news_enabled', 1);
+    $footerNews = $footerNewsEnabled
+        ? app(\App\Application\System\Actions\Footer\GetFooterNewsAction::class)->execute()
+        : [];
 @endphp
 
 <footer id="footer" dir="rtl" class="bg-white dark:bg-slate-950">
@@ -70,7 +74,7 @@
             </div>
         </div>
 
-        <div class="py-14">
+        <div class="pt-14 pb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div
                     class="bg-white rounded-3xl p-8 border border-neutral-200 text-center hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/20">
@@ -136,7 +140,58 @@
 
     </div>
 
-    <div class="mx-auto max-w-7xl px-4 py-8">
+    <div class="mx-auto max-w-7xl px-4 pb-8">
+        @if(count($footerNews) > 0)
+            <section data-footer-news
+                     aria-label="{{ get_setting('footer', 'news_title', 'تیتر اخبار') ?: 'تیتر اخبار' }}"
+                     class="mb-8 rounded-2xl border border-neutral-200 bg-slate-50/80 px-4 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 sm:px-5">
+                <div class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                    <div class="flex shrink-0 items-center gap-2.5 sm:max-w-56">
+                        <span aria-hidden="true" class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                            <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
+                        </span>
+                        <h3 class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                            {{ get_setting('footer', 'news_title', 'تیتر اخبار') ?: 'تیتر اخبار' }}
+                        </h3>
+                    </div>
+
+                    <div class="min-w-0 flex-1" aria-live="off">
+                        @foreach($footerNews as $item)
+                            <div data-footer-news-slide @if(!$loop->first) hidden @endif>
+                                @if($item['url'])
+                                    <a href="{{ $item['url'] }}"
+                                       class="group inline-flex max-w-full items-start gap-2 text-sm font-semibold leading-7 text-slate-700 transition-colors hover:text-brand-700 focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-slate-200 dark:hover:text-brand-400">
+                                        <span aria-hidden="true" class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
+                                        <span class="min-w-0 break-words">{{ $item['title'] }}</span>
+                                    </a>
+                                @else
+                                    <p class="flex items-start gap-2 text-sm font-semibold leading-7 text-slate-700 dark:text-slate-200">
+                                        <span aria-hidden="true" class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
+                                        <span class="min-w-0 break-words">{{ $item['title'] }}</span>
+                                    </p>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+
+                    @if(count($footerNews) > 1)
+                        <div class="flex shrink-0 flex-wrap items-center" aria-label="انتخاب خبر">
+                            @foreach($footerNews as $item)
+                                <button type="button"
+                                        data-footer-news-control="{{ $loop->index }}"
+                                        aria-label="نمایش خبر {{ $loop->iteration }}"
+                                        aria-current="{{ $loop->first ? 'true' : 'false' }}"
+                                        class="group flex h-8 w-6 cursor-pointer items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+                                    <span aria-hidden="true"
+                                          class="h-2 w-2 rounded-full bg-slate-300 transition-all group-hover:bg-brand-400 group-aria-[current=true]:w-6 group-aria-[current=true]:bg-brand-500 dark:bg-slate-700 dark:group-hover:bg-brand-400 dark:group-aria-[current=true]:bg-brand-400"></span>
+                                </button>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+            </section>
+        @endif
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-6 items-start">
             <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-4">
                 <div class="font-extrabold mb-3 dark:text-slate-100">{{ get_setting('footer', 'column1_title') }}</div>
@@ -270,6 +325,7 @@
                         </a>
                     @endif
                 </div>
+
             </div>
 
             <div class="flex flex-col justify-start items-center lg:items-start lg:col-span-3">

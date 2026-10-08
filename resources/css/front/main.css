@@ -5,6 +5,21 @@
     display: none !important;
 }
 
+[data-footer-news-slide][hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    [data-footer-news-slide]:not([hidden]) {
+        animation: footer-news-appear 350ms ease-out both;
+    }
+}
+
+@keyframes footer-news-appear {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 .header-account-action {
     position: relative;
     isolation: isolate;
