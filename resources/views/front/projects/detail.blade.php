@@ -13,17 +13,16 @@
             <div class="absolute inset-0 bg-gradient-to-l from-slate-950/75 via-slate-950/35 to-slate-950/10"></div>
 
             <div class="relative p-6 sm:p-10">
-                <nav class="text-xs text-white/70 flex flex-wrap gap-2">
-                    <a href="{{ route('home') }}" class="hover:text-brand-300 font-bold transition">
-                        خانه
-                    </a>
-                    <span>—</span>
-                    <a href="{{ front_route('projects.list') }}" class="hover:text-brand-300 font-bold transition">
-                        پروژه‌ها
-                    </a>
-                    <span>—</span>
-                    <span class="text-white/90 font-semibold">{{ $project->title }}</span>
-                </nav>
+                <x-front.breadcrumbs
+                    nav-class="text-xs text-white/70 flex flex-wrap gap-2"
+                    link-class="hover:text-brand-300 font-bold transition"
+                    current-class="text-white/90 font-semibold"
+                    :fallback-items="[
+                        ['name' => 'خانه', 'url' => route('home')],
+                        ['name' => 'پروژه‌ها', 'url' => front_route('projects.list')],
+                        ['name' => $project->title, 'url' => null],
+                    ]"
+                />
 
                 <div class="mt-4 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
                     <div class="max-w-2xl">

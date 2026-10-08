@@ -29,24 +29,14 @@
             </span>
         </button>
 
-        <nav
-            class="flex flex-wrap items-center gap-1.5 pl-11 text-xs text-slate-500
-                   dark:text-slate-400 [&_svg]:h-3 [&_svg]:w-3">
-
-            <a
-                href="{{ route('home') }}"
-                class="font-bold transition hover:text-brand-700 dark:hover:text-brand-300">
-                خانه
-            </a>
-
-            @include('icons.arrow-left-01')
-
-            <a
-                href="{{ front_route('posts.list') }}"
-                class="font-bold transition hover:text-brand-700 dark:hover:text-brand-300">
-                نوشته‌ها
-            </a>
-        </nav>
+        <x-front.breadcrumbs
+            nav-class="flex flex-wrap items-center gap-1.5 pl-11 text-xs text-slate-500 dark:text-slate-400"
+            :fallback-items="[
+                ['name' => 'خانه', 'url' => route('home')],
+                ['name' => 'نوشته‌ها', 'url' => front_route('posts.list')],
+                ['name' => $post->title, 'url' => null],
+            ]"
+        />
 
         <div class="mt-4 flex flex-col gap-4">
             <div class="flex flex-wrap gap-1.5">

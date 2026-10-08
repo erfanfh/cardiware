@@ -110,10 +110,23 @@ final class PollSeoResolver implements SeoResolverInterface
             ),
             schemaJson: $this->renderSchemaGraphAction->execute([
                 '@context' => 'https://schema.org',
-                '@type' => 'CollectionPage',
-                'name' => 'نظرسنجی‌ها',
-                'url' => $url,
-                'description' => $description,
+                '@graph' => [
+                    [
+                        '@type' => 'CollectionPage',
+                        'name' => 'نظرسنجی‌ها',
+                        'url' => $url,
+                        'description' => $description,
+                        'breadcrumb' => ['@id' => rtrim($url, '/').'/#breadcrumb'],
+                    ],
+                    [
+                        '@type' => 'BreadcrumbList',
+                        '@id' => rtrim($url, '/').'/#breadcrumb',
+                        'itemListElement' => [
+                            ['@type' => 'ListItem', 'position' => 1, 'name' => 'خانه', 'item' => $defaults['site_url']],
+                            ['@type' => 'ListItem', 'position' => 2, 'name' => 'نظرسنجی‌ها'],
+                        ],
+                    ],
+                ],
             ]),
         );
     }

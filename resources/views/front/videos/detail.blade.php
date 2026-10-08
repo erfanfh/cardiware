@@ -36,19 +36,19 @@
         </div>
 
         <div class="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-            <nav class="mb-5 flex min-w-0 items-center gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-400"
-                 aria-label="مسیر صفحه">
-                <a href="{{ route('home') }}" class="shrink-0 transition hover:text-brand-700 dark:hover:text-brand-300">خانه</a>
-                <span class="text-slate-300 dark:text-slate-700">/</span>
-                <a href="{{ route('videos.index') }}" class="shrink-0 transition hover:text-brand-700 dark:hover:text-brand-300">ویدیو سنتر</a>
-                @if($video->categories->first())
-                    <span class="hidden text-slate-300 sm:inline dark:text-slate-700">/</span>
-                    <a href="{{ route('videos.categories', $video->categories->first()->path) }}"
-                       class="hidden shrink-0 transition hover:text-brand-700 sm:inline dark:hover:text-brand-300">{{ $video->categories->first()->title }}</a>
-                @endif
-                <span class="text-slate-300 dark:text-slate-700">/</span>
-                <span class="truncate text-slate-700 dark:text-slate-200">{{ $video->title }}</span>
-            </nav>
+            <x-front.breadcrumbs
+                nav-class="mb-5 flex min-w-0 items-center gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-400"
+                link-class="shrink-0 transition hover:text-brand-700 dark:hover:text-brand-300"
+                current-class="truncate text-slate-700 dark:text-slate-200"
+                separator-class="text-slate-300 dark:text-slate-700"
+                :compact-penultimate-on-mobile="true"
+                :fallback-items="[
+                    ['name' => 'خانه', 'url' => route('home')],
+                    ['name' => 'ویدیو سنتر', 'url' => route('videos.index')],
+                    ...($video->categories->first() ? [['name' => $video->categories->first()->title, 'url' => route('videos.categories', $video->categories->first()->path)]] : []),
+                    ['name' => $video->title, 'url' => null],
+                ]"
+            />
 
             <div data-smart-sidebar-layout class="grid grid-cols-1 gap-6 lg:grid-cols-10 lg:items-start">
                 <div data-smart-sidebar-content class="min-w-0 space-y-6 lg:col-span-7">

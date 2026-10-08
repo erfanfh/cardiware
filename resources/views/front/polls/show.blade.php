@@ -17,10 +17,11 @@
             class="pointer-events-none absolute inset-x-0 top-0 h-[540px] bg-[radial-gradient(circle_at_20%_15%,rgba(249,115,22,.13),transparent_32%),radial-gradient(circle_at_80%_5%,rgba(14,165,233,.12),transparent_30%)] dark:bg-[radial-gradient(circle_at_20%_15%,rgba(249,115,22,.09),transparent_32%),radial-gradient(circle_at_80%_5%,rgba(14,165,233,.08),transparent_30%)]"></div>
 
         <div class="relative mx-auto max-w-5xl px-4 py-7 sm:py-10 lg:py-14">
-            <nav class="mb-5 flex items-center gap-2 text-[11px] font-bold text-slate-400 sm:text-xs"><a
-                    href="{{ route('home') }}" class="transition hover:text-brand-600">خانه</a><span>—</span><a
-                    class="transition hover:text-brand-600" href="{{ route('polls.index') }}">نظرسنجی‌ها</a><span>—</span><span
-                    class="max-w-[250px] truncate text-slate-600 dark:text-slate-300">{{ $poll->title }}</span></nav>
+            <x-front.breadcrumbs
+                nav-class="mb-5 flex items-center gap-2 text-[11px] font-bold text-slate-400 sm:text-xs"
+                link-class="transition hover:text-brand-600"
+                current-class="max-w-[250px] truncate text-slate-600 dark:text-slate-300"
+            />
 
             <section
                 class="overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_25px_80px_-40px_rgba(15,23,42,.35)] dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/30 sm:rounded-[36px]">

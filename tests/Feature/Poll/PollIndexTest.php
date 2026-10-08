@@ -38,6 +38,7 @@ class PollIndexTest extends TestCase
 
         self::assertSame(1, substr_count($index->getContent(), '<title>'));
         $index->assertSee('<title>نظرسنجی‌ها | ', false);
+        $index->assertSee('aria-label="مسیر صفحه"', false);
 
         $this->get($this->indexUrl(['status' => 'active']))
             ->assertOk()

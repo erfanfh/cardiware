@@ -12,6 +12,7 @@
         x-init="init()"
         :style="`--header-offset: ${headerOffset}px`"
     >
+        <x-front.breadcrumbs />
         <section data-smart-sidebar-layout class="grid grid-cols-1 lg:grid-cols-10 gap-6">
             <div data-smart-sidebar-content class="min-w-0 lg:col-span-7 space-y-6">
                 @include('front.catalog.products.partials.detail.title')

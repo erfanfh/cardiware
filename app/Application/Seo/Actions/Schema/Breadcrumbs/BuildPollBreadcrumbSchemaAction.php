@@ -25,6 +25,12 @@ final class BuildPollBreadcrumbSchemaAction
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
+                    'name' => 'نظرسنجی‌ها',
+                    'item' => route('polls.index'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
                     'name' => $context->headline,
                 ],
             ],

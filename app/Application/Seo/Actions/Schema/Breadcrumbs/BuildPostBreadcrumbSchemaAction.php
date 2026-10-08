@@ -31,6 +31,12 @@ final class BuildPostBreadcrumbSchemaAction
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
+                    'name' => 'نوشته‌ها',
+                    'item' => front_route('posts.list'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
                     'name' => $context->headline,
                 ],
             ],

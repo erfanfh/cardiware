@@ -107,6 +107,12 @@ class PollVotingTest extends TestCase
         self::assertContains('BreadcrumbList', $types);
         self::assertNotContains('QAPage', $types);
 
+        $breadcrumbNode = collect($schema['@graph'])->firstWhere('@type', 'BreadcrumbList');
+        self::assertSame(['خانه', 'نظرسنجی‌ها', $poll->title], array_column($breadcrumbNode['itemListElement'], 'name'));
+        self::assertSame(1, preg_match('/<nav[^>]*aria-label="مسیر صفحه"[^>]*>(.*?)<\/nav>/s', $html, $breadcrumbMatches));
+        self::assertStringContainsString('نظرسنجی‌ها', $breadcrumbMatches[1]);
+        self::assertStringContainsString($poll->title, $breadcrumbMatches[1]);
+
         $pageNode = collect($schema['@graph'])->firstWhere('@type', 'WebPage');
         self::assertSame($canonical, $pageNode['url']);
         self::assertSame($poll->title, $pageNode['name']);

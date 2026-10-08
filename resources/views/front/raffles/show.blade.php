@@ -47,13 +47,11 @@
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(249,115,22,.22),transparent_28%),radial-gradient(circle_at_78%_80%,rgba(59,130,246,.12),transparent_30%)]"></div>
 
             <div class="relative p-5 sm:p-8 lg:p-10">
-                <nav class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-white/55 sm:text-xs">
-                    <a href="{{ route('home') }}" class="transition hover:text-brand-300">خانه</a>
-                    <span>—</span>
-                    <a href="{{ route('raffles.index') }}" class="transition hover:text-brand-300">قرعه کشی ها</a>
-                    <span>—</span>
-                    <span class="max-w-[220px] truncate text-white/90 sm:max-w-none">{{ $campaign->title }}</span>
-                </nav>
+                <x-front.breadcrumbs
+                    nav-class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-white/55 sm:text-xs"
+                    link-class="transition hover:text-brand-300"
+                    current-class="max-w-[220px] truncate text-white/90 sm:max-w-none"
+                />
 
                 <div class="mt-7 grid gap-7 lg:grid-cols-[minmax(0,1fr)_390px] lg:items-end">
                     <div class="max-w-3xl">

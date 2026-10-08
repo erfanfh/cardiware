@@ -12,11 +12,11 @@
             <div class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl"></div>
 
             <div class="relative p-5 sm:p-8 lg:p-10">
-                <nav class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-white/55 sm:text-xs">
-                    <a href="{{ route('home') }}" class="transition hover:text-brand-300">خانه</a>
-                    <span>—</span>
-                    <span class="text-white/90">قرعه کشی ها</span>
-                </nav>
+                <x-front.breadcrumbs
+                    nav-class="flex flex-wrap items-center gap-2 text-[11px] font-bold text-white/55 sm:text-xs"
+                    link-class="transition hover:text-brand-300"
+                    current-class="text-white/90"
+                />
 
                 <div class="mt-6 grid gap-7 lg:grid-cols-[minmax(0,1fr)_430px] lg:items-end">
                     <div class="max-w-2xl">

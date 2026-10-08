@@ -41,19 +41,12 @@
         </div>
 
         <div class="relative mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-            <nav class="mb-5 flex items-center gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-400"
-                 aria-label="مسیر صفحه">
-                <a href="{{ route('home') }}" class="transition hover:text-brand-700 dark:hover:text-brand-300">خانه</a>
-                <span class="text-slate-300 dark:text-slate-700">/</span>
-                @if(isset($term))
-                    <a href="{{ route('videos.index') }}"
-                       class="transition hover:text-brand-700 dark:hover:text-brand-300">ویدیو سنتر</a>
-                    <span class="text-slate-300 dark:text-slate-700">/</span>
-                    <span class="truncate text-slate-700 dark:text-slate-200">{{ $term->title }}</span>
-                @else
-                    <span class="text-slate-700 dark:text-slate-200">ویدیو سنتر</span>
-                @endif
-            </nav>
+            <x-front.breadcrumbs
+                nav-class="mb-5 flex items-center gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-400"
+                link-class="transition hover:text-brand-700 dark:hover:text-brand-300"
+                current-class="truncate text-slate-700 dark:text-slate-200"
+                separator-class="text-slate-300 dark:text-slate-700"
+            />
 
             <section
                 class="relative overflow-hidden rounded-[1.5rem] border border-slate-800/80 bg-slate-950 shadow-2xl shadow-slate-950/20 sm:rounded-[2rem] dark:border-white/10 dark:shadow-black/50">

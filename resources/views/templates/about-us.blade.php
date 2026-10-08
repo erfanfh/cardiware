@@ -38,11 +38,15 @@ Template Name: صفحه درباره ما
             <div class="absolute inset-0 -z-10 bg-gradient-to-l from-slate-950/95 via-slate-950/85 to-slate-950/55"></div>
 
             <div class="relative px-5 py-6 sm:px-8 sm:py-9 lg:px-10 lg:py-12">
-                <nav aria-label="مسیر صفحه" class="flex flex-wrap items-center gap-2 text-xs text-white/65">
-                    <a href="{{ route('home') }}" class="font-bold transition hover:text-brand-300">خانه</a>
-                    <span aria-hidden="true">/</span>
-                    <span class="font-semibold text-white/90">{{ $page->title }}</span>
-                </nav>
+                <x-front.breadcrumbs
+                    nav-class="flex flex-wrap items-center gap-2 text-xs text-white/65"
+                    link-class="font-bold transition hover:text-brand-300"
+                    current-class="font-semibold text-white/90"
+                    :fallback-items="[
+                        ['name' => 'خانه', 'url' => route('home')],
+                        ['name' => $page->title, 'url' => null],
+                    ]"
+                />
 
                 <div class="mt-7 grid gap-8 lg:grid-cols-[minmax(0,1fr)_400px] lg:items-end">
                     <div class="max-w-3xl">

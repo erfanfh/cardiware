@@ -67,6 +67,12 @@ class RaffleSeoResolver implements SeoResolverInterface
             ]);
         }
 
+        unset($schema['@context']);
+
+        if ($context->routeIs('raffles.index')) {
+            $schema['breadcrumb'] = ['@id' => rtrim($url, '/').'/#breadcrumb'];
+        }
+
         return new SeoDataDTO(
             robots: $defaults['robots'],
             title: $title,
@@ -87,7 +93,26 @@ class RaffleSeoResolver implements SeoResolverInterface
                 description: $description,
                 image: $image,
             ),
-            schemaJson: json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
+            schemaJson: json_encode([
+                '@context' => 'https://schema.org',
+                '@graph' => [
+                    $schema,
+                    [
+                        '@type' => 'BreadcrumbList',
+                        '@id' => rtrim($url, '/').'/#breadcrumb',
+                        'itemListElement' => $context->routeIs('raffles.index')
+                            ? [
+                                ['@type' => 'ListItem', 'position' => 1, 'name' => 'خانه', 'item' => $defaults['site_url']],
+                                ['@type' => 'ListItem', 'position' => 2, 'name' => 'قرعه کشی ها'],
+                            ]
+                            : [
+                                ['@type' => 'ListItem', 'position' => 1, 'name' => 'خانه', 'item' => $defaults['site_url']],
+                                ['@type' => 'ListItem', 'position' => 2, 'name' => 'قرعه کشی ها', 'item' => route('raffles.index')],
+                                ['@type' => 'ListItem', 'position' => 3, 'name' => $campaign->title],
+                            ],
+                    ],
+                ],
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
         );
     }
 }

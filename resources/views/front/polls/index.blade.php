@@ -9,11 +9,11 @@
 
             <div class="relative grid gap-9 p-6 sm:p-9 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-center lg:gap-12 lg:p-12">
                 <div>
-                    <nav aria-label="مسیر صفحه" class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
-                        <a href="{{ route('home') }}" class="transition hover:text-brand-600 dark:hover:text-white">خانه</a>
-                        <span aria-hidden="true">/</span>
-                        <span class="text-slate-800 dark:text-white">نظرسنجی‌ها</span>
-                    </nav>
+                    <x-front.breadcrumbs
+                        nav-class="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400"
+                        link-class="transition hover:text-brand-600 dark:hover:text-white"
+                        current-class="text-slate-800 dark:text-white"
+                    />
                     <div class="mt-8 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/75 px-3 py-1.5 text-[11px] font-black text-brand-700 shadow-sm dark:border-orange-400/20 dark:bg-orange-400/10 dark:text-orange-200 dark:shadow-none">
                         <span class="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,.9)]"></span>
                         صدای جامعه مودینگ‌وی

@@ -3,6 +3,7 @@
 @section('content')
     <main class="py-8" x-data="">
         <div class="mx-auto max-w-7xl px-4">
+            <x-front.breadcrumbs />
             {{-- Header --}}
             <div
                 class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 mb-6 dark:border-slate-800 dark:bg-slate-900">
