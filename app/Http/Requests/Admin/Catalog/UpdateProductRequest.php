@@ -431,6 +431,8 @@ class UpdateProductRequest extends FormRequest
 
             'update_progress' => ['nullable', 'array'],
             'update_progress.is_visible' => ['nullable', 'boolean'],
+            'update_progress.title' => ['nullable', 'string', 'max:255'],
+            'update_progress.description' => ['nullable', 'string', 'max:1000'],
             'update_progress.progress_percentage' => ['nullable', 'integer'],
             'update_progress.started_at' => ['nullable', 'date'],
             'update_progress.release_at' => ['nullable', 'date'],
