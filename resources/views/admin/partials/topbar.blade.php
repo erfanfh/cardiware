@@ -1,11 +1,14 @@
-<div x-data="adminTopbar()" class="sticky top-0 z-20">
+<div x-data="adminTopbar()" class="admin-topbar sticky top-0 z-20">
     <header
         class="h-16 bg-white/90 backdrop-blur border-b border-slate-200 flex items-center justify-between px-5 py-[10px] relative top-0 z-20 ps-[12px] pe-[14px] lg:px-5"
     >
         <div class="flex items-center gap-3 min-w-0">
             <button
+                type="button"
                 class="inline-flex lg:hidden items-center justify-center h-10 w-10 rounded-2xl bg-slate-100 text-slate-700 cursor-pointer border border-slate-200 transition hover:bg-brand-50 hover:text-brand-600"
                 aria-label="باز کردن منو"
+                aria-controls="Sidebar"
+                aria-expanded="false"
                 id="SidebarToggle"
             >
                 <svg viewBox="0 0 24 24" width="20" height="20">
@@ -27,7 +30,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3 relative">
+        <div class="admin-topbar-actions flex shrink-0 items-center gap-2 sm:gap-3 relative">
 
             <a href="{{ route('home') }}" target="_blank"
                class="hidden sm:inline-flex items-center gap-1.5 px-3 h-10 rounded-2xl border border-slate-200 bg-white text-xs font-semibold text-slate-700 transition hover:bg-slate-50">
@@ -84,14 +87,16 @@
             <div class="relative" @keydown.escape.window="closeUserMenu()">
                 <button
                     @click="toggleUserMenu()"
-                    class="cursor-pointer flex items-center gap-2 ps-[5px] pe-[12px] py-[5px] rounded-full border border-slate-200 transition hover:bg-slate-50"
+                    aria-label="منوی حساب کاربری"
+                    :aria-expanded="userMenuOpen.toString()"
+                    class="admin-user-toggle cursor-pointer flex items-center gap-2 ps-[5px] pe-[12px] py-[5px] rounded-full border border-slate-200 transition hover:bg-slate-50"
                 >
                     <div
                         class="w-7 h-7 rounded-full bg-gradient-to-br from-brand-500 to-orange-500 flex items-center justify-center text-white text-sm font-semibold">
                         {{ mb_substr(auth()->user()->display_name, 0, 1) }}
                     </div>
 
-                    <div class="flex flex-col text-right">
+                    <div class="admin-user-summary flex flex-col text-right">
                         <div class="text-xs font-semibold">
                             {{ auth()->user()->display_name }}
                         </div>

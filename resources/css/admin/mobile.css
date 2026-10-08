@@ -1,0 +1,202 @@
+@media (max-width: 1023px) {
+    .admin-sidebar-open {
+        overflow: hidden;
+    }
+
+    .admin-main {
+        min-width: 0;
+    }
+
+    .admin-main > *,
+    .admin-main .grid > * {
+        min-width: 0;
+    }
+}
+
+@media (min-width: 1024px) {
+    .admin-save-bar {
+        width: calc(100% - 250px);
+    }
+}
+
+@media (max-width: 767px) {
+    .admin-main {
+        padding: 14px;
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    .admin-main :is(input, select, textarea) {
+        max-width: 100%;
+        font-size: 16px;
+    }
+
+    .admin-main :is(p, dd, code, a) {
+        overflow-wrap: anywhere;
+    }
+
+    .admin-main .grid-cols-12 > * {
+        min-width: 0;
+    }
+
+    .admin-main .grid-cols-12 > [class*="col-span-"] {
+        grid-column: 1 / -1;
+    }
+
+    .admin-main form .grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-main form .flex:has(> button) {
+        flex-wrap: wrap;
+    }
+
+    .admin-topbar header {
+        min-width: 0;
+        padding-inline: 12px;
+    }
+
+    .admin-topbar header > :first-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .admin-user-toggle {
+        padding: 5px;
+    }
+
+    .admin-user-summary,
+    .admin-user-toggle > svg {
+        display: none;
+    }
+
+    .admin-save-bar {
+        padding: 10px 14px max(10px, env(safe-area-inset-bottom));
+    }
+
+    .admin-save-bar button[type="submit"] {
+        min-height: 44px;
+        min-width: 112px;
+    }
+
+    .admin-list-shell {
+        border: 0;
+        background: transparent;
+        overflow: visible;
+    }
+
+    .admin-list-scroll {
+        overflow: visible;
+    }
+
+    .admin-data-table.admin-mobile-ready,
+    .admin-data-table.admin-mobile-ready > tbody,
+    .admin-data-table.admin-mobile-ready > tbody > tr {
+        display: block;
+        width: 100%;
+    }
+
+    .admin-data-table.admin-mobile-ready > thead {
+        display: none;
+    }
+
+    .admin-data-table.admin-mobile-ready.admin-has-sorting > thead {
+        display: block;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: white;
+        scrollbar-width: thin;
+    }
+
+    .admin-data-table.admin-mobile-ready > thead > tr {
+        display: flex;
+        width: max-content;
+        min-width: 100%;
+        align-items: center;
+    }
+
+    .admin-data-table.admin-mobile-ready > thead th {
+        display: none;
+        width: auto !important;
+    }
+
+    .admin-data-table.admin-mobile-ready > thead th.admin-mobile-sort {
+        display: block;
+        flex: none;
+        padding: 8px 12px;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody {
+        border: 0;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr {
+        margin-bottom: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        background: white;
+        box-shadow: 0 2px 8px rgb(15 23 42 / 0.04);
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td {
+        display: grid;
+        grid-template-columns: minmax(76px, 31%) minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        width: 100%;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        text-align: right;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td:last-child {
+        border-bottom: 0;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td::before {
+        content: attr(data-mobile-label);
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.75rem;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td > * {
+        grid-column: 2;
+        min-width: 0;
+        max-width: 100%;
+        text-align: right;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td [class*="min-w-["] {
+        min-width: 0;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr > td :is(.whitespace-nowrap, [dir="ltr"]) {
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr.admin-list-spanning-row > td {
+        display: block;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr.admin-list-spanning-row > td::before {
+        display: none;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr.admin-list-spanning-row > td > div {
+        max-width: 100%;
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr.admin-list-spanning-row .grid-cols-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .admin-data-table.admin-mobile-ready > tbody > tr.admin-list-spanning-row .col-span-12 {
+        grid-column: span 12 / span 12;
+    }
+}

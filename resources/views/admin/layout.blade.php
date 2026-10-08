@@ -16,20 +16,20 @@
     @stack('styles')
     @livewireStyles
 </head>
-<body>
+<body class="admin-body">
 
 <div class="flex min-h-[100vh] bg-gray-100 ">
     <div
-        class="fixed inset-0 bg-[rgba(15,23,42,0.45)]  opacity-0 pointer-events-none z-20 transition-all"
+        class="fixed inset-0 bg-[rgba(15,23,42,0.45)] opacity-0 pointer-events-none z-20 transition-all"
         id="SidebarBackdrop"></div>
 
     @include('admin.partials.sidebar')
 
-    <div class="flex-1 min-w-0 flex flex-col">
+    <div class="admin-workspace flex-1 min-w-0 flex flex-col">
 
         @include('admin.partials.topbar')
 
-        <main class="flex-1 p-5 min-h-0 overflow-y-auto space-y-4">
+        <main class="admin-main flex-1 min-w-0 p-5 min-h-0 overflow-y-auto space-y-4">
             @yield('page_header')
             @yield('content')
 

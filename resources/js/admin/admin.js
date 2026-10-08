@@ -11,6 +11,7 @@ import './async-select.js'
 import './editor.js'
 import './seo/readability-component.js'
 import './icon-picker.js'
+import './mobile.js'
 
 window.addEventListener('admin-inline-edit-started', () => {
     requestAnimationFrame(() => {
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('Sidebar');
     const toggleBtn = document.getElementById('SidebarToggle');
     const backdrop = document.getElementById('SidebarBackdrop');
+    const closeBtn = document.getElementById('SidebarClose');
 
     if (!sidebar || !toggleBtn || !backdrop) {
         return;
@@ -49,29 +51,64 @@ document.addEventListener('DOMContentLoaded', () => {
     function openSidebar() {
         sidebar.classList.add('sidebar--open');
         backdrop.classList.add('sidebar-backdrop--visible');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        toggleBtn.setAttribute('aria-label', 'بستن منو');
+        sidebar.inert = false;
+        document.body.classList.add('admin-sidebar-open');
+        closeBtn?.focus();
     }
 
-    function closeSidebar() {
+    function closeSidebar(restoreFocus = false) {
         sidebar.classList.remove('sidebar--open');
         backdrop.classList.remove('sidebar-backdrop--visible');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.setAttribute('aria-label', 'باز کردن منو');
+        document.body.classList.remove('admin-sidebar-open');
+        sidebar.inert = window.innerWidth < 1024;
+        if (restoreFocus) toggleBtn.focus();
     }
+
+    sidebar.inert = window.innerWidth < 1024;
 
     toggleBtn.addEventListener('click', () => {
         const isOpen = sidebar.classList.contains('sidebar--open');
         if (isOpen) {
-            closeSidebar();
+            closeSidebar(true);
         } else {
             openSidebar();
         }
     });
 
-    backdrop.addEventListener('click', closeSidebar);
+    closeBtn?.addEventListener('click', () => closeSidebar(true));
+    backdrop.addEventListener('click', () => closeSidebar(true));
+    document.addEventListener('keydown', (event) => {
+        if (!sidebar.classList.contains('sidebar--open')) return;
+
+        if (event.key === 'Escape') {
+            closeSidebar(true);
+            return;
+        }
+
+        if (event.key === 'Tab') {
+            const focusable = [...sidebar.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])')]
+                .filter((element) => element.getClientRects().length > 0);
+            if (!focusable.length) return;
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        }
+    });
 
     window.addEventListener('resize', () => {
-        if (window.innerWidth > 1024) {
-            sidebar.classList.remove('sidebar--open');
-            backdrop.classList.remove('sidebar-backdrop--visible');
-        }
+        if (window.innerWidth >= 1024) closeSidebar();
+        else sidebar.inert = !sidebar.classList.contains('sidebar--open');
     });
 });
 

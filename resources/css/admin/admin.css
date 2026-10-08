@@ -2,6 +2,7 @@
 @import './media-picker.css';
 @import './icon-picker.css';
 @import './async-select.css';
+@import './mobile.css';
 
 [x-cloak] {
     display: none !important

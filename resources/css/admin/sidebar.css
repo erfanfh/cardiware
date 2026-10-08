@@ -47,12 +47,15 @@
     background-clip: content-box;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
     .sidebar {
         position: fixed;
+        z-index: 50;
         inset-block: 0;
         inset-inline-start: 0;
-        width: 260px;
+        width: min(320px, calc(100vw - 44px));
+        height: 100dvh;
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
         transform: translateX(105%);
         transition: transform 0.3s ease-in-out;
         box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
@@ -60,5 +63,11 @@
 
     .sidebar--open {
         transform: translateX(0);
+    }
+
+    .sidebar-backdrop--visible {
+        z-index: 40;
+        opacity: 1;
+        pointer-events: auto;
     }
 }
