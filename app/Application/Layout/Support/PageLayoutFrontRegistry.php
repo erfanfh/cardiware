@@ -95,6 +95,12 @@ class PageLayoutFrontRegistry
             'populars' => [
                 'view' => 'front.sidebar.partials.populars',
             ],
+            'sidebar_advertisement_1' => [
+                'view' => 'front.sidebar.partials.ads-1',
+            ],
+            'sidebar_advertisement_2' => [
+                'view' => 'front.sidebar.partials.ads-2',
+            ],
         ];
     }
 

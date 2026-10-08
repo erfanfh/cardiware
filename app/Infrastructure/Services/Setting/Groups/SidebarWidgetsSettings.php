@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
+use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -26,11 +27,17 @@ class SidebarWidgetsSettings extends BaseSettings
         'comments_title',
         'comments_subtitle',
         'comments_count',
+        'ads_1_display_background',
+        'ads_1_body',
+        'ads_2_display_background',
+        'ads_2_body',
     ];
 
     protected array $casts = [
         'tools_items' => RepeaterArrayCast::class,
         'categories_items' => RepeaterArrayCast::class,
         'projects_items' => RepeaterArrayCast::class,
+        'ads_1_display_background' => BooleanCast::class,
+        'ads_2_display_background' => BooleanCast::class,
     ];
 }

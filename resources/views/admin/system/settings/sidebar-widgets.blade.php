@@ -12,6 +12,7 @@
                     'populars' => 'مطالب پربازدید',
                     'projects' => 'پروژه ها',
                     'comments' => 'آخرین دیدگاه ها',
+                    'ads' => 'تبلیغات',
                 ]"
                 active="tools"
             >
@@ -313,6 +314,10 @@
                             </div>
                         </x-admin.metabox>
                     </div>
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="ads">
+                    @include('admin.system.settings.partials.sidebar-ads')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>

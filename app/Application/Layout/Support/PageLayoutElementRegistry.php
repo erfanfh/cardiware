@@ -318,6 +318,26 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.sidebar-widgets',
                 'settings_route_parameters' => ['tab' => 'populars'],
             ],
+            'sidebar_advertisement_1' => [
+                'type' => 'advertisement',
+                'type_label' => 'تبلیغات سایدبار ۱',
+                'type_color' => 'rose',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'ads'],
+            ],
+            'sidebar_advertisement_2' => [
+                'type' => 'advertisement',
+                'type_label' => 'تبلیغات سایدبار ۲',
+                'type_color' => 'rose',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'ads'],
+            ],
         ];
     }
 
