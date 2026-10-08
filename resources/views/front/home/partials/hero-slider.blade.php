@@ -3,7 +3,7 @@
 <div class="w-full">
     @if(count($items) > 0)
         <div class="hero-slider relative overflow-hidden rounded-2xl bg-slate-900">
-            <div class="swiper heroSwiper h-full">
+            <div class="swiper heroSwiper">
                 <div class="swiper-wrapper">
                     @foreach($items as $item)
                         @php
@@ -12,9 +12,9 @@
                             $hasSlideUrl = ! empty($item['url']);
                         @endphp
 
-                        <div class="swiper-slide relative {{ $hasImage ? '' : 'min-h-[360px]' }}">
+                        <div class="swiper-slide home-hero-slide relative {{ $hasImage ? '' : 'min-h-[360px]' }}">
                             @if($hasImage)
-                                <img class="block h-auto w-full object-cover opacity-80"
+                                <img class="home-hero-image block h-auto w-full object-cover opacity-80"
                                      src="{{ $item['image']['path'] }}"
                                      alt="{{ $item['title'] ?? '' }}">
                             @endif
@@ -30,7 +30,7 @@
                                    aria-label="{{ $item['title'] ?? 'slide link' }}"></a>
                             @endif
 
-                            <div class="pointer-events-none absolute inset-0 z-30 p-6 sm:p-8">
+                            <div class="home-hero-content pointer-events-none absolute inset-0 z-30 p-6 sm:p-8">
                                 <div class="flex h-full flex-col">
                                     <div class="flex items-center justify-between gap-3">
                                         @if($item['top_label_text'])
@@ -42,19 +42,19 @@
                                         @endif
                                     </div>
 
-                                    <div class="mt-8 flex h-full flex-col">
+                                    <div class="home-hero-body mt-8 flex h-full flex-col">
                                         @if(! empty($item['square_label_text']) || ! empty($item['subtitle']) || ! empty($item['title']))
-                                            <div class="flex items-center gap-3">
+                                            <div class="home-hero-heading flex items-center gap-3">
                                                 @if($item['square_label_text'])
                                                     <div
-                                                        class="h-12 w-12 rounded-2xl bg-white grid place-items-center dark:bg-slate-950">
+                                                        class="home-hero-square h-12 w-12 shrink-0 rounded-2xl bg-white grid place-items-center dark:bg-slate-950">
                                                         <span class="font-black text-slate-900 dark:text-slate-100">
                                                             {{ $item['square_label_text'] }}
                                                         </span>
                                                     </div>
                                                 @endif
 
-                                                <div class="text-white">
+                                                <div class="home-hero-heading-text min-w-0 text-white">
                                                     @if($item['subtitle'])
                                                         <div
                                                             class="text-sm font-semibold text-white/80">{{ $item['subtitle'] }}</div>
@@ -73,10 +73,10 @@
                                             </p>
                                         @endif
 
-                                        <div class="mt-auto grid grid-cols-2 gap-3 pt-6 pb-3 lg:flex lg:flex-wrap">
+                                        <div class="home-hero-actions mt-auto grid grid-cols-2 gap-3 pt-6 pb-3 lg:flex lg:flex-wrap">
                                             @if($item['primary_button_text'])
                                                 <a href="{{ $item['primary_button_url'] ?: '#' }}"
-                                                   class="relative z-40 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
+                                                   class="home-hero-button relative z-40 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
                                                     hover:bg-brand-600 active:bg-brand-700 transition shadow-lg dark:hover:bg-brand-400">
                                                     {{ $item['primary_button_text'] }}
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -91,7 +91,7 @@
 
                                             @if($item['secondary_button_text'])
                                                 <a href="{{ $item['secondary_button_url'] ?: '#' }}"
-                                                   class="relative z-40 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-5 py-3 text-sm font-bold text-white
+                                                   class="home-hero-button relative z-40 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-5 py-3 text-sm font-bold text-white
                                                     hover:bg-white/15 transition backdrop-blur border border-white/10">
                                                     {{ $item['secondary_button_text'] }}
                                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -130,7 +130,7 @@
                 </button>
             </div>
 
-            <div class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 heroDots"></div>
+            <div class="home-hero-dots absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 heroDots"></div>
         </div>
     @endif
 </div>

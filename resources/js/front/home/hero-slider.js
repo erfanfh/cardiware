@@ -21,6 +21,7 @@ function initHeroSwipers(scope = document) {
             modules: [Navigation, Autoplay],
             loop: true,
             speed: 550,
+            autoHeight: true,
 
             autoplay: {
                 delay: 6500,
@@ -42,6 +43,12 @@ function initHeroSwipers(scope = document) {
                     syncHeroDots(sw, dotsWrappers);
                 },
             },
+        });
+
+        sliderEl.querySelectorAll('img').forEach((image) => {
+            if (!image.complete) {
+                image.addEventListener('load', () => swiper.updateAutoHeight(), {once: true});
+            }
         });
     });
 }
