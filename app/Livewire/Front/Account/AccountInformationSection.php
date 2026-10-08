@@ -2,7 +2,9 @@
 
 namespace App\Livewire\Front\Account;
 
+use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Identity\Models\User;
+use App\Domain\Identity\PresetAvatars;
 use App\Rules\MobileRule;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Carbon;
@@ -20,9 +22,10 @@ class AccountInformationSection extends Component
     public string $display_name = '';
     public ?string $mobile = null;
     public ?string $email = null;
+    public ?string $preset_avatar = null;
 
-    public ?string $successMessage = null;
     public ?string $errorMessage = null;
+    public ?string $avatarErrorMessage = null;
 
     public function mount(): void
     {
@@ -42,6 +45,7 @@ class AccountInformationSection extends Component
         $this->display_name = (string)($user->display_name ?: trim($user->first_name . ' ' . $user->last_name));
         $this->mobile = $user->mobile;
         $this->email = $user->email;
+        $this->preset_avatar = $user->preset_avatar === null ? null : (string) $user->preset_avatar;
     }
 
     /**
@@ -76,6 +80,12 @@ class AccountInformationSection extends Component
         ];
     }
 
+    /** @return array<string, mixed> */
+    private function avatarRules(): array
+    {
+        return ['preset_avatar' => ['required', Rule::in(PresetAvatars::ids())]];
+    }
+
     /**
      * Validation messages.
      *
@@ -102,7 +112,27 @@ class AccountInformationSection extends Component
             'email.email' => 'ایمیل وارد شده معتبر نیست.',
             'email.unique' => 'این ایمیل قبلا ثبت شده است.',
             'email.max' => 'ایمیل نمی‌تواند بیشتر از ۱۹۰ کاراکتر باشد.',
+            'preset_avatar.in' => 'آواتار انتخاب‌شده معتبر نیست.',
+            'preset_avatar.required' => 'لطفاً یک آواتار انتخاب کنید.',
         ];
+    }
+
+    public function saveAvatar(): void
+    {
+        $this->avatarErrorMessage = null;
+        $validated = $this->validate($this->avatarRules());
+
+        try {
+            /** @var User $user */
+            $user = auth()->user();
+            $user->forceFill(['preset_avatar' => (int) $validated['preset_avatar']])->save();
+
+            session()->flash('account_information_success', 'آواتار پروفایل با موفقیت ذخیره شد.');
+            $this->redirectRoute('account.information');
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->avatarErrorMessage = 'ذخیره آواتار با خطا مواجه شد. لطفاً دوباره تلاش کنید.';
+        }
     }
 
     /**
@@ -110,7 +140,6 @@ class AccountInformationSection extends Component
      */
     public function save(): void
     {
-        $this->successMessage = null;
         $this->errorMessage = null;
 
         $this->mobile = $this->normalizeMobile($this->mobile);
@@ -153,9 +182,12 @@ class AccountInformationSection extends Component
                 auth()->setUser($user->refresh());
             });
 
+            app(UserCacheInvalidator::class)->flushAccountForUser(auth()->user());
+
             $this->fillFromUser();
 
-            $this->successMessage = 'اطلاعات حساب با موفقیت ذخیره شد.';
+            session()->flash('account_information_success', 'اطلاعات حساب با موفقیت ذخیره شد.');
+            $this->redirectRoute('account.information');
         } catch (Throwable $exception) {
             report($exception);
 

@@ -1,4 +1,49 @@
-<section class="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
+<section class="space-y-4 xl:space-y-6">
+    @if(session('account_information_success'))
+        <div role="status" class="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold leading-7 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+            {{ session('account_information_success') }}
+        </div>
+    @endif
+
+    <div id="account-avatar" class="scroll-mt-44 rounded-2xl border border-brand-200 bg-gradient-to-l from-brand-50 to-white p-4 shadow-sm md:scroll-mt-40 sm:p-6 dark:border-brand-500/30 dark:from-brand-500/10 dark:to-slate-900">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+                <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-white">تغییر تصویر پروفایل</h2>
+                <p class="mt-1 text-xs leading-6 text-slate-600 dark:text-slate-300">آواتار دلخواهت را از مجموعهٔ زیر انتخاب و ذخیره کن.</p>
+            </div>
+            <img src="{{ auth()->user()->profileAvatarUrl() ?: asset('img/user-avatar.png') }}" alt="تصویر فعلی پروفایل" width="64" height="64" class="size-16 rounded-2xl border-2 border-white object-cover shadow-sm ring-2 ring-brand-200 dark:border-slate-800 dark:ring-brand-500/30">
+        </div>
+
+        @if($avatarErrorMessage)
+            <div role="alert" class="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $avatarErrorMessage }}</div>
+        @endif
+
+        <form wire:submit.prevent="saveAvatar" class="mt-5">
+            <fieldset>
+                <legend class="sr-only">انتخاب آواتار پروفایل</legend>
+                <div class="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-12">
+                    @foreach(\App\Domain\Identity\PresetAvatars::ids() as $avatarId)
+                        <label class="group relative cursor-pointer" wire:key="preset-avatar-{{ $avatarId }}">
+                            <input type="radio" name="preset_avatar" wire:model="preset_avatar" value="{{ $avatarId }}" class="peer sr-only" aria-label="آواتار {{ $avatarId }}">
+                            <img src="{{ \App\Domain\Identity\PresetAvatars::url($avatarId) }}" alt="" loading="lazy" width="96" height="96"
+                                 class="aspect-square w-full rounded-2xl border-2 border-slate-200 bg-white object-cover transition group-hover:border-brand-300 peer-checked:border-brand-500 peer-checked:ring-4 peer-checked:ring-brand-500/20 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-500 dark:border-slate-600 dark:bg-slate-900">
+                            <span class="pointer-events-none absolute bottom-1 left-1 hidden rounded-full bg-brand-500 px-1.5 py-0.5 text-[10px] font-black text-white peer-checked:block" aria-hidden="true">✓</span>
+                        </label>
+                    @endforeach
+                </div>
+            </fieldset>
+            @error('preset_avatar')
+                <p role="alert" class="mt-3 text-xs font-bold text-red-600 dark:text-red-300">{{ $message }}</p>
+            @enderror
+            <button type="submit" wire:loading.attr="disabled" wire:target="saveAvatar"
+                    class="mt-5 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-brand-400 sm:w-auto">
+                <span wire:loading.remove wire:target="saveAvatar">ذخیره آواتار</span>
+                <span wire:loading wire:target="saveAvatar">در حال ذخیره...</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
     <div
         class="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -12,13 +57,6 @@
                 در حال پردازش...
             </div>
         </div>
-
-        @if($successMessage)
-            <div
-                class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-bold leading-6 text-emerald-800 sm:mt-5 sm:p-4 sm:text-sm sm:leading-7 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                {{ $successMessage }}
-            </div>
-        @endif
 
         @if($errorMessage)
             <div
@@ -245,5 +283,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </section>

@@ -62,7 +62,7 @@
 
                         <x-admin.list.td>
                             <x-admin.list.thumbnail
-                                :src="$user->avatar?->url"
+                                :src="$user->profileAvatarUrl()"
                                 :alt="$user->title"
                                 size="md-square"
                             />

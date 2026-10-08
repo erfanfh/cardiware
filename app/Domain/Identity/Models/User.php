@@ -10,6 +10,7 @@ use App\Domain\Discussion\Enums\CommentAuthorBadge;
 use App\Domain\Financial\Models\Wallet;
 use App\Domain\Financial\Models\WalletTransfer;
 use App\Domain\Identity\Enums\UserStatusEnum;
+use App\Domain\Identity\PresetAvatars;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Notification\Models\UserNotification;
@@ -52,6 +53,7 @@ class User extends Authenticatable implements HasDiscussionOwner
         'mobile_verified_at',
         'email_verified_at',
         'avatar_id',
+        'preset_avatar',
         'first_device_public_key',
         'first_device_fingerprint',
         'second_device_public_key',
@@ -92,6 +94,7 @@ class User extends Authenticatable implements HasDiscussionOwner
             'mobile_verified_at' => 'datetime',
             'password' => 'hashed',
             'status' => UserStatusEnum::class,
+            'preset_avatar' => 'integer',
             'active_device_slot' => 'integer',
             'device_transfer_used' => 'boolean',
             'first_activated_at' => 'datetime',
@@ -156,6 +159,12 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function avatar(): BelongsTo
     {
         return $this->belongsTo(MediaFile::class);
+    }
+
+    public function profileAvatarUrl(): ?string
+    {
+        return ($this->preset_avatar !== null ? PresetAvatars::url($this->preset_avatar) : null)
+            ?? $this->avatar?->url;
     }
 
     /**

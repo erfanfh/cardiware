@@ -77,7 +77,7 @@ class StorePostCommentController extends Controller
         return [
             'id' => $comment->id,
             'name' => $comment->display_name,
-            'avatar' => $comment->user->avatar->url,
+            'avatar' => $comment->user?->profileAvatarUrl(),
             'time' => 'همین الان',
             'text' => $comment->content,
             'rating' => $comment->rating_percent !== null
@@ -94,7 +94,7 @@ class StorePostCommentController extends Controller
         return [
             'id' => $comment->id,
             'name' => $comment->display_name,
-            'avatar' => $comment->user->avatar->url,
+            'avatar' => $comment->user?->profileAvatarUrl(),
             'time' => 'همین الان',
             'text' => $comment->content,
         ];

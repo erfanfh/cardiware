@@ -124,8 +124,8 @@
 
                             <div class="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
                                 <div class="flex min-w-0 items-center gap-3">
-                                    @if($video->author?->avatar?->url)
-                                        <img src="{{ $video->author->avatar->url }}" alt="{{ $authorName }}"
+                                    @if($video->author?->profileAvatarUrl())
+                                        <img src="{{ $video->author->profileAvatarUrl() }}" alt="{{ $authorName }}"
                                              class="h-11 w-11 shrink-0 rounded-2xl border border-slate-200 bg-slate-50 object-cover dark:border-slate-700 dark:bg-slate-800">
                                     @else
                                         <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-sm font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">{{ $authorInitial }}</span>

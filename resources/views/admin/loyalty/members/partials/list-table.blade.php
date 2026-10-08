@@ -57,7 +57,7 @@
                 <x-admin.list.td>
                     <div class="flex min-w-[250px] items-center gap-3">
                         <x-admin.list.thumbnail
-                            :src="$member->avatar?->url"
+                            :src="$member->profileAvatarUrl()"
                             :alt="$member->full_name"
                             size="sm-square"
                         />

@@ -6,12 +6,17 @@ use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Identity\Models\User;
+use App\Domain\Identity\PresetAvatars;
 use Illuminate\Support\Facades\Cache;
 
 final class GetUserAvatarAction
 {
     public function execute(User $user): array
     {
+        if ($user->preset_avatar !== null && $url = PresetAvatars::url($user->preset_avatar)) {
+            return ['url' => $url];
+        }
+
         return Cache::tags([
             CacheTag::user($user->id),
             CacheTag::ACCOUNT,
@@ -24,10 +29,8 @@ final class GetUserAvatarAction
 
     private function resolve(User $user): array
     {
-        $avatar = $user->avatar;
-
         return [
-            'url' => $avatar?->url,
+            'url' => $user->avatar?->url,
         ];
     }
 }

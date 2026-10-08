@@ -15,7 +15,7 @@
         <div
             class="flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:flex-row lg:items-center">
             <div class="flex min-w-0 items-center gap-4">
-                <x-admin.list.thumbnail :src="$user->avatar?->url" :alt="$user->full_name" size="sm-square"/>
+                <x-admin.list.thumbnail :src="$user->profileAvatarUrl()" :alt="$user->full_name" size="sm-square"/>
 
                 <div class="min-w-0">
                     <div class="flex flex-wrap items-center gap-2">

@@ -12,6 +12,12 @@
                     class="h-20 w-20 rounded-3xl object-cover shadow-sm ring-4 ring-brand-100 sm:h-24 sm:w-24 dark:ring-brand-500/20"
                 />
 
+                <a href="{{ route('account.information') }}#account-avatar"
+                   aria-label="ویرایش تصویر پروفایل" title="ویرایش تصویر پروفایل"
+                   class="absolute -top-2 -right-2 inline-flex size-9 items-center justify-center rounded-xl border-2 border-white bg-brand-500 text-white shadow-md transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-300/50 dark:border-slate-900 dark:hover:bg-brand-400 [&_svg]:size-4">
+                    @include('icons.pencil-edit-02')
+                </a>
+
                 <span
                     class="absolute -bottom-1 -left-1 inline-flex items-center rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 sm:text-[11px] dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                     آنلاین

@@ -182,6 +182,10 @@ class UserController extends Controller
         $data['role_id'] = $data['role'];
         unset($data['role']);
 
+        if (!empty($data['avatar_id']) && (int) $data['avatar_id'] !== (int) $user->avatar_id) {
+            $data['preset_avatar'] = null;
+        }
+
         $user->update($data);
 
         $wallet = app(GetOrCreateWalletAction::class)->execute($user);

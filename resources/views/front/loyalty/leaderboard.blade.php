@@ -171,7 +171,7 @@
                         <div class="relative flex items-start justify-between gap-4">
                             <div class="flex min-w-0 items-center gap-3">
                                 <div class="relative shrink-0">
-                                    <img src="{{ $champion->user?->avatar?->url ?: asset('img/user-avatar.png') }}"
+                                    <img src="{{ $champion->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}"
                                          alt="{{ $championName }}"
                                          class="h-16 w-16 rounded-3xl border-2 border-white/70 object-cover shadow-xl sm:h-20 sm:w-20">
                                     <span class="absolute -bottom-2 -left-2 grid h-8 min-w-8 place-items-center rounded-xl border-2 border-amber-300 bg-white px-1 text-sm font-black text-amber-600 shadow-lg">۱</span>
@@ -209,7 +209,7 @@
                                 <div class="relative flex h-full flex-col">
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="flex min-w-0 items-center gap-3">
-                                            <img src="{{ $account->user?->avatar?->url ?: asset('img/user-avatar.png') }}"
+                                            <img src="{{ $account->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}"
                                                  alt="{{ $memberName }}"
                                                  class="h-14 w-14 shrink-0 rounded-2xl border-2 object-cover shadow-sm {{ $isSecond ? 'border-slate-300 dark:border-slate-600' : 'border-orange-200 dark:border-orange-500/30' }}">
                                             <div class="min-w-0">
@@ -270,7 +270,7 @@
                                     {{ number_format($rank) }}
                                 </span>
 
-                                <img src="{{ $account->user?->avatar?->url ?: asset('img/user-avatar.png') }}"
+                                <img src="{{ $account->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}"
                                      alt="{{ $memberName }}"
                                      class="h-11 w-11 shrink-0 rounded-2xl border border-slate-200 object-cover shadow-sm dark:border-slate-700">
 

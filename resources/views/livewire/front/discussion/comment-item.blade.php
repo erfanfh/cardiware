@@ -42,9 +42,9 @@
                 'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
             ])
         >
-            @if($this->comment->user?->avatar)
+            @if($this->comment->user?->profileAvatarUrl())
                 <img
-                    src="{{ $this->comment->user->avatar->url }}"
+                    src="{{ $this->comment->user->profileAvatarUrl() }}"
                     class="h-full w-full object-cover"
                     alt="{{ $this->comment->display_name }}"
                 >
@@ -107,9 +107,9 @@
                 'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
             ])
         >
-            @if($this->comment->user?->avatar)
+            @if($this->comment->user?->profileAvatarUrl())
                 <img
-                    src="{{ $this->comment->user->avatar->url }}"
+                    src="{{ $this->comment->user->profileAvatarUrl() }}"
                     class="h-full w-full object-cover"
                     alt="{{ $this->comment->display_name }}"
                 >
