@@ -218,6 +218,19 @@ return [
                 'gate' => 'purchase-access.reset-downloads',
             ],
             [
+                'label' => 'تحلیل فروش و درآمد',
+                'route' => 'admin.analytics.index',
+                'icon' => 'icons.chart-03',
+                'gate' => 'analytics.view',
+            ],
+        ],
+    ],
+
+    [
+        'label' => 'لانچر',
+        'icon' => 'icons.computer-check',
+        'children' => [
+            [
                 'label' => 'دستگاه‌های لانچر',
                 'route' => 'admin.launcher-devices.index',
                 'icon' => 'icons.computer-check',
@@ -252,12 +265,6 @@ return [
                 'route' => 'admin.launcher-guides.index',
                 'icon' => 'icons.help-circle',
                 'gate' => 'launcher-device.manage',
-            ],
-            [
-                'label' => 'تحلیل فروش و درآمد',
-                'route' => 'admin.analytics.index',
-                'icon' => 'icons.chart-03',
-                'gate' => 'analytics.view',
             ],
         ],
     ],
