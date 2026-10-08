@@ -1,7 +1,7 @@
 @props([
     'message',
     'tone' => 'light',
-    'darkMode' => true,
+    'thumbnailClass' => '',
     'openInNewTab' => false,
 ])
 
@@ -33,7 +33,7 @@
                     'group relative h-[4.5rem] w-[4.5rem] shrink-0 cursor-zoom-in overflow-hidden rounded-xl border bg-slate-100 text-right transition focus:outline-none focus:ring-4 sm:h-20 sm:w-20',
                     'border-white/20 focus:ring-white/20' => $isDarkTone,
                     'border-slate-200 focus:ring-brand-100' => !$isDarkTone,
-                    'dark:border-slate-600 dark:focus:ring-brand-500/20' => !$isDarkTone && $darkMode,
+                    $thumbnailClass => filled($thumbnailClass),
                 ])
             >
                 <img

@@ -16,6 +16,8 @@ class IconPicker extends Component
 {
     use WithPagination;
 
+    protected string $paginationTheme = 'admin';
+
     public ?string $itemKey = null;
     public bool $opened = false;
 

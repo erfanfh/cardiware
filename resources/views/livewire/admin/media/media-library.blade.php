@@ -369,7 +369,7 @@
 
     @if($mediaFiles->hasPages())
         <div class="rounded-[22px] border border-slate-200 bg-white px-4 py-4 shadow-sm">
-            {{ $mediaFiles->links('vendor.livewire.custom-pagination') }}
+            {{ $mediaFiles->links() }}
             <div class="mt-3 text-center text-xs text-slate-500">
                 نمایش <span class="font-bold text-slate-700">{{ $mediaFiles->firstItem() }}</span> تا
                 <span class="font-bold text-slate-700">{{ $mediaFiles->lastItem() }}</span> از

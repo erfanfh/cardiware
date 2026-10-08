@@ -23,6 +23,8 @@ class ManageRedirects extends Component
 {
     use WithPagination;
 
+    protected string $paginationTheme = 'admin';
+
     public string $search = '';
 
     public string $statusFilter = '';

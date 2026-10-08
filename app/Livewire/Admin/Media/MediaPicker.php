@@ -23,6 +23,8 @@ use Throwable;
 class MediaPicker extends Component
 {
     use WithPagination;
+
+    protected string $paginationTheme = 'admin';
     use WithFileUploads;
 
     private const MAX_UPLOAD_FILES = 20;

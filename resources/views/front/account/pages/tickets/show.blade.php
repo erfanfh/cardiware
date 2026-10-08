@@ -268,7 +268,7 @@
 
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
 
-                                        <x-ticket.attachments :message="$message" />
+                                        <x-ticket.attachments :message="$message" thumbnail-class="dark:border-slate-600 dark:focus:ring-brand-500/20" />
                                     </div>
 
                                     <div

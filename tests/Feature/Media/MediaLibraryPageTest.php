@@ -61,6 +61,22 @@ class MediaLibraryPageTest extends TestCase
         ]);
     }
 
+    public function test_admin_media_pagination_uses_light_only_livewire_markup(): void
+    {
+        $admin = $this->createSuperAdmin();
+        $this->createImage($admin, 'تصویر اول', 'media/images/first.webp', 800, 800, 1024);
+        $this->createImage($admin, 'تصویر دوم', 'media/images/second.webp', 800, 800, 1024);
+
+        Livewire::actingAs($admin)
+            ->test(MediaLibrary::class)
+            ->set('perPage', 1)
+            ->assertSee('nextPage', false)
+            ->assertDontSee('dark:', false)
+            ->call('nextPage')
+            ->assertSet('paginators.page', 2)
+            ->assertDontSee('dark:', false);
+    }
+
     private function createSuperAdmin(): User
     {
         $role = Role::factory()->create([

@@ -23,7 +23,7 @@
                         <div class="mb-1.5 text-[11px] font-bold text-slate-500 dark:text-slate-400">{{ $fromSeller ? 'پاسخ پشتیبانی · ' . ($message->user?->display_name ?? 'پشتیبانی') : ($message->isSystemMessage() ? 'سیستم' : ($ticket->user?->display_name ?? 'مشتری')) }}</div>
                         <div class="rounded-2xl px-4 py-3 text-sm leading-8 shadow-sm {{ $fromSeller ? 'rounded-tr-sm bg-brand-600 text-white' : 'rounded-tl-sm border border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100' }}">
                             <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
-                            <x-ticket.attachments :message="$message" :tone="$fromSeller ? 'dark' : 'light'" :open-in-new-tab="true" />
+                            <x-ticket.attachments :message="$message" :tone="$fromSeller ? 'dark' : 'light'" :thumbnail-class="$fromSeller ? '' : 'dark:border-slate-600 dark:focus:ring-brand-500/20'" :open-in-new-tab="true" />
                         </div>
                         <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">{{ jalali_date($message->created_at, 'Y/m/d H:i') }}</div>
                     </div>

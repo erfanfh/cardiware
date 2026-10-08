@@ -24,6 +24,8 @@ class MediaLibrary extends Component
     use WithFileUploads;
     use WithPagination;
 
+    protected string $paginationTheme = 'admin';
+
     private const MAX_UPLOAD_FILES = 20;
 
     public string $search = '';

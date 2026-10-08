@@ -119,7 +119,7 @@
                                         class="rounded-[1.35rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 shadow-sm">
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
 
-                                        <x-ticket.attachments :message="$message" :dark-mode="false" />
+                                        <x-ticket.attachments :message="$message" />
                                     </div>
 
                                     <div class="mt-1 px-1 text-left text-xs font-bold text-slate-400">
@@ -138,7 +138,7 @@
                                         class="rounded-[1.35rem] rounded-br-md bg-brand-600 px-4 py-3 text-sm font-bold leading-7 text-white shadow-lg shadow-brand-500/15">
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
 
-                                        <x-ticket.attachments :message="$message" tone="dark" :dark-mode="false" />
+                                        <x-ticket.attachments :message="$message" tone="dark" />
                                     </div>
 
                                     <div class="mt-1 px-1 text-right text-xs font-bold text-slate-400">

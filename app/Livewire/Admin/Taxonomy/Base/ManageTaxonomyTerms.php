@@ -13,6 +13,8 @@ abstract class ManageTaxonomyTerms extends Component
 {
     use WithPagination;
 
+    protected string $paginationTheme = 'admin';
+
     protected TaxonomyTermListing $taxonomyTermListing;
 
     public string $search = '';
