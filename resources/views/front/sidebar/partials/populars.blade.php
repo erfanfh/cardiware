@@ -1,34 +1,67 @@
-<div
-    class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
-    <div class="flex items-start justify-between gap-3">
-        <div class="flex items-center gap-3">
-              <span
-                  class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                  @include('icons.view')
-              </span>
-            <h2 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('sidebarWidgets', 'populars_title') }}</h2>
+@php
+    $popularPostsWidget = app(\App\Application\System\Actions\Sidebar\GetSidebarPopularPostsAction::class)->execute();
+@endphp
+
+<x-front.sidebar.sidebar-item
+    :title="$popularPostsWidget['title']"
+    :subtitle="$popularPostsWidget['subtitle']"
+    iconName="view"
+>
+    <div x-data="{ period: 'week' }">
+        <div role="tablist" aria-label="بازهٔ مطالب پربازدید"
+             class="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800/80">
+            @foreach(['day' => 'امروز', 'week' => 'این هفته', 'month' => 'این ماه'] as $periodKey => $periodLabel)
+                <button type="button" role="tab"
+                        id="popular-posts-tab-{{ $periodKey }}"
+                        aria-controls="popular-posts-panel-{{ $periodKey }}"
+                        :aria-selected="period === '{{ $periodKey }}'"
+                        @click="period = '{{ $periodKey }}'"
+                        :class="period === '{{ $periodKey }}'
+                            ? 'bg-white text-brand-700 shadow-sm dark:bg-slate-700 dark:text-brand-300'
+                            : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'"
+                        class="cursor-pointer rounded-lg px-2 py-2 text-xs font-extrabold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
+                    {{ $periodLabel }}
+                </button>
+            @endforeach
         </div>
 
-        <p class="mt-2 text-xs text-slate-500 leading-6 dark:text-slate-400">
-            {{ get_setting('sidebarWidgets', 'populars_subtitle') }}
-        </p>
-    </div>
-
-    <div class="mt-4 space-y-3">
-        @foreach(\App\Domain\Content\Models\Post::take(get_setting('sidebarWidgets', 'populars_posts_count'))->get() as $post)
-            <a href="{{ front_route('contents.detail', $post) }}"
-               class="flex gap-3 rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
-                <img src="{{ $post->picture?->url }}" alt="{{ $post->title }}"
-                     class="h-14 w-14 rounded-2xl object-cover"/>
-                <div class="min-w-0">
-                    <div class="text-sm font-extrabold leading-6 truncate dark:text-slate-100">
-                        {{ $post->title }}
-                    </div>
-                    <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        {{ $post->excerpt }}
-                    </div>
-                </div>
-            </a>
+        @foreach(['day', 'week', 'month'] as $periodKey)
+            <div role="tabpanel"
+                 id="popular-posts-panel-{{ $periodKey }}"
+                 aria-labelledby="popular-posts-tab-{{ $periodKey }}"
+                 x-show="period === '{{ $periodKey }}'"
+                 @if($periodKey !== 'week') x-cloak @endif
+                 class="mt-3">
+                @forelse($popularPostsWidget['periods'][$periodKey] as $post)
+                    @php($pictureUrl = $post->picture?->url)
+                    <a href="{{ front_route('contents.detail', $post) }}"
+                       class="group flex items-center gap-2.5 border-b border-slate-100 px-1 py-2.5 transition last:border-b-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
+                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-xs font-black tabular-nums {{ $loop->iteration <= 3 ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' }}">
+                            {{ $loop->iteration }}
+                        </span>
+                        @if($pictureUrl)
+                            <img src="{{ $pictureUrl }}" alt="" loading="lazy"
+                                 class="h-10 w-10 shrink-0 rounded-lg object-cover"/>
+                        @else
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-400 dark:bg-slate-800">
+                                @include('icons.view')
+                            </span>
+                        @endif
+                        <span class="min-w-0 flex-1">
+                            <span class="line-clamp-2 text-sm font-bold leading-5 text-slate-800 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
+                                {{ $post->title }}
+                            </span>
+                            <span class="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
+                                {{ number_format((int) $post->total_views) }} بازدید
+                            </span>
+                        </span>
+                    </a>
+                @empty
+                    <p class="px-1 py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+                        در این بازه هنوز بازدیدی برای نوشته‌ها ثبت نشده است.
+                    </p>
+                @endforelse
+            </div>
         @endforeach
     </div>
-</div>
+</x-front.sidebar.sidebar-item>

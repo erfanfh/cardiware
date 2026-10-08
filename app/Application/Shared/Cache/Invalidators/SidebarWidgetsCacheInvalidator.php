@@ -14,6 +14,7 @@ class SidebarWidgetsCacheInvalidator
             CacheTag::SIDEBAR_CATEGORIES,
             CacheTag::SIDEBAR_COMMENTS,
             CacheTag::SIDEBAR_PROJECTS,
+            CacheTag::SIDEBAR_POPULARS,
         ])->flush();
     }
 }

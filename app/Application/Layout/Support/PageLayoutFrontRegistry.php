@@ -92,6 +92,9 @@ class PageLayoutFrontRegistry
             'comments' => [
                 'view' => 'front.sidebar.partials.comments',
             ],
+            'populars' => [
+                'view' => 'front.sidebar.partials.populars',
+            ],
         ];
     }
 

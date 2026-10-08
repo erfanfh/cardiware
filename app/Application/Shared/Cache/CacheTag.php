@@ -49,6 +49,7 @@ final class CacheTag
     public const SIDEBAR_COMMENTS = 'sidebar:comments';
     public const SIDEBAR_CATEGORIES = 'sidebar:categories';
     public const SIDEBAR_PROJECTS = 'sidebar:projects';
+    public const SIDEBAR_POPULARS = 'sidebar:populars';
 
     public const PROJECT_DETAIL = 'project-detail';
     public const PROJECT_LISTS = 'project-lists';

@@ -109,6 +109,11 @@ final class CacheKey
         return 'sidebar:projects';
     }
 
+    public static function sidebarPopulars(string $date): string
+    {
+        return "sidebar:populars:{$date}";
+    }
+
     public static function postList(int $page, int $perPage): string
     {
         return "content:posts:list:page:{$page}:per-page:{$perPage}";

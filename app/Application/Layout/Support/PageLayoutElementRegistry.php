@@ -308,6 +308,16 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.sidebar-widgets',
                 'settings_route_parameters' => ['tab' => 'comments'],
             ],
+            'populars' => [
+                'type' => 'populars',
+                'type_label' => 'مطالب پربازدید',
+                'type_color' => 'indigo',
+                'allowed_areas' => [
+                    'sidebar_area',
+                ],
+                'settings_route' => 'admin.settings.sidebar-widgets',
+                'settings_route_parameters' => ['tab' => 'populars'],
+            ],
         ];
     }
 

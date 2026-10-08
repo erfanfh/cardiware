@@ -201,8 +201,8 @@
                                     </x-admin.field>
 
                                     <x-admin.field label="تعداد نوشته نمایشی">
-                                        <x-admin.form.input name="populars_posts_count" type="number"
-                                                            :value="get_setting('sidebarWidgets', 'populars_posts_count')"/>
+                                        <x-admin.form.input name="populars_posts_count" type="number" min="1" max="20"
+                                                            :value="get_setting('sidebarWidgets', 'populars_posts_count') ?: 5"/>
                                     </x-admin.field>
                                 </div>
 
