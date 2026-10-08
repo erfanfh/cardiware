@@ -149,7 +149,7 @@ Template Name: صفحه معرفی تیم
                             mb_substr(trim((string) $member->last_name), 0, 1)
                         );
                     @endphp
-                    <article class="group relative flex h-full flex-col overflow-hidden rounded-[1.65rem] border border-slate-200/90 bg-white shadow-[0_8px_30px_-24px_rgba(15,23,42,.45)] ring-1 ring-transparent transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-200 hover:shadow-[0_22px_50px_-26px_rgba(249,115,22,.42)] hover:ring-brand-100/70 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/25 dark:hover:border-brand-500/30 dark:hover:shadow-[0_22px_50px_-26px_rgba(0,0,0,.75)] dark:hover:ring-brand-500/10">
+                    <article class="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[1.65rem] border border-slate-200/90 bg-white shadow-[0_8px_30px_-24px_rgba(15,23,42,.45)] ring-1 ring-transparent transition-all duration-300 ease-out hover:-translate-y-1.5 hover:border-brand-200 hover:shadow-[0_22px_50px_-26px_rgba(249,115,22,.42)] hover:ring-brand-100/70 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/25 dark:hover:border-brand-500/30 dark:hover:shadow-[0_22px_50px_-26px_rgba(0,0,0,.75)] dark:hover:ring-brand-500/10">
                         <span class="pointer-events-none absolute inset-x-8 top-0 z-20 h-0.5 origin-center scale-x-0 rounded-full bg-gradient-to-r from-transparent via-brand-500 to-transparent transition-transform duration-500 ease-out group-hover:scale-x-100" aria-hidden="true"></span>
 
                         <div class="relative aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800">
@@ -185,7 +185,7 @@ Template Name: صفحه معرفی تیم
                             </div>
 
                             @if(filled($member->bio))
-                                <p class="mt-3 flex-1 text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $member->bio }}</p>
+                                <p class="mt-3 line-clamp-4 flex-1 break-words text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $member->bio }}</p>
                             @endif
 
                             @if(filled($member->website_url) || filled($member->email))
