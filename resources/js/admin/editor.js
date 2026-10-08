@@ -1,4 +1,5 @@
 import tinymce from 'tinymce';
+import {registerContentBoxControls} from './content-boxes.js';
 import '../../css/admin/tinymce.css';
 import '../../css/front/tinymce-content.css';
 
@@ -70,7 +71,7 @@ function getPresetConfig(preset = 'default') {
 
         default: {
             menubar: false,
-            toolbar: 'undo redo | blocks bold italic underline | alignright aligncenter alignleft | link mediaPicker | bullist numlist | ltr rtl',
+            toolbar: 'undo redo | blocks bold italic underline | alignright aligncenter alignleft | link mediaPicker contentBoxes boxDarkPreview | bullist numlist | ltr rtl',
             plugins: [
                 'advlist',
                 'autolink',
@@ -85,7 +86,7 @@ function getPresetConfig(preset = 'default') {
 
         full: {
             menubar: false,
-            toolbar: 'undo redo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker | insertMore | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
+            toolbar: 'undo redo | blocks bold italic | alignright aligncenter alignleft alignjustify | link mediaPicker contentBoxes boxDarkPreview | insertMore | forecolor backcolor | bullist numlist outdent indent | table underline strikethrough hr | rtl ltr | code fullscreen',
             plugins: [
                 'autolink',
                 'lists',
@@ -295,6 +296,8 @@ function syncEditorsBeforeSubmit(event) {
 
 function registerCustomButtons(editor, element) {
     const itemKey = element.dataset.editorKey;
+
+    registerContentBoxControls(editor, commitEditorChanges);
 
     editor.ui.registry.addIcon('mediaPickerIcon', `
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">

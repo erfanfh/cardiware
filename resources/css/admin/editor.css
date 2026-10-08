@@ -27,6 +27,12 @@ body {
     padding: 0.75rem;
 }
 
+body.dark {
+    background: #0f172a;
+    color: #e2e8f0;
+    color-scheme: dark;
+}
+
 figure.content-media {
     margin: 1rem 0;
 }

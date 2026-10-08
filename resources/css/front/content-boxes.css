@@ -1,0 +1,605 @@
+/* Shared by TinyMCE's iframe and every public .tinymce-content area.
+   Change a palette or layout here to update existing saved content as well. */
+.tinymce-content .mw-box--amber {
+    --mw-box-accent: #c45a0a;
+    --mw-box-rgb: 234, 112, 26;
+    --mw-box-tint: #fff4e5;
+    --mw-box-line: #f5cf9f;
+    --mw-box-strong: #9a4208;
+}
+
+.tinymce-content .mw-box--sky {
+    --mw-box-accent: #0369a1;
+    --mw-box-rgb: 14, 165, 233;
+    --mw-box-tint: #ecf8ff;
+    --mw-box-line: #a9def7;
+    --mw-box-strong: #075985;
+}
+
+.tinymce-content .mw-box--emerald {
+    --mw-box-accent: #047857;
+    --mw-box-rgb: 16, 185, 129;
+    --mw-box-tint: #eafbf3;
+    --mw-box-line: #a4e5c8;
+    --mw-box-strong: #065f46;
+}
+
+.tinymce-content .mw-box--violet {
+    --mw-box-accent: #6d28d9;
+    --mw-box-rgb: 139, 92, 246;
+    --mw-box-tint: #f5f0ff;
+    --mw-box-line: #d6c3fc;
+    --mw-box-strong: #5b21b6;
+}
+
+.tinymce-content .mw-box--rose {
+    --mw-box-accent: #be185d;
+    --mw-box-rgb: 244, 63, 117;
+    --mw-box-tint: #fff0f5;
+    --mw-box-line: #f9bed2;
+    --mw-box-strong: #9d174d;
+}
+
+.tinymce-content .mw-box--teal {
+    --mw-box-accent: #0f766e;
+    --mw-box-rgb: 15, 118, 110;
+    --mw-box-tint: #e9f8f6;
+    --mw-box-line: #9bd7d1;
+    --mw-box-strong: #115e59;
+}
+
+.tinymce-content .mw-box--indigo {
+    --mw-box-accent: #4338ca;
+    --mw-box-rgb: 67, 56, 202;
+    --mw-box-tint: #eef0ff;
+    --mw-box-line: #b9bffa;
+    --mw-box-strong: #3730a3;
+}
+
+.tinymce-content .mw-box--lime {
+    --mw-box-accent: #5b7500;
+    --mw-box-rgb: 101, 133, 0;
+    --mw-box-tint: #f5fadf;
+    --mw-box-line: #d5e795;
+    --mw-box-strong: #465c00;
+}
+
+.tinymce-content .mw-box--crimson {
+    --mw-box-accent: #be123c;
+    --mw-box-rgb: 190, 18, 60;
+    --mw-box-tint: #fff0f1;
+    --mw-box-line: #f4b5bf;
+    --mw-box-strong: #9f1239;
+}
+
+.tinymce-content .mw-box--slate {
+    --mw-box-accent: #475569;
+    --mw-box-rgb: 71, 85, 105;
+    --mw-box-tint: #f1f5f9;
+    --mw-box-line: #bdc9d7;
+    --mw-box-strong: #334155;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--amber {
+    --mw-box-accent: #fbbf72;
+    --mw-box-rgb: 251, 191, 114;
+    --mw-box-tint: #332317;
+    --mw-box-line: #674127;
+    --mw-box-strong: #ffcf95;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--sky {
+    --mw-box-accent: #7dd3fc;
+    --mw-box-rgb: 125, 211, 252;
+    --mw-box-tint: #142c3b;
+    --mw-box-line: #28546b;
+    --mw-box-strong: #a5e3ff;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--emerald {
+    --mw-box-accent: #6ee7b7;
+    --mw-box-rgb: 110, 231, 183;
+    --mw-box-tint: #18332b;
+    --mw-box-line: #2d6852;
+    --mw-box-strong: #a7f3d0;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--violet {
+    --mw-box-accent: #c4b5fd;
+    --mw-box-rgb: 196, 181, 253;
+    --mw-box-tint: #29223f;
+    --mw-box-line: #554677;
+    --mw-box-strong: #ddd6fe;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--rose {
+    --mw-box-accent: #fda4c3;
+    --mw-box-rgb: 253, 164, 195;
+    --mw-box-tint: #3b202f;
+    --mw-box-line: #75405b;
+    --mw-box-strong: #fecddf;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--teal {
+    --mw-box-accent: #5eead4;
+    --mw-box-rgb: 94, 234, 212;
+    --mw-box-tint: #17332f;
+    --mw-box-line: #32675f;
+    --mw-box-strong: #99f6e4;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--indigo {
+    --mw-box-accent: #a5b4fc;
+    --mw-box-rgb: 165, 180, 252;
+    --mw-box-tint: #212943;
+    --mw-box-line: #465987;
+    --mw-box-strong: #c7d2fe;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--lime {
+    --mw-box-accent: #c4e37c;
+    --mw-box-rgb: 196, 227, 124;
+    --mw-box-tint: #29331e;
+    --mw-box-line: #526837;
+    --mw-box-strong: #e0f4ad;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--crimson {
+    --mw-box-accent: #fda4af;
+    --mw-box-rgb: 253, 164, 175;
+    --mw-box-tint: #3b1f29;
+    --mw-box-line: #75404d;
+    --mw-box-strong: #fecdd3;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--slate {
+    --mw-box-accent: #cbd5e1;
+    --mw-box-rgb: 203, 213, 225;
+    --mw-box-tint: #263343;
+    --mw-box-line: #526477;
+    --mw-box-strong: #e2e8f0;
+}
+
+.tinymce-content .mw-box {
+    --mw-box-ink: #243247;
+    --mw-box-muted: #45556e;
+    position: relative;
+    box-sizing: border-box;
+    display: flow-root;
+    width: 100%;
+    margin: 1.5rem 0;
+    padding: 1.35rem 1.5rem;
+    border: 1px solid var(--mw-box-line, #d8e0ea);
+    border-radius: 1.1rem;
+    background: var(--mw-box-tint, #f8fafc);
+    color: var(--mw-box-ink);
+    line-height: 1.9;
+    overflow-wrap: anywhere;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box {
+    --mw-box-ink: #f1f5f9;
+    --mw-box-muted: #cbd5e1;
+}
+
+.tinymce-content .mw-box-title {
+    display: block;
+    margin: 0 0 .55rem;
+    color: var(--mw-box-strong);
+    font-size: 1.03rem;
+    font-weight: 800;
+    line-height: 1.7;
+}
+
+.tinymce-content .mw-box-body {
+    color: var(--mw-box-ink);
+}
+
+.tinymce-content .mw-box-body > :first-child {
+    margin-top: 0;
+}
+
+.tinymce-content .mw-box-body > :last-child {
+    margin-bottom: 0;
+}
+
+.tinymce-content .mw-box a {
+    color: var(--mw-box-strong);
+    text-decoration: underline;
+    text-underline-offset: .2em;
+}
+
+.tinymce-content .mw-box ul li::before {
+    background-color: var(--mw-box-accent);
+}
+
+/* Rich text inside a dark box must not inherit the light article surfaces. */
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box blockquote {
+    border-right: 0;
+    border-inline-start: 4px solid var(--mw-box-accent);
+    background: rgba(var(--mw-box-rgb), .12);
+    color: var(--mw-box-ink);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box code {
+    background: rgba(255, 255, 255, .12);
+    color: var(--mw-box-ink);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box pre code {
+    background: transparent;
+    color: inherit;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box :is(th, td) {
+    border-color: var(--mw-box-line);
+    color: var(--mw-box-ink);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box th {
+    background: rgba(var(--mw-box-rgb), .18);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box hr {
+    border-top-color: var(--mw-box-line);
+}
+
+/* 01: gentle colour wash */
+.tinymce-content .mw-box--soft {
+    box-shadow: 0 12px 32px rgba(var(--mw-box-rgb), .07);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--soft {
+    box-shadow: 0 14px 30px rgba(0, 0, 0, .18);
+}
+
+/* 02: a quiet, architectural frame */
+.tinymce-content .mw-box--outline {
+    border: 1.5px solid var(--mw-box-accent);
+    background: transparent;
+    box-shadow: inset 0 0 0 5px rgba(var(--mw-box-rgb), .08);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--outline {
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .12), rgba(15, 23, 42, .35));
+    box-shadow: inset 0 0 0 5px rgba(var(--mw-box-rgb), .06), 0 12px 26px rgba(0, 0, 0, .16);
+}
+
+/* 03: reading guide on the start edge, including RTL content */
+.tinymce-content .mw-box--stripe {
+    border: 0;
+    border-inline-start: 6px solid var(--mw-box-accent);
+    border-radius: .3rem 1rem 1rem .3rem;
+    background: var(--mw-box-tint);
+    box-shadow: 0 8px 26px rgba(15, 23, 42, .07);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--stripe {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+}
+
+/* 04: overlapping colour washes */
+.tinymce-content .mw-box--gradient {
+    background: radial-gradient(circle at 90% 0%, rgba(var(--mw-box-rgb), .24), transparent 48%),
+        linear-gradient(120deg, var(--mw-box-tint), rgba(var(--mw-box-rgb), .04));
+    box-shadow: 0 12px 30px rgba(var(--mw-box-rgb), .1);
+}
+
+/* 05: compact, high contrast announcement */
+.tinymce-content .mw-box--solid {
+    --mw-box-ink: #fff;
+    --mw-box-strong: #fff;
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--mw-box-accent), color-mix(in srgb, var(--mw-box-accent), #101827 30%));
+    box-shadow: 0 15px 32px rgba(var(--mw-box-rgb), .25);
+}
+
+.tinymce-content .mw-box--solid .mw-box-title,
+.tinymce-content .mw-box--solid .mw-box-body,
+.tinymce-content .mw-box--solid a {
+    color: #fff;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--solid {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--mw-box-accent), #101827 64%), #182234);
+    border-color: var(--mw-box-line);
+}
+
+/* 06: layered translucent card */
+.tinymce-content .mw-box--glass {
+    border: 1px solid rgba(var(--mw-box-rgb), .35);
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .16), rgba(var(--mw-box-rgb), .035) 70%);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .09), inset 0 1px rgba(255, 255, 255, .55);
+    backdrop-filter: blur(12px);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--glass {
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .22), rgba(15, 23, 42, .6) 75%);
+    box-shadow: 0 18px 36px rgba(0, 0, 0, .25), inset 0 1px rgba(255, 255, 255, .1);
+}
+
+/* 07: title as a coloured ribbon */
+.tinymce-content .mw-box--ribbon {
+    padding-top: 1rem;
+    background: transparent;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--ribbon {
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .1), rgba(15, 23, 42, .35));
+}
+
+.tinymce-content .mw-box--ribbon .mw-box-title {
+    display: table;
+    max-width: 100%;
+    margin: -1.6rem -.4rem 1.05rem 0;
+    padding: .36rem 1rem;
+    border-radius: .65rem;
+    background: var(--mw-box-accent);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(var(--mw-box-rgb), .2);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--ribbon .mw-box-title {
+    background: color-mix(in srgb, var(--mw-box-accent), #101827 62%);
+}
+
+/* 08: editorial quote with a large punctuation mark */
+.tinymce-content .mw-box--quote {
+    padding-inline-start: 4.4rem;
+    border: 0;
+    border-radius: 0;
+    border-block: 1px solid var(--mw-box-line);
+    background: transparent;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--quote {
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .1), rgba(15, 23, 42, .28));
+}
+
+.tinymce-content .mw-box--quote::before {
+    content: '“';
+    position: absolute;
+    inset-block-start: 1rem;
+    inset-inline-start: 1.25rem;
+    color: var(--mw-box-accent);
+    font-family: Georgia, serif;
+    font-size: 5.2rem;
+    line-height: 1;
+    opacity: .65;
+    pointer-events: none;
+}
+
+/* 09: a detachable note */
+.tinymce-content .mw-box--ticket {
+    border: 2px dashed var(--mw-box-accent);
+    border-radius: .45rem;
+    background: var(--mw-box-tint);
+    box-shadow: 5px 5px 0 rgba(var(--mw-box-rgb), .14);
+}
+
+.tinymce-content .mw-box--ticket .mw-box-title {
+    padding-bottom: .6rem;
+    border-bottom: 1px dashed var(--mw-box-line);
+}
+
+/* 10: focused editorial panel with an accent halo */
+.tinymce-content .mw-box--spotlight {
+    padding: 1.7rem 1.8rem;
+    border: 1px solid rgba(var(--mw-box-rgb), .33);
+    border-radius: 1.5rem .45rem 1.5rem .45rem;
+    background: radial-gradient(circle at 100% 0%, rgba(var(--mw-box-rgb), .28), transparent 44%),
+        linear-gradient(135deg, var(--mw-box-tint), #fff 78%);
+    box-shadow: 0 18px 40px rgba(var(--mw-box-rgb), .15);
+}
+
+.tinymce-content .mw-box--spotlight .mw-box-title {
+    font-size: 1.18rem;
+    letter-spacing: -.01em;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--spotlight {
+    background: radial-gradient(circle at 100% 0%, rgba(var(--mw-box-rgb), .27), transparent 50%),
+        linear-gradient(135deg, var(--mw-box-tint), #172033 85%);
+}
+
+/* 11: a small folded paper corner */
+.tinymce-content .mw-box--folded {
+    --mw-fold-size: 2.8rem;
+    text-align: start;
+    border: 1px solid var(--mw-box-line);
+    border-radius: 1rem;
+    border-start-end-radius: .15rem;
+    background: var(--mw-box-tint);
+    box-shadow: 0 15px 32px rgba(15, 23, 42, .1);
+}
+
+.tinymce-content .mw-box--folded .mw-box-title {
+    padding-inline-end: 1.5rem;
+}
+
+.tinymce-content .mw-box--folded::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-end: 0;
+    width: var(--mw-fold-size);
+    height: var(--mw-fold-size);
+    background: linear-gradient(135deg, var(--mw-box-line), var(--mw-box-tint));
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+    filter: drop-shadow(0 3px 3px rgba(15, 23, 42, .18));
+    pointer-events: none;
+}
+
+.tinymce-content .mw-box--folded:dir(ltr)::after {
+    background: linear-gradient(225deg, var(--mw-box-line), var(--mw-box-tint));
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--folded {
+    box-shadow: 0 16px 32px rgba(0, 0, 0, .22);
+}
+
+/* 12: a vertical path with a prominent milestone */
+.tinymce-content .mw-box--timeline {
+    padding-inline-start: 3.5rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--timeline {
+    background: linear-gradient(135deg, rgba(var(--mw-box-rgb), .1), rgba(15, 23, 42, .28));
+}
+
+.tinymce-content .mw-box--timeline::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 1.3rem;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--mw-box-accent), var(--mw-box-line));
+    pointer-events: none;
+}
+
+.tinymce-content .mw-box--timeline::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 1.55rem;
+    inset-inline-start: .88rem;
+    width: .9rem;
+    height: .9rem;
+    border: 3px solid var(--mw-box-accent);
+    border-radius: 50%;
+    background: var(--mw-box-tint);
+    box-shadow: 0 0 0 5px rgba(var(--mw-box-rgb), .12);
+    pointer-events: none;
+}
+
+/* 13: ruled stationery with two binding marks */
+.tinymce-content .mw-box--notepad {
+    padding-block-start: 1.8rem;
+    border: 1px solid var(--mw-box-line);
+    border-top: 5px solid var(--mw-box-accent);
+    border-radius: .25rem .25rem 1rem 1rem;
+    background: repeating-linear-gradient(to bottom, transparent 0, transparent 2.14rem,
+        rgba(var(--mw-box-rgb), .16) 2.15rem, transparent 2.2rem), var(--mw-box-tint);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, .07);
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--notepad {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
+}
+
+.tinymce-content .mw-box--notepad::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -.65rem;
+    inset-inline-start: 1.25rem;
+    width: 3rem;
+    height: 1rem;
+    background: radial-gradient(circle at .5rem .5rem, var(--mw-box-accent) 0 .2rem, transparent .22rem),
+        radial-gradient(circle at 2.5rem .5rem, var(--mw-box-accent) 0 .2rem, transparent .22rem);
+    pointer-events: none;
+}
+
+/* 14: the title occupies its own coloured panel */
+.tinymce-content .mw-box--split {
+    display: grid;
+    grid-template-columns: minmax(8.5rem, 30%) minmax(0, 1fr);
+    align-items: stretch;
+    padding: 0;
+    overflow: hidden;
+    border-color: var(--mw-box-line);
+    background: var(--mw-box-tint);
+    box-shadow: 0 12px 30px rgba(var(--mw-box-rgb), .1);
+}
+
+.tinymce-content .mw-box--split .mw-box-title {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 1.25rem;
+    background: var(--mw-box-accent);
+    color: #fff;
+}
+
+.tinymce-content .mw-box--split .mw-box-body {
+    min-width: 0;
+    padding: 1.25rem 1.4rem;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--split .mw-box-title {
+    background: color-mix(in srgb, var(--mw-box-accent), #101827 62%);
+}
+
+/* 15: two light sources wash across a restrained frame */
+.tinymce-content .mw-box--aurora {
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(var(--mw-box-rgb), .36);
+    border-radius: 1.6rem;
+    background: radial-gradient(ellipse at 0% 0%, rgba(var(--mw-box-rgb), .3), transparent 58%),
+        radial-gradient(ellipse at 100% 100%, rgba(56, 189, 248, .2), transparent 52%),
+        linear-gradient(135deg, #fff, var(--mw-box-tint));
+    box-shadow: 0 18px 42px rgba(var(--mw-box-rgb), .13), inset 0 1px 0 rgba(255, 255, 255, .7);
+}
+
+.tinymce-content .mw-box--aurora::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -4rem;
+    inset-inline-end: -2rem;
+    z-index: -1;
+    width: 11rem;
+    height: 11rem;
+    border: 1px solid rgba(var(--mw-box-rgb), .2);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2rem rgba(var(--mw-box-rgb), .045), 0 0 0 4rem rgba(var(--mw-box-rgb), .025);
+    pointer-events: none;
+}
+
+:is(.dark .tinymce-content, [data-theme="dark"] .tinymce-content, .tinymce-content.dark) .mw-box--aurora {
+    background: radial-gradient(ellipse at 0% 0%, rgba(var(--mw-box-rgb), .24), transparent 58%),
+        radial-gradient(ellipse at 100% 100%, rgba(56, 189, 248, .12), transparent 52%),
+        linear-gradient(135deg, #172033, var(--mw-box-tint));
+    box-shadow: 0 18px 42px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+@media (max-width: 640px) {
+    .tinymce-content .mw-box {
+        padding: 1.1rem 1.15rem;
+        border-radius: .85rem;
+    }
+
+    .tinymce-content .mw-box--quote {
+        padding-inline-start: 3.4rem;
+    }
+
+    .tinymce-content .mw-box--quote::before {
+        inset-inline-start: .8rem;
+        font-size: 4.1rem;
+    }
+
+    .tinymce-content .mw-box--folded {
+        --mw-fold-size: 2.4rem;
+        border-start-end-radius: .15rem;
+    }
+
+    .tinymce-content .mw-box--folded .mw-box-title {
+        padding-inline-end: 1.5rem;
+    }
+
+    .tinymce-content .mw-box--timeline {
+        padding-inline-start: 3rem;
+    }
+
+    .tinymce-content .mw-box--split {
+        grid-template-columns: minmax(0, 1fr);
+        padding: 0;
+    }
+
+    .tinymce-content .mw-box--split .mw-box-title,
+    .tinymce-content .mw-box--split .mw-box-body {
+        padding: 1rem 1.15rem;
+    }
+}

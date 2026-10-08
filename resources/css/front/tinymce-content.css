@@ -1,3 +1,5 @@
+@import "./content-boxes.css";
+
 .tinymce-content {
     unicode-bidi: plaintext;
     line-height: 1.75rem;
