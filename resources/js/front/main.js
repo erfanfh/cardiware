@@ -1,4 +1,5 @@
 import './lightbox-gallery.js';
+import '../localize-display-digits.js';
 import './popups.js';
 import typingPlaceholder from './typing-placeholder.js';
 import './old-toggle-box.js';

@@ -22,13 +22,13 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+    --font-sans: 'main-font', 'IRANSansX', 'IRANSans', sans-serif;
 }
 
 @font-face {
     font-family: "main-font";
-    src: url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2") format("woff2"),
-    url("../fonts/IRANSansX/IRANSansXFaNum-Regular.woff") format("woff");
+    src: url("../fonts/IRANSansX/IRANSansX-Regular.woff2") format("woff2"),
+    url("../fonts/IRANSansX/IRANSansX-Regular.woff") format("woff");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -37,8 +37,8 @@
 
 @font-face {
     font-family: "main-font";
-    src: url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2") format("woff2"),
-    url("../fonts/IRANSansX/IRANSansXFaNum-Bold.woff") format("woff");
+    src: url("../fonts/IRANSansX/IRANSansX-Bold.woff2") format("woff2"),
+    url("../fonts/IRANSansX/IRANSansX-Bold.woff") format("woff");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -46,7 +46,7 @@
 }
 
 body {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', sans-serif;
 }
 
 ::-webkit-scrollbar {

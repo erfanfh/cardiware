@@ -20,18 +20,18 @@
 
     <style>
         @font-face {
-            font-family: "IRANSansXFaNum";
-            src: url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansXFaNum-Regular.woff2') }}") format("woff2"),
-            url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansXFaNum-Regular.woff') }}") format("woff");
+            font-family: "IRANSansX";
+            src: url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansX-Regular.woff2') }}") format("woff2"),
+            url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansX-Regular.woff') }}") format("woff");
             font-style: normal;
             font-weight: 400;
             font-display: swap;
         }
 
         @font-face {
-            font-family: "IRANSansXFaNum";
-            src: url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansXFaNum-Bold.woff2') }}") format("woff2"),
-            url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansXFaNum-Bold.woff') }}") format("woff");
+            font-family: "IRANSansX";
+            src: url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansX-Bold.woff2') }}") format("woff2"),
+            url("{{ \Illuminate\Support\Facades\Vite::asset('resources/fonts/IRANSansX/IRANSansX-Bold.woff') }}") format("woff");
             font-style: normal;
             font-weight: 700 900;
             font-display: swap;
@@ -76,7 +76,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            font-family: "IRANSansXFaNum",
+            font-family: "IRANSansX",
             Tahoma,
             Arial,
             sans-serif;

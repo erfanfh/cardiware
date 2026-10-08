@@ -1,7 +1,7 @@
 @font-face {
     font-family: "main-font";
-    src: url("../../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2") format("woff2"),
-    url("../../fonts/IRANSansX/IRANSansXFaNum-Regular.woff") format("woff");
+    src: url("../../fonts/IRANSansX/IRANSansX-Regular.woff2") format("woff2"),
+    url("../../fonts/IRANSansX/IRANSansX-Regular.woff") format("woff");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -10,8 +10,8 @@
 
 @font-face {
     font-family: "main-font";
-    src: url("../../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2") format("woff2"),
-    url("../../fonts/IRANSansX/IRANSansXFaNum-Bold.woff") format("woff");
+    src: url("../../fonts/IRANSansX/IRANSansX-Bold.woff2") format("woff2"),
+    url("../../fonts/IRANSansX/IRANSansX-Bold.woff") format("woff");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
@@ -19,11 +19,11 @@
 }
 
 * {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 body .tox :not(svg):not(rect) {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 .tox .tox-tbtn {
@@ -71,7 +71,7 @@ body .tox :not(svg):not(rect) {
 }
 
 .tox .tox-collection--list .tox-collection__item-label * {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
     font-size: 0.9rem !important;
 }
 
@@ -80,11 +80,11 @@ body .tox :not(svg):not(rect) {
 }
 
 .tox .tox-dialog * {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif';
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif';
 }
 
 .tox .tox-dialog__title {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
     font-size: 1rem !important;
     font-weight: bold !important;
 }
@@ -105,7 +105,7 @@ body .tox :not(svg):not(rect) {
 .tox .tox-dialog .tox-form .tox-form__group select,
 .tox .tox-dialog .tox-form .tox-form__group button,
 .tox .tox-dialog .tox-form .tox-form__group textarea {
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
     font-size: 0.9rem;
 }
 
@@ -124,7 +124,7 @@ body .tox :not(svg):not(rect) {
 .tox .tox-dialog__footer button {
     margin-left: 0 !important;
     margin-right: 0.5rem;
-    font-family: 'main-font', 'IRANSansXFaNum', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
+    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif' !important;
     font-size: 0.8rem;
 }
 

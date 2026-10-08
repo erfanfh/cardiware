@@ -164,7 +164,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     itemHeight: 8,
                     textStyle: {
                         color: '#475569',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         fontSize: 11,
                     },
                 },
@@ -176,7 +176,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     padding: 12,
                     textStyle: {
                         color: '#fff',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                     },
                     axisPointer: {
                         type: 'line',
@@ -192,7 +192,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     axisTick: {show: false},
                     axisLabel: {
                         color: '#64748b',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         fontSize: 11,
                         hideOverlap: true,
                     },
@@ -203,7 +203,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     splitNumber: 4,
                     axisLabel: {
                         color: '#94a3b8',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         formatter: (value) => compactNumberFormatter.format(value),
                     },
                     splitLine: {lineStyle: {color: '#f1f5f9'}},
@@ -225,7 +225,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                             handleStyle: {color: '#f97316'},
                             textStyle: {
                                 color: '#94a3b8',
-                                fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                                fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                             },
                         },
                     ]
@@ -239,7 +239,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                         style: {
                             text: 'در این بازه فروش پرداخت شده‌ای ثبت نشده است',
                             fill: '#94a3b8',
-                            font: "13px \'main-font\', \'IRANSansXFaNum\', sans-serif",
+                            font: "13px \'main-font\', \'IRANSansX\', sans-serif",
                         },
                     }],
                 series,
@@ -304,7 +304,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     itemHeight: 8,
                     textStyle: {
                         color: '#475569',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         fontSize: 11,
                     },
                 },
@@ -316,7 +316,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     padding: 12,
                     textStyle: {
                         color: '#fff',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                     },
                     axisPointer: {type: 'shadow'},
                     formatter: (params) => this.tooltipFormatter(params, false),
@@ -328,7 +328,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     axisTick: {show: false},
                     axisLabel: {
                         color: '#64748b',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         fontSize: 11,
                         hideOverlap: true,
                     },
@@ -340,7 +340,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                     splitNumber: 4,
                     axisLabel: {
                         color: '#94a3b8',
-                        fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                        fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                         formatter: (value) => numberFormatter.format(value),
                     },
                     splitLine: {lineStyle: {color: '#f1f5f9'}},
@@ -362,7 +362,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                             handleStyle: {color: '#f97316'},
                             textStyle: {
                                 color: '#94a3b8',
-                                fontFamily: "\'main-font\', \'IRANSansXFaNum\', sans-serif",
+                                fontFamily: "\'main-font\', \'IRANSansX\', sans-serif",
                             },
                         },
                     ]
@@ -376,7 +376,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
                         style: {
                             text: 'در این بازه سفارش پرداخت شده‌ای ثبت نشده است',
                             fill: '#94a3b8',
-                            font: "13px \'main-font\', \'IRANSansXFaNum\', sans-serif",
+                            font: "13px \'main-font\', \'IRANSansX\', sans-serif",
                         },
                     }],
                 series,

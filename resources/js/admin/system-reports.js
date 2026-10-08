@@ -98,7 +98,7 @@ window.systemReportsChart = function (initialPayload) {
                     itemHeight: 8,
                     textStyle: {
                         color: '#475569',
-                        fontFamily: "'main-font', 'IRANSansXFaNum', sans-serif",
+                        fontFamily: "'main-font', 'IRANSansX', sans-serif",
                         fontSize: 11,
                     },
                 },
@@ -110,7 +110,7 @@ window.systemReportsChart = function (initialPayload) {
                     padding: 12,
                     textStyle: {
                         color: '#fff',
-                        fontFamily: "'main-font', 'IRANSansXFaNum', sans-serif",
+                        fontFamily: "'main-font', 'IRANSansX', sans-serif",
                     },
                     axisPointer: {
                         type: this.mode === 'users' ? 'shadow' : 'line',
@@ -125,7 +125,7 @@ window.systemReportsChart = function (initialPayload) {
                     axisTick: {show: false},
                     axisLabel: {
                         color: '#64748b',
-                        fontFamily: "'main-font', 'IRANSansXFaNum', sans-serif",
+                        fontFamily: "'main-font', 'IRANSansX', sans-serif",
                         fontSize: 11,
                         hideOverlap: true,
                     },
@@ -137,7 +137,7 @@ window.systemReportsChart = function (initialPayload) {
                     splitNumber: 4,
                     axisLabel: {
                         color: '#94a3b8',
-                        fontFamily: "'main-font', 'IRANSansXFaNum', sans-serif",
+                        fontFamily: "'main-font', 'IRANSansX', sans-serif",
                         formatter: (value) => numberFormatter.format(value),
                     },
                     splitLine: {lineStyle: {color: '#f1f5f9'}},
@@ -159,7 +159,7 @@ window.systemReportsChart = function (initialPayload) {
                             handleStyle: {color: '#f97316'},
                             textStyle: {
                                 color: '#94a3b8',
-                                fontFamily: "'main-font', 'IRANSansXFaNum', sans-serif",
+                                fontFamily: "'main-font', 'IRANSansX', sans-serif",
                             },
                         },
                     ]
@@ -173,7 +173,7 @@ window.systemReportsChart = function (initialPayload) {
                         style: {
                             text: 'در این بازه داده‌ای برای نمایش وجود ندارد',
                             fill: '#94a3b8',
-                            font: "13px 'main-font', 'IRANSansXFaNum', sans-serif",
+                            font: "13px 'main-font', 'IRANSansX', sans-serif",
                         },
                     }],
                 series,
