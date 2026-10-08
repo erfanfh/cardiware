@@ -39,11 +39,15 @@ class HandlePostBulkAction
      */
     protected function updateStatus(array $ids, PostStatusEnum $status): int
     {
-        return Post::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status
-            ]);
+        $count = 0;
+        foreach (Post::query()->whereIn('id', $ids)->get() as $post) {
+            if ($post->status !== $status) {
+                $post->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

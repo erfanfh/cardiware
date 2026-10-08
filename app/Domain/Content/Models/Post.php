@@ -2,7 +2,6 @@
 
 namespace App\Domain\Content\Models;
 
-use App\Domain\Audit\Traits\Auditable;
 use App\Domain\Content\Enums\PostMediaCollectionEnum;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Scopes\ActivePostScope;
@@ -26,7 +25,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model implements PageViewableInterface, CommentableContract
 {
-    use SoftDeletes, HasTaxonomyTerms, Auditable, HasFeatures, HasComments, HasExcerpt, HasSeoMeta;
+    use SoftDeletes, HasTaxonomyTerms, HasFeatures, HasComments, HasExcerpt, HasSeoMeta;
 
     protected $fillable = [
         'author_id',

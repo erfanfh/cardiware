@@ -12,62 +12,36 @@ class SyncCouponTargetsAction
 {
     public function execute(Coupon $coupon, array $data): void
     {
-        $coupon->targets()->delete();
-
         $scope = $data['scope'] instanceof CouponScopeEnum
-            ? $data['scope']->value
-            : $data['scope'];
-
-        if (in_array($scope, [CouponScopeEnum::ORDER->value, CouponScopeEnum::VIP->value], true)) {
-            return;
-        }
+            ? $data['scope']->value : $data['scope'];
+        $desired = [];
 
         if ($scope === CouponScopeEnum::PRODUCTS->value) {
-            $this->syncProducts($coupon, $data['product_ids'] ?? []);
-
-            return;
+            foreach (collect($data['product_ids'] ?? [])->filter()->map(fn ($id) => (int) $id)->unique() as $id) {
+                $desired[Relation::getMorphAlias(Product::class).':'.$id] = [
+                    'target_type' => Relation::getMorphAlias(Product::class),
+                    'target_id' => $id,
+                ];
+            }
+        } elseif ($scope === CouponScopeEnum::STORE->value && filled($data['store_id'] ?? null)) {
+            $id = (int) $data['store_id'];
+            $desired[Relation::getMorphAlias(Store::class).':'.$id] = [
+                'target_type' => Relation::getMorphAlias(Store::class),
+                'target_id' => $id,
+            ];
         }
 
-        if ($scope === CouponScopeEnum::STORE->value) {
-            $this->syncStore($coupon, $data['store_id'] ?? null);
-        }
-    }
-
-    private function syncProducts(Coupon $coupon, array $productIds): void
-    {
-        $productIds = collect($productIds)
-            ->filter()
-            ->map(fn($id) => (int)$id)
-            ->unique()
-            ->values();
-
-        if ($productIds->isEmpty()) {
-            return;
+        foreach ($coupon->targets()->get() as $target) {
+            $key = $target->target_type.':'.$target->target_id;
+            if (isset($desired[$key])) {
+                unset($desired[$key]);
+            } else {
+                $target->delete();
+            }
         }
 
-        $now = now();
-        $targetType = Relation::getMorphAlias(Product::class);
-
-        $rows = $productIds->map(fn(int $productId) => [
-            'coupon_id' => $coupon->id,
-            'target_type' => $targetType,
-            'target_id' => $productId,
-            'created_at' => $now,
-            'updated_at' => $now,
-        ])->all();
-
-        $coupon->targets()->insert($rows);
-    }
-
-    private function syncStore(Coupon $coupon, mixed $storeId): void
-    {
-        if (blank($storeId)) {
-            return;
+        foreach ($desired as $target) {
+            $coupon->targets()->create($target);
         }
-
-        $coupon->targets()->create([
-            'target_type' => Relation::getMorphAlias(Store::class),
-            'target_id' => (int)$storeId,
-        ]);
     }
 }

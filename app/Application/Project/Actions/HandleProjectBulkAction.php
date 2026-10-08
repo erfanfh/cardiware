@@ -39,11 +39,15 @@ class HandleProjectBulkAction
      */
     protected function updateStatus(array $ids, ProjectStatusEnum $status): int
     {
-        return Project::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status
-            ]);
+        $count = 0;
+        foreach (Project::query()->whereIn('id', $ids)->get() as $project) {
+            if ($project->status !== $status) {
+                $project->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

@@ -31,6 +31,6 @@ class SyncModelProjectTagsAction
             $payload ?? [],
         );
 
-        $model->tags()->sync($tagIds);
+        app(SyncModelTaxonomyTermsAction::class)->execute($model, 'tags', TaxonomyKeyEnum::PROJECT_TAG, $tagIds);
     }
 }

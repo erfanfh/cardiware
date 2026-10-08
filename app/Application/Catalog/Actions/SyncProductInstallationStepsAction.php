@@ -16,7 +16,7 @@ class SyncProductInstallationStepsAction
                 'sort_order' => 0,
             ]);
 
-            $product->installationSteps()->where('id', '!=', $installationStep->id)->delete();
+            $product->installationSteps()->where('id', '!=', $installationStep->id)->get()->each->delete();
 
             return;
         }

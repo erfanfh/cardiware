@@ -1,6 +1,7 @@
 <?php
 
 use App\Providers\AppServiceProvider;
+use App\Providers\AuditServiceProvider;
 use App\Providers\AuthServiceProvider;
 use App\Providers\FinancialServiceProvider;
 use App\Providers\HorizonServiceProvider;
@@ -16,6 +17,7 @@ use App\Providers\SlugServiceProvider;
 
 return [
     AppServiceProvider::class,
+    AuditServiceProvider::class,
     AuthServiceProvider::class,
     RouteBindingServiceProvider::class,
     FinancialServiceProvider::class,

@@ -39,7 +39,7 @@ class SyncProductInformationEntriesAction
                     ProductInformationEntry::query()
                         ->where('product_id', $product->id)
                         ->where('product_information_field_id', $fieldId)
-                        ->delete();
+                        ->get()->each->delete();
 
                     continue;
                 }
@@ -58,7 +58,7 @@ class SyncProductInformationEntriesAction
             ProductInformationEntry::query()
                 ->where('product_id', $product->id)
                 ->whereNotIn('product_information_field_id', $validFieldIds)
-                ->delete();
+                ->get()->each->delete();
         });
     }
 }

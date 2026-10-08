@@ -4,6 +4,7 @@ namespace App\Application\Taxonomy\Actions;
 
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use InvalidArgumentException;
@@ -58,11 +59,11 @@ class SyncModelTaxonomyTermsAction
         $idsToDetach = array_values(array_diff($currentTaxonomyIds, $validIds));
 
         if (count($idsToDetach) !== 0) {
-            $relationInstance->detach($idsToDetach);
+            app(AuditService::class)->detach($model, $relation, $idsToDetach);
         }
 
         if (count($validIds) !== 0) {
-            $relationInstance->syncWithoutDetaching($validIds);
+            app(AuditService::class)->sync($model, $relation, $validIds, false);
         }
     }
 

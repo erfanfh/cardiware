@@ -37,7 +37,7 @@ class SetFeatureValueAction
 
         if ($definition->value_type === ValueTypeEnum::FLAG) {
             if ($normalizedValue === null) {
-                FeatureAssignment::query()->where($attributes)->delete();
+                FeatureAssignment::query()->where($attributes)->get()->each->delete();
                 return;
             }
 
@@ -50,7 +50,7 @@ class SetFeatureValueAction
         }
 
         if ($normalizedValue === null || $normalizedValue === '') {
-            FeatureAssignment::query()->where($attributes)->delete();
+            FeatureAssignment::query()->where($attributes)->get()->each->delete();
             return;
         }
 

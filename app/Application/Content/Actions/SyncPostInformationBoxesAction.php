@@ -20,7 +20,7 @@ class SyncPostInformationBoxesAction
             if (blank($title) && blank($body)) {
                 $post->informationBoxes()
                     ->where('type', $type->value)
-                    ->delete();
+                    ->get()->each->delete();
 
                 continue;
             }

@@ -444,9 +444,21 @@ return [
 
     [
         'label' => 'گزارش‌ها',
-        'route' => 'admin.reports.index',
         'icon' => 'icons.chart-03',
-        'gate' => 'report.view',
+        'children' => [
+            [
+                'label' => 'گزارش‌های عمومی',
+                'route' => 'admin.reports.index',
+                'icon' => 'icons.chart-03',
+                'gate' => 'report.view',
+            ],
+            [
+                'label' => 'تاریخچه تغییرات',
+                'route' => 'admin.audit-events.index',
+                'icon' => 'icons.file-02',
+                'gate' => 'audit.view',
+            ],
+        ],
     ],
 
     [

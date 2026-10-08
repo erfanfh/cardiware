@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Identity\IndexRoleRequest;
 use App\Http\Requests\Admin\Identity\UpdateRoleRequest;
 use App\Infrastructure\Support\BulkActions\DeleteBulkActions;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
@@ -70,7 +71,7 @@ class RoleController extends Controller
         Gate::authorize('role.create');
 
         $role = Role::create($request->validated());
-        $role->permissions()->sync($request->permissions ?? []);
+        app(AuditService::class)->sync($role, 'permissions', $request->permissions ?? []);
 
         return Redirect::route('admin.roles.index')
             ->with('success', 'نقش با موفقیت ایجاد شد.')
@@ -138,7 +139,7 @@ class RoleController extends Controller
         }
 
         $role->update($request->validated());
-        $role->permissions()->sync($request->permissions ?? []);
+        app(AuditService::class)->sync($role, 'permissions', $request->permissions ?? []);
 
         return Redirect::route('admin.roles.index')
             ->with('success', 'نقش با موفقیت به‌روزرسانی شد.')

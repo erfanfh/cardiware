@@ -5,6 +5,7 @@ namespace App\Application\Identity\Actions\Favorites;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Identity\Models\User;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Support\Facades\DB;
 
 final class ToggleProductFavoriteAction
@@ -24,15 +25,13 @@ final class ToggleProductFavoriteAction
         $isFavorite = $this->isProductFavoriteAction->execute($user, $product);
 
         $newState = DB::transaction(function () use ($user, $product, $isFavorite): bool {
-            $relation = $user->favoriteProducts();
-
             if ($isFavorite) {
-                $relation->detach($product->getKey());
+                app(AuditService::class)->detach($user, 'favoriteProducts', [$product->getKey()]);
 
                 return false;
             }
 
-            $relation->syncWithoutDetaching([$product->getKey()]);
+            app(AuditService::class)->sync($user, 'favoriteProducts', [$product->getKey()], false);
 
             return true;
         });

@@ -31,6 +31,6 @@ class SyncModelProductTagsAction
             $payload ?? [],
         );
 
-        $model->tags()->sync($tagIds);
+        app(SyncModelTaxonomyTermsAction::class)->execute($model, 'tags', TaxonomyKeyEnum::PRODUCT_TAG, $tagIds);
     }
 }

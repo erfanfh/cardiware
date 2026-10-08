@@ -3,13 +3,14 @@
 namespace App\Application\Promotion\Actions\Coupon;
 
 use App\Domain\Promotion\Models\Coupon;
+use App\Infrastructure\Services\Audit\AuditService;
 
 class SyncCouponUsersAction
 {
     public function execute(Coupon $coupon, array $userIds): void
     {
         if ($coupon->applies_to_all_users) {
-            $coupon->users()->sync([]);
+            app(AuditService::class)->sync($coupon, 'users', []);
 
             return;
         }
@@ -21,6 +22,6 @@ class SyncCouponUsersAction
             ->values()
             ->all();
 
-        $coupon->users()->sync($userIds);
+        app(AuditService::class)->sync($coupon, 'users', $userIds);
     }
 }

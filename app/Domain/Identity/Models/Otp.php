@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Otp extends Model
 {
+    public function auditExcludedAttributes(): array
+    {
+        return ['code_hash', 'key'];
+    }
+
     protected $fillable = [
         'expired_at',
         'resend_available_at',

@@ -39,11 +39,15 @@ class HandleUserBulkAction
      */
     protected function updateStatus(array $ids, UserStatusEnum $status): int
     {
-        return User::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status
-            ]);
+        $count = 0;
+        foreach (User::query()->whereIn('id', $ids)->get() as $user) {
+            if ($user->status !== $status) {
+                $user->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

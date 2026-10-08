@@ -31,6 +31,6 @@ class SyncModelPostTagsAction
             $payload ?? [],
         );
 
-        $model->tags()->sync($tagIds);
+        app(SyncModelTaxonomyTermsAction::class)->execute($model, 'tags', TaxonomyKeyEnum::POST_TAG, $tagIds);
     }
 }

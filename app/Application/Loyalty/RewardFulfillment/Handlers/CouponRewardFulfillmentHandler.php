@@ -11,6 +11,7 @@ use App\Domain\Promotion\Enums\CouponScopeEnum;
 use App\Domain\Promotion\Enums\CouponStatusEnum;
 use App\Domain\Promotion\Enums\CouponTypeEnum;
 use App\Domain\Promotion\Models\Coupon;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -63,7 +64,7 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
             ],
         ]);
 
-        $coupon->users()->syncWithoutDetaching([$user->getKey()]);
+        app(AuditService::class)->sync($coupon, 'users', [$user->getKey()], false);
 
         return $coupon;
     }

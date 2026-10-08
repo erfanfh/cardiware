@@ -33,7 +33,7 @@ class DeleteMediaFileFromLibraryAction
             }
 
             $mediaFile->update(['primary_variant_id' => null]);
-            $mediaFile->variants()->delete();
+            $mediaFile->variants()->get()->each->delete();
             $mediaFile->delete();
         });
     }

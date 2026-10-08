@@ -7,6 +7,7 @@ use App\Domain\Poll\Enums\PollAudienceEnum;
 use App\Domain\Poll\Models\Poll;
 use App\Domain\Poll\Models\PollOption;
 use App\Domain\Poll\Models\PollResponse;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -73,7 +74,7 @@ class SubmitPollVoteAction
             $added = array_values(array_diff($validIds, $oldIds));
             $removed = array_values(array_diff($oldIds, $validIds));
 
-            $response->options()->sync($validIds);
+            app(AuditService::class)->sync($response, 'options', $validIds);
             $response->forceFill([
                 'user_id' => $identity->userId,
                 'ip_hash' => $identity->ipHash,

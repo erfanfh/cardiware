@@ -156,6 +156,9 @@ class PermissionSeeder extends Seeder
             'report' => [
                 'view' => 'مشاهده گزارش‌های عمومی سامانه',
             ],
+            'audit' => [
+                'view' => 'مشاهده تاریخچه تغییرات سامانه',
+            ],
             'raffle-campaign' => [
                 'list' => 'لیست قرعه کشی ها',
                 'show' => 'مشاهده و مدیریت داشبورد قرعه کشی',

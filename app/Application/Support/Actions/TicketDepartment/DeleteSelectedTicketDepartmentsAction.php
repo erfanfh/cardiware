@@ -34,8 +34,11 @@ class DeleteSelectedTicketDepartmentsAction
             ]);
         }
 
-        return TicketDepartment::query()
+        $departments = TicketDepartment::query()
             ->whereIn('id', $ids)
-            ->delete();
+            ->get();
+        $departments->each->delete();
+
+        return $departments->count();
     }
 }

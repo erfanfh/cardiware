@@ -28,9 +28,15 @@ class HandleRewardOfferBulkAction
     /** @param list<int> $ids */
     private function updateActiveState(array $ids, bool $isActive): int
     {
-        return RewardOffer::query()
-            ->whereIn('id', $ids)
-            ->update(['is_active' => $isActive]);
+        $count = 0;
+        foreach (RewardOffer::query()->whereIn('id', $ids)->get() as $offer) {
+            if ((bool) $offer->is_active !== $isActive) {
+                $offer->update(['is_active' => $isActive]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /** @param list<int> $ids @throws Throwable */

@@ -34,9 +34,15 @@ class HandleEarningRuleBulkAction
     /** @param list<int> $ids */
     private function updateActiveState(array $ids, bool $isActive): int
     {
-        return EarningRule::query()
-            ->whereIn('id', $ids)
-            ->update(['is_active' => $isActive]);
+        $count = 0;
+        foreach (EarningRule::query()->whereIn('id', $ids)->get() as $rule) {
+            if ((bool) $rule->is_active !== $isActive) {
+                $rule->update(['is_active' => $isActive]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

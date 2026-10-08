@@ -39,11 +39,15 @@ class HandlePageBulkAction
      */
     protected function updateStatus(array $ids, PageStatusEnum $status): int
     {
-        return Page::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status
-            ]);
+        $count = 0;
+        foreach (Page::query()->whereIn('id', $ids)->get() as $page) {
+            if ($page->status !== $status) {
+                $page->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

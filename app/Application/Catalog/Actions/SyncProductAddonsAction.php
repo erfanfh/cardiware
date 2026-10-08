@@ -24,7 +24,7 @@ class SyncProductAddonsAction
 
         $product->addons()
             ->whereNotIn('id', $submittedAddonIds)
-            ->delete();
+            ->get()->each->delete();
 
         foreach (array_values($addons) as $index => $addonData) {
             $this->saveAddon($product, $addonData, $index);

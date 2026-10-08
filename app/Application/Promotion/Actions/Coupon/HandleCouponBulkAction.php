@@ -39,11 +39,15 @@ class HandleCouponBulkAction
      */
     protected function updateStatus(array $ids, CouponStatusEnum $status): int
     {
-        return Coupon::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status,
-            ]);
+        $count = 0;
+        foreach (Coupon::query()->whereIn('id', $ids)->get() as $coupon) {
+            if ($coupon->status !== $status) {
+                $coupon->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

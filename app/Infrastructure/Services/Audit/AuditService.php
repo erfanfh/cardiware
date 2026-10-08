@@ -5,257 +5,180 @@ namespace App\Infrastructure\Services\Audit;
 use App\Domain\Audit\Enums\AuditEventTypeEnum;
 use App\Domain\Audit\Models\AuditEvent;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 
 class AuditService
 {
-    /**
-     * Attributes that should never be stored in audit.
-     *
-     * @var array<int, string>
-     */
-    protected array $excludedAttributes = [
-        'password',
-        'remember_token',
-    ];
+    private const EXCLUDED = ['password', 'remember_token', 'token', 'secret', 'api_key', 'private_key'];
 
-    /**
-     * Record attached/detached pivot changes for a model's relation.
-     *
-     * This method loops through the 'attached' and 'detached' IDs returned by
-     * a `sync` operation on a BelongsToMany or MorphToMany relation, and
-     * creates separate audit events for each change.
-     *
-     * @param \Illuminate\Database\Eloquent\Model $model The model instance being audited.
-     * @param string $relation The name of the relation or pivot table for audit purposes.
-     * @param array $result The result of a `sync` call, must contain 'attached' and/or 'detached' keys.
-     * @param string $foreignKeyName The name of the pivot foreign key to include in the audit meta.
-     * @param array<string, mixed> $extraMeta Optional additional metadata to include in each audit record.
-     *
-     * @return void
-     */
-    public function recordSync(Model $model, string $relation, array $result, string $foreignKeyName, array $extraMeta = []): void
-    {
-        if (empty($result['attached']) && empty($result['detached'])) {
-            return;
-        }
-
-        if (!empty($result['attached'])) {
-            foreach ($result['attached'] as $id) {
-                $this->record($model, AuditEventTypeEnum::ATTACHED, array_merge([
-                    'relation' => $relation,
-                    $foreignKeyName => $id,
-                ], $extraMeta));
-            }
-        }
-
-        if (!empty($result['detached'])) {
-            foreach ($result['detached'] as $id) {
-                $this->record($model, AuditEventTypeEnum::DETACHED, array_merge([
-                    'relation' => $relation,
-                    $foreignKeyName => $id,
-                ], $extraMeta));
-            }
-        }
-    }
-
-
-    /**
-     * Record an audit event for the given model and type.
-     *
-     *
-     * @param Model $model The domain entity being audited.
-     * @param AuditEventTypeEnum $type The type of audit event.
-     * @param array<string, mixed> $meta Optional contextual metadata.
-     *
-     * @return void
-     */
     public function record(Model $model, AuditEventTypeEnum $type, array $meta = []): void
     {
-        match ($type) {
-            AuditEventTypeEnum::CREATED => $this->handleCreated($model),
-            AuditEventTypeEnum::UPDATED => $this->handleUpdated($model),
-            AuditEventTypeEnum::DELETED,
-            AuditEventTypeEnum::FORCE_DELETED => $this->handleDeleted($model, $type),
-            AuditEventTypeEnum::RESTORED => $this->handleRestored($model),
-            AuditEventTypeEnum::ATTACHED,
-            AuditEventTypeEnum::DETACHED => $this->handleRelationChange($model, $type, $meta),
-        };
-    }
+        if ($type === AuditEventTypeEnum::UPDATED) {
+            $this->recordChange($model, $model->getPrevious(), $model->getChanges(), $meta);
 
-    /**
-     * Handle create event.
-     *
-     * Storage policy:
-     *  - old_data = null
-     *  - new_data = full snapshot of the record
-     */
-    protected function handleCreated(Model $model): void
-    {
-        $this->log(
-            model: $model,
-            type: AuditEventTypeEnum::CREATED,
-            oldData: null,
-            newData: $this->snapshot($model)
-        );
-    }
-
-    /**
-     * Persist audit event record into storage.
-     *
-     * @param Model $model
-     * @param AuditEventTypeEnum $type
-     * @param array<string, mixed>|null $oldData
-     * @param array<string, mixed>|null $newData
-     * @param array<string, mixed>|null $meta
-     *
-     * @return void
-     */
-    protected function log(
-        Model              $model,
-        AuditEventTypeEnum $type,
-        ?array             $oldData,
-        ?array             $newData,
-        ?array             $meta = null,
-    ): void
-    {
-        AuditEvent::create([
-            'type' => $type->value,
-            'subject_id' => $model->getKey(),
-            'subject_type' => $model->getMorphClass(),
-            'user_id' => auth()->id(),
-            'ip_address' => request()?->ip(),
-            'user_agent' => request()?->userAgent(),
-            'old_data' => $oldData,
-            'new_data' => $newData,
-            'meta' => $meta,
-        ]);
-    }
-
-    /**
-     * Create a sanitized snapshot of the model attributes.
-     *
-     * @param Model $model
-     * @return array<string, mixed>
-     */
-    protected function snapshot(Model $model): array
-    {
-        $attributes = $model->attributesToArray();
-
-        return Arr::except($attributes, $this->excludedAttributes);
-    }
-
-    /**
-     * Handle update event.
-     *
-     * Storage policy:
-     *  - old_data = only changed fields before update
-     *  - new_data = only changed fields after update
-     */
-    protected function handleUpdated(Model $model): void
-    {
-        $dirty = $model->getDirty();
-
-        if (empty($dirty)) {
             return;
+        } elseif ($type === AuditEventTypeEnum::CREATED) {
+            $old = null;
+            $new = $this->snapshot($model);
+        } elseif ($type === AuditEventTypeEnum::RESTORED) {
+            $old = ['deleted_at' => $model->getPrevious()[$model->getDeletedAtColumn()] ?? null];
+            $new = ['deleted_at' => null];
+        } elseif ($type === AuditEventTypeEnum::DELETED || $type === AuditEventTypeEnum::FORCE_DELETED) {
+            $old = $this->snapshot($model);
+            $new = null;
+        } else {
+            $old = null;
+            $new = null;
         }
 
+        $this->persist($model, $type, $old, $new, $meta);
+    }
+
+    /** Use after an intentional raw update, while the old values are still available. */
+    public function recordChange(Model $model, array $before, array $after, array $meta = []): void
+    {
         $old = [];
         $new = [];
-
-        foreach ($dirty as $field => $value) {
-            if ($this->isExcluded($field)) {
+        foreach ($after as $key => $value) {
+            if ($this->excluded($model, $key) || $key === $model->getUpdatedAtColumn()
+                || ($before[$key] ?? null) === $value) {
                 continue;
             }
 
-            $old[$field] = $model->getOriginal($field);
-            $new[$field] = $value;
+            $old[$key] = $before[$key] ?? null;
+            $new[$key] = $value;
         }
 
-        if (empty($old) && empty($new)) {
+        if ($old !== []) {
+            $this->persist($model, AuditEventTypeEnum::UPDATED, $old, $new, $meta);
+        }
+    }
+
+    /** Record a many-to-many change, including changed pivot attributes. */
+    public function sync(Model $model, string $relation, array $ids, bool $detaching = true): array
+    {
+        $related = $model->{$relation}();
+        if (! $related instanceof BelongsToMany) {
+            throw new \InvalidArgumentException("Relation [{$relation}] must be many-to-many.");
+        }
+
+        return $model->getConnection()->transaction(function () use ($model, $relation, $related, $ids, $detaching): array {
+            $before = $this->pivotRows($related);
+            $result = $related->sync($ids, $detaching);
+            $this->recordPivotDiff($model, $relation, $related, $before);
+
+            return $result;
+        });
+    }
+
+    public function detach(Model $model, string $relation, array $ids): int
+    {
+        $related = $model->{$relation}();
+        if (! $related instanceof BelongsToMany) {
+            throw new \InvalidArgumentException("Relation [{$relation}] must be many-to-many.");
+        }
+
+        return $model->getConnection()->transaction(function () use ($model, $relation, $related, $ids): int {
+            $before = $this->pivotRows($related);
+            $count = $related->detach($ids);
+            $this->recordPivotDiff($model, $relation, $related, $before);
+
+            return $count;
+        });
+    }
+
+    private function pivotRows(BelongsToMany $relation): array
+    {
+        $key = $relation->getRelatedPivotKeyName();
+
+        return $relation->newPivotQuery()->get()->mapWithKeys(function (object $row) use ($key): array {
+            $attributes = (array) $row;
+            unset($attributes['created_at'], $attributes['updated_at']);
+            $attributes = array_filter(
+                $attributes,
+                fn ($field) => preg_match('/(?:password|secret|token|private_key|api_key)/i', $field) !== 1,
+                ARRAY_FILTER_USE_KEY,
+            );
+
+            return [(string) $attributes[$key] => $attributes];
+        })->all();
+    }
+
+    private function recordPivotDiff(Model $model, string $name, BelongsToMany $relation, array $before): void
+    {
+        $after = $this->pivotRows($relation);
+        $key = $relation->getRelatedPivotKeyName();
+        foreach (array_unique(array_merge(array_keys($before), array_keys($after))) as $id) {
+            $oldRow = $before[$id] ?? null;
+            $newRow = $after[$id] ?? null;
+            if ($oldRow === $newRow) {
+                continue;
+            }
+
+            $type = $oldRow === null ? AuditEventTypeEnum::ATTACHED : ($newRow === null ? AuditEventTypeEnum::DETACHED : AuditEventTypeEnum::UPDATED);
+            $old = $oldRow === null ? null : array_filter($oldRow, fn ($value, $field) => ! array_key_exists($field, $newRow ?? []) || $newRow[$field] !== $value, ARRAY_FILTER_USE_BOTH);
+            $new = $newRow === null ? null : array_filter($newRow, fn ($value, $field) => ! array_key_exists($field, $oldRow ?? []) || $oldRow[$field] !== $value, ARRAY_FILTER_USE_BOTH);
+            $this->persist($model, $type, $old, $new, [
+                'relation' => $name,
+                'related_type' => $relation->getRelated()->getMorphClass(),
+                'related_id' => $id,
+                'pivot_key' => $key,
+            ]);
+        }
+    }
+
+    private function persist(Model $model, AuditEventTypeEnum $type, ?array $old, ?array $new, array $meta): void
+    {
+        // Some isolated tests intentionally create only the tables they exercise.
+        if (app()->environment('testing') && ! $model->getConnection()->getSchemaBuilder()->hasTable('audit_events')) {
             return;
         }
 
-        $this->log(
-            model: $model,
-            type: AuditEventTypeEnum::UPDATED,
-            oldData: $old,
-            newData: $new,
-        );
+        $user = Auth::user();
+        $event = new AuditEvent([
+            'type' => $type,
+            'subject_id' => $model->getKey(),
+            'subject_type' => $model->getMorphClass(),
+            'subject_label' => $this->subjectLabel($model),
+            'user_id' => $user?->getAuthIdentifier(),
+            'actor_name' => $user
+                ? mb_substr((string) ($user->display_name ?: $user->username ?: $user->getAuthIdentifier()), 0, 255)
+                : (app()->runningInConsole() ? 'system' : 'guest'),
+            'ip_address' => app()->runningInConsole() ? null : request()->ip(),
+            'user_agent' => app()->runningInConsole() ? null : mb_substr((string) request()->userAgent(), 0, 255),
+            'old_data' => $old,
+            'new_data' => $new,
+            'meta' => $meta ?: null,
+        ]);
+        $event->setConnection($model->getConnectionName());
+        $event->save();
     }
 
-    /**
-     * Determine whether an attribute should be excluded from audit.
-     *
-     * @param string $field
-     * @return bool
-     */
-    protected function isExcluded(string $field): bool
+    private function snapshot(Model $model): array
     {
-        return in_array($field, $this->excludedAttributes, true);
+        return array_filter($model->getAttributes(), fn ($key) => ! $this->excluded($model, $key), ARRAY_FILTER_USE_KEY);
     }
 
-    /**
-     * Handle soft/force delete event.
-     *
-     * Storage policy:
-     *  - old_data = full snapshot before deletion
-     *  - new_data = null
-     */
-    protected function handleDeleted(Model $model, AuditEventTypeEnum $type): void
+    private function subjectLabel(Model $model): ?string
     {
-        $this->log(
-            model: $model,
-            type: $type,
-            oldData: $this->snapshot($model),
-            newData: null,
-            meta: [
-                'deleted_by' => auth()->id(),
-            ]
-        );
+        $attributes = $model->getAttributes();
+        foreach (['title', 'name', 'display_name', 'full_name', 'label', 'code', 'slug', 'username'] as $field) {
+            $value = $attributes[$field] ?? null;
+            if (is_scalar($value) && filled($value)) {
+                return mb_substr((string) $value, 0, 160);
+            }
+        }
+
+        return null;
     }
 
-    /**
-     * Handle restore event.
-     *
-     * Storage policy:
-     *  - old_data = deleted_at delta
-     *  - new_data = reset values (null)
-     */
-    protected function handleRestored(Model $model): void
+    private function excluded(Model $model, string $key): bool
     {
-        $this->log(
-            model: $model,
-            type: AuditEventTypeEnum::RESTORED,
-            oldData: [
-                'deleted_at' => $model->deleted_at,
-                'deleted_by' => $model->deleted_by ?? auth()->id(),
-            ],
-            newData: [
-                'deleted_at' => null,
-                'deleted_by' => null,
-            ]
-        );
-    }
-
-    /**
-     * Handle relation attach/detach event.
-     *
-     * Storage policy:
-     *  - old_data = null
-     *  - new_data = null
-     *  - meta contains relation context
-     *
-     * @param array<string, mixed> $meta
-     */
-    protected function handleRelationChange(Model $model, AuditEventTypeEnum $type, array $meta): void
-    {
-        $this->log(
-            model: $model,
-            type: $type,
-            oldData: null,
-            newData: null,
-            meta: $meta
-        );
+        return in_array(strtolower($key), self::EXCLUDED, true)
+            || in_array($key, $model->getHidden(), true)
+            || (method_exists($model, 'auditExcludedAttributes')
+                && in_array($key, $model->auditExcludedAttributes(), true))
+            || preg_match('/(?:password|secret|token|private_key|api_key)/i', $key) === 1;
     }
 }

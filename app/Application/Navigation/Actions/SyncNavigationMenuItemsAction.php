@@ -30,7 +30,7 @@ class SyncNavigationMenuItemsAction
     public function execute(NavigationMenu $menu, array $items): void
     {
         DB::transaction(function () use ($menu, $items) {
-            $menu->items()->delete();
+            $menu->items()->get()->each->delete();
 
             $this->persistItems(
                 menu: $menu,

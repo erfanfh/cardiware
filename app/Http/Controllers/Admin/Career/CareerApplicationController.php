@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin\Career;
 use App\Domain\Career\Models\CareerApplication;
 use App\Domain\Career\Models\CareerPosition;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class CareerApplicationController extends Controller
@@ -76,10 +78,22 @@ class CareerApplicationController extends Controller
             return;
         }
 
-        CareerApplication::query()->whereKey($careerApplication->id)->whereNull('viewed_at')->update([
-            'viewed_at' => now(),
-            'viewed_by' => auth()->id(),
-        ]);
+        DB::transaction(function () use ($careerApplication): void {
+            $viewedAt = now();
+            $viewerId = auth()->id();
+            $updated = CareerApplication::query()->whereKey($careerApplication->id)->whereNull('viewed_at')->update([
+                'viewed_at' => $viewedAt,
+                'viewed_by' => $viewerId,
+            ]);
+
+            if ($updated) {
+                app(AuditService::class)->recordChange(
+                    $careerApplication,
+                    ['viewed_at' => null, 'viewed_by' => null],
+                    ['viewed_at' => $viewedAt->toDateTimeString(), 'viewed_by' => $viewerId],
+                );
+            }
+        });
         $careerApplication->refresh();
     }
 }

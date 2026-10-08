@@ -10,6 +10,11 @@ use Illuminate\Support\Str;
 
 class Payment extends Model
 {
+    public function auditExcludedAttributes(): array
+    {
+        return ['request_payload', 'callback_payload', 'verify_payload'];
+    }
+
     protected $fillable = [
         'payable_type',
         'payable_id',

@@ -35,7 +35,7 @@ class SyncProductSaleItemsAction
     public function execute(Product $product, array $payload, array $customAttributeValueKeyMap): void
     {
         if ($this->productTypeValue($product) === ProductTypeEnum::PHYSICAL->value) {
-            $product->saleItems()->delete();
+            $product->saleItems()->get()->each->delete();
 
             return;
         }
@@ -128,7 +128,7 @@ class SyncProductSaleItemsAction
         $product
             ->saleItems()
             ->when(!empty($keptSaleItemIds), fn($query) => $query->whereNotIn('id', $keptSaleItemIds))
-            ->delete();
+            ->get()->each->delete();
     }
 
     /**
@@ -382,7 +382,7 @@ class SyncProductSaleItemsAction
         array           $customAttributeValueKeyMap
     ): void
     {
-        $saleItem->attributeValues()->delete();
+        $saleItem->attributeValues()->get()->each->delete();
 
         foreach ($attributeValues as $frontendValueKey) {
             $frontendValueKey = trim((string)$frontendValueKey);

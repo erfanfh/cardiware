@@ -24,7 +24,7 @@ class DeleteProductAttributeAction
         }
 
         DB::transaction(function () use ($attribute): void {
-            $attribute->values()->delete();
+            $attribute->values()->get()->each->delete();
             $attribute->delete();
         });
     }

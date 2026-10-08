@@ -10,6 +10,7 @@ use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Marketplace\Models\Store;
 use App\Domain\Slug\Enums\SlugScopeEnum;
+use App\Infrastructure\Services\Audit\AuditService;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -48,7 +49,7 @@ class CreateStoreAction
 
             $store = Store::create($storeData);
 
-            $store->sellers()->sync($data['seller_user_ids'] ?? []);
+            app(AuditService::class)->sync($store, 'sellers', $data['seller_user_ids'] ?? []);
 
             $desiredSlug = first_filled($data['slug'] ?? null, $data['title'] ?? null);
 

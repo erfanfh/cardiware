@@ -15,6 +15,6 @@ class EnsureSingleFloatingCouponAction
         Coupon::query()
             ->whereKeyNot($coupon->getKey())
             ->where('is_floating_box_enabled', true)
-            ->update(['is_floating_box_enabled' => false]);
+            ->get()->each(fn (Coupon $other) => $other->update(['is_floating_box_enabled' => false]));
     }
 }

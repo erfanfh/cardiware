@@ -39,11 +39,15 @@ class HandleProductBulkAction
      */
     protected function updateStatus(array $ids, ProductStatusEnum $status): int
     {
-        return Product::query()
-            ->whereIn('id', $ids)
-            ->update([
-                'status' => $status
-            ]);
+        $count = 0;
+        foreach (Product::query()->whereIn('id', $ids)->get() as $product) {
+            if ($product->status !== $status) {
+                $product->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     /**

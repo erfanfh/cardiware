@@ -66,7 +66,7 @@ class SyncProductGlobalAttributesAction
         $product
             ->attributeAssignments()
             ->when(!empty($keptAssignmentIds), fn($query) => $query->whereNotIn('id', $keptAssignmentIds))
-            ->delete();
+            ->get()->each->delete();
     }
 
     /**
@@ -143,6 +143,6 @@ class SyncProductGlobalAttributesAction
         $assignment
             ->assignmentValues()
             ->when(!empty($keptIds), fn($query) => $query->whereNotIn('id', $keptIds))
-            ->delete();
+            ->get()->each->delete();
     }
 }

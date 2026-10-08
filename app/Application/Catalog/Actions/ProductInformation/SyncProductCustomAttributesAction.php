@@ -73,7 +73,7 @@ class SyncProductCustomAttributesAction
         $product
             ->customAttributes()
             ->when(!empty($keptAttributeIds), fn($query) => $query->whereNotIn('id', $keptAttributeIds))
-            ->delete();
+            ->get()->each->delete();
 
         return $customValueKeyMap;
     }
@@ -167,7 +167,7 @@ class SyncProductCustomAttributesAction
         $customAttribute
             ->values()
             ->when(!empty($keptValueIds), fn($query) => $query->whereNotIn('id', $keptValueIds))
-            ->delete();
+            ->get()->each->delete();
 
         return $valueKeyMap;
     }

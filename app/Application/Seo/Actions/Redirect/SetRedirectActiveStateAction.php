@@ -25,13 +25,14 @@ class SetRedirectActiveStateAction
             return 0;
         }
 
-        $updatedCount = Redirect::query()
+        $redirects = Redirect::query()
             ->whereKey($ids)
             ->where('is_active', !$isActive)
-            ->update([
-                'is_active' => $isActive,
-                'updated_at' => now(),
-            ]);
+            ->get();
+        foreach ($redirects as $redirect) {
+            $redirect->update(['is_active' => $isActive]);
+        }
+        $updatedCount = $redirects->count();
 
         if ($updatedCount > 0) {
             $this->cacheInvalidator->invalidate();

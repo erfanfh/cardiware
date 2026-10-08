@@ -38,9 +38,12 @@ class DeleteSelectedProductInformationFieldsAction
         }
 
         return DB::transaction(function () use ($ids) {
-            return ProductInformationField::query()
+            $fields = ProductInformationField::query()
                 ->whereIn('id', $ids)
-                ->delete();
+                ->get();
+            $fields->each->delete();
+
+            return $fields->count();
         });
     }
 }

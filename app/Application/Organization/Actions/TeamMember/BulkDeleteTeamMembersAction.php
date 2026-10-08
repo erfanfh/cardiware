@@ -11,8 +11,11 @@ class BulkDeleteTeamMembersAction
      */
     public function execute(array $ids): int
     {
-        return TeamMember::query()
+        $members = TeamMember::query()
             ->whereKey($ids)
-            ->delete();
+            ->get();
+        $members->each->delete();
+
+        return $members->count();
     }
 }

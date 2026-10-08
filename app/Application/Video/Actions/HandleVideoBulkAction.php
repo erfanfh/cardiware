@@ -36,7 +36,15 @@ class HandleVideoBulkAction
 
     private function updateStatus(array $ids, VideoStatusEnum $status): int
     {
-        return Video::query()->whereIn('id', $ids)->update(['status' => $status]);
+        $count = 0;
+        foreach (Video::query()->whereIn('id', $ids)->get() as $video) {
+            if ($video->status !== $status) {
+                $video->update(['status' => $status]);
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     private function delete(array $ids): int

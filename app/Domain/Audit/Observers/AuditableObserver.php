@@ -50,9 +50,10 @@ class AuditableObserver
      */
     public function updated(Model $model): void
     {
-        if (array_key_exists('deleted_at', $model->getDirty()) &&
-            $model->getOriginal('deleted_at') !== null
-            && $model->deleted_at === null) {
+        if (method_exists($model, 'getDeletedAtColumn')
+            && array_key_exists($model->getDeletedAtColumn(), $model->getChanges())
+            && ($model->getPrevious()[$model->getDeletedAtColumn()] ?? null) !== null
+            && $model->getAttribute($model->getDeletedAtColumn()) === null) {
             return;
         }
 
@@ -82,7 +83,7 @@ class AuditableObserver
      * @param Model $model
      * @return void
      */
-    public function restoring(Model $model): void
+    public function restored(Model $model): void
     {
         $this->auditService->record($model, AuditEventTypeEnum::RESTORED);
     }

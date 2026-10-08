@@ -15,7 +15,7 @@ class SyncProductReleaseChangesAction
     {
         $items = $this->parseChanges($changes);
 
-        $release->releaseChanges()->delete();
+        $release->releaseChanges()->get()->each->delete();
 
         if ($items === []) {
             return;

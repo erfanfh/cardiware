@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class PopupBulkActionController extends Controller
@@ -22,10 +23,20 @@ class PopupBulkActionController extends Controller
         $action = $data['bulk_action'];
         Gate::authorize($action === 'delete' ? 'popup.delete' : 'popup.edit');
 
-        $query = Popup::query()->whereIn('id', $data['ids']);
-        $count = $action === 'delete'
-            ? $query->delete()
-            : $query->update(['is_active' => $action === 'activate', 'updated_at' => now()]);
+        $count = DB::transaction(function () use ($action, $data): int {
+            $count = 0;
+            foreach (Popup::query()->whereIn('id', $data['ids'])->get() as $popup) {
+                if ($action === 'delete') {
+                    $popup->delete();
+                    $count++;
+                } elseif ((bool) $popup->is_active !== ($action === 'activate')) {
+                    $popup->update(['is_active' => $action === 'activate']);
+                    $count++;
+                }
+            }
+
+            return $count;
+        });
 
         return to_route('admin.popups.index')
             ->with('success', number_format($count).' پاپ‌آپ به‌روزرسانی شد.');
