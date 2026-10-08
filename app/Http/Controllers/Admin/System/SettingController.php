@@ -14,6 +14,7 @@ use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateCareersSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTicketSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
@@ -30,6 +31,28 @@ use RuntimeException;
 
 class SettingController extends Controller
 {
+    public function careers(): View
+    {
+        Gate::authorize('setting.careers');
+
+        return view('admin.system.settings.careers');
+    }
+
+    public function storeCareers(UpdateCareersSettingsRequest $request): RedirectResponse
+    {
+        Gate::authorize('setting.careers');
+
+        DB::transaction(function () use ($request): void {
+            foreach ($request->validated() as $field => $value) {
+                if (! app(UpdateSettingAction::class)->execute('careers', $field, $value)) {
+                    throw new RuntimeException('Unable to persist careers settings.');
+                }
+            }
+        });
+
+        return redirect()->route('admin.settings.careers')->with('success', 'تنظیمات صفحه استخدام ذخیره شد.');
+    }
+
     public function backup(BackupEnvironment $environment): View
     {
         Gate::authorize('setting.backup');

@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Domain\Career\Models;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class CareerPosition extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'title', 'slug', 'department', 'employment_type', 'cooperation_type',
+        'location', 'level', 'detail_label', 'detail_value', 'summary',
+        'requirements', 'status', 'sort_order', 'published_at', 'closes_at',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'requirements' => 'array',
+            'sort_order' => 'integer',
+            'published_at' => 'datetime',
+            'closes_at' => 'datetime',
+        ];
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(CareerApplication::class);
+    }
+
+    public function scopePubliclyAvailable(Builder $query): Builder
+    {
+        return $query->where('status', 'active')
+            ->where(fn (Builder $query) => $query->whereNull('published_at')->orWhere('published_at', '<=', now()))
+            ->where(fn (Builder $query) => $query->whereNull('closes_at')->orWhere('closes_at', '>', now()));
+    }
+}

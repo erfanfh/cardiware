@@ -74,6 +74,16 @@ class PermissionSeeder extends Seeder
                 'information' => 'مدیریت فیلدهای اطلاعات محصولات',
                 'medal' => 'مدیریت مدال‌های محصولات',
             ],
+            'career-position' => [
+                'list' => 'مشاهده موقعیت‌های شغلی',
+                'create' => 'ایجاد موقعیت شغلی',
+                'edit' => 'ویرایش موقعیت شغلی',
+                'delete' => 'حذف موقعیت شغلی',
+            ],
+            'career-application' => [
+                'list' => 'مشاهده درخواست‌های همکاری و رزومه‌ها',
+                'review' => 'بررسی درخواست‌های همکاری',
+            ],
             'tag' => [
                 'manage' => 'مدیریت برچسب ها',
             ],
@@ -117,6 +127,7 @@ class PermissionSeeder extends Seeder
                 'home' => 'صفحه اصلی',
                 'about-us' => 'درباره ما',
                 'team' => 'صفحه تیم',
+                'careers' => 'صفحه استخدام',
                 'ads' => 'تنظیمات تبلیغات',
                 'sidebar-widgets' => 'تنظیمات ابزارک های سایدبار',
                 'auth' => 'ورود/ثبت نام',

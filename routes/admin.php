@@ -36,4 +36,5 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/raffle.php';
         require __DIR__ . '/admin/poll.php';
         require __DIR__ . '/admin/video.php';
+        require __DIR__ . '/admin/career.php';
     });

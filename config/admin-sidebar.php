@@ -385,6 +385,18 @@ return [
     ],
 
     [
+        'label' => 'استخدام و همکاری',
+        'route' => 'admin.career-positions.index',
+        'icon' => 'icons.user-multiple-02',
+        'badge' => 'unseen_career_applications',
+        'children' => [
+            ['label' => 'موقعیت‌های شغلی', 'route' => 'admin.career-positions.index', 'icon' => 'icons.menu-01', 'gate' => 'career-position.list'],
+            ['label' => 'ایجاد موقعیت', 'route' => 'admin.career-positions.create', 'icon' => 'icons.plus-sign', 'gate' => 'career-position.create'],
+            ['label' => 'درخواست‌های همکاری', 'route' => 'admin.career-applications.index', 'icon' => 'icons.file-02', 'gate' => 'career-application.list', 'badge' => 'unseen_career_applications'],
+            ['label' => 'تنظیمات صفحه', 'route' => 'admin.settings.careers', 'icon' => 'icons.settings-02', 'gate' => 'setting.careers'],
+        ],
+    ],
+    [
         'label' => 'کاربران',
         'route' => 'admin.users.index',
         'icon' => 'icons.user',

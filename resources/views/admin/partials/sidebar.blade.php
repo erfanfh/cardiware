@@ -8,6 +8,9 @@
         'open_tickets' => \App\Domain\Support\Models\Ticket::query()
             ->where('status', \App\Domain\Support\Enums\TicketStatusEnum::OPEN)
             ->count(),
+        'unseen_career_applications' => \Illuminate\Support\Facades\Gate::allows('career-application.list')
+            ? \App\Domain\Career\Models\CareerApplication::query()->whereNull('viewed_at')->count()
+            : 0,
         'unresolved_wallet_withdrawals' => \Illuminate\Support\Facades\Gate::allows('wallet.withdrawals')
             ? \App\Domain\Financial\Models\WalletWithdrawal::query()
                 ->unresolved()
