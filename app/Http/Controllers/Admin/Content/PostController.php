@@ -7,6 +7,7 @@ use App\Application\Content\Actions\DeletePostAction;
 use App\Application\Content\Actions\GetPostFeaturesAction;
 use App\Application\Content\Actions\UpdatePostAction;
 use App\Application\Content\Listings\PostListing;
+use App\Application\Content\Support\PostEditLock;
 use App\Application\Taxonomy\Actions\GetAllTaxonomiesAction;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
@@ -18,6 +19,8 @@ use App\Http\Requests\Admin\Content\IndexPostRequest;
 use App\Http\Requests\Admin\Content\UpdatePostRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
@@ -44,7 +47,7 @@ class PostController extends Controller
         Gate::authorize('post.list');
 
         $posts = $postListing
-            ->handle(Post::with(['author', 'seoAnalysis'])->withCount('comments'), $request->validated())
+            ->handle(Post::with(['author', 'seoAnalysis', 'editLockUser'])->withCount('comments'), $request->validated())
             ->paginate($postListing->perPage())
             ->withQueryString();
 
@@ -153,11 +156,18 @@ class PostController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Post $post
-     * @return View
+     * @return Response
      */
-    public function edit(Post $post): View
+    public function edit(Request $request, Post $post, PostEditLock $locks): Response
     {
         Gate::authorize('post.edit');
+
+        $previous = $request->session()->get('post_edit_lock');
+        $token = $request->old('edit_lock_token');
+        if (! is_string($token) && is_array($previous) && ($previous['post_id'] ?? null) === $post->id) {
+            $token = $previous['token'] ?? null;
+        }
+        $editLockToken = $locks->acquire($post, $request->user(), is_string($token) ? $token : null);
 
         $selectedTags = $post->tags
             ->map(fn($tag) => [
@@ -171,7 +181,8 @@ class PostController extends Controller
         $selectedCategoryIds = $post->categories()->pluck('taxonomy_terms.id')->all();
         $selectedFeatures = $this->getPostFeaturesAction->execute($post);
 
-        return view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds', 'selectedFeatures'));
+        return response()->view('admin.content.posts.edit', compact('post', 'selectedTags', 'allCategories', 'selectedCategoryIds', 'selectedFeatures', 'editLockToken'))
+            ->header('Cache-Control', 'no-store');
     }
 
 
@@ -184,14 +195,17 @@ class PostController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action): RedirectResponse
+    public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action, PostEditLock $locks): RedirectResponse
     {
         Gate::authorize('post.edit');
 
-        $action->execute($post, $request->validated());
+        $token = $request->input('edit_lock_token');
+        $locks->save($post, $request->user(), is_string($token) ? $token : '',
+            fn () => $action->execute($post, $request->validated()));
 
         return redirect()
             ->route('admin.posts.edit', $post)
+            ->with('post_edit_lock', ['post_id' => $post->id, 'token' => $token])
             ->with('success', 'نوشته با موفقیت بروزرسانی شد.');
     }
 
@@ -202,11 +216,11 @@ class PostController extends Controller
      * @param DeletePostAction $action
      * @return RedirectResponse
      */
-    public function destroy(Post $post, DeletePostAction $action): RedirectResponse
+    public function destroy(Post $post, DeletePostAction $action, PostEditLock $locks): RedirectResponse
     {
         Gate::authorize('post.delete');
 
-        $action->execute($post);
+        $locks->withoutEditor($post, fn () => $action->execute($post));
 
         return redirect()
             ->route('admin.posts.index')

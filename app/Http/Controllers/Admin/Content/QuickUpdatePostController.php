@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Content;
 
+use App\Application\Content\Support\PostEditLock;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelPostTagsAction;
@@ -12,7 +13,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Content\QuickUpdatePostRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
@@ -28,7 +28,7 @@ class QuickUpdatePostController extends Controller
     /**
      * @throws Throwable
      */
-    public function __invoke(QuickUpdatePostRequest $request, Post $post): JsonResponse|RedirectResponse
+    public function __invoke(QuickUpdatePostRequest $request, Post $post, PostEditLock $locks): JsonResponse|RedirectResponse
     {
         Gate::authorize('post.edit');
 
@@ -36,7 +36,7 @@ class QuickUpdatePostController extends Controller
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['slug'] = $data['slug'] ?: 'untitled-page';
 
-        DB::transaction(function () use ($post, $data): void {
+        $locks->withoutEditor($post, function () use ($post, $data): void {
             $post->update([
                 'title' => $data['title'],
                 'status' => $data['status'],

@@ -2,6 +2,7 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Content\Support\PostEditLock;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -11,6 +12,8 @@ use Throwable;
 
 class HandlePostBulkAction
 {
+    public function __construct(private readonly PostEditLock $locks) {}
+
     /**
      * @param string $action
      * @param array $ids
@@ -20,6 +23,11 @@ class HandlePostBulkAction
     public function execute(string $action, array $ids): BulkActionResultDTO
     {
         return DB::transaction(function () use ($action, $ids) {
+            // Keep every row locked until the entire bulk action commits or rolls back.
+            foreach (Post::query()->whereIn('id', $ids)->orderBy('id')->get() as $post) {
+                $this->locks->withoutEditor($post, fn () => null);
+            }
+
             $affectedCount = match ($action) {
                 'activate' => $this->updateStatus($ids, PostStatusEnum::ACTIVE),
                 'deactivate' => $this->updateStatus($ids, PostStatusEnum::INACTIVE),

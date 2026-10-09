@@ -130,6 +130,12 @@
                                     </template>
                                 </div>
 
+                                @if($post->isEditLocked())
+                                    <p class="mt-2 text-xs font-bold text-amber-700">
+                                        در حال ویرایش توسط {{ $post->editLockUser?->display_name ?: 'مدیر دیگر' }}
+                                    </p>
+                                @endif
+
                                 <x-admin.list.row-actions>
                                     <x-admin.list.action
                                         tag="a"

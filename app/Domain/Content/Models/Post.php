@@ -27,6 +27,8 @@ class Post extends Model implements PageViewableInterface, CommentableContract
 {
     use SoftDeletes, HasTaxonomyTerms, HasFeatures, HasComments, HasExcerpt, HasSeoMeta;
 
+    protected $hidden = ['edit_lock_token'];
+
     protected $fillable = [
         'author_id',
         'title',
@@ -44,6 +46,7 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     ];
 
     protected $casts = [
+        'edit_lock_expires_at' => 'datetime',
         'status' => PostStatusEnum::class,
         'is_pinned' => 'boolean',
         'published_at' => 'datetime',
@@ -83,6 +86,17 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function editLockUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edit_lock_user_id');
+    }
+
+    public function isEditLocked(): bool
+    {
+        return $this->edit_lock_user_id !== null
+            && $this->edit_lock_expires_at?->isFuture() === true;
     }
 
     /**
