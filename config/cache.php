@@ -78,6 +78,12 @@ return [
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
         ],
 
+        'download_counters' => [
+            'driver' => 'redis',
+            'connection' => 'download_counters',
+            'lock_connection' => 'download_counters',
+        ],
+
         'dynamodb' => [
             'driver' => 'dynamodb',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -112,7 +118,7 @@ return [
     |
     */
 
-    'prefix' => env('CACHE_PREFIX', Str::slug((string)env('APP_NAME', 'laravel')) . '-cache-'),
+    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')).'-cache-'),
 
     'page_views_lifetime' => env('CACHE_PAGE_VIEWS_LIFETIME', 5), // minutes
     'page_views_schedule' => env('CACHE_PAGE_VIEWS_SCHEDULE', 1), // minutes
@@ -120,4 +126,5 @@ return [
 
     'download_clicks_schedule' => env('CACHE_DOWNLOAD_CLICKS_SCHEDULE', 1), // minutes
     'download_clicks_flush_limit' => env('CACHE_DOWNLOAD_CLICKS_FLUSH_LIMIT', 10000),
+    'download_clicks_dedup_minutes' => env('CACHE_DOWNLOAD_CLICKS_DEDUP_MINUTES', 30),
 ];

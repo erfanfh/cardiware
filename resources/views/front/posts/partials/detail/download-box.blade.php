@@ -113,7 +113,7 @@
                             $linkEntries = $entries->filter(fn ($entry) => $entry->isLink())->values();
 
                             $copyAllText = $linkEntries
-                                ->map(fn ($entry) => $entry->title . ': ' . route('downloads.entry.redirect', $entry->public_id))
+                                ->map(fn ($entry) => $entry->title . ': ' . $entry->content)
                                 ->implode("\n");
                         @endphp
 
@@ -135,6 +135,13 @@
                                 <div class="space-y-4">
                                     @foreach($entries as $entry)
                                         @if($entry->isLink())
+                                            @php
+                                                $clickTrackingUrl = \Illuminate\Support\Facades\URL::signedRoute(
+                                                    'downloads.entry.track',
+                                                    ['publicId' => $entry->public_id],
+                                                    absolute: false,
+                                                );
+                                            @endphp
                                             <div
                                                 class="group flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition bg-slate-100/80 p-3 dark:bg-slate-800/70 hover:bg-slate-200/50 dark:hover:bg-slate-900/50 max-sm:flex-col max-sm:items-stretch">
                                                 <div class="flex min-w-0 items-center gap-2">
@@ -142,6 +149,9 @@
                                                         class="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500"></span>
 
                                                     <a href="{{ $entry->content }}"
+                                                       data-click-tracking-url="{{ $clickTrackingUrl }}"
+                                                       @click="trackClick($event.currentTarget.dataset.clickTrackingUrl, $event)"
+                                                       @auxclick="trackClick($event.currentTarget.dataset.clickTrackingUrl, $event)"
                                                        class="min-w-0 truncate text-sm font-extrabold leading-7 text-slate-900 dark:text-slate-100">
                                                         {{ $entry->title }}
                                                     </a>
@@ -184,6 +194,9 @@
 
                                                     <a
                                                         href="{{ $entry->content }}"
+                                                        data-click-tracking-url="{{ $clickTrackingUrl }}"
+                                                        @click="trackClick($event.currentTarget.dataset.clickTrackingUrl, $event)"
+                                                        @auxclick="trackClick($event.currentTarget.dataset.clickTrackingUrl, $event)"
                                                         class="inline-flex gap-1.5 leading-8 text-xs whitespace-nowrap items-center justify-center rounded-2xl bg-orange-500 px-4 font-extrabold text-white transition hover:bg-orange-600 active:bg-orange-700 max-sm:w-full"
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"

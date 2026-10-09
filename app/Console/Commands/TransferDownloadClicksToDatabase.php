@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Domain\Download\Models\DownloadEntry;
-use App\Infrastructure\Support\Counters\BufferedCounter;
+use App\Infrastructure\Support\Counters\DownloadClickCounter;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class TransferDownloadClicksToDatabase extends Command
 {
@@ -12,36 +14,53 @@ class TransferDownloadClicksToDatabase extends Command
 
     protected $description = 'Transfer buffered download clicks from Redis to database';
 
-    public function handle(): int
+    public function handle(DownloadClickCounter $counter): int
     {
-        $limit = (int)$this->option('limit');
+        $limit = max(0, (int) $this->option('limit'));
+        if ($limit === 0) {
+            return self::SUCCESS;
+        }
 
-        for ($i = 0; $i < $limit; $i++) {
-            $dirty = BufferedCounter::popDirty('download_clicks');
+        $lock = Cache::store('download_counters')->lock('downloads:flush-clicks', 600);
+        $acquired = false;
 
-            if (!$dirty) {
-                break;
+        try {
+            // Share this lock with the legacy command and other scheduler hosts.
+            if (! ($acquired = $lock->get())) {
+                return self::SUCCESS;
             }
 
-            [$type, $id] = BufferedCounter::parseDirtyValue($dirty);
+            foreach ($counter->pendingEntryIds($limit) as $entryId) {
+                if (! $lock->refresh()) {
+                    $this->error('Download click transfer lock was lost.');
 
-            if ($type !== 'DownloadEntry') {
-                continue;
+                    return self::FAILURE;
+                }
+
+                $count = $counter->pendingCount($entryId);
+
+                if ($count > 0) {
+                    DB::table('download_entries')
+                        ->where('id', $entryId)
+                        ->increment('download_click_count', $count);
+                }
+
+                // Keep the buffer/dirty marker until SQL succeeds. Missing rows are discarded.
+                $counter->acknowledge($entryId, $count);
             }
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->error('Download click transfer failed; unacknowledged counts remain buffered.');
 
-            $count = BufferedCounter::pull(
-                namespace: 'download_clicks',
-                type: $type,
-                id: $id,
-            );
-
-            if ($count <= 0) {
-                continue;
+            return self::FAILURE;
+        } finally {
+            if ($acquired) {
+                try {
+                    $lock->release();
+                } catch (Throwable $exception) {
+                    report($exception);
+                }
             }
-
-            DownloadEntry::query()
-                ->whereKey($id)
-                ->increment('download_click_count', $count);
         }
 
         return self::SUCCESS;

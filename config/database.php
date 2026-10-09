@@ -203,6 +203,21 @@ return [
             'backoff_cap' => env('REDIS_BACKOFF_CAP', 1000),
         ],
 
+        // Same database/prefix as the old buffer, with a short timeout for optional stats.
+        'download_counters' => [
+            'url' => env('REDIS_URL'),
+            'host' => env('REDIS_HOST', '127.0.0.1'),
+            'username' => env('REDIS_USERNAME'),
+            'password' => env('REDIS_PASSWORD'),
+            'port' => env('REDIS_PORT', '6379'),
+            'database' => env('REDIS_DB', '0'),
+            'timeout' => (float) env('REDIS_DOWNLOAD_COUNTER_TIMEOUT', 0.25),
+            'read_timeout' => (float) env('REDIS_DOWNLOAD_COUNTER_TIMEOUT', 0.25),
+            'read_write_timeout' => (float) env('REDIS_DOWNLOAD_COUNTER_TIMEOUT', 0.25),
+            'retry_interval' => 0,
+            'max_retries' => 0,
+        ],
+
     ],
 
 ];

@@ -9,6 +9,9 @@ use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
 
+// Click analytics does not need browser sessions or page tracking.
+require __DIR__.'/front/download.php';
+
 Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
@@ -26,25 +29,24 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         )
             ->middleware(['auth', 'signed', 'throttle:30,1'])
             ->name('launcher.checkout.entry');
-        require __DIR__ . '/front/identity.php';
-        require __DIR__ . '/front/project.php';
-        require __DIR__ . '/front/search.php';
-        require __DIR__ . '/front/download.php';
-        require __DIR__ . '/front/discussion.php';
-        require __DIR__ . '/front/taxonomy.php';
-        require __DIR__ . '/front/seo.php';
-        require __DIR__ . '/front/catalog.php';
-        require __DIR__ . '/front/commerce.php';
-        require __DIR__ . '/front/vip.php';
-        require __DIR__ . '/front/marketplace.php';
-        require __DIR__ . '/front/seller.php';
-        require __DIR__ . '/front/financial.php';
-        require __DIR__ . '/front/system.php';
-        require __DIR__ . '/front/career.php';
-        require __DIR__ . '/front/loyalty.php';
-        require __DIR__ . '/front/support.php';
-        require __DIR__ . '/front/raffle.php';
-        require __DIR__ . '/front/poll.php';
-        require __DIR__ . '/front/video.php';
-        require __DIR__ . '/front/content.php'; // This must be the last
+        require __DIR__.'/front/identity.php';
+        require __DIR__.'/front/project.php';
+        require __DIR__.'/front/search.php';
+        require __DIR__.'/front/discussion.php';
+        require __DIR__.'/front/taxonomy.php';
+        require __DIR__.'/front/seo.php';
+        require __DIR__.'/front/catalog.php';
+        require __DIR__.'/front/commerce.php';
+        require __DIR__.'/front/vip.php';
+        require __DIR__.'/front/marketplace.php';
+        require __DIR__.'/front/seller.php';
+        require __DIR__.'/front/financial.php';
+        require __DIR__.'/front/system.php';
+        require __DIR__.'/front/career.php';
+        require __DIR__.'/front/loyalty.php';
+        require __DIR__.'/front/support.php';
+        require __DIR__.'/front/raffle.php';
+        require __DIR__.'/front/poll.php';
+        require __DIR__.'/front/video.php';
+        require __DIR__.'/front/content.php'; // This must be the last
     });
