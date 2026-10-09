@@ -12,7 +12,7 @@ class CareerPageController extends Controller
     public function __invoke(CareersSettings $settings): View
     {
         $positions = CareerPosition::publiclyAvailable()
-            ->orderBy('sort_order')->orderBy('id')->get();
+            ->latest('published_at')->latest('id')->get();
 
         return view('front.career.index', [
             'careers' => $settings->values(),

@@ -7,9 +7,6 @@
         <x-admin.filters.panel :open="count($filters) > 0">
             <x-admin.filters.header title="مدیریت و جستجوی موقعیت‌های شغلی">
                 <x-slot:actions>
-                    @can('setting.careers')
-                        <x-admin.form.button tag="a" href="{{ route('admin.settings.careers') }}" variant="secondary">تنظیمات صفحه استخدام</x-admin.form.button>
-                    @endcan
                     @can('career-position.create')
                         <x-admin.form.button tag="a" href="{{ route('admin.career-positions.create') }}" variant="solid">+ افزودن موقعیت جدید</x-admin.form.button>
                     @endcan
@@ -42,7 +39,7 @@
                 <x-admin.list.th>نوع همکاری</x-admin.list.th>
                 <x-admin.list.th>مکان</x-admin.list.th>
                 <x-admin.list.th>وضعیت</x-admin.list.th>
-                <x-admin.list.th>ترتیب</x-admin.list.th>
+                <x-admin.list.th>تاریخ انتشار</x-admin.list.th>
                 <x-admin.list.th>درخواست‌ها</x-admin.list.th>
                 <x-admin.list.th>تاریخ ثبت</x-admin.list.th>
             </tr></x-admin.list.thead>
@@ -65,7 +62,7 @@
                         <x-admin.list.td>{{ $position->employment_type ?: '—' }}</x-admin.list.td>
                         <x-admin.list.td>{{ $position->location ?: '—' }}</x-admin.list.td>
                         <x-admin.list.td>{{ ['draft' => 'پیش‌نویس', 'active' => 'فعال', 'closed' => 'بسته'][$position->status] ?? $position->status }}</x-admin.list.td>
-                        <x-admin.list.td>{{ $position->sort_order }}</x-admin.list.td>
+                        <x-admin.list.td>{{ $position->published_at ? jalali_date($position->published_at, 'Y/m/d') : '—' }}</x-admin.list.td>
                         <x-admin.list.td>
                             @can('career-application.list')
                                 <a class="text-brand-700" href="{{ route('admin.career-applications.index', ['career_position_id' => $position->id]) }}">{{ $position->applications_count }}</a>

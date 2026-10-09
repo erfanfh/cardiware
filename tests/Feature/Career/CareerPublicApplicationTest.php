@@ -44,7 +44,7 @@ class CareerPublicApplicationTest extends TestCase
         return CareerPosition::create([
             'title' => $title, 'slug' => 'job-'.uniqid(),
             'summary' => 'همکاری در تیم مودینگ وی', 'status' => $status,
-            'department' => 'محتوا', 'sort_order' => 1,
+            'department' => 'محتوا',
         ]);
     }
 
@@ -74,7 +74,6 @@ class CareerPublicApplicationTest extends TestCase
         $active = $this->position('موقعیت فعال');
         $this->position('موقعیت بسته', 'closed');
         $this->position('موقعیت آینده')->update(['published_at' => now()->addDay()]);
-        $this->position('موقعیت منقضی')->update(['closes_at' => now()->subDay()]);
         app(CareersSettings::class)->set('hero_title', 'عنوان ویژه همکاری');
         $this->withoutMiddleware(ForceTrailingSlash::class);
 
@@ -83,7 +82,6 @@ class CareerPublicApplicationTest extends TestCase
             ->assertSee($active->title)
             ->assertDontSee('موقعیت بسته')
             ->assertDontSee('موقعیت آینده')
-            ->assertDontSee('موقعیت منقضی')
             ->assertSee('name="resume"', false);
     }
 

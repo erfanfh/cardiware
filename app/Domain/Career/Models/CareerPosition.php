@@ -14,16 +14,14 @@ class CareerPosition extends Model
     protected $fillable = [
         'title', 'slug', 'department', 'employment_type', 'cooperation_type',
         'location', 'level', 'detail_label', 'detail_value', 'summary',
-        'requirements', 'status', 'sort_order', 'published_at', 'closes_at',
+        'requirements', 'status', 'published_at',
     ];
 
     protected function casts(): array
     {
         return [
             'requirements' => 'array',
-            'sort_order' => 'integer',
             'published_at' => 'datetime',
-            'closes_at' => 'datetime',
         ];
     }
 
@@ -35,7 +33,6 @@ class CareerPosition extends Model
     public function scopePubliclyAvailable(Builder $query): Builder
     {
         return $query->where('status', 'active')
-            ->where(fn (Builder $query) => $query->whereNull('published_at')->orWhere('published_at', '<=', now()))
-            ->where(fn (Builder $query) => $query->whereNull('closes_at')->orWhere('closes_at', '>', now()));
+            ->where(fn (Builder $query) => $query->whereNull('published_at')->orWhere('published_at', '<=', now()));
     }
 }

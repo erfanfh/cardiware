@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\Career\CareerApplicationController;
 use App\Http\Controllers\Admin\Career\CareerPositionController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('career-positions/check-slug', [CareerPositionController::class, 'checkSlug'])->name('career-positions.check-slug');
 Route::resource('career-positions', CareerPositionController::class)->except('show');
 Route::get('career-applications', [CareerApplicationController::class, 'index'])->name('career-applications.index');
 Route::get('career-applications/{careerApplication}', [CareerApplicationController::class, 'show'])->name('career-applications.show');

@@ -29,9 +29,16 @@ class SaveCareerPositionRequest extends FormRequest
             'summary' => ['required', 'string', 'max:5000'],
             'requirements_text' => ['nullable', 'string', 'max:10000'],
             'status' => ['required', Rule::in(['draft', 'active', 'closed'])],
-            'sort_order' => ['required', 'integer', 'min:0', 'max:1000000'],
             'published_at' => ['nullable', 'date'],
-            'closes_at' => ['nullable', 'date', 'after:published_at'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'published_at' => $this->input('published_at')
+                ? gregorian_date($this->input('published_at'))
+                : now()->format('Y-m-d H:i:s'),
+        ]);
     }
 }
