@@ -2,6 +2,7 @@
 
 namespace App\Application\Seo\Actions\Schema;
 
+use App\Application\Discussion\DTOs\CommentReviewDTO;
 use App\Application\Seo\DTOs\ProductSchemaContextDTO;
 
 final class BuildProductSchemaAction
@@ -10,6 +11,7 @@ final class BuildProductSchemaAction
         protected BuildProductOfferSchemaAction          $buildProductOfferSchemaAction,
         protected BuildProductAggregateOfferSchemaAction $buildProductAggregateOfferSchemaAction,
         protected BuildAggregateRatingSchemaAction       $buildAggregateRatingSchemaAction,
+        protected BuildReviewSchemaAction                $buildReviewSchemaAction,
     )
     {
     }
@@ -45,6 +47,10 @@ final class BuildProductSchemaAction
                 '@id' => $context->base->pageUrl,
             ],
             'aggregateRating' => $this->buildAggregateRatingSchemaAction->execute($context->base),
+            'review' => array_map(
+                fn (CommentReviewDTO $review): array => $this->buildReviewSchemaAction->execute($review, $context->base->pageUrl),
+                $context->reviews,
+            ),
             'offers' => $offers,
             'additionalProperty' => $context->additionalProperties,
         ];

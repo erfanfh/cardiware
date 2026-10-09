@@ -37,6 +37,7 @@ class ProductSeoResolver implements SeoResolverInterface
         return Cache::tags([
             CacheTag::SEO,
             CacheTag::SCHEMA,
+            CacheTag::COMMENT_AUTHORS,
             CacheTag::PRODUCTS,
             CacheTag::product($product->id),
             CacheTag::commentable($product->getMorphClass(), $product->getKey()),

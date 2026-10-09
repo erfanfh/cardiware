@@ -44,6 +44,7 @@ final class CacheTag
     public const RELATED_POSTS = 'related-posts';
 
     public const COMMENTS = 'comments';
+    public const COMMENT_AUTHORS = 'comment-authors';
 
     public const SIDEBAR = 'sidebar';
     public const SIDEBAR_COMMENTS = 'sidebar:comments';

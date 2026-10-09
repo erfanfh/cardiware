@@ -3,6 +3,7 @@
 namespace App\Application\Seo\Actions\Schema\Contexts;
 
 use App\Application\Discussion\Actions\GetCommentableRatingSummaryAction;
+use App\Application\Discussion\Actions\GetCommentableReviewsAction;
 use App\Application\Seo\Actions\GetSeoDefaultsAction;
 use App\Application\Seo\DTOs\ProductSchemaContextDTO;
 use App\Application\Seo\DTOs\ResolvedSeoPayloadDTO;
@@ -21,6 +22,7 @@ final class BuildProductSchemaContextAction
         protected SchemaIdGenerator                 $schemaIdGenerator,
         protected SchemaMoneyFormatter              $schemaMoneyFormatter,
         protected GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
+        protected GetCommentableReviewsAction       $getCommentableReviewsAction,
     )
     {
     }
@@ -145,6 +147,7 @@ final class BuildProductSchemaContextAction
             offers: $offers,
             additionalProperties: $this->buildAdditionalProperties($product),
             keywords: $product->tags->pluck('title')->values()->all(),
+            reviews: $this->getCommentableReviewsAction->execute($product),
         );
     }
 

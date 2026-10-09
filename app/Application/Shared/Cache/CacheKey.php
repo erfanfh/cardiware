@@ -147,7 +147,7 @@ final class CacheKey
         int|string $productId,
         int $productUpdatedAt
     ): string {
-        return "seo-data:product:{$productId}:{$productUpdatedAt}";
+        return "seo-data:product:v2:{$productId}:{$productUpdatedAt}";
     }
 
     public static function productSlug(string $slug): string
@@ -200,6 +200,11 @@ final class CacheKey
     public static function commentableRatingSummary(string $type, int|string $id): string
     {
         return "commentable:{$type}:{$id}:rating_summary";
+    }
+
+    public static function commentableReviews(string $type, int|string $id): string
+    {
+        return "commentable:{$type}:{$id}:reviews";
     }
 
     public static function dashboardYesterdayTopPosts(string $date, int $limit): string

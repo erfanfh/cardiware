@@ -2,11 +2,24 @@
 
 namespace App\Application\Identity\Observers;
 
+use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Identity\Models\User;
 use DomainException;
 
 class UserObserver
 {
+    public function updated(User $user): void
+    {
+        if ($user->wasChanged(['display_name', 'first_name', 'last_name', 'deleted_at'])) {
+            app(UserCacheInvalidator::class)->flushCommentAuthors();
+        }
+    }
+
+    public function deleted(User $user): void
+    {
+        app(UserCacheInvalidator::class)->flushCommentAuthors();
+    }
+
     public function deleting(User $user): void
     {
         if ($user->isForceDeleting()) {

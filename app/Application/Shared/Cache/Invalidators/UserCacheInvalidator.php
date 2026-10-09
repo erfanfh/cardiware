@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Cache;
 
 class UserCacheInvalidator
 {
+    public function flushCommentAuthors(): void
+    {
+        Cache::tags([CacheTag::COMMENT_AUTHORS])->flush();
+    }
+
     public function flushAll(): void
     {
         Cache::tags([

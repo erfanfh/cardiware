@@ -7,6 +7,7 @@ use App\Application\Seo\Actions\Schema\BuildPostArticleSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildProductAggregateOfferSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildProductOfferSchemaAction;
 use App\Application\Seo\Actions\Schema\BuildProductSchemaAction;
+use App\Application\Seo\Actions\Schema\BuildReviewSchemaAction;
 use App\Application\Seo\DTOs\ProductSchemaContextDTO;
 use App\Application\Seo\DTOs\SchemaContextDTO;
 use App\Application\Seo\Support\SchemaIdGenerator;
@@ -61,6 +62,7 @@ final class AggregateRatingSchemaTest extends TestCase
             new BuildProductOfferSchemaAction,
             new BuildProductAggregateOfferSchemaAction,
             $aggregateRatingBuilder,
+            new BuildReviewSchemaAction(new SchemaIdGenerator),
         );
 
         $context = new ProductSchemaContextDTO(

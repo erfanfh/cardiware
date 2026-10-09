@@ -2,6 +2,7 @@
 
 namespace App\Application\Seo\DTOs;
 
+use App\Application\Discussion\DTOs\CommentReviewDTO;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 
 final class ProductSchemaContextDTO
@@ -10,6 +11,7 @@ final class ProductSchemaContextDTO
      * @param array<int, array<string, mixed>> $offers
      * @param array<int, array<string, mixed>> $additionalProperties
      * @param array<int, string> $keywords
+     * @param array<int, CommentReviewDTO> $reviews
      */
     public function __construct(
         public readonly SchemaContextDTO     $base,
@@ -41,6 +43,7 @@ final class ProductSchemaContextDTO
         public readonly array                $offers = [],
         public readonly array                $additionalProperties = [],
         public readonly array                $keywords = [],
+        public readonly array                $reviews = [],
     )
     {
     }

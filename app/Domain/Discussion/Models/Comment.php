@@ -75,6 +75,12 @@ class Comment extends Model
                 'approved_at',
                 'content',
                 'rating_percent',
+                'author_name',
+                'user_id',
+                'parent_id',
+                'created_at',
+                'is_pinned',
+                'pinned_at',
             ])) {
                 $comment->flushCommentableCache();
             }
@@ -86,13 +92,24 @@ class Comment extends Model
 
     protected function flushCommentableCache(): void
     {
-        Cache::tags([
+        $tags = [
             CacheTag::COMMENTS,
             CacheTag::commentable(
                 $this->commentable_type,
                 $this->commentable_id
             ),
-        ])->flush();
+        ];
+
+        if ($this->wasChanged(['commentable_type', 'commentable_id'])) {
+            $originalType = $this->getRawOriginal('commentable_type');
+            $originalId = $this->getRawOriginal('commentable_id');
+
+            if ($originalType !== null && $originalId !== null) {
+                $tags[] = CacheTag::commentable($originalType, $originalId);
+            }
+        }
+
+        Cache::tags($tags)->flush();
     }
 
     /**
