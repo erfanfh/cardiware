@@ -6,6 +6,7 @@ use App\Application\Project\Actions\CreateProjectAction;
 use App\Application\Project\Actions\DeleteProjectAction;
 use App\Application\Project\Actions\UpdateProjectAction;
 use App\Application\Project\Listings\ProjectListing;
+use App\Application\Project\Support\ProjectEditLock;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
@@ -14,6 +15,8 @@ use App\Http\Requests\Admin\Project\IndexProjectRequest;
 use App\Http\Requests\Admin\Project\UpdateProjectRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
@@ -32,7 +35,7 @@ class ProjectController extends Controller
         Gate::authorize('project.list');
 
         $projects = $projectListing
-            ->handle(Project::with(['seoAnalysis']), $request->validated())
+            ->handle(Project::with(['seoAnalysis', 'editLockUser']), $request->validated())
             ->paginate($projectListing->perPage())
             ->withQueryString();
 
@@ -105,11 +108,18 @@ class ProjectController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Project $project
-     * @return View
+     * @return Response
      */
-    public function edit(Project $project): View
+    public function edit(Request $request, Project $project, ProjectEditLock $locks): Response
     {
         Gate::authorize('project.edit');
+
+        $previous = $request->session()->get('project_edit_lock');
+        $token = $request->old('edit_lock_token');
+        if (! is_string($token) && is_array($previous) && ($previous['project_id'] ?? null) === $project->id) {
+            $token = $previous['token'] ?? null;
+        }
+        $editLockToken = $locks->acquire($project, $request->user(), is_string($token) ? $token : null);
 
         $selectedTags = $project->tags
             ->map(fn($tag) => [
@@ -119,7 +129,8 @@ class ProjectController extends Controller
             ->values()
             ->all();
 
-        return view('admin.projects.projects.edit', compact('project', 'selectedTags'));
+        return response()->view('admin.projects.projects.edit', compact('project', 'selectedTags', 'editLockToken'))
+            ->header('Cache-Control', 'no-store');
     }
 
     /**
@@ -131,25 +142,28 @@ class ProjectController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(UpdateProjectRequest $request, Project $project, UpdateProjectAction $action): RedirectResponse
+    public function update(UpdateProjectRequest $request, Project $project, UpdateProjectAction $action, ProjectEditLock $locks): RedirectResponse
     {
         Gate::authorize('project.edit');
 
-        $action->execute($project, $request->validated());
+        $token = $request->input('edit_lock_token');
+        $locks->save($project, $request->user(), is_string($token) ? $token : '',
+            fn () => $action->execute($project, $request->validated()));
 
         return redirect()
             ->route('admin.projects.edit', $project)
+            ->with('project_edit_lock', ['project_id' => $project->id, 'token' => $token])
             ->with('success', 'پروژه با موفقیت بروزرسانی شد.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Project $project, DeleteProjectAction $action): RedirectResponse
+    public function destroy(Project $project, DeleteProjectAction $action, ProjectEditLock $locks): RedirectResponse
     {
         Gate::authorize('project.delete');
 
-        $action->execute($project);
+        $locks->withoutEditor($project, fn () => $action->execute($project));
 
         return redirect()
             ->route('admin.projects.index')

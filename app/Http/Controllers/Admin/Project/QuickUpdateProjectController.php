@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Project;
 
+use App\Application\Project\Support\ProjectEditLock;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Application\Taxonomy\Actions\SyncModelProjectTagsAction;
@@ -12,7 +13,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Project\QuickUpdateProjectRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
@@ -28,14 +28,14 @@ class QuickUpdateProjectController extends Controller
     /**
      * @throws Throwable
      */
-    public function __invoke(QuickUpdateProjectRequest $request, Project $project): JsonResponse|RedirectResponse
+    public function __invoke(QuickUpdateProjectRequest $request, Project $project, ProjectEditLock $locks): JsonResponse|RedirectResponse
     {
         Gate::authorize('project.edit');
 
         $data = $request->validated();
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['slug'] = $data['slug'] ?: 'untitled-page';
-        DB::transaction(function () use ($project, $data): void {
+        $locks->withoutEditor($project, function () use ($project, $data): void {
             $project->update([
                 'title' => $data['title'],
                 'status' => $data['status'],

@@ -2,6 +2,7 @@
 
 namespace App\Application\Project\Actions;
 
+use App\Application\Project\Support\ProjectEditLock;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -11,6 +12,8 @@ use Throwable;
 
 class HandleProjectBulkAction
 {
+    public function __construct(private readonly ProjectEditLock $locks) {}
+
     /**
      * @param string $action
      * @param array $ids
@@ -20,6 +23,11 @@ class HandleProjectBulkAction
     public function execute(string $action, array $ids): BulkActionResultDTO
     {
         return DB::transaction(function () use ($action, $ids) {
+            // Keep every row locked until the entire bulk action commits or rolls back.
+            foreach (Project::query()->whereIn('id', $ids)->orderBy('id')->get() as $project) {
+                $this->locks->withoutEditor($project, fn () => null);
+            }
+
             $affectedCount = match ($action) {
                 'activate' => $this->updateStatus($ids, ProjectStatusEnum::ACTIVE),
                 'deactivate' => $this->updateStatus($ids, ProjectStatusEnum::INACTIVE),

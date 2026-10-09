@@ -2,6 +2,7 @@
 
 namespace App\Domain\Project\Models;
 
+use App\Domain\Identity\Models\User;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Scopes\ActiveProjectScope;
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Project extends Model implements PageViewableInterface
 {
     use HasTaxonomyTerms, HasExcerpt, HasSeoMeta, SoftDeletes;
+
+    protected $hidden = ['edit_lock_token'];
 
     protected $fillable = [
         'title',
@@ -41,6 +44,7 @@ class Project extends Model implements PageViewableInterface
     ];
 
     protected $casts = [
+        'edit_lock_expires_at' => 'datetime',
         'status' => ProjectStatusEnum::class,
         'display_views_offset' => 'integer',
     ];
@@ -66,6 +70,17 @@ class Project extends Model implements PageViewableInterface
     public function isPubliclyVisible(): bool
     {
         return $this->status === ProjectStatusEnum::ACTIVE;
+    }
+
+    public function editLockUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edit_lock_user_id');
+    }
+
+    public function isEditLocked(): bool
+    {
+        return $this->edit_lock_user_id !== null
+            && $this->edit_lock_expires_at?->isFuture() === true;
     }
 
     /**

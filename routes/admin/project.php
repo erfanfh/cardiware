@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Project\ProjectBulkActionController;
 use App\Http\Controllers\Admin\Project\ProjectController;
+use App\Http\Controllers\Admin\Project\ProjectEditLockController;
 use App\Http\Controllers\Admin\Project\ProjectSearchController;
 use App\Http\Controllers\Admin\Project\QuickUpdateProjectController;
 
@@ -11,6 +12,8 @@ Route::prefix('projects')->name('projects.')->group(function () {
     Route::post('bulk-action', ProjectBulkActionController::class)->name('bulk-action');
 
     Route::patch('{project}/quick-update', QuickUpdateProjectController::class)->name('quick-update');
+    Route::post('{project}/edit-lock/renew', [ProjectEditLockController::class, 'renew'])->name('edit-lock.renew');
+    Route::post('{project}/edit-lock/release', [ProjectEditLockController::class, 'release'])->name('edit-lock.release');
 
     Route::get('ajax-search', ProjectSearchController::class)->name('ajax-search');
 });
