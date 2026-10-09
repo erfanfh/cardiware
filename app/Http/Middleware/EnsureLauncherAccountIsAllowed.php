@@ -17,6 +17,16 @@ final class EnsureLauncherAccountIsAllowed
             throw new LauncherAccountSuspendedException($user);
         }
 
+        // Maintenance applies to every authenticated launcher request too, so a launcher
+        // that was already open when maintenance started stops as well. Logout stays
+        // allowed. Tokens are NOT revoked: when maintenance ends, users carry on.
+        if (!$request->routeIs('*auth.logout') && !$request->is('*/auth/logout')) {
+            $maintenance = app(\App\Application\Launcher\Support\LauncherMaintenance::class);
+            if ($maintenance->blocks($user)) {
+                throw new \App\Application\Launcher\Exceptions\LauncherMaintenanceException($maintenance->message());
+            }
+        }
+
         return $next($request);
     }
 }

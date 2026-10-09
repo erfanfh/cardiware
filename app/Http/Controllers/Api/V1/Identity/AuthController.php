@@ -363,6 +363,13 @@ class AuthController extends Controller
         if ($user->isLauncherSuspended()) {
             throw new LauncherAccountSuspendedException($user);
         }
+
+        // «حالت تعمیر لانچر» used to be shown only by the bootstrap response, so pressing
+        // «ورود» on the login page still worked. Bypass-list mobiles keep access.
+        $maintenance = app(\App\Application\Launcher\Support\LauncherMaintenance::class);
+        if ($maintenance->blocks($user)) {
+            throw new \App\Application\Launcher\Exceptions\LauncherMaintenanceException($maintenance->message());
+        }
     }
 
     /**
