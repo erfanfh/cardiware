@@ -17,7 +17,7 @@
     ];
     $repeaters = [
         'why_items' => ['title' => 'کارت‌های چرا همکاری', 'fields' => ['title' => 'عنوان', 'description' => 'توضیح']],
-        'benefits_items' => ['title' => 'مزیت‌ها', 'fields' => ['icon' => 'نماد / ایموجی', 'title' => 'عنوان', 'description' => 'توضیح']],
+        'benefits_items' => ['title' => 'مزیت‌ها', 'fields' => ['icon' => 'آیکون', 'title' => 'عنوان', 'description' => 'توضیح']],
         'process_items' => ['title' => 'مراحل فرآیند', 'fields' => ['title' => 'عنوان', 'description' => 'توضیح']],
         'skills_items' => ['title' => 'مهارت‌ها', 'fields' => ['title' => 'مهارت']],
         'tips_items' => ['title' => 'نکات فرم', 'fields' => ['title' => 'نکته']],
@@ -52,7 +52,9 @@
                             <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 @foreach($config['fields'] as $key => $label)
                                     <x-admin.field :label="$label" :class="in_array($key, ['description', 'answer']) ? 'md:col-span-2' : ''">
-                                        @if(in_array($key, ['description', 'answer']))
+                                        @if($name === 'benefits_items' && $key === 'icon')
+                                            <x-admin.form.icon-picker mode="repeater" name="icon" hint="آیکون مناسب این مزیت را انتخاب کنید."/>
+                                        @elseif(in_array($key, ['description', 'answer']))
                                             <x-admin.form.textarea rows="3" x-model="it.{{ $key }}" x-bind:name="field(i, '{{ $key }}')"/>
                                         @else
                                             <x-admin.form.input x-model="it.{{ $key }}" x-bind:name="field(i, '{{ $key }}')"/>

@@ -23,7 +23,7 @@
         slugName="slug"
         :titleValue="$position?->title ?? ''"
         :slugValue="$position?->slug ?? ''"
-        :basePath="url('/careers') . '/'"
+        :basePath="''"
         :checkUrl="route('admin.career-positions.check-slug')"
         :currentId="$position?->id"
     />

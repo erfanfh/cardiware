@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front\Content;
 
 use App\Application\Content\Actions\GetAboutUsPageDataAction;
+use App\Application\Content\Actions\GetCareerPageDataAction;
 use App\Application\Content\Actions\GetPageDetailDataAction;
 use App\Application\Content\Actions\GetPostDetailDataAction;
 use App\Application\Content\Actions\GetTeamPageDataAction;
@@ -26,6 +27,7 @@ final class ContentController
         private readonly StoreViewAction                   $storeViewAction,
         private readonly PageTemplateService               $pageTemplateService,
         private readonly GetAboutUsPageDataAction          $getAboutUsPageDataAction,
+        private readonly GetCareerPageDataAction           $getCareerPageDataAction,
         private readonly GetTeamPageDataAction             $getTeamPageDataAction,
         private readonly GetPostDetailDataAction           $getPostDetailDataAction,
         private readonly GetPageDetailDataAction           $getPageDetailDataAction,
@@ -122,6 +124,13 @@ final class ContentController
             $viewData = array_merge(
                 $viewData,
                 $this->getTeamPageDataAction->execute(),
+            );
+        }
+
+        if ($viewName === 'templates.careers') {
+            $viewData = array_merge(
+                $viewData,
+                $this->getCareerPageDataAction->execute((int) request()->query('position')),
             );
         }
 

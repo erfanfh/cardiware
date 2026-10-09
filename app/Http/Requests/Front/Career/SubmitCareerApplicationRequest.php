@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Front\Career;
 
 use App\Domain\Career\Models\CareerPosition;
+use App\Domain\Content\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator;
@@ -17,6 +18,7 @@ class SubmitCareerApplicationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'career_page_id' => ['required', 'integer'],
             'full_name' => ['required', 'string', 'min:3', 'max:255'],
             'phone' => ['required', 'regex:/^09[0-9]{9}$/'],
             'email' => ['nullable', 'email', 'max:255'],
@@ -33,6 +35,13 @@ class SubmitCareerApplicationRequest extends FormRequest
     public function after(): array
     {
         return [function (Validator $validator): void {
+            if (! $validator->errors()->has('career_page_id') && ! Page::query()
+                ->where('template', 'careers')
+                ->whereKey($this->input('career_page_id'))
+                ->exists()) {
+                $validator->errors()->add('career_page_id', 'برگه استخدام دیگر در دسترس نیست.');
+            }
+
             $id = $this->input('career_position_id');
 
             if ($id && ! CareerPosition::publiclyAvailable()->whereKey($id)->exists()) {
@@ -55,6 +64,7 @@ class SubmitCareerApplicationRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'career_page_id' => 'برگه استخدام',
             'full_name' => 'نام و نام خانوادگی',
             'phone' => 'شماره تماس',
             'email' => 'ایمیل',

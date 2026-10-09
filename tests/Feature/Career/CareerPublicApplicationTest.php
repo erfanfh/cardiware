@@ -4,6 +4,9 @@ namespace Tests\Feature\Career;
 
 use App\Domain\Career\Models\CareerApplication;
 use App\Domain\Career\Models\CareerPosition;
+use App\Domain\Content\Models\Page;
+use App\Domain\Icon\Models\Icon;
+use App\Domain\Icon\Models\IconSet;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\User;
 use App\Http\Middleware\ForceTrailingSlash;
@@ -19,6 +22,7 @@ class CareerPublicApplicationTest extends TestCase
     use RefreshDatabase;
 
     private ?string $careerStorageRoot = null;
+    private ?Page $careerPage = null;
 
     protected function tearDown(): void
     {
@@ -48,10 +52,31 @@ class CareerPublicApplicationTest extends TestCase
         ]);
     }
 
+    private function page(): Page
+    {
+        if ($this->careerPage) {
+            return $this->careerPage;
+        }
+
+        $this->careerPage = Page::create([
+            'author_id' => User::factory()->create()->id,
+            'title' => 'همکاری با مودینگ وی',
+            'slug' => 'join-moddingway',
+            'body' => '',
+            'status' => 'active',
+            'template' => 'careers',
+            'published_at' => now()->subMinute(),
+        ]);
+        $this->careerPage->slugs()->create(['slug' => $this->careerPage->slug, 'is_current' => true]);
+
+        return $this->careerPage;
+    }
+
     private function payload(CareerPosition $position): array
     {
         return [
             'full_name' => 'علی رضایی',
+            'career_page_id' => (string) $this->page()->id,
             'phone' => '۰۹۱۲۳۴۵۶۷۸۹',
             'email' => 'ali@example.com',
             'career_position_id' => (string) $position->id,
@@ -71,18 +96,48 @@ class CareerPublicApplicationTest extends TestCase
 
     public function test_page_uses_settings_and_only_available_positions(): void
     {
+        $page = $this->page();
         $active = $this->position('موقعیت فعال');
         $this->position('موقعیت بسته', 'closed');
         $this->position('موقعیت آینده')->update(['published_at' => now()->addDay()]);
         app(CareersSettings::class)->set('hero_title', 'عنوان ویژه همکاری');
         $this->withoutMiddleware(ForceTrailingSlash::class);
 
-        $this->get(route('careers.index'))->assertOk()
+        $this->assertSame('صفحه استخدام و همکاری', app(\App\Application\Content\Services\PageTemplateService::class)->all()['careers']);
+        $this->get(route('contents.detail', $page->slug))->assertOk()
             ->assertSee('عنوان ویژه همکاری')
             ->assertSee($active->title)
             ->assertDontSee('موقعیت بسته')
             ->assertDontSee('موقعیت آینده')
+            ->assertSee('name="career_page_id" value="'.$page->id.'"', false)
+            ->assertSee($page->url.'?position='.$active->id.'#apply', false)
             ->assertSee('name="resume"', false);
+        $this->get('/careers')->assertNotFound();
+    }
+
+    public function test_selected_benefit_icon_can_be_saved_and_rendered(): void
+    {
+        $set = IconSet::create(['key' => 'career-test', 'label' => 'Career test']);
+        Icon::create([
+            'icon_set_id' => $set->id,
+            'name' => 'game',
+            'full_name' => 'career-test:game',
+            'search_text' => 'game',
+            'svg' => '<svg data-career-test-icon="1" viewBox="0 0 24 24"></svg>',
+            'import_batch' => '00000000-0000-4000-8000-000000000001',
+        ]);
+
+        $this->actingAs($this->admin())->withoutMiddleware(ForceTrailingSlash::class);
+        $this->get(route('admin.settings.careers'))->assertOk()
+            ->assertSee('mwRepeaterIconPicker', false);
+
+        $values = CareersSettings::defaults();
+        $values['benefits_items'][0]['icon'] = 'career-test:game';
+        $this->put(route('admin.settings.careers.store'), $values)->assertRedirect();
+
+        $this->get(route('contents.detail', $this->page()->slug))->assertOk()
+            ->assertSee('data-career-test-icon="1"', false)
+            ->assertSee('🚀');
     }
 
     public function test_guest_can_send_private_resume_and_admin_reading_clears_unseen_count(): void
@@ -93,7 +148,9 @@ class CareerPublicApplicationTest extends TestCase
         $payload['resume'] = UploadedFile::fake()->create('رزومه.pdf', 80, 'application/pdf');
         $this->withoutMiddleware(ForceTrailingSlash::class);
 
-        $this->post(route('careers.apply'), $payload)->assertRedirect()->assertSessionHas('career_application_success');
+        $this->post(route('careers.apply'), $payload)
+            ->assertRedirect($this->page()->url.'#apply')
+            ->assertSessionHas('career_application_success');
         $application = CareerApplication::firstOrFail();
         $this->assertSame('09123456789', $application->phone);
         $this->assertSame($position->title, $application->position_title);
@@ -125,6 +182,25 @@ class CareerPublicApplicationTest extends TestCase
         $payload = $this->payload($active);
         $payload['resume'] = UploadedFile::fake()->create('script.php', 4, 'application/x-php');
         $this->post(route('careers.apply'), $payload)->assertSessionHasErrors('resume');
+        $this->assertSame(0, CareerApplication::count());
+    }
+
+    public function test_application_cannot_use_a_page_with_another_template(): void
+    {
+        $position = $this->position();
+        $otherPage = Page::create([
+            'author_id' => User::factory()->create()->id,
+            'title' => 'برگه دیگر',
+            'slug' => 'another-page',
+            'body' => '',
+            'status' => 'active',
+            'template' => 'team',
+            'published_at' => now()->subMinute(),
+        ]);
+        $payload = $this->payload($position);
+        $payload['career_page_id'] = (string) $otherPage->id;
+
+        $this->post(route('careers.apply'), $payload)->assertSessionHasErrors('career_page_id');
         $this->assertSame(0, CareerApplication::count());
     }
 

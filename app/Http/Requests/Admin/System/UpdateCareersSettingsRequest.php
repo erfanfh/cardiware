@@ -26,7 +26,7 @@ class UpdateCareersSettingsRequest extends FormRequest
             $rules["{$key}.*.description"] = ['nullable', 'string', 'max:1000'];
             $rules["{$key}.*.sort_order"] = ['nullable', 'integer', 'min:0'];
         }
-        $rules['benefits_items.*.icon'] = ['nullable', 'string', 'max:20'];
+        $rules['benefits_items.*.icon'] = ['nullable', 'string', 'max:255'];
         foreach (['skills_items', 'tips_items'] as $key) {
             $rules["{$key}.*.title"] = ['required', 'string', 'max:255'];
             $rules["{$key}.*.sort_order"] = ['nullable', 'integer', 'min:0'];

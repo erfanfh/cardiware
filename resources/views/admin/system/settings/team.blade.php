@@ -196,7 +196,7 @@
                         </x-admin.field>
 
                         <x-admin.field label="لینک دکمه دوم">
-                            <x-admin.form.input name="cta_secondary_button_url" dir="ltr" placeholder="/careers" :value="old('cta_secondary_button_url', $teamSettings['cta_secondary_button_url'])"/>
+                            <x-admin.form.input name="cta_secondary_button_url" dir="ltr" placeholder="/join-us" :value="old('cta_secondary_button_url', $teamSettings['cta_secondary_button_url'])"/>
                         </x-admin.field>
                     </div>
                 </x-admin.metabox>

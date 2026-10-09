@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front\Career;
 
 use App\Domain\Career\Models\CareerApplication;
 use App\Domain\Career\Models\CareerPosition;
+use App\Domain\Content\Models\Page;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Front\Career\SubmitCareerApplicationRequest;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,8 @@ class SubmitCareerApplicationController extends Controller
 {
     public function __invoke(SubmitCareerApplicationRequest $request): RedirectResponse
     {
-        $data = $request->safe()->except(['resume', 'consent', 'website']);
+        $page = Page::query()->where('template', 'careers')->findOrFail($request->integer('career_page_id'));
+        $data = $request->safe()->except(['career_page_id', 'resume', 'consent', 'website']);
         $position = isset($data['career_position_id'])
             ? CareerPosition::publiclyAvailable()->findOrFail($data['career_position_id'])
             : null;
@@ -46,7 +48,7 @@ class SubmitCareerApplicationController extends Controller
             throw $exception;
         }
 
-        return redirect()->to(route('careers.index').'#apply')
+        return redirect()->to($page->url.'#apply')
             ->with('career_application_success', 'درخواست همکاری شما با موفقیت ثبت شد. پس از بررسی، در صورت نیاز با شما تماس می‌گیریم.');
     }
 }

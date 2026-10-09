@@ -6,6 +6,7 @@ import './old-toggle-box.js';
 import './sticky-columns.js';
 import './scroll-to-top.js';
 import './footer-news.js';
+import './career-page.js';
 import './product-detail/image-gallery-slider.js';
 import './product-detail/team-members.js';
 import './product-detail/video-gallery.js';
