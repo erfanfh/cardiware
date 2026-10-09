@@ -147,6 +147,9 @@
         'sider_working_directory' => '.',
         'sider_arguments' => '',
         'run_sider_as_administrator' => false,
+        'requires_injection' => false,
+        'inject_dll_path' => '',
+        'monitor_process_name' => '',
 
         'content_key_id' => '',
         'content_key_value' => '',
@@ -176,6 +179,7 @@
             'supports_install' => true,
             'supports_launch' => true,
             'supports_sider' => false,
+            'supports_injection' => false,
             'supports_settings' => false,
             'supports_profiles' => false,
             'supports_update' => false,
@@ -211,6 +215,9 @@
             // is being changed to fix, just for the "no manifest yet" case instead of
             // the "manifest exists" case below.
             return array_replace_recursive($manifestFormDefaults, [
+                'requires_injection' => (bool) $old('requires_injection', 0),
+                'inject_dll_path' => $old('inject_dll_path', ''),
+                'monitor_process_name' => $old('monitor_process_name', ''),
                 'content_key_id' => $old('content_key_id', ''),
                 'protected_folder_markers' => $old('protected_folder_markers', ''),
                 'protected_exact_paths' => $old('protected_exact_paths', ''),
@@ -259,6 +266,10 @@
                 'sider_arguments' => $manifest->sider_arguments ?? '',
 
                 'run_sider_as_administrator' => (bool) $manifest->run_sider_as_administrator,
+
+                'requires_injection' => (bool) $manifest->requires_injection,
+                'inject_dll_path' => $old('inject_dll_path', $manifest->inject_dll_path ?? ''),
+                'monitor_process_name' => $old('monitor_process_name', $manifest->monitor_process_name ?? ''),
 
                 'content_key_id' => $old('content_key_id', $manifest->content_key_id ?? ''),
                 // NEVER the real secret here -- this array feeds the initial page

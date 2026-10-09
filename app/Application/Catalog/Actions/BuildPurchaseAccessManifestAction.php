@@ -214,6 +214,7 @@ class BuildPurchaseAccessManifestAction
                  */
                 'requires_injection' => $manifest->requires_injection,
                 'inject_dll_path' => $manifest->inject_dll_path,
+                'monitor_process_name' => $manifest->monitor_process_name,
 
                 /*
                  * Opaque, versioned identifier only -- never the key value itself. The

@@ -189,6 +189,11 @@ class UpdateProductRequest extends FormRequest
             */
             'sale_items.*.manifest.requires_injection' => ['nullable', 'boolean'],
             'sale_items.*.manifest.inject_dll_path' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.manifest.monitor_process_name' => [
+                'nullable', 'string', 'max:255',
+                'not_regex:/[\\\\\\/]/',
+                'not_in:.,..',
+            ],
 
             /*
             |--------------------------------------------------------------------------
@@ -1227,6 +1232,7 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.sider_working_directory' => 'پوشه اجرای Sider',
             'sale_items.*.manifest.sider_arguments' => 'آرگومان‌های Sider',
             'sale_items.*.manifest.inject_dll_path' => 'مسیر فایل DLL تزریق',
+            'sale_items.*.manifest.monitor_process_name' => 'نام پراسس بازی برای پایش',
             'sale_items.*.manifest.content_key_id' => 'شناسه کلید محتوا',
             'sale_items.*.manifest.content_key_value' => 'مقدار کلید محتوا',
             'sale_items.*.manifest.cpu_compatibility.default_mode' => 'حالت پیش‌فرض CPU Compatibility',
@@ -1485,6 +1491,9 @@ class UpdateProductRequest extends FormRequest
             'sider_working_directory' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_working_directory'), 500) ?? '.',
             'sider_arguments' => $this->normalizeNullableStringInput(data_get($manifest, 'sider_arguments'), 2000),
             'run_sider_as_administrator' => $this->normalizeBooleanInput(data_get($manifest, 'run_sider_as_administrator'), false),
+            'requires_injection' => $this->normalizeBooleanInput(data_get($manifest, 'requires_injection'), false),
+            'inject_dll_path' => $this->normalizeNullableStringInput(data_get($manifest, 'inject_dll_path'), 500),
+            'monitor_process_name' => $this->normalizeNullableStringInput(data_get($manifest, 'monitor_process_name'), 255),
             // Lost silently before this fix: this function rebuilds the whole manifest
             // array from an explicit key list, and content_key_id/content_key_value were
             // never added to it when the content-key feature shipped -- so both fields
@@ -1550,6 +1559,7 @@ class UpdateProductRequest extends FormRequest
                 'supports_install' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_install'), true),
                 'supports_launch' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_launch'), true),
                 'supports_sider' => $supportsSider,
+                'supports_injection' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_injection'), false),
                 'supports_settings' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_settings'), false),
                 'supports_profiles' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_profiles'), false),
                 'supports_update' => $this->normalizeBooleanInput(data_get($capabilities, 'supports_update'), false),

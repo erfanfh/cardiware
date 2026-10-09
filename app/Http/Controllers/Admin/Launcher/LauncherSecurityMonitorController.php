@@ -22,6 +22,7 @@ final class LauncherSecurityMonitorController extends Controller
         'module_lua_unlisted' => 'ماژول Lua خارج از لیست',
         'game_dll_hijack_name' => 'DLL با نام حساس کنار exe بازی',
         'game_dll_unlisted' => 'DLL/ASI دیگر کنار exe بازی',
+        'protected_plaintext_present' => 'فایل محافظت‌شده بدون رمز در پوشه بازی (دیتابیس/گرافیک لو رفته یا اشتباه بسته)',
     ];
 
     public function index(Request $request): View

@@ -49,6 +49,112 @@
             </form>
         </section>
 
+        <section class="rounded-2xl border {{ $vpnPolicy !== 'off' ? 'border-sky-300 bg-sky-50/40' : 'border-slate-200 bg-white' }} shadow-sm">
+            <div class="border-b border-slate-200 px-5 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-base font-black text-slate-900">بررسی VPN (فقط IP ایران)</h1>
+                        <p class="mt-1 text-sm leading-7 text-slate-500">
+                            سرور هنگام باز شدن لانچر IP کاربر را با لیست رسمی IPهای ایران (RIPE، هر هفته به‌روز می‌شود) مقایسه می‌کند.
+                            «فقط هشدار»: کاربر پیام خاموش کردن VPN را می‌بیند ولی می‌تواند ادامه دهد.
+                            «مسدود»: کاربر تا خاموش کردن VPN وارد لانچر نمی‌شود (برای نسخه‌های قدیمی لانچر هم کار می‌کند).
+                            شماره‌های «استثنا»ی بخش حالت تعمیر، از مسدودسازی VPN هم مستثنا هستند.
+                        </p>
+                        <p class="mt-2 text-xs font-bold leading-6 {{ $adminIpIranian === false ? 'text-red-700' : 'text-slate-600' }}">
+                            IP فعلی شما: <span dir="ltr" class="font-mono">{{ $adminIp }}</span> —
+                            {{ $adminIpIranian === null ? 'نامشخص (لیست IP هنوز بارگذاری نشده)' : ($adminIpIranian ? 'ایران' : 'خارج از ایران / VPN') }}
+                            · آخرین به‌روزرسانی لیست: {{ $ipListUpdatedAt ? jalali_date($ipListUpdatedAt) : 'ندارد' }}
+                        </p>
+                    </div>
+                    <span class="rounded-xl px-3 py-2 text-xs font-black {{ $vpnPolicy === 'block' ? 'bg-red-100 text-red-800' : ($vpnPolicy === 'warn' ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-600') }}">
+                        {{ ['off' => 'خاموش', 'warn' => 'فقط هشدار', 'block' => 'مسدود'][$vpnPolicy] ?? $vpnPolicy }}
+                    </span>
+                </div>
+            </div>
+            <form method="POST" action="{{ route('admin.launcher-releases.vpn-policy') }}" class="space-y-4 p-5"
+                  onsubmit="return this.querySelector('select[name=launcher_vpn_policy]').value !== 'block' || confirm('در حالت مسدود، کاربری که IP او اشتباهاً غیر ایرانی تشخیص داده شود هم وارد لانچر نمی‌شود. ادامه می‌دهید؟')">
+                @csrf
+                @method('PUT')
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs font-black text-slate-700" for="launcher_vpn_policy">حالت</label>
+                    <select id="launcher_vpn_policy" name="launcher_vpn_policy" class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm">
+                        <option value="off" @selected(old('launcher_vpn_policy', $vpnPolicy) === 'off')>خاموش</option>
+                        <option value="warn" @selected(old('launcher_vpn_policy', $vpnPolicy) === 'warn')>فقط هشدار (پیشنهادی)</option>
+                        <option value="block" @selected(old('launcher_vpn_policy', $vpnPolicy) === 'block')>مسدود</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="mb-2 block text-xs font-black text-slate-700">متن پیام (خالی = متن پیش‌فرض)</label>
+                    <x-admin.form.textarea name="launcher_vpn_message" rows="2"
+                                           placeholder="به نظر می‌رسد VPN یا فیلترشکن شما روشن است. لطفاً VPN را خاموش کنید و دوباره تلاش کنید."
+                                           :value="old('launcher_vpn_message', $vpnMessage)" />
+                    @error('launcher_vpn_message')
+                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label class="mb-2 block text-xs font-black text-slate-700">رنج‌های IP ایرانی اضافه (هر خط یک رنج)</label>
+                    <x-admin.form.textarea name="launcher_vpn_extra_ranges" rows="3" class="direction-ltr text-left"
+                                           placeholder="91.98.0.0/16"
+                                           :value="old('launcher_vpn_extra_ranges', $vpnExtraRanges)" />
+                    <p class="mt-2 text-xs leading-6 text-slate-500">
+                        لیست رسمی برخی ISPهای ایرانی را کامل ندارد. اگر کاربری بدون VPN پیام VPN دید، IP او را از
+                        «رصد امنیتی»/دستگاه‌ها بردارید و رنج اپراتورش را اینجا اضافه کنید.
+                    </p>
+                    @error('launcher_vpn_extra_ranges')
+                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="flex justify-end">
+                    <x-admin.form.button type="submit" variant="dark" size="lg">ذخیره بررسی VPN</x-admin.form.button>
+                </div>
+            </form>
+        </section>
+
+        <section class="rounded-2xl border {{ $emergencyOfflineEnabled ? 'border-amber-300 bg-amber-50/40' : 'border-slate-200 bg-white' }} shadow-sm">
+            <div class="border-b {{ $emergencyOfflineEnabled ? 'border-amber-200' : 'border-slate-200' }} px-5 py-4">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-base font-black text-slate-900">حالت اضطراری قطعی اینترنت</h1>
+                        <p class="mt-1 text-sm leading-7 text-slate-500">
+                            وقتی خبر قطعی اینترنت (حتی اینترنت داخلی) هست، این حالت را روشن کنید و به کاربران اطلاع دهید که
+                            یک‌بار لانچر را آنلاین باز کنند. هر کاربری که در این مدت آنلاین شود، به‌جای ۷ روز، به تعداد روز زیر
+                            مجوز آفلاین می‌گیرد. تا وقتی این حالت روشن است، <span class="font-bold">انتقال حساب به دستگاه جدید بسته است</span>
+                            (تا کسی نتواند یک خرید را برای مدت طولانی روی دو سیستم اجرا کند). حساب‌های تعلیق‌شده مجوز نمی‌گیرند.
+                            بعد از پایان بحران خاموشش کنید؛ مجوزهای جدید دوباره ۷ روزه می‌شوند.
+                        </p>
+                    </div>
+                    <span class="rounded-xl px-3 py-2 text-xs font-black {{ $emergencyOfflineEnabled ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600' }}">
+                        {{ $emergencyOfflineEnabled ? 'فعال — مجوز ' . $emergencyOfflineDays . ' روزه' : 'غیرفعال — روال عادی ۷ روزه' }}
+                    </span>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ route('admin.launcher-releases.emergency-offline') }}" class="space-y-4 p-5"
+                  onsubmit="return !this.querySelector('input[type=checkbox][name=launcher_emergency_offline_enabled]').checked || confirm('با روشن کردن حالت اضطراری، مجوزهای آفلاین طولانی صادر می‌شود و انتقال دستگاه بسته می‌شود. ادامه می‌دهید؟')">
+                @csrf
+                @method('PUT')
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="text-xs font-black text-slate-700" for="launcher_emergency_offline_days">تعداد روز مجوز آفلاین اضطراری (۸ تا ۳۰)</label>
+                    <input id="launcher_emergency_offline_days" type="number" min="8" max="30" name="launcher_emergency_offline_days"
+                           value="{{ old('launcher_emergency_offline_days', $emergencyOfflineDays) }}"
+                           class="w-24 rounded-lg border border-slate-200 px-3 py-1.5 text-sm">
+                    @error('launcher_emergency_offline_days')
+                        <p class="text-xs font-bold text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <label class="flex cursor-pointer items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <span class="text-sm font-black text-amber-800">حالت اضطراری فعال باشد</span>
+                    <input type="hidden" name="launcher_emergency_offline_enabled" value="0">
+                    <input type="checkbox" name="launcher_emergency_offline_enabled" value="1" class="h-5 w-5"
+                           @checked(old('launcher_emergency_offline_enabled', $emergencyOfflineEnabled))>
+                </label>
+                <div class="flex justify-end">
+                    <x-admin.form.button type="submit" variant="dark" size="lg">ذخیره حالت اضطراری</x-admin.form.button>
+                </div>
+            </form>
+        </section>
+
         <section class="rounded-2xl border {{ $maintenanceEnabled ? 'border-red-300 bg-red-50/40' : 'border-slate-200 bg-white' }} shadow-sm">
             <div class="border-b {{ $maintenanceEnabled ? 'border-red-200' : 'border-slate-200' }} px-5 py-4">
                 <div class="flex flex-wrap items-center justify-between gap-3">

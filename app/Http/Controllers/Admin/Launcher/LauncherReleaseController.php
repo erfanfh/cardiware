@@ -46,7 +46,27 @@ final class LauncherReleaseController extends Controller
             ''
         );
 
+        $emergency = app(\App\Application\Launcher\Support\LauncherEmergencyOffline::class);
+        $emergencyOfflineEnabled = $emergency->isEnabled();
+        $emergencyOfflineDays = $emergency->configuredDays();
+
+        $vpnPolicy = (string)$settings->get('launcher_vpn_policy', 'off');
+        $vpnMessage = (string)$settings->get('launcher_vpn_message', '');
+        $vpnExtraRanges = (string)$settings->get('launcher_vpn_extra_ranges', '');
+        $ipListPath = \App\Application\Launcher\Support\IranIpRanges::path();
+        $ipListUpdatedAt = is_file($ipListPath) ? \Illuminate\Support\Carbon::createFromTimestamp(filemtime($ipListPath)) : null;
+        $adminIpIranian = app(\App\Application\Launcher\Support\IranIpRanges::class)->isIranian($request->ip(), $vpnExtraRanges);
+        $adminIp = $request->ip();
+
         return view('admin.launcher.releases.index', compact(
+            'vpnPolicy',
+            'vpnMessage',
+            'vpnExtraRanges',
+            'ipListUpdatedAt',
+            'adminIpIranian',
+            'adminIp',
+            'emergencyOfflineEnabled',
+            'emergencyOfflineDays',
             'releases',
             'editingRelease',
             'publicDownloadUrl',
@@ -86,6 +106,71 @@ final class LauncherReleaseController extends Controller
                     : 'حالت تعمیر لانچر غیرفعال شد.'
             )
             ->with('success_title', 'حالت تعمیر لانچر');
+    }
+
+    public function updateVpnPolicy(Request $request, GeneralSettings $settings): RedirectResponse
+    {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'launcher_vpn_policy' => ['required', Rule::in(['off', 'warn', 'block'])],
+            'launcher_vpn_message' => ['nullable', 'string', 'max:500'],
+            'launcher_vpn_extra_ranges' => ['nullable', 'string', 'max:20000'],
+        ]);
+
+        // Every extra range must parse, otherwise a typo silently does nothing.
+        $ranges = app(\App\Application\Launcher\Support\IranIpRanges::class);
+        $lines = array_values(array_filter(array_map('trim',
+            preg_split('/\R/', (string)($validated['launcher_vpn_extra_ranges'] ?? '')) ?: [])));
+        foreach ($lines as $line) {
+            $network = explode('/', $line, 2)[0];
+            if (!$ranges->cidrContains($line, $network)) {
+                throw ValidationException::withMessages([
+                    'launcher_vpn_extra_ranges' => "رنج «{$line}» معتبر نیست. نمونه درست: 91.98.0.0/16",
+                ]);
+            }
+        }
+
+        $settings->set('launcher_vpn_policy', $validated['launcher_vpn_policy']);
+        $message = trim((string)($validated['launcher_vpn_message'] ?? ''));
+        $settings->set('launcher_vpn_message', $message !== '' ? $message : null);
+        $settings->set('launcher_vpn_extra_ranges', $lines !== [] ? implode("\n", $lines) : null);
+
+        return redirect()->route('admin.launcher-releases.index')
+            ->with('success', match ($validated['launcher_vpn_policy']) {
+                'warn' => 'هشدار VPN فعال شد: کاربرانی که با IP غیر ایران وصل شوند پیام خاموش کردن VPN را می‌بینند.',
+                'block' => 'مسدودسازی VPN فعال شد: کاربرانی که با IP غیر ایران وصل شوند تا خاموش کردن VPN وارد لانچر نمی‌شوند.',
+                default => 'بررسی VPN خاموش شد.',
+            })
+            ->with('success_title', 'بررسی VPN');
+    }
+
+    public function updateEmergencyOffline(Request $request, GeneralSettings $settings): RedirectResponse
+    {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'launcher_emergency_offline_enabled' => ['nullable', 'boolean'],
+            'launcher_emergency_offline_days' => ['required', 'integer', 'min:8', 'max:30'],
+        ], [
+            'launcher_emergency_offline_days.min' => 'تعداد روز اضطراری باید بین ۸ تا ۳۰ باشد.',
+            'launcher_emergency_offline_days.max' => 'تعداد روز اضطراری باید بین ۸ تا ۳۰ باشد.',
+        ]);
+
+        $enabled = $request->boolean('launcher_emergency_offline_enabled');
+        $settings->set('launcher_emergency_offline_enabled', $enabled);
+        $settings->set('launcher_emergency_offline_days', (int)$validated['launcher_emergency_offline_days']);
+
+        return redirect()->route('admin.launcher-releases.index')
+            ->with(
+                'success',
+                $enabled
+                    ? 'حالت اضطراری فعال شد: هر کاربری که آنلاین شود مجوز آفلاین '
+                        . (int)$validated['launcher_emergency_offline_days']
+                        . ' روزه می‌گیرد و انتقال به دستگاه جدید تا خاموش‌شدن این حالت بسته است.'
+                    : 'حالت اضطراری خاموش شد؛ مجوزهای جدید دوباره ۷ روزه هستند.'
+            )
+            ->with('success_title', 'حالت اضطراری قطعی اینترنت');
     }
 
     public function updatePublicDownload(Request $request, GeneralSettings $settings): RedirectResponse

@@ -196,6 +196,13 @@ class AuthController extends Controller
         }
 
         $isTransfer = !$isFirstActivation && !$isActiveDevice;
+        // Emergency-offline mode hands out licences of up to 30 days; moving an account to
+        // a new machine meanwhile would let one purchase run on two PCs for that long.
+        // Covers both the password and the SMS login paths (both call this method).
+        if ($isTransfer && app(\App\Application\Launcher\Support\LauncherEmergencyOffline::class)->isEnabled()) {
+            $this->logBlockedTransferAttempt($user, $deviceData, $ip, 'emergency_paused');
+            throw new \App\Application\Launcher\Exceptions\DeviceTransferPausedException();
+        }
         if ($isTransfer && $user->device_transfer_used) {
             $this->logBlockedTransferAttempt($user, $deviceData, $ip, 'transfer_already_used');
             throw new DeviceLimitReachedException(1, []);
@@ -355,6 +362,13 @@ class AuthController extends Controller
     {
         if ($user->isLauncherSuspended()) {
             throw new LauncherAccountSuspendedException($user);
+        }
+
+        // «حالت تعمیر لانچر» used to be shown only by the bootstrap response, so pressing
+        // «ورود» on the login page still worked. Bypass-list mobiles keep access.
+        $maintenance = app(\App\Application\Launcher\Support\LauncherMaintenance::class);
+        if ($maintenance->blocks($user)) {
+            throw new \App\Application\Launcher\Exceptions\LauncherMaintenanceException($maintenance->message());
         }
     }
 

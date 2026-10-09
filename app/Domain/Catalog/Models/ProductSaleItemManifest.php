@@ -76,6 +76,7 @@ class ProductSaleItemManifest extends Model
         'run_sider_as_administrator',
         'requires_injection',
         'inject_dll_path',
+        'monitor_process_name',
         'content_key_id',
         'content_key_value',
         'protected_folder_markers',
