@@ -112,7 +112,6 @@ Template Name: صفحه استخدام و همکاری
                     <form method="post" action="{{ route('careers.apply') }}" enctype="multipart/form-data" class="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
                         @csrf
                         <input type="hidden" name="career_page_id" value="{{ $page->id }}">
-                        @if(session('career_application_success'))<div role="status" class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold leading-7 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">{{ session('career_application_success') }}</div>@endif
                         @if($errors->any())<div role="alert" class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-200"><p class="font-extrabold">لطفاً موارد زیر را اصلاح کنید:</p><ul class="mt-2 list-inside list-disc space-y-1">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
                         <div class="grid gap-4 sm:grid-cols-2">
                             <div><label for="career-full-name" class="text-sm font-extrabold">نام و نام خانوادگی <span class="text-rose-600">*</span></label><input id="career-full-name" name="full_name" type="text" autocomplete="name" required maxlength="255" value="{{ old('full_name') }}" class="{{ $inputClass }}"></div>
@@ -131,7 +130,7 @@ Template Name: صفحه استخدام و همکاری
                 <aside class="space-y-4 lg:col-span-4">
                     @if($tipItems->isNotEmpty())<div class="rounded-[1.4rem] border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"><h2 class="font-extrabold">{{ $careers['tips_title'] }}</h2><ul class="mt-4 space-y-3">@foreach($tipItems as $item)<li class="flex items-start gap-2 text-sm leading-7 text-slate-700 dark:text-slate-300"><span class="mt-3 h-2 w-2 shrink-0 rounded bg-brand-600"></span>{{ $item['title'] }}</li>@endforeach</ul></div>@endif
                     @if($reviewItems->isNotEmpty())<div class="rounded-[1.4rem] border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"><h2 class="font-extrabold">{{ $careers['review_title'] }}</h2><p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">مراحل کلی بررسی درخواست‌ها</p><ol class="mt-4 space-y-4">@foreach($reviewItems as $item)<li class="flex items-start gap-3"><span class="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-black text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">{{ $loop->iteration }}</span><div><div class="text-sm font-extrabold">{{ $item['title'] }}</div><p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ $item['description'] ?? '' }}</p></div></li>@endforeach</ol></div>@endif
-                    <div class="rounded-[1.4rem] bg-slate-950 p-5 text-white"><h2 class="font-extrabold">{{ $careers['general_cta_title'] }}</h2><p class="mt-2 text-sm leading-7 text-white/70">{{ $careers['general_cta_description'] }}</p></div>
+                    <div class="rounded-[1.4rem] border border-brand-200 bg-brand-50 p-5 text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white"><h2 class="font-extrabold">{{ $careers['general_cta_title'] }}</h2><p class="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $careers['general_cta_description'] }}</p></div>
                 </aside>
             </div>
         </section>
@@ -165,6 +164,19 @@ Template Name: صفحه استخدام و همکاری
                     @endforeach
                 </div>
             </section>
+        @endif
+        @if(session('career_application_success'))
+            <dialog data-career-success-modal aria-labelledby="career-success-title" aria-describedby="career-success-message"
+                    class="m-auto w-[calc(100%_-_2rem)] max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white p-0 text-right text-slate-900 shadow-2xl backdrop:bg-slate-950/65 backdrop:backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+                <div class="p-6 sm:p-8">
+                    <div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300" aria-hidden="true">
+                        <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h2 id="career-success-title" class="text-lg font-black">درخواست شما ثبت شد</h2>
+                    <p id="career-success-message" class="mt-3 text-sm leading-8 text-slate-600 dark:text-slate-300">{{ session('career_application_success') }}</p>
+                    <button type="button" data-career-modal-close class="mt-7 w-full cursor-pointer rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-500/25">متوجه شدم</button>
+                </div>
+            </dialog>
         @endif
     </main>
 @endsection

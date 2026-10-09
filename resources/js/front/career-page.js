@@ -3,7 +3,22 @@ const careerPage = document.querySelector('[data-career-page]');
 if (careerPage) {
     const header = document.getElementById('header');
     const positionSelect = document.getElementById('career-position');
+    const successModal = careerPage.querySelector('[data-career-success-modal]');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (successModal) {
+        successModal.showModal();
+        successModal.querySelector('[data-career-modal-close]')?.addEventListener('click', () => successModal.close());
+        successModal.addEventListener('click', event => {
+            if (event.target !== successModal) return;
+
+            const bounds = successModal.getBoundingClientRect();
+            if (event.clientX < bounds.left || event.clientX > bounds.right ||
+                event.clientY < bounds.top || event.clientY > bounds.bottom) {
+                successModal.close();
+            }
+        });
+    }
 
     const updateScrollOffset = () => {
         const headerHeight = header?.getBoundingClientRect().height || 0;

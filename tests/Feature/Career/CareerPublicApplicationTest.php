@@ -151,6 +151,12 @@ class CareerPublicApplicationTest extends TestCase
         $this->post(route('careers.apply'), $payload)
             ->assertRedirect($this->page()->url.'#apply')
             ->assertSessionHas('career_application_success');
+        $this->get(route('contents.detail', $this->page()->slug))->assertOk()
+            ->assertSee('data-career-success-modal', false)
+            ->assertSee('درخواست شما ثبت شد')
+            ->assertSee('درخواست همکاری شما با موفقیت ثبت شد');
+        $this->get(route('contents.detail', $this->page()->slug))->assertOk()
+            ->assertDontSee('data-career-success-modal', false);
         $application = CareerApplication::firstOrFail();
         $this->assertSame('09123456789', $application->phone);
         $this->assertSame($position->title, $application->position_title);
