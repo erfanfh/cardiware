@@ -33,13 +33,40 @@
             </tr></x-admin.list.thead>
             <x-admin.list.tbody>
                 @forelse($applications as $application)
-                    <x-admin.list.tr>
-                        <x-admin.list.td><a class="font-bold text-brand-700" href="{{ route('admin.career-applications.show', $application) }}">{{ $application->full_name }}</a>@if(!$application->viewed_at)<span class="mr-2 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-bold text-rose-700">مشاهده‌نشده</span>@endif<div class="text-xs text-slate-500">#{{ $application->id }}</div></x-admin.list.td>
-                        <x-admin.list.td>{{ $application->position_title ?: $application->position?->title ?: 'درخواست عمومی' }}</x-admin.list.td>
-                        <x-admin.list.td dir="ltr">{{ $application->phone }}</x-admin.list.td>
+                    @php
+                        $status = match ($application->status) {
+                            'new' => ['جدید', 'blue'],
+                            'reviewing' => ['در حال بررسی', 'yellow'],
+                            'interview' => ['مصاحبه', 'brand'],
+                            'accepted' => ['پذیرفته', 'green'],
+                            'rejected' => ['رد شده', 'red'],
+                            default => [$application->status, 'slate'],
+                        };
+                    @endphp
+                    <x-admin.list.tr :tone="$application->viewed_at ? 'default' : 'danger'">
+                        <x-admin.list.td>
+                            <div class="min-w-[190px]">
+                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+                                    <a class="font-bold leading-6 text-slate-800 transition hover:text-brand-700" href="{{ route('admin.career-applications.show', $application) }}">{{ $application->full_name }}</a>
+                                    @unless($application->viewed_at)
+                                        <x-admin.badge color="red" class="shrink-0 whitespace-nowrap">مشاهده‌نشده</x-admin.badge>
+                                    @endunless
+                                </div>
+                                <div class="mt-1 text-xs text-slate-500">#{{ $application->id }}</div>
+                                <x-admin.list.row-actions>
+                                    <x-admin.list.action tag="a" href="{{ route('admin.career-applications.show', $application) }}" variant="primary">مشاهده</x-admin.list.action>
+                                    @if($application->resume_path && $application->resume_download_token)
+                                        <span class="text-slate-300" aria-hidden="true">|</span>
+                                        <x-admin.list.action tag="a" href="{{ route('admin.career-applications.resume', [$application, $application->resume_download_token]) }}">دانلود رزومه</x-admin.list.action>
+                                    @endif
+                                </x-admin.list.row-actions>
+                            </div>
+                        </x-admin.list.td>
+                        <x-admin.list.td><span class="font-medium text-slate-700">{{ $application->position_title ?: $application->position?->title ?: 'درخواست عمومی' }}</span></x-admin.list.td>
+                        <x-admin.list.td><span dir="ltr" class="inline-block whitespace-nowrap">{{ $application->phone }}</span></x-admin.list.td>
                         <x-admin.list.td>{{ $application->preferred_cooperation_type ?: '—' }}</x-admin.list.td>
-                        <x-admin.list.td>{{ ['new' => 'جدید', 'reviewing' => 'در حال بررسی', 'interview' => 'مصاحبه', 'accepted' => 'پذیرفته', 'rejected' => 'رد شده'][$application->status] ?? $application->status }}</x-admin.list.td>
-                        <x-admin.list.td>{{ $application->created_at?->format('Y/m/d H:i') }}</x-admin.list.td>
+                        <x-admin.list.td><x-admin.badge :color="$status[1]" size="md" class="whitespace-nowrap">{{ $status[0] }}</x-admin.badge></x-admin.list.td>
+                        <x-admin.list.td muted><div class="whitespace-nowrap text-xs leading-6"><div>{{ jalali_date($application->created_at, 'Y/m/d') }}</div><div>{{ jalali_date($application->created_at, 'H:i') }}</div></div></x-admin.list.td>
                     </x-admin.list.tr>
                 @empty
                     <x-admin.list.tr><x-admin.list.td colspan="6" class="text-center">درخواستی ثبت نشده است.</x-admin.list.td></x-admin.list.tr>

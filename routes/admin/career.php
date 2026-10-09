@@ -9,4 +9,5 @@ Route::resource('career-positions', CareerPositionController::class)->except('sh
 Route::get('career-applications', [CareerApplicationController::class, 'index'])->name('career-applications.index');
 Route::get('career-applications/{careerApplication}', [CareerApplicationController::class, 'show'])->name('career-applications.show');
 Route::put('career-applications/{careerApplication}', [CareerApplicationController::class, 'update'])->name('career-applications.update');
-Route::get('career-applications/{careerApplication}/resume', [CareerApplicationController::class, 'resume'])->name('career-applications.resume');
+Route::get('career-applications/{careerApplication}/resume/{resumeToken}', [CareerApplicationController::class, 'resume'])
+    ->whereUuid('resumeToken')->name('career-applications.resume');

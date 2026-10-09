@@ -141,14 +141,27 @@ class CareerAdminTest extends TestCase
             'full_name' => 'کاربر آزمایشی', 'phone' => '09120000000',
             'skills_and_experience' => 'تجربه تولید محتوا', 'status' => 'new',
         ]);
-        $this->get(route('admin.career-applications.index'))->assertOk()->assertSee('کاربر آزمایشی');
-        $this->get(route('admin.career-applications.show', $application))->assertOk()->assertSee('تجربه تولید محتوا');
+        $list = $this->get(route('admin.career-applications.index'))->assertOk()
+            ->assertSee('کاربر آزمایشی')
+            ->assertSee('!bg-rose-50', false)
+            ->assertSee('مشاهده‌نشده')
+            ->assertSee('bg-sky-100', false)
+            ->assertSee('مشاهده')
+            ->assertSee(jalali_date($application->created_at, 'Y/m/d'));
+        $this->assertMatchesRegularExpression('/<tr[^>]*!bg-rose-50[^>]*>.*?کاربر آزمایشی.*?مشاهده‌نشده.*?<\/tr>/su', $list->getContent());
+        $this->get(route('admin.career-applications.show', $application))->assertOk()
+            ->assertSee('تجربه تولید محتوا')
+            ->assertSee(jalali_date($application->created_at, 'Y/m/d H:i'));
         $this->assertNotNull($application->fresh()->viewed_at);
+        $this->get(route('admin.career-applications.index'))->assertOk()->assertDontSee('!bg-rose-50', false);
         $this->put(route('admin.career-applications.update', $application), [
             'status' => 'reviewing', 'internal_notes' => 'برای مصاحبه پیگیری شود',
         ])->assertRedirect();
         $this->assertSame('reviewing', $application->fresh()->status);
         $this->assertNotNull($application->fresh()->reviewed_at);
+        $this->get(route('admin.career-applications.show', $application))->assertOk()
+            ->assertSee(jalali_date($application->fresh()->reviewed_at, 'Y/m/d H:i'))
+            ->assertSee(jalali_date($application->fresh()->viewed_at, 'Y/m/d H:i'));
     }
 
     public function test_application_access_requires_its_own_permission(): void

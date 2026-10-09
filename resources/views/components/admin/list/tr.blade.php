@@ -1,6 +1,7 @@
 @props([
     'active' => false,
     'clickable' => false,
+    'tone' => 'default',
 ])
 
 <tr
@@ -8,8 +9,8 @@
         'class' => collect([
             'group transition',
             $clickable ? 'cursor-pointer' : '',
-            $active ? 'bg-brand-50/40' : 'bg-white',
-            'hover:bg-slate-50/80',
+            $tone === 'danger' ? '!bg-rose-50 hover:!bg-rose-100/70' : ($active ? 'bg-brand-50/40' : 'bg-white'),
+            $tone === 'danger' ? '' : 'hover:bg-slate-50/80',
         ])->filter()->implode(' ')
     ]) }}
 >

@@ -61,10 +61,15 @@ class CareerApplicationController extends Controller
         return back()->with('success', 'وضعیت درخواست ذخیره شد.');
     }
 
-    public function resume(CareerApplication $careerApplication)
+    public function resume(CareerApplication $careerApplication, string $resumeToken)
     {
         Gate::authorize('career-application.list');
 
+        abort_unless(
+            $careerApplication->resume_download_token &&
+            hash_equals($careerApplication->resume_download_token, $resumeToken),
+            404,
+        );
         abort_unless($careerApplication->resume_path && Storage::disk('local')->exists($careerApplication->resume_path), 404);
 
         $this->markViewed($careerApplication);

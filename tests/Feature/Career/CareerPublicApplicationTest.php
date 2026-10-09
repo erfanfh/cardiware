@@ -167,12 +167,16 @@ class CareerPublicApplicationTest extends TestCase
         Storage::disk('local')->assertExists($application->resume_path);
         $this->assertStringStartsWith('careers/resumes/', $application->resume_path);
         $this->assertSame('رزومه.pdf', $application->resume_original_name);
-        $this->get(route('admin.career-applications.resume', $application))->assertRedirect();
+        $this->assertTrue(\Illuminate\Support\Str::isUuid($application->resume_download_token));
+        $resumeUrl = route('admin.career-applications.resume', [$application, $application->resume_download_token]);
+        $this->assertStringContainsString($application->resume_download_token, $resumeUrl);
+        $this->get($resumeUrl)->assertRedirect();
 
         $this->actingAs($this->admin());
         $unseenList = $this->get(route('admin.career-applications.index', ['viewed' => 'unseen']))->assertOk()->assertSee('علی رضایی');
         $this->assertMatchesRegularExpression('/درخواست‌های همکاری<\/span>\s*<span[^>]*>\s*1\s*<\/span>/u', $unseenList->getContent());
-        $this->get(route('admin.career-applications.resume', $application))->assertOk();
+        $this->get(route('admin.career-applications.resume', [$application, (string) \Illuminate\Support\Str::uuid()]))->assertNotFound();
+        $this->get($resumeUrl)->assertOk();
         $this->assertNotNull($application->fresh()->viewed_at);
         $this->get(route('admin.career-applications.show', $application))->assertOk()->assertSee('علی رضایی');
         $this->assertNotNull($application->fresh()->viewed_at);

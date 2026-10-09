@@ -5,6 +5,7 @@ namespace App\Domain\Career\Models;
 use App\Domain\Identity\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class CareerApplication extends Model
 {
@@ -19,6 +20,15 @@ class CareerApplication extends Model
     protected function casts(): array
     {
         return ['reviewed_at' => 'datetime', 'viewed_at' => 'datetime'];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $application): void {
+            if ($application->resume_path && ! $application->resume_download_token) {
+                $application->resume_download_token = (string) Str::uuid();
+            }
+        });
     }
 
     public function position(): BelongsTo
