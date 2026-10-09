@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Catalog;
 
+use App\Application\Catalog\Support\ProductEditLock;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -52,6 +53,7 @@ class ProductUpdateProgressPersistenceTest extends TestCase
         $this->assertSame('توضیحات اولیه', $product->updateProgress->description);
 
         $this->put(route('admin.products.update', $product), [
+            'edit_lock_token' => app(ProductEditLock::class)->acquire($product, $admin),
             ...$productData,
             'update_progress' => [
                 'title' => 'عنوان ویرایش‌شده',

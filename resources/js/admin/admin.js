@@ -12,7 +12,7 @@ import './editor.js'
 import './seo/readability-component.js'
 import './icon-picker.js'
 import './mobile.js'
-import './post-edit-lock.js'
+import './edit-lock.js'
 
 window.addEventListener('admin-inline-edit-started', () => {
     requestAnimationFrame(() => {

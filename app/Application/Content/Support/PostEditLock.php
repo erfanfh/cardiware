@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 
 class PostEditLock
 {
-    public const LIFETIME_SECONDS = 180;
+    public const LIFETIME_SECONDS = 60;
 
     public function acquire(Post $post, User $user, ?string $existingToken = null): string
     {

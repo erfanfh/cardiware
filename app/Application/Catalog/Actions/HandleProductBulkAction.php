@@ -2,6 +2,7 @@
 
 namespace App\Application\Catalog\Actions;
 
+use App\Application\Catalog\Support\ProductEditLock;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -11,6 +12,8 @@ use Throwable;
 
 class HandleProductBulkAction
 {
+    public function __construct(private readonly ProductEditLock $locks) {}
+
     /**
      * @param string $action
      * @param array $ids
@@ -20,6 +23,11 @@ class HandleProductBulkAction
     public function execute(string $action, array $ids): BulkActionResultDTO
     {
         return DB::transaction(function () use ($action, $ids) {
+            // Keep every row locked until the entire bulk action commits or rolls back.
+            foreach (Product::query()->whereIn('id', $ids)->orderBy('id')->get() as $product) {
+                $this->locks->withoutEditor($product, fn () => null);
+            }
+
             $affectedCount = match ($action) {
                 'activate' => $this->updateStatus($ids, ProductStatusEnum::ACTIVE),
                 'deactivate' => $this->updateStatus($ids, ProductStatusEnum::INACTIVE),

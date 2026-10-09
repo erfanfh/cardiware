@@ -3,12 +3,13 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 
-const source = readFileSync(new URL('../../../resources/js/admin/post-edit-lock.js', import.meta.url), 'utf8');
+const source = readFileSync(new URL('../../../resources/js/admin/edit-lock.js', import.meta.url), 'utf8');
 
 function page() {
     const documentEvents = new Map();
     const windowEvents = new Map();
     const intervals = new Map();
+    const intervalDelays = [];
     const requests = [];
     const responses = [];
     const button = { disabled: false };
@@ -30,12 +31,12 @@ function page() {
     const context = vm.createContext({
         document: {
             visibilityState: 'visible',
-            querySelector: selector => selector === '[data-post-edit-lock]' ? form : status,
+            querySelector: selector => selector === '[data-edit-lock]' ? form : status,
             addEventListener: (type, fn) => documentEvents.set(type, fn),
         },
         window: { addEventListener: (type, fn) => windowEvents.set(type, fn) },
         FormData: class extends Map {}, AbortSignal,
-        setInterval: fn => { intervals.set(++timerId, fn); return timerId; },
+        setInterval: (fn, delay) => { intervalDelays.push(delay); intervals.set(++timerId, fn); return timerId; },
         clearInterval: id => intervals.delete(id),
         fetch: async (url, options) => {
             requests.push({ url, options });
@@ -49,7 +50,7 @@ function page() {
     documentEvents.get('DOMContentLoaded')();
 
     return {
-        button, status, form, requests, responses, intervals,
+        button, status, form, requests, responses, intervals, intervalDelays,
         submit: () => form.listeners[0](submitEvent(button)),
         tick: () => [...intervals.values()][0](),
         event: (type, event = {}) => windowEvents.get(type)(event),
@@ -140,4 +141,9 @@ test('a canceled resubmission keeps heartbeats running', async () => {
     assert.equal(p.form.nativeSubmissions, 0);
     await p.tick();
     assert.equal(p.requests.length, 2);
+});
+
+test('heartbeat runs every fifteen seconds for the one-minute lock', () => {
+    const p = page();
+    assert.deepEqual(p.intervalDelays, [15000]);
 });

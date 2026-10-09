@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Catalog;
 
+use App\Application\Catalog\Support\ProductEditLock;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
 use App\Domain\Catalog\Enums\ProductTypeEnum;
@@ -44,6 +45,7 @@ class ProductPublishedAtPreservationTest extends TestCase
         $this->actingAs($admin);
 
         $payload = [
+            'edit_lock_token' => app(ProductEditLock::class)->acquire($product, $admin),
             'title' => 'Edited',
             'body' => '',
             'slug' => $product->slug,

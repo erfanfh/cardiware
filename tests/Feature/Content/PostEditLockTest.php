@@ -70,7 +70,7 @@ class PostEditLockTest extends TestCase
         $updatedAt = $this->post->updated_at;
         $token = $this->locks->acquire($this->post, $this->editor);
         $expiry = $this->post->fresh()->edit_lock_expires_at;
-        $this->travel(60)->seconds();
+        $this->travel(20)->seconds();
 
         $this->actingAs($this->other)->postJson(route('admin.posts.edit-lock.renew', $this->post), [
             'edit_lock_token' => $token,
@@ -87,8 +87,12 @@ class PostEditLockTest extends TestCase
 
     public function test_expired_lock_is_available_and_old_heartbeat_cannot_resurrect_it(): void
     {
+        $this->travelTo(now()->startOfSecond());
         $token = $this->locks->acquire($this->post, $this->editor);
-        $this->travel(PostEditLock::LIFETIME_SECONDS)->seconds();
+        $this->travel(59)->seconds();
+        self::assertTrue($this->post->fresh()->isEditLocked());
+        $this->travel(1)->seconds();
+        self::assertFalse($this->post->fresh()->isEditLocked());
 
         $this->actingAs($this->editor)->postJson(route('admin.posts.edit-lock.renew', $this->post), [
             'edit_lock_token' => $token,

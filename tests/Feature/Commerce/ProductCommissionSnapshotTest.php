@@ -181,6 +181,7 @@ class ProductCommissionSnapshotTest extends TestCase
             ->assertSee('تقسیم درآمد محصول');
 
         $payload = [
+            'edit_lock_token' => $product->fresh()->edit_lock_token,
             'title' => $product->title,
             'body' => '',
             'slug' => $product->slug,
@@ -218,6 +219,7 @@ class ProductCommissionSnapshotTest extends TestCase
             ->assertSee('سهم فروشگاه از این خدمت افزوده');
 
         $payload = [
+            'edit_lock_token' => $product->fresh()->edit_lock_token,
             'title' => $product->title,
             'body' => '',
             'slug' => $product->slug,

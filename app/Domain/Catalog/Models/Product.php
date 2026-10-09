@@ -36,6 +36,8 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
 {
     use SoftDeletes, HasTaxonomyTerms, HasComments, HasSeoMeta, HasExcerpt;
 
+    protected $hidden = ['edit_lock_token'];
+
     protected $fillable = [
         'store_id',
         'seller_commission_basis_points',
@@ -54,6 +56,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     ];
 
     protected $casts = [
+        'edit_lock_expires_at' => 'datetime',
         'status' => ProductStatusEnum::class,
         'type' => ProductTypeEnum::class,
         'content_type' => ProductContentTypeEnum::class,
@@ -91,6 +94,17 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function store(): BelongsTo
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function editLockUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edit_lock_user_id');
+    }
+
+    public function isEditLocked(): bool
+    {
+        return $this->edit_lock_user_id !== null
+            && $this->edit_lock_expires_at?->isFuture() === true;
     }
 
     public function picture(): BelongsTo

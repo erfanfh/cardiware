@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.querySelector('[data-post-edit-lock]');
+    const form = document.querySelector('[data-edit-lock]');
     if (!form) return;
 
-    const status = document.querySelector('[data-post-edit-lock-status]');
+    const status = document.querySelector('[data-edit-lock-status]');
     const normalMessage = status.textContent.trim();
     const submitButtons = [...form.querySelectorAll('button[type="submit"], input[type="submit"]')];
     let lost = false;
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if ([401, 403, 404, 419, 423].includes(response.status)) {
                     lost = true;
                     const data = await response.json().catch(() => ({}));
-                    showStatus(data.message || 'دسترسی ویرایش این صفحه پایان یافته است. تغییرات خود را کپی کنید و نوشته را دوباره باز کنید.', true);
+                    showStatus(data.message || 'دسترسی ویرایش این صفحه پایان یافته است. تغییرات خود را کپی کنید و صفحه ویرایش را دوباره باز کنید.', true);
                 } else {
                     showStatus('ارتباط با سرور برقرار نشد. تا برقراری ارتباط، ذخیره متوقف است؛ تغییرات شما در همین صفحه باقی می‌ماند.', true);
                 }
@@ -84,12 +84,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!approvedEvent || approvedEvent.defaultPrevented) submitting = false;
     }, true);
 
-    let timer = setInterval(renew, 30000);
+    let timer = setInterval(renew, 15000);
     window.addEventListener('online', renew);
     window.addEventListener('pageshow', event => {
         if (event.persisted) {
             submitting = false;
-            timer = setInterval(renew, 30000);
+            timer = setInterval(renew, 15000);
             renew();
         }
     });

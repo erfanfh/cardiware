@@ -6,6 +6,7 @@ use App\Application\Catalog\Actions\CreateProductAction;
 use App\Application\Catalog\Actions\DeleteProductAction;
 use App\Application\Catalog\Actions\UpdateProductAction;
 use App\Application\Catalog\Listings\ProductListing;
+use App\Application\Catalog\Support\ProductEditLock;
 use App\Application\Taxonomy\Actions\GetAllTaxonomiesAction;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Enums\ProductStructureEnum;
@@ -18,6 +19,8 @@ use App\Http\Requests\Admin\Catalog\IndexProductRequest;
 use App\Http\Requests\Admin\Catalog\UpdateProductRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
@@ -45,6 +48,7 @@ class ProductController extends Controller
                         'categories',
                         'tags',
                         'saleItems',
+                        'editLockUser',
                     ])
                     ->withCount('comments'),
                 $request->validated()
@@ -154,11 +158,18 @@ class ProductController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Product $product
-     * @return View
+     * @return Response
      */
-    public function edit(Product $product): View
+    public function edit(Request $request, Product $product, ProductEditLock $locks): Response
     {
         Gate::authorize('product.edit');
+
+        $previous = $request->session()->get('product_edit_lock');
+        $token = $request->old('edit_lock_token');
+        if (! is_string($token) && is_array($previous) && ($previous['product_id'] ?? null) === $product->id) {
+            $token = $previous['token'] ?? null;
+        }
+        $editLockToken = $locks->acquire($product, $request->user(), is_string($token) ? $token : null);
 
         $product->load([
             'informationEntries',
@@ -181,7 +192,8 @@ class ProductController extends Controller
         $allCategories = app(GetAllTaxonomiesAction::class)->execute(TaxonomyKeyEnum::PRODUCT_CATEGORY);
         $selectedCategoryIds = $product->categories()->pluck('taxonomy_terms.id')->all();
 
-        return view('admin.catalog.products.edit', compact('product', 'allCategories', 'selectedCategoryIds', 'selectedTags'));
+        return response()->view('admin.catalog.products.edit', compact('product', 'allCategories', 'selectedCategoryIds', 'selectedTags', 'editLockToken'))
+            ->header('Cache-Control', 'no-store');
     }
 
     /**
@@ -193,22 +205,25 @@ class ProductController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(UpdateProductRequest $request, Product $product, UpdateProductAction $action): RedirectResponse
+    public function update(UpdateProductRequest $request, Product $product, UpdateProductAction $action, ProductEditLock $locks): RedirectResponse
     {
         Gate::authorize('product.edit');
 
-        $action->execute($product, $request->validated());
+        $token = $request->input('edit_lock_token');
+        $locks->save($product, $request->user(), is_string($token) ? $token : '',
+            fn () => $action->execute($product, $request->validated()));
 
         return redirect()
             ->route('admin.products.edit', $product)
+            ->with('product_edit_lock', ['product_id' => $product->id, 'token' => $token])
             ->with('success', 'محصول با موفقیت بروزرسانی شد.');
     }
 
-    public function destroy(Product $product): RedirectResponse
+    public function destroy(Product $product, ProductEditLock $locks): RedirectResponse
     {
         Gate::authorize('product.delete');
 
-        app(DeleteProductAction::class)->execute($product);
+        $locks->withoutEditor($product, fn () => app(DeleteProductAction::class)->execute($product));
 
         return redirect()
             ->route('admin.products.index')
