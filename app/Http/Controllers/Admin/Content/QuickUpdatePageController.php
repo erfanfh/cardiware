@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Content;
 
+use App\Application\Content\Support\PageEditLock;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Content\Enums\PageStatusEnum;
@@ -11,7 +12,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Content\QuickUpdatePageRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Throwable;
 
@@ -26,7 +26,7 @@ class QuickUpdatePageController extends Controller
     /**
      * @throws Throwable
      */
-    public function __invoke(QuickUpdatePageRequest $request, Page $page): JsonResponse|RedirectResponse
+    public function __invoke(QuickUpdatePageRequest $request, Page $page, PageEditLock $locks): JsonResponse|RedirectResponse
     {
         Gate::authorize('page.edit');
 
@@ -34,7 +34,7 @@ class QuickUpdatePageController extends Controller
         $data['title'] = $data['title'] ?: 'بدون عنوان';
         $data['slug'] = $data['slug'] ?: 'untitled-page';
 
-        DB::transaction(function () use ($page, $data): void {
+        $locks->withoutEditor($page, function () use ($page, $data): void {
             $page->update([
                 'title' => $data['title'],
                 'status' => $data['status'],

@@ -106,6 +106,9 @@
                                     </template>
                                 </div>
 
+                                @if($page->isEditLocked())
+                                    <div class="mt-2 text-xs font-bold text-amber-700">در حال ویرایش توسط {{ $page->editLockUser?->display_name ?: 'مدیر دیگر' }}</div>
+                                @endif
                                 <x-admin.list.row-actions>
                                     <x-admin.list.action
                                         tag="a"

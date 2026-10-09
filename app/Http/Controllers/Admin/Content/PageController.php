@@ -6,6 +6,7 @@ use App\Application\Content\Actions\CreatePageAction;
 use App\Application\Content\Actions\DeletePageAction;
 use App\Application\Content\Actions\UpdatePageAction;
 use App\Application\Content\Listings\PageListing;
+use App\Application\Content\Support\PageEditLock;
 use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Models\Page;
 use App\Domain\Identity\Models\User;
@@ -14,6 +15,8 @@ use App\Http\Requests\Admin\Content\IndexPageRequest;
 use App\Http\Requests\Admin\Content\UpdatePageRequest;
 use App\Infrastructure\Support\BulkActions\DefaultBulkActions;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 use Throwable;
@@ -32,7 +35,7 @@ class PageController extends Controller
         Gate::authorize('page.list');
 
         $pages = $pageListing
-            ->handle(Page::with(['author']), $request->validated())
+            ->handle(Page::with(['author', 'editLockUser']), $request->validated())
             ->paginate($pageListing->perPage())
             ->withQueryString();
 
@@ -104,13 +107,21 @@ class PageController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param Page $page
-     * @return View
+     * @return Response
      */
-    public function edit(Page $page): View
+    public function edit(Request $request, Page $page, PageEditLock $locks): Response
     {
         Gate::authorize('page.edit');
 
-        return view('admin.content.pages.edit', compact('page'));
+        $previous = $request->session()->get('page_edit_lock');
+        $token = $request->old('edit_lock_token');
+        if (! is_string($token) && is_array($previous) && ($previous['page_id'] ?? null) === $page->id) {
+            $token = $previous['token'] ?? null;
+        }
+        $editLockToken = $locks->acquire($page, $request->user(), is_string($token) ? $token : null);
+
+        return response()->view('admin.content.pages.edit', compact('page', 'editLockToken'))
+            ->header('Cache-Control', 'no-store');
     }
 
     /**
@@ -122,13 +133,17 @@ class PageController extends Controller
      * @return RedirectResponse
      * @throws Throwable
      */
-    public function update(UpdatePageRequest $request, Page $page, UpdatePageAction $action): RedirectResponse
+    public function update(UpdatePageRequest $request, Page $page, UpdatePageAction $action, PageEditLock $locks): RedirectResponse
     {
         Gate::authorize('page.edit');
 
-        $action->execute($page, $request->validated());
+        $token = $request->input('edit_lock_token');
+        $locks->save($page, $request->user(), is_string($token) ? $token : '',
+            fn () => $action->execute($page, $request->validated()));
 
-        return redirect()->route('admin.pages.edit', $page)->with('success', 'برگه با موفقیت بروزرسانی شد.');
+        return redirect()->route('admin.pages.edit', $page)
+            ->with('page_edit_lock', ['page_id' => $page->id, 'token' => $token])
+            ->with('success', 'برگه با موفقیت بروزرسانی شد.');
     }
 
     /**
@@ -137,11 +152,11 @@ class PageController extends Controller
      * @param Page $page
      * @return RedirectResponse
      */
-    public function destroy(Page $page): RedirectResponse
+    public function destroy(Page $page, PageEditLock $locks): RedirectResponse
     {
         Gate::authorize('page.delete');
 
-        app(DeletePageAction::class)->execute($page);
+        $locks->withoutEditor($page, fn () => app(DeletePageAction::class)->execute($page));
 
         return redirect()->route('admin.pages.index')->with('success', 'برگه موردنظر با موفقیت حذف شد');
     }

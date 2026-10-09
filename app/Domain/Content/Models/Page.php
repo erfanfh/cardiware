@@ -30,10 +30,13 @@ class Page extends Model implements PageViewableInterface
         'published_at',
     ];
 
+    protected $hidden = ['edit_lock_token'];
+
     protected $casts = [
         'status' => PageStatusEnum::class,
         'published_at' => 'datetime',
         'updated_at' => 'datetime',
+        'edit_lock_expires_at' => 'datetime',
     ];
 
     /**
@@ -68,6 +71,16 @@ class Page extends Model implements PageViewableInterface
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function editLockUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edit_lock_user_id');
+    }
+
+    public function isEditLocked(): bool
+    {
+        return $this->edit_lock_user_id !== null && $this->edit_lock_expires_at?->isFuture() === true;
     }
 
     /**

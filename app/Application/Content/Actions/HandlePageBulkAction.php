@@ -2,6 +2,7 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Content\Support\PageEditLock;
 use App\Domain\Content\Enums\PageStatusEnum;
 use App\Domain\Content\Models\Page;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -11,6 +12,8 @@ use Throwable;
 
 class HandlePageBulkAction
 {
+    public function __construct(private readonly PageEditLock $locks) {}
+
     /**
      * @param string $action
      * @param array $ids
@@ -20,6 +23,10 @@ class HandlePageBulkAction
     public function execute(string $action, array $ids): BulkActionResultDTO
     {
         return DB::transaction(function () use ($action, $ids) {
+            foreach (Page::query()->whereIn('id', $ids)->orderBy('id')->get() as $page) {
+                $this->locks->withoutEditor($page, fn () => null);
+            }
+
             $affectedCount = match ($action) {
                 'activate' => $this->updateStatus($ids, PageStatusEnum::ACTIVE),
                 'deactivate' => $this->updateStatus($ids, PageStatusEnum::INACTIVE),
