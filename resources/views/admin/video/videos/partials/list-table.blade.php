@@ -34,6 +34,9 @@
                     <div class="min-w-[280px]">
                         <a href="{{ $itemUrl }}" target="_blank" class="inline-block text-sm font-bold leading-6 text-slate-800 transition hover:text-brand-600">{{ $video->title }}</a>
                         <div class="mt-1 flex items-center gap-2 text-xs text-slate-500"><span>#{{ $video->id }}</span>@if($video->slug)<span class="pb-1 text-slate-300">•</span><span dir="ltr">{{ $video->slug }}</span>@endif</div>
+                        @if($video->isEditLocked())
+                            <div class="mt-2 text-xs font-bold text-amber-700">در حال ویرایش توسط {{ $video->editLockUser?->display_name ?: 'مدیر دیگر' }}</div>
+                        @endif
                         <x-admin.list.row-actions>
                             <x-admin.list.action tag="a" href="{{ route('admin.videos.edit', $video) }}" variant="primary">ویرایش</x-admin.list.action>
                             <span class="text-slate-300">|</span>

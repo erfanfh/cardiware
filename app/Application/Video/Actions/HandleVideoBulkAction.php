@@ -2,6 +2,7 @@
 
 namespace App\Application\Video\Actions;
 
+use App\Application\Video\Support\VideoEditLock;
 use App\Domain\Video\Enums\VideoStatusEnum;
 use App\Domain\Video\Models\Video;
 use App\Infrastructure\Support\BulkActions\BulkActionResultDTO;
@@ -10,9 +11,15 @@ use InvalidArgumentException;
 
 class HandleVideoBulkAction
 {
+    public function __construct(private readonly VideoEditLock $locks) {}
+
     public function execute(string $action, array $ids): BulkActionResultDTO
     {
         return DB::transaction(function () use ($action, $ids): BulkActionResultDTO {
+            foreach (Video::query()->whereIn('id', $ids)->orderBy('id')->get() as $video) {
+                $this->locks->withoutEditor($video, fn () => null);
+            }
+
             $count = match ($action) {
                 'activate' => $this->updateStatus($ids, VideoStatusEnum::ACTIVE),
                 'deactivate' => $this->updateStatus($ids, VideoStatusEnum::INACTIVE),

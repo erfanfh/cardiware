@@ -32,6 +32,8 @@ class Video extends Model implements PageViewableInterface, CommentableContract
         'display_views_offset',
     ];
 
+    protected $hidden = ['edit_lock_token'];
+
     protected $casts = [
         'status' => VideoStatusEnum::class,
         'source_type' => VideoSourceTypeEnum::class,
@@ -41,6 +43,7 @@ class Video extends Model implements PageViewableInterface, CommentableContract
         'guest_comments_enabled' => 'boolean',
         'published_at' => 'datetime',
         'display_views_offset' => 'integer',
+        'edit_lock_expires_at' => 'datetime',
     ];
 
     protected static function booted(): void
@@ -56,6 +59,16 @@ class Video extends Model implements PageViewableInterface, CommentableContract
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function editLockUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'edit_lock_user_id');
+    }
+
+    public function isEditLocked(): bool
+    {
+        return $this->edit_lock_user_id !== null && $this->edit_lock_expires_at?->isFuture() === true;
     }
 
     public function cover(): BelongsTo
