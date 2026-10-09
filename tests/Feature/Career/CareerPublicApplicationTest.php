@@ -111,7 +111,9 @@ class CareerPublicApplicationTest extends TestCase
             ->assertDontSee('موقعیت آینده')
             ->assertSee('name="career_page_id" value="'.$page->id.'"', false)
             ->assertSee($page->url.'?position='.$active->id.'#apply', false)
-            ->assertSee('name="resume"', false);
+            ->assertSee('name="resume"', false)
+            ->assertDontSee('minlength="20"', false)
+            ->assertDontSee('maxlength="10000"', false);
         $this->get('/careers')->assertNotFound();
     }
 
