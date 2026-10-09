@@ -1,11 +1,14 @@
 @php
-    $notifications = collect($personalHeaderNotifications ?? [])
-        ->concat(get_setting('header', 'notifications') ?: [])
+    $personalNotifications = collect($personalHeaderNotifications ?? []);
+    $manualNotifications = get_setting('header', 'notifications') ?: [];
+    $notifications = $personalNotifications->filter(fn ($notification) => empty($notification['read_at']))
+        ->concat($manualNotifications)
         ->concat($raffleHeaderNotifications ?? collect())
+        ->concat($personalNotifications->filter(fn ($notification) => !empty($notification['read_at'])))
         ->values()
         ->all();
     $notificationBadgeCount = ($personalUnreadCount ?? 0)
-        + count(get_setting('header', 'notifications') ?: [])
+        + count($manualNotifications)
         + count($raffleHeaderNotifications ?? []);
 @endphp
 <div
@@ -64,16 +67,18 @@
                 @php
                     $hasLink = !empty($notification['url']);
                     $hasSubtitle = !empty($notification['subtitle']);
+                    $isUnread = empty($notification['read_at']);
                 @endphp
 
                 @if(!empty($notification['id']))
                     <form method="post" action="{{ route('account.notifications.read', $notification['id']) }}" class="border-b border-slate-100 last:border-b-0 dark:border-slate-800">
                         @csrf
-                        <button type="submit" class="group flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-right transition hover:bg-slate-50 dark:hover:bg-slate-800/70 {{ empty($notification['read_at']) ? 'bg-brand-50/50 dark:bg-brand-500/10' : '' }}">
-                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">@include('icons.notification-01')</span>
+                        <button type="submit" class="group flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-right transition hover:bg-slate-50 dark:hover:bg-slate-800/70 {{ $isUnread ? 'bg-brand-50/50 dark:bg-brand-500/10' : 'bg-slate-50/70 dark:bg-slate-800/30' }}">
+                            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border {{ $isUnread ? 'border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-500' }}">@include('icons.notification-01')</span>
                             <span class="min-w-0 flex-1">
-                                <span class="block text-sm font-semibold leading-6 text-slate-700 dark:text-slate-300">{{ $notification['title'] }}</span>
-                                @if($hasSubtitle)<span class="mt-1 block text-[0.7rem] text-slate-500 dark:text-slate-400">{{ $notification['subtitle'] }}</span>@endif
+                                <span class="block text-sm leading-6 {{ $isUnread ? 'font-semibold text-slate-700 dark:text-slate-300' : 'font-medium text-slate-500 dark:text-slate-400' }}">{{ $notification['title'] }}</span>
+                                @if($hasSubtitle)<span class="mt-1 block text-[0.7rem] {{ $isUnread ? 'text-slate-500 dark:text-slate-400' : 'text-slate-400 dark:text-slate-500' }}">{{ $notification['subtitle'] }}</span>@endif
+                                @if(!$isUnread)<span class="mt-1 block text-[0.65rem] text-slate-400 dark:text-slate-500">خوانده‌شده</span>@endif
                             </span>
                         </button>
                     </form>
@@ -82,10 +87,10 @@
                     href="{{ $hasLink ? $notification['url'] : '#' }}"
                     @if(!$hasLink) @click.prevent @endif
                     class="group flex {{ $hasSubtitle ? 'items-start' : 'items-center' }} gap-3 border-b border-slate-100 px-4 py-4 transition last:border-b-0
-                   hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/70
+                   bg-white hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800/70
                    {{ $hasLink ? 'cursor-pointer' : 'cursor-default' }}">
                     <span
-                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
                         @include('icons.notification-01')
                     </span>
 

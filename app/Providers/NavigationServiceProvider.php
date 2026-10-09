@@ -34,6 +34,7 @@ class NavigationServiceProvider extends ServiceProvider
                 $personalUnreadCount = UserNotification::query()->where('user_id', auth()->id())->whereNull('read_at')->count();
                 $personalHeaderNotifications = UserNotification::query()
                     ->where('user_id', auth()->id())
+                    ->orderByRaw('CASE WHEN read_at IS NULL THEN 0 ELSE 1 END')
                     ->orderByDesc('sent_at')->orderByDesc('id')->limit(5)->get()
                     ->map(fn (UserNotification $notification): array => [
                         'id' => $notification->id,
