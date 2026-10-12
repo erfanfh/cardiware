@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use App\Application\Shared\Cache\CacheTag;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
@@ -186,6 +187,12 @@ final class LauncherSecurityMonitorController extends Controller
             ],
         );
         Cache::forget('launcher_allowed_dlls');
+        // The allowlist is embedded in every product's cached manifest (keyed by
+        // manifest_revision in GetUserLibraryManifestAction), so clearing only the small
+        // allowlist cache above is NOT enough -- the customer keeps getting the old
+        // allowlist from the cached manifest until that product is re-saved. Flush the
+        // manifest cache too so a newly-allowed DLL takes effect everywhere immediately.
+        Cache::tags([CacheTag::LAUNCHER_MANIFEST])->flush();
 
         return back()->with('success', 'DLL به لیست مجاز اضافه شد.');
     }
@@ -196,6 +203,7 @@ final class LauncherSecurityMonitorController extends Controller
 
         DB::table('launcher_allowed_dlls')->where('id', $allowedDll)->delete();
         Cache::forget('launcher_allowed_dlls');
+        Cache::tags([CacheTag::LAUNCHER_MANIFEST])->flush();
 
         return back()->with('success', 'DLL از لیست مجاز حذف شد.');
     }
