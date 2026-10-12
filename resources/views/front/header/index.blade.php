@@ -51,7 +51,7 @@
                         />
                     </span>
                 </div>
-                <div class="min-w-0 leading-tight max-[380px]:hidden">
+                <div class="min-w-0 leading-tight max-[410px]:hidden">
                     @if(request()->routeIs('home'))
                         <h1 class="truncate text-base font-extrabold sm:text-lg dark:text-slate-100">
                             {{ get_setting('general', 'title') }}

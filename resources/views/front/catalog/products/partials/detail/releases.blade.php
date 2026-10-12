@@ -34,10 +34,12 @@
                                     {{ $release->title }}
                                 </span>
 
-                                <span
-                                    class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[11px] font-extrabold text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                    {{ jalali_date($release->released_at, 'Y/m/d') }}
-                                </span>
+                                @if($release->released_at)
+                                    <span
+                                        class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[11px] font-extrabold text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                                        {{ jalali_date($release->released_at, 'Y/m/d') }}
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="mt-1 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
