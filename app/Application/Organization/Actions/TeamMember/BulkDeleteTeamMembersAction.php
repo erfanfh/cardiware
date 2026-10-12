@@ -2,10 +2,17 @@
 
 namespace App\Application\Organization\Actions\TeamMember;
 
+use App\Application\Shared\Cache\Invalidators\ProductCacheInvalidator;
 use App\Domain\Organization\Models\TeamMember;
 
 class BulkDeleteTeamMembersAction
 {
+    public function __construct(
+        protected ProductCacheInvalidator $productCacheInvalidator,
+    )
+    {
+    }
+
     /**
      * @param array<int, int> $ids
      */
@@ -15,6 +22,10 @@ class BulkDeleteTeamMembersAction
             ->whereKey($ids)
             ->get();
         $members->each->delete();
+
+        if ($members->isNotEmpty()) {
+            $this->productCacheInvalidator->flushProductDetails();
+        }
 
         return $members->count();
     }

@@ -2,10 +2,17 @@
 
 namespace App\Application\Organization\Actions\TeamMember;
 
+use App\Application\Shared\Cache\Invalidators\ProductCacheInvalidator;
 use App\Domain\Organization\Models\TeamMember;
 
 class UpdateTeamMemberAction
 {
+    public function __construct(
+        protected ProductCacheInvalidator $productCacheInvalidator,
+    )
+    {
+    }
+
     public function execute(
         TeamMember $teamMember,
         array      $data
@@ -21,6 +28,8 @@ class UpdateTeamMemberAction
             'mobile' => $data['mobile'] ?? null,
             'website_url' => $data['website_url'] ?? null,
         ]);
+
+        $this->productCacheInvalidator->flushProductDetails();
 
         return $teamMember->refresh();
     }
