@@ -78,9 +78,11 @@ class ProductSaleItemManifest extends Model
         'inject_dll_path',
         'monitor_process_name',
         'content_key_id',
+        'content_gate',
         'content_key_value',
         'protected_folder_markers',
         'protected_exact_paths',
+        'protected_gate_files',
         'protected_excluded_paths',
         'protected_modules',
         'protected_strict_modules',
@@ -104,6 +106,7 @@ class ProductSaleItemManifest extends Model
         'requires_sider' => 'boolean',
         'run_sider_as_administrator' => 'boolean',
         'requires_injection' => 'boolean',
+        'content_gate' => 'boolean',
         // Same treatment as archive_password on this table: encrypted at rest, Laravel
         // transparently decrypts on read. The stored value is the exact Base64 string
         // the launcher expects -- never re-encoded on the way out.
@@ -114,6 +117,7 @@ class ProductSaleItemManifest extends Model
         // and encrypting them would make them unsearchable for no benefit.
         'protected_folder_markers' => 'array',
         'protected_exact_paths' => 'array',
+        'protected_gate_files' => 'array',
         'protected_excluded_paths' => 'array',
         'protected_modules' => 'array',
         'protected_strict_modules' => 'boolean',

@@ -157,6 +157,8 @@
                             requires_injection: false,
                             inject_dll_path: '',
                             monitor_process_name: '',
+                            content_gate: false,
+                            protected_gate_files: '',
 
                             cpu_compatibility: {
                                 enabled: false,
@@ -278,6 +280,10 @@
 
                             inject_dll_path: source.inject_dll_path ?? '',
                             monitor_process_name: source.monitor_process_name ?? '',
+                            content_gate: this.normalizeBoolean(source.content_gate, false),
+                            protected_gate_files: Array.isArray(source.protected_gate_files)
+                                ? source.protected_gate_files.join('\n')
+                                : (source.protected_gate_files ?? ''),
 
                             cpu_compatibility: {
                                 enabled: this.normalizeBoolean(

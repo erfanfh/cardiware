@@ -209,6 +209,7 @@ class UpdateProductRequest extends FormRequest
                 'regex:/^[A-Za-z0-9._-]+$/',
             ],
             'sale_items.*.manifest.content_key_value' => ['nullable', 'string', 'max:512'],
+            'sale_items.*.manifest.content_gate' => ['nullable', 'boolean'],
 
             /*
             |--------------------------------------------------------------------------
@@ -234,6 +235,7 @@ class UpdateProductRequest extends FormRequest
             */
             'sale_items.*.manifest.protected_folder_markers' => ['nullable'],
             'sale_items.*.manifest.protected_exact_paths' => ['nullable'],
+            'sale_items.*.manifest.protected_gate_files' => ['nullable'],
             'sale_items.*.manifest.protected_excluded_paths' => ['nullable'],
             // One "<offset> <length> <path>" per line, at most 32 lines; length 1..64 so a
             // typo cannot overwrite a large part of a file in memory.
@@ -460,6 +462,31 @@ class UpdateProductRequest extends FormRequest
         $validator->after(function ($validator): void {
             foreach ((array)$this->input('sale_items', []) as $index => $item) {
                 $prefix = "sale_items.{$index}";
+                $manifest = (array)($item['manifest'] ?? []);
+
+                if (filter_var($manifest['content_gate'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+                    if (blank($manifest['content_key_id'] ?? null)) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.content_key_id",
+                            'برای محصولِ نگهبان‌دار (game-gate) باید شناسه‌ی کلیدِ محتوا تعیین شود.'
+                        );
+                    }
+
+                    if (blank($manifest['monitor_process_name'] ?? null)) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.monitor_process_name",
+                            'برای محصولِ نگهبان‌دار باید نامِ پراسسِ بازی (مثلاً FIFA23.exe) تعیین شود.'
+                        );
+                    }
+
+                    if (filter_var($manifest['requires_sider'] ?? false, FILTER_VALIDATE_BOOLEAN)
+                        || filter_var(data_get($manifest, 'capabilities.supports_sider', false), FILTER_VALIDATE_BOOLEAN)) {
+                        $validator->errors()->add(
+                            "{$prefix}.manifest.content_gate",
+                            'محصولِ نگهبان‌دار نباید هم‌زمان Sider داشته باشد؛ Sider را برای این محصول خاموش کنید.'
+                        );
+                    }
+                }
 
                 if (
                     filter_var(
@@ -499,7 +526,6 @@ class UpdateProductRequest extends FormRequest
                 }
 
                 $prefix = "sale_items.{$index}";
-                $manifest = (array)($item['manifest'] ?? []);
                 $files = array_values(array_filter(
                     (array)($item['files'] ?? []),
                     static fn(mixed $file): bool => is_array($file)
@@ -1141,10 +1167,10 @@ class UpdateProductRequest extends FormRequest
             );
         }
 
-        if (!$supportsSider) {
+        if (!$supportsSider && !filter_var($manifest['content_gate'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
             $validator->errors()->add(
                 "{$prefix}.manifest.content_key_id",
-                'تحویل کلید محتوا فقط از طریق Sider انجام می‌شود؛ ابتدا پشتیبانی از Sider را برای این نسخه فعال کنید.'
+                'برای تحویل کلید محتوا باید پشتیبانی از Sider یا نگهبان (game-gate) فعال باشد.'
             );
         }
 
@@ -1219,6 +1245,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.manifest.inject_dll_path' => 'مسیر فایل DLL تزریق',
             'sale_items.*.manifest.monitor_process_name' => 'نام پراسس بازی برای پایش',
             'sale_items.*.manifest.content_key_id' => 'شناسه کلید محتوا',
+            'sale_items.*.manifest.content_gate' => 'گیت محتوا / نگهبان (FIFA)',
+            'sale_items.*.manifest.protected_gate_files' => 'فایل‌های قفل‌شده‌ی نگهبان',
             'sale_items.*.manifest.content_key_value' => 'مقدار کلید محتوا',
             'sale_items.*.manifest.cpu_compatibility.default_mode' => 'حالت پیش‌فرض CPU Compatibility',
         ];
@@ -1477,6 +1505,7 @@ class UpdateProductRequest extends FormRequest
             // or SyncProductSaleItemManifestAction ever saw them, regardless of what the
             // browser actually submitted.
             'content_key_id' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_id'), 128),
+            'content_gate' => $this->normalizeBooleanInput(data_get($manifest, 'content_gate'), false),
             'content_key_value' => $this->normalizeNullableStringInput(data_get($manifest, 'content_key_value'), 512),
 
             // The content-protection-policy fields hit the EXACT SAME bug described in
@@ -1498,6 +1527,10 @@ class UpdateProductRequest extends FormRequest
             'protected_exact_paths' => $this->normalizeMultilineListInput(
                 data_get($manifest, 'protected_exact_paths')
             ),
+            // Preserve array input too; the sync action drops entries with embedded line breaks.
+            'protected_gate_files' => is_array(data_get($manifest, 'protected_gate_files'))
+                ? data_get($manifest, 'protected_gate_files')
+                : $this->normalizeMultilineListInput(data_get($manifest, 'protected_gate_files')),
             'protected_watermark_sites' => $this->normalizeMultilineListInput(
                 data_get($manifest, 'protected_watermark_sites')
             ),
