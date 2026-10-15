@@ -215,15 +215,15 @@
                                     </span>
                             </div>
 
-                            @if($order->coupon_code)
+                            @foreach($order->appliedCouponSnapshots() as $appliedCoupon)
                                 <div
                                     class="flex items-center justify-between gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                                     <span class="text-xs font-bold text-slate-500">کدتخفیف</span>
                                     <span class="text-sm font-extrabold text-slate-900">
-                                        {{ $order->coupon_code }}
+                                        {{ $appliedCoupon['code'] }}
                                     </span>
                                 </div>
-                            @endif
+                            @endforeach
                         </div>
                     </div>
                 </div>

@@ -34,6 +34,7 @@ class Coupon extends Model
         'used_count',
         'is_floating_box_enabled',
         'applies_to_addons',
+        'is_stackable',
         'created_by_user_id',
         'metadata',
     ];
@@ -44,6 +45,7 @@ class Coupon extends Model
         'status' => CouponStatusEnum::class,
         'applies_to_all_users' => 'boolean',
         'applies_to_addons' => 'boolean',
+        'is_stackable' => 'boolean',
         'value' => 'integer',
         'max_discount_amount' => 'integer',
         'minimum_order_amount' => 'integer',

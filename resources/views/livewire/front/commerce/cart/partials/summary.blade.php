@@ -109,8 +109,9 @@
                         </div>
                     </form>
 
-                    @if($this->cart?->coupon_code)
+                    @foreach($this->cart?->appliedCouponSnapshots() ?? [] as $appliedCoupon)
                         <div
+                            wire:key="applied-coupon-{{ $appliedCoupon['coupon_id'] }}"
                             class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs
                             dark:border-emerald-900/40 dark:bg-emerald-900/20"
                         >
@@ -122,12 +123,12 @@
                                 <div
                                     class="mt-1 flex flex-wrap items-center gap-2 text-emerald-700 dark:text-emerald-300">
                                     <span dir="ltr" class="font-black">
-                                        {{ $this->cart->coupon_code }}
+                                        {{ $appliedCoupon['code'] }}
                                     </span>
 
-                                    @if($this->cart->coupon_discount_amount)
+                                    @if($appliedCoupon['discount_amount'])
                                         <span class="text-emerald-600 dark:text-emerald-400">
-                                            {{ $this->money((int) $this->cart->coupon_discount_amount) }}
+                                            {{ $this->money((int) $appliedCoupon['discount_amount']) }}
                                         </span>
                                     @endif
                                 </div>
@@ -135,7 +136,7 @@
 
                             <button
                                 type="button"
-                                wire:click="removeCoupon"
+                                wire:click="removeCoupon(@js($appliedCoupon['code']))"
                                 wire:loading.attr="disabled"
                                 wire:target="removeCoupon"
                                 class="cursor-pointer shrink-0 text-xs font-extrabold text-rose-600 transition hover:text-rose-700 disabled:opacity-50"
@@ -143,7 +144,7 @@
                                 حذف
                             </button>
                         </div>
-                    @endif
+                    @endforeach
 
                     @if($checkoutError)
                         <div

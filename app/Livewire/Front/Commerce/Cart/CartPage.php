@@ -67,12 +67,6 @@ class CartPage extends Component
         $this->openCheckoutOnLoad = (bool) session()->pull('open_checkout_after_auth', false)
             && !$this->checkoutTermsRequired;
 
-        $cart = app(GetCurrentActiveCartAction::class)->execute();
-
-        if ($cart) {
-            $this->couponCode = $cart->coupon_code;
-        }
-
         $this->rotateCheckoutRequestKey();
     }
 
@@ -329,13 +323,13 @@ class CartPage extends Component
         }
 
         try {
-            $cart = $applyCouponToCartAction->execute(
+            $applyCouponToCartAction->execute(
                 cart: $this->cart,
                 code: (string)$this->couponCode,
                 user: auth()->user(),
             );
 
-            $this->couponCode = $cart->coupon_code;
+            $this->couponCode = null;
             $this->checkoutNotice = 'کدتخفیف با موفقیت اعمال شد.';
 
             $this->afterCartMutation();
@@ -348,7 +342,7 @@ class CartPage extends Component
         }
     }
 
-    public function removeCoupon(RemoveCouponFromCartAction $removeCouponFromCartAction): void
+    public function removeCoupon(RemoveCouponFromCartAction $removeCouponFromCartAction, ?string $code = null): void
     {
         $this->checkoutError = null;
         $this->checkoutNotice = null;
@@ -359,7 +353,7 @@ class CartPage extends Component
         }
 
         try {
-            $removeCouponFromCartAction->execute($this->cart);
+            $removeCouponFromCartAction->execute($this->cart, $code);
 
             $this->couponCode = null;
             $this->checkoutNotice = 'کدتخفیف از سبد خرید حذف شد.';
@@ -690,7 +684,7 @@ class CartPage extends Component
                     . ' است. لطفاً دوباره ادامه دهید.';
             }
 
-            $this->couponCode = $exception->currentCouponCode;
+            $this->couponCode = null;
             $this->cartNeedsRefresh = false;
 
             $this->resetCartComputedProperties();

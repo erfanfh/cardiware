@@ -19,87 +19,96 @@ class ReserveCouponForOrderAction
      */
     public function execute(Order $order): ?CouponReservation
     {
-        if (!$order->coupon_id || (int)$order->coupon_discount_amount <= 0) {
-            return null;
-        }
-
-        return DB::transaction(function () use ($order): CouponReservation {
+        return DB::transaction(function () use ($order): ?CouponReservation {
             /** @var Order $order */
             $order = Order::query()
                 ->whereKey($order->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            if (!$order->coupon_id || (int)$order->coupon_discount_amount <= 0) {
-                throw new DomainException('Order has no coupon to reserve.');
-            }
-
-            /** @var Coupon $coupon */
-            $coupon = Coupon::query()
-                ->whereKey($order->coupon_id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            $this->expireExpiredReservations($coupon);
-
-            $existingReservation = CouponReservation::query()
-                ->where('order_id', $order->id)
-                ->lockForUpdate()
-                ->first();
-
-            if ($existingReservation instanceof CouponReservation) {
-                if ($this->isActiveAndNotExpired($existingReservation)) {
-                    return $existingReservation;
+            $snapshots = collect($order->appliedCouponSnapshots())
+                ->filter(fn (array $snapshot): bool => ! empty($snapshot['coupon_id']) && (int) $snapshot['discount_amount'] > 0)
+                ->sortBy('coupon_id');
+            $coupons = Coupon::query()->whereIn('id', $snapshots->pluck('coupon_id'))
+                ->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            $firstReservation = null;
+            foreach ($snapshots as $snapshot) {
+                $coupon = $coupons->get($snapshot['coupon_id']);
+                if (! $coupon) {
+                    throw new DomainException('Coupon not found.');
                 }
-
-                if ($existingReservation->status->isRedeemed()) {
-                    return $existingReservation;
+                $reservation = $this->reserve($order, $coupon, $snapshot);
+                if ($firstReservation === null || (int) $coupon->id === (int) $order->coupon_id) {
+                    $firstReservation = $reservation;
                 }
             }
 
-            if (!$coupon->isCurrentlyUsable()) {
-                throw new DomainException('Coupon is not currently usable.');
-            }
-
-            $this->ensureGlobalCapacityIsAvailable($coupon);
-
-            $this->ensureUserCapacityIsAvailable($coupon, $order);
-
-            $reservationData = [
-                'coupon_id' => $coupon->id,
-                'user_id' => $order->user_id,
-                'cart_id' => $order->cart_id,
-                'order_id' => $order->id,
-
-                /*
-                 * Important:
-                 * Keep the coupon code snapshot from the order.
-                 * If admin changes coupon code later, this order still keeps
-                 * the code that was applied when the order was created.
-                 */
-                'code' => $order->coupon_code ?: $coupon->code,
-
-                'eligible_amount' => (int)$order->coupon_eligible_amount,
-                'discount_amount' => (int)$order->coupon_discount_amount,
-
-                'status' => CouponReservationStatusEnum::ACTIVE,
-                'reserved_at' => now(),
-                'expires_at' => now()->addMinutes(self::RESERVATION_TTL_MINUTES),
-                'redeemed_at' => null,
-                'released_at' => null,
-                'expired_at' => null,
-
-                'metadata' => $this->reservationMetadata($order, $existingReservation),
-            ];
-
-            if ($existingReservation instanceof CouponReservation) {
-                $existingReservation->forceFill($reservationData)->save();
-
-                return $existingReservation->refresh();
-            }
-
-            return CouponReservation::query()->create($reservationData);
+            return $firstReservation;
         });
+    }
+
+    private function reserve(Order $order, Coupon $coupon, array $snapshot): CouponReservation
+    {
+        $this->expireExpiredReservations($coupon);
+
+        $existingReservation = CouponReservation::query()
+            ->where('order_id', $order->id)
+            ->where('coupon_id', $coupon->id)
+            ->lockForUpdate()
+            ->first();
+
+        if ($existingReservation instanceof CouponReservation) {
+            if ($this->isActiveAndNotExpired($existingReservation)) {
+                return $existingReservation;
+            }
+
+            if ($existingReservation->status->isRedeemed()) {
+                return $existingReservation;
+            }
+        }
+
+        if (! $coupon->isCurrentlyUsable()) {
+            throw new DomainException('Coupon is not currently usable.');
+        }
+
+        $this->ensureGlobalCapacityIsAvailable($coupon);
+
+        $this->ensureUserCapacityIsAvailable($coupon, $order);
+
+        $reservationData = [
+            'coupon_id' => $coupon->id,
+            'user_id' => $order->user_id,
+            'cart_id' => $order->cart_id,
+            'order_id' => $order->id,
+
+            /*
+             * Important:
+             * Keep the coupon code snapshot from the order.
+             * If admin changes coupon code later, this order still keeps
+             * the code that was applied when the order was created.
+             */
+            'code' => $snapshot['code'] ?: $coupon->code,
+
+            'eligible_amount' => (int) $snapshot['eligible_amount'],
+            'discount_amount' => (int) $snapshot['discount_amount'],
+
+            'status' => CouponReservationStatusEnum::ACTIVE,
+            'reserved_at' => now(),
+            'expires_at' => now()->addMinutes(self::RESERVATION_TTL_MINUTES),
+            'redeemed_at' => null,
+            'released_at' => null,
+            'expired_at' => null,
+
+            'metadata' => $this->reservationMetadata($order, $existingReservation),
+        ];
+
+        if ($existingReservation instanceof CouponReservation) {
+            $existingReservation->forceFill($reservationData)->save();
+
+            return $existingReservation->refresh();
+        }
+
+        return CouponReservation::query()->create($reservationData);
     }
 
     private function expireExpiredReservations(Coupon $coupon): void
@@ -126,16 +135,16 @@ class ReserveCouponForOrderAction
             ->where('expires_at', '>', now())
             ->count();
 
-        $reservedAndUsedCount = (int)$coupon->used_count + $activeReservationsCount;
+        $reservedAndUsedCount = (int) $coupon->used_count + $activeReservationsCount;
 
-        if ($reservedAndUsedCount >= (int)$coupon->usage_limit) {
+        if ($reservedAndUsedCount >= (int) $coupon->usage_limit) {
             throw new DomainException('Coupon reservation limit reached.');
         }
     }
 
     private function ensureUserCapacityIsAvailable(Coupon $coupon, Order $order): void
     {
-        if ($coupon->usage_limit_per_user === null || !$order->user_id) {
+        if ($coupon->usage_limit_per_user === null || ! $order->user_id) {
             return;
         }
 
@@ -152,7 +161,7 @@ class ReserveCouponForOrderAction
 
         $reservedAndRedeemedByUserCount = $redeemedByUserCount + $activeReservationsByUserCount;
 
-        if ($reservedAndRedeemedByUserCount >= (int)$coupon->usage_limit_per_user) {
+        if ($reservedAndRedeemedByUserCount >= (int) $coupon->usage_limit_per_user) {
             throw new DomainException('Coupon per user reservation limit reached.');
         }
     }

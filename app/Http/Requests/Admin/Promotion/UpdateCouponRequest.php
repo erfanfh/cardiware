@@ -100,6 +100,8 @@ class UpdateCouponRequest extends FormRequest
                 'boolean',
             ],
 
+            'is_stackable' => ['sometimes', 'boolean'],
+
             'applies_to_all_users' => [
                 'required',
                 'boolean',
@@ -160,6 +162,7 @@ class UpdateCouponRequest extends FormRequest
             'usage_limit' => 'تعداد استفاده کلی',
             'usage_limit_per_user' => 'تعداد استفاده برای هر کاربر',
             'is_floating_box_enabled' => 'باکس شناور تخفیف',
+            'is_stackable' => 'امکان استفاده همراه با کد تخفیف دیگر',
             'applies_to_all_users' => 'قابل استفاده برای همه کاربران',
             'user_ids' => 'کاربران خاص',
             'scope' => 'محدوده اعمال',
@@ -225,6 +228,7 @@ class UpdateCouponRequest extends FormRequest
             'applies_to_all_users' => $this->boolean('applies_to_all_users'),
             'applies_to_addons' => $this->boolean('applies_to_addons'),
             'is_floating_box_enabled' => $this->boolean('is_floating_box_enabled'),
+            'is_stackable' => $this->input('is_stackable', false),
 
             'starts_at' => $this->normalizeDateTime($this->input('starts_at')),
             'expires_at' => $this->normalizeDateTime($this->input('expires_at')),

@@ -72,6 +72,7 @@ class CreateCouponAction
             'usage_limit' => $data['usage_limit'] ?? null,
             'usage_limit_per_user' => $data['usage_limit_per_user'] ?? null,
             'is_floating_box_enabled' => (bool)($data['is_floating_box_enabled'] ?? false),
+            'is_stackable' => (bool)($data['is_stackable'] ?? false),
 
             'scope' => $data['scope'],
 

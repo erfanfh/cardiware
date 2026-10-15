@@ -4,6 +4,7 @@ namespace App\Domain\Commerce\Models;
 
 use App\Domain\Commerce\Enums\CartStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Promotion\Concerns\HasAppliedCoupons;
 use App\Domain\Promotion\Models\Coupon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
+    use HasAppliedCoupons;
+
     protected $fillable = [
         'user_id',
         'session_id',
@@ -29,6 +32,7 @@ class Cart extends Model
         'coupon_eligible_amount',
         'coupon_discount_amount',
         'coupon_applied_at',
+        'applied_coupons',
     ];
 
     protected $casts = [
@@ -44,6 +48,7 @@ class Cart extends Model
         'coupon_eligible_amount' => 'integer',
         'coupon_discount_amount' => 'integer',
         'coupon_applied_at' => 'datetime',
+        'applied_coupons' => 'array',
     ];
 
     /**

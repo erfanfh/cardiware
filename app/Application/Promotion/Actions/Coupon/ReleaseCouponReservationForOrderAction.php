@@ -16,24 +16,22 @@ class ReleaseCouponReservationForOrderAction
     public function execute(Order $order, string $reason = 'released'): void
     {
         DB::transaction(function () use ($order, $reason): void {
-            $reservation = CouponReservation::query()
+            $reservations = CouponReservation::query()
                 ->where('order_id', $order->id)
                 ->where('status', CouponReservationStatusEnum::ACTIVE)
                 ->lockForUpdate()
-                ->first();
+                ->get();
 
-            if (!$reservation) {
-                return;
+            foreach ($reservations as $reservation) {
+                $metadata = $reservation->metadata ?? [];
+                $metadata['release_reason'] = $reason;
+
+                $reservation->forceFill([
+                    'status' => CouponReservationStatusEnum::RELEASED,
+                    'released_at' => now(),
+                    'metadata' => $metadata,
+                ])->save();
             }
-
-            $metadata = $reservation->metadata ?? [];
-            $metadata['release_reason'] = $reason;
-
-            $reservation->forceFill([
-                'status' => CouponReservationStatusEnum::RELEASED,
-                'released_at' => now(),
-                'metadata' => $metadata,
-            ])->save();
         });
     }
 }

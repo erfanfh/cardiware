@@ -185,6 +185,21 @@
         </div>
     </x-admin.metabox>
 
+    <x-admin.metabox title="استفاده هم‌زمان از کدهای تخفیف">
+        <x-admin.field
+            label="امکان استفاده همراه با کد تخفیف دیگر"
+            hint="با فعال‌کردن این گزینه، این کد می‌تواند کنار یک کد معمولی و کدهای دارای همین قابلیت اعمال شود. تخفیف آن روی مبلغ باقی‌مانده محاسبه می‌شود."
+        >
+            <input type="hidden" name="is_stackable" value="0">
+            <label class="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
+                <input type="checkbox" name="is_stackable" value="1"
+                    @checked((bool) old('is_stackable', $coupon?->is_stackable ?? false))
+                    class="rounded border-slate-300 text-orange-500 focus:ring-orange-200">
+                امکان اعمال همراه با کد تخفیف دیگر
+            </label>
+        </x-admin.field>
+    </x-admin.metabox>
+
     <x-admin.metabox title="محدودیت زمانی">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <x-admin.field label="زمان شروع">

@@ -7,6 +7,7 @@ use App\Domain\Commerce\Enums\OrderStatusEnum;
 use App\Domain\Financial\Models\Payment;
 use App\Domain\Financial\Models\WalletTopUp;
 use App\Domain\Identity\Models\User;
+use App\Domain\Promotion\Concerns\HasAppliedCoupons;
 use App\Domain\Promotion\Models\Coupon;
 use App\Domain\Promotion\Models\CouponReservation;
 use Illuminate\Database\Eloquent\Builder;
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Order extends Model implements Payable
 {
+    use HasAppliedCoupons;
+
     protected $fillable = [
         'user_id',
         'cart_id',
@@ -38,6 +41,7 @@ class Order extends Model implements Payable
         'coupon_code',
         'coupon_eligible_amount',
         'coupon_discount_amount',
+        'applied_coupons',
     ];
 
     protected $casts = [
@@ -53,6 +57,7 @@ class Order extends Model implements Payable
         'metadata' => 'array',
         'coupon_eligible_amount' => 'integer',
         'coupon_discount_amount' => 'integer',
+        'applied_coupons' => 'array',
     ];
 
     protected static function booted(): void
@@ -188,6 +193,11 @@ class Order extends Model implements Payable
     public function couponReservation(): HasOne
     {
         return $this->hasOne(CouponReservation::class);
+    }
+
+    public function couponReservations(): HasMany
+    {
+        return $this->hasMany(CouponReservation::class);
     }
 
     /**

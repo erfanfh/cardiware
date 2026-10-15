@@ -25,7 +25,7 @@ class CalculateCouponDiscountForCartAction
     {
     }
 
-    public function execute(Cart $cart, Coupon $coupon, ?User $user = null): CouponDiscountResultDTO
+    public function execute(Cart $cart, Coupon $coupon, ?User $user = null, bool $useRemainingAmount = false): CouponDiscountResultDTO
     {
         $cart->loadMissing([
             'items.purchasable',
@@ -43,8 +43,9 @@ class CalculateCouponDiscountForCartAction
             ->filter(fn(CartItem $item): bool => $this->isEligibleItem($item, $coupon))
             ->values();
 
-        $eligibleAmount = (int)$eligibleItems
-            ->sum(fn(CartItem $item): int => max(0, (int)$item->total_amount));
+        $amountResolver = fn(CartItem $item): int => max(0, (int) $item->total_amount
+            - ($useRemainingAmount ? (int) $item->coupon_discount_amount : 0));
+        $eligibleAmount = (int) $eligibleItems->sum($amountResolver);
 
         if ($eligibleAmount <= 0) {
             throw new DomainException('Coupon has no eligible cart items.');
@@ -70,7 +71,7 @@ class CalculateCouponDiscountForCartAction
         $itemDiscounts = $this->allocateCouponDiscountAcrossItemsAction->execute(
             items: $eligibleItems,
             discountAmount: $discountAmount,
-            eligibleAmountResolver: fn(CartItem $item): int => max(0, (int)$item->total_amount),
+            eligibleAmountResolver: $amountResolver,
         );
 
         return new CouponDiscountResultDTO(

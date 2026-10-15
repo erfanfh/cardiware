@@ -23,9 +23,11 @@ class EnsureCartReadyForCheckoutAction
     {
         $cart = $cart->refresh();
 
-        $hadCoupon = filled($cart->coupon_id) || filled($cart->coupon_code);
+        $previousCoupons = $cart->appliedCouponSnapshots();
+        $previousCouponSignature = $cart->appliedCouponSignature();
+        $hadCoupon = $previousCoupons !== [];
 
-        $previousCouponCode = $cart->coupon_code;
+        $previousCouponCode = $hadCoupon ? collect($previousCoupons)->pluck('code')->implode(' + ') : null;
         $previousCouponDiscountAmount = (int)$cart->coupon_discount_amount;
         $previousTotalAmount = (int)$cart->total_amount;
 
@@ -37,18 +39,20 @@ class EnsureCartReadyForCheckoutAction
             throw new CartNeedsRefreshException($result);
         }
 
-        if ($hadCoupon && blank($cart->coupon_id) && blank($cart->coupon_code)) {
+        $currentCoupons = $cart->appliedCouponSnapshots();
+        if ($hadCoupon && $currentCoupons === []) {
             throw new DomainException('Applied coupon is no longer valid.');
         }
 
-        $currentCouponCode = $cart->coupon_code;
+        $currentCouponCode = $currentCoupons !== [] ? collect($currentCoupons)->pluck('code')->implode(' + ') : null;
 
         $couponCodeChanged = $hadCoupon
             && (string)$previousCouponCode !== (string)$currentCouponCode;
 
         $couponAmountChanged = $hadCoupon
             && (
-                $previousCouponDiscountAmount !== (int)$cart->coupon_discount_amount
+                $previousCouponSignature !== $cart->appliedCouponSignature()
+                || $previousCouponDiscountAmount !== (int)$cart->coupon_discount_amount
                 || $previousTotalAmount !== (int)$cart->total_amount
             );
 

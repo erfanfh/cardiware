@@ -2,10 +2,8 @@
 
 namespace App\Application\Promotion\Actions\Coupon;
 
-use App\Application\Commerce\Actions\Cart\RecalculateCartItemTotalsAction;
-use App\Application\Commerce\Support\TaxCalculator;
+use App\Application\Commerce\Actions\Cart\RecalculateCartTotalsAction;
 use App\Domain\Commerce\Models\Cart;
-use App\Domain\Commerce\Models\CartItem;
 use App\Domain\Identity\Models\User;
 use App\Domain\Promotion\Models\Coupon;
 use DomainException;
@@ -15,106 +13,71 @@ use Throwable;
 class ApplyCouponToCartAction
 {
     public function __construct(
-        private readonly RecalculateCartItemTotalsAction      $recalculateCartItemTotalsAction,
-        private readonly CalculateCouponDiscountForCartAction $calculateCouponDiscountForCartAction,
-        private readonly ApplyCouponDiscountToCartItemsAction $applyCouponDiscountToCartItemsAction,
-        private readonly TaxCalculator                         $taxCalculator,
-    )
-    {
-    }
+        private readonly RecalculateCartTotalsAction $recalculateCartTotalsAction,
+    ) {}
 
     /**
      * @throws Throwable
      */
     public function execute(Cart $cart, string $code, ?User $user = null): Cart
     {
-        $code = $this->normalizeCode($code);
-
+        $code = trim($code);
         if ($code === '') {
             throw new DomainException('Coupon code is required.');
         }
 
         return DB::transaction(function () use ($cart, $code, $user): Cart {
-            /** @var Cart $cart */
-            $cart = Cart::query()
-                ->whereKey($cart->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            if (!$cart->isEditable()) {
+            $cart = Cart::query()->whereKey($cart->id)->lockForUpdate()->firstOrFail();
+            if (! $cart->isEditable()) {
                 throw new DomainException('Cart is not editable.');
             }
 
             $coupon = Coupon::query()
                 ->whereRaw('LOWER(code) = ?', [mb_strtolower($code)])
-                ->with([
-                    'targets',
-                    'couponUsers',
-                ])
-                ->lockForUpdate()
                 ->first();
-
-            if (!$coupon) {
+            if (! $coupon) {
                 throw new DomainException('Coupon not found.');
             }
 
-            $cart->loadMissing([
-                'items.purchasable',
-            ]);
-
-            foreach ($cart->items as $item) {
-                if ($item instanceof CartItem) {
-                    $this->recalculateCartItemTotalsAction->execute($item);
-                }
+            $snapshots = collect($cart->appliedCouponSnapshots());
+            // Lock all involved coupons in a consistent order for concurrent checkouts.
+            $existingCoupons = Coupon::query()
+                ->where(function ($query) use ($snapshots, $coupon) {
+                    $query->whereIn('id', [...$snapshots->pluck('coupon_id')->filter()->all(), $coupon->id]);
+                    $codes = $snapshots->whereNull('coupon_id')->pluck('code')->filter()
+                        ->map(fn (string $code): string => mb_strtolower($code))->all();
+                    if ($codes !== []) {
+                        $query->orWhereIn(DB::raw('LOWER(code)'), $codes);
+                    }
+                })->orderBy('id')->lockForUpdate()->get();
+            $coupon = $existingCoupons->firstWhere('id', $coupon->id);
+            if (! $coupon || mb_strtolower($coupon->code) !== mb_strtolower($code)) {
+                throw new DomainException('Coupon not found.');
             }
 
-            $cart->load([
-                'items.purchasable',
-                'items.parent.purchasable',
-                'user',
-            ]);
+            $snapshots = $snapshots->filter(function (array $snapshot) use ($coupon, $existingCoupons): bool {
+                $existing = $snapshot['coupon_id']
+                    ? $existingCoupons->firstWhere('id', $snapshot['coupon_id'])
+                    : $existingCoupons->first(fn (Coupon $existing): bool => mb_strtolower($existing->code) === mb_strtolower($snapshot['code'] ?? ''));
 
-            $result = $this->calculateCouponDiscountForCartAction->execute(
-                cart: $cart,
-                coupon: $coupon,
-                user: $user,
-            );
+                return $existing && ($coupon->is_stackable || $existing->is_stackable || $existing->id === $coupon->id);
+            })->values();
 
-            $this->applyCouponDiscountToCartItemsAction->execute(
-                cart: $cart,
-                itemDiscounts: $result->itemDiscounts,
-            );
+            if (! $snapshots->contains(fn (array $snapshot): bool => (int) ($snapshot['coupon_id'] ?? 0) === (int) $coupon->id
+                || mb_strtolower($snapshot['code'] ?? '') === mb_strtolower($coupon->code))) {
+                $snapshots->push([
+                    'coupon_id' => (int) $coupon->id,
+                    'code' => $coupon->code,
+                    'eligible_amount' => 0,
+                    'discount_amount' => 0,
+                    'applied_at' => now()->toDateTimeString(),
+                ]);
+            }
 
-            $items = $cart->items()->get();
+            $cart->applied_coupons = $snapshots->all();
 
-            $subtotalAmount = (int)$items->sum('subtotal_amount');
-            $productDiscountAmount = (int)$items->sum('discount_amount');
-            $allocatedCouponDiscountAmount = (int)$items->sum('coupon_discount_amount');
-
-            $discountAmount = $productDiscountAmount + $allocatedCouponDiscountAmount;
-            $tax = $this->taxCalculator->calculate((int)$items->sum('final_total_amount'));
-
-            $cart->forceFill([
-                'coupon_id' => $coupon->id,
-                'coupon_code' => $coupon->code,
-                'coupon_eligible_amount' => $result->eligibleAmount,
-                'coupon_discount_amount' => $allocatedCouponDiscountAmount,
-                'coupon_applied_at' => now(),
-
-                'subtotal_amount' => $subtotalAmount,
-                'discount_amount' => $discountAmount,
-                'taxable_amount' => $tax->taxableAmount,
-                'tax_rate_basis_points' => $tax->rateBasisPoints,
-                'tax_amount' => $tax->taxAmount,
-                'total_amount' => $tax->totalAmount,
-            ])->save();
-
-            return $cart->refresh();
+            // Failure of the requested code rolls back all changes, including item totals.
+            return $this->recalculateCartTotalsAction->execute($cart, (int) $coupon->id, $user);
         });
-    }
-
-    private function normalizeCode(string $code): string
-    {
-        return trim($code);
     }
 }
