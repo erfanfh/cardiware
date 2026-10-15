@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="mt-4 grid grid-cols-2 gap-2">
+    <div @class(['mt-4 grid gap-2', 'grid-cols-1' => $product->store->hide_sales_count, 'grid-cols-2' => !$product->store->hide_sales_count])>
         <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
             <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد محصولات</div>
             <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
@@ -45,12 +45,14 @@
             </div>
         </div>
 
-        <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
-            <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد فروش</div>
-            <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
-                {{ number_format($storeSoldQuantity) }}
+        @unless($product->store->hide_sales_count)
+            <div class="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
+                <div class="text-[11px] text-slate-500 dark:text-slate-400">تعداد فروش</div>
+                <div class="mt-1 text-sm font-extrabold text-slate-900 dark:text-white">
+                    {{ number_format($storeSoldQuantity) }}
+                </div>
             </div>
-        </div>
+        @endunless
     </div>
 
     <p class="mt-4 text-justify text-xs leading-6 text-slate-600 dark:text-slate-400">

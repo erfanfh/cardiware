@@ -77,6 +77,15 @@
         </x-admin.field>
     </x-admin.metabox>
 
+    <x-admin.metabox title="تنظیمات نمایش">
+        <x-admin.field label="عدم نمایش تعداد فروش">
+            <x-admin.form.switch
+                name="hide_sales_count"
+                :checked="old('hide_sales_count', $store?->hide_sales_count ?? false)"
+            />
+        </x-admin.field>
+    </x-admin.metabox>
+
     <x-admin.metabox title="فروشندگان" class="overflow-visible">
         <input type="hidden" name="seller_user_ids_submitted" value="1">
         <x-admin.form.async-select

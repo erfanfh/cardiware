@@ -24,11 +24,13 @@ class Store extends Model implements PageViewableInterface
         'slug',
         'body',
         'activity_field',
+        'hide_sales_count',
         'picture_id',
         'status',
     ];
 
     protected $casts = [
+        'hide_sales_count' => 'boolean',
         'status' => StoreStatusEnum::class,
     ];
 

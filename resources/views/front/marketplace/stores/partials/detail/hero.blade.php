@@ -118,18 +118,20 @@ dark:border-slate-700 dark:bg-slate-900">
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-between gap-3">
-                            <span
-                                class="flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-                                <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                                تعداد فروش
-                            </span>
+                        @unless($store->hide_sales_count)
+                            <div class="flex items-center justify-between gap-3">
+                                <span
+                                    class="flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
+                                    <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+                                    تعداد فروش
+                                </span>
 
-                            <span
-                                class="text-left text-xs font-extrabold text-slate-900 sm:text-sm dark:text-slate-100">
-                                {{ $soldQuantity }}
-                            </span>
-                        </div>
+                                <span
+                                    class="text-left text-xs font-extrabold text-slate-900 sm:text-sm dark:text-slate-100">
+                                    {{ $soldQuantity }}
+                                </span>
+                            </div>
+                        @endunless
                     </div>
                 </div>
             </div>

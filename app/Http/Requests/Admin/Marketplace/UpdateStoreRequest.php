@@ -30,6 +30,7 @@ class UpdateStoreRequest extends FormRequest
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'body' => ['nullable', 'string'],
             'activity_field' => ['nullable', 'string'],
+            'hide_sales_count' => ['sometimes', 'boolean'],
 
             'seller_user_ids' => ['sometimes', 'array'],
             'seller_user_ids.*' => ['required', 'integer', 'distinct', Rule::exists('users', 'id')->whereNull('deleted_at')],
@@ -48,6 +49,7 @@ class UpdateStoreRequest extends FormRequest
             'slug' => 'اسلاگ',
             'status' => 'وضعیت',
             'body' => 'توضیحات',
+            'hide_sales_count' => 'عدم نمایش تعداد فروش',
             'seller_user_ids' => 'فروشندگان',
         ];
     }
