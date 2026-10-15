@@ -9,6 +9,7 @@ use App\Infrastructure\Services\Setting\BaseSettings;
 class HeaderSettings extends BaseSettings
 {
     protected string $group = 'header';
+
     protected array $allowedKeys = [
         'active_tab',
 
@@ -18,6 +19,14 @@ class HeaderSettings extends BaseSettings
         'announcement_button_url',
         'announcement_background_image',
         'announcement_background_color',
+        'announcement_background_type',
+        'announcement_gradient_color',
+        'announcement_gradient_angle',
+        'announcement_animation_duration',
+        'announcement_pattern',
+        'announcement_pattern_color',
+        'announcement_pattern_size',
+        'announcement_pattern_image',
         'announcement_text_color',
         'logo',
         'notifications',
@@ -25,6 +34,7 @@ class HeaderSettings extends BaseSettings
 
     protected array $casts = [
         'announcement_background_image' => MediaFileCast::class,
+        'announcement_pattern_image' => MediaFileCast::class,
         'logo' => MediaFileCast::class,
         'notifications' => RepeaterArrayCast::class,
     ];

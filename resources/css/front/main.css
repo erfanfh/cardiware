@@ -1,5 +1,6 @@
 @import "./tinymce-content.css";
 @import "./project-card.css";
+@import "./announcement.css";
 
 [x-cloak] {
     display: none !important;

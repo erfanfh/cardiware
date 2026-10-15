@@ -301,6 +301,19 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.header');
 
+        $request->validate([
+            'announcement_background_type' => ['sometimes', 'required', 'in:color,image,gradient,pattern'],
+            'announcement_gradient_color' => ['nullable', 'hex_color'],
+            'announcement_gradient_angle' => ['nullable', 'integer', 'between:0,360'],
+            'announcement_animation_duration' => ['nullable', 'integer', 'between:2,120'],
+            'announcement_pattern' => ['nullable', 'in:dots,stripes,grid,image'],
+            'announcement_pattern_color' => ['nullable', 'hex_color'],
+            'announcement_pattern_size' => ['nullable', 'integer', 'between:8,256'],
+            'announcement_pattern_image' => ['nullable', 'array:id,path'],
+            'announcement_pattern_image.id' => ['nullable', 'integer'],
+            'announcement_pattern_image.path' => ['nullable', 'string', 'max:2048'],
+        ]);
+
         $this->storeSettings($request, 'header');
 
         $activeTab = $request->input('active_tab', 'general');

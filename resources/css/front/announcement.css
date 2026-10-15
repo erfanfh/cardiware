@@ -1,0 +1,87 @@
+.header-announcement {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.header-announcement--gradient {
+    background-image: linear-gradient(var(--announcement-angle), var(--announcement-base), var(--announcement-gradient), var(--announcement-base));
+    background-size: 300% 300%;
+    animation: announcement-gradient var(--announcement-duration) ease-in-out infinite;
+}
+
+.header-announcement__pattern {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-repeat: repeat;
+    background-size: var(--announcement-pattern-size) var(--announcement-pattern-size);
+    animation: announcement-pattern var(--announcement-duration) linear infinite;
+}
+
+.header-announcement__pattern--dots {
+    background-image: radial-gradient(circle, var(--announcement-pattern-color) 2px, transparent 2.5px);
+}
+
+.header-announcement__pattern--stripes {
+    background-image: linear-gradient(45deg, var(--announcement-pattern-color) 25%, transparent 25%, transparent 50%, var(--announcement-pattern-color) 50%, var(--announcement-pattern-color) 75%, transparent 75%);
+}
+
+.header-announcement__pattern--grid {
+    background-image: linear-gradient(var(--announcement-pattern-color) 1px, transparent 1px), linear-gradient(90deg, var(--announcement-pattern-color) 1px, transparent 1px);
+}
+
+.header-announcement__content {
+    position: relative;
+    z-index: 1;
+}
+
+.header-announcement__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: .375rem 1rem;
+    border: 1px solid currentColor;
+    border-radius: .75rem;
+    color: inherit;
+    background-color: rgb(255 255 255 / 14%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 10%);
+    text-decoration: none;
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.header-announcement__button:hover {
+    background-color: rgb(255 255 255 / 24%);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 14%);
+    transform: translateY(-1px);
+}
+
+.header-announcement__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+@keyframes announcement-gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes announcement-pattern {
+    from { background-position: 0 0; }
+    to { background-position: var(--announcement-pattern-size) var(--announcement-pattern-size); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .header-announcement--gradient,
+    .header-announcement__pattern {
+        animation: none;
+    }
+
+    .header-announcement__button {
+        transition: none;
+        transform: none;
+    }
+}
