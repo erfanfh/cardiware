@@ -23,8 +23,6 @@ class HeaderSettings extends BaseSettings
         'announcement_gradient_color',
         'announcement_gradient_angle',
         'announcement_animation_duration',
-        'announcement_pattern',
-        'announcement_pattern_color',
         'announcement_pattern_size',
         'announcement_pattern_image',
         'announcement_text_color',

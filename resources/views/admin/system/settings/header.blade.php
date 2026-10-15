@@ -85,7 +85,7 @@
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="announcement">
-                    <div class="space-y-6" x-data="{ backgroundType: @js(old('announcement_background_type', get_setting('header', 'announcement_background_type') ?: (get_setting('header', 'announcement_background_image')?->path ? 'image' : 'color'))), pattern: @js(old('announcement_pattern', get_setting('header', 'announcement_pattern') ?: 'dots')) }">
+                    <div class="space-y-6" x-data="{ backgroundType: @js(old('announcement_background_type', get_setting('header', 'announcement_background_type') ?: (get_setting('header', 'announcement_background_image')?->path ? 'image' : 'color'))) }">
                         <x-admin.metabox title="باکس اطلاعیه">
                             <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
                                 <div class="flex gap-5 lg:col-span-2">
@@ -186,27 +186,18 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 gap-5 lg:col-span-2 lg:grid-cols-2" x-show="backgroundType === 'pattern'" x-cloak>
-                                    <x-admin.field label="طرح پترن">
-                                        <x-admin.form.select name="announcement_pattern" x-model="pattern"
-                                            :value="old('announcement_pattern', get_setting('header', 'announcement_pattern') ?: 'dots')"
-                                            :options="['dots' => 'نقطه‌ای', 'stripes' => 'خطوط مورب', 'grid' => 'شبکه‌ای', 'image' => 'تصویر دلخواه']" />
-                                    </x-admin.field>
                                     <x-admin.field label="اندازه کاشی پترن (پیکسل)">
                                         <x-admin.form.input name="announcement_pattern_size" type="number" min="8" max="256"
                                             :value="old('announcement_pattern_size', get_setting('header', 'announcement_pattern_size') ?: 32)" />
                                     </x-admin.field>
-                                    <x-admin.field label="رنگ پترن" x-show="pattern !== 'image'">
-                                        <x-admin.form.colorpicker name="announcement_pattern_color" default="#ffffff26"
-                                            :value="old('announcement_pattern_color', get_setting('header', 'announcement_pattern_color'))" />
-                                    </x-admin.field>
-                                    <x-admin.field label="تصویر پترن" x-show="pattern === 'image'">
+                                    <x-admin.field label="آپلود تصویر پترن">
                                         <x-admin.form.media-picker name="announcement_pattern_image"
                                             :value="[
                                                 'id' => old('announcement_pattern_image.id', get_setting('header', 'announcement_pattern_image')->id),
                                                 'path' => old('announcement_pattern_image.path', get_setting('header', 'announcement_pattern_image')->path),
                                             ]" />
                                     </x-admin.field>
-                                    <p class="text-xs text-slate-500 lg:col-span-2">پترن روی رنگ بک گراند تکرار می‌شود. برای تصویر دلخواه، از طرح مربعی با لبه‌های پیوسته استفاده کنید.</p>
+                                    <p class="text-xs text-slate-500 lg:col-span-2">تصویر آپلودشده روی رنگ بک گراند تکرار می‌شود و به‌صورت پیوسته حرکت می‌کند. از طرح مربعی با لبه‌های پیوسته استفاده کنید.</p>
                                 </div>
 
                                 <x-admin.field label="مدت هر چرخه حرکت (ثانیه)" x-show="['gradient', 'pattern'].includes(backgroundType)" x-cloak>

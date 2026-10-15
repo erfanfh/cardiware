@@ -21,18 +21,6 @@
     animation: announcement-pattern var(--announcement-duration) linear infinite;
 }
 
-.header-announcement__pattern--dots {
-    background-image: radial-gradient(circle, var(--announcement-pattern-color) 2px, transparent 2.5px);
-}
-
-.header-announcement__pattern--stripes {
-    background-image: linear-gradient(45deg, var(--announcement-pattern-color) 25%, transparent 25%, transparent 50%, var(--announcement-pattern-color) 50%, var(--announcement-pattern-color) 75%, transparent 75%);
-}
-
-.header-announcement__pattern--grid {
-    background-image: linear-gradient(var(--announcement-pattern-color) 1px, transparent 1px), linear-gradient(90deg, var(--announcement-pattern-color) 1px, transparent 1px);
-}
-
 .header-announcement__content {
     position: relative;
     z-index: 1;

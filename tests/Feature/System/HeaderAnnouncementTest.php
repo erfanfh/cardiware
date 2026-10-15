@@ -65,24 +65,25 @@ class HeaderAnnouncementTest extends TestCase
         $this->assertStringContainsString('--announcement-duration: 8s', $html);
     }
 
-    public function test_patterns_render_as_decorative_layers_including_custom_images(): void
+    public function test_uploaded_pattern_image_renders_as_a_decorative_layer(): void
     {
-        foreach (['dots', 'stripes', 'grid', 'image'] as $pattern) {
-            $html = $this->renderAnnouncement([
-                'announcement_background_type' => 'pattern',
-                'announcement_pattern' => $pattern,
-                'announcement_pattern_size' => '48',
-                'announcement_pattern_image' => json_encode(['id' => 43, 'path' => '/storage/tile.png']),
-            ]);
-            $this->assertStringContainsString('aria-hidden="true"', $html);
-            $this->assertStringContainsString('header-announcement__pattern--'.$pattern, $html);
-            $this->assertStringContainsString('--announcement-pattern-size: 48px', $html);
-            if ($pattern === 'image') {
-                $this->assertStringContainsString("background-image: url('/storage/tile.png')", $html);
-            } else {
-                $this->assertStringNotContainsString('/storage/tile.png', $html);
-            }
-        }
+        $html = $this->renderAnnouncement([
+            'announcement_background_type' => 'pattern',
+            'announcement_pattern_size' => '48',
+            'announcement_pattern_image' => json_encode(['id' => 43, 'path' => '/storage/tile.png']),
+        ]);
+        $this->assertStringContainsString('aria-hidden="true"', $html);
+        $this->assertStringContainsString('class="header-announcement__pattern"', $html);
+        $this->assertStringContainsString('--announcement-pattern-size: 48px', $html);
+        $this->assertStringContainsString("background-image: url('/storage/tile.png')", $html);
+    }
+
+    public function test_no_pattern_is_generated_without_an_uploaded_image(): void
+    {
+        $html = $this->renderAnnouncement(['announcement_background_type' => 'pattern']);
+        $this->assertStringContainsString('header-announcement--pattern', $html);
+        $this->assertStringNotContainsString('class="header-announcement__pattern"', $html);
+        $this->assertStringNotContainsString('background-image:', $html);
     }
 
     public function test_disabled_announcement_renders_nothing(): void
@@ -98,7 +99,6 @@ class HeaderAnnouncementTest extends TestCase
             'announcement_gradient_color' => 'invalid',
             'announcement_gradient_angle' => '361',
             'announcement_animation_duration' => '0',
-            'announcement_pattern' => 'invalid',
             'announcement_pattern_size' => '0',
         ]);
 
@@ -106,7 +106,7 @@ class HeaderAnnouncementTest extends TestCase
             app(SettingController::class)->storeHeader($request);
             $this->fail('Invalid settings should not be saved.');
         } catch (ValidationException $exception) {
-            $this->assertCount(6, $exception->errors());
+            $this->assertCount(5, $exception->errors());
         }
     }
 }
