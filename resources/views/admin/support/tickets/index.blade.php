@@ -3,6 +3,8 @@
 @section('title', 'لیست تیکت‌ها')
 
 @section('content')
+    <x-admin.form.validation-errors/>
+
     @include('admin.support.tickets.partials.filters-panel')
 
     @php

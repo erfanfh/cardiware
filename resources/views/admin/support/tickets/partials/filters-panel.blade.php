@@ -1,5 +1,5 @@
-<x-admin.form method="get" action="{{ route('admin.tickets.index') }}" class="space-y-5">
-    <x-admin.filters.panel :open="$hasActiveFilters">
+<form method="get" action="{{ route('admin.tickets.index') }}" class="space-y-5">
+    <x-admin.filters.panel :open="$hasActiveFilters || $errors->any()">
         <x-admin.filters.header
             title="مدیریت و جستجوی تیکت‌ها"
         />
@@ -9,7 +9,8 @@
                 <x-admin.filters.item label="شماره">
                     <x-admin.form.input
                         name="number"
-                        :value="request('number')"
+                        :value="old('number', request('number'))"
+                        inputmode="numeric"
                     />
                 </x-admin.filters.item>
 
@@ -125,4 +126,4 @@
             </x-admin.filters.actions>
         </x-admin.filters.body>
     </x-admin.filters.panel>
-</x-admin.form>
+</form>

@@ -70,11 +70,27 @@ class IndexTicketRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
+            'number' => $this->normalizeTicketNumber($this->input('number')),
             'created_at_from' => $this->normalizeDateToGregorian($this->input('created_at_from')),
             'created_at_to' => $this->normalizeDateToGregorian($this->input('created_at_to')),
             'last_message_at_from' => $this->normalizeDateToGregorian($this->input('last_message_at_from')),
             'last_message_at_to' => $this->normalizeDateToGregorian($this->input('last_message_at_to')),
         ]);
+    }
+
+    protected function normalizeTicketNumber(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        $value = trim(normalize_number($value));
+
+        if (str_starts_with($value, '#')) {
+            $value = trim(substr($value, 1));
+        }
+
+        return $value;
     }
 
     protected function normalizeDateToGregorian(mixed $value): mixed
