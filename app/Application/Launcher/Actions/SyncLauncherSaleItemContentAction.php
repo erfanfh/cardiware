@@ -41,6 +41,7 @@ class SyncLauncherSaleItemContentAction
                 'description' => $data['description'] ?? null,
                 'changelog' => $data['changelog'] ?? null,
                 'is_enabled' => (bool)($data['is_enabled'] ?? false),
+                'is_staging' => filter_var($data['is_staging'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'is_mandatory' => (bool)($data['is_mandatory'] ?? false),
                 'has_option_file' => (bool)($data['has_option_file'] ?? false),
                 'archive_format' => '7z',

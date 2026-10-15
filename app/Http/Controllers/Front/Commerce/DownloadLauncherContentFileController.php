@@ -22,9 +22,11 @@ class DownloadLauncherContentFileController extends Controller
         abort_unless($purchaseAccess->isUsableForLauncher(), 403);
 
         if ($contentType === 'update') {
+            $saleItem = $purchaseAccess->productSaleItem()->firstOrFail();
             $owner = LauncherUpdate::query()
                 ->whereKey($content)
                 ->where('product_sale_item_id', $purchaseAccess->product_sale_item_id)
+                ->visibleToLauncherUser((int) $purchaseAccess->user_id, $saleItem->staging_user_ids ?? [])
                 ->published()
                 ->firstOrFail();
             $download = LauncherUpdateFile::query()

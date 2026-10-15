@@ -33,6 +33,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'version',
         'manifest_revision',
         'launcher_enabled',
+        'staging_user_ids',
         'launcher_free_claim_enabled',
         'launcher_title',
         'launcher_excerpt',
@@ -54,6 +55,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     protected $casts = [
         'manifest_revision' => 'integer',
         'launcher_enabled' => 'boolean',
+        'staging_user_ids' => 'array',
         'launcher_free_claim_enabled' => 'boolean',
         'launcher_sort_order' => 'integer',
         'launcher_support_enabled' => 'boolean',
@@ -65,6 +67,12 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
         'sort_order' => 'integer',
         'status' => ProductSaleItemStatusEnum::class,
     ];
+
+    public function isLauncherStagingTester(?int $userId): bool
+    {
+        return $userId !== null && $userId > 0
+            && in_array($userId, array_map('intval', $this->staging_user_ids ?? []), true);
+    }
 
     /**
      * Get the product that owns the sale item.

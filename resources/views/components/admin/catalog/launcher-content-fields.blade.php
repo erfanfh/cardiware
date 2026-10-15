@@ -80,6 +80,17 @@
                     />
                 </x-admin.field>
 
+                <x-admin.field label="حساب‌های تستِ آماده‌سازی" class="col-span-12"
+                    hint="شناسه کاربران تست را با کاما یا هر شناسه در یک خط وارد کنید. فقط این حساب‌ها آپدیت‌های آماده‌سازی همین نسخه فروش را دریافت می‌کنند؛ خالی یعنی هیچ حساب تستی تعیین نشده است.">
+                    <x-admin.form.textarea
+                        rows="3"
+                        dir="ltr"
+                        x-bind:name="`sale_items[{{ $indexToken }}][staging_user_ids]`"
+                        x-model="{{ $item }}.staging_user_ids"
+                        placeholder="12, 34"
+                    />
+                </x-admin.field>
+
                 <div class="col-span-12 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
                     <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div class="min-w-0">
@@ -405,6 +416,7 @@
                         <div class="mt-4 grid grid-cols-12 gap-3">
                             @foreach([
                                 'is_enabled' => ['title' => 'فعال', 'description' => 'این آپدیت در لانچر منتشر شود.'],
+                                'is_staging' => ['title' => 'حالتِ آماده‌سازی (فقط تسترها)', 'description' => 'فقط حساب‌های تست همین نسخه فروش این آپدیت را می‌بینند. برای انتشار عمومی، این گزینه را خاموش کنید.'],
                                 'is_mandatory' => ['title' => 'اجباری', 'description' => 'کاربر قبل از ادامه باید این آپدیت را نصب کند.'],
                                 'has_option_file' => ['title' => 'دارای OPTION FILE', 'description' => 'مستقل از بسته پایه؛ پوشه OPTION FILE باید بعد از استخراج این آپدیت وجود داشته باشد.'],
                             ] as $field => $option)
@@ -425,6 +437,11 @@
                                 </div>
                             @endforeach
                         </div>
+
+                        <p class="mt-3 text-[11px] leading-6 text-amber-800">
+                            در مرحله آماده‌سازی، آپدیت را با کلید محتوای فعلی بسازید و شناسه کلید مانیفست را تغییر ندهید.
+                            تغییر کلید محتوا باید هم‌زمان با انتشار عمومی انجام شود؛ کلید مانیفست بین همه کاربران مشترک است.
+                        </p>
 
                         <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
                             <div

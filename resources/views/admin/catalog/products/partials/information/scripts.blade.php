@@ -557,6 +557,9 @@
                                 max_quantity_per_order: item.max_quantity_per_order ?? '',
                                 description: item.description ?? '',
                                 launcher_enabled: this.normalizeBoolean(item.launcher_enabled, false),
+                                staging_user_ids: Array.isArray(item.staging_user_ids)
+                                    ? item.staging_user_ids.join('\n')
+                                    : (item.staging_user_ids ?? ''),
                                 launcher_free_claim_enabled: this.normalizeBoolean(item.launcher_free_claim_enabled, false),
                                 launcher_title: item.launcher_title ?? '',
                                 launcher_excerpt: item.launcher_excerpt ?? '',
@@ -665,6 +668,7 @@
                             changelog: item.changelog ?? '',
                             archive_password: item.archive_password ?? '',
                             is_enabled: this.normalizeBoolean(item.is_enabled, false),
+                            is_staging: this.normalizeBoolean(item.is_staging, false),
                             is_mandatory: this.normalizeBoolean(item.is_mandatory, false),
                             has_option_file: this.normalizeBoolean(item.has_option_file, false),
                             published_at: item.published_at ?? '',
@@ -866,6 +870,9 @@
                             max_quantity_per_order: payload.max_quantity_per_order ?? '',
                             description: payload.description ?? '',
                             launcher_enabled: this.normalizeBoolean(payload.launcher_enabled, false),
+                            staging_user_ids: Array.isArray(payload.staging_user_ids)
+                                ? payload.staging_user_ids.join('\n')
+                                : (payload.staging_user_ids ?? ''),
                             launcher_free_claim_enabled: this.normalizeBoolean(payload.launcher_free_claim_enabled, false),
                             launcher_title: payload.launcher_title ?? '',
                             launcher_excerpt: payload.launcher_excerpt ?? '',

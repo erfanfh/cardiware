@@ -6,6 +6,7 @@ use App\Application\Launcher\Actions\GetLauncherModsAction;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use Illuminate\Support\Facades\Cache;
 use App\Domain\Commerce\Scopes\ActivePurchaseAccessScope;
 use App\Domain\Launcher\Models\LauncherUpdate;
@@ -19,20 +20,22 @@ class LauncherContentController extends Controller
     {
         $access = $this->access($request, $purchaseAccess);
 
-        // The list depends only on the sale item (and its manifest revision, which every
-        // update/file edit bumps through LauncherContentManifestRevisionObserver). Short
+        // Cache separately for testers and ordinary users. Short
         // TTL because published() is a "published_at <= now()" window: a scheduled
         // publish must appear within minutes even without an edit.
         $saleItemId = (int) $access->product_sale_item_id;
-        $revision = (int) $access->productSaleItem()->value('manifest_revision');
+        $saleItem = $access->productSaleItem()->firstOrFail();
+        $revision = (int) $saleItem->manifest_revision;
+        $userId = (int) $request->user()->getKey();
+        $isTester = $saleItem->isLauncherStagingTester($userId);
         $updates = Cache::tags([
             CacheTag::LAUNCHER,
             CacheTag::LAUNCHER_CONTENT,
             CacheTag::launcherSaleItem($saleItemId),
         ])->remember(
-            CacheKey::launcherUpdates($saleItemId, $revision),
+            CacheKey::launcherUpdates($saleItemId, $revision, $isTester),
             now()->addMinutes(5),
-            fn(): array => $this->buildUpdates($saleItemId),
+            fn(): array => $this->buildUpdates($saleItem, $userId),
         );
 
         return response()->json([
@@ -43,10 +46,11 @@ class LauncherContentController extends Controller
     /**
      * @return array<int, array<string, mixed>>
      */
-    private function buildUpdates(int $saleItemId): array
+    private function buildUpdates(ProductSaleItem $saleItem, int $userId): array
     {
         $updates = LauncherUpdate::query()
-            ->where('product_sale_item_id', $saleItemId)
+            ->where('product_sale_item_id', $saleItem->getKey())
+            ->visibleToLauncherUser($userId, $saleItem->staging_user_ids ?? [])
             ->published()
             ->with('files')
             ->get()
@@ -104,13 +108,17 @@ class LauncherContentController extends Controller
         $access = $this->access($request, $purchaseAccess);
 
         $saleItemId = (int) $access->product_sale_item_id;
-        $revision = (int) $access->productSaleItem()->value('manifest_revision');
+        $saleItem = $access->productSaleItem()->firstOrFail();
+        $revision = (int) $saleItem->manifest_revision;
+        $isTester = $saleItem->isLauncherStagingTester((int) $request->user()->getKey());
+        // The action must use the same tester membership snapshot as this cache key.
+        $access->setRelation('productSaleItem', $saleItem);
         $mods = Cache::tags([
             CacheTag::LAUNCHER,
             CacheTag::LAUNCHER_CONTENT,
             CacheTag::launcherSaleItem($saleItemId),
         ])->remember(
-            CacheKey::launcherMods($saleItemId, $revision),
+            CacheKey::launcherMods($saleItemId, $revision, $isTester),
             now()->addMinutes(5),
             fn(): array => $action->execute($access),
         );

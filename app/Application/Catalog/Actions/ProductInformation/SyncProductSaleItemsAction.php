@@ -74,6 +74,9 @@ class SyncProductSaleItemsAction
                 ),
                 'version' => $this->resolveVersion($item['version'] ?? null),
                 'launcher_enabled' => (bool)($item['launcher_enabled'] ?? false),
+                'staging_user_ids' => collect($item['staging_user_ids'] ?? $saleItem->staging_user_ids ?? [])
+                    ->map(static fn($id) => filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]))
+                    ->filter()->unique()->values()->all(),
                 'launcher_free_claim_enabled' => (bool)($item['launcher_free_claim_enabled'] ?? false),
                 'launcher_title' => $this->normalizer->nullableString($item['launcher_title'] ?? null),
                 'launcher_excerpt' => $this->normalizer->nullableString($item['launcher_excerpt'] ?? null),
