@@ -398,7 +398,7 @@
                     class="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h2 class="text-base font-black text-slate-900">آیتم‌های خریداری‌شده</h2>
-                        <p class="mt-1 text-xs text-slate-500">جزئیات آیتم‌های خریداری شده توسط کاربر</p>
+                        <p class="mt-1 text-xs text-slate-500">مبلغ هر آیتم پس از کسر تمام تخفیف‌ها و پیش از مالیات نمایش داده می‌شود.</p>
                     </div>
 
                     <span
@@ -466,8 +466,10 @@
 
                                             $itemQuantity = (int) ($item->quantity ?? 1);
                                             $itemUnitPrice = (int) ($item->unit_price ?? 0);
-                                            $itemDiscount = (int) ($item->discount_amount ?? 0);
-                                            $itemTotal = (int) ($item->total_amount ?? ($itemUnitPrice * $itemQuantity));
+                                            $itemCouponDiscount = (int) ($item->coupon_discount_amount ?? 0);
+                                            $itemDiscount = (int) ($item->discount_amount ?? 0) + $itemCouponDiscount;
+                                            $itemTotalBeforeCoupon = (int) ($item->total_amount ?? ($itemUnitPrice * $itemQuantity));
+                                            $itemTotal = (int) ($item->final_total_amount ?? max(0, $itemTotalBeforeCoupon - $itemCouponDiscount));
 
                                             $access = $item->purchaseAccess;
                                             $accessStatus = $access?->status;
@@ -518,8 +520,10 @@
 
                                                                 $childQuantity = (int) ($child->quantity ?? 1);
                                                                 $childUnitPrice = (int) ($child->unit_price ?? 0);
-                                                                $childDiscount = (int) ($child->discount_amount ?? 0);
-                                                                $childTotal = (int) ($child->total_amount ?? ($childUnitPrice * $childQuantity));
+                                                                $childCouponDiscount = (int) ($child->coupon_discount_amount ?? 0);
+                                                                $childDiscount = (int) ($child->discount_amount ?? 0) + $childCouponDiscount;
+                                                                $childTotalBeforeCoupon = (int) ($child->total_amount ?? ($childUnitPrice * $childQuantity));
+                                                                $childTotal = (int) ($child->final_total_amount ?? max(0, $childTotalBeforeCoupon - $childCouponDiscount));
                                                             @endphp
 
                                                             <div
@@ -587,6 +591,16 @@
                                     </tbody>
 
                                     <tfoot class="bg-slate-50">
+                                    @if($taxAmount > 0)
+                                        <tr>
+                                            <td colspan="4" class="px-4 py-4 text-left text-sm font-bold text-slate-600">
+                                                مالیات ({{ $taxRate }}٪)
+                                            </td>
+                                            <td colspan="2" class="whitespace-nowrap px-4 py-4 text-sm font-bold text-slate-800">
+                                                {{ $money($taxAmount) }}
+                                            </td>
+                                        </tr>
+                                    @endif
                                     <tr>
                                         <td colspan="4"
                                             class="px-4 py-4 text-left text-sm font-black text-slate-700">

@@ -186,18 +186,36 @@
     </x-admin.metabox>
 
     <x-admin.metabox title="استفاده هم‌زمان از کدهای تخفیف">
-        <x-admin.field
-            label="امکان استفاده همراه با کد تخفیف دیگر"
-            hint="با فعال‌کردن این گزینه، این کد می‌تواند کنار یک کد معمولی و کدهای دارای همین قابلیت اعمال شود. تخفیف آن روی مبلغ باقی‌مانده محاسبه می‌شود."
+        <div
+            x-data="{ stackable: @js((bool) old('is_stackable', $coupon?->is_stackable ?? false)) }"
+            class="rounded-2xl border p-4 transition-colors sm:p-5"
+            :class="stackable ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 bg-slate-50'"
         >
-            <input type="hidden" name="is_stackable" value="0">
-            <label class="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
-                <input type="checkbox" name="is_stackable" value="1"
-                    @checked((bool) old('is_stackable', $coupon?->is_stackable ?? false))
-                    class="rounded border-slate-300 text-orange-500 focus:ring-orange-200">
-                امکان اعمال همراه با کد تخفیف دیگر
-            </label>
-        </x-admin.field>
+            <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                    <div class="text-sm font-bold leading-7 text-slate-800">امکان استفاده همراه با کد تخفیف دیگر</div>
+                    <p class="mt-1 max-w-3xl text-xs leading-6 text-slate-500">
+                        این کد می‌تواند کنار یک کد معمولی و کدهای دارای قابلیت استفاده هم‌زمان، روی سبد خرید اعمال شود.
+                    </p>
+                </div>
+
+                <div class="flex shrink-0 flex-col items-center gap-2 pt-1">
+                    <x-admin.form.switch
+                        name="is_stackable"
+                        :checked="old('is_stackable', $coupon?->is_stackable ?? false)"
+                        x-model="stackable"
+                    />
+                    <span class="text-[11px] font-bold"
+                          :class="stackable ? 'text-emerald-700' : 'text-slate-500'"
+                          x-text="stackable ? 'فعال' : 'غیرفعال'"></span>
+                </div>
+            </div>
+
+            <p class="mt-4 border-t border-slate-200/70 pt-3 text-xs leading-6 text-slate-600">
+                <span class="font-bold text-slate-700">نحوه محاسبه:</span>
+                تخفیف این کد روی مبلغ باقی‌مانده پس از کدهای قبلی محاسبه می‌شود.
+            </p>
+        </div>
     </x-admin.metabox>
 
     <x-admin.metabox title="محدودیت زمانی">
