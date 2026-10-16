@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Identity\PermissionSearchController;
 use App\Http\Controllers\Admin\Identity\RoleBulkActionController;
 use App\Http\Controllers\Admin\Identity\RoleController;
+use App\Http\Controllers\Admin\Identity\RoleLoginAlertsController;
 use App\Http\Controllers\Admin\Identity\UserBulkActionController;
 use App\Http\Controllers\Admin\Identity\UserController;
 use App\Http\Controllers\Admin\Identity\UserSearchController;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('roles', RoleController::class);
 Route::prefix('roles')->name('roles.')->group(function () {
+    Route::get('{role}/login-alerts', [RoleLoginAlertsController::class, 'edit'])->name('login-alerts.edit');
+    Route::put('{role}/login-alerts', [RoleLoginAlertsController::class, 'update'])->name('login-alerts.update');
     Route::post('bulk-action', RoleBulkActionController::class)->name('bulk-action');
 });
 

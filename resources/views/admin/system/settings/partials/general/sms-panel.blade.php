@@ -1,4 +1,5 @@
 <div class="space-y-6">
+    @include('admin.system.settings.partials.general.login-alert-sms')
     <x-admin.metabox title="سامانه‌های پیامکی">
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <x-admin.field

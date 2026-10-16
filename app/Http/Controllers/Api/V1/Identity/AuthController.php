@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Identity;
 
+use App\Application\Identity\Actions\Auth\QueueLoginAlertsAction;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\Identity\LoginRequest;
@@ -240,6 +241,9 @@ class AuthController extends Controller
 
     private function loginResponse(LauncherDevice $device, mixed $token, User $user): JsonResponse
     {
+        app(QueueLoginAlertsAction::class)
+            ->execute($user, request(), 'launcher');
+
         return response()->json([
             'message' => 'Login completed successfully.',
             'data' => [

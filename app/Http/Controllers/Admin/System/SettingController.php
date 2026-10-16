@@ -237,6 +237,34 @@ class SettingController extends Controller
             ]);
         }
 
+        $loginSmsRules = [];
+        foreach (['smsir', 'farazsms', 'melipayamak'] as $provider) {
+            $loginSmsRules["{$provider}_login_pattern"] = ['nullable', 'string', 'max:255'];
+            if ($provider !== 'melipayamak') {
+                foreach (['name', 'time', 'ip', 'source'] as $parameter) {
+                    $loginSmsRules["{$provider}_login_{$parameter}_parameter"] = ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z][a-zA-Z0-9_]*$/'];
+                }
+            }
+        }
+        $request->validate($loginSmsRules);
+
+        foreach (['smsir', 'farazsms'] as $provider) {
+            if (! $request->filled("{$provider}_login_pattern")) {
+                continue;
+            }
+            $parameters = [];
+            foreach (['name', 'time', 'ip', 'source'] as $parameter) {
+                $field = "{$provider}_login_{$parameter}_parameter";
+                $name = $request->input($field) ?: ucfirst($parameter);
+                if (in_array($name, $parameters, true)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        $field => 'نام متغیرهای الگوی اعلان ورود باید متفاوت باشند.',
+                    ]);
+                }
+                $parameters[] = $name;
+            }
+        }
+
         $this->storeSettings($request, 'general');
         $activeTab = $request->input('active_tab', 'main');
 

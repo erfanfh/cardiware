@@ -29,6 +29,12 @@ abstract class BaseSettings
      */
     protected static array $resolvedGroups = [];
 
+    public static function clearResolvedGroups(): void
+    {
+        // Keep the shared cache; only discard values retained by a long-lived worker.
+        self::$resolvedGroups = [];
+    }
+
     public function __construct()
     {
         if (empty($this->group) || empty($this->allowedKeys)) {

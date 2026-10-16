@@ -16,11 +16,15 @@ class Role extends Model
         'title',
         'is_default',
         'is_super_admin',
+        'login_email_enabled',
+        'login_sms_enabled',
     ];
 
     protected $casts = [
         'is_default' => 'boolean',
         'is_super_admin' => 'boolean',
+        'login_email_enabled' => 'boolean',
+        'login_sms_enabled' => 'boolean',
     ];
 
     protected static function newFactory(): RoleFactory

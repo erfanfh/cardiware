@@ -16,6 +16,18 @@ class GeneralSettings extends BaseSettings
 
         'default_sms_provider',
 
+        'smsir_login_pattern',
+        'smsir_login_name_parameter',
+        'smsir_login_time_parameter',
+        'smsir_login_ip_parameter',
+        'smsir_login_source_parameter',
+        'farazsms_login_pattern',
+        'farazsms_login_name_parameter',
+        'farazsms_login_time_parameter',
+        'farazsms_login_ip_parameter',
+        'farazsms_login_source_parameter',
+        'melipayamak_login_pattern',
+
         'smsir_api_key',
         'smsir_otp_template_id',
         'smsir_otp_parameter_name',

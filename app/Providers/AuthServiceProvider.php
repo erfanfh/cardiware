@@ -3,10 +3,13 @@
 namespace App\Providers;
 
 use App\Application\Identity\Actions\PermissionCheckerAction;
+use App\Application\Identity\Listeners\QueueLoginAlerts;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,6 +30,8 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(Login::class, QueueLoginAlerts::class);
+
         Gate::before(function ($user, string $ability) {
             if (!str_contains($ability, '.')) {
                 return null;

@@ -57,9 +57,21 @@
 
                                 <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
                                     <span>#{{ $role->id }}</span>
+                                    @if($role->login_email_enabled)
+                                        <span>اعلان ایمیلی فعال</span>
+                                    @endif
+                                    @if($role->login_sms_enabled)
+                                        <span>اعلان پیامکی فعال</span>
+                                    @endif
                                 </div>
 
                                 <x-admin.list.row-actions>
+                                    @can('role.edit')
+                                        <x-admin.list.action tag="a" :href="route('admin.roles.login-alerts.edit', $role)" variant="primary">
+                                            اعلان ورود
+                                        </x-admin.list.action>
+                                        <span class="text-slate-300">|</span>
+                                    @endcan
                                     <x-admin.list.action
                                         tag="a"
                                         :href="route('admin.roles.edit', $role)"

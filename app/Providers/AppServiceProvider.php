@@ -31,10 +31,12 @@ use App\Domain\Launcher\Models\LauncherRelease;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
 use App\Domain\Support\Models\Ticket;
+use App\Infrastructure\Services\Setting\BaseSettings;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use App\Domain\Video\Models\Video;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
@@ -69,6 +71,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Queue::before(function (): void {
+            BaseSettings::clearResolvedGroups();
+        });
+
         if (app()->environment('production')) {
             URL::forceScheme('https');
         }
