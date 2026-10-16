@@ -1,5 +1,4 @@
 <div class="space-y-6">
-    @include('admin.system.settings.partials.general.login-alert-sms')
     <x-admin.metabox title="سامانه‌های پیامکی">
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <x-admin.field
@@ -47,6 +46,8 @@
                     value="{{ get_setting('general', 'smsir_otp_parameter_name') }}"
                 />
             </x-admin.field>
+
+            @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'smsir'])
         </div>
     </x-admin.metabox>
 
@@ -87,6 +88,8 @@
                     value="{{ get_setting('general', 'farazsms_otp_attribute_name') }}"
                 />
             </x-admin.field>
+
+            @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'farazsms'])
         </div>
     </x-admin.metabox>
 
@@ -118,6 +121,8 @@
                     value="{{ get_setting('general', 'melipayamak_otp_pattern') }}"
                 />
             </x-admin.field>
+
+            @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'melipayamak'])
         </div>
     </x-admin.metabox>
 </div>
