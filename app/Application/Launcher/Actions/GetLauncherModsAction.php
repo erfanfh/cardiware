@@ -6,6 +6,7 @@ use App\Application\Commerce\Exceptions\PurchaseAccessFileUnavailableException;
 use App\Application\Launcher\Support\RemoteDownloadFileMetadataResolver;
 use Illuminate\Support\Facades\Log;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
@@ -24,8 +25,9 @@ class GetLauncherModsAction
      */
     public function execute(PurchaseAccess $access): array
     {
-        $baseVersion = (string) $access->productSaleItem()->value('version');
-        $updateState = $this->updateState($access->product_sale_item_id);
+        $saleItem = $access->productSaleItem ?? $access->productSaleItem()->firstOrFail();
+        $baseVersion = (string) $saleItem->version;
+        $updateState = $this->updateState($saleItem, (int) $access->user_id);
 
         return LauncherMod::query()
             ->where('product_sale_item_id', $access->product_sale_item_id)
@@ -70,11 +72,12 @@ class GetLauncherModsAction
     /**
      * @return array{current_version: ?string, versions: array<int, string>}
      */
-    private function updateState(int $saleItemId): array
+    private function updateState(ProductSaleItem $saleItem, ?int $userId): array
     {
         /** @var Collection<int, LauncherUpdate> $updates */
         $updates = LauncherUpdate::query()
-            ->where('product_sale_item_id', $saleItemId)
+            ->where('product_sale_item_id', $saleItem->getKey())
+            ->visibleToLauncherUser($userId, $saleItem->staging_user_ids ?? [])
             ->with('files')
             ->get();
 

@@ -36,11 +36,13 @@
         'monitor_process_name' => null,
 
         'content_key_id' => null,
+        'content_gate' => false,
         'content_key_value' => null,
         'content_key_configured' => false,
 
         'protected_folder_markers' => '',
         'protected_exact_paths' => '',
+        'protected_gate_files' => '',
         'protected_excluded_paths' => '',
         'protected_modules' => [],
         'protected_strict_modules' => true,
@@ -85,6 +87,11 @@
         $defaults,
         $submittedManifest
     );
+
+    $manifestState['content_gate'] = filter_var($manifestState['content_gate'], FILTER_VALIDATE_BOOLEAN);
+    if (is_array($manifestState['protected_gate_files'])) {
+        $manifestState['protected_gate_files'] = implode("\n", $manifestState['protected_gate_files']);
+    }
 
     $state = $isSimple
         ? 'manifest'
@@ -928,7 +935,7 @@
             </div>
 
             <div class="mt-1 text-[11px] leading-5 text-slate-500">
-                فقط برای محصولاتی که دیتابیس بازی از قبل رمزنگاری شده پر کنید (مثلاً PGL6).
+                برای محصولاتی که محتوای رمزنگاری‌شده یا نگهبان دارند پر کنید (مثلاً PGL6 یا FIFA).
                 برای بقیه‌ی محصولات هر دو فیلد را خالی بگذارید. جزئیات کامل در
                 <span dir="ltr" class="font-mono">docs/CONTENT-KEY-PIPE-FA.md</span>
                 سمت لانچر.
@@ -1100,8 +1107,38 @@
             </div>
         </div>
 
+        <label class="mb-4 flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-3">
+            <input type="checkbox" x-model="{{ $state }}.content_gate" class="mt-1 h-4 w-4">
+            <span class="text-[11px] leading-5 text-slate-700">
+                <span class="font-bold">گِیتِ محتوا / نگهبان (FIFA)</span>
+                — نیازمند شناسه کلید محتوا و نام پراسس بازی است. Sider باید خاموش باشد.
+            </span>
+        </label>
+        @if($isSimple)
+            <input type="hidden" name="{{ $staticName('content_gate') }}" x-bind:value="{{ $state }}.content_gate ? 1 : 0">
+        @else
+            <input type="hidden" x-bind:name="{{ $dynamicName('content_gate') }}" x-bind:value="{{ $state }}.content_gate ? 1 : 0">
+        @endif
+
+        <div x-show="{{ $state }}.content_gate" x-cloak class="mb-4 rounded-xl border border-orange-200 bg-orange-50 p-3 text-[11px] leading-6 text-slate-700">
+            <div class="font-bold">راهنمای تنظیم نگهبان برای همین نسخه فروش</div>
+            <ol class="list-inside list-decimal">
+                <li>ابتدا بسته بازی را با ابزار نگهبان آماده کنید؛ فایل اجرایی اصلی در بخش اجرا باید <span dir="ltr" class="font-mono">Launcher.exe</span> باشد.</li>
+                <li>نام پراسس واقعی بازی را در بخش اجرا وارد کنید؛ برای FIFA23 مقدار <span dir="ltr" class="font-mono">FIFA23.exe</span> است.</li>
+                <li>پشتیبانی از Sider و گزینه Sider اجباری را خاموش کنید.</li>
+                <li>شناسه و مقدار کلید محتوا را در بخش کلید رمزگشایی ثبت کنید؛ باید با کلید استفاده‌شده برای بسته بازی یکسان باشد.</li>
+                <li>فقط مسیر فایل‌هایی را وارد کنید که در بسته با <span dir="ltr" class="font-mono">GateFiles</span> قفل شده‌اند؛ این فهرست می‌تواند خالی بماند.</li>
+            </ol>
+            <div class="mt-1">اجرای نگهبان به لانچر نسخه <span dir="ltr">1.21.105</span> یا بالاتر نیاز دارد. تنظیمات با ذخیره محصول اعمال می‌شوند و نیازی به وارد کردن شناسه محصول نیست.</div>
+        </div>
+
         @php
             $protectionFields = [
+                'protected_gate_files' => [
+                    'label' => 'فایل‌های قفل‌شده‌ی نگهبان',
+                    'hint' => 'اختیاری؛ هر خط یک مسیر نسبی که در بسته با GateFiles قفل شده است، مثل Data\\layout.toc.',
+                    'placeholder' => "Data\\layout.toc",
+                ],
                 'protected_folder_markers' => [
                     'label' => 'پوشه‌های کاملاً محافظت‌شده',
                     'hint' => 'مثل pesdb — فقط وقتی مجاز است که همه فایل‌های داخل آن پوشه مال ما و رمزشده باشند. اگر فایل سالم بازی را در بر بگیرد، آن فایل خراب می‌شود.',

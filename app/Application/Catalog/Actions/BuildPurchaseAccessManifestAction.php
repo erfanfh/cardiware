@@ -224,6 +224,7 @@ class BuildPurchaseAccessManifestAction
                  * this general-purpose manifest response.
                  */
                 'content_key_id' => $manifest->content_key_id,
+                'content_gate' => (bool)($manifest->content_gate ?? false),
 
                 /*
                  * DRM policy for sider.dll: which virtual paths are protected, which
@@ -243,6 +244,7 @@ class BuildPurchaseAccessManifestAction
                     'excluded_paths' => array_values($manifest->protected_excluded_paths ?? []),
                     'modules' => array_values($manifest->protected_modules ?? []),
                     'strict_modules' => (bool)($manifest->protected_strict_modules ?? true),
+                    'gate_files' => array_values($manifest->protected_gate_files ?? []),
                     // Refuse to launch with an unknown/modified native DLL in the game
                     // (see add_native_dll_enforcement migration). The allowlist is global
                     // and always sent, so reports carry allowed=yes even while enforcement

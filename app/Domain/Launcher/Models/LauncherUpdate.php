@@ -13,12 +13,13 @@ class LauncherUpdate extends Model
 {
     protected $fillable = [
         'product_sale_item_id', 'version', 'title', 'description', 'changelog',
-        'is_enabled', 'is_mandatory', 'has_option_file', 'archive_format', 'archive_password',
+        'is_enabled', 'is_staging', 'is_mandatory', 'has_option_file', 'archive_format', 'archive_password',
         'published_at', 'sort_order',
     ];
 
     protected $casts = [
         'is_enabled' => 'boolean',
+        'is_staging' => 'boolean',
         'is_mandatory' => 'boolean',
         'has_option_file' => 'boolean',
         'published_at' => 'datetime',
@@ -41,6 +42,14 @@ class LauncherUpdate extends Model
         return $query->where('is_enabled', true)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    public function scopeVisibleToLauncherUser(Builder $query, ?int $userId, array $testerIds): Builder
+    {
+        $isTester = $userId !== null && $userId > 0
+            && in_array($userId, array_map('intval', $testerIds), true);
+
+        return $isTester ? $query : $query->where('is_staging', false);
     }
 
     /**

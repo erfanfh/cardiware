@@ -134,9 +134,11 @@ class StreamLauncherDownloadController extends Controller
         $this->ensureSessionIsAlive($downloadSession->session_expires_at);
 
         if ($contentType === 'update') {
+            $saleItem = $access->productSaleItem()->firstOrFail();
             $owner = LauncherUpdate::query()
                 ->whereKey($contentId)
                 ->where('product_sale_item_id', $access->product_sale_item_id)
+                ->visibleToLauncherUser((int) $access->user_id, $saleItem->staging_user_ids ?? [])
                 ->published()
                 ->firstOrFail();
 

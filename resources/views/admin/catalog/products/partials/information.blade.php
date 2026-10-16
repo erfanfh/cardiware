@@ -152,6 +152,7 @@
         'monitor_process_name' => '',
 
         'content_key_id' => '',
+        'content_gate' => false,
         'content_key_value' => '',
         'content_key_configured' => false,
 
@@ -161,6 +162,7 @@
         // digests by hand would be both tedious and easy to get wrong.
         'protected_folder_markers' => '',
         'protected_exact_paths' => '',
+        'protected_gate_files' => '',
         'protected_excluded_paths' => '',
         'protected_modules' => [],
         'protected_strict_modules' => true,
@@ -219,8 +221,10 @@
                 'inject_dll_path' => $old('inject_dll_path', ''),
                 'monitor_process_name' => $old('monitor_process_name', ''),
                 'content_key_id' => $old('content_key_id', ''),
+                'content_gate' => filter_var($old('content_gate', false), FILTER_VALIDATE_BOOLEAN),
                 'protected_folder_markers' => $old('protected_folder_markers', ''),
                 'protected_exact_paths' => $old('protected_exact_paths', ''),
+                'protected_gate_files' => $old('protected_gate_files', ''),
                 'protected_watermark_sites' => $old('protected_watermark_sites', ''),
                 'protected_excluded_paths' => $old('protected_excluded_paths', ''),
                 'protected_modules' => ($json = $old('protected_modules_json'))
@@ -272,6 +276,7 @@
                 'monitor_process_name' => $old('monitor_process_name', $manifest->monitor_process_name ?? ''),
 
                 'content_key_id' => $old('content_key_id', $manifest->content_key_id ?? ''),
+                'content_gate' => filter_var($old('content_gate', $manifest->content_gate ?? false), FILTER_VALIDATE_BOOLEAN),
                 // NEVER the real secret here -- this array feeds the initial page
                 // render, which every admin with product-edit access can open.
                 // content_key_value stays redacted until RevealContentKeyController
@@ -302,6 +307,8 @@
                     implode("\n", $manifest->protected_folder_markers ?? [])),
                 'protected_exact_paths' => $old('protected_exact_paths',
                     implode("\n", $manifest->protected_exact_paths ?? [])),
+                'protected_gate_files' => $old('protected_gate_files',
+                    implode("\n", $manifest->protected_gate_files ?? [])),
                 'protected_watermark_sites' => $old('protected_watermark_sites',
                     implode("\n", $manifest->protected_watermark_sites ?? [])),
                 'protected_excluded_paths' => $old('protected_excluded_paths',
@@ -381,6 +388,7 @@
                 'max_quantity_per_order' => $saleItem->max_quantity_per_order,
                 'description' => $saleItem->description,
                 'launcher_enabled' => (bool) $saleItem->launcher_enabled,
+                'staging_user_ids' => $saleItem->staging_user_ids ?? [],
                 'launcher_free_claim_enabled' => (bool) $saleItem->launcher_free_claim_enabled,
                 'launcher_title' => $saleItem->launcher_title,
                 'launcher_excerpt' => $saleItem->launcher_excerpt,
@@ -439,6 +447,7 @@
                     'changelog' => $update->changelog,
                     'archive_password' => $update->archive_password ?? '',
                     'is_enabled' => (bool) $update->is_enabled,
+                    'is_staging' => (bool) $update->is_staging,
                     'is_mandatory' => (bool) $update->is_mandatory,
                     'has_option_file' => (bool) $update->has_option_file,
                     'published_at' => $update->published_at?->format('Y-m-d H:i:s'),

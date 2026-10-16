@@ -188,6 +188,7 @@ class SyncProductSaleItemManifestAction
                 // vault-password grant) in UpdateProductRequest -- this method only
                 // decides WHAT to persist, given that decision already passed.
                 'content_key_id' => $contentKeyId,
+                'content_gate' => $this->toBoolean(Arr::get($data, 'content_gate', false)),
                 'content_key_value' => $this->resolveContentKeyValue(
                     saleItem: $saleItem,
                     submittedContentKeyId: $contentKeyId,
@@ -204,6 +205,8 @@ class SyncProductSaleItemManifestAction
                     $this->normalizeStringList(Arr::get($data, 'protected_folder_markers')),
                 'protected_exact_paths' =>
                     $this->normalizeStringList(Arr::get($data, 'protected_exact_paths')),
+                'protected_gate_files' =>
+                    $this->normalizeStringList(Arr::get($data, 'protected_gate_files')),
                 'protected_excluded_paths' =>
                     $this->normalizeStringList(Arr::get($data, 'protected_excluded_paths')),
                 // Per-buyer watermark locations, "<offset> <length> <path>". Empty = off.

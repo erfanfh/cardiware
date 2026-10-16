@@ -20,6 +20,7 @@ class ProductSaleItemObserver
             'edition_key',
             'version',
             'launcher_enabled',
+            'staging_user_ids',
             'launcher_free_claim_enabled',
             'launcher_title',
             'launcher_excerpt',

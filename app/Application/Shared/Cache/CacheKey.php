@@ -313,14 +313,18 @@ final class CacheKey
         return "launcher:manifest:{$saleItemId}:r{$manifestRevision}";
     }
 
-    public static function launcherUpdates(int|string $saleItemId, int $manifestRevision): string
+    public static function launcherUpdates(int|string $saleItemId, int $manifestRevision, bool $isStagingTester = false): string
     {
-        return "launcher:updates:{$saleItemId}:r{$manifestRevision}";
+        $audience = $isStagingTester ? 'tester' : 'public';
+
+        return "launcher:updates:{$saleItemId}:r{$manifestRevision}:{$audience}";
     }
 
-    public static function launcherMods(int|string $saleItemId, int $manifestRevision): string
+    public static function launcherMods(int|string $saleItemId, int $manifestRevision, bool $isStagingTester = false): string
     {
-        return "launcher:mods:{$saleItemId}:r{$manifestRevision}";
+        $audience = $isStagingTester ? 'tester' : 'public';
+
+        return "launcher:mods:{$saleItemId}:r{$manifestRevision}:{$audience}";
     }
 
     public static function launcherSlides(): string

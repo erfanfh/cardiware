@@ -177,6 +177,7 @@ class PrepareLauncherContentDownloadAction
                 contentId: $contentId,
                 fileId: $fileId,
                 expectedFileName: $expectedFileName,
+                userId: (int) $user->getKey(),
             );
 
             if (
@@ -331,6 +332,7 @@ class PrepareLauncherContentDownloadAction
             contentId: $contentId,
             fileId: $fileId,
             expectedFileName: $expectedFileName,
+            userId: (int) $user->getKey(),
         );
 
         return [$access, $content, $file];
@@ -344,13 +346,16 @@ class PrepareLauncherContentDownloadAction
         string  $type,
         int     $contentId,
         int     $fileId,
+        int     $userId,
         ?string $expectedFileName = null,
     ): array
     {
         if ($type === 'update') {
+            $saleItem = ProductSaleItem::query()->findOrFail($saleItemId);
             $content = LauncherUpdate::query()
                 ->whereKey($contentId)
                 ->where('product_sale_item_id', $saleItemId)
+                ->visibleToLauncherUser($userId, $saleItem->staging_user_ids ?? [])
                 ->published()
                 ->first();
 
