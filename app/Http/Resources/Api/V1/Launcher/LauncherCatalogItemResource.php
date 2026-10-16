@@ -29,6 +29,7 @@ class LauncherCatalogItemResource extends JsonResource
         // A cancelled/refunded/revoked historical order must not unlock the
         // launcher.  Ownership is deliberately based only on a usable access.
         $hasAccess = $usableAccess instanceof PurchaseAccess;
+        $isPurchasable = $this->resource->isPurchasable();
 
         return [
             'id' => $this->id,
@@ -46,8 +47,8 @@ class LauncherCatalogItemResource extends JsonResource
                 'access_id' => $usableAccess?->id,
             ],
             'actions' => [
-                'can_buy' => !$isFree && !$hasAccess,
-                'can_claim' => $isFree && !$hasAccess,
+                'can_buy' => $isPurchasable && !$isFree && !$hasAccess,
+                'can_claim' => $isPurchasable && $isFree && !$hasAccess,
                 'can_install' => $hasAccess,
             ],
             'web_url' => $this->product?->url,

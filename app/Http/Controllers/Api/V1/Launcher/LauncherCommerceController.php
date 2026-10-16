@@ -43,7 +43,7 @@ class LauncherCommerceController extends Controller
             'return_uri' => ['required', Rule::in(['mwlauncher://purchase-complete'])],
         ])->validate();
 
-        ProductSaleItem::query()
+        $item = ProductSaleItem::query()
             ->whereKey($saleItem)
             ->where('launcher_enabled', true)
             ->firstOrFail();
@@ -62,6 +62,8 @@ class LauncherCommerceController extends Controller
                 'data' => ['purchase_access_id' => $existingAccess->getKey()],
             ]);
         }
+
+        abort_unless($item->isPurchasableAvailable(), 422, 'این نسخه فروش در حال حاضر موجود نیست.');
 
         $device = $request->attributes->get('launcher_device');
         abort_unless($device instanceof LauncherDevice, 401);

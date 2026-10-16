@@ -19,11 +19,10 @@ use Illuminate\Pagination\Paginator as PaginatorState;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * The public part of a catalog page (sale items + product/media/discount/manifest) is
- * identical for every user and is what makes this endpoint expensive, so it is cached
- * per (search, page, perPage). The one per-user relation the resource reads --
- * purchaseAccesses -- is loaded live with the same constraints it always had and
- * attached to the cached models, so the response is what the uncached query produced.
+ * Catalog content is cached per (search, page, perPage, owned unavailable IDs).
+ * Users with the same eligible retired items can share the expensive product/media/
+ * discount snapshot. The per-user purchaseAccesses relation is always loaded live
+ * and attached to the cached models.
  * Invalidated by LauncherCacheInvalidator on any sale item / product change (see
  * BumpLauncherManifestRevisionAction and LauncherCacheObserver).
  */
@@ -33,13 +32,29 @@ class GetLauncherCatalogAction
     {
         $search = trim((string) $search);
         $page = max(1, (int) PaginatorState::resolveCurrentPage());
+        // Resolve entitlements live so expiry/revocation cannot leave a retired item
+        // visible through a shared catalog cache. Keep pagination and search in SQL.
+        $ownedUnavailableIds = PurchaseAccess::query()
+            ->where('user_id', $user->getKey())
+            ->launcherUsable()
+            ->whereHas('productSaleItem', fn (Builder $query): Builder => $query
+                ->where('launcher_enabled', true)
+                ->where('status', ProductSaleItemStatusEnum::UNAVAILABLE->value))
+            ->distinct()
+            ->orderBy('product_sale_item_id')
+            ->pluck('product_sale_item_id')
+            ->all();
+        $cacheKey = CacheKey::launcherCatalogPage($search, $page, $perPage);
+        if ($ownedUnavailableIds !== []) {
+            $cacheKey .= ':owned:'.hash('sha256', implode(',', $ownedUnavailableIds));
+        }
 
         /** @var array{items: Collection<int, ProductSaleItem>, total: int} $cached */
         $cached = Cache::tags([CacheTag::LAUNCHER, CacheTag::LAUNCHER_CATALOG])->remember(
-            CacheKey::launcherCatalogPage($search, $page, $perPage),
+            $cacheKey,
             CacheTtl::short(),
-            function () use ($search, $perPage, $page): array {
-                $paginator = $this->baseQuery()
+            function () use ($search, $perPage, $page, $ownedUnavailableIds): array {
+                $paginator = $this->baseQuery($ownedUnavailableIds)
                     ->with([
                         'product.picture.primaryVariant',
                         'launcherHero.primaryVariant',
@@ -119,11 +134,15 @@ class GetLauncherCatalogAction
         return $saleItem;
     }
 
-    private function baseQuery(): Builder
+    /** @param array<int, int|string> $ownedUnavailableIds */
+    private function baseQuery(array $ownedUnavailableIds): Builder
     {
         return ProductSaleItem::query()
             ->where('launcher_enabled', true)
-            ->where('status', ProductSaleItemStatusEnum::AVAILABLE->value)
+            ->where(function (Builder $query) use ($ownedUnavailableIds): void {
+                $query->where('status', ProductSaleItemStatusEnum::AVAILABLE->value)
+                    ->orWhereIn('id', $ownedUnavailableIds);
+            })
             ->whereHas(
                 'product',
                 fn(Builder $query): Builder => $query->where('status', ProductStatusEnum::ACTIVE->value)
