@@ -11,6 +11,7 @@ use App\Application\Discussion\Actions\ResolveCommentAuthorBadgesAction;
 use App\Application\Identity\Observers\UserObserver;
 use App\Application\Launcher\Observers\LauncherCacheObserver;
 use App\Application\Launcher\Observers\LauncherReleaseObserver;
+use App\Application\Marketplace\Observers\StoreSlugCacheObserver;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Launcher\Models\LauncherGuide;
@@ -32,6 +33,8 @@ use App\Domain\Launcher\Models\LauncherModGroup;
 use App\Domain\Launcher\Models\LauncherRelease;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
+use App\Domain\Marketplace\Models\Store;
+use App\Domain\Marketplace\Models\StoreSlug;
 use App\Domain\Support\Models\Ticket;
 use App\Infrastructure\Services\Setting\BaseSettings;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -161,6 +164,8 @@ class AppServiceProvider extends ServiceProvider
         ProductSaleItemFile::observe(ProductSaleItemFileObserver::class);
         Product::observe(ProductSlugCacheObserver::class);
         ProductSlug::observe(ProductSlugCacheObserver::class);
+        Store::observe(StoreSlugCacheObserver::class);
+        StoreSlug::observe(StoreSlugCacheObserver::class);
 
         LauncherUpdate::observe(LauncherContentManifestRevisionObserver::class);
         LauncherUpdateFile::observe(LauncherContentManifestRevisionObserver::class);

@@ -165,6 +165,11 @@ final class CacheKey
         return "content:page:{$pageId}:detail-data:{$pageUpdatedAt}";
     }
 
+    public static function storeSlug(string $slug): string
+    {
+        return 'store:slug:'.trim($slug);
+    }
+
     public static function storeSeoData(
         int|string $storeId,
         int $storeUpdatedAt,
