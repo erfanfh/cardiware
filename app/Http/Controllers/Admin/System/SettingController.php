@@ -237,31 +237,42 @@ class SettingController extends Controller
             ]);
         }
 
-        $loginSmsRules = [];
+        $smsPatternParameters = [
+            'login' => ['name' => 'Name', 'time' => 'Time', 'ip' => 'Ip', 'source' => 'Source'],
+        ];
+        foreach (\App\Domain\Notification\Enums\CustomerSmsType::cases() as $type) {
+            $smsPatternParameters[$type->value] = $type->parameters();
+        }
+
+        $smsPatternRules = [];
         foreach (['smsir', 'farazsms', 'melipayamak'] as $provider) {
-            $loginSmsRules["{$provider}_login_pattern"] = ['nullable', 'string', 'max:255'];
-            if ($provider !== 'melipayamak') {
-                foreach (['name', 'time', 'ip', 'source'] as $parameter) {
-                    $loginSmsRules["{$provider}_login_{$parameter}_parameter"] = ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z][a-zA-Z0-9_]*$/'];
+            foreach ($smsPatternParameters as $pattern => $parameters) {
+                $smsPatternRules["{$provider}_{$pattern}_pattern"] = ['nullable', 'string', 'max:255'];
+                if ($provider !== 'melipayamak') {
+                    foreach (array_keys($parameters) as $parameter) {
+                        $smsPatternRules["{$provider}_{$pattern}_{$parameter}_parameter"] = ['nullable', 'string', 'max:100', 'regex:/^[a-zA-Z][a-zA-Z0-9_]*$/'];
+                    }
                 }
             }
         }
-        $request->validate($loginSmsRules);
+        $request->validate($smsPatternRules);
 
         foreach (['smsir', 'farazsms'] as $provider) {
-            if (! $request->filled("{$provider}_login_pattern")) {
-                continue;
-            }
-            $parameters = [];
-            foreach (['name', 'time', 'ip', 'source'] as $parameter) {
-                $field = "{$provider}_login_{$parameter}_parameter";
-                $name = $request->input($field) ?: ucfirst($parameter);
-                if (in_array($name, $parameters, true)) {
-                    throw \Illuminate\Validation\ValidationException::withMessages([
-                        $field => 'نام متغیرهای الگوی اعلان ورود باید متفاوت باشند.',
-                    ]);
+            foreach ($smsPatternParameters as $pattern => $parameters) {
+                if (! $request->filled("{$provider}_{$pattern}_pattern")) {
+                    continue;
                 }
-                $parameters[] = $name;
+                $names = [];
+                foreach ($parameters as $parameter => $defaultName) {
+                    $field = "{$provider}_{$pattern}_{$parameter}_parameter";
+                    $name = $request->input($field) ?: $defaultName;
+                    if (in_array($name, $names, true)) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            $field => 'نام متغیرهای هر الگوی پیامک باید متفاوت باشند.',
+                        ]);
+                    }
+                    $names[] = $name;
+                }
             }
         }
 

@@ -4,6 +4,30 @@
 
 @section('content')
     <x-admin.page>
+        <x-admin.form.validation-errors/>
+        <x-admin.form :action="route('admin.settings.notifications.sms.update')" method="put">
+            <x-admin.metabox title="اعلان‌های پیامکی کاربران">
+                <p class="mb-5 text-sm leading-7 text-slate-500">هر دو اعلان به‌صورت پیش‌فرض غیرفعال هستند. پیامک به شمارهٔ موبایل صاحب تیکت یا خریدار ارسال می‌شود.</p>
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    @foreach($smsTypes as $type)
+                        <x-admin.field :label="$type->label()">
+                            <x-admin.form.switch :name="$type->settingKey()" :checked="old($type->settingKey(), $smsSettings->get($type->settingKey(), false))"/>
+                            <p class="mt-2 text-xs leading-6 text-slate-500">
+                                @if($type === \App\Domain\Notification\Enums\CustomerSmsType::TICKET_REPLY)
+                                    پس از ثبت هر پاسخ پشتیبانی، صاحب تیکت با یک پیامک حاوی شمارهٔ تیکت مطلع می‌شود.
+                                @else
+                                    پس از پرداخت موفق، یک پیامک حاوی شمارهٔ سفارش ارسال می‌شود؛ حتی اگر سفارش چند محصول داشته باشد.
+                                @endif
+                            </p>
+                        </x-admin.field>
+                    @endforeach
+                </div>
+                <a href="{{ route('admin.settings.general', ['tab' => 'sms-panel']) }}" class="mt-5 inline-block text-sm text-brand-600">تنظیم سرویس پیامک و الگوهای پاسخ تیکت و خرید موفق</a>
+                <div class="mt-5">
+                    <x-admin.form.button type="submit">ذخیره تنظیمات پیامک</x-admin.form.button>
+                </div>
+            </x-admin.metabox>
+        </x-admin.form>
         <x-admin.metabox title="اعلان‌های داخل سیستم">
             <p class="mb-5 text-sm text-slate-500">هر رویداد را جداگانه فعال یا غیرفعال کنید. این تغییر فقط روی اعلان‌های بعدی اثر می‌گذارد.</p>
             <div class="space-y-3">

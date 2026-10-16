@@ -5,6 +5,7 @@ namespace App\Application\Support\Actions;
 use App\Domain\Identity\Models\User;
 use App\Domain\Support\Enums\TicketMessageSenderTypeEnum;
 use App\Domain\Support\Enums\TicketStatusEnum;
+use App\Domain\Support\Events\TicketRepliedEvent;
 use App\Domain\Support\Models\Ticket;
 use App\Domain\Support\Models\TicketMessage;
 use DomainException;
@@ -87,11 +88,18 @@ class CreateTicketMessageAction
                     );
                 }
 
-                return $message->load([
+                $message->load([
                     'ticket',
                     'user',
                     'attachments.variants',
                 ]);
+
+                if ($message->isFromSupport()) {
+                    $messageId = (int) $message->getKey();
+                    DB::afterCommit(static fn () => event(new TicketRepliedEvent($messageId)));
+                }
+
+                return $message;
             });
         } catch (Throwable $exception) {
             foreach ($storedAttachments as $attachment) {

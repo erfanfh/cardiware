@@ -48,6 +48,7 @@
             </x-admin.field>
 
             @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'smsir'])
+            @include('admin.system.settings.partials.general.customer-notification-sms', ['provider' => 'smsir'])
         </div>
     </x-admin.metabox>
 
@@ -90,6 +91,7 @@
             </x-admin.field>
 
             @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'farazsms'])
+            @include('admin.system.settings.partials.general.customer-notification-sms', ['provider' => 'farazsms'])
         </div>
     </x-admin.metabox>
 
@@ -123,6 +125,7 @@
             </x-admin.field>
 
             @include('admin.system.settings.partials.general.login-alert-sms', ['provider' => 'melipayamak'])
+            @include('admin.system.settings.partials.general.customer-notification-sms', ['provider' => 'melipayamak'])
         </div>
     </x-admin.metabox>
 </div>

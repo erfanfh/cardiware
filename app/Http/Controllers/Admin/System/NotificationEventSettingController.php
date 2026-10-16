@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin\System;
 
+use App\Domain\Notification\Enums\CustomerSmsType;
 use App\Domain\Notification\NotificationEvents;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\System\UpdateSmsNotificationSettingsRequest;
+use App\Infrastructure\Services\Setting\Groups\NotificationsSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +25,8 @@ class NotificationEventSettingController extends Controller
         return view('admin.system.settings.notifications', [
             'events' => NotificationEvents::LABELS,
             'settings' => $settings,
+            'smsTypes' => CustomerSmsType::cases(),
+            'smsSettings' => app(NotificationsSettings::class),
         ]);
     }
 
@@ -45,5 +50,18 @@ class NotificationEventSettingController extends Controller
         );
 
         return back()->with('success', 'تنظیمات اعلان ذخیره شد.');
+    }
+
+    public function updateSms(UpdateSmsNotificationSettingsRequest $request, NotificationsSettings $settings): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $settings): void {
+            foreach (array_keys($request->validated()) as $key) {
+                $settings->set($key, $request->boolean($key));
+            }
+        });
+        $settings->forgetCache();
+
+        return redirect()->route('admin.settings.notifications')
+            ->with('success', 'تنظیمات اعلان‌های پیامکی ذخیره شد.');
     }
 }
