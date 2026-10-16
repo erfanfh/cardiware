@@ -3,17 +3,25 @@
 namespace App\Application\Catalog\Observers;
 
 use App\Application\Catalog\Actions\BumpLauncherManifestRevisionAction;
+use App\Application\Shared\Cache\Invalidators\LauncherCacheInvalidator;
 use App\Domain\Catalog\Models\ProductSaleItem;
 
 class ProductSaleItemObserver
 {
     public function __construct(
         private readonly BumpLauncherManifestRevisionAction $bumpRevisionAction,
+        private readonly LauncherCacheInvalidator $cacheInvalidator,
     ) {
     }
 
     public function updated(ProductSaleItem $saleItem): void
     {
+        // Availability affects catalog visibility/actions, not the installed content
+        // identity. Refresh caches without invalidating customers' download sessions.
+        if ($saleItem->wasChanged('status')) {
+            $this->cacheInvalidator->flushSaleItem((int) $saleItem->getKey());
+        }
+
         if (!$saleItem->wasChanged([
             'sku',
             'title',
