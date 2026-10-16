@@ -4,6 +4,7 @@ namespace App\Livewire\Front\Identity;
 
 use App\Application\Commerce\Actions\Cart\GetCurrentActiveCartAction;
 use App\Application\Identity\Actions\Auth\CompleteAuthModalAction;
+use App\Application\Identity\Actions\Auth\LoginUserWithEmailAction;
 use App\Application\Identity\Actions\Auth\LoginUserWithOtpAction;
 use App\Application\Identity\Actions\Auth\LoginUserWithPasswordAction;
 use App\Application\Identity\Actions\Auth\RegisterUserWithOtpAction;
@@ -15,6 +16,7 @@ use App\Application\Identity\Actions\Auth\StartAuthFlowAction;
 use App\Application\Identity\DTOs\RegisterUserWithOtpDTO;
 use App\Application\Identity\DTOs\ResetUserPasswordWithOtpDTO;
 use App\Application\Identity\DTOs\SendOtpResultDTO;
+use App\Application\Identity\Exceptions\AuthRateLimitExceededException;
 use App\Application\Identity\Exceptions\EmailAlreadyRegisteredException;
 use App\Application\Identity\Exceptions\InvalidCredentialsException;
 use App\Application\Identity\Exceptions\InvalidMobileException;
@@ -204,6 +206,58 @@ final class AuthModal extends Component
                 exception: $exception,
                 field: 'password',
             );
+
+            return null;
+        }
+
+        return $this->finishAuthentication(
+            user: $user,
+            guestCart: $guestCart,
+            completeAuthModalAction: $completeAuthModalAction,
+        );
+    }
+
+    public function goToEmailLogin(): void
+    {
+        if ($this->step !== AuthFlowStepEnum::ENTER_MOBILE) {
+            return;
+        }
+
+        $this->goToEnterMobile();
+        $this->step = AuthFlowStepEnum::LOGIN_EMAIL;
+    }
+
+    public function loginWithEmail(
+        LoginUserWithEmailAction $loginUserWithEmailAction,
+        GetCurrentActiveCartAction $getCurrentActiveCartAction,
+        CompleteAuthModalAction $completeAuthModalAction,
+    ): RedirectResponse|Redirector|null
+    {
+        if ($this->step !== AuthFlowStepEnum::LOGIN_EMAIL) {
+            return null;
+        }
+
+        $this->resetValidation();
+        $this->email = Str::lower(trim($this->email ?? ''));
+
+        $this->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:255'],
+            'password' => ['required', 'string'],
+        ], [
+            'email.*' => 'اطلاعات وارد شده صحیح نیست.',
+            'password.*' => 'اطلاعات وارد شده صحیح نیست.',
+        ]);
+
+        $guestCart = $this->captureGuestCart($getCurrentActiveCartAction);
+
+        try {
+            $user = $loginUserWithEmailAction->execute($this->email, $this->password);
+        } catch (InvalidCredentialsException|AuthRateLimitExceededException $exception) {
+            $this->addError('emailLogin', 'اطلاعات وارد شده صحیح نیست.');
+
+            return null;
+        } catch (Throwable $exception) {
+            $this->handleUnexpectedError(exception: $exception, field: 'emailLogin');
 
             return null;
         }

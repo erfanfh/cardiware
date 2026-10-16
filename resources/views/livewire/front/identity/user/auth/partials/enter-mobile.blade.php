@@ -102,4 +102,13 @@
             </div>
         @endif
     </form>
+
+    <button
+        type="button"
+        wire:click="goToEmailLogin"
+        wire:loading.attr="disabled"
+        class="flex h-11 w-full cursor-pointer items-center justify-center rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+    >
+        ورود با ایمیل
+    </button>
 </div>

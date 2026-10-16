@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front\Identity\User\Auth;
 
+use App\Application\Identity\Actions\Auth\LoginUserWithEmailAction;
 use App\Application\Identity\Actions\Auth\LoginUserWithOtpAction;
 use App\Application\Identity\Actions\Auth\LoginUserWithPasswordAction;
 use App\Application\Identity\Actions\Auth\RedirectLoggedInUserAction;
@@ -195,6 +196,49 @@ final class AuthFlow extends Component
                 'password',
                 $exception->getMessage()
             );
+
+            return null;
+        }
+
+        $this->resetSensitiveFields();
+
+        return $redirectLoggedInUserAction->execute();
+    }
+
+    public function goToEmailLogin(): void
+    {
+        if ($this->step !== AuthFlowStepEnum::ENTER_MOBILE) {
+            return;
+        }
+
+        $this->goToEnterMobile();
+        $this->step = AuthFlowStepEnum::LOGIN_EMAIL;
+    }
+
+    public function loginWithEmail(
+        LoginUserWithEmailAction $loginUserWithEmailAction,
+        RedirectLoggedInUserAction $redirectLoggedInUserAction,
+    ): RedirectResponse|Redirector|null
+    {
+        if ($this->step !== AuthFlowStepEnum::LOGIN_EMAIL) {
+            return null;
+        }
+
+        $this->resetValidation();
+        $this->email = Str::lower(trim($this->email ?? ''));
+
+        $this->validate([
+            'email' => ['required', 'string', 'email:rfc', 'max:255'],
+            'password' => ['required', 'string'],
+        ], [
+            'email.*' => 'اطلاعات وارد شده صحیح نیست.',
+            'password.*' => 'اطلاعات وارد شده صحیح نیست.',
+        ]);
+
+        try {
+            $loginUserWithEmailAction->execute($this->email, $this->password);
+        } catch (InvalidCredentialsException|AuthRateLimitExceededException $exception) {
+            $this->addError('emailLogin', 'اطلاعات وارد شده صحیح نیست.');
 
             return null;
         }

@@ -100,4 +100,13 @@
             </button>
         </div>
     </form>
+
+    <button
+        type="button"
+        wire:click="goToEmailLogin"
+        wire:loading.attr="disabled"
+        class="mt-4 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-xs font-extrabold text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+    >
+        ورود با ایمیل
+    </button>
 </div>

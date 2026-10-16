@@ -106,7 +106,7 @@
             }
         "
         wire:loading.class="pointer-events-none opacity-60"
-        wire:target="startAuthFlow,loginWithPassword,requestLoginOtp,requestPasswordResetOtp,verifyLoginOtp,register,resetPassword,resendOtp"
+        wire:target="startAuthFlow,loginWithPassword,loginWithEmail,goToEmailLogin,requestLoginOtp,requestPasswordResetOtp,verifyLoginOtp,register,resetPassword,resendOtp"
         class="min-w-0 transition dark:text-slate-100"
     >
         @if(session()->has('success'))
@@ -159,6 +159,10 @@
                     @include(
                         'livewire.front.identity.auth-modal.partials.enter-mobile'
                     )
+                    @break
+
+                @case(\App\Domain\Identity\Enums\AuthFlowStepEnum::LOGIN_EMAIL)
+                    @include('livewire.front.identity.auth-modal.partials.login-email')
                     @break
 
                 @case(\App\Domain\Identity\Enums\AuthFlowStepEnum::LOGIN_PASSWORD)

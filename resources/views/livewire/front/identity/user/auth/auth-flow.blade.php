@@ -72,7 +72,7 @@
 >
     <div
         wire:loading.class="pointer-events-none opacity-60"
-        wire:target="startAuthFlow,loginWithPassword,requestLoginOtp,requestPasswordResetOtp,verifyLoginOtp,register,resetPassword,resendOtp"
+        wire:target="startAuthFlow,loginWithPassword,loginWithEmail,goToEmailLogin,requestLoginOtp,requestPasswordResetOtp,verifyLoginOtp,register,resetPassword,resendOtp"
         class="font-sans transition
             dark:text-slate-100
             [&_h2]:dark:text-slate-100
@@ -148,6 +148,10 @@
                     @include(
                         'livewire.front.identity.user.auth.partials.enter-mobile'
                     )
+                    @break
+
+                @case(\App\Domain\Identity\Enums\AuthFlowStepEnum::LOGIN_EMAIL)
+                    @include('livewire.front.identity.user.auth.partials.login-email')
                     @break
 
                 @case(\App\Domain\Identity\Enums\AuthFlowStepEnum::LOGIN_PASSWORD)

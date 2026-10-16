@@ -8,6 +8,8 @@ enum AuthFlowStepEnum: string
 
     case LOGIN_PASSWORD = 'login_password';
 
+    case LOGIN_EMAIL = 'login_email';
+
     case VERIFY_LOGIN_OTP = 'verify_login_otp';
 
     case REGISTER = 'register';
