@@ -46,6 +46,7 @@
                                     :defaultItem="[
                                         'title' => '',
                                         'subtitle' => '',
+                                        'description' => '',
                                         'url' => '',
                                         'image_id' => null,
                                         'image_path' => null,
@@ -69,6 +70,14 @@
                                                 <x-admin.form.input
                                                     x-bind:name="field(i, 'subtitle')"
                                                     x-model="it.subtitle"
+                                                />
+                                            </x-admin.field>
+
+                                            <x-admin.field label="توضیح کوتاه">
+                                                <x-admin.form.input
+                                                    x-bind:name="field(i, 'description')"
+                                                    x-model="it.description"
+                                                    maxlength="160"
                                                 />
                                             </x-admin.field>
 

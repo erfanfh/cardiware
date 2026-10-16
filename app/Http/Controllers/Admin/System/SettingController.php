@@ -526,6 +526,14 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.sidebar-widgets');
 
+        $request->validate([
+            'tools_items' => ['nullable', 'array'],
+            'tools_items.*' => ['array'],
+            'tools_items.*.description' => ['nullable', 'string', 'max:160'],
+        ], [], [
+            'tools_items.*.description' => 'توضیح کوتاه ابزار',
+        ]);
+
         $this->storeSettings($request, 'sidebarWidgets');
 
         $activeTab = $request->input('active_tab', 'tools');
