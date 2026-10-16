@@ -58,6 +58,7 @@ class UpdateProductRequest extends FormRequest
             'seller_commission_percent' => ['sometimes', 'required', 'numeric', 'between:0,100', 'decimal:0,2'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
             'body' => ['nullable', 'string'],
+            'file_size_body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
             'published_at' => ['nullable', 'string'],
 
@@ -1236,6 +1237,7 @@ class UpdateProductRequest extends FormRequest
             'seller_commission_percent' => 'درصد سهم فروشگاه',
             'addons.*.seller_commission_percent' => 'درصد سهم فروشگاه از خدمت افزوده',
             'body' => 'توضیحات',
+            'file_size_body' => 'حجم فایل ها',
             'excerpt' => 'خلاصه',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
             'video_gallery_items.*.video_url' => 'لینک ویدیو',

@@ -46,6 +46,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'sku',
         'excerpt',
         'body',
+        'file_size_body',
         'type',
         'content_type',
         'structure',
@@ -84,6 +85,15 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     public function isPubliclyVisible(): bool
     {
         return $this->status === ProductStatusEnum::ACTIVE && (bool)$this->published_at?->lte(now());
+    }
+
+    public function hasFileSizeContent(): bool
+    {
+        $body = $this->file_size_body ?? '';
+        $text = html_entity_decode(strip_tags($body), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return preg_match('/\S/u', $text) === 1
+            || preg_match('/<(?:img|video|audio|iframe|embed|object|hr)\b/i', $body) === 1;
     }
 
     public function displaySetting(): HasOne

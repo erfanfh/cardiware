@@ -376,6 +376,21 @@
     </x-admin.metabox>
 
     <x-admin.metabox
+        title="حجم فایل ها"
+        storageKey="product-file-size"
+    >
+        <x-admin.field>
+            <x-admin.form.editor
+                name="file_size_body"
+                :value="old('file_size_body', $product?->file_size_body)"
+                preset="full"
+                height="500"
+                :toolbar-sticky="false"
+            />
+        </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox
         title="گالری ویدیویی"
         storageKey="video-gallery"
     >
