@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Application\Commerce\Listeners\QueueOrderReceipt;
 use App\Application\Notification\Listeners\QueueCustomerSmsNotifications;
 use App\Application\Notification\SendInAppNotification;
 use App\Domain\Commerce\Events\OrderPaidEvent;
@@ -19,6 +20,7 @@ class NotificationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(OrderPaidEvent::class, [QueueCustomerSmsNotifications::class, 'orderPaid']);
+        Event::listen(OrderPaidEvent::class, QueueOrderReceipt::class);
         Event::listen(TicketRepliedEvent::class, [QueueCustomerSmsNotifications::class, 'ticketReplied']);
 
         View::composer('admin.partials.topbar', function ($view): void {
@@ -41,7 +43,7 @@ class NotificationServiceProvider extends ServiceProvider
 
         Event::listen(CommentCreatedEvent::class, fn (CommentCreatedEvent $event) => app(SendInAppNotification::class)->commentCreated($event->commentId));
         Event::listen(CommentApprovedEvent::class, function (CommentApprovedEvent $event): void {
-            if (!$event->approvedOnCreation) {
+            if (! $event->approvedOnCreation) {
                 app(SendInAppNotification::class)->commentApproved($event->commentId);
             }
         });

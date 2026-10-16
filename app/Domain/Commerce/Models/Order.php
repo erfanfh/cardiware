@@ -53,6 +53,7 @@ class Order extends Model implements Payable
         'tax_amount' => 'integer',
         'total_amount' => 'integer',
         'paid_at' => 'datetime',
+        'receipt_email_sent_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'metadata' => 'array',
         'coupon_eligible_amount' => 'integer',

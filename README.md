@@ -529,7 +529,7 @@ php artisan help wp:import-posts
 | فروش | [ترکیب کوپن](docs/coupon-stacking-fa.md)، [تحلیل فروش](docs/commerce-analytics-step-1.md) |
 | آمار دانلود | [ثبت کلیک، انتقال و تست](docs/download-box-tracking-fa.md) |
 | قرعه‌کشی | [عملیات](docs/raffle-operations-fa.md)، [تست دستی](docs/raffle-manual-test-fa.md) |
-| اطلاع‌رسانی | [اعلان داخل سایت](docs/in-app-notifications-fa.md)، [پیامک مشتریان](docs/CUSTOMER_SMS_NOTIFICATIONS_FA.md)، [هشدار ورود](docs/LOGIN_ALERTS_FA.md) |
+| اطلاع‌رسانی | [اعلان داخل سایت](docs/in-app-notifications-fa.md)، [پیامک مشتریان](docs/CUSTOMER_SMS_NOTIFICATIONS_FA.md)، [ایمیل فاکتور سفارش](docs/ORDER_RECEIPT_EMAIL_FA.md)، [هشدار ورود](docs/LOGIN_ALERTS_FA.md) |
 | مدیریت | [انتخاب‌گر آیکن](docs/icon-picker.md)، [تاریخچه تغییرات](docs/audit-history.md) |
 | بک‌آپ | [راه‌اندازی و بازیابی](docs/backup-operations-fa.md) |
 

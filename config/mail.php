@@ -16,6 +16,11 @@ return [
 
     'default' => env('MAIL_MAILER', 'log'),
 
+    'order_receipts' => [
+        // Null uses the application's default connection and its default queue.
+        'connection' => env('ORDER_RECEIPT_QUEUE_CONNECTION'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Mailer Configurations
