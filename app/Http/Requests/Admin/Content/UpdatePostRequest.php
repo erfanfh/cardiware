@@ -88,6 +88,7 @@ class UpdatePostRequest extends FormRequest
 
             'information_boxes' => ['nullable', 'array'],
             'information_boxes.*' => ['array'],
+            'information_boxes.prerequisites.body' => ['nullable', 'string'],
         ];
     }
 
@@ -103,6 +104,7 @@ class UpdatePostRequest extends FormRequest
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
             'display_views_offset' => 'افزایش نمایشی بازدید',
+            'information_boxes.prerequisites.body' => 'پیش نیاز ها',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
             'video_gallery_items.*.video_url' => 'لینک ویدیو',
             'video_gallery_items.*.cover.id' => 'کاور ویدیو',

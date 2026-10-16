@@ -335,12 +335,14 @@
             storageKey="post-information-box-{{ $postInformationBox->value }}"
         >
             <div class="flex flex-col gap-5">
-                <x-admin.field label="عنوان">
-                    <x-admin.form.input
-                        name="information_boxes[{{ $postInformationBox->value }}][title]"
-                        :value="old('information_boxes.' . $postInformationBox->value . '.title', $informationBoxes->get($postInformationBox->value)?->title)"
-                    />
-                </x-admin.field>
+                @if($postInformationBox !== \App\Domain\Content\Enums\PostInformationBoxTypeEnum::PREREQUISITES)
+                    <x-admin.field label="عنوان">
+                        <x-admin.form.input
+                            name="information_boxes[{{ $postInformationBox->value }}][title]"
+                            :value="old('information_boxes.' . $postInformationBox->value . '.title', $informationBoxes->get($postInformationBox->value)?->title)"
+                        />
+                    </x-admin.field>
+                @endif
 
                 <x-admin.field>
                     <x-admin.form.editor

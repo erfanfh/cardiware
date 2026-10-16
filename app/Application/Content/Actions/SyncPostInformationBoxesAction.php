@@ -14,7 +14,9 @@ class SyncPostInformationBoxesAction
         foreach (PostInformationBoxTypeEnum::cases() as $type) {
             $data = $informationBoxes[$type->value] ?? [];
 
-            $title = $data['title'] ?? null;
+            $title = $type === PostInformationBoxTypeEnum::PREREQUISITES
+                ? null
+                : ($data['title'] ?? null);
             $body = $data['body'] ?? null;
 
             if (blank($title) && blank($body)) {
