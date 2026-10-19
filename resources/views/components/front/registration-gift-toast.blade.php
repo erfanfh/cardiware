@@ -2,6 +2,7 @@
 
 @if(is_array($gift))
     <div
+        data-purchase-notification-blocker
         x-data="{ open: false, copied: false }"
         x-init="open = true; setTimeout(() => open = false, 12000)"
         x-show="open"

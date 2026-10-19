@@ -23,9 +23,15 @@ class ChangeOrderStatusAction
             ? CarbonImmutable::instance($transitionedAt)
             : now(config('app.timezone'))->toImmutable();
 
+        // Clear an existing checkout flag without adding metadata to manual orders.
+        $metadata = $order->metadata ?? [];
+        if (array_key_exists('purchase_notification_eligible', $metadata)) {
+            $order->metadata = array_merge($metadata, ['purchase_notification_eligible' => false]);
+        }
+
         $order->forceFill([
             'status' => $newStatus,
-            'paid_at' => $newStatus->isPaid() && !$oldStatus->isPaid()
+            'paid_at' => $newStatus->isPaid() && ! $oldStatus->isPaid()
                 ? $transitionedAt
                 : $order->paid_at,
             'cancelled_at' => $newStatus === OrderStatusEnum::CANCELLED

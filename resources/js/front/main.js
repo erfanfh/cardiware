@@ -36,6 +36,8 @@ document.addEventListener('alpine:init', () => {
 
 import initTimeSpentTracker from './loyalty/time-spent-tracker.js';
 import initLoyaltyEarnedToast from './loyalty/earned-toast.js';
+import initRecentPurchases from './recent-purchases.js';
 
 initLoyaltyEarnedToast();
 initTimeSpentTracker();
+initRecentPurchases();

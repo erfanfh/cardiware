@@ -36,6 +36,7 @@
 <x-front.registration-gift-toast/>
 <x-front.loyalty-earned-toast/>
 <livewire:front.promotion.floating-coupon-box/>
+<x-front.recent-purchases/>
 @unless(request()->routeIs('preview.*'))
     @php
         $popupTargetType = isset($post) ? 'post' : (isset($page) ? 'page' : (isset($product) ? 'product' : (request()->routeIs('home') ? 'home' : 'other')));

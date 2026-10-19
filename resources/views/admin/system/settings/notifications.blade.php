@@ -5,6 +5,17 @@
 @section('content')
     <x-admin.page>
         <x-admin.form.validation-errors/>
+        <x-admin.form :action="route('admin.settings.notifications.recent-purchases.update')" method="put">
+            <x-admin.metabox title="اعلان خریدهای اخیر">
+                <x-admin.field label="نمایش خریدهای اخیر در سایت">
+                    <x-admin.form.switch name="recent_purchases_enabled" :checked="old('recent_purchases_enabled', $recentPurchasesEnabled)"/>
+                    <p class="mt-2 text-xs leading-6 text-slate-500">نام و نام خانوادگی خریدار و محصول خریداری‌شده در یک اعلان کوچک پایین صفحات عمومی نمایش داده می‌شود. این گزینه به‌صورت پیش‌فرض فعال است.</p>
+                </x-admin.field>
+                <div class="mt-5">
+                    <x-admin.form.button type="submit">ذخیره تنظیمات خریدهای اخیر</x-admin.form.button>
+                </div>
+            </x-admin.metabox>
+        </x-admin.form>
         <x-admin.form :action="route('admin.settings.notifications.sms.update')" method="put">
             <x-admin.metabox title="اعلان‌های پیامکی کاربران">
                 <p class="mb-5 text-sm leading-7 text-slate-500">هر دو اعلان به‌صورت پیش‌فرض غیرفعال هستند. پیامک به شمارهٔ موبایل صاحب تیکت یا خریدار ارسال می‌شود.</p>

@@ -28,7 +28,7 @@ class MarkOrderAsPaidAction
                 return $order;
             }
 
-            if (!$order->status->canBePaid()) {
+            if (! $order->status->canBePaid()) {
                 throw new DomainException('Order cannot be marked as paid.');
             }
 
@@ -37,6 +37,9 @@ class MarkOrderAsPaidAction
             $order->forceFill([
                 'status' => OrderStatusEnum::PAID,
                 'paid_at' => $transitionedAt,
+                'metadata' => array_merge($order->metadata ?? [], [
+                    'purchase_notification_eligible' => (int) $order->total_amount > 0,
+                ]),
             ])->save();
 
             $this->snapshotCommissions->execute($order);
@@ -44,7 +47,7 @@ class MarkOrderAsPaidAction
             $orderId = (int) $order->getKey();
 
             DB::afterCommit(
-                fn() => event(new OrderPaidEvent(
+                fn () => event(new OrderPaidEvent(
                     orderId: $orderId,
                     occurredAt: $transitionedAt,
                 ))

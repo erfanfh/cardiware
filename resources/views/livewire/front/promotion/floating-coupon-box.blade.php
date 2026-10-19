@@ -4,6 +4,7 @@
         @php($isFinished = $promotion['state'] === 'finished')
 
         <aside
+            data-purchase-notification-blocker
             wire:poll.visible.20s
             wire:key="floating-coupon-{{ $promotion['id'] }}-{{ $promotion['state'] }}"
             x-data="{

@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 // Click analytics does not need browser sessions or page tracking.
 require __DIR__.'/front/download.php';
 
+// Public, cached feed: no session, page tracking or loyalty side effects.
+Route::get('/notifications/recent-purchases', \App\Http\Controllers\Front\Commerce\RecentPurchasesController::class)
+    ->middleware('throttle:120,1')
+    ->name('notifications.recent-purchases');
+
 Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');

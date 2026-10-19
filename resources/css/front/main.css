@@ -6,6 +6,10 @@
     display: none !important;
 }
 
+[data-recent-purchases][hidden] {
+    display: none;
+}
+
 [data-footer-news-slide][hidden] {
     display: none;
 }

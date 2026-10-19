@@ -49,3 +49,4 @@ Route::get('settings/team/ajax-members', TeamSettingMemberSearchController::clas
 Route::get('settings/notifications', [NotificationEventSettingController::class, 'index'])->name('settings.notifications');
 Route::put('settings/notifications', [NotificationEventSettingController::class, 'update'])->name('settings.notifications.update');
 Route::put('settings/notifications/sms', [NotificationEventSettingController::class, 'updateSms'])->name('settings.notifications.sms.update');
+Route::put('settings/notifications/recent-purchases', [NotificationEventSettingController::class, 'updateRecentPurchases'])->name('settings.notifications.recent-purchases.update');
