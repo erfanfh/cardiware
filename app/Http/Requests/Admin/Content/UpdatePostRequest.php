@@ -31,6 +31,11 @@ class UpdatePostRequest extends FormRequest
             'status' => ['required', Rule::enum(PostStatusEnum::class)],
             'is_pinned' => ['boolean'],
             'picture_id' => ['nullable', 'integer', 'exists:media_files,id'],
+            'download_banner_media_id' => [
+                'nullable', 'integer',
+                Rule::exists('media_files', 'id')->where('type', 'image')->where('visibility', 'public'),
+            ],
+            'download_banner_url' => ['nullable', 'string', 'url:http,https', 'max:2048'],
             'author_id' => ['nullable', 'integer', 'exists:users,id'],
             'body' => ['nullable', 'string'],
             'excerpt' => ['nullable', 'string'],
@@ -103,6 +108,8 @@ class UpdatePostRequest extends FormRequest
             'status' => 'وضعیت',
             'body' => 'توضیحات',
             'excerpt' => 'خلاصه',
+            'download_banner_media_id' => 'تصویر بنر بالای باکس دانلود',
+            'download_banner_url' => 'لینک بنر بالای باکس دانلود',
             'display_views_offset' => 'افزایش نمایشی بازدید',
             'information_boxes.prerequisites.body' => 'پیش نیاز ها',
             'video_gallery_items.*.title' => 'عنوان ویدیو',
@@ -133,6 +140,10 @@ class UpdatePostRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        if ($this->has('download_banner')) {
+            $this->merge(['download_banner_media_id' => $this->input('download_banner.id')]);
+        }
+
         $tags = $this->input('tags', []);
 
         $existing = collect(data_get($tags, 'existing', []))

@@ -38,6 +38,8 @@ class Post extends Model implements PageViewableInterface, CommentableContract
         'status',
         'is_pinned',
         'picture_id',
+        'download_banner_media_id',
+        'download_banner_url',
         'published_at',
         'created_at',
         'updated_at',
@@ -105,6 +107,11 @@ class Post extends Model implements PageViewableInterface, CommentableContract
     public function picture(): BelongsTo
     {
         return $this->belongsTo(MediaFile::class);
+    }
+
+    public function downloadBanner(): BelongsTo
+    {
+        return $this->belongsTo(MediaFile::class, 'download_banner_media_id');
     }
 
     /**

@@ -20,6 +20,8 @@
 @endphp
 
 @if($hasDownloadSections || $hasInformationBoxes)
+    @include('front.posts.partials.detail.download-banner')
+
     <section x-data="{ activeTab: @js($defaultActiveTab), ...downloadsBlock() }" class="mt-6">
         <div
             class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:shadow-black/25">

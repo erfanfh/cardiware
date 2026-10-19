@@ -304,6 +304,10 @@
         @include('admin.content.posts.partials.seo-box')
     </x-admin.metabox>
 
+    <x-admin.metabox title="بنر بالای باکس دانلود" storageKey="post-download-banner">
+        @include('admin.content.posts.partials.download-banner')
+    </x-admin.metabox>
+
     <x-admin.metabox
         title="باکس دانلود"
         storageKey="post-download-sections"

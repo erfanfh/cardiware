@@ -53,6 +53,8 @@ class GetPostDetailDataAction
             'author:id,username,display_name',
             'picture.primaryVariant',
             'picture.variants',
+            'downloadBanner.primaryVariant',
+            'downloadBanner.variants',
             'categories:id,title,path',
             'tags:id,title,path',
             'imageGallery.mediaFile.primaryVariant',
