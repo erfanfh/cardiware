@@ -193,6 +193,9 @@ class PermissionSeeder extends Seeder
                 'edit' => 'ویرایش کدتخفیف',
                 'delete' => 'حذف کدتخفیف',
             ],
+            'account-announcement' => [
+                'manage' => 'مدیریت اطلاعیه‌های حساب کاربری',
+            ],
             'popup' => [
                 'list' => 'لیست پاپ‌آپ‌ها',
                 'create' => 'ایجاد پاپ‌آپ',

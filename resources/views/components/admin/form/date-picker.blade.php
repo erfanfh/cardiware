@@ -9,7 +9,7 @@
         type="text"
         value="{{ $value }}"
         @if($name) name="{{ $name }}" @endif
-        placeholder="{{ $placeholder }}"
+        @if(filled($placeholder)) placeholder="{{ $placeholder }}" @endif
         data-jdp
         autocomplete="off"
         {{ $attributes->merge([

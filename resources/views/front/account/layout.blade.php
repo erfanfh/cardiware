@@ -12,6 +12,7 @@
             @include('front.account.partials.sidebar')
 
             <div class="min-w-0 lg:col-span-8 xl:col-span-9">
+                <x-front.account-announcements/>
                 @yield('page-content')
             </div>
         </section>

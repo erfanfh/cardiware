@@ -5,6 +5,12 @@
 @section('content')
     <x-admin.page>
         <x-admin.form.validation-errors/>
+        @can('account-announcement.manage')
+            <x-admin.metabox title="اطلاعیه‌های حساب کاربری">
+                <p class="mb-4 text-sm leading-7 text-slate-500">پیام‌های عمومی را برای نمایش در حساب همه کاربران ایجاد، ویرایش یا زمان‌بندی کنید.</p>
+                <x-admin.form.button tag="a" href="{{ route('admin.account-announcements.index') }}">مدیریت اطلاعیه‌های حساب کاربری</x-admin.form.button>
+            </x-admin.metabox>
+        @endcan
         <x-admin.form :action="route('admin.settings.notifications.recent-purchases.update')" method="put">
             <x-admin.metabox title="اعلان خریدهای اخیر">
                 <x-admin.field label="نمایش خریدهای اخیر در سایت">

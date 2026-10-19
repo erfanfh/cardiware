@@ -275,6 +275,12 @@ return [
         'icon' => 'icons.notification-01',
         'children' => [
             [
+                'label' => 'اطلاعیه‌های حساب کاربری',
+                'route' => 'admin.account-announcements.index',
+                'icon' => 'icons.notification-01',
+                'gate' => 'account-announcement.manage',
+            ],
+            [
                 'label' => 'پاپ‌آپ‌ها',
                 'route' => 'admin.popups.index',
                 'icon' => 'icons.menu-01',
