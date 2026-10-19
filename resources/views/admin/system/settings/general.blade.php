@@ -11,6 +11,7 @@
                     'goftino' => 'گفتینو',
                     'sms-panel' => 'پنل پیامکی',
                     'payment-gateway' => 'پرداخت و مالیات',
+                    'system-report' => 'گزارش روزانه سیستم',
                 ]"
                 active="{{ request()->input('tab') ?: 'main' }}"
             >
@@ -28,6 +29,10 @@
 
                 <x-admin.tabs.panel name="payment-gateway">
                     @include('admin.system.settings.partials.general.payment-gateway')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="system-report">
+                    @include('admin.system.settings.partials.general.system-report')
                 </x-admin.tabs.panel>
             </x-admin.tabs>
         </x-admin.page>

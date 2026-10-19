@@ -12,6 +12,13 @@ class SchedulerServiceProvider extends ServiceProvider
      */
     public function boot(Schedule $schedule): void
     {
+        $schedule->command('system:send-daily-report')
+            ->dailyAt('20:00')
+            ->timezone('Asia/Tehran')
+            ->withoutOverlapping(15)
+            ->onOneServer()
+            ->runInBackground();
+
         $viewsSchedule = max((int) config('cache.page_views_schedule', 1), 1);
         $viewsLimit = (int) config('cache.page_views_flush_limit', 10000);
 

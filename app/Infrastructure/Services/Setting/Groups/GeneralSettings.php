@@ -13,6 +13,7 @@ class GeneralSettings extends BaseSettings
         'active_tab',
         'title',
         'subtitle',
+        'system_report_recipients',
 
         'default_sms_provider',
 

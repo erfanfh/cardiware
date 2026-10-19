@@ -193,6 +193,24 @@ class SettingController extends Controller
     {
         Gate::authorize('setting.general');
 
+        $request->validate([
+            'system_report_recipients' => [
+                'nullable', 'string', 'max:5000',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $recipients = preg_split('/[\s,;]+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
+                    if (count($recipients) > 20) {
+                        $fail('حداکثر ۲۰ ایمیل برای گزارش روزانه وارد کنید.');
+                    }
+                    foreach ($recipients as $recipient) {
+                        if (! filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
+                            $fail('همه گیرندگان گزارش روزانه باید آدرس ایمیل معتبر داشته باشند.');
+                            break;
+                        }
+                    }
+                },
+            ],
+        ]);
+
         if ($request->hasAny(['tax_enabled', 'tax_rate_percent'])) {
             $request->validate([
                 'tax_enabled' => ['required', 'boolean'],
