@@ -97,6 +97,14 @@ class UpdateProductRequest extends FormRequest
 
             'releases' => ['nullable', 'array'],
             'releases.*' => ['array'],
+            'releases.*.id' => ['nullable', 'integer', 'exists:product_releases,id'],
+            'releases.*.title' => ['nullable', 'string', 'max:255'],
+            'releases.*.version' => ['nullable', 'string'],
+            'releases.*.excerpt' => ['nullable', 'string'],
+            'releases.*.released_at' => ['nullable', 'string'],
+            'releases.*.sort_order' => ['nullable', 'integer', 'min:0'],
+            'releases.*.changes_body' => ['nullable', 'string'],
+            'releases.*.changes' => ['nullable', 'string'],
 
             'attributes' => ['nullable', 'array'],
             'attributes.*.id' => ['nullable', 'integer', 'exists:product_attribute_assignments,id'],

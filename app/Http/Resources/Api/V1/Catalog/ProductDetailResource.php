@@ -136,6 +136,7 @@ class ProductDetailResource extends JsonResource
                         'id' => $release->id,
                         'title' => $release->title,
                         'excerpt' => $release->excerpt,
+                        'changes_body' => $release->changes_body,
 
                         'released_at' =>
                             $release->released_at?->toDateString(),

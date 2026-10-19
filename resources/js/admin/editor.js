@@ -1,5 +1,6 @@
 import tinymce from 'tinymce';
 import {registerContentBoxControls} from './content-boxes.js';
+import {repeaterEditor} from './repeater-editor.js';
 import '../../css/admin/tinymce.css';
 import '../../css/front/tinymce-content.css';
 
@@ -798,7 +799,7 @@ function buildEditorConfig(element) {
     const presetConfig = getPresetConfig(preset);
 
     return {
-        selector: `#${CSS.escape(element.id)}`,
+        target: element,
 
         license_key: 'gpl',
         branding: false,
@@ -849,6 +850,9 @@ function buildEditorConfig(element) {
 
         setup(editor) {
             registerCustomButtons(editor, element);
+
+            // Keep Alpine's x-model current before a repeater rebuilds its rows.
+            editor.on('change input undo redo', () => syncEditorToSource(editor));
 
             editor.on('init', () => {
                 const container = editor.getContainer();
@@ -1037,3 +1041,5 @@ window.AdminEditor = {
     destroy: destroyEditors,
     reinit: reinitEditors,
 };
+
+window.repeaterEditor = repeaterEditor;

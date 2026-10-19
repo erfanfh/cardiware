@@ -12,9 +12,7 @@
                 'version' => $release->version,
                 'excerpt' => $release->excerpt,
                 'released_at' => $release->released_at ? jalali_date($release->released_at) : '',
-                'changes' => $release->releaseChanges
-                    ->map(fn ($change) => ($change->is_special ? '**' : '') . $change->title)
-                    ->implode("\n"),
+                'changes_body' => $release->changes_body,
             ])
             ->values()
             ->toArray();
@@ -32,7 +30,7 @@
         'version' => '',
         'excerpt' => '',
         'released_at' => '',
-        'changes' => '',
+        'changes_body' => '',
     ]"
     addText="افزودن آیتم"
     emptyText="هنوز آیتمی اضافه نشده است."
@@ -68,13 +66,16 @@
                 />
             </x-admin.field>
 
-            <x-admin.field label="تغییرات"
-                           class="col-span-2"
-                           hint="هر تغییر را در یک خط قرار دهید و ابتدای خط تغییرات مهم ** بگذارید.">
-                <x-admin.form.textarea
-                    x-bind:name="field(i, 'changes')"
-                    x-model="it.changes"
-                />
+            <x-admin.field label="تغییرات" class="col-span-2">
+                <div x-data="repeaterEditor()">
+                    <x-admin.form.editor
+                        x-bind:name="field(i, 'changes_body')"
+                        x-model="it.changes_body"
+                        preset="full"
+                        height="400"
+                        :toolbar-sticky="false"
+                    />
+                </div>
             </x-admin.field>
         </div>
     </div>

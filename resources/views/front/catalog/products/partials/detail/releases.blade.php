@@ -67,29 +67,8 @@
                         x-cloak
                         class="bg-slate-50 dark:bg-slate-900/60"
                     >
-                        <div class="px-4 py-4 sm:px-5 sm:py-5">
-                            <ul class="space-y-3">
-                                @foreach($release->releaseChanges as $change)
-                                    <li class="flex items-start gap-3 text-sm leading-7 text-slate-700 dark:text-slate-300">
-                                        <span
-                                            @class([
-                                                'mt-2 shrink-0 rounded-full',
-                                                'h-2 w-2 bg-brand-600 dark:bg-brand-400' => ! $change->is_special,
-                                                'relative h-2.5 w-2.5 bg-brand-600 shadow-[0_0_0_4px_rgba(249,115,22,0.12)] animate-pulse dark:bg-brand-400 dark:shadow-[0_0_0_4px_rgba(251,146,60,0.16)]' => $change->is_special,
-                                            ])
-                                        >
-                                            @if($change->is_special)
-                                                <span
-                                                    class="absolute inset-0 animate-ping rounded-full bg-brand-500 opacity-75 dark:bg-brand-400"></span>
-                                                <span
-                                                    class="absolute inset-0 rounded-full bg-brand-600 dark:bg-brand-400"></span>
-                                            @endif
-                                        </span>
-
-                                        <span class="min-w-0">{{ $change->title }}</span>
-                                    </li>
-                                @endforeach
-                            </ul>
+                        <div class="tinymce-content px-4 py-4 text-slate-700 sm:px-5 sm:py-5 dark:text-slate-300">
+                            {!! $release->changes_body !!}
                         </div>
                     </div>
                 </div>

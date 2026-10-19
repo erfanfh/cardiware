@@ -3,6 +3,7 @@
 namespace App\Application\Catalog\Actions;
 
 use App\Domain\Catalog\Models\ProductRelease;
+use App\Domain\Catalog\Support\ProductReleaseContent;
 
 class SyncProductReleaseChangesAction
 {
@@ -14,6 +15,12 @@ class SyncProductReleaseChangesAction
     public function execute(ProductRelease $release, mixed $changes): void
     {
         $items = $this->parseChanges($changes);
+
+        $release->update([
+            'changes_body' => ProductReleaseContent::fromChanges(
+                array_map(static fn (array $item): object => (object) $item, $items)
+            ),
+        ]);
 
         $release->releaseChanges()->get()->each->delete();
 

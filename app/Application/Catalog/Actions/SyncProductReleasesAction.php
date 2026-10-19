@@ -36,6 +36,7 @@ class SyncProductReleasesAction extends AbstractSyncRepeaterAction
             || filled($item['version'] ?? null)
             || filled($item['excerpt'] ?? null)
             || filled($item['released_at'] ?? null)
+            || filled($item['changes_body'] ?? null)
             || filled($item['changes'] ?? null);
     }
 
@@ -47,12 +48,18 @@ class SyncProductReleasesAction extends AbstractSyncRepeaterAction
      */
     protected function mapItemToPayload(array $item, int $sortOrder, Model $owner): ?array
     {
-        return [
+        $payload = [
             'title' => $this->stringOrDefault($item['title'] ?? ''),
             'version' => $this->stringOrDefault($item['version'] ?? ''),
             'excerpt' => $this->stringOrDefault($item['excerpt'] ?? ''),
             'released_at' => $this->nullableGregorianDate($item['released_at'] ?? null),
         ];
+
+        if (array_key_exists('changes_body', $item)) {
+            $payload['changes_body'] = $this->stringOrDefault($item['changes_body']);
+        }
+
+        return $payload;
     }
 
     /**
@@ -86,7 +93,8 @@ class SyncProductReleasesAction extends AbstractSyncRepeaterAction
      */
     private function syncChanges(Model $record, array $item): void
     {
-        if (!$record instanceof ProductRelease) {
+        if (!$record instanceof ProductRelease || array_key_exists('changes_body', $item)
+            || !array_key_exists('changes', $item)) {
             return;
         }
 
