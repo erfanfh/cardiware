@@ -1,6 +1,7 @@
 const POLL_INTERVAL = 30_000;
 const DISPLAY_DURATION = 6_000;
 const DISPLAY_GAP = 24_000;
+const EXIT_DURATION = 240;
 const SEEN_KEY = 'mw-recent-purchases-seen-v1';
 const DISMISSED_KEY = 'mw-recent-purchases-dismissed-until';
 const blockers = '[data-purchase-notification-blocker], [data-loyalty-earned-card], [data-product-sticky-buy-bar], [data-mw-popup], [role="dialog"], dialog[open]';
@@ -64,6 +65,7 @@ export default function initRecentPurchases() {
     let controller = null;
     let timer = null;
     let stopped = false;
+    let exitTimer = null;
 
     const refreshSeen = () => {
         const stored = readStorage(SEEN_KEY, []);
@@ -79,10 +81,21 @@ export default function initRecentPurchases() {
         }
     };
 
-    const hide = () => {
-        root.hidden = true;
+    const hide = (immediate = false) => {
+        window.clearTimeout(exitTimer);
         current = null;
         nextDisplayAt = Date.now() + DISPLAY_GAP;
+        const finish = () => {
+            root.hidden = true;
+            root.dataset.state = 'hidden';
+            exitTimer = null;
+        };
+        if (immediate || root.hidden || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+            finish();
+        } else {
+            root.dataset.state = 'leaving';
+            exitTimer = window.setTimeout(finish, EXIT_DURATION);
+        }
     };
 
     const isBlocked = () => document.body.style.overflow === 'hidden'
@@ -113,13 +126,13 @@ export default function initRecentPurchases() {
                 .slice(0, 5);
             failures = 0;
             // A refunded or removed purchase disappears on the next refresh.
-            if (current && !purchases.some((purchase) => purchase.id === current.id)) hide();
+            if (current && !purchases.some((purchase) => purchase.id === current.id)) hide(true);
         } catch {
             if (!document.hidden && !stopped) {
                 failures = Math.min(failures + 1, 4);
                 nextPollAt = Date.now() + Math.min(300_000, POLL_INTERVAL * 2 ** failures);
                 purchases = [];
-                if (current) hide();
+                if (current) hide(true);
             }
         } finally {
             window.clearTimeout(timeout);
@@ -136,7 +149,8 @@ export default function initRecentPurchases() {
         }
         if (!inFlight && Date.now() >= nextPollAt) void poll();
         if (current) {
-            if (isBlocked() || current.expires_at <= Date.now() / 1000
+            if (isBlocked()) hide(true);
+            else if (current.expires_at <= Date.now() / 1000
                 || (Date.now() >= hideAt && !root.matches(':hover, :focus-within'))) hide();
             return;
         }
@@ -150,6 +164,8 @@ export default function initRecentPurchases() {
         product.href = purchase.url;
         time.textContent = purchaseTime(purchase.purchased_at, Date.now() / 1000);
         current = purchase;
+        window.clearTimeout(exitTimer);
+        root.dataset.state = 'visible';
         root.hidden = false;
         hideAt = Date.now() + DISPLAY_DURATION;
         seen.set(purchase.id, purchase.expires_at);
@@ -160,7 +176,7 @@ export default function initRecentPurchases() {
         window.clearInterval(timer);
         if (document.hidden) {
             controller?.abort();
-            if (current) hide();
+            if (!root.hidden) hide(true);
         } else if (!stopped) {
             nextPollAt = Math.max(nextPollAt, Date.now());
             timer = window.setInterval(tick, 1_000);
@@ -184,7 +200,7 @@ export default function initRecentPurchases() {
     window.addEventListener('pagehide', () => {
         window.clearInterval(timer);
         controller?.abort();
-        if (current) hide();
+        if (!root.hidden) hide(true);
     });
     window.addEventListener('pageshow', onVisibility);
     onVisibility();

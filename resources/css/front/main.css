@@ -10,6 +10,41 @@
     display: none;
 }
 
+[data-recent-purchases][data-state="visible"] .recent-purchase-card {
+    animation: recent-purchase-enter 440ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+[data-recent-purchases][data-state="visible"] .recent-purchase-icon {
+    animation: recent-purchase-icon-enter 600ms cubic-bezier(.16, 1, .3, 1) both;
+}
+
+[data-recent-purchases][data-state="leaving"] .recent-purchase-card {
+    pointer-events: none;
+    animation: recent-purchase-leave 240ms ease-in both;
+}
+
+@keyframes recent-purchase-enter {
+    from { opacity: 0; transform: translate3d(18px, 22px, 0) scale(.96); }
+    to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+@keyframes recent-purchase-leave {
+    from { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    to { opacity: 0; transform: translate3d(12px, 12px, 0) scale(.98); }
+}
+
+@keyframes recent-purchase-icon-enter {
+    from { opacity: .4; transform: scale(.8) rotate(-10deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-recent-purchases][data-state] .recent-purchase-card,
+    [data-recent-purchases][data-state] .recent-purchase-icon {
+        animation: none;
+    }
+}
+
 [data-footer-news-slide][hidden] {
     display: none;
 }

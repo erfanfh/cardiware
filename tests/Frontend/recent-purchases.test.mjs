@@ -10,7 +10,7 @@ const purchase = (id = 'a') => ({
     purchased_at: now / 1000 - 60, expires_at: now / 1000 + 1740,
 });
 
-function browser(t, { hidden = false, blocked = false, unavailableStorage = false } = {}) {
+function browser(t, { hidden = false, blocked = false, unavailableStorage = false, reducedMotion = false } = {}) {
     t.mock.timers.enable({ apis: ['Date', 'setInterval', 'setTimeout'], now });
     t.mock.method(Math, 'random', () => 0);
     const originals = { window: globalThis.window, document: globalThis.document, fetch: globalThis.fetch };
@@ -36,6 +36,7 @@ function browser(t, { hidden = false, blocked = false, unavailableStorage = fals
     };
     globalThis.window = {
         location: { origin }, setInterval, clearInterval, setTimeout, clearTimeout,
+        matchMedia: () => ({ matches: reducedMotion }),
         localStorage: {
             getItem: (key) => { if (unavailableStorage) throw new Error('Storage disabled'); return storage.get(key) ?? null; },
             setItem: (key, value) => { if (unavailableStorage) throw new Error('Storage disabled'); storage.set(key, value); },
@@ -79,6 +80,9 @@ test('delays the first request, displays safe text, and never replays the same o
     assert.equal(root.hidden, false);
     assert.equal(fields.get('product').textContent, '<img src=x onerror=alert(1)>');
     t.mock.timers.tick(6_000);
+    assert.equal(root.dataset.state, 'leaving');
+    assert.equal(root.hidden, false);
+    t.mock.timers.tick(240);
     assert.equal(root.hidden, true);
     t.mock.timers.tick(30_000);
     await setImmediate();
@@ -124,6 +128,8 @@ test('closing stops requests and suppresses notifications after navigation', asy
     t.mock.timers.tick(1_000);
     assert.equal(root.hidden, false);
     listeners.get('close:click')();
+    assert.equal(root.dataset.state, 'leaving');
+    t.mock.timers.tick(240);
     assert.equal(root.hidden, true);
     delete root.dataset.initialized;
     initRecentPurchases();
@@ -154,4 +160,15 @@ test('an expired purchase waiting behind a modal is never shown', async (t) => {
     state.blocked = false;
     t.mock.timers.tick(1_000);
     assert.equal(root.hidden, true);
+});
+
+test('reduced motion closes immediately without waiting for an exit animation', async (t) => {
+    const { root, listeners } = browser(t, { reducedMotion: true });
+    t.mock.timers.tick(8_000);
+    await setImmediate();
+    t.mock.timers.tick(1_000);
+    assert.equal(root.hidden, false);
+    listeners.get('close:click')();
+    assert.equal(root.hidden, true);
+    assert.equal(root.dataset.state, 'hidden');
 });
