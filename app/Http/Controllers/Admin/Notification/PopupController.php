@@ -100,7 +100,12 @@ class PopupController extends Controller
         $data = $request->validate([
             'title' => ['required', 'string', 'max:180'],
             'body' => ['nullable', 'string', 'max:5000'],
-            'image.id' => ['nullable', 'integer', Rule::exists('media_files', 'id')
+            'display_mode' => ['sometimes', 'required', Rule::in(['standard', 'image_only'])],
+            'buttons' => ['nullable', 'array', 'max:20'],
+            'buttons.*' => ['required', 'array:text,url'],
+            'buttons.*.text' => ['required', 'string', 'max:100'],
+            'buttons.*.url' => ['required', 'string', 'max:2048', 'url:http,https'],
+            'image.id' => ['required_if:display_mode,image_only', 'nullable', 'integer', Rule::exists('media_files', 'id')
                 ->where('type', 'image')->where('visibility', 'public')->where('status', 'ready')],
             'target_type' => ['required', Rule::in(['all', 'home', 'post', 'page', 'product'])],
             'specific_target' => ['required', 'boolean'],
@@ -112,6 +117,11 @@ class PopupController extends Controller
             'close_minutes' => ['required', 'integer', 'between:1,10080'],
             'hide_days' => ['required', 'integer', 'between:1,365'],
             'is_active' => ['required', 'boolean'],
+        ], [
+            'image.id.required_if' => 'برای حالت فقط تصویر، یک تصویر انتخاب کنید.',
+            'buttons.*.text.required' => 'متن دکمه را وارد کنید.',
+            'buttons.*.url.required' => 'لینک دکمه را وارد کنید.',
+            'buttons.*.url.url' => 'لینک دکمه باید یک آدرس کامل با http:// یا https:// باشد.',
         ]);
 
         $targetType = $data['target_type'];
@@ -125,6 +135,8 @@ class PopupController extends Controller
         return [
             'title' => $data['title'],
             'body' => $data['body'] ?? null,
+            'display_mode' => $data['display_mode'] ?? 'standard',
+            'buttons' => array_values($data['buttons'] ?? []),
             'image_id' => $data['image']['id'] ?? null,
             'target_type' => $targetType,
             'target_id' => $request->boolean('specific_target') ? $targetId : null,

@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             dismiss(active, false);
         } else if (event.key === 'Tab') {
-            const focusable = [...active.querySelectorAll('button')];
+            const focusable = [...active.querySelectorAll('button:not([disabled]), a[href]')];
             const first = focusable[0];
             const last = focusable.at(-1);
             if (event.shiftKey && document.activeElement === first) {
