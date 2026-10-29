@@ -33,7 +33,7 @@
 
         @if(session('success'))<div class="mx-5 mt-5 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">{{ session('success') }}</div>@endif
 
-        @if($ticket->canReceiveReply())
+        @if($ticket->canReceiveReply() && $store->sellerCan('reply_tickets'))
             <form action="{{ route('seller.stores.tickets.reply', [$store, $ticket]) }}" method="post" enctype="multipart/form-data" class="border-t border-slate-100 bg-white p-5 sm:p-7 dark:border-slate-800 dark:bg-slate-900">
                 @csrf
                 <label for="seller-ticket-message" class="mb-2 block text-sm font-black">پاسخ به مشتری</label>
@@ -61,7 +61,7 @@
                 @error('message')<p class="mt-2 text-xs font-bold text-rose-600 dark:text-rose-300">{{ $message }}</p>@enderror
             </form>
         @else
-            <div class="border-t border-slate-100 p-5 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">این تیکت بسته شده و امکان پاسخ ندارد.</div>
+            <div class="border-t border-slate-100 p-5 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">{{ $store->sellerCan('reply_tickets') ? 'این تیکت بسته شده و امکان پاسخ ندارد.' : 'دسترسی شما به تیکت‌ها فقط برای مشاهده است.' }}</div>
         @endif
     </section>
 

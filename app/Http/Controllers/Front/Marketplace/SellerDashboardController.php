@@ -21,6 +21,8 @@ class SellerDashboardController extends Controller
             ->orderBy('stores.title')
             ->get();
 
+        $stores = $stores->filter(fn (Store $store) => $store->sellerCan('access_panel'));
+
         abort_if($stores->isEmpty(), 403);
 
         return view('front.marketplace.seller.dashboard', compact('stores'));
@@ -34,18 +36,18 @@ class SellerDashboardController extends Controller
         }
 
         $report = $reportAction->execute($store, $days);
-        $withdrawalBalance = $balanceAction->execute($store);
+        $withdrawalBalance = $store->sellerCan('manage_withdrawals') ? $balanceAction->execute($store) : null;
         $productsCount = Product::withoutGlobalScope(ActiveProductScope::class)->where('store_id', $store->id)->count();
-        $commentsCount = Comment::query()
-            ->where('commentable_type', (new Product())->getMorphClass())
+        $commentsCount = $store->sellerCan('view_comments') ? Comment::query()
+            ->where('commentable_type', (new Product)->getMorphClass())
             ->whereIn('commentable_id', Product::withoutGlobalScope(ActiveProductScope::class)->where('store_id', $store->id)->select('id'))
-            ->count();
-        $recentTickets = Ticket::query()
+            ->count() : null;
+        $recentTickets = $store->sellerCan('view_tickets') ? Ticket::query()
             ->whereIn('product_id', Product::withoutGlobalScope(ActiveProductScope::class)->where('store_id', $store->id)->select('id'))
             ->with('user')
             ->latestActivity()
             ->limit(4)
-            ->get();
+            ->get() : collect();
 
         return view('front.marketplace.seller.store-dashboard', compact('store', 'report', 'withdrawalBalance', 'productsCount', 'commentsCount', 'recentTickets'));
     }

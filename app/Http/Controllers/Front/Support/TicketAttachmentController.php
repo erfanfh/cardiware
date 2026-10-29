@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Front\Support;
 
+use App\Domain\Catalog\Scopes\ActiveProductScope;
+use App\Domain\Marketplace\Models\Store;
 use App\Domain\Support\Enums\TicketAttachmentVariantEnum;
 use App\Domain\Support\Models\TicketMessageAttachment;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -33,15 +34,13 @@ class TicketAttachmentController extends Controller
         $isAuthorizedAdmin = ! $isOwner
             && Gate::forUser($user)->allows('admin.display')
             && Gate::forUser($user)->allows('ticket.show');
-        $isAssignedSeller = ! $isOwner && ! $isAuthorizedAdmin && $ticket?->product_id
-            && DB::table('products')
-                ->join('store_users', 'store_users.store_id', '=', 'products.store_id')
-                ->join('stores', 'stores.id', '=', 'products.store_id')
-                ->where('products.id', $ticket->product_id)
-                ->whereNull('products.deleted_at')
-                ->whereNull('stores.deleted_at')
-                ->where('store_users.user_id', $user->getKey())
-                ->exists();
+        $sellerStore = ! $isOwner && ! $isAuthorizedAdmin && $ticket?->product_id
+            ? Store::query()
+                ->whereHas('sellers', fn ($query) => $query->whereKey($user->getKey()))
+                ->whereHas('products', fn ($query) => $query->withoutGlobalScope(ActiveProductScope::class)->whereKey($ticket->product_id))
+                ->first()
+            : null;
+        $isAssignedSeller = $sellerStore?->sellerCan('view_tickets') ?? false;
 
         abort_unless($ticket && ($isOwner || $isAuthorizedAdmin || $isAssignedSeller), 404);
 

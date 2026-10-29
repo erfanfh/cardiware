@@ -77,13 +77,28 @@
         </x-admin.field>
     </x-admin.metabox>
 
-    <x-admin.metabox title="تنظیمات نمایش">
+    <x-admin.metabox title="تنظیمات نمایش عمومی سایت">
         <x-admin.field label="عدم نمایش تعداد فروش">
             <x-admin.form.switch
                 name="hide_sales_count"
                 :checked="old('hide_sales_count', $store?->hide_sales_count ?? false)"
             />
         </x-admin.field>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="دسترسی‌های پنل فروشندگان">
+        <p class="mb-5 text-sm leading-7 text-slate-500">این تنظیمات برای همه فروشندگان متصل به همین فروشگاه اعمال می‌شود. دسترسی‌های وابسته تنها در صورت فعال بودن پیش‌نیازشان باز می‌شوند.</p>
+        <div class="space-y-5">
+            @foreach(\App\Domain\Marketplace\Enums\SellerPermissionEnum::cases() as $permission)
+                <x-admin.field :label="$permission->label()">
+                    <x-admin.form.switch
+                        :name="'seller_permissions['.$permission->value.']'"
+                        :checked="old('seller_permissions.'.$permission->value, ($store?->seller_permissions ?? [])[$permission->value] ?? true)"
+                    />
+                    <p class="mt-2 text-xs leading-6 text-slate-500">{{ $permission->hint() }}</p>
+                </x-admin.field>
+            @endforeach
+        </div>
     </x-admin.metabox>
 
     <x-admin.metabox title="فروشندگان" class="overflow-visible">

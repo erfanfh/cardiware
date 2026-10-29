@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin\Marketplace;
 
+use App\Domain\Marketplace\Enums\SellerPermissionEnum;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,7 +19,11 @@ class UpdateStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $permissionKeys = array_map(fn (SellerPermissionEnum $permission) => $permission->value, SellerPermissionEnum::cases());
+
         return [
+            'seller_permissions' => ['sometimes', 'array:'.implode(',', $permissionKeys)],
+            ...array_fill_keys(array_map(fn (string $key) => 'seller_permissions.'.$key, $permissionKeys), ['sometimes', 'required', 'boolean']),
             'title' => ['nullable', 'string', 'max:255'],
             'slug' => [
                 'nullable',
@@ -44,7 +49,8 @@ class UpdateStoreRequest extends FormRequest
      */
     public function attributes(): array
     {
-        return [
+        $attributes = [
+            'seller_permissions' => 'دسترسی‌های پنل فروشندگان',
             'title' => 'عنوان',
             'slug' => 'اسلاگ',
             'status' => 'وضعیت',
@@ -52,6 +58,12 @@ class UpdateStoreRequest extends FormRequest
             'hide_sales_count' => 'عدم نمایش تعداد فروش',
             'seller_user_ids' => 'فروشندگان',
         ];
+
+        foreach (SellerPermissionEnum::cases() as $permission) {
+            $attributes['seller_permissions.'.$permission->value] = $permission->label();
+        }
+
+        return $attributes;
     }
 
     /**
@@ -66,7 +78,7 @@ class UpdateStoreRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        if ($this->boolean('seller_user_ids_submitted') && !$this->has('seller_user_ids')) {
+        if ($this->boolean('seller_user_ids_submitted') && ! $this->has('seller_user_ids')) {
             $this->merge(['seller_user_ids' => []]);
         }
 

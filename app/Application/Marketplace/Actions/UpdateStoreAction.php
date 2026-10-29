@@ -17,18 +17,13 @@ use Throwable;
 class UpdateStoreAction
 {
     public function __construct(
-        protected AssignSlugAction       $assignSlugAction,
-        protected SyncSeoMetaAction      $syncSeoMetaAction,
+        protected AssignSlugAction $assignSlugAction,
+        protected SyncSeoMetaAction $syncSeoMetaAction,
         protected StoreSeoAnalysisAction $storeSeoAnalysisAction,
-        protected StoreCacheInvalidator  $storeCacheInvalidator,
-    )
-    {
-    }
+        protected StoreCacheInvalidator $storeCacheInvalidator,
+    ) {}
 
     /**
-     * @param Store $store
-     * @param array $data
-     * @return Store
      * @throws Throwable
      */
     public function execute(Store $store, array $data): Store
@@ -39,6 +34,13 @@ class UpdateStoreAction
 
         $store = DB::transaction(function () use ($store, $data) {
             $storeData = $data;
+
+            if (array_key_exists('seller_permissions', $storeData)) {
+                $storeData['seller_permissions'] = array_replace(
+                    $store->seller_permissions ?? [],
+                    array_map(fn ($enabled) => (bool) $enabled, $storeData['seller_permissions']),
+                );
+            }
 
             unset(
                 $storeData['slug'],

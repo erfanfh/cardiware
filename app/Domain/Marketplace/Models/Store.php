@@ -4,6 +4,7 @@ namespace App\Domain\Marketplace\Models;
 
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Identity\Models\User;
+use App\Domain\Marketplace\Enums\SellerPermissionEnum;
 use App\Domain\Marketplace\Enums\StoreStatusEnum;
 use App\Domain\Media\Models\MediaFile;
 use App\Domain\Seo\Traits\HasSeoMeta;
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Store extends Model implements PageViewableInterface
 {
-    use SoftDeletes, HasExcerpt, HasSeoMeta;
+    use HasExcerpt, HasSeoMeta, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -25,18 +26,45 @@ class Store extends Model implements PageViewableInterface
         'body',
         'activity_field',
         'hide_sales_count',
+        'seller_permissions',
         'picture_id',
         'status',
     ];
 
     protected $casts = [
         'hide_sales_count' => 'boolean',
+        'seller_permissions' => 'array',
         'status' => StoreStatusEnum::class,
     ];
 
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function sellerCan(SellerPermissionEnum|string $permission): bool
+    {
+        $permission = is_string($permission) ? SellerPermissionEnum::tryFrom($permission) : $permission;
+        if (! $permission) {
+            return false;
+        }
+
+        // Missing settings preserve access for existing stores. Unknown values fail closed.
+        $settings = $this->seller_permissions ?? [];
+        $enabled = fn (SellerPermissionEnum $item): bool => ! array_key_exists($item->value, $settings)
+            || in_array($settings[$item->value], [true, 1, '1'], true);
+
+        if (! $enabled(SellerPermissionEnum::ACCESS_PANEL) || ! $enabled($permission)) {
+            return false;
+        }
+
+        foreach ($permission->dependencies() as $dependency) {
+            if (! $this->sellerCan($dependency)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function getExcerptAttribute(): string

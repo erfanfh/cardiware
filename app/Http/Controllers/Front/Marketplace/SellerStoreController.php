@@ -34,19 +34,25 @@ class SellerStoreController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $sales = DB::table('order_items')
+        $sales = $store->sellerCan('view_sales_count') || $store->sellerCan('view_revenue') ? DB::table('order_items')
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->where('order_items.store_id', $store->id)
             ->whereIn('order_items.product_id', $products->getCollection()->modelKeys())
             ->where('orders.status', OrderStatusEnum::PAID->value)
             ->select('order_items.product_id')
-            ->selectRaw('COUNT(DISTINCT orders.id) AS orders_count')
-            ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS units_count', ['product_sale_item'])
-            ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS addon_units_count', [(new ProductAddon())->getMorphClass()])
-            ->selectRaw('COALESCE(SUM(order_items.seller_commission_amount), 0) AS seller_amount')
+            ->when($store->sellerCan('view_sales_count'), fn ($query) => $query
+                ->selectRaw('COUNT(DISTINCT orders.id) AS orders_count')
+                ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS units_count', ['product_sale_item'])
+                ->selectRaw('SUM(CASE WHEN order_items.purchasable_type = ? THEN order_items.quantity ELSE 0 END) AS addon_units_count', [(new ProductAddon)->getMorphClass()]))
+            ->when($store->sellerCan('view_revenue'), fn ($query) => $query
+                ->selectRaw('COALESCE(SUM(order_items.seller_commission_amount), 0) AS seller_amount'))
             ->groupBy('order_items.product_id')
             ->get()
-            ->keyBy('product_id');
+            ->keyBy('product_id') : collect();
+
+        if (! $store->sellerCan('view_commission')) {
+            $products->getCollection()->each(fn (Product $product) => $product->offsetUnset('seller_commission_basis_points'));
+        }
 
         return view('front.marketplace.seller.products', compact('store', 'products', 'sales', 'search'));
     }
@@ -76,7 +82,7 @@ class SellerStoreController extends Controller
         }
 
         $comments = Comment::query()
-            ->where('commentable_type', (new Product())->getMorphClass())
+            ->where('commentable_type', (new Product)->getMorphClass())
             ->whereIn('commentable_id', $this->productIds($store))
             ->when($request->integer('comment') > 0, fn (Builder $query) => $query->whereKey($request->integer('comment')))
             ->when($status !== 'all', fn (Builder $query) => $query->where('status', $status))

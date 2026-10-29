@@ -14,8 +14,9 @@ class GetSellerProductSalesAction
 {
     public function execute(Store $store, Product $product, string $period): array
     {
-        $saleItemType = (new ProductSaleItem())->getMorphClass();
-        $addonType = (new ProductAddon())->getMorphClass();
+        abort_unless($store->sellerCan('view_sales_details'), 403);
+        $saleItemType = (new ProductSaleItem)->getMorphClass();
+        $addonType = (new ProductAddon)->getMorphClass();
         $start = $period === 'all' ? null : now()->startOfDay()->subDays((int) $period - 1);
         $end = now()->endOfDay();
 
@@ -95,7 +96,12 @@ class GetSellerProductSalesAction
 
         $recentItems = OrderItem::query()
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
-            ->select('order_items.*')
+            ->select([
+                'order_items.id', 'order_items.order_id', 'order_items.purchasable_type',
+                'order_items.purchasable_id', 'order_items.quantity', 'order_items.final_total_amount',
+                'order_items.seller_commission_basis_points', 'order_items.seller_commission_amount',
+                'order_items.snapshot',
+            ])
             ->with('order:id,order_number,paid_at')
             ->where('order_items.store_id', $store->getKey())
             ->where('order_items.product_id', $product->getKey())
@@ -116,7 +122,38 @@ class GetSellerProductSalesAction
                 $saleItemType,
                 $addonType,
             ));
+            // Snapshot and metadata may contain customer data; only the resolved title is needed.
+            $item->offsetUnset('snapshot');
         });
+
+        if (! $store->sellerCan('view_revenue')) {
+            foreach (array_keys($summary) as $field) {
+                if (str_ends_with($field, '_amount')) {
+                    $summary[$field] = null;
+                }
+            }
+            $breakdown = $breakdown->map(function (array $item): array {
+                foreach (['net_amount', 'seller_amount', 'platform_amount'] as $field) {
+                    $item[$field] = null;
+                }
+
+                return $item;
+            });
+            $recentItems->getCollection()->each(function (OrderItem $item): void {
+                $item->offsetUnset('final_total_amount');
+                $item->offsetUnset('seller_commission_amount');
+            });
+        }
+
+        if (! $store->sellerCan('view_commission')) {
+            $summary['platform_amount'] = null;
+            $breakdown = $breakdown->map(function (array $item): array {
+                $item['platform_amount'] = $item['effective_seller_percent'] = null;
+
+                return $item;
+            });
+            $recentItems->getCollection()->each(fn (OrderItem $item) => $item->offsetUnset('seller_commission_basis_points'));
+        }
 
         return [
             'period' => $period,

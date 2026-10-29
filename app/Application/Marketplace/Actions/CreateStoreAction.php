@@ -17,19 +17,15 @@ use Throwable;
 class CreateStoreAction
 {
     public function __construct(
-        protected AssignSlugAction       $assignSlugAction,
-        protected SyncSeoMetaAction      $syncSeoMetaAction,
+        protected AssignSlugAction $assignSlugAction,
+        protected SyncSeoMetaAction $syncSeoMetaAction,
         protected StoreSeoAnalysisAction $storeSeoAnalysisAction,
-        protected StoreCacheInvalidator  $storeCacheInvalidator,
-    )
-    {
-    }
+        protected StoreCacheInvalidator $storeCacheInvalidator,
+    ) {}
 
     /**
      * Create a new store, assign its slug, and sync related data.
      *
-     * @param array $data
-     * @return Store
      * @throws Throwable
      */
     public function execute(array $data): Store
@@ -40,6 +36,10 @@ class CreateStoreAction
 
         $store = DB::transaction(function () use ($data) {
             $storeData = $data;
+
+            if (array_key_exists('seller_permissions', $storeData)) {
+                $storeData['seller_permissions'] = array_map(fn ($enabled) => (bool) $enabled, $storeData['seller_permissions']);
+            }
 
             unset(
                 $storeData['slug'],

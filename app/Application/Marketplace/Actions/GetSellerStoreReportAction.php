@@ -11,6 +11,7 @@ class GetSellerStoreReportAction
 {
     public function execute(Store $store, int $days): array
     {
+        abort_unless($store->sellerCan('access_panel'), 403);
         $start = CarbonImmutable::now()->startOfDay()->subDays($days - 1);
         $end = CarbonImmutable::now()->endOfDay();
 
@@ -61,7 +62,7 @@ class GetSellerStoreReportAction
             $amounts[] = (int) ($daily[$day->toDateString()] ?? 0);
         }
 
-        return [
+        $report = [
             'days' => $days,
             'summary' => [
                 'orders' => (int) ($summary->orders_count ?? 0),
@@ -77,5 +78,28 @@ class GetSellerStoreReportAction
                 'seller' => (int) ($lifetime->seller_amount ?? 0),
             ],
         ];
+
+        if (! $store->sellerCan('view_sales_count')) {
+            $report['summary']['orders'] = $report['summary']['units'] = null;
+            $report['lifetime']['orders'] = null;
+            $report['top_products']->each(function ($product): void {
+                unset($product->units_count);
+            });
+        }
+
+        if (! $store->sellerCan('view_commission')) {
+            $report['summary']['platform'] = null;
+        }
+
+        if (! $store->sellerCan('view_revenue')) {
+            foreach (['gross', 'seller', 'platform'] as $field) {
+                $report['summary'][$field] = null;
+            }
+            $report['lifetime']['seller'] = null;
+            $report['chart'] = null;
+            $report['top_products'] = collect();
+        }
+
+        return $report;
     }
 }
