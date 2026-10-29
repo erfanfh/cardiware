@@ -54,7 +54,7 @@ class GetProductListPageDataAction
             availablePriceMax: $availablePriceMax
         );
 
-        $products = $this->products(
+        $products = clone $this->products(
             filters: $filters,
             page: $page,
             perPage: $perPage,
@@ -62,7 +62,8 @@ class GetProductListPageDataAction
             fixedCategoryId: $fixedCategory?->getKey(),
             fixedTagIds: $fixedTagIds,
             fixedTagId: $fixedTag?->getKey(),
-        )->withQueryString();
+        );
+        $products->withPath($request->url())->withQueryString();
 
         return [
             'products' => $products,
@@ -196,6 +197,7 @@ class GetProductListPageDataAction
                 'picture.variants',
                 'categories',
                 'saleItems:id,product_id,base_price,status,sort_order',
+                'saleItems.discount',
                 'store:id,title,slug',
             ])
             ->withMin('saleItems as min_price', 'base_price')

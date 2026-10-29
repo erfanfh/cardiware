@@ -9,7 +9,7 @@ class BuildPollResultsAction
     /** @return array{responses:int,selections:int,options:array<int,array<string,mixed>>} */
     public function execute(Poll $poll): array
     {
-        $options = $poll->options()->get();
+        $options = $poll->relationLoaded('options') ? $poll->options : $poll->options()->get();
         $responses = (int) $poll->responses_count;
         $selections = (int) $options->sum('responses_count');
 

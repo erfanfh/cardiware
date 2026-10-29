@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Front\Taxonomy;
 
+use App\Application\Content\Actions\GetPostArchiveAction;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Domain\Slug\Enums\SlugScopeEnum;
@@ -13,12 +14,11 @@ use Illuminate\Http\RedirectResponse;
 abstract class BaseTaxonomyListController extends Controller
 {
     public function __invoke(
-        string            $path,
+        string $path,
         ResolveSlugAction $resolveSlugAction,
-        ?int              $page = null,
-    ): View|RedirectResponse
-    {
-        $page = max(1, (int)($page ?? request()->route('page', 1)));
+        ?int $page = null,
+    ): View|RedirectResponse {
+        $page = max(1, (int) ($page ?? request()->route('page', 1)));
 
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
@@ -27,7 +27,7 @@ abstract class BaseTaxonomyListController extends Controller
             )
         );
 
-        if (!$resolvedSlug->found) {
+        if (! $resolvedSlug->found) {
             abort(404);
         }
 
@@ -42,22 +42,11 @@ abstract class BaseTaxonomyListController extends Controller
             return redirect()->to($this->baseUrl($term), 301);
         }
 
-        $postsQuery = $term->isHierarchical()
-            ? $term->postsIncludingDescendants()
-            : $term->posts();
-
-        $posts = $postsQuery
-            ->with([
-                'picture.primaryVariant',
-                'picture.variants',
-                'categories',
-            ])
-            ->latest('published_at')
-            ->paginate(
-                perPage: get_setting('general', 'category_tag_posts_count_settings') ?? 9,
-                pageName: 'page',
-                page: $page,
-            );
+        $posts = app(GetPostArchiveAction::class)->execute(
+            page: $page,
+            perPage: (int) (get_setting('general', 'category_tag_posts_count_settings') ?? 9),
+            term: $term,
+        );
 
         if ($page > 1 && $posts->lastPage() > 0 && $page > $posts->lastPage()) {
             abort(404);

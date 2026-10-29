@@ -2,9 +2,13 @@
 
 namespace App\Application\Raffle\Actions\Front;
 
+use App\Application\Shared\Cache\PublicReadCache;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Domain\Raffle\Models\DrawPrize;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class GetPublicDrawCampaignListAction
 {
@@ -12,6 +16,19 @@ class GetPublicDrawCampaignListAction
      * @return array{campaigns: LengthAwarePaginator, stats: array<string, int>, filter: string}
      */
     public function execute(string $filter = 'all'): array
+    {
+        $page = max(1, Paginator::resolveCurrentPage());
+        $data = app(PublicReadCache::class)->remember(
+            'raffle-list', [$filter, $page], [DrawCampaign::class, DrawPrize::class, MediaFile::class],
+            fn () => $this->queryData($filter, $page),
+            seconds: 60,
+        );
+        $data['campaigns'] = (clone $data['campaigns'])->withPath(request()->url())->withQueryString();
+
+        return $data;
+    }
+
+    private function queryData(string $filter, int $page): array
     {
         $visibleStatuses = $this->visibleStatuses();
 
@@ -46,8 +63,7 @@ class GetPublicDrawCampaignListAction
             ->orderByRaw('CASE WHEN status = ? THEN closes_at END ASC', [DrawCampaignStatusEnum::OPEN->value])
             ->orderByRaw('CASE WHEN status = ? THEN starts_at END ASC', [DrawCampaignStatusEnum::SCHEDULED->value])
             ->latest('id')
-            ->paginate(9)
-            ->withQueryString();
+            ->paginate(9, ['*'], 'page', $page);
 
         $baseStatsQuery = DrawCampaign::query()->whereIn('status', $visibleStatuses);
 
@@ -61,7 +77,7 @@ class GetPublicDrawCampaignListAction
             'completed_campaigns' => (clone $baseStatsQuery)
                 ->where('status', DrawCampaignStatusEnum::COMPLETED->value)
                 ->count(),
-            'active_tickets' => (int)(clone $baseStatsQuery)
+            'active_tickets' => (int) (clone $baseStatsQuery)
                 ->where('status', DrawCampaignStatusEnum::OPEN->value)
                 ->sum('active_tickets_count'),
         ];

@@ -2,10 +2,12 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Organization\Models\TeamMember;
 use App\Domain\Video\Enums\VideoStatusEnum;
 use App\Domain\Video\Models\Video;
@@ -36,21 +38,25 @@ class GetTeamPageDataAction
         return [
             'teamPage' => $settings,
             'teamMembers' => $members,
-            'teamStats' => [
-                'members' => $members->count(),
-                'products' => Product::withoutGlobalScopes()
-                    ->where('status', ProductStatusEnum::ACTIVE)
-                    ->where('published_at', '<=', now())
-                    ->count(),
-                'content' => Post::withoutGlobalScopes()
-                    ->where('status', PostStatusEnum::ACTIVE)
-                    ->where('published_at', '<=', now())
-                    ->count()
-                    + Video::withoutGlobalScopes()
-                        ->where('status', VideoStatusEnum::ACTIVE)
+            'teamStats' => app(PublicReadCache::class)->remember(
+                'team-stats', [$members->count()], [Product::class, Post::class, Video::class],
+                fn () => [
+                    'members' => $members->count(),
+                    'products' => Product::withoutGlobalScopes()
+                        ->where('status', ProductStatusEnum::ACTIVE)
                         ->where('published_at', '<=', now())
                         ->count(),
-            ],
+                    'content' => Post::withoutGlobalScopes()
+                        ->where('status', PostStatusEnum::ACTIVE)
+                        ->where('published_at', '<=', now())
+                        ->count()
+                        + Video::withoutGlobalScopes()
+                            ->where('status', VideoStatusEnum::ACTIVE)
+                            ->where('published_at', '<=', now())
+                            ->count(),
+                ],
+                [Product::class => ['published_at'], Post::class => ['published_at'], Video::class => ['published_at']],
+            ),
         ];
     }
 
@@ -63,12 +69,15 @@ class GetTeamPageDataAction
 
         $positions = $memberIds->flip();
 
-        return TeamMember::query()
-            ->with(['picture.primaryVariant', 'picture.variants'])
-            ->whereKey($memberIds->all())
-            ->get()
-            ->sortBy(fn (TeamMember $member): int => (int) $positions->get($member->getKey(), PHP_INT_MAX))
-            ->values();
+        return app(PublicReadCache::class)->remember(
+            'team-members', $memberIds->all(), [TeamMember::class, MediaFile::class],
+            fn () => TeamMember::query()
+                ->with(['picture.primaryVariant', 'picture.variants'])
+                ->whereKey($memberIds->all())
+                ->get()
+                ->sortBy(fn (TeamMember $member): int => (int) $positions->get($member->getKey(), PHP_INT_MAX))
+                ->values(),
+        );
     }
 
     protected function safeUrl(mixed $value): ?string

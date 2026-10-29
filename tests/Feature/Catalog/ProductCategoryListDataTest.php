@@ -4,6 +4,7 @@ namespace Tests\Feature\Catalog;
 
 use App\Application\Catalog\Actions\GetProductListPageDataAction;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\ProductSaleItemDiscount;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use Illuminate\Database\Schema\Blueprint;
@@ -54,6 +55,15 @@ class ProductCategoryListDataTest extends TestCase
             $table->unsignedInteger('sort_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('product_sale_item_discounts', function (Blueprint $table): void {
+            $table->id();
+            $table->foreignId('product_sale_item_id');
+            $table->unsignedBigInteger('discounted_price');
+            $table->timestamp('starts_at')->nullable();
+            $table->timestamp('ends_at')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('taxonomables', function (Blueprint $table): void {
@@ -109,6 +119,31 @@ class ProductCategoryListDataTest extends TestCase
         self::assertSame(180_000, $data['availablePriceMin']);
         self::assertSame(180_000, $data['availablePriceMax']);
         self::assertTrue($data['featuredProducts']->contains('id', $includedProductId));
+    }
+
+    public function test_discounts_are_loaded_with_the_list_and_price_edits_invalidate_cached_cards(): void
+    {
+        $categoryId = $this->insertCategory('Games', 'games');
+        $productId = $this->insertProduct('Game', 180_000, $categoryId);
+        $saleItemId = DB::table('product_sale_items')->where('product_id', $productId)->value('id');
+        $discount = ProductSaleItemDiscount::query()->create([
+            'product_sale_item_id' => $saleItemId, 'discounted_price' => 150_000,
+        ]);
+        $action = app(GetProductListPageDataAction::class);
+        $read = fn () => $action->execute(Request::create('/products'))['products']->first()->saleItems->sole();
+        $saleItem = $read();
+        self::assertTrue($saleItem->relationLoaded('discount'));
+
+        DB::enableQueryLog();
+        DB::flushQueryLog();
+        self::assertSame(150_000, $saleItem->discount->discounted_price);
+        self::assertSame([], DB::getQueryLog());
+        DB::disableQueryLog();
+
+        $discount->update(['discounted_price' => 120_000]);
+        self::assertSame(120_000, $read()->discount->discounted_price);
+        $discount->delete();
+        self::assertNull($read()->discount);
     }
 
     private function insertCategory(string $title, string $path, ?int $parentId = null): int

@@ -33,31 +33,33 @@ class GetProjectListPageDataAction
         ])->remember(
             CacheKey::projectStats(),
             CacheTtl::medium(),
-            fn() => Project::query()
-                ->selectRaw("
+            fn () => Project::query()
+                ->selectRaw('
                     COUNT(*) as total,
                     SUM(CASE WHEN progress_percent = 0 THEN 1 ELSE 0 END) as not_started,
                     SUM(CASE WHEN progress_percent BETWEEN 1 AND 99 THEN 1 ELSE 0 END) as in_progress,
                     SUM(CASE WHEN progress_percent = 100 THEN 1 ELSE 0 END) as completed
-                ")
+                ')
                 ->first()
         );
     }
 
     protected function getProjects(int $page, int $perPage): LengthAwarePaginator
     {
-        return Cache::tags([
+        $projects = Cache::tags([
             CacheTag::PROJECTS,
             CacheTag::PROJECT_LISTS,
         ])->remember(
             CacheKey::projectList($page, $perPage),
             CacheTtl::short(),
-            fn() => Project::query()
+            fn () => Project::query()
                 ->latest()
                 ->paginate(
                     perPage: $perPage,
                     page: $page,
                 )
         );
+
+        return (clone $projects)->withPath(request()->url());
     }
 }

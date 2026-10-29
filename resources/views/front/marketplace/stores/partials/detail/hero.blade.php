@@ -47,7 +47,7 @@ dark:border-slate-700 dark:bg-slate-900">
                                         فروشنده تاییدشده
                                     </span>
 
-                                    @if($store->products->count() >= 3)
+                                    @if($store->products_count >= 3)
                                         <span
                                             class="rounded-xl border border-blue-300 bg-blue-100 px-2 py-1 text-[11px] font-extrabold text-blue-800
                                             dark:border-blue-500/50 dark:bg-blue-700 dark:text-blue-200">

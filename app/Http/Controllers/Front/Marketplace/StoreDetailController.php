@@ -18,15 +18,14 @@ use Illuminate\Http\Request;
 class StoreDetailController extends Controller
 {
     public function __invoke(
-        string                    $storeSlug,
-        Request                   $request,
-        ResolveSlugAction         $resolveSlugAction,
-        GetStoreDetailAction      $getStoreDetailAction,
-        GetStoreProductsAction    $getStoreProductsAction,
+        string $storeSlug,
+        Request $request,
+        ResolveSlugAction $resolveSlugAction,
+        GetStoreDetailAction $getStoreDetailAction,
+        GetStoreProductsAction $getStoreProductsAction,
         GetStoreDetailStatsAction $getStoreDetailStatsAction,
-        StoreViewAction           $storeViewAction,
-    ): View|RedirectResponse
-    {
+        StoreViewAction $storeViewAction,
+    ): View|RedirectResponse {
         $resolvedSlug = $resolveSlugAction->execute(
             new ResolveSlugDTO(
                 scope: SlugScopeEnum::STORE,
@@ -34,7 +33,7 @@ class StoreDetailController extends Controller
             )
         );
 
-        if (!$resolvedSlug->found) {
+        if (! $resolvedSlug->found) {
             abort(404);
         }
 
@@ -43,13 +42,14 @@ class StoreDetailController extends Controller
         }
 
         /** @var Store $store */
-        $store = $getStoreDetailAction->execute($resolvedSlug->model);
+        $store = clone $getStoreDetailAction->execute($resolvedSlug->model);
 
         $storeProducts = $getStoreProductsAction->execute(
             store: $store,
             page: $request->integer('page', 1),
             perPage: 12
         );
+        $store->setAttribute('products_count', $storeProducts->total());
 
         $stats = $getStoreDetailStatsAction->execute($store);
 

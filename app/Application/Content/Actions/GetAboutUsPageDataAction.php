@@ -2,10 +2,12 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Organization\Models\TeamMember;
 use App\Domain\Project\Enums\ProjectStatusEnum;
 use App\Domain\Project\Models\Project;
@@ -32,6 +34,18 @@ class GetAboutUsPageDataAction
         $projectLimit = max(1, min(6, (int) ($settings['projects_count'] ?? 3)));
         $teamMemberLimit = max(1, min(12, (int) ($settings['team_members_count'] ?? 6)));
 
+        $data = app(PublicReadCache::class)->remember(
+            'about-us', [$projectLimit, $teamMemberLimit],
+            [Project::class, Product::class, User::class, TeamMember::class, MediaFile::class],
+            fn () => $this->queryData($projectLimit, $teamMemberLimit),
+            [Product::class => ['published_at']],
+        );
+
+        return [...$data, 'aboutUs' => $settings, 'aboutUsContacts' => $this->contacts($settings)];
+    }
+
+    private function queryData(int $projectLimit, int $teamMemberLimit): array
+    {
         $projectStats = Project::query()
             ->where('status', ProjectStatusEnum::ACTIVE)
             ->selectRaw('
@@ -45,7 +59,6 @@ class GetAboutUsPageDataAction
         $completedProjects = (int) ($projectStats?->completed ?? 0);
 
         return [
-            'aboutUs' => $settings,
             'aboutUsStats' => [
                 'total_projects' => $totalProjects,
                 'in_progress_projects' => (int) ($projectStats?->in_progress ?? 0),
@@ -71,7 +84,6 @@ class GetAboutUsPageDataAction
                 ->oldest('id')
                 ->limit($teamMemberLimit)
                 ->get(),
-            'aboutUsContacts' => $this->contacts($settings),
         ];
     }
 

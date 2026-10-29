@@ -3,6 +3,7 @@
 namespace App\Application\Poll\Actions;
 
 use App\Application\Poll\Support\PollVoterIdentity;
+use App\Application\Shared\Cache\Invalidators\PublicReadCacheInvalidator;
 use App\Domain\Poll\Enums\PollAudienceEnum;
 use App\Domain\Poll\Models\Poll;
 use App\Domain\Poll\Models\PollOption;
@@ -92,6 +93,9 @@ class SubmitPollVoteAction
             if ($wasCreated) {
                 Poll::query()->whereKey($poll->getKey())->increment('responses_count');
             }
+
+            app(PublicReadCacheInvalidator::class)->forModel(Poll::class);
+            app(PublicReadCacheInvalidator::class)->forModel(PollOption::class);
 
             return $response->load('options');
         });

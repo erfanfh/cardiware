@@ -2,6 +2,7 @@
 
 namespace App\Application\Content\Actions;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Career\Models\CareerPosition;
 use App\Infrastructure\Services\Setting\Groups\CareersSettings;
 
@@ -14,8 +15,11 @@ class GetCareerPageDataAction
     /** @return array<string, mixed> */
     public function execute(?int $requestedPositionId = null): array
     {
-        $positions = CareerPosition::publiclyAvailable()
-            ->latest('published_at')->latest('id')->get();
+        $positions = app(PublicReadCache::class)->remember(
+            'career-positions', [], [CareerPosition::class],
+            fn () => CareerPosition::publiclyAvailable()->latest('published_at')->latest('id')->get(),
+            [CareerPosition::class => ['published_at']],
+        );
 
         return [
             'careers' => $this->settings->values(),

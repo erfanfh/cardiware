@@ -29,6 +29,7 @@ final class GetRelatedProductsAction
                     ->toArray();
 
                 return Product::query()
+                    ->with(['picture.primaryVariant', 'picture.variants', 'categories', 'store', 'saleItems.discount'])
                     ->whereHas('taxonomyTerms', function ($q) use ($taxonomyIds) {
                         $q->whereIn('taxonomy_terms.id', $taxonomyIds);
                     })

@@ -3,14 +3,24 @@
 namespace App\Http\Controllers\Front\Search;
 
 use App\Application\Search\Support\ContentSearchQuery;
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Catalog\Models\Product;
+use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Catalog\Models\ProductSaleItemDiscount;
 use App\Domain\Content\Models\Post;
+use App\Domain\Discussion\Models\Comment;
+use App\Domain\Identity\Models\User;
+use App\Domain\Marketplace\Models\Store;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Project\Models\Project;
+use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Video\Models\Video;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\View\View;
 
 class SearchController extends Controller
@@ -45,10 +55,16 @@ class SearchController extends Controller
         $productsQuery = $this->productsQuery($searchTerm);
         $videosQuery = $this->videosQuery($searchTerm);
 
-        $postsCount = (clone $postsQuery)->reorder()->count();
-        $projectsCount = (clone $projectsQuery)->reorder()->count();
-        $productsCount = (clone $productsQuery)->reorder()->count();
-        $videosCount = (clone $videosQuery)->reorder()->count();
+        [$postsCount, $projectsCount, $productsCount, $videosCount] = app(PublicReadCache::class)->remember(
+            'search-counts', [$searchTerm], [Post::class, Project::class, Product::class, Video::class],
+            fn () => [
+                (clone $postsQuery)->reorder()->count(),
+                (clone $projectsQuery)->reorder()->count(),
+                (clone $productsQuery)->reorder()->count(),
+                (clone $videosQuery)->reorder()->count(),
+            ],
+            $this->publicationTransitions(),
+        );
 
         $type = $requestedType;
 
@@ -70,44 +86,42 @@ class SearchController extends Controller
         $videos = null;
 
         if ($type === 'posts') {
-            $posts = (clone $postsQuery)
+            $query = (clone $postsQuery)
                 ->with([
                     'picture.primaryVariant',
                     'picture.variants',
                     'categories',
                 ])
-                ->latest()
-                ->paginate((int) (get_setting('general', 'search_posts_count_settings') ?? 12))
-                ->withQueryString();
+                ->latest();
+            $posts = $this->cachedResults($query, $searchTerm, $type, $postsCount);
 
             request()->attributes->set('seo_paginator', $posts);
         }
 
         if ($type === 'projects') {
-            $projects = (clone $projectsQuery)
-                ->latest()
-                ->paginate((int) (get_setting('general', 'search_projects_count_settings') ?? 12))
-                ->withQueryString();
+            $query = (clone $projectsQuery)->latest();
+            $projects = $this->cachedResults($query, $searchTerm, $type, $projectsCount);
 
             request()->attributes->set('seo_paginator', $projects);
         }
 
         if ($type === 'products') {
-            $products = (clone $productsQuery)
+            $query = (clone $productsQuery)
                 ->with([
                     'picture.primaryVariant',
                     'picture.variants',
                     'store',
+                    'categories',
+                    'saleItems.discount',
                 ])
-                ->latest()
-                ->paginate((int) (get_setting('general', 'search_products_count_settings') ?? 12))
-                ->withQueryString();
+                ->latest();
+            $products = $this->cachedResults($query, $searchTerm, $type, $productsCount);
 
             request()->attributes->set('seo_paginator', $products);
         }
 
         if ($type === 'videos') {
-            $videos = (clone $videosQuery)
+            $query = (clone $videosQuery)
                 ->with([
                     'cover.primaryVariant',
                     'cover.variants',
@@ -115,9 +129,8 @@ class SearchController extends Controller
                     'author',
                 ])
                 ->withCount('approvedComments')
-                ->latest('published_at')
-                ->paginate((int) (get_setting('general', 'search_videos_count_settings') ?? 12))
-                ->withQueryString();
+                ->latest('published_at');
+            $videos = $this->cachedResults($query, $searchTerm, $type, $videosCount);
 
             request()->attributes->set('seo_paginator', $videos);
         }
@@ -134,6 +147,28 @@ class SearchController extends Controller
             'videosCount',
             'searchTerm',
         ));
+    }
+
+    private function publicationTransitions(): array
+    {
+        return [Post::class => ['published_at'], Product::class => ['published_at'], Video::class => ['published_at']];
+    }
+
+    private function cachedResults(Builder $query, string $searchTerm, string $type, int $total): LengthAwarePaginator
+    {
+        $perPage = max(1, (int) (get_setting('general', 'search_'.$type.'_count_settings') ?? 12));
+        $page = max(1, Paginator::resolveCurrentPage());
+
+        return app(PublicReadCache::class)->paginate(
+            'search-results', [$searchTerm, $type, $page, $perPage],
+            [
+                $query->getModel()::class, MediaFile::class, TaxonomyTerm::class,
+                Store::class, ProductSaleItem::class, ProductSaleItemDiscount::class,
+                User::class, Comment::class,
+            ],
+            fn () => $query->paginate($perPage, ['*'], 'page', $page, $total),
+            $this->publicationTransitions(),
+        )->withQueryString();
     }
 
     private function postsQuery(string $searchTerm): Builder

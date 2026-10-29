@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Front\Poll;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Poll\Models\Poll;
+use App\Domain\Poll\Models\PollOption;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class PollIndexController extends Controller
 {
@@ -19,10 +23,27 @@ class PollIndexController extends Controller
 
         $status = $validated['status'] ?? 'all';
         $search = trim($validated['search'] ?? '');
+        $page = max(1, Paginator::resolveCurrentPage());
+        $cache = app(PublicReadCache::class);
+        $stats = $cache->remember(
+            'poll-stats', [], [Poll::class], fn () => $this->stats(),
+            [Poll::class => ['starts_at', 'ends_at']],
+        );
+        $polls = $cache->paginate(
+            'poll-list', [$status, $search, $page], [Poll::class, PollOption::class],
+            fn () => $this->polls($status, $search, $page),
+            [Poll::class => ['starts_at', 'ends_at']],
+        )->withQueryString();
+
+        return view('front.polls.index', compact('polls', 'stats', 'status', 'search'));
+    }
+
+    private function stats(): array
+    {
         $now = now();
         $base = Poll::query()->publiclyVisible();
 
-        $stats = [
+        return [
             'all' => (clone $base)->count(),
             'active' => (clone $base)
                 ->where(fn (Builder $query) => $query->whereNull('starts_at')->orWhere('starts_at', '<=', $now))
@@ -31,7 +52,11 @@ class PollIndexController extends Controller
             'upcoming' => (clone $base)->where('starts_at', '>', $now)->count(),
             'ended' => (clone $base)->whereNotNull('ends_at')->where('ends_at', '<=', $now)->count(),
         ];
+    }
 
+    private function polls(string $status, string $search, int $page): LengthAwarePaginator
+    {
+        $now = now();
         $query = Poll::query()->publiclyVisible()->withCount('activeOptions');
 
         if ($search !== '') {
@@ -49,13 +74,10 @@ class PollIndexController extends Controller
             default => null,
         };
 
-        $polls = $query
+        return $query
             ->orderByRaw('CASE WHEN (starts_at IS NULL OR starts_at <= ?) AND (ends_at IS NULL OR ends_at > ?) THEN 0 WHEN starts_at > ? THEN 1 ELSE 2 END', [$now, $now, $now])
             ->latest('created_at')
             ->latest('id')
-            ->paginate(9)
-            ->withQueryString();
-
-        return view('front.polls.index', compact('polls', 'stats', 'status', 'search'));
+            ->paginate(9, ['*'], 'page', $page);
     }
 }

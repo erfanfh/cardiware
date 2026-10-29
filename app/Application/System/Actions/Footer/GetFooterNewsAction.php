@@ -2,6 +2,7 @@
 
 namespace App\Application\System\Actions\Footer;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Content\Models\Post;
 
 class GetFooterNewsAction
@@ -27,11 +28,17 @@ class GetFooterNewsAction
                 ->all();
         }
 
-        return Post::query()
-            ->whereNotNull('slug')
-            ->latest('published_at')
-            ->limit(4)
-            ->get(['title', 'slug'])
+        $posts = app(PublicReadCache::class)->remember(
+            'footer-news', [], [Post::class],
+            fn () => Post::query()
+                ->whereNotNull('slug')
+                ->latest('published_at')
+                ->limit(4)
+                ->get(['title', 'slug']),
+            [Post::class => ['published_at']],
+        );
+
+        return $posts
             ->map(fn (Post $post): array => [
                 'title' => $post->title,
                 'url' => front_route('contents.detail', $post),

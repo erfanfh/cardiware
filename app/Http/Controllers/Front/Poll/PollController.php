@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Front\Poll;
 use App\Application\Poll\Actions\BuildPollResultsAction;
 use App\Application\Poll\Actions\RecordPollViewAction;
 use App\Application\Poll\Support\PollVoterIdentity;
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Poll\Models\Poll;
+use App\Domain\Poll\Models\PollOption;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -18,7 +20,13 @@ class PollController extends Controller
         RecordPollViewAction $recordView,
         BuildPollResultsAction $resultsAction,
     ): View {
-        $poll = Poll::query()->publiclyVisible()->where('slug', $pollSlug)->with('options')->firstOrFail();
+        $poll = app(PublicReadCache::class)->remember(
+            'poll-detail', [$pollSlug], [Poll::class, PollOption::class],
+            fn () => Poll::query()->publiclyVisible()->where('slug', $pollSlug)->with('options')->first(),
+            seconds: 60,
+        );
+        abort_unless($poll instanceof Poll, 404);
+        $poll = clone $poll;
         $request->attributes->set('poll', $poll);
         $identity = PollVoterIdentity::resolve($request->user(), $request->ip());
         $recordView->execute($poll, $identity);

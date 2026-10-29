@@ -13,7 +13,7 @@ final class GetStoreProductsAction
 {
     public function execute(Store $store, int $page = 1, int $perPage = 12): LengthAwarePaginator
     {
-        return Cache::tags([
+        $products = Cache::tags([
             CacheTag::STORES,
             CacheTag::STORE_PRODUCTS,
             CacheTag::PRODUCTS,
@@ -26,13 +26,13 @@ final class GetStoreProductsAction
                 perPage: $perPage
             ),
             CacheTtl::medium(),
-            fn() => $store
+            fn () => $store
                 ->products()
                 ->with([
                     'picture.primaryVariant',
                     'picture.variants',
                     'store',
-                    'saleItems',
+                    'saleItems.discount',
                     'categories',
                     'tags',
                 ])
@@ -41,5 +41,7 @@ final class GetStoreProductsAction
                     page: $page
                 )
         );
+
+        return (clone $products)->withPath(request()->url());
     }
 }

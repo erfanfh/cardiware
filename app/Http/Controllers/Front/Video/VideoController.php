@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers\Front\Video;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Application\Slug\Actions\ResolveSlugAction;
 use App\Application\Slug\DTOs\ResolveSlugDTO;
 use App\Application\System\Actions\StoreViewAction;
+use App\Domain\Discussion\Models\Comment;
+use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
+use App\Domain\Seo\Models\SeoMeta;
 use App\Domain\Slug\Enums\SlugScopeEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Video\Models\Video;
 use App\Domain\Video\Scopes\ActiveVideoScope;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -24,24 +31,11 @@ class VideoController extends Controller
     public function index(Request $request): View
     {
         $sort = $this->resolveSort($request);
-        $videos = $this->applySort(
-            Video::query()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
-            $sort,
-        )->paginate(12)->withQueryString();
-        $featured = Video::query()
-            ->featured()
-            ->with(['cover.primaryVariant', 'categories', 'author'])
-            ->withCount('approvedComments')
-            ->latest('published_at')
-            ->first();
-        $categories = TaxonomyTerm::query()->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
-            ->whereNull('parent_id')->withCount('videos')->orderBy('title')->get();
-        $trendingVideos = $this->trendingVideos();
-        $totalVideos = Video::query()->count();
+        $videos = $this->videoList($sort);
 
         request()->attributes->set('seo_paginator', $videos);
 
-        return view('front.videos.index', compact('videos', 'featured', 'categories', 'trendingVideos', 'totalVideos', 'sort'));
+        return view('front.videos.index', [...$this->catalogData(), 'videos' => $videos, 'sort' => $sort]);
     }
 
     public function show(string $videoSlug, ResolveSlugAction $resolveSlug, StoreViewAction $storeView): View|RedirectResponse
@@ -71,30 +65,40 @@ class VideoController extends Controller
 
     private function renderDetail(Video $video, ?StoreViewAction $storeView = null): View
     {
-        $video->load([
-            'cover.primaryVariant',
-            'cover.variants',
-            'author.avatar',
-            'categories',
-            'tags',
-            'seoMeta',
-        ])->loadCount('approvedComments');
+        $data = app(PublicReadCache::class)->remember(
+            'video-detail', [$video->id],
+            [...$this->cacheModels(), SeoMeta::class],
+            function () use ($video): array {
+                $video = clone $video;
+                $video->load([
+                    'cover.primaryVariant',
+                    'cover.variants',
+                    'author.avatar',
+                    'categories',
+                    'tags',
+                    'seoMeta',
+                ])->loadCount('approvedComments');
 
+                $relatedVideos = $this->relatedVideos($video);
+                $sidebarCategories = TaxonomyTerm::query()
+                    ->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
+                    ->whereNull('parent_id')
+                    ->withCount('videos')
+                    ->orderByDesc('videos_count')
+                    ->orderBy('title')
+                    ->limit(6)
+                    ->get();
+
+                return compact('video', 'relatedVideos', 'sidebarCategories');
+            },
+            [Video::class => ['published_at']],
+        );
+
+        $video = $data['video'];
         $storeView?->execute($video);
-
-        $relatedVideos = $this->relatedVideos($video);
-        $sidebarCategories = TaxonomyTerm::query()
-            ->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
-            ->whereNull('parent_id')
-            ->withCount('videos')
-            ->orderByDesc('videos_count')
-            ->orderBy('title')
-            ->limit(6)
-            ->get();
-
         request()->attributes->set('video', $video);
 
-        return view('front.videos.detail', compact('video', 'relatedVideos', 'sidebarCategories'));
+        return view('front.videos.detail', $data);
     }
 
     public function taxonomy(Request $request, string $path, string $taxonomy, ResolveSlugAction $resolveSlug): View|RedirectResponse
@@ -109,22 +113,56 @@ class VideoController extends Controller
         /** @var TaxonomyTerm $term */
         $term = $resolved->model;
         $sort = $this->resolveSort($request);
-        $videos = $this->applySort(
-            $term->videosIncludingDescendants()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
-            $sort,
-        )->paginate(12)->withQueryString();
+        $videos = $this->videoList($sort, $term);
         request()->attributes->set('video_taxonomy_term', $term);
         request()->attributes->set('seo_paginator', $videos);
 
         return view('front.videos.index', [
+            ...$this->catalogData(),
             'videos' => $videos,
             'featured' => null,
-            'categories' => TaxonomyTerm::query()->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)->whereNull('parent_id')->withCount('videos')->orderBy('title')->get(),
             'term' => $term,
-            'trendingVideos' => $this->trendingVideos(),
-            'totalVideos' => Video::query()->count(),
             'sort' => $sort,
         ]);
+    }
+
+    private function cacheModels(): array
+    {
+        return [Video::class, TaxonomyTerm::class, MediaFile::class, User::class, Comment::class];
+    }
+
+    private function videoList(string $sort, ?TaxonomyTerm $term = null): LengthAwarePaginator
+    {
+        $page = max(1, Paginator::resolveCurrentPage());
+
+        return app(PublicReadCache::class)->paginate(
+            'videos', [$sort, $term?->id, $page], $this->cacheModels(),
+            fn () => $this->applySort(
+                ($term ? $term->videosIncludingDescendants() : Video::query())
+                    ->with(['cover.primaryVariant', 'cover.variants', 'categories', 'author'])
+                    ->withCount('approvedComments'),
+                $sort,
+            )->paginate(12, ['*'], 'page', $page),
+            [Video::class => ['published_at']],
+        )->withQueryString();
+    }
+
+    private function catalogData(): array
+    {
+        return app(PublicReadCache::class)->remember(
+            'video-catalog', [], $this->cacheModels(),
+            fn () => [
+                'featured' => Video::query()->featured()
+                    ->with(['cover.primaryVariant', 'cover.variants', 'categories', 'author'])
+                    ->withCount('approvedComments')->latest('published_at')->first(),
+                'categories' => TaxonomyTerm::query()->forTaxonomy(TaxonomyKeyEnum::VIDEO_CATEGORY)
+                    ->whereNull('parent_id')->withCount('videos')->orderBy('title')->get(),
+                'trendingVideos' => $this->trendingVideos(),
+                'totalVideos' => Video::query()->count(),
+            ],
+            [Video::class => ['published_at']],
+            seconds: 60,
+        );
     }
 
     private function resolveSort(Request $request): string
@@ -153,7 +191,7 @@ class VideoController extends Controller
     private function trendingVideos(): Collection
     {
         return $this->applySort(
-            Video::query()->with(['cover.primaryVariant', 'categories', 'author'])->withCount('approvedComments'),
+            Video::query()->with(['cover.primaryVariant', 'cover.variants', 'categories', 'author'])->withCount('approvedComments'),
             'popular',
         )->limit(4)->get();
     }

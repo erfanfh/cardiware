@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Front\Content;
 
-use App\Domain\Content\Models\Post;
+use App\Application\Content\Actions\GetPostArchiveAction;
 use App\Domain\Identity\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -12,7 +12,7 @@ class AuthorController
     public function __invoke(User $user, ?int $page = null): View|RedirectResponse
     {
         $author = $user;
-        $page = max(1, (int)($page ?? request()->route('page', 1)));
+        $page = max(1, (int) ($page ?? request()->route('page', 1)));
 
         if ($page === 1 && request()->routeIs('author.page')) {
             return redirect()->route('author', [
@@ -22,19 +22,7 @@ class AuthorController
 
         $postsPerPage = get_setting('general', 'author_posts_count_settings') ?? 9;
 
-        $posts = Post::query()
-            ->with([
-                'picture.primaryVariant',
-                'picture.variants',
-                'categories',
-            ])
-            ->where('author_id', $author->id)
-            ->latest('published_at')
-            ->paginate(
-                perPage: $postsPerPage,
-                pageName: 'page',
-                page: $page,
-            );
+        $posts = app(GetPostArchiveAction::class)->execute($page, (int) $postsPerPage, $author->id);
 
         if ($page > 1 && $posts->lastPage() > 0 && $page > $posts->lastPage()) {
             abort(404);

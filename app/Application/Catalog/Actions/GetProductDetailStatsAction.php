@@ -13,9 +13,7 @@ final class GetProductDetailStatsAction
 {
     public function __construct(
         private readonly ProductSalesReport $salesReport,
-    )
-    {
-    }
+    ) {}
 
     public function execute(Product $product): array
     {
@@ -24,11 +22,15 @@ final class GetProductDetailStatsAction
         ])->remember(
             CacheKey::productDetailStats($product->id),
             CacheTtl::medium(),
-            fn() => [
-                'sold_quantity' => $this->salesReport->saleItemSummary($product->id)['sold_quantity'] ?? 0,
-                'store_sold_quantity' => $this->salesReport->storeSummary($product->store_id)['sold_quantity'] ?? 0,
-                'store_products_count' => $this->salesReport->storeSummary($product->store_id)['products_count'] ?? 0,
-            ]
+            function () use ($product): array {
+                $storeSummary = $this->salesReport->storeSummary($product->store_id);
+
+                return [
+                    'sold_quantity' => $this->salesReport->saleItemSummary($product->id)['sold_quantity'] ?? 0,
+                    'store_sold_quantity' => $storeSummary['sold_quantity'] ?? 0,
+                    'store_products_count' => $storeSummary['products_count'] ?? 0,
+                ];
+            }
         );
     }
 }

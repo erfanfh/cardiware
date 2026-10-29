@@ -2,6 +2,7 @@
 
 namespace App\Application\Taxonomy\Actions;
 
+use App\Application\Shared\Cache\Invalidators\PublicReadCacheInvalidator;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Infrastructure\Services\Audit\AuditService;
@@ -12,15 +13,11 @@ use InvalidArgumentException;
 class SyncModelTaxonomyTermsAction
 {
     /**
-     * @param Model $model
-     * @param string $relation
-     * @param TaxonomyKeyEnum $taxonomy
-     * @param array<int, int|string|null> $ids
-     * @return void
+     * @param  array<int, int|string|null>  $ids
      */
     public function execute(Model $model, string $relation, TaxonomyKeyEnum $taxonomy, array $ids): void
     {
-        if (!method_exists($model, $relation)) {
+        if (! method_exists($model, $relation)) {
             return;
         }
 
@@ -33,13 +30,13 @@ class SyncModelTaxonomyTermsAction
                 ->forTaxonomy($taxonomy)
                 ->whereIn('id', $normalizedIds)
                 ->pluck('id')
-                ->map(fn($id) => (int)$id)
+                ->map(fn ($id) => (int) $id)
                 ->all();
         }
 
         $relationInstance = $model->{$relation}();
 
-        if (!$relationInstance instanceof BelongsToMany) {
+        if (! $relationInstance instanceof BelongsToMany) {
             throw new InvalidArgumentException("Relation [{$relation}] is not syncable.");
         }
 
@@ -53,7 +50,7 @@ class SyncModelTaxonomyTermsAction
         $currentTaxonomyIds = $model->{$relation}()
             ->forTaxonomy($taxonomy)
             ->pluck($relationInstance->getRelated()->getQualifiedKeyName())
-            ->map(fn($id) => (int)$id)
+            ->map(fn ($id) => (int) $id)
             ->all();
 
         $idsToDetach = array_values(array_diff($currentTaxonomyIds, $validIds));
@@ -65,10 +62,14 @@ class SyncModelTaxonomyTermsAction
         if (count($validIds) !== 0) {
             app(AuditService::class)->sync($model, $relation, $validIds, false);
         }
+
+        if ($idsToDetach !== [] || array_diff($validIds, $currentTaxonomyIds) !== []) {
+            app(PublicReadCacheInvalidator::class)->forModel($model);
+        }
     }
 
     /**
-     * @param array<int, int|string|null> $ids
+     * @param  array<int, int|string|null>  $ids
      * @return array<int, int>
      */
     protected function normalizeIds(array $ids): array
@@ -79,7 +80,7 @@ class SyncModelTaxonomyTermsAction
                     return null;
                 }
 
-                $normalizedId = (int)$id;
+                $normalizedId = (int) $id;
 
                 return $normalizedId > 0 ? $normalizedId : null;
             })

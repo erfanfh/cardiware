@@ -4,6 +4,11 @@ namespace App\Application\Shared\Cache;
 
 final class CacheKey
 {
+    public static function publicRead(string $resource, array $parameters = []): string
+    {
+        return 'public-read:v1:'.$resource.':'.hash('sha256', json_encode($parameters, JSON_THROW_ON_ERROR));
+    }
+
     public static function settingsGroup(string $group): string
     {
         return "settings:group:{$group}";
@@ -174,7 +179,7 @@ final class CacheKey
         int|string $storeId,
         int $storeUpdatedAt,
     ): string {
-        return "seo-data:post:{$storeId}:{$storeUpdatedAt}";
+        return "seo-data:store:{$storeId}:{$storeUpdatedAt}";
     }
 
     public static function taxonomySlug(string $taxonomy, string $routeKey): string
@@ -300,7 +305,7 @@ final class CacheKey
 
     public static function launcherCatalogPage(string $search, int $page, int $perPage): string
     {
-        return 'launcher:catalog:page:' . md5($search) . ":{$page}:{$perPage}";
+        return 'launcher:catalog:page:'.md5($search).":{$page}:{$perPage}";
     }
 
     public static function launcherCatalogItem(int|string $saleItemId, int $manifestRevision): string

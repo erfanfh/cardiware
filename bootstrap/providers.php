@@ -9,6 +9,7 @@ use App\Providers\LoyaltyServiceProvider;
 use App\Providers\NavigationServiceProvider;
 use App\Providers\NotificationServiceProvider;
 use App\Providers\PageLayoutServiceProvider;
+use App\Providers\PublicReadCacheServiceProvider;
 use App\Providers\RaffleServiceProvider;
 use App\Providers\RouteBindingServiceProvider;
 use App\Providers\SchedulerServiceProvider;
@@ -17,6 +18,7 @@ use App\Providers\SlugServiceProvider;
 
 return [
     AppServiceProvider::class,
+    PublicReadCacheServiceProvider::class,
     AuditServiceProvider::class,
     AuthServiceProvider::class,
     RouteBindingServiceProvider::class,

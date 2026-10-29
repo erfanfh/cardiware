@@ -2,9 +2,11 @@
 
 namespace App\Application\Loyalty\Actions;
 
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Models\PointAccount;
+use App\Domain\Media\Models\MediaFile;
 use Illuminate\Database\Eloquent\Builder;
 
 class GetAudienceClubLeaderboardAction
@@ -13,6 +15,30 @@ class GetAudienceClubLeaderboardAction
 
     /** @return array<string, mixed> */
     public function execute(?User $user): array
+    {
+        $public = app(PublicReadCache::class)->remember(
+            'leaderboard', [], [PointAccount::class, User::class, MediaFile::class],
+            fn () => $this->publicData(),
+            seconds: 60,
+        );
+
+        $currentAccount = $user?->pointAccount()->first();
+        $currentRank = $currentAccount && $currentAccount->balance > 0
+            ? $this->rankFor($currentAccount)
+            : null;
+
+        return [
+            ...$public,
+            'currentMember' => [
+                'rank' => $currentRank,
+                'balance' => max(0, (int) ($currentAccount?->balance ?? 0)),
+                'lifetime_earned' => (int) ($currentAccount?->lifetime_earned ?? 0),
+                'is_visible' => $currentRank !== null && $currentRank <= self::LEADERBOARD_LIMIT,
+            ],
+        ];
+    }
+
+    private function publicData(): array
     {
         $leaders = $this->rankedAccountsQuery()
             ->with('user.avatar')
@@ -23,11 +49,6 @@ class GetAudienceClubLeaderboardAction
         $leaders->each(
             fn (PointAccount $account, int $index) => $account->setAttribute('leaderboard_rank', $index + 1),
         );
-
-        $currentAccount = $user?->pointAccount()->first();
-        $currentRank = $currentAccount && $currentAccount->balance > 0
-            ? $this->rankFor($currentAccount)
-            : null;
 
         $eligibleAccounts = $this->eligibleAccountsQuery();
         $totalMembers = (clone $eligibleAccounts)->count();
@@ -41,12 +62,6 @@ class GetAudienceClubLeaderboardAction
                 'total_points' => $totalPoints,
                 'average_points' => $totalMembers > 0 ? (int) floor($totalPoints / $totalMembers) : 0,
                 'highest_points' => (int) ($leaders->first()?->balance ?? 0),
-            ],
-            'currentMember' => [
-                'rank' => $currentRank,
-                'balance' => max(0, (int) ($currentAccount?->balance ?? 0)),
-                'lifetime_earned' => (int) ($currentAccount?->lifetime_earned ?? 0),
-                'is_visible' => $currentRank !== null && $currentRank <= self::LEADERBOARD_LIMIT,
             ],
         ];
     }

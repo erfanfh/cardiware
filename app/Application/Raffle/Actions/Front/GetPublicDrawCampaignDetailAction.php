@@ -4,13 +4,16 @@ namespace App\Application\Raffle\Actions\Front;
 
 use App\Application\Raffle\Actions\Draw\VerifyDrawRunAction;
 use App\Application\Raffle\Support\PublicDrawWinnerPresenter;
+use App\Application\Shared\Cache\PublicReadCache;
 use App\Domain\Identity\Models\User;
+use App\Domain\Media\Models\MediaFile;
 use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Enums\DrawRunStatusEnum;
 use App\Domain\Raffle\Enums\DrawTicketStatusEnum;
 use App\Domain\Raffle\Enums\DrawWinnerKindEnum;
 use App\Domain\Raffle\Enums\DrawWinnerStatusEnum;
 use App\Domain\Raffle\Models\DrawCampaign;
+use App\Domain\Raffle\Models\DrawPrize;
 use App\Domain\Raffle\Models\DrawRun;
 use App\Domain\Raffle\Models\DrawTicket;
 use App\Domain\Raffle\Models\DrawWinner;
@@ -29,14 +32,18 @@ class GetPublicDrawCampaignDetailAction
      */
     public function execute(string $slug, ?User $user = null): array
     {
-        $campaign = DrawCampaign::query()
-            ->where('slug', $slug)
-            ->whereIn('status', $this->visibleStatuses())
-            ->with([
-                'coverMediaFile.primaryVariant',
-                'prizes.mediaFile.primaryVariant',
-            ])
-            ->first();
+        $campaign = app(PublicReadCache::class)->remember(
+            'raffle-detail', [$slug], [DrawCampaign::class, DrawPrize::class, MediaFile::class],
+            fn () => DrawCampaign::query()
+                ->where('slug', $slug)
+                ->whereIn('status', $this->visibleStatuses())
+                ->with([
+                    'coverMediaFile.primaryVariant',
+                    'prizes.mediaFile.primaryVariant',
+                ])
+                ->first(),
+            seconds: 60,
+        );
 
         if (! $campaign) {
             throw (new ModelNotFoundException)->setModel(DrawCampaign::class, [$slug]);
@@ -85,8 +92,12 @@ class GetPublicDrawCampaignDetailAction
                 ->get();
         }
 
-        $publicWinners = $this->publicWinners($campaign);
-        $publicDrawRuns = $this->publicDrawRuns($campaign);
+        [$publicWinners, $publicDrawRuns] = app(PublicReadCache::class)->remember(
+            'raffle-results', [$campaign->id],
+            [DrawCampaign::class, DrawPrize::class, DrawWinner::class, DrawRun::class, DrawTicket::class, User::class],
+            fn () => [$this->publicWinners($campaign), $this->publicDrawRuns($campaign)],
+            seconds: 60,
+        );
 
         return compact(
             'campaign',

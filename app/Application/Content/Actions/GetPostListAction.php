@@ -13,13 +13,13 @@ class GetPostListAction
 {
     public function execute(int $page, int $perPage): LengthAwarePaginator
     {
-        return Cache::tags([
+        $posts = Cache::tags([
             CacheTag::POSTS,
             CacheTag::POST_LISTS,
         ])->remember(
             CacheKey::postList($page, $perPage),
             CacheTtl::short(),
-            fn() => Post::query()
+            fn () => Post::query()
                 ->with([
                     'picture.primaryVariant',
                     'picture.variants',
@@ -31,5 +31,7 @@ class GetPostListAction
                     page: $page,
                 )
         );
+
+        return (clone $posts)->withPath(request()->url());
     }
 }
