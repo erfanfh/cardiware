@@ -29,6 +29,27 @@ class UpdateSettingAction
      */
     public function execute(string $group, string $key, mixed $value): bool
     {
+        $settings = $this->resolveSettings($group, $key);
+
+        try {
+            $this->persist($settings, $group, $key, $value);
+
+            return true;
+        } catch (Throwable $e) {
+            Log::info($e->getMessage());
+
+            return false;
+        }
+    }
+
+    /** Persist within the caller's transaction without discarding the original failure. */
+    public function executeOrFail(string $group, string $key, mixed $value): void
+    {
+        $this->persist($this->resolveSettings($group, $key), $group, $key, $value);
+    }
+
+    private function resolveSettings(string $group, string $key): BaseSettings
+    {
         $settingsClass = '\\App\\Infrastructure\\Services\\Setting\\Groups\\' . ucfirst($group) . 'Settings';
 
         if (!class_exists($settingsClass) || !is_subclass_of($settingsClass, BaseSettings::class)) {
@@ -41,16 +62,12 @@ class UpdateSettingAction
             throw new InvalidArgumentException("Key '{$key}' is not allowed in group '{$group}'.");
         }
 
-        try {
-            $settings->set($key, $value);
+        return $settings;
+    }
 
-            $this->settingCacheInvalidator->afterUpdated($group, $key);
-
-            return true;
-        } catch (Throwable $e) {
-            Log::info($e->getMessage());
-
-            return false;
-        }
+    private function persist(BaseSettings $settings, string $group, string $key, mixed $value): void
+    {
+        $settings->set($key, $value);
+        $this->settingCacheInvalidator->afterUpdated($group, $key);
     }
 }

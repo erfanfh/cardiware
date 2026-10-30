@@ -67,9 +67,7 @@ class SettingController extends Controller
                     ]);
                 }
 
-                if (!app(UpdateSettingAction::class)->execute('productLandings', $document, $content)) {
-                    throw new RuntimeException('Unable to persist product landing settings.');
-                }
+                app(UpdateSettingAction::class)->executeOrFail('productLandings', $document, $content);
             });
         } finally {
             // Also discard any values read while a failed transaction was open.

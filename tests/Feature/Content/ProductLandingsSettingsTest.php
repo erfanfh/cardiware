@@ -3,6 +3,7 @@
 namespace Tests\Feature\Content;
 
 use App\Application\Content\Support\ProductLandingContentSchema;
+use App\Application\Shared\Cache\Invalidators\SettingCacheInvalidator;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\Permission;
 use App\Domain\Identity\Models\User;
@@ -174,5 +175,26 @@ class ProductLandingsSettingsTest extends TestCase
 
         $this->put(route('admin.settings.product-landings.store', 'ultimate'), $payload)->assertSessionHasErrors('payload');
         self::assertSame(0, Setting::query()->where('group', 'product_landings')->count());
+    }
+
+    public function test_persistence_failure_keeps_original_exception_and_rolls_back(): void
+    {
+        $this->actingAs($this->admin());
+        $this->withoutExceptionHandling();
+        $content = ProductLandingsSettings::defaults()['ultimate'];
+        $payload = $this->payload('ultimate', $content);
+        $failure = new \RuntimeException('Original failure during settings invalidation');
+        $this->mock(SettingCacheInvalidator::class)
+            ->shouldReceive('afterUpdated')->with('productLandings', 'ultimate')->once()->andThrow($failure);
+
+        try {
+            $this->put(route('admin.settings.product-landings.store', 'ultimate'), $payload);
+            self::fail('The original exception must be reported by Laravel.');
+        } catch (\RuntimeException $exception) {
+            self::assertSame($failure, $exception);
+        }
+
+        self::assertSame(0, Setting::query()->where('group', 'product_landings')->count());
+        self::assertSame($content, app(ProductLandingsSettings::class)->document('ultimate'));
     }
 }
