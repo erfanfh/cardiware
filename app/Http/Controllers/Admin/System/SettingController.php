@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\System;
 
 use App\Application\Seo\Support\SeoTemplateVariableRegistry;
 use App\Application\System\Actions\UpdateSettingAction;
+use App\Application\Content\Support\ProductLandingContentSchema;
 use App\Application\System\Backup\BackupEnvironment;
 use App\Application\System\Backup\BackupRunDispatcher;
 use App\Domain\Loyalty\Models\RewardOffer;
@@ -13,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Loyalty\UpdateLoyaltySettingsRequest;
 use App\Http\Requests\Admin\Raffle\UpdateRaffleSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateAboutUsSettingsRequest;
+use App\Http\Requests\Admin\System\UpdateProductLandingsSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateBackupSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateCareersSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
@@ -20,6 +22,8 @@ use App\Http\Requests\Admin\System\UpdateTicketSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use App\Infrastructure\Services\Setting\Groups\TeamSettings;
+use App\Infrastructure\Services\Setting\Groups\ProductLandingsSettings;
+use App\Domain\System\Models\Setting;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -28,9 +32,54 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use RuntimeException;
+use Illuminate\Validation\ValidationException;
 
 class SettingController extends Controller
 {
+    public function productLandings(ProductLandingsSettings $settings, ProductLandingContentSchema $schema, string $document = 'ultimate'): View
+    {
+        Gate::authorize('setting.product-landings');
+
+        $content = $settings->document($document);
+
+        return view('admin.system.settings.product-landings', [
+            'document' => $document,
+            'content' => $content,
+            'contentSchema' => $schema->infer([ProductLandingsSettings::defaults()[$document]]),
+            'version' => $settings->version($content),
+            'labels' => ProductLandingsSettings::labels(),
+        ]);
+    }
+
+    public function storeProductLandings(UpdateProductLandingsSettingsRequest $request, ProductLandingsSettings $settings, string $document): RedirectResponse
+    {
+        Gate::authorize('setting.product-landings');
+        $content = $request->content();
+
+        try {
+            DB::transaction(function () use ($request, $settings, $document, $content): void {
+                Setting::query()->where('group', 'product_landings')->where('key', $document)->lockForUpdate()->first();
+                $settings->forgetCache();
+
+                if (!hash_equals($settings->version($settings->document($document)), $request->validated('version'))) {
+                    throw ValidationException::withMessages([
+                        'version' => 'این تنظیمات در صفحه دیگری تغییر کرده است. ابتدا صفحه را دوباره باز کنید و تغییرات جدید را بررسی کنید.',
+                    ]);
+                }
+
+                if (!app(UpdateSettingAction::class)->execute('productLandings', $document, $content)) {
+                    throw new RuntimeException('Unable to persist product landing settings.');
+                }
+            });
+        } finally {
+            // Also discard any values read while a failed transaction was open.
+            $settings->forgetCache();
+        }
+
+        return redirect()->route('admin.settings.product-landings', $document)
+            ->with('success', 'تنظیمات لندینگ با موفقیت ذخیره شد.');
+    }
+
     public function careers(): View
     {
         Gate::authorize('setting.careers');

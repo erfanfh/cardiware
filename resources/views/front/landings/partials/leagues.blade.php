@@ -11,15 +11,15 @@
 
         <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach($section['items'] as $item)
-                @php($entry = \App\Support\Landings::resolve(config('landing-catalog.leagues.'.$item['slug']), $locale))
-                @php($logoFile = \App\Support\Landings::leagueLogo($item['slug'], $item['logo'] ? basename($item['logo']) : null))
+                @php($entry = \App\Support\Landings::resolve(\App\Support\Landings::catalog('leagues.'.$item['slug']), $locale))
+                @php($logoFile = \App\Support\Landings::leagueLogo($item['slug'], $item['logo'] ?: null))
                 <a href="{{ $prefix }}/{{ $slug }}/leagues/{{ $item['slug'] }}"
                    class="reveal group rounded-2xl border border-edge/70 bg-surface/70 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40">
 
                     <div class="flex items-center justify-between">
                         <span class="grid size-12 place-items-center rounded-xl border border-edge/60 bg-surface-2">
                             @if(!empty($logoFile))
-                                <img src="{{ asset('images/landings/logos/emb/'.$logoFile) }}" alt="{{ $entry['name'] ?? '' }}" class="size-9 object-contain" loading="lazy">
+                                <img src="{{ \App\Support\Landings::logoUrl($logoFile) }}" alt="{{ $entry['name'] ?? '' }}" class="size-9 object-contain" loading="lazy">
                             @else
                                 <span class="font-num text-xs font-black tracking-widest text-muted">{{ $item['tag'] }}</span>
                             @endif

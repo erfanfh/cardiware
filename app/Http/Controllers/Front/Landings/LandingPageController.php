@@ -16,7 +16,7 @@ class LandingPageController
     {
         $locale = Landings::localeFromRequest();
 
-        $data = Landings::resolve(config("product-landings.landings.{$landing}"), $locale);
+        $data = Landings::resolve(Landings::product($landing), $locale);
         abort_if($data === null, 404);
 
         $pageConfig = $data['pages'][$page] ?? null;
@@ -35,10 +35,10 @@ class LandingPageController
     {
         $locale = Landings::localeFromRequest();
 
-        $data = Landings::resolve(config("product-landings.landings.{$landing}"), $locale);
+        $data = Landings::resolve(Landings::product($landing), $locale);
         abort_if($data === null, 404);
 
-        $rawLeague = config("landing-catalog.leagues.{$league}");
+        $rawLeague = Landings::catalog("leagues.{$league}");
         abort_if($rawLeague === null, 404);
 
         $leagueData = Landings::resolve($rawLeague, $locale);
@@ -67,11 +67,11 @@ class LandingPageController
     {
         $locale = Landings::localeFromRequest();
 
-        $data = Landings::resolve(config("product-landings.landings.{$landing}"), $locale);
+        $data = Landings::resolve(Landings::product($landing), $locale);
         abort_if($data === null, 404);
 
         // تیم را روی config خام (دوزبانه) پیدا کن تا slug پایدار باشد
-        $rawLeague = config("landing-catalog.leagues.{$league}");
+        $rawLeague = Landings::catalog("leagues.{$league}");
         abort_if($rawLeague === null, 404);
 
         $rawTeam = collect($rawLeague['teams'] ?? [])
@@ -135,7 +135,7 @@ class LandingPageController
      */
     private function enrichPage(string $page, string $locale): array
     {
-        $config = Landings::resolve(config("product-landings.pages.{$page}"), $locale) ?? [];
+        $config = Landings::resolve(Landings::page($page), $locale) ?? [];
 
         $catalogMap = [
             'leagues' => 'leagues',
@@ -144,7 +144,7 @@ class LandingPageController
         ];
 
         if (isset($catalogMap[$page])) {
-            $catalog = Landings::resolve(config('landing-catalog.'.$catalogMap[$page]), $locale);
+            $catalog = Landings::resolve(Landings::catalog($catalogMap[$page]), $locale);
             $config['catalog'] = $catalog;
         }
 

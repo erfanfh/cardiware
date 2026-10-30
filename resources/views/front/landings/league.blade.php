@@ -19,7 +19,7 @@
                      style="background: radial-gradient(closest-side, var(--landing-glow), transparent)"></div>
             </div>
 
-            @php($logoFile = \App\Support\Landings::leagueLogo($leagueSlug, !empty($league['logo']) ? basename($league['logo']) : null))
+            @php($logoFile = \App\Support\Landings::leagueLogo($leagueSlug, $league['logo'] ?? null))
             <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-12 sm:px-6 lg:px-8">
                 {{-- breadcrumb --}}
                 <nav class="flex flex-wrap items-center gap-2 text-xs text-muted" aria-label="breadcrumb">
@@ -35,7 +35,7 @@
                 <div class="mt-8 flex flex-col items-start gap-7 sm:flex-row sm:items-center">
                     <span class="glow-frame grid size-28 shrink-0 place-items-center rounded-3xl border border-edge/80 bg-surface-2">
                         @if(!empty($logoFile))
-                            <img src="{{ asset('images/landings/logos/emb/'.$logoFile) }}" alt="{{ $league['name'] }}" class="size-20 object-contain">
+                            <img src="{{ \App\Support\Landings::logoUrl($logoFile) }}" alt="{{ $league['name'] }}" class="size-20 object-contain">
                         @else
                             <span class="font-num text-xl font-black tracking-widest text-muted">{{ $league['tag'] }}</span>
                         @endif
@@ -77,7 +77,7 @@
                         <a href="{{ $prefix }}/{{ $slug }}/leagues/{{ $leagueSlug }}/{{ $teamSlugs[$i] }}" class="group flex items-center gap-3.5 rounded-2xl border border-edge/70 bg-surface/60 p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40">
                             <span class="grid size-14 shrink-0 place-items-center rounded-xl border border-edge/60 bg-surface-2 p-1.5">
                                 @if(!empty($team['logo']))
-                                    <img src="{{ asset('images/landings/logos/emb/'.$team['logo']) }}" alt="{{ $team['name'] }}" class="size-full object-contain" loading="lazy">
+                                    <img src="{{ \App\Support\Landings::logoUrl($team['logo']) }}" alt="{{ $team['name'] }}" class="size-full object-contain" loading="lazy">
                                 @else
                                     <span class="font-num text-lg font-black text-muted/70">?</span>
                                 @endif

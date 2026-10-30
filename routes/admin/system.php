@@ -5,6 +5,10 @@ use App\Http\Controllers\Admin\System\NotificationEventSettingController;
 use App\Http\Controllers\Admin\System\TeamSettingMemberSearchController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
+    Route::get('product-landings/{document?}', 'productLandings')
+        ->where('document', 'ultimate|fifa23|pages|catalog')->name('product-landings');
+    Route::put('product-landings/{document}', 'storeProductLandings')
+        ->where('document', 'ultimate|fifa23|pages|catalog')->name('product-landings.store');
     Route::get('backup', 'backup')->name('backup');
     Route::put('backup', 'storeBackup')->name('backup.store');
     Route::post('backup/run', 'runBackup')->name('backup.run');

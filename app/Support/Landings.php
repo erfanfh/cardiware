@@ -2,6 +2,8 @@
 
 namespace App\Support;
 
+use App\Infrastructure\Services\Setting\Groups\ProductLandingsSettings;
+
 /**
  * ابزارهای موتور لندینگ — دوزبانه‌سازی و آدرس‌ها
  *
@@ -10,6 +12,26 @@ namespace App\Support;
  */
 class Landings
 {
+    public static function product(string $slug): ?array
+    {
+        return app(ProductLandingsSettings::class)->product($slug);
+    }
+
+    public static function page(string $slug): ?array
+    {
+        return app(ProductLandingsSettings::class)->document('pages')[$slug] ?? null;
+    }
+
+    public static function catalog(string $key): mixed
+    {
+        return data_get(app(ProductLandingsSettings::class)->document('catalog'), $key);
+    }
+
+    public static function logoUrl(string $path): string
+    {
+        return asset(str_contains($path, '/') ? $path : 'images/landings/logos/emb/'.$path);
+    }
+
     /** locale پیش‌فرض سایت */
     public const DEFAULT_LOCALE = 'fa';
 

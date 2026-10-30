@@ -5,13 +5,13 @@
 
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
         @foreach($pageData['catalog'] as $leagueSlug => $league)
-            @php($logoFile = \App\Support\Landings::leagueLogo($leagueSlug, !empty($league['logo']) ? basename($league['logo']) : null))
+            @php($logoFile = \App\Support\Landings::leagueLogo($leagueSlug, $league['logo'] ?? null))
             <a href="{{ $prefix }}/{{ $slug }}/leagues/{{ $leagueSlug }}"
                class="group flex items-center gap-4 rounded-2xl border border-edge/70 bg-surface/60 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-accent/40">
 
                 <span class="grid size-16 shrink-0 place-items-center rounded-2xl border border-edge/60 bg-surface-2">
                     @if(!empty($logoFile))
-                        <img src="{{ asset('images/landings/logos/emb/'.$logoFile) }}" alt="{{ $league['name'] }}" class="size-12 object-contain" loading="lazy">
+                        <img src="{{ \App\Support\Landings::logoUrl($logoFile) }}" alt="{{ $league['name'] }}" class="size-12 object-contain" loading="lazy">
                     @else
                         <span class="font-num text-sm font-black tracking-widest text-muted">{{ $league['tag'] }}</span>
                     @endif

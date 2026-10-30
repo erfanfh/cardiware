@@ -9,7 +9,7 @@ final class GetProductLandingPageDataAction
     public function execute(string $slug): array
     {
         $locale = Landings::localeFromRequest();
-        $data = Landings::resolve(config("product-landings.landings.{$slug}"), $locale);
+        $data = Landings::resolve(Landings::product($slug), $locale);
 
         abort_if($data === null, 404);
 

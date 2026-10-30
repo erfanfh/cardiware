@@ -7,7 +7,7 @@
                 @php($logoFile = !empty($item['slug']) ? \App\Support\Landings::leagueLogo($item['slug'], $item['logo'] ?? null) : ($item['logo'] ?? null))
                 <span class="league-chip {{ !empty($logoFile) ? 'league-chip--logo' : '' }}" dir="rtl">
                     @if(!empty($logoFile))
-                        <img src="{{ asset('images/landings/logos/emb/'.$logoFile) }}" alt="" class="size-7 object-contain" loading="lazy">
+                        <img src="{{ \App\Support\Landings::logoUrl($logoFile) }}" alt="" class="size-7 object-contain" loading="lazy">
                     @else
                         <span class="font-num text-[10px] font-bold tracking-widest text-accent">{{ $item['tag'] }}</span>
                     @endif

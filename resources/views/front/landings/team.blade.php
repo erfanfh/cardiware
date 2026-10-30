@@ -40,7 +40,7 @@
                     <span data-tilt="9" class="tilt-card glow-frame grid size-28 shrink-0 place-items-center rounded-3xl border border-edge/80 bg-surface-2">
                         <span data-tilt-inner class="grid place-items-center">
                             @if(!empty($team['logo']))
-                                <img src="{{ asset('images/landings/logos/emb/'.$team['logo']) }}" alt="{{ $team['name'] }}" class="size-20 object-contain">
+                                <img src="{{ \App\Support\Landings::logoUrl($team['logo']) }}" alt="{{ $team['name'] }}" class="size-20 object-contain">
                             @else
                                 <span class="font-num text-xl font-black tracking-widest text-muted">?</span>
                             @endif

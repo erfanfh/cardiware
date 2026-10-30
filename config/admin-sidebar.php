@@ -608,6 +608,12 @@ return [
                 'gate' => 'setting.products',
             ],
             [
+                'label' => 'لندینگ‌های PGL',
+                'route' => 'admin.settings.product-landings',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.product-landings',
+            ],
+            [
                 'label' => 'صفحه استخدام',
                 'route' => 'admin.settings.careers',
                 'icon' => 'icons.settings-02',

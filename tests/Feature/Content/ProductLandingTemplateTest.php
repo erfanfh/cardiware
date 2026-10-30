@@ -11,15 +11,20 @@ use App\Http\Middleware\ForceTrailingSlash;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
 use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Infrastructure\Services\Setting\BaseSettings;
 use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ProductLandingTemplateTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected function setUp(): void
     {
         parent::setUp();
+        BaseSettings::clearResolvedGroups();
 
         $this->withoutVite();
         $this->withoutMiddleware([

@@ -126,6 +126,7 @@ class PermissionSeeder extends Seeder
                 'footer' => 'تنظیمات فوتر',
                 'home' => 'صفحه اصلی',
                 'about-us' => 'درباره ما',
+                'product-landings' => 'لندینگ‌های PGL',
                 'team' => 'صفحه تیم',
                 'careers' => 'صفحه استخدام',
                 'ads' => 'تنظیمات تبلیغات',
