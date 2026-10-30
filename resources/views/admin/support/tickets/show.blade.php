@@ -131,7 +131,7 @@
                             <div class="mb-4 flex justify-start">
                                 <div class="max-w-[82%]">
                                     <div class="mb-1 text-right text-xs font-bold text-brand-600">
-                                        {{ $message->user?->name ?? 'پشتیبانی' }}
+                                        {{ $message->user?->display_name ?? 'پشتیبانی' }}
                                     </div>
 
                                     <div
