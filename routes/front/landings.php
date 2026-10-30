@@ -17,6 +17,8 @@
 
 use App\Http\Controllers\Front\Landings\LandingPageController;
 use App\Http\Controllers\Front\Landings\ProductLandingController;
+use App\Http\Middleware\EnsureUserIsSuperAdmin;
+use App\Http\Middleware\ProtectContentPreview;
 use Illuminate\Support\Facades\Route;
 
 // Match only registered products so the CMS catch-all keeps its own slugs.
@@ -28,6 +30,7 @@ $landingPattern = implode('|', array_map(
 /* --- فارسی (بدون پیشوند) --- */
 Route::get('/{landing}', [ProductLandingController::class, 'show'])
     ->where('landing', $landingPattern)
+    ->middleware([EnsureUserIsSuperAdmin::class, ProtectContentPreview::class])
     ->name('landings.show');
 
 Route::get('/{landing}/leagues/{league}', [LandingPageController::class, 'league'])

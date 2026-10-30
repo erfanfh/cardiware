@@ -35,6 +35,7 @@
 ## مسیرها
 
 - `/pgl-ultimate` و `/pgl-fifa-23`: لندینگ‌های فارسی
+- دسترسی مستقیم به دو مسیر فارسی بالا فقط برای نقش دارای `is_super_admin` فعال است؛ مهمان، کاربر عادی و مدیر دارای مجوز پنل بدون این نقش پاسخ ۴۰۴ می‌گیرند.
 - `/en/pgl-ultimate` و `/en/pgl-fifa-23`: نسخه‌های انگلیسی
 - زیرمسیرهای `leagues`، `stadiums`، `trophies` و `faces`: جزئیات
 - نمونه صفحه لیگ: `/pgl-ultimate/leagues/persian-gulf-pro-league`

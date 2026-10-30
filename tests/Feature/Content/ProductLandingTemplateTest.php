@@ -7,6 +7,9 @@ use App\Application\Content\DTOs\ResolvedContentDTO;
 use App\Application\Content\Services\PageTemplateService;
 use App\Application\System\Actions\StoreViewAction;
 use App\Domain\Content\Models\Page;
+use App\Domain\Identity\Models\Permission;
+use App\Domain\Identity\Models\Role;
+use App\Domain\Identity\Models\User;
 use App\Http\Middleware\ForceTrailingSlash;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
 use App\Http\Middleware\RecordDailyLoyaltyVisit;
@@ -47,6 +50,11 @@ class ProductLandingTemplateTest extends TestCase
     #[DataProvider('landingUrls')]
     public function test_original_landing_pages_render(string $url, string $locale, string $direction): void
     {
+        if (in_array($url, ['/pgl-ultimate', '/pgl-fifa-23'], true)) {
+            $role = Role::factory()->create(['is_super_admin' => true]);
+            $this->actingAs(User::factory()->create(['role_id' => $role->id]));
+        }
+
         $this->get($url)
             ->assertOk()
             ->assertSee('<html lang="'.$locale.'" dir="'.$direction.'">', false)
@@ -66,6 +74,51 @@ class ProductLandingTemplateTest extends TestCase
 
         self::assertSame('لندینگ PGL Ultimate 27', $templates['pgl-ultimate']);
         self::assertSame('لندینگ PGL FIFA 23', $templates['pgl-fifa-23']);
+    }
+
+    public static function restrictedLandingUrls(): iterable
+    {
+        yield ['/pgl-ultimate'];
+        yield ['/pgl-fifa-23'];
+    }
+
+    #[DataProvider('restrictedLandingUrls')]
+    public function test_guest_receives_404_on_restricted_landing(string $url): void
+    {
+        $this->get($url)->assertNotFound();
+        $this->head($url)->assertNotFound();
+        $this->get($url.'/?preview=1')->assertNotFound();
+    }
+
+    #[DataProvider('restrictedLandingUrls')]
+    public function test_regular_user_receives_404_on_restricted_landing(string $url): void
+    {
+        $this->actingAs(User::factory()->create());
+
+        $this->get($url)->assertNotFound();
+    }
+
+    #[DataProvider('restrictedLandingUrls')]
+    public function test_admin_without_super_admin_role_receives_404(string $url): void
+    {
+        $role = Role::factory()->create(['is_super_admin' => false]);
+        $role->permissions()->attach(Permission::query()->create([
+            'group' => 'admin', 'ability' => 'display', 'label' => 'پنل مدیریت',
+        ])->id);
+        $this->actingAs(User::factory()->create(['role_id' => $role->id]));
+
+        $this->get($url)->assertNotFound();
+    }
+
+    #[DataProvider('restrictedLandingUrls')]
+    public function test_super_admin_can_view_restricted_landing_without_public_caching(string $url): void
+    {
+        $role = Role::factory()->create(['is_super_admin' => true]);
+        $this->actingAs(User::factory()->create(['role_id' => $role->id]));
+
+        $response = $this->get($url)->assertOk()->assertViewIs('front.landings.page');
+        self::assertTrue($response->headers->hasCacheControlDirective('private'));
+        self::assertTrue($response->headers->hasCacheControlDirective('no-store'));
     }
 
     public static function templateNames(): iterable
