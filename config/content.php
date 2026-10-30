@@ -34,5 +34,7 @@ return [
         'preview',
         'vip',
         'vip-products',
+        'pgl-fifa-23',
+        'pgl-ultimate',
     ],
 ];
