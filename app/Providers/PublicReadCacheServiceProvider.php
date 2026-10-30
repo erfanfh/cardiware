@@ -29,6 +29,7 @@ use App\Domain\Raffle\Models\DrawRun;
 use App\Domain\Raffle\Models\DrawTicket;
 use App\Domain\Raffle\Models\DrawWinner;
 use App\Domain\Seo\Models\SeoMeta;
+use App\Domain\Story\Models\Story;
 use App\Domain\Support\Models\TicketDepartment;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
 use App\Domain\Video\Models\Video;
@@ -47,7 +48,7 @@ final class PublicReadCacheServiceProvider extends ServiceProvider
             ProductSaleItemFile::class, Comment::class, PointAccount::class,
             Poll::class, PollOption::class, DrawCampaign::class, DrawPrize::class,
             DrawWinner::class, DrawRun::class, DrawTicket::class, Coupon::class, CouponTarget::class,
-            AccountAnnouncement::class, Popup::class, TicketDepartment::class,
+            AccountAnnouncement::class, Popup::class, TicketDepartment::class, Story::class,
         ] as $model) {
             $model::observe(PublicReadCacheObserver::class);
         }

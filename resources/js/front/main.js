@@ -13,8 +13,10 @@ import './product-detail/video-gallery.js';
 import productBuyBox from './product-detail/product-buy-box.js';
 import './product-list/hero-slider.js';
 import productTabs from './product-detail/tabs.js';
+import storyViewer from './story-viewer.js';
 
 Alpine.data('productTabs', productTabs);
+Alpine.data('storyViewer', storyViewer);
 
 window.productBuyBox = productBuyBox;
 

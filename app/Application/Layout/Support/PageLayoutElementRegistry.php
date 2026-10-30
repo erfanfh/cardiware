@@ -21,7 +21,7 @@ class PageLayoutElementRegistry
                     'content_main',
                     'footer_primary',
                 ],
-                'settings_route' => 'admin.dashboard',
+                'settings_route' => 'admin.stories.index',
             ],
             'hero-slider' => [
                 'type' => 'hero_slider',

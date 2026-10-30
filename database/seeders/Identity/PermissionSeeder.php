@@ -196,6 +196,12 @@ class PermissionSeeder extends Seeder
             'account-announcement' => [
                 'manage' => 'مدیریت اطلاعیه‌های حساب کاربری',
             ],
+            'story' => [
+                'list' => 'لیست استوری‌ها',
+                'create' => 'ایجاد استوری',
+                'edit' => 'ویرایش استوری',
+                'delete' => 'حذف استوری',
+            ],
             'popup' => [
                 'list' => 'لیست پاپ‌آپ‌ها',
                 'create' => 'ایجاد پاپ‌آپ',

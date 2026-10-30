@@ -61,6 +61,16 @@ return [
     ],
 
     [
+        'label' => 'استوری‌ها',
+        'route' => 'admin.stories.index',
+        'icon' => 'icons.image-03',
+        'children' => [
+            ['label' => 'لیست استوری‌ها', 'route' => 'admin.stories.index', 'icon' => 'icons.menu-01', 'gate' => 'story.list'],
+            ['label' => 'ایجاد استوری', 'route' => 'admin.stories.create', 'icon' => 'icons.plus-sign', 'gate' => 'story.create'],
+        ],
+    ],
+
+    [
         'label' => 'رسانه‌ها',
         'route' => 'admin.media.index',
         'icon' => 'icons.image-03',
