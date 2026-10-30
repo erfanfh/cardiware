@@ -19,12 +19,10 @@ class ArrayCast implements CastsAttributes
 
         try {
             $decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
-            if (json_last_error() !== JSON_ERROR_NONE)
-                throw new JsonException("Error decoding JSON for key '$key': " . json_last_error_msg());
 
             return is_array($decoded) ? $decoded : [];
         } catch (JsonException $e) {
-            throw new InvalidArgumentException("Value for '$key' is not a valid JSON array: " . $e->getMessage());
+            throw new InvalidArgumentException("Value for '$key' is not a valid JSON array: " . $e->getMessage(), previous: $e);
         }
     }
 
@@ -38,12 +36,10 @@ class ArrayCast implements CastsAttributes
 
         try {
             $json = json_encode($value, JSON_THROW_ON_ERROR);
-            if (json_last_error() !== JSON_ERROR_NONE)
-                throw new JsonException("Error encoding JSON for key '$key': " . json_last_error_msg());
 
             return $json;
         } catch (JsonException $e) {
-            throw new InvalidArgumentException("Could not encode array to JSON for key '$key': " . $e->getMessage());
+            throw new InvalidArgumentException("Could not encode array to JSON for key '$key': " . $e->getMessage(), previous: $e);
         }
     }
 }

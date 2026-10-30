@@ -4,6 +4,7 @@ namespace Tests\Feature\Content;
 
 use App\Application\Content\Support\ProductLandingContentSchema;
 use App\Application\Shared\Cache\Invalidators\SettingCacheInvalidator;
+use App\Application\System\Actions\UpdateSettingAction;
 use App\Domain\Identity\Models\Role;
 use App\Domain\Identity\Models\Permission;
 use App\Domain\Identity\Models\User;
@@ -86,6 +87,22 @@ class ProductLandingsSettingsTest extends TestCase
         self::assertSame($originalOther, $settings->document('fifa23'));
         BaseSettings::clearResolvedGroups();
         self::assertSame($content, app(ProductLandingsSettings::class)->document('ultimate'));
+    }
+
+    public function test_all_tabs_save_when_an_earlier_json_operation_failed_in_the_same_request(): void
+    {
+        $this->actingAs($this->admin());
+        $this->app->resolving(UpdateSettingAction::class, static function (): void {
+            json_decode('{invalid json');
+        });
+
+        foreach (ProductLandingsSettings::defaults() as $key => $content) {
+            $this->put(route('admin.settings.product-landings.store', $key), $this->payload($key, $content))
+                ->assertSessionHasNoErrors()
+                ->assertRedirect(route('admin.settings.product-landings', $key));
+
+            self::assertSame($content, app(ProductLandingsSettings::class)->document($key));
+        }
     }
 
     public function test_shared_page_and_catalog_updates_reach_details_and_home(): void
