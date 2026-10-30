@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" role="img" aria-label="Stadiums banner">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0C1310"/>
+      <stop offset="1" stop-color="#070C0A"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#DFFFE8" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#DFFFE8" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="640" fill="url(#bg)"/>
+  <!-- نورافکن‌ها -->
+  <g>
+    <polygon points="300,0 380,0 620,420 480,470" fill="url(#beam)"/>
+    <polygon points="1540,0 1620,0 1440,470 1300,420" fill="url(#beam)"/>
+    <rect x="322" y="10" width="36" height="10" rx="4" fill="#DFFFE8" opacity="0.85"/>
+    <rect x="1562" y="10" width="36" height="10" rx="4" fill="#DFFFE8" opacity="0.85"/>
+  </g>
+  <!-- کاسه استادیوم -->
+  <g fill="none">
+    <ellipse cx="960" cy="400" rx="760" ry="230" stroke="#1F2D33" stroke-width="30" opacity="0.95"/>
+    <ellipse cx="960" cy="400" rx="640" ry="180" stroke="#16232A" stroke-width="18"/>
+    <ellipse cx="960" cy="400" rx="520" ry="140" stroke="#1F2D33" stroke-width="2" stroke-dasharray="5 9"/>
+    <ellipse cx="960" cy="400" rx="330" ry="105" fill="#0B1A10" stroke="#3FA37A" stroke-opacity="0.45" stroke-width="4"/>
+    <line x1="630" y1="400" x2="1290" y2="400" stroke="#3FA37A" stroke-opacity="0.45" stroke-width="4"/>
+    <circle cx="960" cy="400" r="34" fill="none" stroke="#3FA37A" stroke-opacity="0.45" stroke-width="4"/>
+    <circle cx="960" cy="400" r="5" fill="#67E8F9" opacity="0.8"/>
+  </g>
+  <!-- سکوها -->
+  <g stroke="#1F2D33" stroke-width="3" opacity="0.9">
+    <path d="M240 340 Q960 200 1680 340"/>
+    <path d="M330 390 Q960 265 1590 390"/>
+  </g>
+  <g fill="#31454E" opacity="0.8">
+    <circle cx="380" cy="330" r="3"/><circle cx="560" cy="280" r="3"/><circle cx="760" cy="250" r="3"/>
+    <circle cx="960" cy="240" r="3"/><circle cx="1160" cy="250" r="3"/><circle cx="1360" cy="280" r="3"/>
+    <circle cx="1540" cy="330" r="3"/><circle cx="470" cy="420" r="3"/><circle cx="1450" cy="420" r="3"/>
+  </g>
+  <g fill="#67E8F9" opacity="0.45">
+    <circle cx="200" cy="120" r="3"/><circle cx="1750" cy="160" r="3"/><circle cx="130" cy="520" r="2.5"/>
+    <circle cx="1800" cy="540" r="2.5"/><circle cx="960" cy="90" r="2.5"/>
+  </g>
+</svg>

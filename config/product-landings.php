@@ -1,0 +1,629 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Product Landing Registry — رجیستری لندینگ محصولات (دوزبانه)
+|--------------------------------------------------------------------------
+| هر رشته‌ی محتوایی به شکل ['fa' => .., 'en' => ..] است و در کنترلر
+| با App\Support\Landings::resolve() به locale فعلی تبدیل می‌شود.
+|
+| هر محصول = یک کلید (slug) + تم رنگی (.landing--{theme} در landing.css)
+| + لیست sections لندینگ + لیست pages (صفحات جزئیات).
+| دیتای لیگ/تیم/استادیوم/جام در config/landing-catalog.php مشترک است.
+*/
+
+return [
+
+    'landings' => [
+
+        /*
+        |--------------------------------------------------------------
+        | PGL Ultimate 27 — تم سبز نئون (پالت رسمی PGL Ultimate)
+        |--------------------------------------------------------------
+        */
+        'pgl-ultimate' => [
+            'product_name' => ['fa' => 'PGL Ultimate 27', 'en' => 'PGL Ultimate 27'],
+            'brand' => 'MODDINGWAY',
+            'theme' => 'pgl-ultimate',
+            'game' => 'EA SPORTS FC™ 27',
+
+            'seo' => [
+                'title' => [
+                    'fa' => 'PGL Ultimate 27 | بزرگ‌ترین پچ فارسی EA SPORTS FC 27',
+                    'en' => 'PGL Ultimate 27 | The Biggest Persian Mod for EA SPORTS FC 27',
+                ],
+                'description' => [
+                    'fa' => 'تجربه‌ی کامل فوتبال واقعی: لیگ برتر خلیج فارس، گزارشگری فارسی، بیش از ۳٬۱۰۰ چهره واقعی، استادیوم‌های ایرانی و گیم‌پلی واقع‌گرایانه — همه در یک پچ برای EA SPORTS FC 27.',
+                    'en' => 'Complete realistic football: the Persian Gulf Pro League, Persian commentary, 3,100+ real faces, Iranian stadiums and realistic gameplay — one mod for EA SPORTS FC 27.',
+                ],
+            ],
+
+            'buy_url' => '#pricing',
+            'launcher_url' => '#install',
+            'product_url' => '#',
+
+            'nav' => [
+                ['label' => ['fa' => 'ویژگی‌ها', 'en' => 'Features'], 'href' => '#features'],
+                ['label' => ['fa' => 'لیگ‌ها', 'en' => 'Leagues'], 'href' => '#leagues'],
+                ['label' => ['fa' => 'گالری', 'en' => 'Gallery'], 'href' => '#gallery'],
+                ['label' => ['fa' => 'نصب', 'en' => 'Install'], 'href' => '#install'],
+                ['label' => ['fa' => 'قیمت', 'en' => 'Pricing'], 'href' => '#pricing'],
+                ['label' => ['fa' => 'سوالات', 'en' => 'FAQ'], 'href' => '#faq'],
+            ],
+
+            // صفحات جزئیات فعال برای این محصول
+            'pages' => [
+                'leagues' => ['label' => ['fa' => 'همه لیگ‌ها', 'en' => 'All Leagues']],
+                'stadiums' => ['label' => ['fa' => 'استادیوم‌ها', 'en' => 'Stadiums']],
+                'trophies' => ['label' => ['fa' => 'جام‌ها و تروفی‌ها', 'en' => 'Trophies']],
+                'faces' => ['label' => ['fa' => 'چهره‌های واقعی', 'en' => 'Real Faces']],
+            ],
+
+            'sections' => [
+
+                [
+                    'type' => 'hero',
+                    'badge' => ['fa' => 'نسخه ۲۷ همین حالا منتشر شد', 'en' => 'Version 27 is out now'],
+                    'title' => ['fa' => 'فوتبال واقعی،', 'en' => 'Real football,'],
+                    'highlight' => ['fa' => 'به زبان خودت', 'en' => 'in your own language'],
+                    'subtitle' => [
+                        'fa' => 'PGL Ultimate 27 بزرگ‌ترین و کامل‌ترین پچ فارسی برای EA SPORTS FC 27 است؛ لیگ برتر خلیج فارس با گزارش کامل فارسی، هزاران چهره واقعی و گیم‌پلی واقع‌گرایانه — همه در یک پچ، همه با نصب خودکار.',
+                        'en' => 'PGL Ultimate 27 is the biggest and most complete Persian mod for EA SPORTS FC 27 — the Persian Gulf Pro League with full Persian commentary, thousands of real faces and realistic gameplay, all in one mod with one-click install.',
+                    ],
+                    'bullets' => [
+                        ['fa' => 'نصب خودکار با MW Launcher', 'en' => 'One-click install via MW Launcher'],
+                        ['fa' => 'آپدیت‌های فصلی رایگان', 'en' => 'Free seasonal updates'],
+                        ['fa' => 'پشتیبانی اختصاصی ۷ روز هفته', 'en' => 'Dedicated 7-day-a-week support'],
+                    ],
+                    'image' => 'images/landings/pgl-ultimate/hero.svg',
+                    'video_title' => ['fa' => 'تریلر PGL Ultimate 27', 'en' => 'PGL Ultimate 27 Trailer'],
+                    'chips' => [
+                        ['icon' => 'face', 'text' => ['fa' => '۳٬۱۰۰+ چهره واقعی', 'en' => '3,100+ real faces']],
+                        ['icon' => 'mic', 'text' => ['fa' => 'گزارشگری کامل فارسی', 'en' => 'Full Persian commentary']],
+                        ['icon' => 'stadium', 'text' => ['fa' => '۶۲ استادیوم واقعی', 'en' => '62 real stadiums']],
+                    ],
+                ],
+
+                [
+                    'type' => 'stats',
+                    'items' => [
+                        ['value' => 24, 'suffix' => '+', 'label' => ['fa' => 'لیگ واقعی', 'en' => 'Real leagues']],
+                        ['value' => 548, 'suffix' => '', 'label' => ['fa' => 'تیم دارای مجوز', 'en' => 'Licensed teams']],
+                        ['value' => 18000, 'suffix' => '+', 'label' => ['fa' => 'بازیکن به‌روز', 'en' => 'Updated players']],
+                        ['value' => 3100, 'suffix' => '+', 'label' => ['fa' => 'چهره سه‌بعدی', 'en' => '3D faces']],
+                        ['value' => 62, 'suffix' => '', 'label' => ['fa' => 'استادیوم واقعی', 'en' => 'Real stadiums']],
+                    ],
+                ],
+
+                [
+                    'type' => 'marquee',
+                    'items' => [
+                        ['label' => ['fa' => 'لیگ برتر خلیج فارس', 'en' => 'Persian Gulf Pro League'], 'tag' => 'IRN', 'slug' => 'persian-gulf-pro-league', 'logo' => null],
+                        ['label' => ['fa' => 'لیگ آزادگان', 'en' => 'Azadegan League'], 'tag' => 'IRN', 'slug' => 'azadegan-league', 'logo' => null],
+                        ['label' => ['fa' => 'پریمیرلیگ', 'en' => 'Premier League'], 'tag' => 'ENG', 'slug' => 'premier-league', 'logo' => 'emb_0005_l.png'],
+                        ['label' => ['fa' => 'لالیگا', 'en' => 'LaLiga'], 'tag' => 'ESP', 'slug' => 'laliga', 'logo' => 'emb_0008_l.png'],
+                        ['label' => ['fa' => 'سری آ', 'en' => 'Serie A'], 'tag' => 'ITA', 'slug' => 'serie-a', 'logo' => 'emb_0009_l.png'],
+                        ['label' => ['fa' => 'بوندسلیگا', 'en' => 'Bundesliga'], 'tag' => 'GER', 'slug' => 'bundesliga', 'logo' => 'emb_0010_l.png'],
+                        ['label' => ['fa' => 'لیگ ۱', 'en' => 'Ligue 1'], 'tag' => 'FRA', 'slug' => 'ligue-1', 'logo' => null],
+                        ['label' => ['fa' => 'لیگ قهرمانان اروپا', 'en' => 'Champions League'], 'tag' => 'UCL', 'slug' => 'uefa-champions-league', 'logo' => 'emb_0001_l.png'],
+                        ['label' => ['fa' => 'لیگ قهرمانان آسیا', 'en' => 'AFC Champions League'], 'tag' => 'AFC', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'اردیویزه', 'en' => 'Eredivisie'], 'tag' => 'NED', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'لیگا پرتغال', 'en' => 'Liga Portugal'], 'tag' => 'POR', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'لیگ عربستان', 'en' => 'Saudi Pro League'], 'tag' => 'KSA', 'slug' => null, 'logo' => null],
+                    ],
+                ],
+
+                [
+                    'type' => 'features',
+                    'eyebrow' => ['fa' => 'همه در یک پچ', 'en' => 'Everything in one mod'],
+                    'title' => ['fa' => 'هرچیزی که برای تجربه کامل نیاز داری', 'en' => 'Everything you need for the full experience'],
+                    'subtitle' => [
+                        'fa' => 'PGL Ultimate فقط یک ترنسفر پچ نیست؛ یک بسته کامل واقع‌گرایانه است که هر بخش بازی را بازسازی می‌کند — هر کارت را برای جزئیات کامل ببین.',
+                        'en' => 'PGL Ultimate is not just a transfer update — it is a complete realism pack that rebuilds every part of the game. Open each card for the full story.',
+                    ],
+                    'items' => [
+                        ['icon' => 'face', 'stat' => ['fa' => '۳٬۱۰۰+', 'en' => '3,100+'], 'title' => ['fa' => 'چهره‌های واقعی', 'en' => 'Real Faces'], 'desc' => ['fa' => 'چهره‌های سه‌بعدی بازیکنان لیگ برتر، ستاره‌های جهان و افسانه‌ها — با اسکن دقیق و مینی‌فیس به‌روز.', 'en' => '3D scans of Persian Gulf Pro League players, global stars and legends with up-to-date minifaces.'], 'page' => 'faces'],
+                        ['icon' => 'mic', 'stat' => ['fa' => 'فارسی', 'en' => 'Persian'], 'title' => ['fa' => 'گزارشگری فارسی', 'en' => 'Persian Commentary'], 'desc' => ['fa' => 'گزارش کامل مسابقات به فارسی به‌همراه آپدیتر خط، صدای استادیوم و ورودیه‌های اختصاصی تیم‌های ایران.', 'en' => 'Full Persian match commentary with touchline reports, stadium SFX and custom Iranian team intros.']],
+                        ['icon' => 'stadium', 'stat' => ['fa' => '۶۲', 'en' => '62'], 'title' => ['fa' => 'استادیوم واقعی', 'en' => 'Real Stadiums'], 'desc' => ['fa' => 'استادیوم‌های ایران و اروپا با چمن، نورپردازی و سکوهای اختصاصی هر تیم.', 'en' => 'Iranian and European stadiums with custom turf, lighting and stands.'], 'page' => 'stadiums'],
+                        ['icon' => 'gamepad', 'stat' => 'AI', 'title' => ['fa' => 'گیم‌پلی واقع‌گرایانه', 'en' => 'Realistic Gameplay'], 'desc' => ['fa' => 'تنظیمات دقیق فیزیک توپ، سرعت بازی و هوش مصنوعی برای تجربه‌ای نزدیک به واقعیت.', 'en' => 'Fine-tuned ball physics, match tempo and AI for a true-to-life experience.']],
+                        ['icon' => 'tv', 'stat' => 'HD', 'title' => ['fa' => 'پخش تلویزیونی', 'en' => 'TV Broadcast'], 'desc' => ['fa' => 'اسکوربورد شبکه‌های ورزشی، لوگوهای TV، ریپلی‌ها و گرافیک بین‌بازیِ هم‌سطح پخش زنده.', 'en' => 'Sports-network scoreboards, TV logos, replays and broadcast-grade graphics.']],
+                        ['icon' => 'trophy', 'stat' => ['fa' => '۴۰+', 'en' => '40+'], 'title' => ['fa' => 'جام‌ها و تروفی‌ها', 'en' => 'Trophies'], 'desc' => ['fa' => 'مدل سه‌بعدی جام‌های واقعی؛ از جام لیگ برتر تا لیگ قهرمانان اروپا.', 'en' => '3D models of real trophies, from the PGPL to the Champions League.'], 'page' => 'trophies'],
+                        ['icon' => 'shirt', 'stat' => ['fa' => '۱۰۰%', 'en' => '100%'], 'title' => ['fa' => 'کیت‌های فصل جدید', 'en' => 'This Season\'s Kits'], 'desc' => ['fa' => 'لباس‌های اصلی، سوم و دروازه‌بانی همه تیم‌ها با اسپانسرها و فونت‌های اختصاصی.', 'en' => 'Home, away, third and keeper kits for every club with sponsors and fonts.']],
+                        ['icon' => 'bolt', 'stat' => ['fa' => '۱ کلیک', 'en' => '1 click'], 'title' => ['fa' => 'نصب خودکار', 'en' => 'One-Click Install'], 'desc' => ['fa' => 'دانلود، نصب و آپدیت پچ فقط با یک کلیک در MW Launcher؛ بدون دست‌زدن به فایل‌های بازی.', 'en' => 'Download, install and update with a single click in MW Launcher — game files stay untouched.']],
+                        ['icon' => 'shield', 'stat' => ['fa' => 'ایمن', 'en' => 'Safe'], 'title' => ['fa' => 'پایدار و برگشت‌پذیر', 'en' => 'Stable & Reversible'], 'desc' => ['fa' => 'بدون تغییر فایل‌های اصلی بازی؛ حذف پچ و بازگشت به نسخه اصلی فقط با یک کلیک.', 'en' => 'No permanent game-file changes; remove the mod and the game reverts in one click.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'leagues',
+                    'eyebrow' => ['fa' => 'پوشش کامل', 'en' => 'Full coverage'],
+                    'title' => ['fa' => 'لیگ‌ها و جام‌های پچ', 'en' => 'Leagues & Cups in the Mod'],
+                    'subtitle' => [
+                        'fa' => 'از لیگ برتر خلیج فارس تا مهم‌ترین لیگ‌های اروپا — روی هر لیگ کلیک کن تا تیم‌هایش را با لوگو ببینی.',
+                        'en' => 'From the Persian Gulf Pro League to Europe\'s biggest stages — click any league to see its clubs with crests.',
+                    ],
+                    'items' => [
+                        ['slug' => 'persian-gulf-pro-league', 'tag' => 'IRN', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0001_l.png'],
+                        ['slug' => 'azadegan-league', 'tag' => 'IRN', 'teams' => 16, 'level' => ['fa' => 'سطح ۲', 'en' => 'Tier 2'], 'logo' => null],
+                        ['slug' => 'premier-league', 'tag' => 'ENG', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0005_l.png'],
+                        ['slug' => 'laliga', 'tag' => 'ESP', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0008_l.png'],
+                        ['slug' => 'serie-a', 'tag' => 'ITA', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0009_l.png'],
+                        ['slug' => 'bundesliga', 'tag' => 'GER', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0010_l.png'],
+                        ['slug' => 'ligue-1', 'tag' => 'FRA', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => null],
+                        ['slug' => 'uefa-champions-league', 'tag' => 'UCL', 'teams' => 36, 'level' => ['fa' => 'جام', 'en' => 'Cup'], 'logo' => 'images/landings/logos/emb/emb_0001_l.png'],
+                    ],
+                ],
+
+
+                [
+                    'type' => 'gallery',
+                    'eyebrow' => ['fa' => 'گالری', 'en' => 'Gallery'],
+                    'title' => ['fa' => 'پچ را از نزدیک ببین', 'en' => 'See the mod up close'],
+                    'subtitle' => ['fa' => 'گیم‌پلی، منوها، استادیوم‌ها و گرافیک پخش — بدون رتوش.', 'en' => 'Gameplay, menus, stadiums and broadcast graphics — no retouching.'],
+                    'images' => [
+                        ['src' => 'images/landings/shared/g1-menu.svg', 'caption' => ['fa' => 'منوی اصلی', 'en' => 'Main menu']],
+                        ['src' => 'images/landings/shared/g2-gameplay.svg', 'caption' => ['fa' => 'گیم‌پلی', 'en' => 'Gameplay']],
+                        ['src' => 'images/landings/shared/g3-stadium.svg', 'caption' => ['fa' => 'استادیوم', 'en' => 'Stadium']],
+                        ['src' => 'images/landings/shared/g4-faces.svg', 'caption' => ['fa' => 'چهره‌ها', 'en' => 'Faces']],
+                        ['src' => 'images/landings/shared/g5-broadcast.svg', 'caption' => ['fa' => 'پخش تلویزیونی', 'en' => 'Broadcast']],
+                        ['src' => 'images/landings/shared/g6-kits.svg', 'caption' => ['fa' => 'کیت‌ها', 'en' => 'Kits']],
+                    ],
+                ],
+
+                [
+                    'type' => 'steps',
+                    'eyebrow' => ['fa' => 'شروع سریع', 'en' => 'Quick start'],
+                    'title' => ['fa' => '۳ قدم تا اولین بازی', 'en' => 'Three steps to kickoff'],
+                    'subtitle' => ['fa' => 'بدون فایل زیپ و کپی دستی — همه چیز خودکار.', 'en' => 'No zips, no manual copies — everything is automated.'],
+                    'items' => [
+                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Moddingway را دانلود و نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Download the official Moddingway launcher; your account is your license.']],
+                        ['icon' => 'shield', 'title' => ['fa' => 'خرید و فعال‌سازی', 'en' => 'Buy & activate'], 'desc' => ['fa' => 'پچ را از فروشگاه خریداری کنید؛ لایسنس به صورت خودکار به حساب شما متصل می‌شود.', 'en' => 'Purchase from the store; the license links to your account automatically.']],
+                        ['icon' => 'bolt', 'title' => ['fa' => 'یک کلیک، تمام', 'en' => 'One click, done'], 'desc' => ['fa' => 'دکمه «نصب» را بزنید؛ لانچر پچ را دانلود، نصب و همیشه به‌روز نگه می‌دارد.', 'en' => 'Hit Install; the launcher downloads, installs and keeps the mod up to date.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'pricing',
+                    'eyebrow' => ['fa' => 'قیمت‌گذاری', 'en' => 'Pricing'],
+                    'title' => ['fa' => 'یک پچ، یک قیمت، همه‌ی امکانات', 'en' => 'One mod, one price, everything included'],
+                    'subtitle' => ['fa' => 'بدون اشتراک ماهانه — یک بار خرید، یک سال آپدیت رایگان.', 'en' => 'No monthly subscription — buy once, get a full year of updates.'],
+                    'plans' => [
+                        [
+                            'name' => 'PGL Ultimate 27',
+                            'badge' => ['fa' => 'پیشنهاد ویژه انتشار', 'en' => 'Launch offer'],
+                            'price' => ['fa' => '۸۹۰٬۰۰۰', 'en' => '$29'],
+                            'old_price' => ['fa' => '۱٬۲۰۰٬۰۰۰', 'en' => '$39'],
+                            'period' => ['fa' => 'تومان / سالانه', 'en' => 'per year'],
+                            'features' => [
+                                ['fa' => 'دسترسی کامل به همه بخش‌های پچ', 'en' => 'Full access to every mod feature'],
+                                ['fa' => 'آپدیت‌های فصلی و ترنسفری رایگان', 'en' => 'Free seasonal & transfer updates'],
+                                ['fa' => 'نصب و آپدیت خودکار با MW Launcher', 'en' => 'One-click install & updates'],
+                                ['fa' => 'پشتیبانی اختصاصی ۷ روز هفته', 'en' => 'Dedicated 7-day-a-week support'],
+                                ['fa' => 'تضمین بازگشت وجه تا ۷ روز', 'en' => '7-day money-back guarantee'],
+                            ],
+                            'cta' => ['fa' => 'همین حالا خرید کن', 'en' => 'Get it now'],
+                        ],
+                    ],
+                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی moddingway.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official moddingway.ir gateways — instant activation.'],
+                ],
+
+                [
+                    'type' => 'changelog',
+                    'eyebrow' => ['fa' => 'همیشه به‌روز', 'en' => 'Always up to date'],
+                    'title' => ['fa' => 'آخرین تغییرات پچ', 'en' => 'Latest changes'],
+                    'items' => [
+                        [
+                            'version' => 'V27.2', 'date' => ['fa' => '۱۴۰۵/۰۷/۳۰', 'en' => '2026-10-22'],
+                            'notes' => [
+                                ['fa' => 'آپدیت کامل ترنسفرهای تابستان برای ۱۲ لیگ', 'en' => 'Full summer transfers for 12 leagues'],
+                                ['fa' => '۸ چهره سه‌بعدی جدید برای بازیکنان لیگ برتر', 'en' => '8 new 3D faces for PGPL players'],
+                                ['fa' => 'بهبود پایداری گزارشگری فارسی در حالت کاریر', 'en' => 'Persian commentary stability in career mode'],
+                            ],
+                        ],
+                        [
+                            'version' => 'V27.1', 'date' => ['fa' => '۱۴۰۵/۰۷/۱۰', 'en' => '2026-10-02'],
+                            'notes' => [
+                                ['fa' => 'رفع مشکل اسکوربورد در مسابقات شب', 'en' => 'Fixed scoreboard in night matches'],
+                                ['fa' => 'به‌روزرسانی کیت‌های ۲۴ تیم', 'en' => 'Updated kits for 24 clubs'],
+                                ['fa' => 'بهینه‌سازی زمان نصب در MW Launcher', 'en' => 'Faster install times in MW Launcher'],
+                            ],
+                        ],
+                        [
+                            'version' => 'V27.0', 'date' => ['fa' => '۱۴۰۵/۰۶/۲۱', 'en' => '2026-09-12'],
+                            'notes' => [
+                                ['fa' => 'انتشار رسمی PGL Ultimate 27', 'en' => 'PGL Ultimate 27 official release'],
+                                ['fa' => 'پشتیبانی کامل از EA SPORTS FC 27', 'en' => 'Full EA SPORTS FC 27 support'],
+                                ['fa' => 'بازسازی کامل گرافیک پخش تلویزیونی', 'en' => 'Rebuilt TV broadcast graphics'],
+                            ],
+                        ],
+                    ],
+                ],
+
+                [
+                    'type' => 'faq',
+                    'eyebrow' => ['fa' => 'پرسش‌های متداول', 'en' => 'FAQ'],
+                    'title' => ['fa' => 'هر چیزی که لازم است بدانی', 'en' => 'Everything you need to know'],
+                    'items' => [
+                        ['q' => ['fa' => 'پچ با کدام نسخه بازی سازگار است؟', 'en' => 'Which game version is supported?'], 'a' => ['fa' => 'PGL Ultimate 27 با نسخه PC بازی EA SPORTS FC 27 کاملاً سازگار است و پس از هر آپدیت رسمی بازی، ظرف چند روز به‌روزرسانی می‌شود.', 'en' => 'PGL Ultimate 27 fully supports the PC version of EA SPORTS FC 27 and is updated within days of each official game patch.']],
+                        ['q' => ['fa' => 'نصب پچ چقدر طول می‌کشد؟', 'en' => 'How long does installation take?'], 'a' => ['fa' => 'با MW Launcher همه چیز خودکار است؛ بسته به سرعت اینترنت بین ۱۰ تا ۳۰ دقیقه.', 'en' => 'MW Launcher automates everything — typically 10 to 30 minutes depending on your connection.']],
+                        ['q' => ['fa' => 'آپدیت‌های پچ رایگان است؟', 'en' => 'Are updates free?'], 'a' => ['fa' => 'بله؛ تمام آپدیت‌های فصلی و رفع اشکال تا یک سال کامل پس از خرید رایگان‌اند.', 'en' => 'Yes — all seasonal and hotfix updates are free for a full year after purchase.']],
+                        ['q' => ['fa' => 'برای بازی آنلاین هم می‌توانم استفاده کنم؟', 'en' => 'Can I play online with it?'], 'a' => ['fa' => 'پچ برای حالت‌های آفلاین بهینه شده؛ برای بازی آنلاین با یک کلیک از لانچر موقتاً غیرفعال کنید.', 'en' => 'The mod is tuned for offline modes; disable it from the launcher with one click before going online.']],
+                        ['q' => ['fa' => 'حداقل سیستم مورد نیاز چیست؟', 'en' => 'What are the system requirements?'], 'a' => ['fa' => 'همان حداقل‌های خود بازی؛ پچ بار سخت‌افزاری اضافه‌ای ندارد.', 'en' => 'Same as the base game — the mod adds no extra hardware load.']],
+                        ['q' => ['fa' => 'اگر پچ را حذف کنم، بازی سالم برمی‌گردد؟', 'en' => 'Is removal safe?'], 'a' => ['fa' => 'بله؛ پچ هیچ فایل اصلی بازی را دائمی تغییر نمی‌دهد و حذفش بازی را دقیقاً به حالت قبل برمی‌گرداند.', 'en' => 'Yes — the mod never permanently alters game files; removing it restores the game exactly.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'cta',
+                    'title' => ['fa' => 'آماده‌ای فوتبال را از اول تجربه کنی؟', 'en' => 'Ready to fall in love with football again?'],
+                    'subtitle' => ['fa' => 'هزاران گیمر ایرانی همین الان با PGL Ultimate بازی می‌کنند — نصب فقط یک کلیک فاصله دارد.', 'en' => 'Thousands of gamers already play with PGL Ultimate — you are one click away.'],
+                    'primary' => ['label' => ['fa' => 'خرید PGL Ultimate 27', 'en' => 'Buy PGL Ultimate 27'], 'href' => '#pricing'],
+                    'secondary' => ['label' => ['fa' => 'دانلود MW Launcher', 'en' => 'Download MW Launcher'], 'href' => '#install'],
+                ],
+            ],
+
+            'footer' => [
+                'about' => [
+                    'fa' => 'Moddingway از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL Ultimate پرچم‌دار ما برای نسل جدید بازی‌های فوتبال است.',
+                    'en' => 'Since 2019, Moddingway has been Iran\'s largest football modding hub; PGL Ultimate is our flagship for the new generation of football games.',
+                ],
+                'links' => [
+                    ['label' => ['fa' => 'وبلاگ', 'en' => 'Blog'], 'href' => '#'],
+                    ['label' => ['fa' => 'پشتیبانی', 'en' => 'Support'], 'href' => '#'],
+                    ['label' => ['fa' => 'قوانین و بازگشت وجه', 'en' => 'Terms & refunds'], 'href' => '#'],
+                    ['label' => ['fa' => 'درباره ما', 'en' => 'About us'], 'href' => '#'],
+                ],
+                'socials' => [
+                    ['label' => 'Telegram', 'href' => '#'],
+                    ['label' => 'Instagram', 'href' => '#'],
+                    ['label' => 'YouTube', 'href' => '#'],
+                    ['label' => 'Discord', 'href' => '#'],
+                ],
+                'disclaimer' => [
+                    'fa' => 'PGL Ultimate یک محصول مستقل از Moddingway است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports، FIFA یا هر لیگ و باشگاهی ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
+                    'en' => 'PGL Ultimate is an independent Moddingway product and is not affiliated with or endorsed by EA Sports, FIFA or any league or club. All trademarks belong to their respective owners.',
+                ],
+                'copyright' => ['fa' => '© ۱۴۰۵ Moddingway — تمامی حقوق محفوظ است.', 'en' => '© 2026 Moddingway — All rights reserved.'],
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------
+        | PGL FIFA 23 — تم نارنجی برند Moddingway (نمونه محصول دوم)
+        |--------------------------------------------------------------
+        */
+        'pgl-fifa-23' => [
+            'product_name' => ['fa' => 'PGL FIFA 23', 'en' => 'PGL FIFA 23'],
+            'brand' => 'MODDINGWAY',
+            'theme' => 'pgl-fifa-23',
+            'game' => 'EA SPORTS™ FIFA 23',
+
+            'seo' => [
+                'title' => ['fa' => 'PGL FIFA 23 | پچ کامل فارسی FIFA 23', 'en' => 'PGL FIFA 23 | The Complete Persian Mod for FIFA 23'],
+                'description' => [
+                    'fa' => 'کامل‌ترین پچ فارسی FIFA 23: لیگ برتر خلیج فارس، گزارشگری فارسی، چهره‌های واقعی، استادیوم‌های ایرانی و گیم‌پلی واقع‌گرایانه.',
+                    'en' => 'The most complete Persian mod for FIFA 23: Persian Gulf Pro League, Persian commentary, real faces, Iranian stadiums and realistic gameplay.',
+                ],
+            ],
+
+            'buy_url' => '#pricing',
+            'launcher_url' => '#install',
+            'product_url' => '#',
+
+            'nav' => [
+                ['label' => ['fa' => 'ویژگی‌ها', 'en' => 'Features'], 'href' => '#features'],
+                ['label' => ['fa' => 'لیگ‌ها', 'en' => 'Leagues'], 'href' => '#leagues'],
+                ['label' => ['fa' => 'گالری', 'en' => 'Gallery'], 'href' => '#gallery'],
+                ['label' => ['fa' => 'نصب', 'en' => 'Install'], 'href' => '#install'],
+                ['label' => ['fa' => 'قیمت', 'en' => 'Pricing'], 'href' => '#pricing'],
+                ['label' => ['fa' => 'سوالات', 'en' => 'FAQ'], 'href' => '#faq'],
+            ],
+
+            'pages' => [
+                'leagues' => ['label' => ['fa' => 'همه لیگ‌ها', 'en' => 'All Leagues']],
+                'stadiums' => ['label' => ['fa' => 'استادیوم‌ها', 'en' => 'Stadiums']],
+                'trophies' => ['label' => ['fa' => 'جام‌ها و تروفی‌ها', 'en' => 'Trophies']],
+                'faces' => ['label' => ['fa' => 'چهره‌های واقعی', 'en' => 'Real Faces']],
+            ],
+
+            'sections' => [
+
+                [
+                    'type' => 'hero',
+                    'badge' => ['fa' => 'نسخه نهایی V3 منتشر شد', 'en' => 'Final V3 is out now'],
+                    'title' => ['fa' => 'FIFA 23،', 'en' => 'FIFA 23,'],
+                    'highlight' => ['fa' => 'مثل همیشه بهتر', 'en' => 'better than ever'],
+                    'subtitle' => [
+                        'fa' => 'PGL FIFA 23 پرچم‌دار Moddingway؛ کامل‌ترین پچ فارسی FIFA 23 با پوشش کامل لیگ برتر خلیج فارس، گزارش فارسی و صدها چهره واقعی — روی پایدارترین نسخه سری FIFA.',
+                        'en' => 'The Moddingway flagship: the most complete Persian mod for FIFA 23 — full Persian Gulf Pro League coverage, Persian commentary and hundreds of real faces on the most stable FIFA engine.',
+                    ],
+                    'bullets' => [
+                        ['fa' => 'نصب خودکار با MW Launcher', 'en' => 'One-click install via MW Launcher'],
+                        ['fa' => 'آپدیت‌های ترنسفری رایگان', 'en' => 'Free transfer updates'],
+                        ['fa' => 'پشتیبانی اختصاصی ۷ روز هفته', 'en' => 'Dedicated 7-day-a-week support'],
+                    ],
+                    'image' => 'images/landings/pgl-fifa-23/hero.svg',
+                    'video_title' => ['fa' => 'تریلر PGL FIFA 23', 'en' => 'PGL FIFA 23 Trailer'],
+                    'chips' => [
+                        ['icon' => 'face', 'text' => ['fa' => '۱٬۹۰۰+ چهره واقعی', 'en' => '1,900+ real faces']],
+                        ['icon' => 'mic', 'text' => ['fa' => 'گزارشگری کامل فارسی', 'en' => 'Full Persian commentary']],
+                        ['icon' => 'stadium', 'text' => ['fa' => '۴۸ استادیوم واقعی', 'en' => '48 real stadiums']],
+                    ],
+                ],
+
+                [
+                    'type' => 'stats',
+                    'items' => [
+                        ['value' => 20, 'suffix' => '+', 'label' => ['fa' => 'لیگ واقعی', 'en' => 'Real leagues']],
+                        ['value' => 480, 'suffix' => '', 'label' => ['fa' => 'تیم دارای مجوز', 'en' => 'Licensed teams']],
+                        ['value' => 16000, 'suffix' => '+', 'label' => ['fa' => 'بازیکن به‌روز', 'en' => 'Updated players']],
+                        ['value' => 1900, 'suffix' => '+', 'label' => ['fa' => 'چهره سه‌بعدی', 'en' => '3D faces']],
+                        ['value' => 48, 'suffix' => '', 'label' => ['fa' => 'استادیوم واقعی', 'en' => 'Real stadiums']],
+                    ],
+                ],
+
+                [
+                    'type' => 'marquee',
+                    'items' => [
+                        ['label' => ['fa' => 'لیگ برتر خلیج فارس', 'en' => 'Persian Gulf Pro League'], 'tag' => 'IRN', 'slug' => 'persian-gulf-pro-league', 'logo' => null],
+                        ['label' => ['fa' => 'لیگ آزادگان', 'en' => 'Azadegan League'], 'tag' => 'IRN', 'slug' => 'azadegan-league', 'logo' => null],
+                        ['label' => ['fa' => 'پریمیرلیگ', 'en' => 'Premier League'], 'tag' => 'ENG', 'slug' => 'premier-league', 'logo' => 'emb_0005_l.png'],
+                        ['label' => ['fa' => 'لالیگا', 'en' => 'LaLiga'], 'tag' => 'ESP', 'slug' => 'laliga', 'logo' => 'emb_0008_l.png'],
+                        ['label' => ['fa' => 'سری آ', 'en' => 'Serie A'], 'tag' => 'ITA', 'slug' => 'serie-a', 'logo' => 'emb_0009_l.png'],
+                        ['label' => ['fa' => 'بوندسلیگا', 'en' => 'Bundesliga'], 'tag' => 'GER', 'slug' => 'bundesliga', 'logo' => 'emb_0010_l.png'],
+                        ['label' => ['fa' => 'لیگ ۱', 'en' => 'Ligue 1'], 'tag' => 'FRA', 'slug' => 'ligue-1', 'logo' => null],
+                        ['label' => ['fa' => 'لیگ قهرمانان اروپا', 'en' => 'Champions League'], 'tag' => 'UCL', 'slug' => 'uefa-champions-league', 'logo' => 'emb_0001_l.png'],
+                        ['label' => ['fa' => 'لیگ قهرمانان آسیا', 'en' => 'AFC Champions League'], 'tag' => 'AFC', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'اردیویزه', 'en' => 'Eredivisie'], 'tag' => 'NED', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'لیگا پرتغال', 'en' => 'Liga Portugal'], 'tag' => 'POR', 'slug' => null, 'logo' => null],
+                        ['label' => ['fa' => 'لیگ عربستان', 'en' => 'Saudi Pro League'], 'tag' => 'KSA', 'slug' => null, 'logo' => null],
+                    ],
+                ],
+
+                [
+                    'type' => 'features',
+                    'eyebrow' => ['fa' => 'همه در یک پچ', 'en' => 'Everything in one mod'],
+                    'title' => ['fa' => 'هرچیزی که FIFA 23 کم داشت', 'en' => 'Everything FIFA 23 was missing'],
+                    'subtitle' => [
+                        'fa' => 'بازسازی کامل تجربه FIFA 23 با پوشش فارسی بی‌نقص و گیم‌پلی واقع‌گرایانه.',
+                        'en' => 'A complete rebuild of the FIFA 23 experience with flawless Persian coverage.',
+                    ],
+                    'items' => [
+                        ['icon' => 'face', 'stat' => ['fa' => '۱٬۹۰۰+', 'en' => '1,900+'], 'title' => ['fa' => 'چهره‌های واقعی', 'en' => 'Real Faces'], 'desc' => ['fa' => 'چهره‌های سه‌بعدی بازیکنان لیگ برتر و ستاره‌های فوتبال ایران و جهان.', 'en' => '3D faces for PGPL players and Iranian & global stars.'], 'page' => 'faces'],
+                        ['icon' => 'mic', 'stat' => ['fa' => 'فارسی', 'en' => 'Persian'], 'title' => ['fa' => 'گزارشگری فارسی', 'en' => 'Persian Commentary'], 'desc' => ['fa' => 'گزارش کامل و روان مسابقات به فارسی با آپدیتر خط و صدای استادیوم‌های ایرانی.', 'en' => 'Fluent full-match Persian commentary with Iranian stadium SFX.']],
+                        ['icon' => 'stadium', 'stat' => ['fa' => '۴۸', 'en' => '48'], 'title' => ['fa' => 'استادیوم واقعی', 'en' => 'Real Stadiums'], 'desc' => ['fa' => 'استادیوم‌های ایران و اروپا با جزئیات کامل سکوها و نورپردازی.', 'en' => 'Iranian and European stadiums in full detail.'], 'page' => 'stadiums'],
+                        ['icon' => 'gamepad', 'stat' => 'AI', 'title' => ['fa' => 'گیم‌پلی واقع‌گرایانه', 'en' => 'Realistic Gameplay'], 'desc' => ['fa' => 'اصلاح فیزیک توپ، سرعت بازی و هوش مصنوعی برای مسابقات چالشی.', 'en' => 'Reworked physics, tempo and AI for challenging matches.']],
+                        ['icon' => 'tv', 'stat' => 'HD', 'title' => ['fa' => 'پخش تلویزیونی', 'en' => 'TV Broadcast'], 'desc' => ['fa' => 'اسکوربورد و گرافیک پخش هم‌سطح تلویزیون.', 'en' => 'Broadcast-grade scoreboards and graphics.']],
+                        ['icon' => 'trophy', 'stat' => ['fa' => '۳۰+', 'en' => '30+'], 'title' => ['fa' => 'جام‌ها و تروفی‌ها', 'en' => 'Trophies'], 'desc' => ['fa' => 'مدل‌های واقعی جام‌ها؛ از جام حذفی تا جام جهانی باشگاه‌ها.', 'en' => 'Real trophy models from the Hazfi Cup to the CWC.'], 'page' => 'trophies'],
+                        ['icon' => 'shirt', 'stat' => ['fa' => '۱۰۰%', 'en' => '100%'], 'title' => ['fa' => 'کیت‌های به‌روز', 'en' => 'Updated Kits'], 'desc' => ['fa' => 'لباس‌های همه تیم‌ها با اسپانسر و فونت اختصاصی.', 'en' => 'Every club\'s kits with sponsors and fonts.']],
+                        ['icon' => 'bolt', 'stat' => ['fa' => '۱ کلیک', 'en' => '1 click'], 'title' => ['fa' => 'نصب خودکار', 'en' => 'One-Click Install'], 'desc' => ['fa' => 'نصب و آپدیت فقط با یک کلیک در MW Launcher.', 'en' => 'Install & update with one click in MW Launcher.']],
+                        ['icon' => 'shield', 'stat' => ['fa' => 'ایمن', 'en' => 'Safe'], 'title' => ['fa' => 'پایدار و برگشت‌پذیر', 'en' => 'Stable & Reversible'], 'desc' => ['fa' => 'بدون تغییر دائمی فایل‌های بازی؛ حذف با یک کلیک.', 'en' => 'No permanent file changes; remove in one click.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'leagues',
+                    'eyebrow' => ['fa' => 'پوشش کامل', 'en' => 'Full coverage'],
+                    'title' => ['fa' => 'لیگ‌ها و جام‌های پچ', 'en' => 'Leagues & Cups in the Mod'],
+                    'subtitle' => [
+                        'fa' => 'از لیگ برتر خلیج فارس تا مهم‌ترین لیگ‌های اروپا — روی هر لیگ کلیک کن تا تیم‌هایش را ببینی.',
+                        'en' => 'From the Persian Gulf Pro League to Europe\'s biggest stages — click any league for its clubs.',
+                    ],
+                    'items' => [
+                        ['slug' => 'persian-gulf-pro-league', 'tag' => 'IRN', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0001_l.png'],
+                        ['slug' => 'azadegan-league', 'tag' => 'IRN', 'teams' => 16, 'level' => ['fa' => 'سطح ۲', 'en' => 'Tier 2'], 'logo' => null],
+                        ['slug' => 'premier-league', 'tag' => 'ENG', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0005_l.png'],
+                        ['slug' => 'laliga', 'tag' => 'ESP', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0008_l.png'],
+                        ['slug' => 'serie-a', 'tag' => 'ITA', 'teams' => 20, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0009_l.png'],
+                        ['slug' => 'bundesliga', 'tag' => 'GER', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => 'images/landings/logos/emb/emb_0010_l.png'],
+                        ['slug' => 'ligue-1', 'tag' => 'FRA', 'teams' => 18, 'level' => ['fa' => 'سطح ۱', 'en' => 'Tier 1'], 'logo' => null],
+                        ['slug' => 'uefa-champions-league', 'tag' => 'UCL', 'teams' => 32, 'level' => ['fa' => 'جام', 'en' => 'Cup'], 'logo' => 'images/landings/logos/emb/emb_0001_l.png'],
+                    ],
+                ],
+
+
+                [
+                    'type' => 'gallery',
+                    'eyebrow' => ['fa' => 'گالری', 'en' => 'Gallery'],
+                    'title' => ['fa' => 'پچ را از نزدیک ببین', 'en' => 'See the mod up close'],
+                    'subtitle' => ['fa' => 'گیم‌پلی، منوها، استادیوم‌ها و گرافیک پخش — بدون رتوش.', 'en' => 'Gameplay, menus, stadiums and broadcast graphics — no retouching.'],
+                    'images' => [
+                        ['src' => 'images/landings/shared/g1-menu.svg', 'caption' => ['fa' => 'منوی اصلی', 'en' => 'Main menu']],
+                        ['src' => 'images/landings/shared/g2-gameplay.svg', 'caption' => ['fa' => 'گیم‌پلی', 'en' => 'Gameplay']],
+                        ['src' => 'images/landings/shared/g3-stadium.svg', 'caption' => ['fa' => 'استادیوم', 'en' => 'Stadium']],
+                        ['src' => 'images/landings/shared/g4-faces.svg', 'caption' => ['fa' => 'چهره‌ها', 'en' => 'Faces']],
+                        ['src' => 'images/landings/shared/g5-broadcast.svg', 'caption' => ['fa' => 'پخش تلویزیونی', 'en' => 'Broadcast']],
+                        ['src' => 'images/landings/shared/g6-kits.svg', 'caption' => ['fa' => 'کیت‌ها', 'en' => 'Kits']],
+                    ],
+                ],
+
+                [
+                    'type' => 'steps',
+                    'eyebrow' => ['fa' => 'شروع سریع', 'en' => 'Quick start'],
+                    'title' => ['fa' => '۳ قدم تا اولین بازی', 'en' => 'Three steps to kickoff'],
+                    'subtitle' => ['fa' => 'بدون فایل زیپ و کپی دستی — همه چیز خودکار.', 'en' => 'No zips, no manual copies — everything is automated.'],
+                    'items' => [
+                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Moddingway را نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Install the official launcher; your account is your license.']],
+                        ['icon' => 'shield', 'title' => ['fa' => 'خرید و فعال‌سازی', 'en' => 'Buy & activate'], 'desc' => ['fa' => 'پچ را بخرید؛ لایسنس خودکار متصل می‌شود.', 'en' => 'Purchase; the license links automatically.']],
+                        ['icon' => 'bolt', 'title' => ['fa' => 'یک کلیک، تمام', 'en' => 'One click, done'], 'desc' => ['fa' => 'دکمه نصب را بزنید؛ لانچر بقیه را انجام می‌دهد.', 'en' => 'Hit Install; the launcher does the rest.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'pricing',
+                    'eyebrow' => ['fa' => 'قیمت‌گذاری', 'en' => 'Pricing'],
+                    'title' => ['fa' => 'یک پچ، یک قیمت، همه‌ی امکانات', 'en' => 'One mod, one price, everything included'],
+                    'subtitle' => ['fa' => 'یک بار پرداخت، آپدیت رایگان تا پایان پشتیبانی بازی.', 'en' => 'Pay once, free updates through end of support.'],
+                    'plans' => [
+                        [
+                            'name' => ['fa' => 'PGL FIFA 23 — نسخه کامل', 'en' => 'PGL FIFA 23 — Full Edition'],
+                            'badge' => ['fa' => 'نسخه پایدار V3', 'en' => 'Stable V3'],
+                            'price' => ['fa' => '۴۹۰٬۰۰۰', 'en' => '$19'],
+                            'old_price' => ['fa' => '۶۵۰٬۰۰۰', 'en' => '$25'],
+                            'period' => ['fa' => 'تومان / یک‌بار پرداخت', 'en' => 'one-time'],
+                            'features' => [
+                                ['fa' => 'دسترسی کامل به همه بخش‌های پچ', 'en' => 'Full access to every mod feature'],
+                                ['fa' => 'آپدیت‌های ترنسفری و رفع اشکال رایگان', 'en' => 'Free transfer & hotfix updates'],
+                                ['fa' => 'نصب و آپدیت خودکار با MW Launcher', 'en' => 'One-click install & updates'],
+                                ['fa' => 'پشتیبانی اختصاصی ۷ روز هفته', 'en' => 'Dedicated support'],
+                                ['fa' => 'تضمین بازگشت وجه تا ۷ روز', 'en' => '7-day money-back guarantee'],
+                            ],
+                            'cta' => ['fa' => 'همین حالا خرید کن', 'en' => 'Get it now'],
+                        ],
+                    ],
+                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی moddingway.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official gateways — instant activation.'],
+                ],
+
+                [
+                    'type' => 'changelog',
+                    'eyebrow' => ['fa' => 'همیشه به‌روز', 'en' => 'Always up to date'],
+                    'title' => ['fa' => 'آخرین تغییرات پچ', 'en' => 'Latest changes'],
+                    'items' => [
+                        [
+                            'version' => 'V3', 'date' => ['fa' => '۱۴۰۵/۰۸/۰۱', 'en' => '2026-10-23'],
+                            'notes' => [
+                                ['fa' => 'بازسازی کامل V3 با ۴۹ پارت و رفع مشکلات یکپارچگی', 'en' => 'Full V3 rebuild in 49 parts with integrity fixes'],
+                                ['fa' => 'آپدیت ترنسفرهای پاییزه', 'en' => 'Autumn transfer update'],
+                                ['fa' => 'گزارشگری فارسی در حالت کاریر', 'en' => 'Persian commentary in career mode'],
+                            ],
+                        ],
+                        [
+                            'version' => 'V2.4', 'date' => ['fa' => '۱۴۰۵/۰۶/۱۲', 'en' => '2026-09-03'],
+                            'notes' => [
+                                ['fa' => 'رفع مشکل نمایش نام تیم‌ها در منو', 'en' => 'Fixed club names in menus'],
+                                ['fa' => '۱۲ چهره جدید بازیکنان لیگ برتری', 'en' => '12 new PGPL faces'],
+                                ['fa' => 'بهبود پایداری نصب در لانچر ۱.۲۱+', 'en' => 'Install stability on launcher 1.21+'],
+                            ],
+                        ],
+                        [
+                            'version' => 'V2', 'date' => ['fa' => '۱۴۰۵/۰۴/۰۳', 'en' => '2026-06-24'],
+                            'notes' => [
+                                ['fa' => 'پشتیبانی از آخرین آپدیت رسمی FIFA 23', 'en' => 'Support for the latest official FIFA 23 update'],
+                                ['fa' => 'به‌روزرسانی کامل کیت‌ها', 'en' => 'Full kit refresh'],
+                                ['fa' => 'بهینه‌سازی حجم پچ', 'en' => 'Smaller download size'],
+                            ],
+                        ],
+                    ],
+                ],
+
+                [
+                    'type' => 'faq',
+                    'eyebrow' => ['fa' => 'پرسش‌های متداول', 'en' => 'FAQ'],
+                    'title' => ['fa' => 'هر چیزی که لازم است بدانی', 'en' => 'Everything you need to know'],
+                    'items' => [
+                        ['q' => ['fa' => 'پچ با کدام نسخه بازی سازگار است؟', 'en' => 'Which game version is supported?'], 'a' => ['fa' => 'با نسخه PC بازی FIFA 23 سازگار است و روی همه آپدیت‌های رسمی تست و پایدار شده است.', 'en' => 'Fully compatible with the PC version and tested on every official update.']],
+                        ['q' => ['fa' => 'نصب پچ چقدر طول می‌کشد؟', 'en' => 'How long does installation take?'], 'a' => ['fa' => 'با MW Launcher بین ۱۰ تا ۳۰ دقیقه، بدون کپی دستی فایل.', 'en' => '10–30 minutes via MW Launcher, no manual copying.']],
+                        ['q' => ['fa' => 'آپدیت‌های پچ رایگان است؟', 'en' => 'Are updates free?'], 'a' => ['fa' => 'بله؛ تا پایان دوره پشتیبانی FIFA 23 رایگان است.', 'en' => 'Yes — free through the end of FIFA 23 support.']],
+                        ['q' => ['fa' => 'برای بازی آنلاین هم می‌توانم استفاده کنم؟', 'en' => 'Can I play online with it?'], 'a' => ['fa' => 'برای آنلاین، پچ را با یک کلیک از لانچر موقتاً غیرفعال کنید.', 'en' => 'Disable the mod from the launcher with one click before playing online.']],
+                        ['q' => ['fa' => 'حداقل سیستم مورد نیاز چیست؟', 'en' => 'System requirements?'], 'a' => ['fa' => 'همان حداقل‌های خود بازی FIFA 23.', 'en' => 'Same as base FIFA 23.']],
+                        ['q' => ['fa' => 'اگر پچ را حذف کنم، بازی سالم برمی‌گردد؟', 'en' => 'Is removal safe?'], 'a' => ['fa' => 'بله؛ حذف پچ بازی را دقیقاً به حالت اول برمی‌گرداند.', 'en' => 'Yes — removal restores the game exactly.']],
+                    ],
+                ],
+
+                [
+                    'type' => 'cta',
+                    'title' => ['fa' => 'FIFA 23 را دوباره عاشقانه بازی کن', 'en' => 'Fall in love with FIFA 23 again'],
+                    'subtitle' => ['fa' => 'نسخه پایدار V3 همین‌جاست — نصب فقط یک کلیک فاصله دارد.', 'en' => 'Stable V3 is here — one click away.'],
+                    'primary' => ['label' => ['fa' => 'خرید PGL FIFA 23', 'en' => 'Buy PGL FIFA 23'], 'href' => '#pricing'],
+                    'secondary' => ['label' => ['fa' => 'دانلود MW Launcher', 'en' => 'Download MW Launcher'], 'href' => '#install'],
+                ],
+            ],
+
+            'footer' => [
+                'about' => [
+                    'fa' => 'Moddingway از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL FIFA 23 پرچم‌دار ما برای محبوب‌ترین نسخه سری FIFA است.',
+                    'en' => 'Since 2019, Moddingway has been Iran\'s largest football modding hub; PGL FIFA 23 is our flagship for the best-loved FIFA engine.',
+                ],
+                'links' => [
+                    ['label' => ['fa' => 'وبلاگ', 'en' => 'Blog'], 'href' => '#'],
+                    ['label' => ['fa' => 'پشتیبانی', 'en' => 'Support'], 'href' => '#'],
+                    ['label' => ['fa' => 'قوانین و بازگشت وجه', 'en' => 'Terms & refunds'], 'href' => '#'],
+                    ['label' => ['fa' => 'درباره ما', 'en' => 'About us'], 'href' => '#'],
+                ],
+                'socials' => [
+                    ['label' => 'Telegram', 'href' => '#'],
+                    ['label' => 'Instagram', 'href' => '#'],
+                    ['label' => 'YouTube', 'href' => '#'],
+                    ['label' => 'Discord', 'href' => '#'],
+                ],
+                'disclaimer' => [
+                    'fa' => 'PGL FIFA 23 یک محصول مستقل از Moddingway است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports یا FIFA ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
+                    'en' => 'PGL FIFA 23 is an independent Moddingway product, not affiliated with EA Sports or FIFA. All trademarks belong to their respective owners.',
+                ],
+                'copyright' => ['fa' => '© ۱۴۰۵ Moddingway — تمامی حقوق محفوظ است.', 'en' => '© 2026 Moddingway — All rights reserved.'],
+            ],
+        ],
+    ],
+
+    /*
+    |----------------------------------------------------------------------
+    | محتوای مشترک صفحات جزئیات (/{landing}/{page})
+    |----------------------------------------------------------------------
+    */
+    'pages' => [
+
+        'leagues' => [
+            'hero_image' => 'images/landings/shared/b-leagues.svg',
+            'eyebrow' => ['fa' => 'کاتالوگ لیگ‌ها', 'en' => 'League Catalog'],
+            'title' => ['fa' => 'هر لیگ پچ، با همه تیم‌هایش', 'en' => 'Every league, with all of its clubs'],
+            'intro' => [
+                'fa' => 'در این صفحه همه لیگ‌ها و جام‌های پچ را با لوگوی رسمی می‌بینید؛ روی هر لیگ کلیک کنید تا فهرست کامل تیم‌ها، لوگوها و توضیحات آن باز شود.',
+                'en' => 'Browse every league and cup in the mod with its official crest. Click a league to open its full club list with crests and details.',
+            ],
+            'meta' => [
+                ['value' => ['fa' => '۲۴+', 'en' => '24+'], 'label' => ['fa' => 'لیگ و جام', 'en' => 'leagues & cups']],
+                ['value' => ['fa' => '۵۴۸', 'en' => '548'], 'label' => ['fa' => 'تیم دارای مجوز', 'en' => 'licensed clubs']],
+                ['value' => ['fa' => '۱۸٬۰۰۰+', 'en' => '18,000+'], 'label' => ['fa' => 'بازیکن', 'en' => 'players']],
+                ['value' => ['fa' => '۱۰۰٪', 'en' => '100%'], 'label' => ['fa' => 'کیت و لوگوی واقعی', 'en' => 'authentic kits & badges']],
+            ],
+        ],
+
+        'stadiums' => [
+            'hero_image' => 'images/landings/shared/b-stadiums.svg',
+            'eyebrow' => ['fa' => 'کاتالوگ استادیوم‌ها', 'en' => 'Stadium Catalog'],
+            'title' => ['fa' => 'از آزادی تا ونبل', 'en' => 'From Azadi to Wembley'],
+            'intro' => [
+                'fa' => 'استادیوم‌های بازسازی‌شده پچ با چمن، نورپردازی، سکوها و موسیقی اختصاصی؛ هر استادیوم با ظرفیت واقعی و تیم صاحبش.',
+                'en' => 'Rebuilt stadiums with custom turf, lighting, stands and chants — each with its real capacity and home club.',
+            ],
+            'meta' => [
+                ['value' => ['fa' => '۶۲', 'en' => '62'], 'label' => ['fa' => 'استادیوم واقعی', 'en' => 'real stadiums']],
+                ['value' => ['fa' => '۱۲', 'en' => '12'], 'label' => ['fa' => 'استادیوم ایرانی', 'en' => 'Iranian stadiums']],
+                ['value' => ['fa' => '۷۸٬۱۱۶', 'en' => '78,116'], 'label' => ['fa' => 'ظرفیت آزادی', 'en' => 'Azadi capacity']],
+                ['value' => ['fa' => 'HD', 'en' => 'HD'], 'label' => ['fa' => 'نورپردازی شبانه', 'en' => 'night lighting']],
+            ],
+        ],
+
+        'trophies' => [
+            'hero_image' => 'images/landings/shared/b-trophies.svg',
+            'eyebrow' => ['fa' => 'کاتالوگ جام‌ها', 'en' => 'Trophy Catalog'],
+            'title' => ['fa' => 'جام‌هایی که واقعاً بلند می‌کنی', 'en' => 'Trophies you actually lift'],
+            'intro' => [
+                'fa' => 'مدل سه‌بعدی جام‌های واقعی با مراسم اهدای اختصاصی؛ از جام لیگ برتر خلیج فارس تا جام قهرمانان اروپا.',
+                'en' => 'Real 3D trophy models with dedicated celebration scenes — from the Persian Gulf Pro League to the Champions League.',
+            ],
+            'meta' => [
+                ['value' => ['fa' => '۴۰+', 'en' => '40+'], 'label' => ['fa' => 'مدل جام', 'en' => 'trophy models']],
+                ['value' => ['fa' => '۸', 'en' => '8'], 'label' => ['fa' => 'مراسم اهدای ایرانی', 'en' => 'Iranian celebrations']],
+                ['value' => ['fa' => '۳D', 'en' => '3D'], 'label' => ['fa' => 'مدل واقعی', 'en' => 'authentic models']],
+                ['value' => ['fa' => 'HD', 'en' => 'HD'], 'label' => ['fa' => 'گرافیک مراسم', 'en' => 'ceremony graphics']],
+            ],
+        ],
+
+        'faces' => [
+            'hero_image' => 'images/landings/shared/b-faces.svg',
+            'eyebrow' => ['fa' => 'چهره‌های واقعی', 'en' => 'Real Faces'],
+            'title' => ['fa' => 'بازیکنان، با چهره واقعی‌شان', 'en' => 'Players, as they really look'],
+            'intro' => [
+                'fa' => 'بیش از ۳٬۱۰۰ چهره سه‌بعدی اسکن‌شده؛ از ستاره‌های لیگ برتر تا افسانه‌های فوتبال ایران — با مینی‌فیس هماهنگ برای منوها.',
+                'en' => 'Over 3,100 scanned 3D faces — from Persian Gulf Pro League stars to Iranian legends — with matching menu minifaces.',
+            ],
+            'meta' => [
+                ['value' => ['fa' => '۳٬۱۰۰+', 'en' => '3,100+'], 'label' => ['fa' => 'چهره سه‌بعدی', 'en' => '3D faces']],
+                ['value' => ['fa' => '۴۵۰+', 'en' => '450+'], 'label' => ['fa' => 'بازیکن ایرانی', 'en' => 'Iranian players']],
+                ['value' => ['fa' => '۱۰۰%', 'en' => '100%'], 'label' => ['fa' => 'لیگ برتر ایران', 'en' => 'PGPL covered']],
+                ['value' => ['fa' => 'HD', 'en' => 'HD'], 'label' => ['fa' => 'کیفیت اسکن', 'en' => 'scan quality']],
+            ],
+        ],
+    ],
+];

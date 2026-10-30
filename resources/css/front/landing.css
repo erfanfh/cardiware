@@ -1,0 +1,418 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ */
+/*  فونت‌ها (کپی از پروژه اصلی moddingway)                             */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('../../fonts/IRANSansX/IRANSansX-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'IRANSansX';
+    src: url('../../fonts/IRANSansX/IRANSansX-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'IRANSansXFaNum';
+    src: url('../../fonts/IRANSansX/IRANSansXFaNum-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'IRANSansXFaNum';
+    src: url('../../fonts/IRANSansX/IRANSansXFaNum-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* ------------------------------------------------------------------ */
+/*  پل رنگی Tailwind ↔ متغیرهای تم                                     */
+/*  هر تم فقط متغیرها را عوض می‌کند و همه‌ی کلاسها دنبالش می‌روند       */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+    --font-landing: 'IRANSansX', 'Segoe UI', Tahoma, sans-serif;
+    --font-num: 'IRANSansXFaNum', 'IRANSansX', 'Segoe UI', Tahoma, sans-serif;
+
+    --color-page: var(--landing-bg);
+    --color-surface: var(--landing-surface);
+    --color-surface-2: var(--landing-surface-2);
+    --color-edge: var(--landing-border);
+    --color-ink: var(--landing-text);
+    --color-muted: var(--landing-muted);
+    --color-accent: var(--landing-accent);
+    --color-accent-2: var(--landing-accent-2);
+    --color-accent-3: var(--landing-accent-3);
+}
+
+/* ------------------------------------------------------------------ */
+/*  تم‌های محصول                                                       */
+/* ------------------------------------------------------------------ */
+
+/* PGL Ultimate — پالت رسمی (سبز نئون) */
+.landing--pgl-ultimate,
+.landing--hub {
+    --landing-accent: #00FF7A;
+    --landing-accent-2: #00E5FF;
+    --landing-accent-3: #A8FF3C;
+    --landing-bg: #0A0F0D;
+    --landing-surface: #141A18;
+    --landing-surface-2: #1E2422;
+    --landing-border: #2F3433;
+    --landing-text: #E8ECEF;
+    --landing-muted: #A7ACB0;
+    --landing-glow: rgba(0, 255, 122, 0.14);
+    --landing-on-accent: #04110B;
+}
+
+/* PGL FIFA 23 — برند نارنجی Moddingway */
+.landing--pgl-fifa-23 {
+    --landing-accent: #F97316;
+    --landing-accent-2: #FBBF24;
+    --landing-accent-3: #FDE68A;
+    --landing-bg: #0E0A07;
+    --landing-surface: #191210;
+    --landing-surface-2: #241A13;
+    --landing-border: #3D2E22;
+    --landing-text: #F5EDE6;
+    --landing-muted: #B3A69A;
+    --landing-glow: rgba(249, 115, 22, 0.13);
+    --landing-on-accent: #1F0E02;
+}
+
+/* ------------------------------------------------------------------ */
+/*  پایه                                                               */
+/* ------------------------------------------------------------------ */
+
+.landing {
+    background-color: var(--landing-bg);
+    color: var(--landing-text);
+    overflow-x: clip;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+::selection {
+    background: var(--landing-accent);
+    color: var(--landing-on-accent);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--landing-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--landing-surface-2);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--landing-border);
+}
+
+/* ------------------------------------------------------------------ */
+/*  اجزای مشترک                                                        */
+/* ------------------------------------------------------------------ */
+
+.section-pad {
+    padding-block: clamp(4.5rem, 8vw, 7rem);
+}
+
+.eyebrow {
+    display: inline-block;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--landing-accent) 25%, transparent);
+    background: color-mix(in srgb, var(--landing-accent) 10%, transparent);
+    padding: 0.3rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--landing-accent);
+}
+
+.text-gradient {
+    background-image: linear-gradient(100deg, var(--landing-accent), var(--landing-accent-2) 55%, var(--landing-accent-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.85rem;
+    padding: 0.95rem 1.9rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--landing-on-accent);
+    background-image: linear-gradient(135deg, var(--landing-accent), var(--landing-accent-2));
+    box-shadow: 0 12px 40px -14px var(--landing-accent);
+    transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 18px 50px -14px var(--landing-accent);
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.85rem;
+    padding: 0.95rem 1.9rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--landing-text);
+    border: 1px solid var(--landing-border);
+    background: color-mix(in srgb, var(--landing-surface) 60%, transparent);
+    backdrop-filter: blur(8px);
+    transition: border-color 0.25s, color 0.25s, transform 0.25s;
+}
+.btn-ghost:hover {
+    border-color: color-mix(in srgb, var(--landing-accent) 55%, transparent);
+    color: var(--landing-accent);
+    transform: translateY(-2px);
+}
+
+/* شبکه‌ی نقطه‌چین پس‌زمینه */
+.bg-grid {
+    background-image:
+        linear-gradient(color-mix(in srgb, var(--landing-border) 55%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--landing-border) 55%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, black 35%, transparent 80%);
+}
+
+.bg-hero-pattern {
+    background:
+        radial-gradient(closest-side at 50% 0%, var(--landing-glow), transparent),
+        var(--landing-bg);
+}
+
+/* قاب درخشان هیرو */
+.glow-frame {
+    box-shadow:
+        0 0 90px -20px var(--landing-accent),
+        inset 0 0 0 1px color-mix(in srgb, var(--landing-accent) 12%, transparent);
+}
+
+/* چیپ‌های شناور هیرو */
+.float-chip {
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ------------------------------------------------------------------ */
+/*  marquee لیگ‌ها                                                      */
+/* ------------------------------------------------------------------ */
+
+.marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 12%, black 88%, transparent);
+}
+.marquee__track {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: max-content;
+    animation: marquee 48s linear infinite;
+}
+.marquee:hover .marquee__track {
+    animation-play-state: paused;
+}
+@keyframes marquee {
+    to { transform: translateX(-50%); }
+}
+
+.league-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    white-space: nowrap;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--landing-border) 80%, transparent);
+    background: color-mix(in srgb, var(--landing-surface) 70%, transparent);
+    padding: 0.55rem 1.15rem;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Swiper (گالری)                                                     */
+/* ------------------------------------------------------------------ */
+
+.swiper-pagination-bullet {
+    background: var(--landing-muted) !important;
+    opacity: 0.35 !important;
+    transition: all 0.3s;
+}
+.swiper-pagination-bullet-active {
+    background: var(--landing-accent) !important;
+    opacity: 1 !important;
+    width: 1.65rem !important;
+    border-radius: 9999px !important;
+}
+
+/* ------------------------------------------------------------------ */
+/*  انیمیشن ظهور                                                       */
+/* ------------------------------------------------------------------ */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.65, 0.3, 1), transform 0.7s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+.reveal.in {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .marquee__track { animation: none; }
+    .float-chip { animation: none; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  زبان انگلیسی (LTR) — فونت لاتین برای بدنه                          */
+/* ------------------------------------------------------------------ */
+
+.font-landing-ltr,
+html[dir="ltr"] .font-landing {
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, "IRANSansX", sans-serif;
+}
+html[dir="ltr"] .font-num {
+    font-family: "Segoe UI", Inter, system-ui, -apple-system, "IRANSansX", sans-serif;
+}
+
+/* ------------------------------------------------------------------ */
+/*  صفحات جزئیات                                                       */
+/* ------------------------------------------------------------------ */
+
+.crest-fallback {
+    display: grid;
+    place-items: center;
+    border: 1px dashed var(--landing-border);
+    border-radius: 0.75rem;
+}
+
+/* ------------------------------------------------------------------ */
+/*  اسپینر ۳۶۰°                                                        */
+/* ------------------------------------------------------------------ */
+
+.spinner {
+    cursor: grab;
+    touch-action: none;
+    outline: none;
+    transition: border-color 0.3s;
+}
+.spinner:hover,
+.spinner:focus-visible {
+    border-color: color-mix(in srgb, var(--landing-accent) 45%, transparent);
+    box-shadow: 0 0 60px -20px var(--landing-accent);
+}
+.spinner.is-grabbing {
+    cursor: grabbing;
+}
+.spinner img {
+    animation: none;
+    will-change: src;
+}
+
+/* ------------------------------------------------------------------ */
+/*  کارت‌های tilt سه‌بعدی                                               */
+/* ------------------------------------------------------------------ */
+
+.tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.18s ease-out;
+}
+.tilt-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.13), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.25s;
+}
+.tilt-card:hover::after {
+    opacity: 1;
+}
+[data-tilt-inner] {
+    transition: transform 0.18s ease-out;
+}
+
+/* ------------------------------------------------------------------ */
+/*  افکت‌های ماوس                                                       */
+/* ------------------------------------------------------------------ */
+
+.cursor-glow {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    width: 10px;
+    height: 10px;
+    border-radius: 9999px;
+    pointer-events: none;
+    background: var(--landing-accent);
+    box-shadow: 0 0 14px 2px var(--landing-accent);
+    opacity: 0.75;
+    transition: opacity 0.3s;
+}
+html[dir="ltr"] .cursor-glow { opacity: 0.65; }
+
+.fx-letter {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    font-family: 'Segoe UI', Consolas, monospace;
+    font-weight: 900;
+    color: var(--landing-accent);
+    text-shadow: 0 0 10px var(--landing-accent);
+    will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cursor-glow { display: none; }
+}
+
+/* چیپ marquee با لوگو */
+.league-chip--logo {
+    gap: 0.55rem;
+    padding-block: 0.35rem;
+}
+
+/* پنل کره */
+.globe-panel--open {
+    border-color: color-mix(in srgb, var(--landing-accent) 35%, transparent);
+    box-shadow: 0 0 50px -18px var(--landing-accent);
+}
+
+/* (removed: map) */
+/* (removed: globe) */

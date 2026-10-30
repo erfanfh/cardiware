@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="PGL FIFA 23 stadium art">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#150E09"/>
+      <stop offset="1" stop-color="#0A0605"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0.5" cy="0.06" r="0.85">
+      <stop offset="0" stop-color="#F97316" stop-opacity="0.24"/>
+      <stop offset="0.55" stop-color="#F97316" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#F97316" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#FDE68A" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#FDE68A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="pitchTop" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#12200F"/>
+      <stop offset="1" stop-color="#0C170A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <rect width="1600" height="900" fill="url(#aura)"/>
+
+  <g fill="none" stroke="#3D2E22" stroke-width="2">
+    <path d="M170 420 Q800 255 1430 420"/>
+    <path d="M235 452 Q800 297 1365 452"/>
+    <path d="M300 484 Q800 339 1300 484"/>
+  </g>
+  <g fill="#6B5748" opacity="0.7">
+    <circle cx="420" cy="395" r="2.5"/><circle cx="520" cy="375" r="2.5"/><circle cx="640" cy="362" r="2.5"/>
+    <circle cx="760" cy="355" r="2.5"/><circle cx="880" cy="355" r="2.5"/><circle cx="1000" cy="362" r="2.5"/>
+    <circle cx="1120" cy="375" r="2.5"/><circle cx="1220" cy="395" r="2.5"/>
+    <circle cx="470" cy="420" r="2.5"/><circle cx="700" cy="398" r="2.5"/><circle cx="930" cy="398" r="2.5"/><circle cx="1160" cy="420" r="2.5"/>
+  </g>
+
+  <g>
+    <rect x="222" y="150" width="36" height="8" rx="3" fill="#FDE68A" opacity="0.85"/>
+    <rect x="1342" y="150" width="36" height="8" rx="3" fill="#FDE68A" opacity="0.85"/>
+    <line x1="240" y1="158" x2="200" y2="240" stroke="#3D2E22" stroke-width="3"/>
+    <line x1="240" y1="158" x2="300" y2="250" stroke="#3D2E22" stroke-width="3"/>
+    <line x1="1360" y1="158" x2="1300" y2="250" stroke="#3D2E22" stroke-width="3"/>
+    <line x1="1360" y1="158" x2="1400" y2="240" stroke="#3D2E22" stroke-width="3"/>
+    <polygon points="222,160 258,160 420,540 330,585" fill="url(#beam)"/>
+    <polygon points="1342,160 1378,160 1270,585 1180,540" fill="url(#beam)"/>
+  </g>
+
+  <polygon points="520,430 1080,430 1300,900 300,900" fill="url(#pitchTop)"/>
+  <g opacity="0.55">
+    <polygon points="520,430 1080,430 1116,508 483,508" fill="#152A11"/>
+    <polygon points="447,586 1153,586 1189,664 410,664" fill="#152A11"/>
+    <polygon points="373,742 1226,742 1262,820 337,820" fill="#152A11"/>
+  </g>
+
+  <g stroke="#F97316" stroke-opacity="0.4" fill="none" stroke-width="3">
+    <line x1="800" y1="430" x2="800" y2="900"/>
+    <ellipse cx="800" cy="640" rx="150" ry="52"/>
+    <ellipse cx="800" cy="443" rx="92" ry="15"/>
+  </g>
+  <path d="M560 900 L585 800 Q800 775 1015 800 L1040 900" fill="none" stroke="#F97316" stroke-opacity="0.4" stroke-width="3"/>
+
+  <line x1="170" y1="420" x2="1430" y2="420" stroke="#F97316" stroke-opacity="0.5" stroke-width="2.5"/>
+  <ellipse cx="800" cy="420" rx="360" ry="60" fill="#F97316" opacity="0.05"/>
+
+  <g opacity="0.5" font-family="Arial, sans-serif" font-weight="900" letter-spacing="6">
+    <text x="800" y="620" text-anchor="middle" font-size="40" fill="#FDE68A" opacity="0.35">PGL</text>
+  </g>
+</svg>

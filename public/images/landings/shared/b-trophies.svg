@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" role="img" aria-label="Trophies banner">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D120E"/>
+      <stop offset="1" stop-color="#070A08"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.85" r="0.8">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cup" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#8FB6C4"/>
+      <stop offset="0.5" stop-color="#D9EAEE"/>
+      <stop offset="1" stop-color="#6E93A2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="640" fill="url(#bg)"/>
+  <rect width="1920" height="640" fill="url(#glow)"/>
+  <!-- سکو -->
+  <rect x="460" y="500" width="1000" height="16" rx="8" fill="#101A1F" stroke="#1F2D33"/>
+  <!-- جام قهرمانان (وسط، بزرگ) -->
+  <g transform="translate(830 190)">
+    <path d="M60 0 H240 C240 90 200 150 150 165 C100 150 60 90 60 0 Z" fill="url(#cup)" opacity="0.9"/>
+    <path d="M60 14 C20 20 0 60 34 96 C56 118 90 118 108 104" fill="none" stroke="#8FB6C4" stroke-width="12"/>
+    <path d="M240 14 C280 20 300 60 266 96 C244 118 210 118 192 104" fill="none" stroke="#8FB6C4" stroke-width="12"/>
+    <rect x="130" y="160" width="40" height="60" fill="#8FB6C4"/>
+    <rect x="88" y="220" width="124" height="22" rx="10" fill="#A9C6CF"/>
+    <ellipse cx="150" cy="82" rx="52" ry="40" fill="#67E8F9" opacity="0.12"/>
+  </g>
+  <!-- جام‌های کناری کوچک‌تر -->
+  <g transform="translate(520 260) scale(0.55)" opacity="0.75">
+    <path d="M60 0 H240 C240 90 200 150 150 165 C100 150 60 90 60 0 Z" fill="url(#cup)"/>
+    <rect x="130" y="160" width="40" height="60" fill="#8FB6C4"/>
+    <rect x="88" y="220" width="124" height="22" rx="10" fill="#A9C6CF"/>
+  </g>
+  <g transform="translate(1290 260) scale(0.55)" opacity="0.75">
+    <path d="M60 0 H240 C240 90 200 150 150 165 C100 150 60 90 60 0 Z" fill="url(#cup)"/>
+    <rect x="130" y="160" width="40" height="60" fill="#8FB6C4"/>
+    <rect x="88" y="220" width="124" height="22" rx="10" fill="#A9C6CF"/>
+  </g>
+  <!-- کاسه بوندسلیگا -->
+  <g transform="translate(330 300) scale(0.42)" opacity="0.6">
+    <ellipse cx="150" cy="60" rx="120" ry="46" fill="none" stroke="#8FB6C4" stroke-width="14"/>
+    <path d="M40 60 C40 150 90 200 150 210 C210 200 260 150 260 60" fill="none" stroke="#8FB6C4" stroke-width="12"/>
+  </g>
+  <!-- ستاره‌ها -->
+  <g fill="#67E8F9" opacity="0.5">
+    <path d="M700 120 l6 14 15 2 -11 10 3 15 -13 -7 -13 7 3 -15 -11 -10 15 -2 Z"/>
+    <path d="M1180 100 l6 14 15 2 -11 10 3 15 -13 -7 -13 7 3 -15 -11 -10 15 -2 Z"/>
+    <path d="M960 60 l5 12 13 2 -9 9 2 13 -11 -6 -11 6 2 -13 -9 -9 13 -2 Z"/>
+  </g>
+  <g fill="#67E8F9" opacity="0.35">
+    <circle cx="240" cy="180" r="2.5"/><circle cx="1660" cy="200" r="2.5"/><circle cx="150" cy="420" r="2.5"/>
+    <circle cx="1780" cy="420" r="2.5"/><circle cx="560" cy="90" r="2.5"/><circle cx="1380" cy="80" r="2.5"/>
+  </g>
+</svg>

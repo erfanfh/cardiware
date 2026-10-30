@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Gameplay concept">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D1418"/>
+      <stop offset="1" stop-color="#080D10"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0.5" cy="0.1" r="0.8">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#aura)"/>
+
+  <!-- زمین -->
+  <polygon points="440,300 840,300 1080,720 200,720" fill="#0B1A10"/>
+  <g opacity="0.6">
+    <polygon points="440,300 840,300 865,380 415,380" fill="#0D2015"/>
+    <polygon points="390,540 890,540 915,620 365,620" fill="#0D2015"/>
+  </g>
+  <g stroke="#3FA37A" stroke-opacity="0.5" fill="none" stroke-width="3">
+    <line x1="640" y1="300" x2="640" y2="720"/>
+    <ellipse cx="640" cy="480" rx="120" ry="42"/>
+    <path d="M480 720 L500 640 Q640 620 780 640 L800 720"/>
+  </g>
+
+  <!-- سکوها -->
+  <path d="M120 300 Q640 180 1160 300" fill="none" stroke="#1F2D33" stroke-width="4"/>
+  <path d="M190 330 Q640 225 1090 330" fill="none" stroke="#1F2D33" stroke-width="3"/>
+  <line x1="120" y1="300" x2="1160" y2="300" stroke="#67E8F9" stroke-opacity="0.4" stroke-width="2"/>
+
+  <!-- بازیکن‌ها -->
+  <g>
+    <circle cx="540" cy="430" r="16" fill="#1A2830"/>
+    <path d="M522 470 Q540 448 558 470 L562 505 L518 505 Z" fill="#23413A"/>
+    <circle cx="740" cy="500" r="16" fill="#1A2830"/>
+    <path d="M722 540 Q740 518 758 540 L762 580 L718 580 Z" fill="#3A3423"/>
+    <circle cx="610" cy="560" r="14" fill="#1A2830"/>
+    <path d="M594 596 Q610 576 626 596 L630 628 L590 628 Z" fill="#23413A"/>
+    <!-- توپ -->
+    <circle cx="668" cy="520" r="8" fill="#DDE9EE"/>
+  </g>
+
+  <!-- اسکوربورد -->
+  <g>
+    <rect x="60" y="44" width="330" height="64" rx="10" fill="#0A1216" stroke="#1F2D33"/>
+    <rect x="60" y="44" width="6" height="64" rx="3" fill="#67E8F9"/>
+    <circle cx="102" cy="76" r="16" fill="#1A2830"/>
+    <rect x="130" y="62" width="90" height="10" rx="5" fill="#31454E"/>
+    <text x="250" y="84" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800" fill="#DDE9EE" text-anchor="middle">1 - 0</text>
+    <rect x="286" y="62" width="90" height="10" rx="5" fill="#31454E"/>
+    <circle cx="394" cy="76" r="0.5" fill="none"/>
+    <circle cx="404" cy="76" r="16" fill="#1A2830" transform="translate(90 0)"/>
+  </g>
+  <!-- نوار زمان -->
+  <rect x="60" y="120" width="200" height="6" rx="3" fill="#16232A"/>
+  <rect x="60" y="120" width="120" height="6" rx="3" fill="#67E8F9" fill-opacity="0.7"/>
+
+  <text x="1240" y="688" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#5A7078" letter-spacing="3">GAMEPLAY</text>
+</svg>

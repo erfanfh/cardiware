@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Stadium concept">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D1418"/>
+      <stop offset="1" stop-color="#080D10"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <rect width="1280" height="720" fill="url(#glow)"/>
+
+  <!-- سقف استادیوم -->
+  <ellipse cx="640" cy="360" rx="560" ry="300" fill="none" stroke="#1F2D33" stroke-width="26" opacity="0.9"/>
+  <ellipse cx="640" cy="360" rx="480" ry="240" fill="none" stroke="#16232A" stroke-width="16"/>
+  <ellipse cx="640" cy="360" rx="400" ry="180" fill="none" stroke="#1F2D33" stroke-width="2" stroke-dasharray="6 10"/>
+
+  <!-- نورافکن‌ها -->
+  <g>
+    <circle cx="180" cy="150" r="14" fill="#DDE9EE" opacity="0.9"/>
+    <circle cx="1100" cy="150" r="14" fill="#DDE9EE" opacity="0.9"/>
+    <circle cx="640" cy="60" r="10" fill="#DDE9EE" opacity="0.7"/>
+    <polygon points="150,160 210,160 330,520 240,540" fill="#DDE9EE" opacity="0.05"/>
+    <polygon points="1070,160 1130,160 1040,540 950,520" fill="#DDE9EE" opacity="0.05"/>
+  </g>
+
+  <!-- زمین از بالا در مرکز -->
+  <ellipse cx="640" cy="360" rx="300" ry="160" fill="#0B1A10"/>
+  <ellipse cx="640" cy="360" rx="300" ry="160" fill="none" stroke="#3FA37A" stroke-opacity="0.5" stroke-width="3"/>
+  <line x1="340" y1="360" x2="940" y2="360" stroke="#3FA37A" stroke-opacity="0.5" stroke-width="3"/>
+  <circle cx="640" cy="360" r="42" fill="none" stroke="#3FA37A" stroke-opacity="0.5" stroke-width="3"/>
+  <circle cx="640" cy="360" r="6" fill="#67E8F9" opacity="0.8"/>
+
+  <!-- نقاط تماشاچی -->
+  <g fill="#31454E">
+    <circle cx="240" cy="240" r="3"/><circle cx="300" cy="200" r="3"/><circle cx="380" cy="165" r="3"/>
+    <circle cx="470" cy="140" r="3"/><circle cx="560" cy="128" r="3"/><circle cx="660" cy="124" r="3"/>
+    <circle cx="760" cy="128" r="3"/><circle cx="850" cy="140" r="3"/><circle cx="940" cy="165" r="3"/>
+    <circle cx="1020" cy="200" r="3"/><circle cx="1080" cy="240" r="3"/>
+    <circle cx="260" cy="500" r="3"/><circle cx="360" cy="545" r="3"/><circle cx="480" cy="575" r="3"/>
+    <circle cx="610" cy="590" r="3"/><circle cx="740" cy="588" r="3"/><circle cx="870" cy="570" r="3"/>
+    <circle cx="990" cy="540" r="3"/><circle cx="1090" cy="495" r="3"/>
+  </g>
+
+  <text x="1240" y="688" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#5A7078" letter-spacing="3">STADIUM</text>
+</svg>

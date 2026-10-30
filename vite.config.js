@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/js/front/home/index.js',
                 'resources/js/front/post-detail/index.js',
                 'resources/js/front/seller-dashboard.js',
+                'resources/js/front/landing.js',
 
                 'resources/css/app.css',
 
@@ -29,6 +30,7 @@ export default defineConfig({
                 'resources/css/front/tinymce-content.css',
                 'resources/css/front/main.css',
                 'resources/css/front/home.css',
+                'resources/css/front/landing.css',
             ],
             refresh: true,
         }),

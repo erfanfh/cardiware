@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" role="img" aria-label="Leagues banner">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0C1310"/>
+      <stop offset="1" stop-color="#070C0A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.3" r="0.7">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.13"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="640" fill="url(#bg)"/>
+  <rect width="1920" height="640" fill="url(#glow)"/>
+  <g stroke="#1F2D33" stroke-width="1.5" opacity="0.6">
+    <path d="M0 80 H1920 M0 160 H1920 M0 240 H1920 M0 320 H1920 M0 400 H1920 M0 480 H1920 M0 560 H1920"/>
+    <path d="M240 0 V640 M480 0 V640 M720 0 V640 M960 0 V640 M1200 0 V640 M1440 0 V640 M1680 0 V640"/>
+  </g>
+  <!-- زمین هوایی کج سمت چپ -->
+  <g transform="translate(150 90) rotate(-14)" opacity="0.9">
+    <rect x="0" y="0" width="700" height="460" rx="18" fill="#0B1A10" stroke="#3FA37A" stroke-opacity="0.55" stroke-width="4"/>
+    <line x1="0" y1="230" x2="700" y2="230" stroke="#3FA37A" stroke-opacity="0.55" stroke-width="4"/>
+    <circle cx="350" cy="230" r="64" fill="none" stroke="#3FA37A" stroke-opacity="0.55" stroke-width="4"/>
+    <rect x="0" y="160" width="76" height="140" fill="none" stroke="#3FA37A" stroke-opacity="0.55" stroke-width="4"/>
+    <rect x="624" y="160" width="76" height="140" fill="none" stroke="#3FA37A" stroke-opacity="0.55" stroke-width="4"/>
+    <g stroke="#3FA37A" stroke-opacity="0.18" stroke-width="3">
+      <line x1="0" y1="58" x2="700" y2="58"/><line x1="0" y1="116" x2="700" y2="116"/>
+      <line x1="0" y1="344" x2="700" y2="344"/><line x1="0" y1="402" x2="700" y2="402"/>
+    </g>
+  </g>
+  <!-- نشان‌های شناور -->
+  <g opacity="0.95">
+    <circle cx="1080" cy="150" r="46" fill="#101A1F" stroke="#2A3B44"/>
+    <circle cx="1080" cy="150" r="30" fill="none" stroke="#67E8F9" stroke-opacity="0.5" stroke-width="3"/>
+    <circle cx="1230" cy="330" r="54" fill="#101A1F" stroke="#2A3B44"/>
+    <path d="M1206 348 L1230 300 L1254 348 Z" fill="none" stroke="#67E8F9" stroke-opacity="0.5" stroke-width="3"/>
+    <circle cx="1140" cy="500" r="38" fill="#101A1F" stroke="#2A3B44"/>
+    <rect x="1124" y="484" width="32" height="32" rx="6" fill="none" stroke="#67E8F9" stroke-opacity="0.5" stroke-width="3"/>
+    <circle cx="1420" cy="210" r="34" fill="#101A1F" stroke="#2A3B44"/>
+    <circle cx="1420" cy="210" r="18" fill="none" stroke="#67E8F9" stroke-opacity="0.4" stroke-width="3"/>
+    <circle cx="1345" cy="555" r="26" fill="#101A1F" stroke="#2A3B44"/>
+  </g>
+  <!-- نقاط نور -->
+  <g fill="#67E8F9" opacity="0.5">
+    <circle cx="160" cy="70" r="3"/><circle cx="980" cy="90" r="2.5"/><circle cx="1560" cy="140" r="3"/>
+    <circle cx="1700" cy="420" r="2.5"/><circle cx="880" cy="560" r="3"/><circle cx="620" cy="120" r="2.5"/>
+  </g>
+</svg>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="TV broadcast concept">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D1418"/>
+      <stop offset="1" stop-color="#080D10"/>
+    </linearGradient>
+    <linearGradient id="lower" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.9"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0.2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+
+  <!-- صحنه پشت -->
+  <rect x="0" y="0" width="1280" height="560" fill="#0B1A10" opacity="0.6"/>
+  <polygon points="480,180 800,180 1000,560 280,560" fill="#0D2015" opacity="0.8"/>
+  <line x1="640" y1="180" x2="640" y2="560" stroke="#3FA37A" stroke-opacity="0.4" stroke-width="3"/>
+  <ellipse cx="640" cy="380" rx="110" ry="40" fill="none" stroke="#3FA37A" stroke-opacity="0.4" stroke-width="3"/>
+  <circle cx="560" cy="330" r="10" fill="#22333C"/>
+  <circle cx="700" cy="400" r="10" fill="#22333C"/>
+  <circle cx="630" cy="450" r="7" fill="#DDE9EE"/>
+
+  <!-- باگ امتیاز -->
+  <g>
+    <rect x="70" y="50" width="300" height="54" rx="8" fill="#0A1216" stroke="#1F2D33"/>
+    <rect x="70" y="50" width="54" height="54" rx="8" fill="#67E8F9" fill-opacity="0.2"/>
+    <text x="97" y="85" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="900" fill="#67E8F9">70'</text>
+    <rect x="140" y="66" width="80" height="9" rx="4.5" fill="#31454E"/>
+    <text x="245" y="84" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="800" fill="#DDE9EE" text-anchor="middle">1 - 1</text>
+    <rect x="280" y="66" width="80" height="9" rx="4.5" fill="#31454E"/>
+  </g>
+
+  <!-- لوگوی شبکه -->
+  <rect x="1150" y="50" width="90" height="40" rx="8" fill="#0A1216" stroke="#1F2D33"/>
+  <rect x="1165" y="63" width="60" height="6" rx="3" fill="#67E8F9" fill-opacity="0.7"/>
+  <rect x="1175" y="74" width="40" height="5" rx="2.5" fill="#31454E"/>
+
+  <!-- لوئر ثیرد -->
+  <g>
+    <rect x="70" y="590" width="420" height="60" rx="10" fill="#0A1216" stroke="#1F2D33"/>
+    <rect x="70" y="590" width="8" height="60" rx="4" fill="url(#lower)"/>
+    <rect x="100" y="608" width="200" height="12" rx="6" fill="#31454E"/>
+    <rect x="100" y="628" width="130" height="8" rx="4" fill="#1A2830"/>
+    <rect x="330" y="600" width="140" height="40" rx="8" fill="#67E8F9" fill-opacity="0.12"/>
+    <text x="400" y="627" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="800" fill="#67E8F9">PGL TV</text>
+  </g>
+
+  <!-- تیکر -->
+  <rect x="0" y="672" width="1280" height="48" fill="#0A1216"/>
+  <rect x="0" y="672" width="1280" height="2" fill="#67E8F9" fill-opacity="0.5"/>
+  <g fill="#31454E">
+    <rect x="40" y="690" width="150" height="12" rx="6"/>
+    <rect x="230" y="690" width="220" height="12" rx="6"/>
+    <rect x="490" y="690" width="180" height="12" rx="6"/>
+    <rect x="710" y="690" width="240" height="12" rx="6"/>
+    <rect x="990" y="690" width="160" height="12" rx="6"/>
+  </g>
+  <circle cx="640" cy="696" r="0.1" fill="none"/>
+</svg>

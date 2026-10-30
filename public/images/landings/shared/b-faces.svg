@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 640" role="img" aria-label="Real faces banner">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0C1215"/>
+      <stop offset="1" stop-color="#070B0D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.7" cy="0.25" r="0.7">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="640" fill="url(#bg)"/>
+  <rect width="1920" height="640" fill="url(#glow)"/>
+  <!-- کارت‌های چهره با چرخش سه‌بعدی‌نما -->
+  <g>
+    <g transform="translate(900 120) rotate(-9)">
+      <rect width="220" height="330" rx="18" fill="#101A1F" stroke="#2A3B44"/>
+      <circle cx="110" cy="120" r="58" fill="#16232A"/>
+      <circle cx="110" cy="100" r="34" fill="#2B414D"/>
+      <path d="M60 210 Q110 160 160 210 L166 300 L54 300 Z" fill="#2B414D"/>
+    </g>
+    <g transform="translate(1180 190) rotate(7)" opacity="0.9">
+      <rect width="200" height="300" rx="16" fill="#101A1F" stroke="#2A3B44"/>
+      <circle cx="100" cy="105" r="52" fill="#16232A"/>
+      <circle cx="100" cy="88" r="30" fill="#31485A"/>
+      <path d="M55 185 Q100 140 145 185 L152 272 L48 272 Z" fill="#31485A"/>
+    </g>
+    <g transform="translate(1420 110) rotate(-5)" opacity="0.75">
+      <rect width="170" height="255" rx="14" fill="#101A1F" stroke="#2A3B44"/>
+      <circle cx="85" cy="88" r="44" fill="#16232A"/>
+      <circle cx="85" cy="74" r="25" fill="#22333C"/>
+      <path d="M47 158 Q85 118 123 158 L129 232 L41 232 Z" fill="#22333C"/>
+    </g>
+  </g>
+  <!-- حلقه اسکن -->
+  <g fill="none" stroke="#67E8F9" stroke-opacity="0.55" stroke-width="3">
+    <ellipse cx="1010" cy="290" rx="140" ry="180" stroke-dasharray="10 12"/>
+    <ellipse cx="1010" cy="290" rx="170" ry="215" stroke-opacity="0.2"/>
+  </g>
+  <g fill="#67E8F9" opacity="0.5">
+    <circle cx="240" cy="160" r="3"/><circle cx="480" cy="420" r="2.5"/><circle cx="1680" cy="480" r="3"/>
+    <circle cx="1760" cy="120" r="2.5"/><circle cx="620" cy="110" r="2.5"/><circle cx="180" cy="500" r="2.5"/>
+  </g>
+  <g stroke="#1F2D33" stroke-width="1.5" opacity="0.5">
+    <path d="M0 560 H1920"/>
+  </g>
+</svg>

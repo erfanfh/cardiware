@@ -6,6 +6,7 @@ use App\Application\Content\Actions\GetAboutUsPageDataAction;
 use App\Application\Content\Actions\GetCareerPageDataAction;
 use App\Application\Content\Actions\GetPageDetailDataAction;
 use App\Application\Content\Actions\GetPostDetailDataAction;
+use App\Application\Content\Actions\GetProductLandingPageDataAction;
 use App\Application\Content\Actions\GetTeamPageDataAction;
 use App\Application\Content\DTOs\ResolvedContentDTO;
 use App\Application\Content\Services\PageTemplateService;
@@ -32,6 +33,7 @@ final class ContentController
         private readonly GetPostDetailDataAction           $getPostDetailDataAction,
         private readonly GetPageDetailDataAction           $getPageDetailDataAction,
         private readonly GetCommentableRatingSummaryAction $getCommentableRatingSummaryAction,
+        private readonly GetProductLandingPageDataAction   $getProductLandingPageDataAction,
     )
     {
     }
@@ -112,6 +114,13 @@ final class ContentController
         }
 
         $viewData = compact('page');
+
+        if (in_array($viewName, ['templates.pgl-ultimate', 'templates.pgl-fifa-23'], true)) {
+            $viewData = array_merge(
+                $viewData,
+                $this->getProductLandingPageDataAction->execute($page->template),
+            );
+        }
 
         if ($viewName === 'templates.about-us') {
             $viewData = array_merge(

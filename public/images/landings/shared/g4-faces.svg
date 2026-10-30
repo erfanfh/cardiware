@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Real faces concept">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D1418"/>
+      <stop offset="1" stop-color="#080D10"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+
+  <!-- کارت‌های چهره -->
+  <g>
+    <rect x="90" y="110" width="300" height="500" rx="22" fill="#101A1F" stroke="#1F2D33"/>
+    <circle cx="240" cy="300" r="95" fill="#16232A"/>
+    <circle cx="240" cy="265" r="52" fill="#22333C"/>
+    <path d="M170 400 Q240 340 310 400 L318 470 L162 470 Z" fill="#22333C"/>
+    <rect x="130" y="500" width="220" height="14" rx="7" fill="#31454E"/>
+    <rect x="130" y="528" width="150" height="10" rx="5" fill="#1A2830"/>
+    <rect x="130" y="552" width="120" height="10" rx="5" fill="#1A2830"/>
+  </g>
+
+  <!-- کارت شاخص (هایلایت) -->
+  <g>
+    <rect x="430" y="60" width="340" height="600" rx="24" fill="#101A1F" stroke="#67E8F9" stroke-opacity="0.6"/>
+    <rect x="430" y="60" width="340" height="600" rx="24" fill="#67E8F9" opacity="0.04"/>
+    <circle cx="600" cy="280" r="110" fill="#16232A"/>
+    <circle cx="600" cy="240" r="60" fill="#2B414D"/>
+    <circle cx="575" cy="235" r="5" fill="#0D1418"/>
+    <circle cx="625" cy="235" r="5" fill="#0D1418"/>
+    <path d="M580 268 Q600 280 620 268" stroke="#0D1418" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M510 410 Q600 330 690 410 L700 500 L500 500 Z" fill="#2B414D"/>
+    <path d="M555 330 Q600 300 645 330" stroke="#67E8F9" stroke-opacity="0.5" stroke-width="2" fill="none"/>
+    <rect x="480" y="530" width="240" height="16" rx="8" fill="#31454E"/>
+    <rect x="480" y="558" width="160" height="10" rx="5" fill="#1A2830"/>
+    <rect x="530" y="90" width="140" height="26" rx="13" fill="#67E8F9" fill-opacity="0.15"/>
+    <text x="600" y="108" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" fill="#67E8F9" letter-spacing="2">NEW SCAN</text>
+  </g>
+
+  <g>
+    <rect x="810" y="110" width="300" height="500" rx="22" fill="#101A1F" stroke="#1F2D33"/>
+    <circle cx="960" cy="300" r="95" fill="#16232A"/>
+    <circle cx="960" cy="265" r="52" fill="#22333C"/>
+    <path d="M890 400 Q960 340 1030 400 L1038 470 L882 470 Z" fill="#22333C"/>
+    <rect x="850" y="500" width="220" height="14" rx="7" fill="#31454E"/>
+    <rect x="850" y="528" width="150" height="10" rx="5" fill="#1A2830"/>
+  </g>
+  <g>
+    <rect x="1150" y="160" width="110" height="360" rx="18" fill="#101A1F" stroke="#1F2D33" transform="translate(-10 40)"/>
+    <circle cx="1200" cy="320" r="45" fill="#16232A" transform="translate(-10 40)"/>
+  </g>
+
+  <text x="1240" y="688" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#5A7078" letter-spacing="3">REAL FACES</text>
+</svg>

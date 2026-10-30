@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="Main menu concept">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#0D1418"/>
+      <stop offset="1" stop-color="#080D10"/>
+    </linearGradient>
+    <linearGradient id="hl" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#67E8F9" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0.05"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <!-- سایدبار -->
+  <rect x="60" y="60" width="290" height="600" rx="24" fill="#101A1F" stroke="#1F2D33"/>
+  <circle cx="110" cy="120" r="26" fill="#1A2830"/>
+  <rect x="152" y="106" width="150" height="12" rx="6" fill="#22333C"/>
+  <rect x="152" y="126" width="90" height="9" rx="4.5" fill="#1A2830"/>
+  <g fill="#16232A">
+    <rect x="90" y="190" width="230" height="52" rx="12"/>
+    <rect x="90" y="258" width="230" height="52" rx="12"/>
+    <rect x="90" y="326" width="230" height="52" rx="12"/>
+    <rect x="90" y="394" width="230" height="52" rx="12"/>
+    <rect x="90" y="462" width="230" height="52" rx="12"/>
+  </g>
+  <rect x="90" y="258" width="230" height="52" rx="12" fill="url(#hl)" stroke="#67E8F9" stroke-opacity="0.5"/>
+  <!-- کارت‌های اصلی -->
+  <g>
+    <rect x="390" y="60" width="380" height="290" rx="20" fill="#101A1F" stroke="#1F2D33"/>
+    <rect x="415" y="95" width="330" height="160" rx="12" fill="#0C1519"/>
+    <circle cx="580" cy="175" r="52" fill="none" stroke="#67E8F9" stroke-opacity="0.6" stroke-width="3"/>
+    <rect x="415" y="275" width="220" height="14" rx="7" fill="#22333C"/>
+    <rect x="415" y="300" width="140" height="10" rx="5" fill="#1A2830"/>
+  </g>
+  <g>
+    <rect x="790" y="60" width="430" height="290" rx="20" fill="#101A1F" stroke="#1F2D33"/>
+    <rect x="815" y="95" width="380" height="160" rx="12" fill="#0C1519"/>
+    <path d="M860 235 L940 155 L1010 210 L1080 145 L1150 235 Z" fill="none" stroke="#67E8F9" stroke-opacity="0.45" stroke-width="3" stroke-linejoin="round"/>
+    <rect x="815" y="275" width="260" height="14" rx="7" fill="#22333C"/>
+  </g>
+  <g>
+    <rect x="390" y="370" width="410" height="290" rx="20" fill="#101A1F" stroke="#1F2D33"/>
+    <circle cx="595" cy="500" r="85" fill="#0C1519" stroke="#1F2D33"/>
+    <ellipse cx="595" cy="630" rx="130" ry="22" fill="#0C1519"/>
+    <rect x="415" y="405" width="200" height="14" rx="7" fill="#22333C"/>
+  </g>
+  <g>
+    <rect x="820" y="370" width="400" height="290" rx="20" fill="#101A1F" stroke="#1F2D33"/>
+    <g fill="none" stroke="#67E8F9" stroke-opacity="0.5" stroke-width="3">
+      <circle cx="890" cy="450" r="22"/><circle cx="960" cy="450" r="22"/><circle cx="1030" cy="450" r="22"/><circle cx="1100" cy="450" r="22"/>
+      <path d="M870 560 Q960 510 1050 560 Q1140 610 1160 560" stroke-opacity="0.3"/>
+    </g>
+    <rect x="845" y="405" width="180" height="12" rx="6" fill="#22333C"/>
+  </g>
+  <text x="1240" y="688" text-anchor="end" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#5A7078" letter-spacing="3">MAIN MENU</text>
+</svg>
