@@ -22,10 +22,12 @@
             <input type="hidden" name="payload" :value="JSON.stringify(landingContent)">
 
             <div class="mb-6 rounded-2xl border border-slate-200 bg-white p-5 text-sm leading-7 text-slate-600">
-                <p>تنظیمات {{ $labels[$document] }}؛ متن‌های فارسی و انگلیسی را جداگانه ویرایش کنید. هر بخش را برای دیدن فیلدهای آن باز کنید.</p>
-                <p>مقادیر فعلی کارفرما پیش‌فرض هستند. موارد فهرست‌ها را می‌توانید اضافه، حذف یا جابه‌جا کنید. ذخیره فقط روی همین زبانه اعمال می‌شود.</p>
+                <p>تنظیمات {{ $labels[$document] }}؛ متن‌های فارسی و انگلیسی را جداگانه ویرایش کنید. هر بخش را برای دیدن
+                    فیلدهای آن باز کنید.</p>
                 @if(in_array($document, ['ultimate', 'fifa23'], true))
-                    <a class="font-bold text-orange-600" target="_blank" rel="noopener" href="{{ url($document === 'ultimate' ? '/pgl-ultimate' : '/pgl-fifa-23') }}">مشاهده لندینگ ذخیره‌شده ↗</a>
+                    <a class="font-bold text-orange-600" target="_blank" rel="noopener"
+                       href="{{ url($document === 'ultimate' ? '/pgl-ultimate' : '/pgl-fifa-23') }}">مشاهده لندینگ
+                        ذخیره‌شده ↗</a>
                 @else
                     <p>این اطلاعات بین هر دو لندینگ مشترک است.</p>
                 @endif
