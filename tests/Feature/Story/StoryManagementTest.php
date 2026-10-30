@@ -28,18 +28,21 @@ class StoryManagementTest extends TestCase
 
     public function test_admin_can_create_edit_list_and_delete_stories(): void
     {
-        $this->get(route('admin.stories.create'))->assertOk()->assertSee('کاور دایره‌ای');
+        $this->get(route('admin.stories.create'))->assertOk()->assertSee('کاور دایره‌ای')
+            ->assertSee('data-jdp', false)->assertDontSee('datetime-local', false);
         $image = $this->image();
         $thumbnail = $this->image();
         $this->post(route('admin.stories.store'), $this->payload($image, [
             'thumbnail' => ['id' => $thumbnail->id],
-            'starts_at' => '2026-10-30T09:00', 'ends_at' => '2026-11-03T09:00',
+            'starts_at' => '1405/08/08 09:00', 'ends_at' => '1405/08/12 09:00',
         ]))->assertSessionHasNoErrors();
         $story = Story::query()->sole();
         $this->assertSame($thumbnail->id, $story->thumbnail_id);
         $this->assertSame('2026-10-30 09:00', $story->starts_at->format('Y-m-d H:i'));
         $this->get(route('admin.stories.index'))->assertOk()->assertSee('پچ جدید');
-        $this->get(route('admin.stories.edit', $story))->assertOk()->assertSee('2026-10-30T09:00', false);
+        $this->assertSame('2026-11-03 09:00', $story->ends_at->format('Y-m-d H:i'));
+        $this->get(route('admin.stories.edit', $story))->assertOk()->assertSee('1405/08/08 09:00', false)
+            ->assertSee('1405/08/12 09:00', false)->assertSee('data-jdp', false)->assertDontSee('datetime-local', false);
         $this->put(route('admin.stories.update', $story), $this->payload($image, [
             'title' => 'ویرایش‌شده', 'is_active' => '0', 'sort_order' => 8,
             'duration_seconds' => 7, 'link_url' => null, 'caption' => null,
@@ -75,10 +78,43 @@ class StoryManagementTest extends TestCase
             'short duration' => [['duration_seconds' => 2], 'duration_seconds'],
             'long duration' => [['duration_seconds' => 61], 'duration_seconds'],
             'negative order' => [['sort_order' => -1], 'sort_order'],
-            'inverted schedule' => [['starts_at' => '2026-11-02T12:00', 'ends_at' => '2026-11-01T12:00'], 'ends_at'],
-            'equal dates' => [['starts_at' => '2026-11-02T12:00', 'ends_at' => '2026-11-02T12:00'], 'ends_at'],
+            'inverted schedule' => [['starts_at' => '1405/08/11 12:00', 'ends_at' => '1405/08/10 12:00'], 'ends_at'],
+            'equal dates' => [['starts_at' => '1405/08/11 12:00', 'ends_at' => '1405/08/11 12:00'], 'ends_at'],
             'invalid date' => [['starts_at' => 'nonsense'], 'starts_at'],
+            'invalid Jalali day' => [['starts_at' => '1405/07/31 09:00'], 'starts_at'],
+            'invalid leap day' => [['ends_at' => '1404/12/30 09:00'], 'ends_at'],
+            'invalid time' => [['starts_at' => '1405/08/08 24:00'], 'starts_at'],
+            'array date' => [['starts_at' => ['1405/08/08 09:00']], 'starts_at'],
         ];
+    }
+
+    public function test_jalali_dates_accept_persian_digits_and_can_be_updated(): void
+    {
+        $image = $this->image();
+        $this->post(route('admin.stories.store'), $this->payload($image, [
+            'starts_at' => '۱۴۰۵/۰۸/۰۸ ۰۹:۳۰', 'ends_at' => '۱۴۰۵/۰۸/۰۸ ۱۱:۴۵',
+        ]))->assertSessionHasNoErrors();
+        $story = Story::query()->sole();
+        $this->assertSame('2026-10-30 09:30', $story->starts_at->format('Y-m-d H:i'));
+        $this->assertSame('2026-10-30 11:45', $story->ends_at->format('Y-m-d H:i'));
+
+        $this->put(route('admin.stories.update', $story), $this->payload($image, [
+            'starts_at' => '1405/08/09 10:15', 'ends_at' => '1405/08/09 12:45',
+        ]))->assertSessionHasNoErrors();
+        $this->assertSame('2026-10-31 10:15', $story->fresh()->starts_at->format('Y-m-d H:i'));
+        $this->assertSame('2026-10-31 12:45', $story->fresh()->ends_at->format('Y-m-d H:i'));
+    }
+
+    public function test_validation_errors_preserve_original_jalali_input(): void
+    {
+        $this->from(route('admin.stories.create'))
+            ->post(route('admin.stories.store'), $this->payload($this->image(), [
+                'title' => '', 'starts_at' => '1405/08/08 09:30', 'ends_at' => '۱۴۰۵/۰۸/۰۹ ۱۱:۴۵',
+            ]))->assertSessionHasErrors('title')
+            ->assertSessionHasInput('starts_at', '1405/08/08 09:30')
+            ->assertSessionHasInput('ends_at', '۱۴۰۵/۰۸/۰۹ ۱۱:۴۵');
+        $this->get(route('admin.stories.create'))->assertOk()
+            ->assertSee('1405/08/08 09:30', false)->assertSee('۱۴۰۵/۰۸/۰۹ ۱۱:۴۵', false);
     }
 
     public function test_media_must_be_ready_public_images_for_both_fields(): void
