@@ -158,4 +158,42 @@
             </x-admin.form.repeater>
         </div>
     </x-admin.metabox>
+
+    <x-admin.metabox title="چیپ‌های آماری هیرو" :collapsible="false">
+        <div class="space-y-4">
+            <div class="text-xs text-slate-500">
+                تا سه چیپ شیشه‌ای در پایین هیرو نمایش داده می‌شود (مثلاً «+۲۰۰ مود و پچ»). مقدار خالی = نمایش داده نمی‌شود.
+            </div>
+
+            <x-admin.form.repeater
+                name="hero_stats"
+                :items="old('hero_stats', get_setting('home', 'hero_stats') ?? [])"
+                title="آمار هیرو"
+                addText="افزودن آمار"
+                emptyText="آماری اضافه نشده است."
+                headingKey="value"
+                headingPlaceholder="آمار بدون مقدار"
+                :defaultItem="[
+                    'value' => '',
+                    'label' => '',
+                ]"
+            >
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <x-admin.field label="مقدار">
+                        <x-admin.form.input
+                            x-bind:name="field(i, 'value')"
+                            x-model="it.value"
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field label="برچسب">
+                        <x-admin.form.input
+                            x-bind:name="field(i, 'label')"
+                            x-model="it.label"
+                        />
+                    </x-admin.field>
+                </div>
+            </x-admin.form.repeater>
+        </div>
+    </x-admin.metabox>
 </div>

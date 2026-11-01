@@ -5,17 +5,23 @@ namespace App\Application\System\Actions\Footer;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
+use App\Domain\Catalog\Enums\ProductStatusEnum;
+use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
-use App\Domain\Discussion\Models\Comment;
+use App\Domain\Identity\Models\User;
+use App\Domain\Support\Models\Ticket;
 use Illuminate\Support\Facades\Cache;
 
 class GetFooterStatsAction
 {
     /**
+     * آمار کلی سایت برای نوار هیروباکس فوتر:
+     * کاربران، تیکت‌ها، نوشته‌ها و محصولات.
+     *
      * @return array{
-     *     orders:int,
-     *     comments:int,
+     *     users:int,
+     *     tickets:int,
      *     posts:int,
      *     products:int
      * }
@@ -28,17 +34,19 @@ class GetFooterStatsAction
             CacheKey::footerStats(),
             CacheTtl::long(),
             function () {
-                $approvedCommentsCount = Comment::approved()->count();
-
                 $activePostsCount = Post::query()
                     ->where('status', PostStatusEnum::ACTIVE)
                     ->count();
 
+                $activeProductsCount = Product::query()
+                    ->where('status', ProductStatusEnum::ACTIVE)
+                    ->count();
+
                 return [
-                    'orders' => 12000,
-                    'comments' => $this->roundDownToHundred($approvedCommentsCount),
+                    'users' => $this->roundDownToHundred(User::query()->count()),
+                    'tickets' => $this->roundDownToHundred(Ticket::query()->count()),
                     'posts' => $this->roundDownToHundred($activePostsCount),
-                    'products' => 30,
+                    'products' => $this->roundDownToHundred(max(1, $activeProductsCount)),
                 ];
             }
         );

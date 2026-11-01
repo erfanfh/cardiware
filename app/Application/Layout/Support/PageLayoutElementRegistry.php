@@ -129,6 +129,40 @@ class PageLayoutElementRegistry
                 'settings_route' => 'admin.settings.home',
                 'settings_route_parameters' => ['tab' => 'projects'],
             ],
+            'club-cards' => [
+                'type' => 'club_cards',
+                'type_label' => 'کارت‌های باشگاه (ویژه/پروژه/برترین‌ها)',
+                'type_color' => 'amber',
+                'allowed_areas' => [
+                    'header_primary',
+                    'content_main',
+                    'footer_primary',
+                ],
+                'settings_route' => 'admin.settings.home',
+                'settings_route_parameters' => ['tab' => 'projects'],
+            ],
+            'team' => [
+                'type' => 'team',
+                'type_label' => 'تیم مودینگ‌وی',
+                'type_color' => 'blue',
+                'allowed_areas' => [
+                    'header_primary',
+                    'content_main',
+                    'footer_primary',
+                ],
+                'settings_route' => 'admin.settings.team',
+            ],
+            'gallery-cta' => [
+                'type' => 'gallery_cta',
+                'type_label' => 'باکس دعوت به گالری کاربران',
+                'type_color' => 'amber',
+                'allowed_areas' => [
+                    'header_primary',
+                    'content_main',
+                    'footer_primary',
+                ],
+                'settings_route' => 'admin.gallery.index',
+            ],
             'videos' => [
                 'type' => 'videos',
                 'type_label' => 'ویدیوها',

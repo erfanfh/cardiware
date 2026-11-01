@@ -61,7 +61,7 @@
                                         :alt="$post->title"
                                         :title="$post->title"
                                         variant="medium_large"
-                                        class="h-40 w-full object-cover"
+                                        class="w-full h-auto object-cover"
                                         wrapper-class="w-full transition-transform duration-300 group-hover:scale-[1.02]"
                                         :lazy="$loop->index >= 3"
                                         :async="$loop->index >= 3"

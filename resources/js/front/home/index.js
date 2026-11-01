@@ -64,3 +64,21 @@ import './free-posts.js';
     });
     /*** ==================== End Physical Products ==================== ***/
 })();
+
+/*** ==================== Team slider ==================== ***/
+(function () {
+    const track = document.querySelector('[data-mw-team-track]');
+
+    if (!track) return;
+
+    const prev = document.querySelector('[data-mw-team-prev]');
+    const next = document.querySelector('[data-mw-team-next]');
+
+    if (prev) {
+        prev.addEventListener('click', () => track.scrollBy({left: 340, behavior: 'smooth'}));
+    }
+
+    if (next) {
+        next.addEventListener('click', () => track.scrollBy({left: -340, behavior: 'smooth'}));
+    }
+})();

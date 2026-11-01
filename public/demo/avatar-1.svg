@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img">
+  <defs>
+    <linearGradient id="gavatar-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="aavatar-1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" fill="url(#gavatar-1)"/>
+  <circle cx="240" cy="0" r="240" fill="url(#aavatar-1)" opacity="0.18"/>
+  <circle cx="240" cy="240" r="240" fill="url(#aavatar-1)" opacity="0.10"/>
+  <circle cx="0" cy="240" r="240" fill="#f97316" opacity="0.08"/>
+  <path d="M0 240 Q 240/4 240/2 240/2 240 T 240 240/2" stroke="#f97316" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="240/24" y="240/2" width="240/5" height="10" rx="5" fill="url(#aavatar-1)"/>
+  <text x="240/24" y="240/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="13" font-weight="900">م</text>
+  <text x="240/24" y="240/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="6">کاربر نمونه</text>
+</svg>

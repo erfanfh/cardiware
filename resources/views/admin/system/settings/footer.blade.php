@@ -6,6 +6,36 @@
     <x-admin.form action="{{ route('admin.settings.footer.store') }}" method="put">
         <x-admin.page>
             <div class="space-y-6">
+                <x-admin.metabox title="هیروباکس آمار فوتر">
+                    <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
+                        <x-admin.field
+                            label="تصویر پس‌زمینه آمار"
+                        >
+                            <x-admin.form.media-picker
+                                name="stats_bg_image"
+                                :value="[
+                                    'id' => old('stats_bg_image.id', get_setting('footer', 'stats_bg_image')->id),
+                                    'path' => old('stats_bg_image.path', get_setting('footer', 'stats_bg_image')->path),
+                                ]"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            class="lg:col-span-3"
+                            label="انیمیشن آمار (شمارش عددی + جاروی نورانی)"
+                        >
+                            <x-admin.form.switch
+                                name="stats_animation_enabled"
+                                :checked="old('stats_animation_enabled', get_setting('footer', 'stats_animation_enabled', 1))"
+                            />
+                        </x-admin.field>
+                    </div>
+
+                    <div class="text-xs text-slate-500">
+                        آمار نمایش‌داده‌شده: تعداد کاربران، تیکت‌ها، نوشته‌های منتشرشده و محصولات فعال فروشگاه — به‌صورت خودکار از دیتابیس محاسبه می‌شود.
+                    </div>
+                </x-admin.metabox>
+
                 <x-admin.metabox title="هویت و متن‌های فوتر">
                     <div class="grid grid-cols-1 gap-5 lg:grid-cols-4">
                         <x-admin.field

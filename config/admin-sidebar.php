@@ -86,6 +86,7 @@ return [
             ['label' => 'افزودن ویدیو', 'route' => 'admin.videos.create', 'icon' => 'icons.plus-sign', 'gate' => 'video.create'],
             ['label' => 'دسته‌ها', 'route' => 'admin.videos.categories.index', 'icon' => 'icons.tag-02', 'gate' => 'video.category'],
             ['label' => 'برچسب‌ها', 'route' => 'admin.videos.tags.index', 'icon' => 'icons.tag-02', 'gate' => 'video.tag'],
+            ['label' => 'رسانه‌های کاربران', 'route' => 'admin.gallery.index', 'icon' => 'icons.image-03', 'gate' => 'gallery.manage'],
         ],
     ],
 
@@ -310,6 +311,12 @@ return [
         'icon' => 'icons.medal-06',
         'children' => [
             [
+                'label' => 'سطوح باشگاه',
+                'route' => 'admin.loyalty-levels.index',
+                'icon' => 'icons.medal-06',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
                 'label' => 'قوانین کسب امتیاز',
                 'route' => 'admin.earning-rules.index',
                 'icon' => 'icons.star',
@@ -322,10 +329,53 @@ return [
                 'gate' => 'loyalty-account.list',
             ],
             [
+                'label' => 'مأموریت‌های هفتگی',
+                'route' => 'admin.loyalty-missions.index',
+                'icon' => 'icons.target-01',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'نشان‌ها',
+                'route' => 'admin.loyalty-achievements.index',
+                'icon' => 'icons.checkmark-badge-01',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
                 'label' => 'پاداش‌ها',
                 'route' => 'admin.reward-offers.index',
                 'icon' => 'icons.discount',
                 'gate' => 'loyalty-reward.list',
+            ],
+        ],
+    ],
+
+    [
+        'label' => 'همکاری در فروش',
+        'icon' => 'icons.user-multiple-02',
+        'children' => [
+            [
+                'label' => 'همکاران در فروش',
+                'route' => 'admin.affiliates.index',
+                'icon' => 'icons.user-multiple-02',
+                'gate' => 'affiliate.list',
+            ],
+            [
+                'label' => 'ایجاد همکار',
+                'route' => 'admin.affiliates.create',
+                'icon' => 'icons.plus-sign',
+                'gate' => 'affiliate.create',
+            ],
+            [
+                'label' => 'برداشت‌های کمیسیون',
+                'route' => 'admin.affiliate-withdrawals.index',
+                'icon' => 'icons.discount',
+                'gate' => 'affiliate.withdrawals',
+            ],
+            [
+                'label' => 'تنظیمات همکاری',
+                'route' => 'admin.settings.affiliate',
+                'icon' => 'icons.settings-02',
+                'gate' => 'affiliate.settings',
             ],
         ],
     ],
@@ -582,6 +632,12 @@ return [
                 'route' => 'admin.settings.ticket',
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.ticket',
+            ],
+            [
+                'label' => 'لانچر',
+                'route' => 'admin.settings.launcher',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.launcher',
             ],
             [
                 'label' => 'صفحه اصلی',

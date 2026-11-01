@@ -40,8 +40,31 @@ class ProductLandingsSettings extends BaseSettings
 
     public function document(string $key): array
     {
-        // Lists are read as a whole: deleted rows must never reappear from defaults.
-        return $this->get($key, self::defaults()[$key]);
+        // سندِ ذخیره‌شده روی پیش‌فرضِ config سوار می‌شود: کلیدهای تازه‌ی config
+        // (مثل enabled/hidden) خودکار ظاهر می‌شوند؛ اما هر کلید یا فهرستی که
+        // کاربر ذخیره کرده عیناً حفظ می‌شود (ردیف‌های حذف‌شده بازنمی‌گردند).
+        $defaults = self::defaults()[$key];
+        $raw = $this->getAll()[$key] ?? null;
+        $saved = $raw === null ? [] : (array) $this->castValueForGet($key, $raw);
+
+        return self::mergeDefaults($defaults, $saved);
+    }
+
+    /** ادغام امن: فقط نگاشت‌های انجمنی بازتوزیع می‌شوند؛ فهرست‌ها کامل جایگزین. */
+    private static function mergeDefaults(array $defaults, array $saved): array
+    {
+        $isMap = static fn (array $a): bool => !array_is_list($a);
+
+        foreach ($saved as $key => $value) {
+            if (isset($defaults[$key]) && is_array($defaults[$key]) && is_array($value)
+                && $isMap($defaults[$key]) && $isMap($value)) {
+                $defaults[$key] = self::mergeDefaults($defaults[$key], $value);
+            } else {
+                $defaults[$key] = $value;
+            }
+        }
+
+        return $defaults;
     }
 
     public function product(string $slug): ?array

@@ -25,6 +25,9 @@
                 'image_id' => null,
                 'image_path' => null,
                 'label' => '',
+                'badge_text' => '',
+                'price_text' => '',
+                'old_price_text' => '',
             ]"
         >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -56,6 +59,29 @@
                             class="direction-ltr"
                         />
                     </x-admin.field>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <x-admin.field label="بج (مثلا ۲۰٪)">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'badge_text')"
+                                x-model="it.badge_text"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="قیمت">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'price_text')"
+                                x-model="it.price_text"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="قیمت قبلی">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'old_price_text')"
+                                x-model="it.old_price_text"
+                            />
+                        </x-admin.field>
+                    </div>
 
                 </div>
 

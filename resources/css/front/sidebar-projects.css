@@ -1,0 +1,144 @@
+/* ===== Sidebar projects widget: animated bars + 100% green halo ===== */
+
+.sb-project-card {
+    position: relative;
+    z-index: 0;
+    border-radius: 18px;
+    border: 1px solid rgb(226 232 240);
+    background: linear-gradient(165deg, rgb(248 250 252), #fff 60%);
+    padding: 12px;
+    transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+
+.dark .sb-project-card {
+    border-color: rgb(51 65 85 / .8);
+    background: linear-gradient(165deg, rgb(2 6 23), rgb(15 23 42) 65%);
+}
+
+.sb-project-card:hover {
+    border-color: rgba(249, 115, 22, .35);
+    box-shadow: 0 10px 26px rgba(249, 115, 22, .1);
+    transform: translateY(-2px);
+}
+
+/* پروژه تکمیل‌شده: هاله سبز چرخان دور کارت */
+.sb-project-card.is-done { padding: 2px; }
+
+.sb-project-card.is-done::before {
+    content: '';
+    position: absolute;
+    inset: -130%;
+    z-index: -1;
+    background: conic-gradient(
+        from 0deg,
+        rgba(16, 185, 129, 0) 0deg,
+        rgba(16, 185, 129, .9) 60deg,
+        rgba(52, 211, 153, .4) 130deg,
+        rgba(16, 185, 129, 0) 210deg,
+        rgba(16, 185, 129, .65) 330deg,
+        rgba(16, 185, 129, 0) 360deg
+    );
+    animation: sbProjectRing 5s linear infinite;
+}
+
+.sb-project-card.is-done::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    z-index: -1;
+    border-radius: 16px;
+    background: linear-gradient(165deg, rgb(246 253 250), #fff 60%);
+}
+
+.dark .sb-project-card.is-done::after {
+    background: linear-gradient(165deg, rgb(2 6 23), rgb(15 23 42) 65%);
+}
+
+@keyframes sbProjectRing {
+    to { transform: rotate(360deg); }
+}
+
+/* نوار پیشرفت با بافت متحرک */
+.sb-project-bar {
+    position: relative;
+    height: 9px;
+    border-radius: 9999px;
+    background: rgba(148, 163, 184, .18);
+    overflow: visible;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, .12);
+}
+
+.sb-project-fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #c2410c, #f97316);
+    overflow: hidden;
+}
+
+/* پرشدن یکدست و صاف — بدون بافت خط‌خط */
+.sb-project-fill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(255, 255, 255, .2), transparent 55%);
+}
+
+.sb-project-fill::after {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    width: 14px;
+    height: 100%;
+    background: radial-gradient(circle at right, rgba(255, 255, 255, .55), transparent 70%);
+}
+
+.sb-project-fill.is-done {
+    background: linear-gradient(90deg, #047857, #10b981);
+    box-shadow: 0 0 12px rgba(16, 185, 129, .45);
+}
+
+/* درخشش نوک نوار — رنگ از درصد پروژه (متغیر --sb-tip) */
+.sb-project-tip {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 15px;
+    height: 15px;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: #fff;
+    border: 2px solid var(--sb-tip, #f97316);
+    /* فال‌بک برای مرورگرهای بدون color-mix */
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, .18), 0 0 14px rgba(249, 115, 22, .55);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--sb-tip, #f97316) 18%, transparent), 0 0 14px color-mix(in srgb, var(--sb-tip, #f97316) 55%, transparent);
+    animation: sbProjectTipPulse 1.8s ease-in-out infinite;
+}
+
+.sb-project-tip.is-done {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, .18), 0 0 14px rgba(16, 185, 129, .55);
+}
+
+.dark .sb-project-tip { background: rgb(15 23 42); }
+.dark .sb-project-tip.is-done { background: rgb(2 6 23); }
+
+@keyframes sbProjectTipPulse {
+    0%, 100% { transform: translateY(-50%) scale(1); }
+    50% { transform: translateY(-50%) scale(.82); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sb-project-tip,
+    .sb-project-card.is-done::before {
+        animation: none;
+    }
+
+    .sb-project-fill,
+    .sb-project-fill.mw-fill-anim,
+    .sb-project-tip.mw-fill-tip {
+        transition: none;
+    }
+}

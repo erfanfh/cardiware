@@ -201,6 +201,50 @@ class SettingController extends Controller
         return view('admin.system.settings.loyalty', compact('registrationGiftOffers'));
     }
 
+    public function affiliate(\App\Infrastructure\Services\Setting\Groups\AffiliateSettings $settings): View
+    {
+        Gate::authorize('affiliate.settings');
+
+        return view('admin.system.settings.affiliate', ['settings' => $settings]);
+    }
+
+    public function storeAffiliate(Request $request): RedirectResponse
+    {
+        Gate::authorize('affiliate.settings');
+
+        $validated = $request->validate([
+            'affiliate_enabled' => ['required', 'boolean'],
+            'default_commission_type' => ['required', 'in:percent,fixed'],
+            'default_commission_value' => [
+                'required', 'integer', 'min:0',
+                function (string $attribute, mixed $value, \Closure $fail) use ($request): void {
+                    if ($request->input('default_commission_type') === 'percent' && (int) $value > 100) {
+                        $fail('در حالت درصدی، کمیسیون پیش‌فرض نمی‌تواند بیشتر از ۱۰۰ باشد.');
+                    }
+                },
+            ],
+            'default_attribution_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'default_cookie_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'default_min_withdrawal_amount' => ['required', 'integer', 'min:0', 'max:1000000000'],
+            'referral_bonus_enabled' => ['required', 'boolean'],
+            'referral_bonus_referrer_points' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'referral_bonus_referee_points' => ['required', 'integer', 'min:0', 'max:1000000'],
+            'referral_bonus_min_order_amount' => ['required', 'integer', 'min:0', 'max:1000000000'],
+        ]);
+
+        DB::transaction(function () use ($validated): void {
+            foreach ($validated as $field => $value) {
+                if (! app(UpdateSettingAction::class)->execute('affiliate', $field, $value)) {
+                    throw new RuntimeException('Unable to persist affiliate settings.');
+                }
+            }
+        });
+
+        return redirect()
+            ->route('admin.settings.affiliate')
+            ->with('success', 'تنظیمات همکاری در فروش با موفقیت ذخیره شد.');
+    }
+
     public function storeLoyalty(UpdateLoyaltySettingsRequest $request): RedirectResponse
     {
         Gate::authorize('loyalty-rule.list');
@@ -749,6 +793,32 @@ class SettingController extends Controller
         return redirect()
             ->route('admin.settings.ticket')
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * Launcher landing settings page.
+     */
+    public function launcher(): View
+    {
+        Gate::authorize('setting.launcher');
+
+        return view('admin.system.settings.launcher');
+    }
+
+    /**
+     * Store launcher landing settings.
+     *
+     * @throws BindingResolutionException
+     */
+    public function storeLauncher(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.launcher');
+
+        $this->storeSettings($request, 'launcher');
+
+        return redirect()
+            ->route('admin.settings.launcher')
+            ->with('success', 'تنظیمات لانچر با موفقیت ذخیره شد.');
     }
 
     /**

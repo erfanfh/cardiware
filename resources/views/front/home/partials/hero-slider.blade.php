@@ -1,4 +1,7 @@
-@php $items = get_setting('home', 'hero_slider'); @endphp
+@php
+    $items = get_setting('home', 'hero_slider');
+    $heroStats = collect(get_setting('home', 'hero_stats') ?? [])->filter(fn($s) => filled($s['value'] ?? null))->take(3)->values();
+@endphp
 
 <div class="w-full">
     @if(count($items) > 0)
@@ -35,7 +38,7 @@
                                     <div class="flex items-center justify-between gap-3">
                                         @if($item['top_label_text'])
                                             <div
-                                                class="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-3 py-2 text-white/90 backdrop-blur">
+                                                class="home-hero-top-label inline-flex items-center gap-2 rounded-2xl bg-white/10 px-3 py-2 text-white/90 backdrop-blur">
                                                 <span class="h-2 w-2 rounded-full bg-brand-400"></span>
                                                 <span class="text-xs font-semibold">{{ $item['top_label_text'] }}</span>
                                             </div>
@@ -68,12 +71,12 @@
                                         @endif
 
                                         @if($item['description'])
-                                            <p class="mt-4 text-white/80 text-sm sm:text-base leading-7">
+                                            <p class="home-hero-description mt-4 text-white/80 text-sm sm:text-base leading-7">
                                                 {!! nl2br(htmlspecialchars(e($item['description']))) !!}
                                             </p>
                                         @endif
 
-                                        <div class="home-hero-actions mt-auto grid grid-cols-2 gap-3 pt-6 pb-3 lg:flex lg:flex-wrap">
+                                        <div class="home-hero-actions mt-5 grid grid-cols-2 gap-3 lg:flex lg:flex-wrap">
                                             @if($item['primary_button_text'])
                                                 <a href="{{ $item['primary_button_url'] ?: '#' }}"
                                                    class="home-hero-button relative z-40 pointer-events-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white
@@ -111,9 +114,21 @@
                 </div>
             </div>
 
+            @if($heroStats->isNotEmpty())
+                <div class="home-hero-stats absolute inset-x-4 sm:inset-x-6 bottom-12 z-20 hidden sm:grid"
+                     style="grid-template-columns: repeat({{ $heroStats->count() }}, minmax(0, 1fr)); gap: 10px;">
+                    @foreach($heroStats as $stat)
+                        <div class="home-hero-stat">
+                            <b>{{ $stat['value'] }}</b>
+                            <span>{{ $stat['label'] ?? '' }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="absolute top-6 left-6 z-20 hidden items-center gap-2 sm:flex">
                 <button
-                    class="heroPrev cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition grid place-items-center"
+                    class="heroPrev cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-brand-500 transition grid place-items-center"
                     aria-label="قبلی" type="button">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M10 7l5 5-5 5" stroke="currentColor" stroke-width="2"
@@ -121,7 +136,7 @@
                     </svg>
                 </button>
                 <button
-                    class="heroNext cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-white/15 transition grid place-items-center"
+                    class="heroNext cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-brand-500 transition grid place-items-center"
                     aria-label="بعدی" type="button">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M14 7l-5 5 5 5" stroke="currentColor" stroke-width="2"

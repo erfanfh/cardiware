@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Setting\Groups;
 
+use App\Infrastructure\Casts\ArrayCast;
 use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\IntegerCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
@@ -19,6 +20,9 @@ class LoyaltySettings extends BaseSettings
         'point_conversion_daily_points_limit',
         'registration_gift_enabled',
         'registration_gift_reward_offer_id',
+        'max_credit_percent_per_order',
+        'streak_milestones',
+        'points_inactivity_expiry_months',
     ];
 
     protected array $casts = [
@@ -30,5 +34,8 @@ class LoyaltySettings extends BaseSettings
         'point_conversion_daily_points_limit' => IntegerCast::class,
         'registration_gift_enabled' => BooleanCast::class,
         'registration_gift_reward_offer_id' => IntegerCast::class,
+        'max_credit_percent_per_order' => IntegerCast::class,
+        'streak_milestones' => ArrayCast::class,
+        'points_inactivity_expiry_months' => IntegerCast::class,
     ];
 }

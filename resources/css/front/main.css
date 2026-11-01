@@ -1,6 +1,10 @@
 @import "./tinymce-content.css";
 @import "./project-card.css";
 @import "./announcement.css";
+@import "./footer-stats.css";
+@import "./sidebar-projects.css";
+@import "./update-progress.css";
+@import "./store-hero.css";
 
 [x-cloak] {
     display: none !important;

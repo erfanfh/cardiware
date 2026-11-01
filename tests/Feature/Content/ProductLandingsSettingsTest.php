@@ -139,6 +139,27 @@ class ProductLandingsSettingsTest extends TestCase
         self::assertSame('NEW BRAND', $settings->document('ultimate')['brand']);
     }
 
+    public function test_legacy_documents_can_omit_the_new_visibility_and_squad_fields(): void
+    {
+        $this->actingAs($this->admin());
+        $removeNewFields = function (array $content) use (&$removeNewFields): array {
+            foreach ($content as $key => $value) {
+                if (in_array($key, ['enabled', 'hidden', 'pgl_team_id'], true)) {
+                    unset($content[$key]);
+                } elseif (is_array($value)) {
+                    $content[$key] = $removeNewFields($value);
+                }
+            }
+
+            return $content;
+        };
+        $content = $removeNewFields(ProductLandingsSettings::defaults()['ultimate']);
+
+        $this->put(route('admin.settings.product-landings.store', 'ultimate'), $this->payload('ultimate', $content))
+            ->assertSessionHasNoErrors()->assertRedirect();
+        self::assertSame(true, app(ProductLandingsSettings::class)->document('ultimate')['enabled']);
+    }
+
     public function test_invalid_content_is_rejected_without_persisting_any_changes(): void
     {
         $this->actingAs($this->admin());

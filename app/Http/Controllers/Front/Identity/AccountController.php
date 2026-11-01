@@ -112,12 +112,19 @@ class AccountController extends Controller
 
     public function loyalty(
         GetAudienceClubOverviewAction $getAudienceClubOverviewAction,
+        \App\Application\Affiliate\Actions\EnsureUserAffiliateAction $ensureUserAffiliateAction,
+        \App\Infrastructure\Services\Setting\Groups\AffiliateSettings $affiliateSettings,
     ): View
     {
         $user = $this->getHydratedUser();
         $club = $getAudienceClubOverviewAction->execute($user);
 
-        return view('front.account.pages.loyalty', compact('user', 'club'));
+        // کد دعوت/همکاری کاربر برای تب «دعوت دوستان» به‌صورت تنبل ساخته می‌شود
+        $affiliate = $affiliateSettings->isEnabled()
+            ? $ensureUserAffiliateAction->execute($user)
+            : $user->affiliateRecord()->first();
+
+        return view('front.account.pages.loyalty', compact('user', 'club', 'affiliate'));
     }
 
     private function getHydratedUser(): User

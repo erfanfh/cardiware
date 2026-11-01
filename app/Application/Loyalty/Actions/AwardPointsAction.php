@@ -20,6 +20,7 @@ class AwardPointsAction
     public function __construct(
         private readonly PointLedgerFingerprint $fingerprint,
         private readonly PointLedgerIdempotencyGuard $idempotencyGuard,
+        private readonly ProcessLevelUpAction $processLevelUp,
     ) {
     }
 
@@ -46,11 +47,18 @@ class AwardPointsAction
 
                 $balanceBefore = (int)$account->balance;
                 $balanceAfter = $balanceBefore + $data->amount;
+                $previousXp = (int)$account->lifetime_xp;
 
                 $account->forceFill([
                     'balance' => $balanceAfter,
                     'lifetime_earned' => (int)$account->lifetime_earned + $data->amount,
-                ])->save();
+                ]);
+
+                if ($data->awardsXp) {
+                    $account->lifetime_xp = $previousXp + $data->amount;
+                }
+
+                $account->save();
 
                 $entry = PointLedgerEntry::query()->create([
                     'point_account_id' => $account->id,
@@ -78,6 +86,12 @@ class AwardPointsAction
                         ])
                         : $data->metadata,
                 ]);
+
+                // پاداش ارتقای سطح فقط برای امتیازهای XP-دار پردازش می‌شود تا
+                // خودِ پاداش سطح، ارتقای بعدی را فعال نکند (زنجیره بی‌پایان).
+                if ($data->awardsXp) {
+                    $this->processLevelUp->execute($account, $previousXp);
+                }
 
                 return $this->loadRelations($entry);
             }, 3);

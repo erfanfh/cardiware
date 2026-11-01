@@ -12,6 +12,8 @@ final readonly class AwardPointsDTO
 {
     /**
      * @param array<string, mixed> $metadata
+     * @param bool $awardsXp آیا این امتیاز به XP (سطح) هم اضافه می‌شود؟
+     *                      پاداش Level-Up فقط Point می‌دهد و XP نمی‌دهد تا زنجیره سطح ایجاد نشود.
      */
     public function __construct(
         public PointAccount $account,
@@ -24,6 +26,7 @@ final readonly class AwardPointsDTO
         public ?string $description = null,
         public array $metadata = [],
         public ?CarbonInterface $occurredAt = null,
+        public bool $awardsXp = true,
     ) {
     }
 }

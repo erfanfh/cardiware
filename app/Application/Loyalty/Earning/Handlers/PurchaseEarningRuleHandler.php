@@ -2,6 +2,7 @@
 
 namespace App\Application\Loyalty\Earning\Handlers;
 
+use App\Application\Loyalty\Actions\ResolveUserLevelAction;
 use App\Application\Loyalty\Earning\Contexts\PurchaseEarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningContext;
 use App\Application\Loyalty\Earning\Contracts\EarningRuleHandler;
@@ -18,6 +19,7 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
     public function __construct(
         private readonly EarningRuleConfigReader $config,
         private readonly EarningIdempotencyKeyFactory $idempotencyKeys,
+        private readonly ResolveUserLevelAction $resolveUserLevel,
     ) {
     }
 
@@ -92,6 +94,15 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
             );
         }
 
+        // ضریب سطح کاربر روی امتیاز خرید؛ سطح از lifetime_xp تعیین می‌شود.
+        $level = $this->resolveUserLevel->execute($user->pointAccount()->first());
+        $multiplier = (float) $level->purchase_multiplier;
+        $basePoints = $points;
+
+        if ($multiplier > 0 && $multiplier !== 1.0) {
+            $points = (int) round($points * $multiplier);
+        }
+
         return EarningRuleEvaluation::award(
             rule: $rule,
             points: $points,
@@ -107,6 +118,10 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
                 'steps' => $steps,
                 'points_per_step' => $pointsPerStep,
                 'max_points_per_order' => $maximumPointsPerOrder,
+                'base_points' => $basePoints,
+                'level_id' => $level->getKey(),
+                'level_title' => $level->title,
+                'level_multiplier' => $multiplier,
             ],
         );
     }

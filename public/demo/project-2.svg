@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="506" viewBox="0 0 900 506" role="img">
+  <defs>
+    <linearGradient id="gproject-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0c1a3d"/>
+    </linearGradient>
+    <linearGradient id="aproject-2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="506" fill="url(#gproject-2)"/>
+  <circle cx="900" cy="0" r="506" fill="url(#aproject-2)" opacity="0.18"/>
+  <circle cx="900" cy="506" r="506" fill="url(#aproject-2)" opacity="0.10"/>
+  <circle cx="0" cy="506" r="506" fill="#60a5fa" opacity="0.08"/>
+  <path d="M0 506 Q 900/4 506/2 900/2 506 T 900 506/2" stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="900/24" y="506/2" width="900/5" height="10" rx="5" fill="url(#aproject-2)"/>
+  <text x="900/24" y="506/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="50" font-weight="900">لیگ‌های اروپا</text>
+  <text x="900/24" y="506/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="23">در حال توسعه</text>
+</svg>

@@ -44,6 +44,9 @@ class PermissionSeeder extends Seeder
                 'category' => 'مدیریت دسته‌بندی ویدیوها',
                 'tag' => 'مدیریت برچسب ویدیوها',
             ],
+            'gallery' => [
+                'manage' => 'مدیریت رسانه‌های ارسالی کاربران',
+            ],
             'project' => [
                 'list' => 'لیست پروژه ها',
                 'create' => 'ایجاد پروژه',
@@ -136,6 +139,7 @@ class PermissionSeeder extends Seeder
                 'posts' => 'تنظیمات صفحه نوشته ها',
                 'products' => 'تنظیمات صفحه محصولات',
                 'ticket' => 'تنظیمات تیکت',
+                'launcher' => 'تنظیمات لانچر',
                 'backup' => 'تنظیمات بک آپ',
             ],
             'order' => [
@@ -250,6 +254,14 @@ class PermissionSeeder extends Seeder
                 'create' => 'ایجاد عضو تیم',
                 'edit' => 'ویرایش عضو تیم',
                 'delete' => 'حذف عضو تیم',
+            ],
+            'affiliate' => [
+                'list' => 'لیست همکاران در فروش',
+                'create' => 'ایجاد همکار در فروش',
+                'edit' => 'ویرایش تنظیمات همکار در فروش',
+                'delete' => 'حذف همکار در فروش',
+                'withdrawals' => 'بررسی درخواست‌های برداشت کمیسیون',
+                'settings' => 'تنظیمات همکاری در فروش',
             ],
         ];
 

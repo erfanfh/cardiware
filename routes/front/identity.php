@@ -3,6 +3,8 @@
 use App\Http\Controllers\Front\Identity\AccountController;
 use App\Http\Controllers\Front\Identity\AuthController;
 use App\Http\Controllers\Front\Identity\UserNotificationController;
+use App\Http\Controllers\Front\Affiliate\AffiliatePanelController;
+use App\Http\Controllers\Front\Affiliate\StoreAffiliateWithdrawalController;
 use App\Http\Controllers\Front\Loyalty\ConvertPointsToWalletController;
 use App\Http\Controllers\Front\Loyalty\RedeemRewardOfferController;
 use App\Http\Controllers\Front\Financial\WalletWithdrawalController;
@@ -43,4 +45,9 @@ Route::prefix('account')->middleware('auth')->name('account.')->group(function (
     Route::post('loyalty/convert-to-wallet', ConvertPointsToWalletController::class)
         ->middleware('throttle:10,1')
         ->name('loyalty.convert-to-wallet');
+
+    Route::get('affiliate', AffiliatePanelController::class)->name('affiliate');
+    Route::post('affiliate/withdrawals', StoreAffiliateWithdrawalController::class)
+        ->middleware('throttle:5,1')
+        ->name('affiliate.withdrawals.store');
 });

@@ -2,11 +2,16 @@
 
 namespace App\Application\Loyalty\Actions;
 
+use App\Application\Loyalty\Missions\Actions\RecordMissionProgressAction;
 use App\Application\Loyalty\PointConversion\Actions\ResolvePointConversionConfigAction;
+use App\Application\Loyalty\Streak\Actions\RecordDailyStreakAction;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\RewardRedemptionStatusEnum;
 use App\Domain\Loyalty\Enums\RewardTypeEnum;
 use App\Domain\Loyalty\Models\EarningRule;
+use App\Domain\Loyalty\Models\LoyaltyAchievement;
+use App\Domain\Loyalty\Models\LoyaltyMission;
+use App\Domain\Loyalty\Models\LoyaltyStreak;
 use App\Domain\Loyalty\Models\PointConversion;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use App\Domain\Loyalty\Models\RewardOffer;
@@ -15,12 +20,14 @@ use App\Domain\Raffle\Enums\DrawCampaignStatusEnum;
 use App\Domain\Raffle\Models\TicketGrant;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Support\Facades\DB;
 
 class GetAudienceClubOverviewAction
 {
     public function __construct(
         private readonly EvaluateRewardOfferAvailabilityAction $evaluateReward,
         private readonly ResolvePointConversionConfigAction $resolvePointConversionConfig,
+        private readonly ResolveUserLevelAction $resolveUserLevel,
     ) {}
 
     /** @return array<string, mixed> */
@@ -57,6 +64,12 @@ class GetAudienceClubOverviewAction
         );
 
         $pointEntries = $this->pointEntries($account?->getKey());
+        $lifetimeEarned = (int) ($account?->lifetime_earned ?? 0);
+        $lifetimeXp = (int) ($account?->lifetime_xp ?? 0);
+        $level = $this->resolveUserLevel->execute($account);
+        $nextLevel = $this->resolveUserLevel->nextLevel($account);
+        $levelColors = $level->colorClasses();
+        $gamification = $this->gamification($user);
         $earningRules = EarningRule::query()
             ->currentlyActive()
             ->orderByDesc('priority')
@@ -114,9 +127,28 @@ class GetAudienceClubOverviewAction
             'pointAccount' => $account,
             'pointBalance' => $balance,
             'spendablePointBalance' => max(0, $balance),
-            'lifetimeEarned' => (int) ($account?->lifetime_earned ?? 0),
+            'lifetimeEarned' => $lifetimeEarned,
             'lifetimeSpent' => (int) ($account?->lifetime_spent ?? 0),
+            'level' => [
+                'model' => $level,
+                'next' => $nextLevel,
+                'title' => $level->title,
+                'badge' => $level->badge,
+                'number' => $this->resolveUserLevel->activeLevels()->search(fn ($l) => $l->is($level)) + 1,
+                'xp' => $lifetimeXp,
+                'multiplier' => (float) $level->purchase_multiplier,
+                'colors' => $levelColors,
+                'nextTitle' => $nextLevel?->title,
+                'nextMin' => $nextLevel?->min_xp,
+                'progressPercent' => $this->resolveUserLevel->progressPercent($account),
+                'xpToNext' => $nextLevel ? max(0, $nextLevel->min_xp - $lifetimeXp) : 0,
+                'ladder' => $this->resolveUserLevel->activeLevels(),
+            ],
             'pointEntries' => $pointEntries,
+            'monthlySummary' => $this->monthlySummary($account?->getKey(), $user),
+            'streak' => $gamification['streak'],
+            'missions' => $gamification['missions'],
+            'achievements' => $gamification['achievements'],
             'earningRules' => $earningRules,
             'rewardOffers' => $rewardOffers,
             'rewardAvailabilities' => $rewardAvailabilities,
@@ -159,5 +191,115 @@ class GetAudienceClubOverviewAction
             ->orderByDesc('id')
             ->paginate(12, ['*'], 'points_page')
             ->withQueryString();
+    }
+
+    /**
+     * جمع کسب و مصرف امتیاز برای چهار ماه اخیر.
+     *
+     * @param int|null $accountId
+     * @param User $user
+     * @return array<int, array{label:string, earned:int, spent:int}>
+     */
+    /**
+     * داده‌های گیمیفیکیشن صفحه باشگاه: زنجیره، مأموریت‌های هفته و نشان‌ها.
+     *
+     * @param User $user
+     * @return array{streak: array<string, mixed>, missions: \Illuminate\Support\Collection<int, array<string, mixed>>, achievements: array<string, mixed>}
+     */
+    private function gamification(User $user): array
+    {
+        $streakModel = LoyaltyStreak::query()
+            ->where('user_id', $user->getKey())
+            ->first();
+
+        $milestones = app(RecordDailyStreakAction::class)->milestones();
+        $nextMilestone = null;
+
+        foreach ($milestones as $milestone) {
+            if ((int) $milestone['days'] > (int) ($streakModel?->current_days ?? 0)) {
+                $nextMilestone = $milestone;
+                break;
+            }
+        }
+
+        $streak = [
+            'model' => $streakModel,
+            'currentDays' => (int) ($streakModel?->current_days ?? 0),
+            'longestDays' => (int) ($streakModel?->longest_days ?? 0),
+            'visitedToday' => $streakModel?->last_visit_date?->toDateString() === now(config('app.timezone'))->toDateString(),
+            'milestones' => $milestones,
+            'nextMilestone' => $nextMilestone,
+        ];
+
+        $periodKey = app(RecordMissionProgressAction::class)->currentPeriodKey();
+
+        $missions = LoyaltyMission::query()
+            ->active()
+            ->get()
+            ->map(function (LoyaltyMission $mission) use ($user, $periodKey): array {
+                $progress = $mission->progressFor($user, $periodKey);
+
+                return [
+                    'mission' => $mission,
+                    'progressCount' => (int) ($progress?->progress_count ?? 0),
+                    'targetCount' => $mission->target_count,
+                    'completedAt' => $progress?->completed_at,
+                    'percent' => min(100, (int) round(((int) ($progress?->progress_count ?? 0)) / max(1, $mission->target_count) * 100)),
+                ];
+            })
+            ->values();
+
+        $achievements = LoyaltyAchievement::query()->active()->get();
+        $earned = DB::table('loyalty_achievement_user')
+            ->where('user_id', $user->getKey())
+            ->get()
+            ->keyBy('loyalty_achievement_id');
+
+        return [
+            'streak' => $streak,
+            'missions' => $missions,
+            'achievements' => [
+                'all' => $achievements,
+                'earnedIds' => $earned->keys(),
+                'earnedMap' => $earned,
+                'earnedCount' => $earned->count(),
+                'totalCount' => $achievements->count(),
+            ],
+        ];
+    }
+
+    private function monthlySummary(?int $accountId, User $user): array
+    {
+        if (! $accountId) {
+            return [];
+        }
+
+        $gregorian = new \DateTimeImmutable('first day of this month');
+        $monthRanges = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $start = $gregorian->modify("-{$i} months");
+            $monthRanges[] = [$start, $start->modify('+1 month')];
+        }
+
+        $rows = PointLedgerEntry::query()
+            ->where('point_account_id', $accountId)
+            ->where('occurred_at', '>=', $monthRanges[0][0])
+            ->where('occurred_at', '<', end($monthRanges)[1])
+            ->get(['direction', 'amount', 'occurred_at']);
+
+        $summary = [];
+        foreach ($monthRanges as [$start, $end]) {
+            $inRange = $rows->filter(
+                fn (PointLedgerEntry $entry) => $entry->occurred_at >= $start && $entry->occurred_at < $end,
+            );
+
+            $summary[] = [
+                'label' => jalali_date($start, 'F'),
+                'earned' => (int) $inRange->where('direction.value', 'credit')->sum('amount'),
+                'spent' => (int) $inRange->where('direction.value', 'debit')->sum('amount'),
+            ];
+        }
+
+        return $summary;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Identity\Models;
 
+use App\Domain\Affiliate\Models\Affiliate;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Content\Models\Post;
@@ -262,6 +263,11 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function pointAccount(): HasOne
     {
         return $this->hasOne(PointAccount::class);
+    }
+
+    public function affiliateRecord(): HasOne
+    {
+        return $this->hasOne(Affiliate::class);
     }
 
     /**

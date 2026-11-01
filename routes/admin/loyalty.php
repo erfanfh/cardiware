@@ -3,11 +3,17 @@
 use App\Http\Controllers\Admin\Loyalty\AdjustAudienceMemberPointsController;
 use App\Http\Controllers\Admin\Loyalty\AudienceMemberController;
 use App\Http\Controllers\Admin\Loyalty\EarningRuleBulkActionController;
+use App\Http\Controllers\Admin\Loyalty\LoyaltyAchievementController;
+use App\Http\Controllers\Admin\Loyalty\LoyaltyLevelController;
+use App\Http\Controllers\Admin\Loyalty\LoyaltyMissionController;
 use App\Http\Controllers\Admin\Loyalty\EarningRuleController;
 use App\Http\Controllers\Admin\Loyalty\RewardOfferBulkActionController;
 use App\Http\Controllers\Admin\Loyalty\RewardOfferController;
 use Illuminate\Support\Facades\Route;
 
+Route::resource('loyalty-levels', LoyaltyLevelController::class)->except(['show']);
+Route::resource('loyalty-missions', LoyaltyMissionController::class)->except(['show']);
+Route::resource('loyalty-achievements', LoyaltyAchievementController::class)->except(['show']);
 Route::resource('earning-rules', EarningRuleController::class)->except(['show']);
 Route::post('earning-rules/bulk-action', EarningRuleBulkActionController::class)->name('earning-rules.bulk-action');
 

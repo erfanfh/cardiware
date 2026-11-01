@@ -43,15 +43,15 @@
                                 href="{{ front_route('contents.detail', $relatedPost) }}"
                                 class="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 dark:hover:border-brand-500/30 dark:hover:shadow-black/20"
                             >
-                                <div class="relative aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                                <div class="relative overflow-hidden bg-slate-100 dark:bg-slate-800">
                                     <x-front.responsive-image
                                         :media="$relatedPost->picture"
                                         :fallback="$relatedPost->picture?->url"
                                         :alt="$relatedPost->title"
                                         :title="$relatedPost->title"
                                         variant="medium_large"
-                                        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
-                                        wrapper-class="absolute inset-0"
+                                        class="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                                        wrapper-class="block w-full"
                                         :lazy="true"
                                         :async="true"
                                         sizes="(max-width: 640px) 82vw, (max-width: 1024px) 45vw, 260px"

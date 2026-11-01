@@ -36,6 +36,10 @@
                 'enable_progress_percent' => '',
                 'progress_percent' => '',
                 'label' => '',
+                'badge_text' => '',
+                'price_text' => '',
+                'old_price_text' => '',
+                'button_text' => '',
             ]"
         >
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -57,6 +61,43 @@
                             x-model="it.short_description"
                         />
                     </x-admin.field>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <x-admin.field label="بج تصویر (مثلا ۲۰٪)">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'badge_text')"
+                                x-model="it.badge_text"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="برچسب (مثلا FC 26)">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'label')"
+                                x-model="it.label"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="قیمت">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'price_text')"
+                                x-model="it.price_text"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="قیمت قبلی">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'old_price_text')"
+                                x-model="it.old_price_text"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="متن دکمه (پیش‌فرض: خرید)" class="col-span-2">
+                            <x-admin.form.input
+                                x-bind:name="field(i, 'button_text')"
+                                x-model="it.button_text"
+                            />
+                        </x-admin.field>
+                    </div>
 
                     <x-admin.field
                         label="لینک"

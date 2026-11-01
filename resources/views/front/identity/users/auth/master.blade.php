@@ -8,14 +8,16 @@
     {!! seo_head() !!}
     <x-favicons/>
     @include('front.scripts.dark-light')
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/css/front/main.css'])
     @yield('head')
+    @stack('styles')
     @livewireStyles
 </head>
-<body dir="rtl" class="pb-10 md:py-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+<body dir="rtl" class="bg-slate-950 text-slate-100">
 <h1 class="sr-only">ورود / ثبت نام در {{ get_setting('general', 'title') }}</h1>
 @yield('content')
 @yield('scripts')
+@stack('scripts')
 @vite(['resources/js/front/main.js'])
 @livewireScripts
 </body>

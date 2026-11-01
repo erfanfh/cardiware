@@ -10,6 +10,17 @@ use Illuminate\Validation\Validator;
 
 class UpdateLoyaltySettingsRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        // فیلد مایل‌استون‌های زنجیره از فرم به‌صورت رشته JSON می‌آید؛
+        // قبل از اعتبارسنجی به آرایه تبدیل می‌شود تا ArrayCast مستقیماً آن را ذخیره کند.
+        if ($this->has('streak_milestones') && is_string($this->input('streak_milestones'))) {
+            $decoded = json_decode(trim($this->input('streak_milestones')), true);
+
+            $this->merge(['streak_milestones' => is_array($decoded) ? $decoded : null]);
+        }
+    }
+
     public function authorize(): bool
     {
         return Gate::allows('loyalty-rule.list');
@@ -25,6 +36,11 @@ class UpdateLoyaltySettingsRequest extends FormRequest
             'point_conversion_minimum_points' => ['required', 'integer', 'min:1', 'max:1000000000'],
             'point_conversion_maximum_points_per_request' => ['required', 'integer', 'min:0', 'max:1000000000'],
             'point_conversion_daily_points_limit' => ['required', 'integer', 'min:0', 'max:1000000000'],
+            'max_credit_percent_per_order' => ['required', 'integer', 'min:0', 'max:100'],
+            'streak_milestones' => ['required', 'array', 'min:1'],
+            'points_inactivity_expiry_months' => ['required', 'integer', 'min:0', 'max:240'],
+            'streak_milestones.*.days' => ['required_with:streak_milestones', 'integer', 'min:1', 'max:3650'],
+            'streak_milestones.*.points' => ['required_with:streak_milestones', 'integer', 'min:1', 'max:1000000'],
             'registration_gift_enabled' => ['required', 'boolean'],
             'registration_gift_reward_offer_id' => [
                 'nullable',

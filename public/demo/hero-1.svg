@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img">
+  <defs>
+    <linearGradient id="ghero-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="ahero-1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="560" fill="url(#ghero-1)"/>
+  <circle cx="1280" cy="0" r="560" fill="url(#ahero-1)" opacity="0.18"/>
+  <circle cx="1280" cy="560" r="560" fill="url(#ahero-1)" opacity="0.10"/>
+  <circle cx="0" cy="560" r="560" fill="#f97316" opacity="0.08"/>
+  <path d="M0 560 Q 1280/4 560/2 1280/2 560 T 1280 560/2" stroke="#f97316" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="1280/24" y="560/2" width="1280/5" height="10" rx="5" fill="url(#ahero-1)"/>
+  <text x="1280/24" y="560/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="71" font-weight="900">MW Launcher</text>
+  <text x="1280/24" y="560/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="32">دانلودگر اختصاصی مودینگ‌وی</text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560" role="img">
+  <defs>
+    <linearGradient id="ghero-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e1065"/>
+      <stop offset="100%" stop-color="#150733"/>
+    </linearGradient>
+    <linearGradient id="ahero-3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="560" fill="url(#ghero-3)"/>
+  <circle cx="1280" cy="0" r="560" fill="url(#ahero-3)" opacity="0.18"/>
+  <circle cx="1280" cy="560" r="560" fill="url(#ahero-3)" opacity="0.10"/>
+  <circle cx="0" cy="560" r="560" fill="#a78bfa" opacity="0.08"/>
+  <path d="M0 560 Q 1280/4 560/2 1280/2 560 T 1280 560/2" stroke="#a78bfa" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="1280/24" y="560/2" width="1280/5" height="10" rx="5" fill="url(#ahero-3)"/>
+  <text x="1280/24" y="560/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="71" font-weight="900">اشتراک VIP</text>
+  <text x="1280/24" y="560/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="32">دسترسی نامحدود به همه مادها</text>
+</svg>

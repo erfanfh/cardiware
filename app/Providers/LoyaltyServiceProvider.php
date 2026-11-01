@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Application\Loyalty\Listeners\AwardCommentPointsListener;
 use App\Application\Loyalty\Listeners\AwardPurchasePointsListener;
+use App\Application\Loyalty\Listeners\TrackGamificationOnCommentApprovedListener;
+use App\Application\Loyalty\Listeners\TrackGamificationOnOrderPaidListener;
 use App\Application\Loyalty\Listeners\AwardRegistrationPointsListener;
 use App\Application\Loyalty\Listeners\GrantRegistrationRewardListener;
 use App\Application\Loyalty\Listeners\RecordRegistrationPointEligibilityListener;
@@ -57,8 +59,24 @@ class LoyaltyServiceProvider extends ServiceProvider
             ReverseCommentPointsListener::class,
         );
 
+        Event::listen(
+            OrderPaidEvent::class,
+            TrackGamificationOnOrderPaidListener::class,
+        );
+
+        Event::listen(
+            CommentApprovedEvent::class,
+            TrackGamificationOnCommentApprovedListener::class,
+        );
+
         $schedule->command('loyalty:award-membership-anniversaries --lookback=7')
             ->dailyAt('00:15')
+            ->withoutOverlapping(120)
+            ->onOneServer();
+
+        // انقضای امتیاز کاربران غیرفعال بر اساس تنظیمات باشگاه
+        $schedule->command('loyalty:expire-inactive-points')
+            ->dailyAt('03:10')
             ->withoutOverlapping(120)
             ->onOneServer();
 

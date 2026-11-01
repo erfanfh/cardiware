@@ -9,29 +9,47 @@
 >
     <div class="space-y-3">
         @foreach($sidebarProjectsWidget['projects'] as $project)
-            <div class="rounded-2xl border border-slate-200 p-3 dark:border-slate-700">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <div class="text-sm font-extrabold truncate dark:text-slate-100">
-                            <a href="{{ front_route('projects.detail', $project) }}">
-                                {{ $project->title }}
-                            </a>
+            @php
+                $sbProjectProgress = max(0, min(100, (int)($project->progress_percent ?? 0)));
+                $sbProjectDone = $sbProjectProgress >= 100;
+                $sbHue = (int) round($sbProjectProgress * 1.42);
+                $sbGradient = $sbProjectDone
+                    ? 'linear-gradient(90deg, hsl(152 78% 45%), hsl(160 80% 38%))'
+                    : "linear-gradient(90deg, hsl({$sbHue} 84% 52%), hsl(" . min(160, $sbHue + 16) . " 82% 46%))";
+            @endphp
+
+            <div class="sb-project-card {{ $sbProjectDone ? 'is-done' : '' }}">
+                <div class="{{ $sbProjectDone ? 'p-2.5' : '' }}">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-sm font-extrabold truncate dark:text-slate-100">
+                                <a href="{{ front_route('projects.detail', $project) }}">
+                                    {{ $project->title }}
+                                </a>
+                            </div>
+
+                            <div class="mt-1 text-xs text-slate-500 truncate dark:text-slate-400">
+                                {{ $project->excerpt }}
+                            </div>
                         </div>
 
-                        <div class="mt-1 text-xs text-slate-500 truncate dark:text-slate-400">
-                            {{ $project->excerpt }}
-                        </div>
+                        <span
+                            class="text-[11px] font-extrabold border @if($sbProjectDone) text-green-800 bg-green-50 border-green-100 dark:text-green-300 dark:bg-green-500/10 dark:border-green-500/20 @else text-brand-800 bg-brand-50 border-brand-100 dark:text-brand-300 dark:bg-brand-500/10 dark:border-brand-500/20 @endif px-2 py-1 rounded-xl">
+                            {{ $sbProjectProgress . '%' }}
+                        </span>
                     </div>
 
-                    <span
-                        class="text-[11px] font-extrabold border @if($project->progress_percent == 100) text-green-800 bg-green-50 border-green-100 dark:text-green-300 dark:bg-green-500/10 dark:border-green-500/20 @else text-brand-800 bg-brand-50 border-brand-100 dark:text-brand-300 dark:bg-brand-500/10 dark:border-brand-500/20 @endif px-2 py-1 rounded-xl">
-                        {{ $project->progress_percent . '%' }}
-                    </span>
-                </div>
+                        <div class="sb-project-bar mt-3">
+                            <div class="sb-project-fill mw-fill-anim {{ $sbProjectDone ? 'is-done' : '' }}"
+                                 data-fill-target="{{ $sbProjectProgress }}%"
+                                 style="width: 0; background: {{ $sbGradient }};"></div>
 
-                <div class="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden dark:bg-slate-800">
-                    <div class="h-full @if($project->progress_percent == 100) bg-green-500 @else bg-brand-500 @endif"
-                         style="width: {{ $project->progress_percent . '%' }}"></div>
+                            @if($sbProjectProgress > 2 && $sbProjectProgress < 98)
+                                <span class="sb-project-tip mw-fill-tip" data-fill-target="{{ $sbProjectProgress }}%"
+                                      style="right: calc(0% - 8px); --sb-tip: hsl({{ $sbHue }} 80% 45%);"
+                                      aria-hidden="true"></span>
+                            @endif
+                        </div>
                 </div>
             </div>
         @endforeach

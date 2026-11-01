@@ -18,6 +18,7 @@ class PointAccount extends Model
         'balance' => 'integer',
         'lifetime_earned' => 'integer',
         'lifetime_spent' => 'integer',
+        'lifetime_xp' => 'integer',
     ];
 
     public function user(): BelongsTo

@@ -6,6 +6,7 @@ use App\Application\Financial\Actions\Payment\CreatePaymentForPayableAction;
 use App\Application\Financial\Actions\Payment\StartCreatedPaymentAction;
 use App\Application\Financial\Actions\Wallet\CreateWalletHoldAction;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
+use App\Application\Financial\Actions\Wallet\ResolveWalletOrderPaymentCapAction;
 use App\Application\Financial\DTOs\CreateWalletHoldDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Financial\Exceptions\WalletTopUpIdempotencyConflictException;
@@ -36,6 +37,7 @@ class StartOrderWalletShortfallPaymentAction
         private readonly CreatePaymentForPayableAction         $createPaymentForPayableAction,
         private readonly StartCreatedPaymentAction             $startCreatedPaymentAction,
         private readonly FailOrderWalletShortfallPaymentAction $failShortfallPaymentAction,
+        private readonly ResolveWalletOrderPaymentCapAction   $resolveWalletOrderPaymentCapAction,
     )
     {
     }
@@ -208,7 +210,10 @@ class StartOrderWalletShortfallPaymentAction
 
             $this->walletBalanceCalculator->assertIntegrity($wallet);
 
-            $walletAmount = $this->walletBalanceCalculator->availableBalance($wallet);
+            $walletAmount = min(
+                $this->walletBalanceCalculator->availableBalance($wallet),
+                $this->resolveWalletOrderPaymentCapAction->execute($orderTotal, $wallet),
+            );
 
             /*
              * This Action is only for genuinely mixed payments.

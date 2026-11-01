@@ -55,6 +55,7 @@ class DrawCandidateSelector
                 $campaign,
                 $seed,
                 $candidateLimit,
+                $allowMultipleWinsPerUser,
                 $hashContext,
                 &$eligibleCount,
                 $ticketHeap,

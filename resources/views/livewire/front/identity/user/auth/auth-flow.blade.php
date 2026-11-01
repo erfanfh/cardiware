@@ -142,7 +142,7 @@
             </div>
         @endif
 
-        <div wire:key="auth-flow-step-{{ $step->value }}">
+        <div wire:key="auth-flow-step-{{ $step->value }}" class="auth-step">
             @switch($step)
                 @case(\App\Domain\Identity\Enums\AuthFlowStepEnum::ENTER_MOBILE)
                     @include(

@@ -38,7 +38,13 @@ class UpdateSettingActionTest extends TestCase
         });
         $this->app->instance('\\'.ProductLandingsSettings::class, $settings);
         $this->mock(SettingCacheInvalidator::class)->shouldNotReceive('afterUpdated');
-        Log::shouldReceive('info')->with('Storage failure')->once();
+        Log::shouldReceive('error')->with('Setting persist failed', \Mockery::on(
+            fn (array $context): bool => $context['group'] === 'productLandings'
+                && $context['key'] === 'ultimate'
+                && $context['exception'] === RuntimeException::class
+                && $context['message'] === 'Storage failure'
+                && isset($context['at']),
+        ))->once();
 
         self::assertFalse(app(UpdateSettingAction::class)->execute('productLandings', 'ultimate', []));
     }

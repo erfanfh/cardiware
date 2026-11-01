@@ -8,6 +8,14 @@
     $footerNews = $footerNewsEnabled
         ? app(\App\Application\System\Actions\Footer\GetFooterNewsAction::class)->execute()
         : [];
+    $footerStatsBg = get_setting('footer', 'stats_bg_image')->path;
+    $footerStatsAnimated = (bool) get_setting('footer', 'stats_animation_enabled', 1);
+    $footerStatsItems = [
+        ['label' => 'کاربر ثبت‌نام‌شده', 'value' => $footerStats['users'], 'icon' => 'icons.user-multiple-02'],
+        ['label' => 'تیکت پشتیبانی', 'value' => $footerStats['tickets'], 'icon' => 'icons.message-search-02'],
+        ['label' => 'نوشته و مود', 'value' => $footerStats['posts'], 'icon' => 'icons.file-02'],
+        ['label' => 'محصول در فروشگاه', 'value' => $footerStats['products'], 'icon' => 'icons.shop-line-duotone'],
+    ];
 @endphp
 
 <footer id="footer" dir="rtl" class="bg-white dark:bg-slate-950">
@@ -15,40 +23,43 @@
 
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div class="py-12">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6 text-center">
-                <div class="flex flex-col items-center">
-                    @include('icons.cart-check-line-duotone')
-                    <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format($footerStats['orders']) }}
-                        سفارش
-                    </div>
+            <section class="mw-footer-stats {{ $footerStatsAnimated ? 'is-animated' : '' }}">
+                @if($footerStatsBg)
+                    <img src="{{ $footerStatsBg }}" alt="" class="mw-footer-stats-bg" loading="lazy">
+                @endif
+
+                <span class="mw-footer-stats-overlay" aria-hidden="true"></span>
+
+                @if($footerStatsAnimated)
+                    <span class="mw-footer-stats-sweep" aria-hidden="true"></span>
+                    <span class="mw-footer-stats-sweep mw-footer-stats-sweep-2" aria-hidden="true"></span>
+                @endif
+
+                <div class="relative z-10 text-center">
+                    <span class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-extrabold text-white backdrop-blur">
+                        <span class="mw-footer-stats-pulse" aria-hidden="true"></span>
+                        مودینگ‌وی در یک نگاه
+                    </span>
+
+                    <h2 class="mt-3 text-xl font-black text-white sm:text-2xl">
+                        یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمرهای فوتبال
+                    </h2>
                 </div>
 
-                <div class="flex flex-col items-center">
-                    @include('icons.chat-unread-line-duotone')
-                    <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format($footerStats['comments']) }}
-                        دیدگاه
-                    </div>
+                <div class="relative z-10 mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+                    @foreach($footerStatsItems as $stat)
+                        <div class="mw-footer-stat">
+                            <span class="mw-footer-stat-icon">
+                                @include($stat['icon'])
+                            </span>
+                            <b>
+                                <span class="mw-count-up" data-count="{{ (int) $stat['value'] }}">۰</span><small>+</small>
+                            </b>
+                            <span>{{ $stat['label'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
-
-                <div class="flex flex-col items-center">
-                    @include('icons.clipboard-list-line-duotone')
-                    <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format($footerStats['posts']) }}
-                        نوشته
-                    </div>
-                </div>
-
-                <div class="flex flex-col items-center">
-                    @include('icons.shop-line-duotone')
-                    <div class="mt-4 text-orange-500 font-extrabold text-sm sm:text-base">
-                        +{{ number_format($footerStats['products']) }}
-                        محصول
-                    </div>
-                </div>
-
-            </div>
+            </section>
         </div>
 
         <div class="pb-12 border-b border-neutral-200 dark:border-slate-800">
@@ -404,10 +415,67 @@
             &copy; {{ get_setting('footer', 'copyright') }}
         </div>
 
-        <a href="https://avinoco.ir" target="_blank" rel="sponsored noopener">
+        <a href="https://avinoco.ir" target="_blank" rel="nofollow sponsored noopener">
             طراحی و توسعه توسط Avino
         </a>
     </div>
+
+    @push('scripts')
+        <script>
+            (function () {
+                var counters = document.querySelectorAll('.mw-count-up');
+
+                if (!counters.length) {
+                    return;
+                }
+
+                var faDigits = function (value) {
+                    return String(value)
+                        .replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; })
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, '٬');
+                };
+
+                var animate = function (el) {
+                    var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+                    var started = null;
+                    var duration = 1600;
+
+                    var step = function (ts) {
+                        if (started === null) started = ts;
+
+                        var p = Math.min(1, (ts - started) / duration);
+                        var eased = 1 - Math.pow(1 - p, 3);
+
+                        el.textContent = faDigits(Math.round(target * eased));
+
+                        if (p < 1) requestAnimationFrame(step);
+                    };
+
+                    requestAnimationFrame(step);
+                };
+
+                var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                if (reduced || !('IntersectionObserver' in window)) {
+                    counters.forEach(function (el) {
+                        el.textContent = faDigits(el.getAttribute('data-count'));
+                    });
+                    return;
+                }
+
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            animate(entry.target);
+                            io.unobserve(entry.target);
+                        }
+                    });
+                }, {threshold: 0.4});
+
+                counters.forEach(function (el) { io.observe(el); });
+            })();
+        </script>
+    @endpush
 </footer>
 
 @include('front.footer.goftino')

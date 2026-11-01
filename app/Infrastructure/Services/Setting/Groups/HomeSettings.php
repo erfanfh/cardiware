@@ -48,6 +48,7 @@ class HomeSettings extends BaseSettings
         'ads_4_body',
         'ads_5_body',
         'services_options_items',
+        'hero_stats',
     ];
 
     protected array $casts = [
@@ -65,5 +66,6 @@ class HomeSettings extends BaseSettings
         'ads_4_display_background' => BooleanCast::class,
         'ads_5_display_background' => BooleanCast::class,
         'services_options_items' => RepeaterArrayCast::class,
+        'hero_stats' => RepeaterArrayCast::class,
     ];
 }

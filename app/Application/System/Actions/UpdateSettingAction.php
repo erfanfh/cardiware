@@ -36,7 +36,14 @@ class UpdateSettingAction
 
             return true;
         } catch (Throwable $e) {
-            Log::info($e->getMessage());
+            // علت واقعی خطا باید در لاگ قابل پیدا کردن باشد (قبلاً info بی‌جزئیات بود)
+            Log::error('Setting persist failed', [
+                'group' => $group,
+                'key' => $key,
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'at' => $e->getFile().':'.$e->getLine(),
+            ]);
 
             return false;
         }

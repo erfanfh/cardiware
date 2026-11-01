@@ -7,6 +7,7 @@
 
 @section('page-content')
     <div class="space-y-5">
+        @include('front.account.partials.celebration-overlay')
         <x-front.cart class="relative overflow-hidden !p-0">
             <div class="absolute inset-0 bg-gradient-to-l from-brand-50 via-white to-white dark:from-brand-950/35 dark:via-slate-900 dark:to-slate-900"></div>
             <div class="absolute -left-14 -top-14 h-40 w-40 rounded-full bg-brand-200/60 blur-3xl dark:bg-brand-500/10"></div>

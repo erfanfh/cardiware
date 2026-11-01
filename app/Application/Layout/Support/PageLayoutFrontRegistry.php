@@ -40,6 +40,15 @@ class PageLayoutFrontRegistry
             'projects' => [
                 'view' => 'front.home.partials.projects',
             ],
+            'club-cards' => [
+                'view' => 'front.home.partials.club-cards',
+            ],
+            'team' => [
+                'view' => 'front.home.partials.team',
+            ],
+            'gallery-cta' => [
+                'view' => 'front.home.partials.gallery-cta',
+            ],
             'videos' => [
                 'view' => 'front.home.partials.videos',
             ],

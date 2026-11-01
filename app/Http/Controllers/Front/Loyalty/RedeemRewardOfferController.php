@@ -62,11 +62,13 @@ class RedeemRewardOfferController extends Controller
                 ->with('success', sprintf(
                     '%s با موفقیت دریافت شد و بلیط های شما صادر شدند.',
                     $rewardOffer->title,
-                ));
+                ))
+                ->with('celebration', $rewardOffer->title);
         }
 
         return redirect()
             ->to(route('account.loyalty') . '#rewards')
-            ->with('success', 'پاداش با موفقیت دریافت شد.');
+            ->with('success', 'پاداش با موفقیت دریافت شد.')
+            ->with('celebration', $rewardOffer->title);
     }
 }

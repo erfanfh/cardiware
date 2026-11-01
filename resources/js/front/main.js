@@ -43,3 +43,207 @@ import initRecentPurchases from './recent-purchases.js';
 initLoyaltyEarnedToast();
 initTimeSpentTracker();
 initRecentPurchases();
+
+/*** ==================== Progress fill on view (red→green bars) ==================== ***/
+(function () {
+    function applyFill(fillEl) {
+        const target = fillEl.getAttribute("data-fill-target");
+
+        if (target) {
+            fillEl.style.width = target;
+        }
+
+        // نوک فلشر همراه نوار حرکت می‌کند
+        const tip = fillEl.parentElement
+            ? fillEl.parentElement.querySelector(".mw-fill-tip")
+            : null;
+
+        if (tip) {
+            const match = (target || "").match(/^([\d.]+)%$/);
+
+            if (match) {
+                // نوک دقیقاً روی لبه پر شدن مرکز می‌شود (نصف عرض خودش)
+                const half = tip.offsetWidth ? tip.offsetWidth / 2 : 9;
+
+                tip.style.right = `calc(${match[1]}% - ${half}px)`;
+            }
+        }
+    }
+
+    function initFillBars(scope) {
+        const fills = scope.querySelectorAll(".mw-fill-anim:not([data-fill-done])");
+
+        if (!fills.length) return;
+
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (reduced || !("IntersectionObserver" in window)) {
+            fills.forEach((el) => {
+                el.setAttribute("data-fill-done", "1");
+                applyFill(el);
+            });
+            return;
+        }
+
+        // عنصر پرشدن عرض صفر دارد و IntersectionObserver آن را نمی‌بیند؛
+        // به‌جای آن، والدِ نوار (تمام‌عرض) را زیر نظر می‌گیریم.
+        const pending = new Map(); // bar -> fill
+
+        fills.forEach((el) => {
+            const bar = el.closest(".mw-prj-bar, .sb-project-bar, .mw-upbox-bar") || el.parentElement;
+
+            if (!bar) {
+                el.setAttribute("data-fill-done", "1");
+                applyFill(el);
+                return;
+            }
+
+            pending.set(bar, el);
+        });
+
+        let stagger = 0;
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+
+                const fillEl = pending.get(entry.target);
+
+                io.unobserve(entry.target);
+                pending.delete(entry.target);
+
+                if (!fillEl || fillEl.hasAttribute("data-fill-done")) return;
+
+                fillEl.setAttribute("data-fill-done", "1");
+
+                setTimeout(() => applyFill(fillEl), 120 + (stagger++ % 6) * 140);
+            });
+        }, { threshold: 0.2 });
+
+        pending.forEach((fillEl, bar) => io.observe(bar));
+
+        // تور ایمنی: اگر به هر دلیلی (تب پس‌زمینه، رندر عجیب) observer شلیک نکرد،
+        // پس از کامل شدن بارگذاری + یک ثانیه، همه را پر می‌کنیم.
+        const forceRemaining = () => {
+            scope.querySelectorAll(".mw-fill-anim:not([data-fill-done])").forEach((el) => {
+                el.setAttribute("data-fill-done", "1");
+                applyFill(el);
+            });
+        };
+
+        if (document.readyState === "complete") {
+            setTimeout(forceRemaining, 1200);
+        } else {
+            window.addEventListener("load", () => setTimeout(forceRemaining, 1200), { once: true });
+        }
+    }
+
+    function boot(scope) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", () => initFillBars(scope), { once: true });
+        } else {
+            initFillBars(scope);
+        }
+    }
+
+    boot(document);
+
+    document.addEventListener("livewire:navigated", () => initFillBars(document));
+})();
+
+/*** ==================== Entrance animations gate ==================== ***/
+/* انیمیشن‌های ورود فقط وقتی فعال می‌شوند که تب در دید باشد؛
+   در غیر این صورت (بدون JS، تب مخیدی، motion کاهش‌یافته) محتوا مرئی می‌ماند. */
+(function () {
+    const root = document.documentElement;
+
+    const enable = () => root.classList.add("mw-anim-ready");
+
+    if (document.visibilityState === "visible") {
+        enable();
+    } else {
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") enable();
+        }, { once: true });
+    }
+})();
+
+/*** ==================== Count-up numbers (باکس درصد پیشرفت آپدیت) ==================== ***/(function () {
+    function animateCount(el) {
+        const to = parseFloat(el.getAttribute("data-count-to") || "0") || 0;
+        const duration = 1300;
+        const start = performance.now();
+
+        function frame(now) {
+            const t = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+
+            el.textContent = Math.round(to * eased);
+
+            if (t < 1) requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+    }
+
+    function initCounters(scope) {
+        const counters = scope.querySelectorAll(".mw-count[data-count-to]:not([data-count-done])");
+
+        if (!counters.length) return;
+
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (reduced || !("IntersectionObserver" in window)) {
+            counters.forEach((el) => {
+                el.setAttribute("data-count-done", "1");
+                el.textContent = el.getAttribute("data-count-to");
+            });
+            return;
+        }
+
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+
+                const el = entry.target;
+
+                io.unobserve(el);
+
+                if (el.hasAttribute("data-count-done")) return;
+
+                el.setAttribute("data-count-done", "1");
+
+                // هم‌زمان‌تر شدن با پر شدن نوار
+                setTimeout(() => animateCount(el), 150);
+            });
+        }, { threshold: 0.4 });
+
+        counters.forEach((el) => io.observe(el));
+
+        // تور ایمنی: اگر observer شلیک نکرد، پس از لود مقدار نهایی را نشان بده
+        const forceRemaining = () => {
+            scope.querySelectorAll(".mw-count[data-count-to]:not([data-count-done])").forEach((el) => {
+                el.setAttribute("data-count-done", "1");
+                el.textContent = el.getAttribute("data-count-to");
+            });
+        };
+
+        if (document.readyState === "complete") {
+            setTimeout(forceRemaining, 1600);
+        } else {
+            window.addEventListener("load", () => setTimeout(forceRemaining, 1600), { once: true });
+        }
+    }
+
+    function boot(scope) {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", () => initCounters(scope), { once: true });
+        } else {
+            initCounters(scope);
+        }
+    }
+
+    boot(document);
+
+    document.addEventListener("livewire:navigated", () => initCounters(document));
+})();

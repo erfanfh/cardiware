@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="506" viewBox="0 0 900 506" role="img">
+  <defs>
+    <linearGradient id="gproject-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="aproject-1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#fdba74"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="506" fill="url(#gproject-1)"/>
+  <circle cx="900" cy="0" r="506" fill="url(#aproject-1)" opacity="0.18"/>
+  <circle cx="900" cy="506" r="506" fill="url(#aproject-1)" opacity="0.10"/>
+  <circle cx="0" cy="506" r="506" fill="#f97316" opacity="0.08"/>
+  <path d="M0 506 Q 900/4 506/2 900/2 506 T 900 506/2" stroke="#f97316" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="900/24" y="506/2" width="900/5" height="10" rx="5" fill="url(#aproject-1)"/>
+  <text x="900/24" y="506/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="50" font-weight="900">پروژه PGL V6</text>
+  <text x="900/24" y="506/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="23">در حال توسعه</text>
+</svg>

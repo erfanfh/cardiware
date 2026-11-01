@@ -5,6 +5,7 @@ use App\Http\Controllers\Front\Launcher\LauncherBridgeController;
 use App\Http\Controllers\Front\Launcher\LauncherCheckoutEntryController;
 use App\Http\Controllers\Front\Launcher\LauncherLandingController;
 use App\Http\Middleware\HandleSeoRedirectsMiddleware;
+use App\Http\Middleware\TrackAffiliateReferral;
 use App\Http\Middleware\RecordDailyLoyaltyVisit;
 use App\Http\Middleware\RedirectToCanonicalUrl;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,7 @@ Route::get('/notifications/recent-purchases', \App\Http\Controllers\Front\Commer
     ->middleware('throttle:120,1')
     ->name('notifications.recent-purchases');
 
-Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class])
+Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddleware::class, RecordDailyLoyaltyVisit::class, TrackAffiliateReferral::class])
     ->group(function () {
         Route::get('/', HomeController::class)->name('home');
         Route::get('/launcher', LauncherLandingController::class)
@@ -53,6 +54,8 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         require __DIR__.'/front/raffle.php';
         require __DIR__.'/front/poll.php';
         require __DIR__.'/front/video.php';
+        require __DIR__.'/front/gallery.php';
         require __DIR__.'/front/landings.php';
+        require __DIR__.'/front/players.php';
         require __DIR__.'/front/content.php'; // This must be the last
     });

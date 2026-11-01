@@ -3,6 +3,7 @@
 use App\Providers\AppServiceProvider;
 use App\Providers\AuditServiceProvider;
 use App\Providers\AuthServiceProvider;
+use App\Providers\AffiliateServiceProvider;
 use App\Providers\FinancialServiceProvider;
 use App\Providers\HorizonServiceProvider;
 use App\Providers\LoyaltyServiceProvider;
@@ -21,6 +22,7 @@ return [
     PublicReadCacheServiceProvider::class,
     AuditServiceProvider::class,
     AuthServiceProvider::class,
+    AffiliateServiceProvider::class,
     RouteBindingServiceProvider::class,
     FinancialServiceProvider::class,
     HorizonServiceProvider::class,

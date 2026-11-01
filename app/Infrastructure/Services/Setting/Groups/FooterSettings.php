@@ -47,6 +47,8 @@ class FooterSettings extends BaseSettings
         'column4_image',
         'column4_image_dark',
         'namad_code',
+        'stats_bg_image',
+        'stats_animation_enabled',
     ];
 
     protected array $casts = [
@@ -56,5 +58,7 @@ class FooterSettings extends BaseSettings
         'news_items' => RepeaterArrayCast::class,
         'column4_image' => MediaFileCast::class,
         'column4_image_dark' => MediaFileCast::class,
+        'stats_bg_image' => MediaFileCast::class,
+        'stats_animation_enabled' => 'boolean',
     ];
 }

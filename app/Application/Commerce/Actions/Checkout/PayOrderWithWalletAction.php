@@ -5,6 +5,8 @@ namespace App\Application\Commerce\Actions\Checkout;
 use App\Application\Financial\Actions\Payment\CreatePaymentForPayableAction;
 use App\Application\Financial\Actions\Payment\MarkPaymentAsPaidAction;
 use App\Application\Financial\Actions\Wallet\DebitWalletAction;
+use App\Application\Financial\Actions\Wallet\ResolveWalletOrderPaymentCapAction;
+use App\Application\Financial\Support\WalletBalanceCalculator;
 use App\Application\Financial\Actions\Wallet\GetOrCreateWalletAction;
 use App\Application\Financial\DTOs\DebitWalletDTO;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
@@ -31,6 +33,8 @@ class PayOrderWithWalletAction
         private readonly DebitWalletAction                         $debitWalletAction,
         private readonly MarkPaymentAsPaidAction                   $markPaymentAsPaidAction,
         private readonly CompleteOrderAfterSuccessfulPaymentAction $completeOrderAfterSuccessfulPaymentAction,
+        private readonly ResolveWalletOrderPaymentCapAction        $resolveWalletOrderPaymentCapAction,
+        private readonly WalletBalanceCalculator                   $walletBalanceCalculator,
     )
     {
     }
@@ -126,6 +130,22 @@ class PayOrderWithWalletAction
             if ((int)$wallet->user_id !== (int)$user->id) {
                 throw new WalletIntegrityException(
                     'Wallet owner does not match order owner.'
+                );
+            }
+
+            /*
+             * سقف استفاده از اعتبار باشگاه در هر سفارش.
+             */
+            $maxWalletAmount = $this->resolveWalletOrderPaymentCapAction->execute(
+                $amount,
+                $wallet,
+            );
+
+            $canPayFullAmount = $this->walletBalanceCalculator->availableBalance($wallet) >= $amount;
+
+            if ($canPayFullAmount && $amount > $maxWalletAmount) {
+                throw new DomainException(
+                    'سهم اعتبار باشگاه از پرداخت این سفارش از حد مجاز بیشتر است؛ مابقی را از درگاه پرداخت کنید.'
                 );
             }
 

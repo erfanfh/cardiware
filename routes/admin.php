@@ -28,6 +28,7 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/promotion.php';
         require __DIR__ . '/admin/notification.php';
         require __DIR__ . '/admin/loyalty.php';
+        require __DIR__ . '/admin/affiliate.php';
         require __DIR__ . '/admin/vip.php';
         require __DIR__ . '/admin/support.php';
         require __DIR__ . '/admin/organization.php';
@@ -38,5 +39,6 @@ Route::middleware(['web', 'auth:web', EnsureUserIsAdmin::class])
         require __DIR__ . '/admin/raffle.php';
         require __DIR__ . '/admin/poll.php';
         require __DIR__ . '/admin/video.php';
+        require __DIR__ . '/admin/gallery.php';
         require __DIR__ . '/admin/career.php';
     });

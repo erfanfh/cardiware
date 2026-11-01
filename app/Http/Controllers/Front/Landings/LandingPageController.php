@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Front\Landings;
 
+use App\Application\Content\Actions\GetProductLandingPageDataAction;
+use App\Application\Players\Actions\GetPglSquadAction;
 use App\Support\Landings;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -9,15 +11,16 @@ use Illuminate\View\View;
 /**
  * صفحات جزئیات محصول — /{landing}/{page} و /{landing}/leagues/{league}[/{$team}]
  * نوع‌های صفحه: leagues | stadiums | trophies | faces (از config کاتالوگ مشترک)
+ *
+ * دیتای محصول از GetProductLandingPageDataAction می‌آید تا محصولِ غیرفعال و
+ * صفحات غیرفعالِ پنل برای کاربران عادی به‌صورت 404 مخفی بمانند.
  */
 class LandingPageController
 {
-    public function show(string $landing, string $page): View
+    public function show(string $landing, string $page, GetProductLandingPageDataAction $getPageData): View
     {
+        $data = $getPageData->execute($landing)['data'];
         $locale = Landings::localeFromRequest();
-
-        $data = Landings::resolve(Landings::product($landing), $locale);
-        abort_if($data === null, 404);
 
         $pageConfig = $data['pages'][$page] ?? null;
         abort_if($pageConfig === null, 404);
@@ -31,12 +34,11 @@ class LandingPageController
         ]);
     }
 
-    public function league(string $landing, string $league): View
+    public function league(string $landing, string $league, GetProductLandingPageDataAction $getPageData): View
     {
         $locale = Landings::localeFromRequest();
 
-        $data = Landings::resolve(Landings::product($landing), $locale);
-        abort_if($data === null, 404);
+        $data = $getPageData->execute($landing)['data'];
 
         $rawLeague = Landings::catalog("leagues.{$league}");
         abort_if($rawLeague === null, 404);
@@ -63,12 +65,11 @@ class LandingPageController
      * صفحه اختصاصی هر تیم — /{landing}/leagues/{league}/{team}
      * slug تیم از نام انگلیسی ساخته می‌شود (پایدار و خوانا در URL).
      */
-    public function team(string $landing, string $league, string $team): View
+    public function team(string $landing, string $league, string $team, GetProductLandingPageDataAction $getPageData, GetPglSquadAction $squadAction): View
     {
         $locale = Landings::localeFromRequest();
 
-        $data = Landings::resolve(Landings::product($landing), $locale);
-        abort_if($data === null, 404);
+        $data = $getPageData->execute($landing)['data'];
 
         // تیم را روی config خام (دوزبانه) پیدا کن تا slug پایدار باشد
         $rawLeague = Landings::catalog("leagues.{$league}");
@@ -114,6 +115,30 @@ class LandingPageController
             'images' => $teamData['gallery'],
         ];
         $teamData['blocks'] = Landings::resolve($detail['blocks'] ?? $defaultBlocks, $locale);
+
+        /*
+         * ترکیب تیم از دیتابیس بازیکنان پچ — اگر تیم کاتالوگ به تیم پچ نگاشت
+         * شده باشد (pgl_team_id در کاتالوگ)، بلوک «ترکیب» اولین بلوک صفحه می‌شود
+         * و با هر ایمپورت جدید (انتقال/اورال/پست) خودکار به‌روز می‌گردد.
+         */
+        $pglTeamId = $rawTeam['pgl_team_id'] ?? null;
+        if ($pglTeamId) {
+            try {
+                $squadData = $squadAction->execute((int) $pglTeamId);
+                if ($squadData['squad']->isNotEmpty()) {
+                    array_unshift($teamData['blocks'], [
+                        'type' => 'squad',
+                        'squad' => $squadData['squad'],
+                        'changes' => $squadData['changes'],
+                        'newPids' => $squadData['newPids'],
+                        'latestImport' => $squadData['latestImport'],
+                    ]);
+                }
+            } catch (\Throwable) {
+                // دیتابیس بازیکنان آماده نیست — صفحه‌ی تیم بدون ترکیب رندر می‌شود
+            }
+        }
+
         $teamData['tags'] = Landings::resolve($detail['tags'] ?? [
             ['fa' => 'کیت فصل جاری', 'en' => 'Current-season kit'],
             ['fa' => 'ترکیب به‌روز', 'en' => 'Updated squad'],

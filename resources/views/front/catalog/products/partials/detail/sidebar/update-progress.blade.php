@@ -9,6 +9,16 @@
 
         $isPublished = $progress >= 100;
 
+        // رنگ پیوسته: ۰٪ قرمز → ۵۰٪ نارنجی/زرد → ۱۰۰٪ سبز (هماهنگ با کارت پروژه‌ها)
+        $hue = $isPublished ? 152 : (int) round($progress * 1.42);
+        $hueEnd = min(160, $hue + 16);
+
+        $accent = "hsl({$hue} 80% 45%)";
+        $accentSoft = "hsl({$hue} 84% 52% / .14)";
+        $accentBorder = "hsl({$hue} 84% 52% / .38)";
+        $glow = "hsl({$hue} 84% 52% / .45)";
+        $barGradient = "linear-gradient(to left, hsl({$hueEnd} 83% 47%), hsl({$hue} 88% 53%))";
+
         $startedAt = $update->started_at
             ? jalali_date($update->started_at, 'Y/m/d')
             : null;
@@ -19,97 +29,117 @@
     @endphp
 
     <section
-            class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/90"
+            class="mw-upbox {{ $isPublished ? 'is-done' : '' }}"
+            style="--mw-up-accent: {{ $accent }}; --mw-up-accent-soft: {{ $accentSoft }}; --mw-up-accent-border: {{ $accentBorder }}; --mw-up-glow: {{ $glow }}; --mw-up-grad: {{ $barGradient }};"
     >
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
+        <span class="mw-upbox-halo" aria-hidden="true"></span>
+
+        <div class="mw-upbox-head">
+            <span class="mw-upbox-icon {{ $isPublished ? '' : 'is-spinning' }}" aria-hidden="true">
+                @include('icons.arrow-reload-horizontal')
+            </span>
+
+            <div class="min-w-0 flex-1">
+                <div class="mw-upbox-title">
                     {{ $update->display_title }}
                 </div>
 
-                <div class="mt-1 whitespace-pre-line text-xs leading-6 text-slate-500 dark:text-slate-400">
-                    {{ $update->display_description }}
-                </div>
+                @if($update->display_description)
+                    <div class="mw-upbox-desc">
+                        {{ $update->display_description }}
+                    </div>
+                @endif
             </div>
 
-            <span
-            @class([
-                'w-fit rounded-xl border px-2.5 py-1 text-[11px] font-extrabold',
-
-                'border-emerald-200 bg-emerald-50 text-emerald-700' => $isPublished,
-                'dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300' => $isPublished,
-
-                'border-brand-100 bg-brand-50 text-brand-800' => !$isPublished,
-                'dark:border-brand-500/20 dark:bg-brand-950/40 dark:text-brand-300' => !$isPublished,
-            ])
-        >
-            {{ $isPublished ? 'منتشر شد' : 'در حال آماده‌سازی' }}
-        </span>
+            <span class="mw-upbox-badge {{ $isPublished ? 'is-done' : '' }}">
+                <span class="mw-upbox-badge-dot"></span>
+                {{ $isPublished ? 'منتشر شد' : 'در حال آماده‌سازی' }}
+            </span>
         </div>
 
-        <div class="mt-5">
-            <div class="grid gap-2 text-xs text-slate-500 dark:text-slate-400 sm:grid-cols-2">
-                <div class="flex items-center justify-between gap-1.5 sm:justify-start">
-                    @if($startedAt)
-                        <span>شروع توسعه:</span>
-
-                        <span class="font-bold text-slate-700 dark:text-slate-200">
-                            {{ $startedAt }}
-                        </span>
-                    @endif
-                </div>
-
-                <div class="flex items-center justify-between gap-1.5 sm:justify-end">
-                    @if($releaseAt)
-                        <span>تاریخ انتشار:</span>
-
-                        <span class="font-bold text-slate-700 dark:text-slate-200">
-                            {{ $releaseAt }}
-                        </span>
-                    @endif
-                </div>
+        {{-- درصد درشت با شمارنده متحرک --}}
+        <div class="mw-upbox-stage">
+            <div class="mw-upbox-count">
+                <b class="mw-count" data-count-to="{{ $progress }}">0</b>
+                <span class="mw-upbox-count-unit">٪</span>
             </div>
 
+            <div class="mw-upbox-count-label">
+                تکمیل شده
+                <span>از ۱۰۰٪</span>
+            </div>
+        </div>
+
+        {{-- نوار پیشرفت: پر شدن خودکار هنگام دیده‌شدن + بافت متحرک + نوک فلشر --}}
+        <div
+                class="mw-upbox-bar"
+                role="progressbar"
+                aria-label="{{ $update->display_title }}"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="{{ $progress }}"
+        >
             <div
-                    class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
-                    role="progressbar"
-                    aria-label="{{ $update->display_title }}"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow="{{ $progress }}"
-            >
-                <div
-                        @class([
-                            'h-full rounded-full transition-all duration-500',
-                            'bg-emerald-500 dark:bg-emerald-400' => $isPublished,
-                            'bg-brand-500 dark:bg-brand-400' => !$isPublished,
-                        ])
-                        style="width: {{ $progress }}%"
-                ></div>
-            </div>
+                    class="mw-upbox-fill mw-fill-anim {{ $isPublished ? 'is-done' : '' }}"
+                    data-fill-target="{{ $progress }}%"
+                    style="width: 0;"
+            ></div>
 
-            <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div class="text-xs text-slate-500 dark:text-slate-400">
-                <span class="font-extrabold text-slate-800 dark:text-slate-100">
-                    {{ $progress }}٪
+            @if($progress > 3 && $progress < 97)
+                <span class="mw-upbox-tip mw-fill-tip" data-fill-target="{{ $progress }}%"
+                      style="right: calc(0% - 9px);"
+                      aria-hidden="true">
+                    @include('icons.arrow-left-02')
+                </span>
+            @endif
+
+            @if($isPublished)
+                <span class="mw-upbox-flag" aria-hidden="true">
+                    @include('icons.target-01')
+                </span>
+            @endif
+        </div>
+
+        <div class="mw-upbox-dates">
+            @if($startedAt)
+                <div class="mw-upbox-date">
+                    <span class="mw-upbox-date-icon" aria-hidden="true">
+                        @include('icons.calendar-03')
+                    </span>
+
+                    <span class="mw-upbox-date-label">شروع توسعه</span>
+
+                    <b>{{ $startedAt }}</b>
+                </div>
+            @endif
+
+            @if($releaseAt)
+                <div class="mw-upbox-date">
+                    <span class="mw-upbox-date-icon" aria-hidden="true">
+                        @include('icons.calendar-03')
+                    </span>
+
+                    <span class="mw-upbox-date-label">تاریخ انتشار</span>
+
+                    <b>{{ $releaseAt }}</b>
+                </div>
+            @endif
+        </div>
+
+        <div class="mw-upbox-foot {{ $isPublished ? 'is-done' : '' }}">
+            @if($isPublished)
+                <span class="mw-upbox-foot-check" aria-hidden="true">
+                    @include('icons.checkmark-badge-01')
                 </span>
 
-                    تکمیل شده
-                </div>
+                آپدیت منتشر شد
+            @else
+                <span class="mw-upbox-dots" aria-hidden="true">
+                    <i></i><i></i><i></i>
+                </span>
 
-                <div
-                        @class([
-                            'text-xs font-extrabold',
-                            'text-emerald-700 dark:text-emerald-300' => $isPublished,
-                            'text-brand-700 dark:text-brand-300' => !$isPublished,
-                        ])
-                >
-                    {{ $isPublished
-                        ? 'آپدیت منتشر شد'
-                        : 'آپدیت در مسیر انتشار'
-                    }}
-                </div>
-            </div>
+                آپدیت در مسیر انتشار
+            @endif
         </div>
     </section>
 @endif

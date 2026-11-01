@@ -49,7 +49,8 @@ final class ProductLandingContentSchema
                         }
                     }
                     $schema['fields'][$field] = $this->infer($values, (string) $field);
-                    $schema['fields'][$field]['optional'] = count($values) !== count($present);
+                    $schema['fields'][$field]['optional'] = count($values) !== count($present)
+                        || in_array($field, ['enabled', 'hidden', 'pgl_team_id'], true);
                 }
             }
         } else {
@@ -174,6 +175,9 @@ final class ProductLandingContentSchema
             'spinner' => 'چرخش ۳۶۰ درجه', 'base' => 'پوشه فریم‌ها', 'frames' => 'تعداد فریم‌ها',
             'tilt-cards' => 'کارت‌های متحرک', 'capacity' => 'ظرفیت', 'club' => 'باشگاه', 'city' => 'شهر',
             'lat' => 'عرض جغرافیایی', 'lng' => 'طول جغرافیایی', 'cards' => 'کارت‌ها', 'body' => 'متن',
+            'enabled' => 'فعال باشد (برای کاربران عادی نمایش داده شود)',
+            'hidden' => 'مخفی باشد (در لندینگ رندر نشود)',
+            'pgl_team_id' => 'شناسه تیم در دیتابیس بازیکنان پچ (برای نمایش ترکیب)',
         ][$key] ?? str_replace(['-', '_'], ' ', $key);
     }
 

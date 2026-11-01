@@ -16,6 +16,8 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('raffle', 'storeRaffle')->name('raffle.store');
     Route::get('loyalty', 'loyalty')->name('loyalty');
     Route::put('loyalty', 'storeLoyalty')->name('loyalty.store');
+    Route::get('affiliate', 'affiliate')->name('affiliate');
+    Route::put('affiliate', 'storeAffiliate')->name('affiliate.store');
     Route::get('general', 'general')->name('general');
     Route::put('general', 'storeGeneral')->name('general.store');
     Route::get('seo', 'seo')->name('seo');
@@ -46,6 +48,8 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('videos', 'storeVideos')->name('videos.store');
     Route::get('ticket', 'ticket')->name('ticket');
     Route::put('ticket', 'storeTicket')->name('ticket.store');
+    Route::get('launcher', 'launcher')->name('launcher');
+    Route::put('launcher', 'storeLauncher')->name('launcher.store');
 });
 
 Route::get('settings/team/ajax-members', TeamSettingMemberSearchController::class)->name('settings.team.ajax-members');

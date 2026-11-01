@@ -1,98 +1,96 @@
-<section id="digital-products">
-    <div class="flex items-center justify-between gap-3 mb-4">
-        <div class="flex items-center gap-2">
-            <span
-                class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">⬤</span>
-            <h3 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('home', 'download_products_title') }}</h3>
-        </div>
+@php
+    $shopItems = collect(get_setting('home', 'download_products_items') ?? [])
+        ->filter(fn($item) => filled($item['title'] ?? null))
+        ->values();
+@endphp
 
-        <a href="{{ get_setting('home', 'download_products_all_url') }}"
-           class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
-            مشاهده همه
-            <span class="[&_svg]:w-4 [&_svg]:h-4">
-                @include('icons.arrow-left-02')
-            </span>
-        </a>
-    </div>
+@if($shopItems->isNotEmpty())
+    <section id="digital-products">
+        <div class="flex items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-2">
+                <span
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-[1.05rem] [&_svg]:w-[1.05rem]">
+                    @include('icons.shop-line-duotone')
+                </span>
 
-    <div
-        class="relative rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
-        <div
-            class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] dark:bg-brand-500/10"></div>
-        <div class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
-
-        <div class="p-4">
-            <div class="swiper js-download-products-swiper">
-                <div class="swiper-wrapper">
-                    @foreach(get_setting('home', 'download_products_items') as $item)
-                        <article class="swiper-slide h-auto">
-                            <a href="{{ $item['link'] }}"
-                               class="block h-full rounded-2xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition dark:border-slate-700 dark:bg-slate-950 dark:hover:shadow-black/20">
-                                <div class="relative aspect-[16/9] bg-slate-100 dark:bg-slate-800">
-                                    <x-front.responsive-image
-                                        :fallback="$item['image']['path'] ?? null"
-                                        :alt="$item['title'] ?? ''"
-                                        variant="medium_large"
-                                        class="h-full w-full object-cover"
-                                        wrapper-class="absolute inset-0"
-                                        :lazy="true"
-                                        :async="true"
-                                        sizes="(max-width: 768px) 85vw, 360px"
-                                    />
-
-                                    <div
-                                        class="absolute bottom-3 right-3 inline-flex items-center gap-2 rounded-2xl bg-white/90 px-3 py-1 text-xs font-extrabold text-slate-900 ring-1 ring-slate-200 dark:bg-slate-950/85 dark:text-slate-100 dark:ring-slate-700">
-                                        <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                                        پیشرفت آپدیت: {{ $item['progress_percent'] }}%
-                                    </div>
-                                </div>
-
-                                <div class="p-4">
-                                    <div class="flex items-center justify-between gap-2">
-                                        <span
-                                            class="inline-flex items-center gap-1 rounded-xl bg-brand-50 border border-brand-100 px-2 py-1 text-[11px] font-bold text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                            <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                                            {{ $item['label'] }}
-                                        </span>
-                                    </div>
-
-                                    <h4 class="mt-3 font-extrabold leading-7 dark:text-slate-100">
-                                        {{ $item['title'] }}
-                                    </h4>
-
-                                    <p class="mt-2 text-sm text-slate-600 leading-7 dark:text-slate-300">
-                                        {{ $item['short_description'] }}
-                                    </p>
-
-                                    @if($item['enable_progress_percent'])
-                                        <div class="mt-3">
-                                            <div
-                                                class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                                <span>پیشرفت ساخت/آپدیت</span>
-                                                <span class="font-extrabold text-slate-700 dark:text-slate-200">
-                                                    {{ $item['progress_percent'] }}%
-                                                </span>
-                                            </div>
-
-                                            <div
-                                                class="mt-2 h-2 rounded-full bg-slate-100 overflow-hidden dark:bg-slate-800">
-                                                <div
-                                                    class="h-full bg-brand-500"
-                                                    style="width: {{ $item['progress_percent'] }}%"
-                                                ></div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </a>
-                        </article>
-                    @endforeach
-                </div>
-
-                <div class="mt-4 flex items-center justify-center">
-                    <div class="swiper-pagination !static !w-auto"></div>
-                </div>
+                <h3 class="text-base font-extrabold dark:text-slate-100">{{ get_setting('home', 'download_products_title') }}</h3>
             </div>
+
+            <a href="{{ get_setting('home', 'download_products_all_url') }}"
+               class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
+                مشاهده همه
+                <span class="[&_svg]:w-4 [&_svg]:h-4">
+                    @include('icons.arrow-left-02')
+                </span>
+            </a>
         </div>
-    </div>
-</section>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            @foreach($shopItems as $item)
+                <a href="{{ $item['link'] }}"
+                   class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/40">
+                    <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                        <x-front.responsive-image
+                            :fallback="$item['image']['path'] ?? null"
+                            :alt="$item['title'] ?? ''"
+                            :title="$item['title'] ?? null"
+                            variant="medium_large"
+                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                            wrapper-class="absolute inset-0"
+                            :lazy="true"
+                            :async="true"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                        />
+
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/55 to-transparent"></div>
+
+                        @if(filled($item['badge_text'] ?? null))
+                            <span class="absolute top-2.5 right-2.5 rounded-xl bg-brand-500 px-2.5 py-1 text-[10.5px] font-black text-white shadow-lg shadow-brand-500/40">
+                                {{ $item['badge_text'] }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="flex flex-1 flex-col p-4">
+                        <div class="text-sm font-extrabold leading-7 dark:text-slate-100">
+                            {{ $item['title'] }}
+                        </div>
+
+                        @if(filled($item['short_description'] ?? null))
+                            <p class="mt-1.5 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
+                                {{ $item['short_description'] }}
+                            </p>
+                        @endif
+
+                        @if(filled($item['label'] ?? null))
+                            <div class="mt-3 flex flex-wrap gap-1.5">
+                                <span class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+                                    {{ $item['label'] }}
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="mt-auto flex items-center justify-between gap-2 pt-4">
+                            @if(filled($item['price_text'] ?? null))
+                                <span class="min-w-0">
+                                    <b class="block whitespace-nowrap text-sm font-black text-brand-600 dark:text-brand-400">{{ $item['price_text'] }}</b>
+                                    @if(filled($item['old_price_text'] ?? null))
+                                        <s class="block text-[11px] text-slate-400">{{ $item['old_price_text'] }}</s>
+                                    @endif
+                                </span>
+                            @else
+                                <span></span>
+                            @endif
+
+                            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-brand-500 px-3.5 py-2 text-xs font-extrabold text-white shadow-sm transition group-hover:bg-brand-600 dark:bg-brand-500 dark:group-hover:bg-brand-400 [&_svg]:h-3.5 [&_svg]:w-3.5">
+                                {{ $item['button_text'] ?? 'خرید' }}
+                                @include('icons.arrow-left-02')
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            @endforeach
+        </div>
+    </section>
+@endif

@@ -10,6 +10,9 @@
         $minimumPoints = old('point_conversion_minimum_points', get_setting('loyalty', 'point_conversion_minimum_points', 500));
         $maximumPoints = old('point_conversion_maximum_points_per_request', get_setting('loyalty', 'point_conversion_maximum_points_per_request', 10000));
         $dailyLimit = old('point_conversion_daily_points_limit', get_setting('loyalty', 'point_conversion_daily_points_limit', 20000));
+        $maxCreditPercent = old('max_credit_percent_per_order', get_setting('loyalty', 'max_credit_percent_per_order', 100));
+        $streakMilestones = old('streak_milestones', json_encode(get_setting('loyalty', 'streak_milestones', []), JSON_UNESCAPED_UNICODE));
+        $expiryMonths = old('points_inactivity_expiry_months', get_setting('loyalty', 'points_inactivity_expiry_months', 12));
         $registrationGiftEnabled = old('registration_gift_enabled', get_setting('loyalty', 'registration_gift_enabled', false));
         $registrationGiftOfferId = old('registration_gift_reward_offer_id', get_setting('loyalty', 'registration_gift_reward_offer_id'));
         $registrationGiftOfferOptions = ['' => 'انتخاب پاداش...'] + $registrationGiftOffers
@@ -234,6 +237,52 @@
                                 step="1"
                                 name="point_conversion_daily_points_limit"
                                 :value="$dailyLimit"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="سقف اعتبار باشگاه در هر سفارش (درصد)"
+                            hint="حداکثر سهم اعتبار باشگاه (غیرقابل برداشت) از پرداخت هر سفارش. مثال: ۲۰ یعنی حداکثر ۲۰٪ مبلغ سفارش از اعتبار باشگاه قابل پرداخت است و مابقی باید از درگاه پرداخت شود. صفر یا ۱۰۰ = بدون محدودیت."
+                            :error="$errors->first('max_credit_percent_per_order')"
+                            required
+                        >
+                            <x-admin.form.input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="1"
+                                name="max_credit_percent_per_order"
+                                :value="$maxCreditPercent"
+                            />
+                        </x-admin.field>
+                    </div>
+                </x-admin.metabox>
+
+                <x-admin.metabox title="زنجیره ورود روزانه و انقضای امتیاز">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <x-admin.field
+                            label="مایل‌استون‌های زنجیره ورود (JSON)"
+                            hint='ساختار: [{"days":7,"points":200},{"days":14,"points":300},{"days":30,"points":1000}] — وقتی روزهای زنجیره فعلی دقیقاً به days برسد، points به‌صورت خودکار پرداخت می‌شود. با قطع زنجیره، شمارش از روز اول شروع می‌شود.'
+                            :error="$errors->first('streak_milestones')"
+                        >
+                            <x-admin.form.input
+                                type="text"
+                                name="streak_milestones"
+                                :value="$streakMilestones"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field
+                            label="انقضای امتیاز بعد از عدم فعالیت (ماه)"
+                            hint="اگر کاربر این مدت هیچ گردش امتیازی نداشته باشد، کل موجودی‌اش با ردیف انقضا صفر می‌شود. صفر = انقضا خاموش."
+                            :error="$errors->first('points_inactivity_expiry_months')"
+                        >
+                            <x-admin.form.input
+                                type="number"
+                                min="0"
+                                step="1"
+                                name="points_inactivity_expiry_months"
+                                :value="$expiryMonths"
                             />
                         </x-admin.field>
                     </div>

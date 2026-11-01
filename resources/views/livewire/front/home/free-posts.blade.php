@@ -1,5 +1,10 @@
+@php
+    $activePostTab = collect($this->postTabs)->firstWhere('key', $this->activeTabKey);
+    $activeTabCategory = $activePostTab['main_category'] ?? null;
+@endphp
+
 <section id="free-mods">
-    <div class="flex flex-wrap gap-2 mb-4">
+    <div class="flex flex-wrap items-center gap-2 mb-4">
         @foreach($this->postTabs as $postTab)
             <button
                 wire:key="post-tab-{{ $postTab['key'] }}"
@@ -9,11 +14,29 @@
                 class="inline-flex cursor-pointer items-center gap-2 h-10 px-4 rounded-2xl font-extrabold text-sm transition border disabled:opacity-70
                 {{ $postTab['key'] === $activeTabKey ? 'border-brand-100 bg-brand-50 text-slate-900 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-slate-100' : 'border-slate-200 bg-white text-slate-800 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800' }}"
             >
-                <span class="inline-flex h-5 w-5 items-center justify-center rounded-xl text-xs font-black
-                    {{ $postTab['key'] === $activeTabKey ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-900 dark:bg-brand-500/20 dark:text-brand-200' }}"></span>
+                <span class="inline-flex h-5 w-5 items-center justify-center rounded-lg text-[10.5px] font-black
+                    {{ $postTab['key'] === $activeTabKey ? 'bg-brand-600 text-white' : 'bg-brand-200 text-brand-900 dark:bg-brand-500/20 dark:text-brand-200' }}">{{ $postTab['posts_count'] ?? 0 }}</span>
                 <h2>{{ $postTab['main_title'] }}</h2>
             </button>
         @endforeach
+
+        @if($activePostTab && $activeTabCategory)
+            <a href="{{ front_route('posts.categories', $activeTabCategory) }}"
+               class="mr-auto inline-flex items-center gap-2 h-10 px-4 rounded-2xl text-sm font-extrabold text-brand-700 border border-dashed border-brand-200 transition hover:bg-brand-50 dark:text-brand-300 dark:border-brand-500/30 dark:hover:bg-brand-500/10">
+                مشاهده همه {{ $activePostTab['main_title'] }}
+                <span class="[&_svg]:w-4 [&_svg]:h-4">
+                    @include('icons.arrow-left-02')
+                </span>
+            </a>
+        @elseif($activePostTab)
+            <a href="{{ front_route('posts.list') }}"
+               class="mr-auto inline-flex items-center gap-2 h-10 px-4 rounded-2xl text-sm font-extrabold text-brand-700 border border-dashed border-brand-200 transition hover:bg-brand-50 dark:text-brand-300 dark:border-brand-500/30 dark:hover:bg-brand-500/10">
+                مشاهده همه {{ $activePostTab['main_title'] }}
+                <span class="[&_svg]:w-4 [&_svg]:h-4">
+                    @include('icons.arrow-left-02')
+                </span>
+            </a>
+        @endif
     </div>
 
     <div

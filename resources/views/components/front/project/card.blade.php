@@ -1,112 +1,97 @@
 @props(['project'])
 
+@php
+    $progress = max(0, min(100, (int) ($project->progress_percent ?? 0)));
+    $isDone = $progress >= 100;
+
+    // رنگ پیوسته: ۰٪ قرمز → ۵۰٪ نارنجی/زرد → ۱۰۰٪ سبز
+    $hue = (int) round($progress * 1.42); // 0 → 0deg (قرمز)، 100 → 142deg (سبز)
+    $hueEnd = min(160, $hue + 16);
+    $barGradient = "linear-gradient(to left, hsl({$hueEnd} 82% 46%), hsl({$hue} 84% 52%))";
+    $barGlow = "hsl({$hue} 84% 52% / .45)";
+    $tipColor = "hsl({$hue} 80% 45%)";
+
+    if ($isDone) {
+        $barGradient = 'linear-gradient(to left, hsl(160 80% 38%), hsl(152 78% 45%))';
+        $barGlow = 'hsl(152 78% 45% / .5)';
+        $tipColor = 'hsl(152 78% 40%)';
+    }
+
+    $statusLabel = $isDone ? 'تکمیل شده' : 'در حال توسعه';
+@endphp
+
 <article x-data
-         class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30">
+         class="mw-prj-card {{ $isDone ? 'is-done' : '' }}">
+    <span class="mw-prj-sheen" aria-hidden="true"></span>
 
-    <div
-        class="pointer-events-none absolute -top-10 -left-10 h-28 w-28 rounded-[48px] bg-brand-100/70 blur-[1px] dark:bg-brand-500/10"></div>
-
-    <div class="pointer-events-none absolute top-4 left-6 h-3 w-3 rounded-full bg-brand-500"></div>
-
-    <div class="flex items-center gap-4">
-        <div class="min-w-0 flex-1">
-            <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                    <div class="text-sm sm:text-base font-extrabold truncate dark:text-slate-100">
-                        {{ $project->title }}
-                    </div>
-
-                    <div class="text-xs text-slate-500 mt-2 truncate dark:text-slate-400">
-                        {{ $project->excerpt() }}
-                    </div>
-                </div>
+    <div class="relative z-10 flex h-full flex-col">
+        <div class="flex items-start justify-between gap-3">
+            <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20 [&_svg]:h-5 [&_svg]:w-5">
+                @include('icons.folder-library')
             </div>
 
-            @php
-                $progress = max(0, min(100, (int) ($project->progress_percent ?? 0)));
+            <span class="mw-prj-status {{ $isDone ? 'is-done' : '' }}">
+                <span class="mw-prj-status-dot"></span>
+                {{ $statusLabel }}
+            </span>
+        </div>
 
-                $progressColor = match (true) {
-                    $progress >= 100 => 'from-emerald-400 via-emerald-500 to-emerald-600',
-                    $progress >= 70 => 'from-cyan-400 via-sky-500 to-blue-600',
-                    $progress >= 40 => 'from-amber-300 via-yellow-400 to-orange-400',
-                    $progress >= 1 => 'from-rose-400 via-red-500 to-orange-500',
-                    default => 'from-slate-300 via-slate-300 to-slate-400 dark:from-slate-600 dark:via-slate-600 dark:to-slate-700',
-                };
+        <a href="{{ front_route('projects.detail', $project) }}" class="mt-4 block">
+            <h3 class="text-base font-black leading-7 transition group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-300">
+                {{ $project->title }}
+            </h3>
+        </a>
 
-                $progressIconColor = match (true) {
-                    $progress >= 100 => 'text-emerald-600 dark:text-emerald-400',
-                    $progress >= 70 => 'text-sky-600 dark:text-sky-400',
-                    $progress >= 40 => 'text-amber-600 dark:text-amber-400',
-                    $progress >= 1 => 'text-rose-600 dark:text-rose-400',
-                    default => 'text-slate-500 dark:text-slate-400',
-                };
-            @endphp
+        @if($project->excerpt())
+            <p class="mt-2 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
+                {{ $project->excerpt() }}
+            </p>
+        @endif
 
-            <div class="mt-3">
-                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                    <span>پیشرفت</span>
-
-                    <span class="font-extrabold text-slate-700 dark:text-slate-200">
-                        {{ $progress }}%
-                    </span>
-                </div>
-
-                <div class="relative h-7">
-                    <div
-                        class="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 rounded-full bg-slate-100 ring-1 ring-slate-200/70 dark:bg-slate-800 dark:ring-slate-700/70">
-                        <div
-                            class="absolute inset-y-0 right-0 overflow-hidden rounded-full bg-gradient-to-l {{ $progressColor }} transition-all duration-700 ease-out"
-                            style="width: {{ $progress }}%;"
-                        >
-                            @if($progress > 0)
-                                <div class="project-progress-flow absolute inset-0 opacity-80"></div>
-
-                                <div
-                                    class="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white/40 via-white/20 to-transparent"></div>
-                            @endif
-                        </div>
-                    </div>
-                    
-                    @if($progress > 0 && $progress < 100)
-                        <div
-                            class="project-progress-tip absolute top-1/2 z-20"
-                            style="right: calc({{ $progress }}% - 25px);"
-                        >
-                            <div
-                                class="relative flex h-6 w-6 items-center justify-center {{ $progressIconColor }} [&_svg]:relative [&_svg]:h-4 [&_svg]:w-4">
-                                <div
-                                    class="absolute inset-0 rounded-full bg-white ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-700"></div>
-
-                                @include('icons.arrow-left-01')
-                            </div>
-                        </div>
-                    @endif
-
-                    @if($progress >= 100)
-                        <div
-                            class="project-progress-target absolute left-0 top-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-emerald-300 bg-white {{ $progressIconColor }} dark:border-emerald-500/50 dark:bg-slate-900 [&_svg]:h-4 [&_svg]:w-4">
-                            @include('icons.target-01')
-                        </div>
-                    @endif
-                </div>
+        {{-- نوار پیشرفت: پر شدن خودکار هنگام دیده‌شدن + رنگ پیوسته قرمز→سبز --}}
+        <div class="mt-auto pt-5">
+            <div class="mb-2 flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">پیشرفت پروژه</span>
+                <b class="text-xs font-black" style="color: {{ $isDone ? 'rgb(16 185 129)' : $tipColor }};">
+                    {{ $progress }}٪
+                </b>
             </div>
 
-            <div class="mt-4 flex items-center justify-between gap-3">
-                <a href="{{ front_route('projects.detail', $project) }}"
-                   class="inline-flex items-center gap-2 rounded-2xl bg-brand-500 px-4 py-2.5 text-[0.8rem] font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition dark:shadow-black/20 dark:hover:bg-brand-400">
-                    اطلاعات پروژه
-                    <span class="[&_svg]:w-4 [&_svg]:h-4">
+            <div class="mw-prj-bar">
+                <div class="mw-prj-fill {{ $isDone ? 'is-done' : '' }} mw-fill-anim"
+                     data-fill-target="{{ $progress }}%"
+                     style="width: 0; background: {{ $barGradient }}; box-shadow: 0 0 12px {{ $barGlow }};"></div>
+
+                @if($progress > 3 && $progress < 97)
+                    <span class="mw-prj-tip mw-fill-tip" data-fill-target="{{ $progress }}%"
+                          style="right: calc(0% - 9px); color: {{ $tipColor }}; border-color: {{ $tipColor }}; box-shadow: 0 0 0 4px {{ $barGlow }}, 0 0 14px {{ $barGlow }};"
+                          aria-hidden="true">
                         @include('icons.arrow-left-02')
                     </span>
-                </a>
+                @endif
 
-                @if($project->last_updated_at)
-                    <span class="text-xs text-slate-500 hidden sm:inline dark:text-slate-400">
-                        بروزرسانی:
-                        {{ time_ago($project->last_updated_at) }}
+                @if($isDone)
+                    <span class="mw-prj-flag" aria-hidden="true">
+                        @include('icons.target-01')
                     </span>
                 @endif
             </div>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
+            <a href="{{ front_route('projects.detail', $project) }}"
+               class="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-400">
+                اطلاعات پروژه
+                <span class="[&_svg]:h-3.5 [&_svg]:w-3.5">
+                    @include('icons.arrow-left-02')
+                </span>
+            </a>
+
+            @if($project->last_updated_at)
+                <span class="text-[10.5px] font-semibold text-slate-400 dark:text-slate-500">
+                    بروزرسانی: {{ time_ago($project->last_updated_at) }}
+                </span>
+            @endif
         </div>
     </div>
 </article>

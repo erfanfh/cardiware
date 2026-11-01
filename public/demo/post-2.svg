@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="405" viewBox="0 0 720 405" role="img">
+  <defs>
+    <linearGradient id="gpost-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#0c1a3d"/>
+    </linearGradient>
+    <linearGradient id="apost-2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="405" fill="url(#gpost-2)"/>
+  <circle cx="720" cy="0" r="405" fill="url(#apost-2)" opacity="0.18"/>
+  <circle cx="720" cy="405" r="405" fill="url(#apost-2)" opacity="0.10"/>
+  <circle cx="0" cy="405" r="405" fill="#60a5fa" opacity="0.08"/>
+  <path d="M0 405 Q 720/4 405/2 720/2 405 T 720 405/2" stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.25"/>
+  <rect x="720/24" y="405/2" width="720/5" height="10" rx="5" fill="url(#apost-2)"/>
+  <text x="720/24" y="405/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="40" font-weight="900">اخبار مادینگ</text>
+  <text x="720/24" y="405/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="18">اخبار</text>
+</svg>

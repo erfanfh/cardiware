@@ -72,7 +72,7 @@
     </div>
 @elseif($showPlaceholder)
     <div
-        class="relative overflow-hidden rounded-[inherit]
+        class="relative overflow-hidden rounded-[inherit] aspect-video
                bg-slate-100 border border-slate-200
                dark:border-slate-700 dark:bg-slate-800 {{ $class }}"
     >

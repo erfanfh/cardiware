@@ -2,15 +2,20 @@
 
 namespace App\Http\Middleware;
 
+use App\Application\Loyalty\Achievements\Actions\EvaluateUserAchievementsAction;
 use App\Application\Loyalty\Earning\Actions\ProcessEarningRuleAction;
 use App\Application\Loyalty\Earning\Contexts\DailyVisitEarningContext;
 use App\Application\Loyalty\Earning\Enums\EarningRuleSkipReasonEnum;
+use App\Application\Loyalty\Missions\Actions\RecordMissionProgressAction;
 use App\Application\Loyalty\Notifications\LoyaltyEarnedNotificationFactory;
 use App\Application\Loyalty\Notifications\PendingLoyaltyEarnedNotifications;
+use App\Application\Loyalty\Streak\Actions\RecordDailyStreakAction;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
+use App\Domain\Loyalty\Enums\MissionMetricEnum;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -20,6 +25,9 @@ class RecordDailyLoyaltyVisit
         private readonly ProcessEarningRuleAction $processEarningRuleAction,
         private readonly LoyaltyEarnedNotificationFactory $notificationFactory,
         private readonly PendingLoyaltyEarnedNotifications $pendingNotifications,
+        private readonly RecordDailyStreakAction $recordDailyStreakAction,
+        private readonly RecordMissionProgressAction $recordMissionProgressAction,
+        private readonly EvaluateUserAchievementsAction $evaluateUserAchievementsAction,
     ) {}
 
     public function handle(Request $request, Closure $next): Response
@@ -52,6 +60,25 @@ class RecordDailyLoyaltyVisit
         try {
             if (Cache::has($doneKey)) {
                 return $response;
+            }
+
+            /*
+             * گیمیفیکیشن (زنجیره ورود + مأموریت‌ها + نشان‌ها) مستقل از قوانین
+             * امتیاز اجرا می‌شود؛ RecordDailyStreakAction خودش per-day
+             * idempotent است و isNewDay فقط بار اول روز true می‌شود.
+             */
+            try {
+                $streakResult = $this->recordDailyStreakAction->execute($user, $occurredAt);
+
+                if ($streakResult['isNewDay']) {
+                    $this->recordMissionProgressAction->execute($user, MissionMetricEnum::DAILY_VISITS);
+                    $this->evaluateUserAchievementsAction->execute($user);
+                }
+            } catch (Throwable $gamificationException) {
+                Log::warning('Daily loyalty gamification tracking failed.', [
+                    'user_id' => $user->getKey(),
+                    'message' => $gamificationException->getMessage(),
+                ]);
             }
 
             $result = $this->processEarningRuleAction->execute(

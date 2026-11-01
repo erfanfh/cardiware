@@ -3,18 +3,37 @@
 
     $availableCoupons = $audienceClub['availableCoupons'];
     $hasAvailableCoupons = $availableCoupons->isNotEmpty();
+    $level = $user->loyalty_level ?? null;
 @endphp
 
 <section class="relative overflow-hidden rounded-[1.75rem] border border-amber-200/80 bg-gradient-to-l from-amber-50 via-white to-brand-50 p-4 shadow-sm sm:p-6 dark:border-amber-400/15 dark:from-amber-950/20 dark:via-slate-900 dark:to-brand-950/20">
+    <div class="mw-grid-overlay"></div>
     <div class="pointer-events-none absolute -right-20 -top-24 h-56 w-56 rounded-full bg-amber-300/25 blur-3xl dark:bg-amber-400/10"></div>
     <div class="pointer-events-none absolute -bottom-28 left-1/4 h-52 w-52 rounded-full bg-brand-300/20 blur-3xl dark:bg-brand-400/10"></div>
 
     <div class="relative grid gap-5 {{ $hasAvailableCoupons ? 'lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.9fr)] lg:items-stretch' : '' }}">
         <div class="flex min-w-0 flex-col justify-between gap-5 sm:flex-row sm:items-center">
             <div class="min-w-0">
-                <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-3 py-1.5 text-[11px] font-black text-amber-700 shadow-sm backdrop-blur dark:border-amber-400/20 dark:bg-slate-900/70 dark:text-amber-300 [&_svg]:h-4 [&_svg]:w-4">
-                    @include('icons.award-03')
-                    باشگاه مخاطبان
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-3 py-1.5 text-[11px] font-black text-amber-700 shadow-sm backdrop-blur dark:border-amber-400/20 dark:bg-slate-900/70 dark:text-amber-300 [&_svg]:h-4 [&_svg]:w-4">
+                        @include('icons.award-03')
+                        باشگاه مخاطبان
+                    </div>
+
+                    @if($level)
+                        @php
+                            $cardLevelColors = $level->colorClasses()
+                        @endphp
+                        <div class="inline-flex items-center gap-1.5 rounded-full border {{ $cardLevelColors['chip'] }} py-1 pl-3 pr-1 text-[10px] font-black backdrop-blur">
+                            @if($level->badge)
+                                <span
+                                    class="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br {{ $cardLevelColors['ring'] }} text-xs shadow-sm ring-2 ring-white/70 dark:ring-slate-900/80">
+                                    <span class="drop-shadow-sm">{{ $level->badge }}</span>
+                                </span>
+                            @endif
+                            سطح {{ $level->title }}
+                        </div>
+                    @endif
                 </div>
 
                 <h2 class="mt-3 text-lg font-black leading-8 text-slate-950 sm:text-xl dark:text-white">
