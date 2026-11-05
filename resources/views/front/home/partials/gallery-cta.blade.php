@@ -1,6 +1,6 @@
 @php
-    $ctaImagePoints = (int) get_setting('gallery', 'image_points', 150);
-    $ctaVideoPoints = (int) get_setting('gallery', 'video_points', 500);
+    $ctaImagePoints = (int) get_setting('gallery', 'image_points', 80);
+    $ctaVideoPoints = (int) get_setting('gallery', 'video_points', 200);
     $ctaSubmittedCount = \App\Domain\Content\Models\UserMediaSubmission::query()->approved()->count();
 @endphp
 

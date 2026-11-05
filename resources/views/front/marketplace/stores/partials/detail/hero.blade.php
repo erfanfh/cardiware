@@ -49,6 +49,9 @@
                 </h1>
 
                 <div class="mt-2.5 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
+                    @foreach(\App\Domain\Marketplace\Models\StoreReward::query()->where('store_id', $store->getKey())->orderByRaw("CASE period_type WHEN 'year' THEN 0 WHEN 'month' THEN 1 ELSE 2 END")->orderBy('rank')->latest('id')->limit(3)->get() as $storeTrophy)
+                        <span class="mw-store-chip" title="{{ $storeTrophy->title() }}">{{ $storeTrophy->trophy() }} {{ \App\Domain\Marketplace\Models\StoreReward::PERIOD_LABELS[$storeTrophy->period_type] }} ({{ $storeTrophy->period_label }})</span>
+                    @endforeach
                     @if($storeVerified)
                         <span class="mw-store-chip is-verified">
                             <span class="mw-store-chip-dot"></span>

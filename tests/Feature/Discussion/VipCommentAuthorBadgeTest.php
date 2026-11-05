@@ -129,7 +129,7 @@ class VipCommentAuthorBadgeTest extends TestCase
             $this->item($comment, $commentable)
                 ->assertSee('ring-amber-400')
                 ->assertSee('کاربر دارای اشتراک VIP فعال')
-                ->assertSee(route('vip.index'));
+                ->assertSee(route('loyalty.members.show', $comment->user_id));
         }
     }
 

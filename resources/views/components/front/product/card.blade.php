@@ -62,13 +62,14 @@
 
 <a
     href="{{ front_route('products.detail', $product->slug) }}"
-    class="group relative block h-full rounded-2xl outline-none transition duration-300 hover:-translate-y-1 focus-visible:ring-4 focus-visible:ring-brand-100
+    class="group relative z-0 block h-full rounded-2xl outline-none transition duration-300 hover:-translate-y-1 hover:z-10 focus-visible:ring-4 focus-visible:ring-brand-100
     dark:focus-visible:ring-brand-900/40"
 >
     <article
-        class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300
-        group-hover:border-brand-200 group-hover:shadow-2xl group-hover:shadow-brand-100/60
-        dark:border-slate-800 dark:bg-slate-900/40 dark:group-hover:border-brand-700 dark:group-hover:shadow-brand-900/20"
+        class="relative flex h-full flex-col overflow-hidden rounded-2xl border border-transparent bg-white
+        shadow-[0_2px_10px_rgba(15,23,42,.05)] ring-1 ring-slate-200/60 transition duration-300
+        group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_-12px_rgba(15,23,42,.18)] group-hover:ring-brand-300/70
+        dark:bg-slate-900/70 dark:ring-slate-800/80 dark:group-hover:shadow-[0_18px_40px_-12px_rgba(0,0,0,.5)] dark:group-hover:ring-brand-700/60"
     >
 
         {{-- Image --}}
@@ -227,9 +228,6 @@
             </div>
 
         </div>
-
-        <div class="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-transparent transition group-hover:ring-brand-200
-        dark:group-hover:ring-brand-900/40"></div>
 
     </article>
 </a>

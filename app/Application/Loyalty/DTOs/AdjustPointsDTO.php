@@ -22,6 +22,8 @@ final readonly class AdjustPointsDTO
         public ?Model $reference = null,
         public ?string $description = null,
         public array $metadata = [],
+        // true: XP سطح هم به همین اندازه تغییر می‌کند (reason=manual_xp_adjustment)
+        public bool $affectsXp = false,
     ) {
     }
 }

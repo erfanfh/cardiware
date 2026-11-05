@@ -14,7 +14,7 @@ class AudienceClubLeaderboardController extends Controller
         GetAudienceClubLeaderboardAction $getAudienceClubLeaderboardAction,
     ): View {
         $user = $request->user();
-        $leaderboard = $getAudienceClubLeaderboardAction->execute($user);
+        $leaderboard = $getAudienceClubLeaderboardAction->execute($user, $request->query('period'));
 
         return view('front.loyalty.leaderboard', compact('user', 'leaderboard'));
     }

@@ -6,6 +6,31 @@
             'title' => $section['title'],
         ])
 
+        @php
+            // آیکون‌های مجاز تغییرات — قابل استفاده با توکن [fire]، [heart] و… در ابتدای هر خط
+            $changelogIcons = [
+                'heart', 'fire', 'sparkles', 'star', 'rocket', 'zap',
+                'bug', 'shield-check', 'gift', 'refresh', 'thumb-up', 'surprise', 'flame2',
+            ];
+
+            // هر note می‌تواند رشته (با توکن ابتدای خط) یا آرایه {icon, text} باشد
+            $parseNote = function (mixed $note) use ($changelogIcons): array {
+                if (is_array($note)) {
+                    $icon = in_array($note['icon'] ?? '', $changelogIcons, true) ? $note['icon'] : null;
+
+                    return [$icon, (string) ($note['text'] ?? '')];
+                }
+
+                $text = (string) $note;
+
+                if (preg_match('/^\[([a-z0-9-]+)\]\s*/i', $text, $m) && in_array(strtolower($m[1]), $changelogIcons, true)) {
+                    return [strtolower($m[1]), mb_substr($text, mb_strlen($m[0]))];
+                }
+
+                return [null, $text];
+            };
+        @endphp
+
         <div class="relative mt-14 pr-6">
             {{-- خط تایم‌لاین --}}
             <div class="absolute inset-y-2 right-2 w-px bg-gradient-to-b from-accent/60 via-edge to-transparent" aria-hidden="true"></div>
@@ -22,9 +47,18 @@
 
                         <ul class="mt-3 space-y-1.5">
                             @foreach($item['notes'] as $note)
+                                @php [$noteIcon, $noteText] = $parseNote($note); @endphp
+
                                 <li class="flex items-start gap-2.5 text-sm leading-7 text-muted">
-                                    <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent/60" aria-hidden="true"></span>
-                                    {{ $note }}
+                                    @if($noteIcon)
+                                        <span class="mt-1 grid size-5 shrink-0 place-items-center rounded-md border border-accent/25 bg-accent/10 text-accent [&_svg]:size-3.5" aria-hidden="true">
+                                            @include('icons.changelog.' . $noteIcon)
+                                        </span>
+                                    @else
+                                        <span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent/60" aria-hidden="true"></span>
+                                    @endif
+
+                                    {{ $noteText }}
                                 </li>
                             @endforeach
                         </ul>

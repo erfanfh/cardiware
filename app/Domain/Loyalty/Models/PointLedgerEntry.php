@@ -102,6 +102,25 @@ class PointLedgerEntry extends Model
         return $this->hasMany(self::class, 'reversal_of_id');
     }
 
+    /**
+     * آیا این ردیف کسب امتیاز، XP (سطح) را هم بالا برده است؟ ردیف‌های جدید
+     * پرچم awards_xp دارند؛ برای ردیف‌های قدیمی، پاداش سطح و نشان (که هرگز
+     * XP نمی‌دادند) از روی reason تشخیص داده می‌شوند.
+     */
+    public function grantedXp(): bool
+    {
+        if ($this->type !== PointEntryTypeEnum::EARN) {
+            return false;
+        }
+
+        $flag = data_get($this->metadata, 'awards_xp');
+        if (is_bool($flag)) {
+            return $flag;
+        }
+
+        return ! in_array($this->reason, ['level_up', 'achievement_earned'], true);
+    }
+
     public function signedAmount(): int
     {
         return $this->direction->isCredit()

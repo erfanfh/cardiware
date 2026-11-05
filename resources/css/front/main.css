@@ -5,6 +5,8 @@
 @import "./sidebar-projects.css";
 @import "./update-progress.css";
 @import "./store-hero.css";
+@import "./footer-glass.css";
+@import "./festival.css";
 
 [x-cloak] {
     display: none !important;

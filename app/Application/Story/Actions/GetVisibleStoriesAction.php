@@ -35,6 +35,7 @@ class GetVisibleStoriesAction
                             'id' => $story->id,
                             'title' => $story->title,
                             'subtitle' => $story->subtitle,
+                            'badge' => $story->badge,
                             'caption' => $story->caption,
                             'image' => $image,
                             'thumb' => $thumbnailUrl ?: $image,

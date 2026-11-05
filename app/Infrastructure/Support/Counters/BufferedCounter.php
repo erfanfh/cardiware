@@ -3,9 +3,19 @@
 namespace App\Infrastructure\Support\Counters;
 
 use Illuminate\Support\Facades\Redis;
+use Throwable;
 
+/**
+ * شمارنده‌ی بافرشده در Redis (مثلاً بازدید صفحه‌ها) که دوره‌ای به دیتابیس منتقل می‌شود.
+ *
+ * شمارش بازدید نباید هیچ صفحه‌ای را از کار بیندازد: اگر Redis در دسترس نباشد
+ * (سرور Redis خاموش، محیط محلی بدون Redis) افزایش شمارنده نادیده گرفته می‌شود و
+ * خواندن آن صفر برمی‌گرداند؛ خطا فقط یک‌بار در هر درخواست گزارش می‌شود.
+ */
 class BufferedCounter
 {
+    private static bool $failureReported = false;
+
     public static function increment(
         string     $namespace,
         string     $type,
@@ -13,12 +23,16 @@ class BufferedCounter
         int        $amount = 1
     ): void
     {
-        Redis::incrby(self::counterKey($namespace, $type, $id), $amount);
+        try {
+            Redis::incrby(self::counterKey($namespace, $type, $id), $amount);
 
-        Redis::sadd(
-            self::dirtyKey($namespace),
-            self::dirtyValue($type, $id)
-        );
+            Redis::sadd(
+                self::dirtyKey($namespace),
+                self::dirtyValue($type, $id)
+            );
+        } catch (Throwable $exception) {
+            self::reportOnce($exception);
+        }
     }
 
     public static function popDirty(string $namespace): ?string
@@ -51,7 +65,23 @@ class BufferedCounter
         int|string $id
     ): int
     {
-        return (int)Redis::get(self::counterKey($namespace, $type, $id));
+        try {
+            return (int)Redis::get(self::counterKey($namespace, $type, $id));
+        } catch (Throwable $exception) {
+            self::reportOnce($exception);
+
+            return 0;
+        }
+    }
+
+    private static function reportOnce(Throwable $exception): void
+    {
+        if (self::$failureReported) {
+            return;
+        }
+
+        self::$failureReported = true;
+        report($exception);
     }
 
     public static function parseDirtyValue(string $value): array

@@ -42,6 +42,26 @@ class Store extends Model implements PageViewableInterface
         return 'slug';
     }
 
+    /** فروشگاهِ بدون نامک (داده‌ی ناقص) با شناسه آدرس‌دهی می‌شود تا صفحه‌های پنل خطای ۵۰۰ ندهند. */
+    public function getRouteKey(): mixed
+    {
+        return filled($this->slug) ? $this->slug : (string) $this->getKey();
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $store = parent::resolveRouteBinding($value, $field);
+
+        if ($store === null && $field === null && ctype_digit((string) $value)) {
+            $store = $this->newQuery()
+                ->whereKey((int) $value)
+                ->where(fn ($query) => $query->whereNull('slug')->orWhere('slug', ''))
+                ->first();
+        }
+
+        return $store;
+    }
+
     public function sellerCan(SellerPermissionEnum|string $permission): bool
     {
         $permission = is_string($permission) ? SellerPermissionEnum::tryFrom($permission) : $permission;

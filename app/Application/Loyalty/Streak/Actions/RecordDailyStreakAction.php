@@ -17,10 +17,12 @@ use Throwable;
  * به‌روزرسانی زنجیره ورود روزانه و پرداخت پاداش مایل‌استون‌ها.
  *
  * «مایل‌استون»ها از Setting «loyalty.streak_milestones» خوانده می‌شوند؛
- * ساختار: [['days' => 7, 'points' => 200], ...]
- * وقتی تعداد روزهای زنجیره فعلی دقیقاً به days برسد، پاداش یک‌بار برای همین
- * زنجیره (بر اساس تاریخ شروعش) پرداخت می‌شود. با قطع زنجیره، شمارش از یک شروع
- * می‌شود و رسیدن دوباره به مایل‌استون، پاداش جدیدی دارد.
+ * ساختار: [['days' => 7, 'points' => 50, 'repeat' => true, 'vip_days' => 0], ...]
+ *  - repeat=false: فقط وقتی روزهای زنجیره دقیقاً به days برسد (یک‌بار در هر زنجیره).
+ *  - repeat=true: در هر مضرب days (۷، ۱۴، ۲۱...) تا کسی که بی‌وقفه می‌آید بعد از
+ *    روز ۳۰ بی‌پاداش نماند و شکستن عمدی زنجیره سودی نداشته باشد.
+ *  - vip_days: اشتراک VIP هدیه (مثلاً ۹۰ روز پشت‌سرهم = یک ماه VIP).
+ * با قطع زنجیره، شمارش از یک شروع می‌شود.
  */
 final class RecordDailyStreakAction
 {
@@ -33,7 +35,7 @@ final class RecordDailyStreakAction
     /**
      * @param User $user
      * @param CarbonInterface|null $date تاریخ بازدید (برای تست)
-     * @return array{streak: LoyaltyStreak, isNewDay: bool, awardedMilestones: array<int, array{days: int, points: int}>}
+     * @return array{streak: LoyaltyStreak, isNewDay: bool, awardedMilestones: array<int, array{days: int, points: int, vip_days: int}>}
      *
      * @throws Throwable
      */
@@ -79,19 +81,28 @@ final class RecordDailyStreakAction
             $isNewDay = true;
 
             foreach ($this->milestones() as $milestone) {
-                if ($locked->current_days !== (int) $milestone['days']) {
+                $days = (int) $milestone['days'];
+                $reached = $milestone['repeat']
+                    ? $locked->current_days % $days === 0
+                    : $locked->current_days === $days;
+
+                if (! $reached) {
                     continue;
                 }
 
-                $points = (int) ($milestone['points'] ?? 0);
-                if ($points <= 0) {
-                    continue;
-                }
+                $entry = $milestone['points'] > 0
+                    ? $this->awardMilestone($user, $locked, $milestone)
+                    : null;
+                $vip = $milestone['vip_days'] > 0
+                    ? $this->grantVip($user, $locked, $milestone)
+                    : null;
 
-                $entry = $this->awardMilestone($user, $locked, (int) $milestone['days'], $points);
-
-                if ($entry !== null) {
-                    $awarded[] = ['days' => (int) $milestone['days'], 'points' => $points];
+                if ($entry !== null || $vip !== null) {
+                    $awarded[] = [
+                        'days' => $locked->current_days,
+                        'points' => $entry !== null ? $milestone['points'] : 0,
+                        'vip_days' => $vip !== null ? $milestone['vip_days'] : 0,
+                    ];
                 }
             }
         });
@@ -100,7 +111,7 @@ final class RecordDailyStreakAction
     }
 
     /**
-     * @return array<int, array{days: int, points: int}>
+     * @return array<int, array{days: int, points: int, repeat: bool, vip_days: int}>
      */
     public function milestones(): array
     {
@@ -114,10 +125,16 @@ final class RecordDailyStreakAction
 
         foreach ($raw as $item) {
             $days = (int) ($item['days'] ?? 0);
-            $points = (int) ($item['points'] ?? 0);
+            $points = max(0, (int) ($item['points'] ?? 0));
+            $vipDays = max(0, (int) ($item['vip_days'] ?? 0));
 
-            if ($days > 0 && $points > 0) {
-                $milestones[] = ['days' => $days, 'points' => $points];
+            if ($days > 0 && ($points > 0 || $vipDays > 0)) {
+                $milestones[] = [
+                    'days' => $days,
+                    'points' => $points,
+                    'repeat' => filter_var($item['repeat'] ?? false, FILTER_VALIDATE_BOOLEAN),
+                    'vip_days' => $vipDays,
+                ];
             }
         }
 
@@ -127,10 +144,18 @@ final class RecordDailyStreakAction
     /**
      * @throws Throwable
      */
-    private function awardMilestone(User $user, LoyaltyStreak $streak, int $days, int $points): ?PointLedgerEntry
+    /**
+     * @param array{days: int, points: int, repeat: bool, vip_days: int} $milestone
+     */
+    private function awardMilestone(User $user, LoyaltyStreak $streak, array $milestone): ?PointLedgerEntry
     {
         $startedOn = $streak->current_streak_started_on?->toDateString() ?? 'unknown';
-        $idempotencyKey = "streak:{$user->getKey()}:{$startedOn}:{$days}";
+        $days = (int) $streak->current_days;
+        $points = $milestone['points'];
+        // کلید قدیمی برای مایل‌استون یک‌باره حفظ شده تا پاداش‌های قبلی دوباره داده نشوند.
+        $idempotencyKey = $milestone['repeat']
+            ? "streak:{$user->getKey()}:{$startedOn}:{$milestone['days']}:{$days}"
+            : "streak:{$user->getKey()}:{$startedOn}:{$days}";
 
         $already = PointLedgerEntry::query()
             ->where('point_account_id', $this->getOrCreatePointAccount->execute($user)->getKey())
@@ -146,11 +171,26 @@ final class RecordDailyStreakAction
             amount: $points,
             reason: 'streak_milestone',
             idempotencyKey: $idempotencyKey,
-            description: "پاداش زنجیره {$days} روزه ورود روزانه",
+            description: "پاداش {$days} روز ورود پشت‌سرهم",
             metadata: [
                 'streak_days' => $days,
                 'streak_started_on' => $startedOn,
             ],
         ));
+    }
+
+    /**
+     * @param array{days: int, points: int, repeat: bool, vip_days: int} $milestone
+     */
+    private function grantVip(User $user, LoyaltyStreak $streak, array $milestone): ?\App\Domain\Vip\Models\VipSubscription
+    {
+        $startedOn = $streak->current_streak_started_on?->toDateString() ?? 'unknown';
+
+        return app(\App\Application\Vip\Actions\GrantGiftVipSubscriptionAction::class)->execute(
+            $user,
+            $milestone['vip_days'],
+            'loyalty_streak',
+            "streak-vip:{$user->getKey()}:{$startedOn}:{$milestone['days']}:{$streak->current_days}",
+        );
     }
 }

@@ -96,7 +96,7 @@ final class BuildProductSchemaContextAction
             ->values();
 
         $sellerName = $product->store?->title ?: $base->organizationName;
-        $sellerUrl = $product->store
+        $sellerUrl = filled($product->store?->slug)
             ? front_route('stores.detail', $product->store->slug)
             : $base->siteUrl;
 

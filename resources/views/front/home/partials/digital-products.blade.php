@@ -28,31 +28,43 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach($shopItems as $item)
                 <a href="{{ $item['link'] }}"
-                   class="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-500/40 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/40">
+                   class="group relative z-0 flex flex-col overflow-hidden rounded-3xl border border-transparent bg-white ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1.5 hover:z-10 hover:shadow-[0_20px_44px_-14px_rgba(15,23,42,.22)] hover:ring-brand-300/70 dark:bg-slate-900/70 dark:ring-slate-800 dark:hover:shadow-[0_20px_44px_-14px_rgba(0,0,0,.55)] dark:hover:ring-brand-700/50">
+                    {{-- تصویر با برق عبوری هاور --}}
                     <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
                         <x-front.responsive-image
                             :fallback="$item['image']['path'] ?? null"
                             :alt="$item['title'] ?? ''"
                             :title="$item['title'] ?? null"
                             variant="medium_large"
-                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                            class="h-full w-full object-cover transition duration-700 group-hover:scale-[1.06]"
                             wrapper-class="absolute inset-0"
                             :lazy="true"
                             :async="true"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
 
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/55 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-slate-950/5 to-transparent"></div>
+
+                        <span class="pointer-events-none absolute inset-0 translate-x-full bg-gradient-to-l from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-[-100%]" aria-hidden="true"></span>
 
                         @if(filled($item['badge_text'] ?? null))
-                            <span class="absolute top-2.5 right-2.5 rounded-xl bg-brand-500 px-2.5 py-1 text-[10.5px] font-black text-white shadow-lg shadow-brand-500/40">
+                            <span class="absolute top-2.5 right-2.5 rounded-xl bg-gradient-to-l from-brand-600 to-brand-500 px-2.5 py-1 text-[10.5px] font-black text-white shadow-lg shadow-brand-900/40 ring-1 ring-white/25 backdrop-blur-sm">
                                 {{ $item['badge_text'] }}
+                            </span>
+                        @endif
+
+                        @if(filled($item['price_text'] ?? null))
+                            <span class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-xl border border-white/20 bg-slate-950/55 px-2.5 py-1 text-[11.5px] font-black text-white backdrop-blur-md">
+                                {{ $item['price_text'] }}
+                                @if(filled($item['old_price_text'] ?? null))
+                                    <s class="text-[9.5px] font-bold text-white/55">{{ $item['old_price_text'] }}</s>
+                                @endif
                             </span>
                         @endif
                     </div>
 
                     <div class="flex flex-1 flex-col p-4">
-                        <div class="text-sm font-extrabold leading-7 dark:text-slate-100">
+                        <div class="line-clamp-2 min-h-[3.25rem] text-sm font-extrabold leading-7 text-slate-900 transition group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
                             {{ $item['title'] }}
                         </div>
 
@@ -64,26 +76,15 @@
 
                         @if(filled($item['label'] ?? null))
                             <div class="mt-3 flex flex-wrap gap-1.5">
-                                <span class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                <span class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
                                     <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
                                     {{ $item['label'] }}
                                 </span>
                             </div>
                         @endif
 
-                        <div class="mt-auto flex items-center justify-between gap-2 pt-4">
-                            @if(filled($item['price_text'] ?? null))
-                                <span class="min-w-0">
-                                    <b class="block whitespace-nowrap text-sm font-black text-brand-600 dark:text-brand-400">{{ $item['price_text'] }}</b>
-                                    @if(filled($item['old_price_text'] ?? null))
-                                        <s class="block text-[11px] text-slate-400">{{ $item['old_price_text'] }}</s>
-                                    @endif
-                                </span>
-                            @else
-                                <span></span>
-                            @endif
-
-                            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-brand-500 px-3.5 py-2 text-xs font-extrabold text-white shadow-sm transition group-hover:bg-brand-600 dark:bg-brand-500 dark:group-hover:bg-brand-400 [&_svg]:h-3.5 [&_svg]:w-3.5">
+                        <div class="mt-auto pt-4">
+                            <span class="inline-flex w-full items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-l from-brand-600 to-brand-500 px-3.5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-brand-500/25 transition duration-300 group-hover:shadow-brand-500/45 group-hover:brightness-110 [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:transition-transform [&_svg]:group-hover:-translate-x-0.5">
                                 {{ $item['button_text'] ?? 'خرید' }}
                                 @include('icons.arrow-left-02')
                             </span>

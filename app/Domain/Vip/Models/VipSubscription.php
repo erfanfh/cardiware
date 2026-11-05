@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class VipSubscription extends Model
 {
     protected $fillable = [
-        'user_id', 'vip_plan_id', 'order_id', 'order_item_id',
+        'user_id', 'vip_plan_id', 'order_id', 'order_item_id', 'source', 'gift_key',
         'duration_days', 'starts_at', 'expires_at', 'revoked_at',
     ];
 

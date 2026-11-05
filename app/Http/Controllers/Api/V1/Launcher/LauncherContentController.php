@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Launcher;
 
 use App\Application\Launcher\Actions\GetLauncherModsAction;
+use App\Application\Launcher\Actions\ResolveLauncherModAccessForUserAction;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Domain\Commerce\Models\PurchaseAccess;
@@ -122,6 +123,21 @@ class LauncherContentController extends Controller
             now()->addMinutes(5),
             fn(): array => $action->execute($access),
         );
+
+        // وضعیت قفل/باز مادهای پولی و VIP به ازای کاربر پس از کش محاسبه
+        // می‌شود تا payload مشترک بین کاربران بماند.
+        $mods = app(ResolveLauncherModAccessForUserAction::class)->execute($request->user(), $mods);
+
+        // لانچرهای قدیمی قفل/خرید ماد را نمی‌شناسند و ماد قفل‌شده (بدون فایل)
+        // را قابل نصب نشان می‌دهند؛ فقط لانچری که این قابلیت را اعلام کند
+        // مادهای قفل‌شده را می‌بیند.
+        $features = array_map('trim', explode(',', strtolower((string) $request->header('X-Launcher-Features', ''))));
+        if (!in_array('paid-mods', $features, true)) {
+            $mods = array_values(array_filter(
+                $mods,
+                static fn(array $mod): bool => !($mod['access']['locked'] ?? false),
+            ));
+        }
 
         return response()->json([
             'data' => $mods,

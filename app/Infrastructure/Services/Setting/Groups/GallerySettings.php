@@ -16,6 +16,10 @@ class GallerySettings extends BaseSettings
         'per_page',
         'image_points',
         'video_points',
+        'second_points_percent',
+        'later_points_percent',
+        'monthly_rewarded_limit',
+        'monthly_submission_limit',
     ];
 
     protected array $casts = [

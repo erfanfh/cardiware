@@ -245,6 +245,7 @@ class CommentItem extends Component
                 ]),
                 'user.avatar.primaryVariant',
                 'user.role',
+                'user.pointAccount:id,user_id,lifetime_xp',
             ])
             ->withCount('approvedReplies')
             ->findOrFail($this->commentId);
@@ -276,6 +277,7 @@ class CommentItem extends Component
             ->with([
                 'user.avatar.primaryVariant',
                 'user.role',
+                'user.pointAccount:id,user_id,lifetime_xp',
             ])
             ->withCount('approvedReplies')
             ->oldestFirst()
@@ -322,6 +324,22 @@ class CommentItem extends Component
             comment: $this->comment,
             commentable: $this->commentable,
         );
+    }
+
+    /**
+     * سطح باشگاه نویسنده (از سطح دوم به بالا تا برچسب «تازه‌وارد» روی همه نیفتد).
+     */
+    #[Computed]
+    public function authorLevel(): ?\App\Domain\Loyalty\Models\LoyaltyLevel
+    {
+        $xp = (int) ($this->comment->user?->pointAccount?->lifetime_xp ?? 0);
+        if ($xp <= 0) {
+            return null;
+        }
+
+        $level = app(\App\Application\Loyalty\Actions\ResolveUserLevelAction::class)->execute($xp);
+
+        return (int) $level->min_xp > 0 ? $level : null;
     }
 
     #[Computed]

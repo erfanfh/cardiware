@@ -401,6 +401,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_mods.*.version' => ['required_with:sale_items.*.launcher_mods', 'string', 'max:50'],
             'sale_items.*.launcher_mods.*.install_target' => ['required_with:sale_items.*.launcher_mods', Rule::enum(LauncherModInstallTargetEnum::class)],
             'sale_items.*.launcher_mods.*.install_mode' => ['nullable', 'in:toggle,permanent'],
+            'sale_items.*.launcher_mods.*.access_type' => ['nullable', 'in:free,purchase'],
+            'sale_items.*.launcher_mods.*.price_toman' => ['nullable', 'required_if:sale_items.*.launcher_mods.*.access_type,purchase', 'integer', 'min:1000', 'max:1000000000'],
             'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
             'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],
             'sale_items.*.launcher_mods.*.description' => ['nullable', 'string'],
@@ -503,14 +505,6 @@ class UpdateProductRequest extends FormRequest
                             'محصولِ نگهبان‌دار نباید هم‌زمان Sider داشته باشد؛ Sider را برای این محصول خاموش کنید.'
                         );
                     }
-                }
-
-                if (filter_var($item['vip_access_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)
-                    && filter_var($item['launcher_enabled'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-                    $validator->errors()->add(
-                        "{$prefix}.vip_access_enabled",
-                        'دسترسی VIP این بخش فقط برای فایل‌های دانلود مستقیم قابل فعال‌سازی است.'
-                    );
                 }
 
                 if (

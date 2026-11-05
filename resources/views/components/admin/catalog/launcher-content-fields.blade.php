@@ -752,6 +752,37 @@
                                 </x-admin.form.select>
                             </x-admin.field>
 
+                            <x-admin.field
+                                label="نوع دسترسی"
+                                hint="رایگان: برای همه دارندگان محصول (خرید تکی یا اشتراک ویژه). خرید تکی: با قیمت جداگانه و یک‌بار پرداخت، برای همیشه فعال می‌شود و در سفارش‌های کاربر ثبت می‌شود."
+                                class="col-span-12 md:col-span-3"
+                            >
+                                <x-admin.form.select
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][access_type]`"
+                                    x-model="mod.access_type"
+                                >
+                                    <option value="free">رایگان</option>
+                                    <option value="purchase">خرید تکی (پولی)</option>
+                                </x-admin.form.select>
+                            </x-admin.field>
+
+                            <x-admin.field
+                                x-show="mod.access_type === 'purchase'"
+                                x-cloak
+                                label="قیمت تکی ماد (تومان)"
+                                hint="مثال: 200000 — ماد پس از پرداخت به‌صورت دائمی برای کاربر فعال می‌شود."
+                                class="col-span-12 md:col-span-3"
+                            >
+                                <x-admin.form.input
+                                    type="number"
+                                    min="0"
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][price_toman]`"
+                                    x-model="mod.price_toman"
+                                    x-bind:required="mod.access_type === 'purchase'"
+                                    placeholder="200000"
+                                />
+                            </x-admin.field>
+
                             <x-admin.field label="کلید گروه" class="col-span-6 md:col-span-2">
                                 <x-admin.form.input
                                     class="direction-ltr"

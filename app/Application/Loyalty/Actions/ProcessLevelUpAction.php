@@ -3,6 +3,7 @@
 namespace App\Application\Loyalty\Actions;
 
 use App\Application\Loyalty\DTOs\AwardPointsDTO;
+use App\Application\Loyalty\Support\ReawardableLedgerKey;
 use App\Domain\Loyalty\Models\LoyaltyLevel;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
@@ -71,14 +72,12 @@ final class ProcessLevelUpAction
      */
     private function awardLevelReward(PointAccount $account, LoyaltyLevel $level): ?PointLedgerEntry
     {
-        $idempotencyKey = "level-up:{$account->getKey()}:{$level->getKey()}";
+        // پاداش هر سطح فقط یک‌بار فعال است؛ اگر با کاهش XP برگشت خورده بود،
+        // رسیدن دوباره به سطح آن را با کلید تازه دوباره پرداخت می‌کند.
+        $idempotencyKey = App::make(ReawardableLedgerKey::class)
+            ->resolve((int) $account->getKey(), "level-up:{$account->getKey()}:{$level->getKey()}");
 
-        $already = PointLedgerEntry::query()
-            ->where('point_account_id', $account->getKey())
-            ->where('idempotency_key', $idempotencyKey)
-            ->exists();
-
-        if ($already) {
+        if ($idempotencyKey === null) {
             return null;
         }
 

@@ -140,22 +140,29 @@
                         <input type="hidden" name="priceMax" value="{{ request('priceMax') }}">
                     @endif
 
-                    <label for="sort" class="text-xs font-black text-slate-400">
-                        مرتب‌سازی:
-                    </label>
+                    {{-- تب‌های مرتب‌سازی شیشه‌ای --}}
+                    @php
+                        $sortOptions = [
+                            'latest' => 'جدیدترین',
+                            'oldest' => 'قدیمی‌ترین',
+                            'price_asc' => 'ارزان‌ترین',
+                            'price_desc' => 'گران‌ترین',
+                        ];
+                    @endphp
 
-                    <select
-                        id="sort"
-                        name="sort"
-                        onchange="this.form.submit()"
-                        class="h-11 w-full cursor-pointer rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100 sm:w-auto
-                        dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                    >
-                        <option value="latest" @selected($sort === 'latest')>جدیدترین</option>
-                        <option value="oldest" @selected($sort === 'oldest')>قدیمی‌ترین</option>
-                        <option value="price_asc" @selected($sort === 'price_asc')>ارزان‌ترین</option>
-                        <option value="price_desc" @selected($sort === 'price_desc')>گران‌ترین</option>
-                    </select>
+                    <div class="flex w-full flex-wrap items-center gap-1.5 rounded-2xl border border-white/60 bg-white/70 p-1.5 shadow-sm backdrop-blur-xl sm:w-auto dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
+                        <span class="px-2 text-[11px] font-black text-slate-400 dark:text-slate-500">مرتب‌سازی</span>
+
+                        @foreach($sortOptions as $value => $label)
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => $value, 'page' => 1]) }}"
+                               class="inline-flex h-9 items-center rounded-xl px-4 text-xs font-extrabold transition
+                               {{ $sort === $value
+                                   ? 'bg-gradient-to-l from-brand-500 to-brand-400 text-white shadow-md shadow-brand-500/30'
+                                   : 'text-slate-600 hover:bg-white/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white' }}">
+                                {{ $label }}
+                            </a>
+                        @endforeach
+                    </div>
                 </form>
             </x-front.cart>
 

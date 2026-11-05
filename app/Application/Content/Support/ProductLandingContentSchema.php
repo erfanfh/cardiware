@@ -93,9 +93,8 @@ final class ProductLandingContentSchema
             }
             foreach ($schema['fields'] as $key => $child) {
                 if (!array_key_exists($key, $value)) {
-                    if (!$child['optional']) {
-                        $fail('فیلد '.$child['label'].' ارسال نشده است.');
-                    }
+                    // فیلد غایب مجاز است: سندهای ذخیره‌شده‌ی قدیمی فیلدهای تازه‌ی
+                    // config را ندارند و هنگام خواندن با پیش‌فرض تکمیل می‌شوند.
                     continue;
                 }
                 $this->validate($value[$key], $child, $path.'.'.$key);

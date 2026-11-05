@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\Identity\UserSearchController;
 use App\Http\Controllers\Admin\Identity\UserWalletController;
 use Illuminate\Support\Facades\Route;
 
-Route::resource('roles', RoleController::class);
+Route::resource('roles', RoleController::class)->except('show');
 Route::prefix('roles')->name('roles.')->group(function () {
     Route::get('{role}/login-alerts', [RoleLoginAlertsController::class, 'edit'])->name('login-alerts.edit');
     Route::put('{role}/login-alerts', [RoleLoginAlertsController::class, 'update'])->name('login-alerts.update');

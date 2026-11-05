@@ -23,13 +23,20 @@ class LauncherCatalogItemResource extends JsonResource
             ->values();
 
         /** @var PurchaseAccess|null $usableAccess */
+        // دسترسی مالکیتی بر امانی VIP اولویت دارد تا کاربرِ خریدار، دکمه خرید نبیند.
         $usableAccess = $saleItemAccesses
-            ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
+            ->first(fn(PurchaseAccess $access): bool => !$access->isVipBorrow() && $access->isUsableForLauncher())
+            ?? $saleItemAccesses
+                ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
 
         // A cancelled/refunded/revoked historical order must not unlock the
         // launcher.  Ownership is deliberately based only on a usable access.
         $hasAccess = $usableAccess instanceof PurchaseAccess;
         $isPurchasable = $this->resource->isPurchasable();
+
+        // دسترسی امانی اشتراک ویژه: نصب باز است اما مالکیت دائمی نه؛
+        // خرید تکی همچنان ممکن است و با پایان اشتراک قفل می‌شود.
+        $isVipBorrowed = $hasAccess && $usableAccess->isVipBorrow();
 
         return [
             'id' => $this->id,
@@ -46,8 +53,12 @@ class LauncherCatalogItemResource extends JsonResource
                 'has_access' => $hasAccess,
                 'access_id' => $usableAccess?->id,
             ],
+            'vip_access' => [
+                'enabled' => (bool)$this->vip_access_enabled,
+                'unlocked_by_subscription' => $isVipBorrowed,
+            ],
             'actions' => [
-                'can_buy' => $isPurchasable && !$isFree && !$hasAccess,
+                'can_buy' => $isPurchasable && !$isFree && (!$hasAccess || $isVipBorrowed),
                 'can_claim' => $isPurchasable && $isFree && !$hasAccess,
                 'can_install' => $hasAccess,
             ],

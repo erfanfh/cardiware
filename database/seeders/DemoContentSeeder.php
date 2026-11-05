@@ -465,7 +465,7 @@ class DemoContentSeeder extends Seeder
         $rules = [
             ['registration', 'هدیه خوش‌آمدگویی', ['points' => 300], 100],
             ['daily_visit', 'بازدید روزانه', ['points' => 20], 90],
-            ['comment', 'ارسال دیدگاه مفید', ['points' => 100, 'daily_limit' => 3], 80],
+            ['comment', 'ارسال دیدگاه مفید', ['points' => 30, 'daily_limit' => 2], 80],
             // اقتصاد خرید: هر ۱۰,۰۰۰ تومان = ۱۰ امتیاز پایه (ضریب سطح در پردازش اعمال می‌شود)
             ['purchase', 'امتیاز خرید', ['points' => 10, 'amount_step' => 10000], 70],
             ['membership_anniversary', 'سالگرد عضویت', ['points' => 500], 50],
@@ -488,9 +488,9 @@ class DemoContentSeeder extends Seeder
 
         $offers = [
             ['demo_coupon_10', 'کد تخفیف ۱۰٪ محصولات دانلودی', 'تخفیف دائمی روی همه محصولات دانلودی فروشگاه.', 400, ['coupon_type' => 'percentage', 'coupon_value' => 10, 'expires_after_days' => 90], 1],
-            ['demo_coupon_fixed', 'کد تخفیف ۵۰ هزار تومانی', 'تخفیف مبلغی روی سبد خرید بالای ۳۰۰ هزار تومان.', 700, ['coupon_type' => 'fixed', 'coupon_value' => 50000, 'expires_after_days' => 60], 2],
-            ['demo_coupon_vip', 'یک ماه اشتراک VIP', 'دسترسی کامل یک‌ماهه به همه مزایای باشگاه ویژه.', 1200, ['coupon_type' => 'fixed', 'coupon_value' => 99000, 'expires_after_days' => 30], 3],
-            ['demo_coupon_mystery', 'جعبه معمایی امتیاز', 'یک جایزه تصادفی بین ۱۰ تا ۱۰۰ هزار تومان اعتبار کیف پول.', 250, ['coupon_type' => 'fixed', 'coupon_value' => 10000, 'expires_after_days' => 45], 4],
+            ['demo_coupon_fixed', 'کد تخفیف ۵۰ هزار تومانی', 'تخفیف مبلغی روی سبد خرید بالای ۳۰۰ هزار تومان.', 700, ['coupon_type' => 'fixed_amount', 'coupon_value' => 50000, 'expires_after_days' => 60], 2],
+            ['demo_coupon_vip', 'یک ماه اشتراک VIP', 'دسترسی کامل یک‌ماهه به همه مزایای باشگاه ویژه.', 1200, ['coupon_type' => 'fixed_amount', 'coupon_value' => 99000, 'expires_after_days' => 30], 3],
+            ['demo_coupon_mystery', 'جعبه معمایی امتیاز', 'یک جایزه تصادفی بین ۱۰ تا ۱۰۰ هزار تومان اعتبار کیف پول.', 250, ['coupon_type' => 'fixed_amount', 'coupon_value' => 10000, 'expires_after_days' => 45], 4],
         ];
 
         foreach ($offers as [$code, $title, $description, $cost, $config, $sort]) {

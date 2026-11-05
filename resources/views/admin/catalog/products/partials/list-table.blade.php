@@ -181,7 +181,7 @@
                             size="md"
                             class="whitespace-nowrap"
                         >
-                            <a href="{{ route('stores.detail', $product->store) }}" target="_blank">
+                            <a href="{{ filled($product->store?->slug) ? route('stores.detail', $product->store) : '#' }}" target="_blank">
                                 {{ $storeTitle }}
                             </a>
                         </x-admin.badge>

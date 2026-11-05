@@ -95,6 +95,7 @@ class AppServiceProvider extends ServiceProvider
             'product' => Product::class,
             'product_sale_item' => ProductSaleItem::class,
             'product_addon' => ProductAddon::class,
+            'launcher_mod' => \App\Domain\Launcher\Models\LauncherMod::class,
             'order' => Order::class,
             'wallet_top_up' => WalletTopUp::class,
             'video' => Video::class,

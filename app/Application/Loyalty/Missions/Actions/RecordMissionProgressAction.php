@@ -2,6 +2,7 @@
 
 namespace App\Application\Loyalty\Missions\Actions;
 
+use App\Application\Loyalty\Support\ReawardableLedgerKey;
 use App\Application\Loyalty\Actions\AwardPointsAction;
 use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
 use App\Application\Loyalty\DTOs\AwardPointsDTO;
@@ -126,11 +127,21 @@ final class RecordMissionProgressAction
             return null;
         }
 
+        $account = $this->getOrCreatePointAccount->execute($user);
+        // اگر پاداش همین مأموریت در همین دوره بعد از مرجوعی برگشت خورده بود، تکمیل
+        // دوباره با کلید تازه پرداخت می‌شود؛ پاداش فعال هرگز دوبار داده نمی‌شود.
+        $idempotencyKey = app(ReawardableLedgerKey::class)
+            ->resolve((int) $account->getKey(), "mission:{$mission->getKey()}:{$user->getKey()}:{$periodKey}");
+
+        if ($idempotencyKey === null) {
+            return null;
+        }
+
         return $this->awardPoints->execute(new AwardPointsDTO(
-            account: $this->getOrCreatePointAccount->execute($user),
+            account: $account,
             amount: $mission->reward_points,
             reason: 'mission_completed',
-            idempotencyKey: "mission:{$mission->getKey()}:{$user->getKey()}:{$periodKey}",
+            idempotencyKey: $idempotencyKey,
             description: "پاداش مأموریت «{$mission->title}»",
             metadata: [
                 'mission_id' => $mission->getKey(),

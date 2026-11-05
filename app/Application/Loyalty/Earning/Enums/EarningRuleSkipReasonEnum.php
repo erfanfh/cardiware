@@ -11,4 +11,5 @@ enum EarningRuleSkipReasonEnum: string
     case BELOW_MINIMUM = 'below_minimum';
     case ZERO_POINTS = 'zero_points';
     case REFERENCE_INVALID = 'reference_invalid';
+    case NOT_ELIGIBLE = 'not_eligible';
 }

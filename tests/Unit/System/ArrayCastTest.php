@@ -35,15 +35,17 @@ class ArrayCastTest extends TestCase
         self::assertSame($value, (new ArrayCast)->get(new Setting, 'ultimate', $encoded, []));
     }
 
-    public function test_invalid_utf8_is_still_rejected(): void
+    public function test_invalid_utf8_is_repaired_without_losing_valid_nested_content(): void
     {
-        try {
-            (new ArrayCast)->set(new Setting, 'ultimate', ['title' => "\xB1\x31"], []);
-            self::fail('Invalid UTF-8 must not be stored.');
-        } catch (InvalidArgumentException $exception) {
-            self::assertInstanceOf(JsonException::class, $exception->getPrevious());
-            self::assertSame(JSON_ERROR_UTF8, $exception->getPrevious()->getCode());
-        }
+        $encoded = (new ArrayCast)->set(new Setting, 'ultimate', [
+            'title' => 'عنوان فارسی',
+            'items' => [["\xB1key" => "\xB1\x31", 'enabled' => true]],
+        ], []);
+        $decoded = json_decode($encoded, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertSame('عنوان فارسی', $decoded['title']);
+        self::assertTrue($decoded['items'][0]['enabled']);
+        self::assertSame(mb_scrub("\xB1\x31", 'UTF-8'), $decoded['items'][0][mb_scrub("\xB1key", 'UTF-8')]);
     }
 
     public function test_malformed_stored_json_is_still_rejected(): void

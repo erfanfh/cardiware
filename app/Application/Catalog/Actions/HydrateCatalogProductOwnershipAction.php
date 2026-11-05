@@ -38,9 +38,12 @@ class HydrateCatalogProductOwnershipAction
                     return;
                 }
 
-                $accesses = $product->relationLoaded('purchaseAccesses')
+                // دسترسی امانی VIP خرید حساب نمی‌شود («خریداری‌شده» نشان داده نشود).
+                $accesses = ($product->relationLoaded('purchaseAccesses')
                     ? $product->purchaseAccesses
-                    : collect();
+                    : collect())
+                    ->reject(static fn(PurchaseAccess $access): bool => $access->isVipBorrow())
+                    ->values();
 
                 $usableAccesses = $accesses->filter(
                     static fn(PurchaseAccess $access): bool => $access->isUsableForLauncher()

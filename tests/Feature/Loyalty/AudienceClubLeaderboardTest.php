@@ -2,79 +2,143 @@
 
 namespace Tests\Feature\Loyalty;
 
+use App\Application\Loyalty\Actions\AwardPointsAction;
 use App\Application\Loyalty\Actions\GetAudienceClubLeaderboardAction;
+use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
+use App\Application\Loyalty\Actions\ReverseEarnedPointsForReferenceAction;
+use App\Application\Loyalty\Actions\SpendPointsAction;
+use App\Application\Loyalty\DTOs\AwardPointsDTO;
+use App\Application\Loyalty\DTOs\SpendPointsDTO;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
-use App\Domain\Loyalty\Models\PointAccount;
+use App\Infrastructure\Services\Setting\BaseSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
+/**
+ * جدول برترین‌ها: رتبه با XP کسب‌شده در دوره، نه موجودی قابل خرج.
+ */
 class AudienceClubLeaderboardTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_it_ranks_active_members_by_balance_and_lifetime_points(): void
+    protected function setUp(): void
     {
-        $currentUser = User::factory()->create(['display_name' => 'Current member']);
-        $firstUser = User::factory()->create(['display_name' => 'First member']);
-        $secondUser = User::factory()->create(['display_name' => 'Second member']);
-        $inactiveUser = User::factory()->create([
-            'display_name' => 'Inactive member',
-            'status' => UserStatusEnum::INACTIVE,
-        ]);
-        $zeroBalanceUser = User::factory()->create(['display_name' => 'Zero balance member']);
-
-        $this->createPointAccount($currentUser, 300, 600);
-        $this->createPointAccount($firstUser, 500, 1_000);
-        $this->createPointAccount($secondUser, 500, 900);
-        $this->createPointAccount($inactiveUser, 9_000, 9_000);
-        $this->createPointAccount($zeroBalanceUser, 0, 100);
-
-        $leaderboard = app(GetAudienceClubLeaderboardAction::class)->execute($currentUser);
-
-        $this->assertSame(
-            [$firstUser->id, $secondUser->id, $currentUser->id],
-            $leaderboard['leaders']->pluck('user_id')->all(),
-        );
-        $this->assertSame([1, 2, 3], $leaderboard['leaders']->pluck('leaderboard_rank')->all());
-        $this->assertSame(3, $leaderboard['currentMember']['rank']);
-        $this->assertTrue($leaderboard['currentMember']['is_visible']);
-        $this->assertSame(3, $leaderboard['stats']['members']);
-        $this->assertSame(1_300, $leaderboard['stats']['total_points']);
-        $this->assertSame(500, $leaderboard['stats']['highest_points']);
+        parent::setUp();
+        BaseSettings::clearResolvedGroups();
+        Cache::flush();
     }
 
-    public function test_guest_can_view_the_public_leaderboard_page(): void
+    public function test_it_ranks_active_non_staff_members_by_xp_earned_this_month(): void
+    {
+        $current = User::factory()->create(['display_name' => 'Current member']);
+        $first = User::factory()->create(['display_name' => 'First member']);
+        $second = User::factory()->create(['display_name' => 'Second member']);
+        $inactive = User::factory()->create(['display_name' => 'Inactive member', 'status' => UserStatusEnum::INACTIVE]);
+        $staff = $this->staffUser();
+
+        $this->earn($current, 300);
+        $this->earn($first, 500);
+        $this->earn($second, 400);
+        $this->earn($inactive, 9000);
+        $this->earn($staff, 9000);
+
+        $board = app(GetAudienceClubLeaderboardAction::class)->execute($current);
+
+        $this->assertSame([$first->id, $second->id, $current->id], $board['leaders']->pluck('user_id')->all());
+        $this->assertSame([500, 400, 300], $board['leaders']->pluck('leaderboard_score')->all());
+        $this->assertSame(3, $board['currentMember']['rank']);
+        $this->assertSame(300, $board['currentMember']['score']);
+        $this->assertSame(3, $board['stats']['members']);
+        $this->assertSame(1200, $board['stats']['total_points']);
+
+        $staffView = app(GetAudienceClubLeaderboardAction::class)->execute($staff);
+        $this->assertTrue($staffView['currentMember']['is_staff']);
+        $this->assertNull($staffView['currentMember']['rank']);
+    }
+
+    public function test_spending_points_keeps_the_rank_but_a_reversal_lowers_it(): void
+    {
+        $spender = User::factory()->create();
+        $other = User::factory()->create();
+        $this->earn($spender, 500);
+        $this->earn($other, 400);
+
+        // خرج کردن امتیاز (جایزه/تبدیل) رتبه را پایین نمی‌آورد.
+        app(SpendPointsAction::class)->execute(new SpendPointsDTO(
+            account: app(GetOrCreatePointAccountAction::class)->execute($spender),
+            amount: 450,
+            reason: 'reward_redeem',
+            idempotencyKey: 'test-spend:' . $spender->id,
+        ));
+        Cache::flush();
+        $this->assertSame($spender->id, app(GetAudienceClubLeaderboardAction::class)->execute(null)['leaders']->first()->user_id);
+
+        // ولی برگشت امتیاز (مثلاً مرجوعی) از امتیاز دوره کم می‌شود.
+        app(ReverseEarnedPointsForReferenceAction::class)->execute(
+            user: $spender,
+            reference: $spender,
+            reason: 'test_activity',
+            eventKey: 'test-reverse:' . $spender->id,
+        );
+        Cache::flush();
+        $board = app(GetAudienceClubLeaderboardAction::class)->execute($spender);
+        $this->assertSame([$other->id], $board['leaders']->pluck('user_id')->all());
+        $this->assertNull($board['currentMember']['rank']);
+    }
+
+    public function test_previous_months_do_not_count_for_this_month_but_count_for_all_time(): void
+    {
+        $old = User::factory()->create();
+        $recent = User::factory()->create();
+        $this->earn($old, 1000, now()->subMonths(2));
+        $this->earn($recent, 100);
+
+        $month = app(GetAudienceClubLeaderboardAction::class)->execute(null, 'month');
+        $all = app(GetAudienceClubLeaderboardAction::class)->execute(null, 'all');
+
+        $this->assertSame([$recent->id], $month['leaders']->pluck('user_id')->all());
+        $this->assertSame([$old->id, $recent->id], $all['leaders']->pluck('user_id')->all());
+    }
+
+    public function test_guest_and_member_can_view_every_period_tab(): void
     {
         $this->get(route('loyalty.leaderboard'))
             ->assertSuccessful()
             ->assertSee('برترین‌های باشگاه مخاطبان')
             ->assertSee('ورود و مشاهده رتبه من');
-    }
 
-    public function test_authenticated_member_can_view_the_leaderboard_page(): void
-    {
         $user = User::factory()->create(['display_name' => 'Leaderboard member']);
-        $this->createPointAccount($user, 250, 400);
+        $this->earn($user, 250);
 
-        $this->actingAs($user)
-            ->get(route('loyalty.leaderboard'))
-            ->assertSuccessful()
-            ->assertSee('برترین‌های باشگاه مخاطبان')
-            ->assertSee('Leaderboard member');
+        foreach (['month', 'season', 'year', 'all'] as $period) {
+            $this->actingAs($user)
+                ->get(route('loyalty.leaderboard', ['period' => $period]))
+                ->assertSuccessful()
+                ->assertSee('Leaderboard member');
+        }
     }
 
-    private function createPointAccount(User $user, int $balance, int $lifetimeEarned): PointAccount
+    private function earn(User $user, int $amount, $at = null): void
     {
-        $account = new PointAccount;
-        $account->forceFill([
-            'user_id' => $user->getKey(),
-            'balance' => $balance,
-            'lifetime_earned' => $lifetimeEarned,
-            'lifetime_spent' => max(0, $lifetimeEarned - $balance),
-        ]);
-        $account->save();
+        app(AwardPointsAction::class)->execute(new AwardPointsDTO(
+            account: app(GetOrCreatePointAccountAction::class)->execute($user),
+            amount: $amount,
+            reason: 'test_activity',
+            idempotencyKey: 'test-earn:' . $user->id . ':' . uniqid(),
+            reference: $user,
+            occurredAt: $at,
+        ));
+    }
 
-        return $account;
+    private function staffUser(): User
+    {
+        $roleId = DB::table('roles')->insertGetId([
+            'title' => 'Staff ' . uniqid(), 'is_super_admin' => true, 'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        return User::factory()->create(['role_id' => $roleId, 'display_name' => 'Staff member']);
     }
 }

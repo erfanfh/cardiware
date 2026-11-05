@@ -3,8 +3,11 @@
 @php
     use App\Domain\Poll\Enums\PollAudienceEnum;
     $selectedIds = old('option_ids', $response?->options?->pluck('id')->all() ?? []);
+    $eliteMembership = app(\App\Application\Loyalty\Support\ClubEliteMembership::class);
+    $eliteBlocked = $poll->audience === PollAudienceEnum::CLUB_ELITE && !$eliteMembership->isMember(auth()->user());
     $canSubmit = $poll->acceptsVotesAt()
         && !($poll->audience === PollAudienceEnum::MEMBERS && !auth()->check())
+        && !$eliteBlocked
         && (!$hasVoted || $poll->allow_vote_changes);
     $statusLabel = !$poll->acceptsVotesAt()
         ? ($poll->starts_at?->isFuture() ? 'به‌زودی آغاز می‌شود' : 'پایان یافته')
@@ -108,6 +111,16 @@
                                         class="cursor-pointer mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-brand-500 to-orange-500 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-orange-200/60 transition hover:-translate-y-0.5 dark:shadow-none">{{ $hasVoted ? 'به‌روزرسانی رأی' : 'ثبت رأی' }}
                                     <span aria-hidden="true">←</span></button>
                             </form>
+                        @elseif($eliteBlocked)
+                            <div class="rounded-3xl border border-violet-200 bg-violet-50 p-6 text-center dark:border-violet-500/20 dark:bg-violet-500/10">
+                                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-2xl text-white">💎</div>
+                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">ویژه کانون نخبگان باشگاه</h2>
+                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">
+                                    در این نظرسنجی فقط اعضای سطح «{{ $eliteMembership->level()?->title ?? 'ویژه' }}» به بالا درباره‌ی محصولات آینده نظر می‌دهند.
+                                    با خرید، اشتراک ویژه و فعالیت در سایت XP بگیر و عضو کانون شو.
+                                </p>
+                                <a href="{{ route('loyalty.hall-of-fame') }}#elite" class="mt-4 inline-flex rounded-2xl bg-violet-600 px-6 py-3 text-xs font-black text-white transition hover:bg-violet-700">کانون نخبگان چیست؟</a>
+                            </div>
                         @elseif($poll->audience === PollAudienceEnum::MEMBERS && !auth()->check())
                             <div
                                 class="rounded-3xl border border-sky-200 bg-sky-50 p-6 text-center dark:border-sky-500/20 dark:bg-sky-500/10">

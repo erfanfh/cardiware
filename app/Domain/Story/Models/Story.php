@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Story extends Model
 {
     protected $fillable = [
-        'title', 'subtitle', 'caption', 'image_id', 'thumbnail_id', 'link_url', 'link_label',
+        'title', 'subtitle', 'badge', 'caption', 'image_id', 'thumbnail_id', 'link_url', 'link_label',
         'duration_seconds', 'sort_order', 'is_active', 'starts_at', 'ends_at',
     ];
 

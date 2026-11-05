@@ -18,6 +18,9 @@ class ArrayCast implements CastsAttributes
             return $value;
 
         try {
+            // JSON_THROW_ON_ERROR خطا را خودش پرتاب می‌کند و json_last_error() را ریست نمی‌کند؛
+            // بررسی json_last_error() اینجا خطای کهنه‌ی یک decode قبلی در همان درخواست را
+            // می‌دید و مقدار سالم را نامعتبر اعلام می‌کرد (خطای ۵۰۰ در لندینگ‌ها).
             $decoded = json_decode($value, true, 512, JSON_THROW_ON_ERROR);
 
             return is_array($decoded) ? $decoded : [];
@@ -35,11 +38,55 @@ class ArrayCast implements CastsAttributes
             throw new InvalidArgumentException("Value for '$key' must be an array.");
 
         try {
-            $json = json_encode($value, JSON_THROW_ON_ERROR);
-
-            return $json;
+            return self::encodeOrScrub($value, $key);
         } catch (JsonException $e) {
             throw new InvalidArgumentException("Could not encode array to JSON for key '$key': " . $e->getMessage(), previous: $e);
         }
+    }
+
+    /**
+     * کدگذاری JSON؛ اگر مقدار حاوی UTF-8 خراب باشد (مثلاً متن جای‌گذاری‌شده از
+     * منبع ناسالم) درست‌سازی و دوباره تلاش می‌شود تا ذخیره با خطای 500 متوقف نشود.
+     */
+    private static function encodeOrScrub(array $value, string $key): string
+    {
+        try {
+            return json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        } catch (JsonException) {
+            return json_encode(self::scrubUtf8($value), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    private static function scrubUtf8(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            $scrubbed = [];
+
+            foreach ($value as $k => $v) {
+                $scrubbed[is_string($k) ? self::scrubString($k) : $k] = self::scrubUtf8($v);
+            }
+
+            return $scrubbed;
+        }
+
+        return is_string($value) ? self::scrubString($value) : $value;
+    }
+
+    private static function scrubString(string $value): string
+    {
+        if (mb_check_encoding($value, 'UTF-8')) {
+            return $value;
+        }
+
+        // توالی‌های بایت نامعتبر یا حذف یا با نویسه جایگزین عوض می‌شوند.
+        $scrubbed = mb_scrub($value, 'UTF-8');
+
+        if ($scrubbed !== '' && mb_check_encoding($scrubbed, 'UTF-8')) {
+            return $scrubbed;
+        }
+
+        $iconv = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+
+        return $iconv === false ? '' : $iconv;
     }
 }

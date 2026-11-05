@@ -64,6 +64,16 @@ class LoyaltyServiceProvider extends ServiceProvider
             TrackGamificationOnOrderPaidListener::class,
         );
 
+        // کد قرعه‌کشی باشگاه به نسبت مبلغ خرید (و ابطال آن با مرجوعی).
+        Event::listen(
+            OrderPaidEvent::class,
+            [\App\Application\Loyalty\Listeners\IssuePurchaseRaffleTicketsListener::class, 'handlePaid'],
+        );
+        Event::listen(
+            OrderPaymentRevokedEvent::class,
+            [\App\Application\Loyalty\Listeners\IssuePurchaseRaffleTicketsListener::class, 'handleRevoked'],
+        );
+
         Event::listen(
             CommentApprovedEvent::class,
             TrackGamificationOnCommentApprovedListener::class,
@@ -71,6 +81,12 @@ class LoyaltyServiceProvider extends ServiceProvider
 
         $schedule->command('loyalty:award-membership-anniversaries --lookback=7')
             ->dailyAt('00:15')
+            ->withoutOverlapping(120)
+            ->onOneServer();
+
+        // بستن ماه/فصل/سال تمام‌شده و جایزه به برترین‌ها (نفرات ۱ تا ۳).
+        $schedule->command('loyalty:close-champion-periods')
+            ->dailyAt('00:20')
             ->withoutOverlapping(120)
             ->onOneServer();
 

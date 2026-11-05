@@ -477,6 +477,8 @@
                     'version' => $mod->version,
                     'install_target' => $mod->install_target?->value ?? 'product_root',
                     'install_mode' => $mod->install_mode?->value ?? 'toggle',
+                    'access_type' => $mod->access_type?->value ?? 'free',
+                    'price_toman' => $mod->price_toman,
                     'group_key' => $mod->group?->key,
                     'short_description' => $mod->short_description,
                     'description' => $mod->description,

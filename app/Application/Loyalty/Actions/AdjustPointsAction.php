@@ -9,6 +9,7 @@ use App\Domain\Loyalty\Enums\PointEntryTypeEnum;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -48,7 +49,15 @@ class AdjustPointsAction
                     ? $balanceBefore + $data->amount
                     : $balanceBefore - $data->amount;
 
-                $account->forceFill(['balance' => $balanceAfter])->save();
+                $changes = ['balance' => $balanceAfter];
+                $previousXp = (int)$account->lifetime_xp;
+                if ($data->affectsXp) {
+                    $changes['lifetime_xp'] = $data->direction->isCredit()
+                        ? $previousXp + $data->amount
+                        : max(0, $previousXp - $data->amount);
+                }
+
+                $account->forceFill($changes)->save();
 
                 $entry = PointLedgerEntry::query()->create([
                     'point_account_id' => $account->id,
@@ -65,8 +74,15 @@ class AdjustPointsAction
                     'idempotency_fingerprint' => $fingerprint,
                     'description' => $data->description,
                     'occurred_at' => now(),
-                    'metadata' => $data->metadata,
+                    'metadata' => array_merge($data->metadata, ['affects_xp' => $data->affectsXp]),
                 ]);
+
+                // تغییر دستی XP مثل کسب/برگشت عادی، سطح و پاداش سطح را هم به‌روز می‌کند.
+                if ($data->affectsXp) {
+                    $data->direction->isCredit()
+                        ? App::make(ProcessLevelUpAction::class)->execute($account, $previousXp)
+                        : App::make(RevokeLevelRewardsAboveXpAction::class)->execute($account);
+                }
 
                 return $this->loadRelations($entry);
             }, 3);

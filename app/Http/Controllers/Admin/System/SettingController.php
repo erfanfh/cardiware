@@ -39,16 +39,74 @@ class SettingController extends Controller
     public function productLandings(ProductLandingsSettings $settings, ProductLandingContentSchema $schema, string $document = 'ultimate'): View
     {
         Gate::authorize('setting.product-landings');
+        abort_unless($settings->isDocument($document), 404);
 
         $content = $settings->document($document);
 
         return view('admin.system.settings.product-landings', [
             'document' => $document,
             'content' => $content,
-            'contentSchema' => $schema->infer([ProductLandingsSettings::defaults()[$document]]),
+            'contentSchema' => $schema->infer([$settings->documentDefaults($document)]),
             'version' => $settings->version($content),
-            'labels' => ProductLandingsSettings::labels(),
+            'labels' => $settings->documentLabels(),
+            'landingSlug' => $settings->slugFor($document),
+            'isCustom' => $settings->customProductByKey($document) !== null,
+            'bases' => ProductLandingsSettings::labels(),
         ]);
+    }
+
+    /** لندینگ محصول جدید (مثلاً PGL6) از روی یکی از لندینگ‌های موجود. */
+    public function storeCustomProductLanding(Request $request, ProductLandingsSettings $settings): RedirectResponse
+    {
+        Gate::authorize('setting.product-landings');
+
+        $data = $request->validate([
+            'label' => ['required', 'string', 'min:2', 'max:80'],
+            'slug' => ['required', 'string', 'max:60', 'regex:' . ProductLandingsSettings::CUSTOM_SLUG_PATTERN],
+            'base' => ['required', 'in:' . implode(',', array_keys(ProductLandingsSettings::BASES))],
+        ], [
+            'slug.regex' => 'نامک باید با pgl- شروع شود و فقط حروف کوچک انگلیسی، عدد و خط تیره داشته باشد (مثل pgl-6).',
+        ], ['label' => 'نام محصول', 'slug' => 'نامک', 'base' => 'پایه']);
+
+        $slug = $data['slug'];
+        $taken = in_array($slug, ProductLandingsSettings::BASES, true)
+            || array_key_exists($slug, (array) config('product-landings.landings', []))
+            || in_array($slug, array_column($settings->customProducts(), 'slug'), true)
+            || (\Illuminate\Support\Facades\Schema::hasTable('content_slugs')
+                && DB::table('content_slugs')->where('slug', $slug)->exists());
+        if ($taken) {
+            throw ValidationException::withMessages(['slug' => 'این نامک قبلاً استفاده شده است.']);
+        }
+
+        $key = 'p_' . substr(str_replace('-', '_', \Illuminate\Support\Str::after($slug, 'pgl-')), 0, 40);
+        if ($settings->customProductByKey($key) !== null) {
+            $key = substr($key, 0, 34) . '_' . substr(bin2hex(random_bytes(3)), 0, 5);
+        }
+
+        $list = $settings->customProducts();
+        $list[] = ['key' => $key, 'slug' => $slug, 'label' => $data['label'], 'base' => $data['base']];
+        if (!app(UpdateSettingAction::class)->execute('productLandings', 'custom_products', $list)) {
+            throw new RuntimeException('Unable to persist product landing list.');
+        }
+
+        return redirect()->route('admin.settings.product-landings', $key)
+            ->with('success', 'لندینگ جدید ساخته شد (فعلاً غیرفعال). محتوا را ویرایش کنید و «فعال» را روشن کنید.');
+    }
+
+    public function destroyCustomProductLanding(ProductLandingsSettings $settings, string $document): RedirectResponse
+    {
+        Gate::authorize('setting.product-landings');
+        abort_unless($settings->customProductByKey($document) !== null, 404);
+
+        DB::transaction(function () use ($settings, $document): void {
+            $list = array_values(array_filter($settings->customProducts(), fn (array $item): bool => $item['key'] !== $document));
+            $settings->set('custom_products', $list);
+            Setting::query()->where('group', 'product_landings')->where('key', $document)->delete();
+            $settings->forgetCache();
+        });
+
+        return redirect()->route('admin.settings.product-landings')
+            ->with('success', 'لندینگ حذف شد.');
     }
 
     public function storeProductLandings(UpdateProductLandingsSettingsRequest $request, ProductLandingsSettings $settings, string $document): RedirectResponse
@@ -198,7 +256,10 @@ class SettingController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('admin.system.settings.loyalty', compact('registrationGiftOffers'));
+        $raffleCampaigns = \App\Domain\Raffle\Models\DrawCampaign::query()->latest('id')->limit(50)->pluck('title', 'id');
+        $loyaltyLevels = \App\Domain\Loyalty\Models\LoyaltyLevel::query()->orderBy('min_xp')->get();
+
+        return view('admin.system.settings.loyalty', compact('registrationGiftOffers', 'raffleCampaigns', 'loyaltyLevels'));
     }
 
     public function affiliate(\App\Infrastructure\Services\Setting\Groups\AffiliateSettings $settings): View
@@ -230,6 +291,7 @@ class SettingController extends Controller
             'referral_bonus_referrer_points' => ['required', 'integer', 'min:0', 'max:1000000'],
             'referral_bonus_referee_points' => ['required', 'integer', 'min:0', 'max:1000000'],
             'referral_bonus_min_order_amount' => ['required', 'integer', 'min:0', 'max:1000000000'],
+            'referral_sale_points_per_1000' => ['required', 'integer', 'min:0', 'max:1000'],
         ]);
 
         DB::transaction(function () use ($validated): void {
@@ -251,6 +313,9 @@ class SettingController extends Controller
 
         DB::transaction(function () use ($request): void {
             foreach ($request->validated() as $field => $value) {
+                if (in_array($field, ['club_raffle_campaign_id', 'elite_min_level_id'], true)) {
+                    $value = (int) ($value ?? 0);
+                }
                 $updated = app(UpdateSettingAction::class)
                     ->execute('loyalty', $field, $value);
 
@@ -528,6 +593,53 @@ class SettingController extends Controller
         return redirect()
             ->route('admin.settings.home', ['tab' => $activeTab])
             ->with('success', 'تنظیمات با موفقیت ذخیره شد.');
+    }
+
+    public function festival(): View
+    {
+        Gate::authorize('setting.home');
+
+        return view('admin.system.settings.festival');
+    }
+
+    public function storeFestival(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.home');
+
+        $this->storeSettings($request, 'festival');
+
+        return redirect()
+            ->route('admin.settings.festival')
+            ->with('success', 'تنظیمات جشنواره ذخیره شد.');
+    }
+
+    public function integrations(): View
+    {
+        Gate::authorize('setting.home');
+
+        return view('admin.system.settings.integrations');
+    }
+
+    public function storeIntegrations(Request $request): RedirectResponse
+    {
+        Gate::authorize('setting.home');
+
+        $data = $request->validate([
+            'torob_pay_enabled' => ['required', 'boolean'],
+            'torob_pay_merchant_key' => ['nullable', 'string', 'max:255'],
+            'snapp_pay_enabled' => ['required', 'boolean'],
+            'snapp_pay_api_key' => ['nullable', 'string', 'max:255'],
+            'torob_search_enabled' => ['required', 'boolean'],
+            'torob_search_website_id' => ['nullable', 'string', 'max:64'],
+        ]);
+
+        foreach ($data as $field => $value) {
+            app(UpdateSettingAction::class)->execute('integrations', $field, $value);
+        }
+
+        return redirect()
+            ->route('admin.settings.integrations')
+            ->with('success', 'تنظیمات یکپارچه‌سازی ذخیره شد.');
     }
 
     /**

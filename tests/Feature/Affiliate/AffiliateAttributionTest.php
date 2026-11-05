@@ -102,7 +102,7 @@ class AffiliateAttributionTest extends TestCase
         ]);
 
         // پاداش معرف و معرف‌شده هر دو یک بار پرداخت شد
-        $this->assertSame(1000, (int) PointLedgerEntry::query()
+        $this->assertSame(200, (int) PointLedgerEntry::query()
             ->where('point_account_id', $this->affiliateOwner->pointAccount->getKey())
             ->where('reason', 'referral_bonus')
             ->sum('amount'));
@@ -118,10 +118,39 @@ class AffiliateAttributionTest extends TestCase
         $this->assertSame(2, AffiliateOrder::query()
             ->where('affiliate_id', $this->affiliate->getKey())
             ->count());
-        $this->assertSame(1000, (int) PointLedgerEntry::query()
+        $this->assertSame(200, (int) PointLedgerEntry::query()
             ->where('reason', 'referral_bonus')
             ->where('point_account_id', $this->affiliateOwner->pointAccount->getKey())
             ->sum('amount'));
+    }
+
+    public function test_every_referred_sale_earns_points_and_a_refund_takes_them_back(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->paidOrder($buyer, 400000);
+        CouponRedemption::query()->create([
+            'coupon_id' => null,
+            'user_id' => $buyer->getKey(),
+            'order_id' => $order->getKey(),
+            'code' => 'TESTAFF',
+            'order_subtotal' => 400000,
+            'eligible_amount' => 400000,
+            'discount_amount' => 0,
+            'redeemed_at' => now(),
+        ]);
+
+        event(new OrderPaidEvent($order->getKey(), CarbonImmutable::now()));
+
+        // پیش‌فرض ۲ امتیاز به ازای هر ۱۰۰۰ تومان فروش
+        $account = $this->affiliateOwner->pointAccount()->first();
+        $this->assertSame(800, (int) $account->balance);
+        $this->assertSame(800, (int) $account->lifetime_xp);
+
+        event(new OrderPaymentRevokedEvent($order->getKey(), 'refund', CarbonImmutable::now()));
+
+        $account->refresh();
+        $this->assertSame(0, (int) $account->balance);
+        $this->assertSame(0, (int) $account->lifetime_xp);
     }
 
     public function test_self_purchase_with_own_code_is_not_attributed(): void

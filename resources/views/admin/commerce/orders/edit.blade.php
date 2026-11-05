@@ -289,14 +289,83 @@
                                         <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
                                     @enderror
 
+                                    <label for="refund_amount" class="mb-2 mt-4 block text-xs font-extrabold text-slate-700">
+                                        مبلغ استرداد (تومان)
+                                    </label>
+                                    <input id="refund_amount" name="refund_amount" type="number" min="0" max="{{ $totalAmount }}" step="1"
+                                           value="{{ old('refund_amount', $totalAmount) }}"
+                                           x-bind:disabled="selectedStatus !== 'refunded'"
+                                           class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
+                                    <p class="mt-2 text-xs leading-6 text-slate-500">
+                                        پیش‌فرض کل مبلغ پرداختی ({{ $money($totalAmount) }}) است؛ می‌توانید مبلغ کمتر یا صفر (مرجوعی بدون بازگشت وجه) وارد کنید.
+                                        با مرجوعی، دسترسی‌ها و امتیازهای باشگاه که بابت این خرید داده شده خودکار کسر می‌شوند.
+                                    </p>
+                                    @error('refund_amount')
+                                        <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                                    @enderror
+
                                     <p class="mt-3 text-xs leading-6 text-slate-600" x-show="refundMethod === 'wallet'" x-cloak>
-                                        با ثبت وضعیت، کل مبلغ سفارش به موجودی کیف پول کاربر افزوده می‌شود و برای خرید قابل استفاده خواهد بود.
+                                        با ثبت وضعیت، مبلغ استرداد به موجودی کیف پول کاربر افزوده می‌شود و برای خرید قابل استفاده خواهد بود.
                                     </p>
 
                                     <div class="mt-4" x-show="refundMethod === 'manual_bank_transfer'" x-cloak>
                                         <p class="text-xs leading-6 text-slate-600">
                                             واریز به حساب کاربر به‌صورت دستی و خارج از سامانه انجام می‌شود. این انتخاب موجودی کیف پول را تغییر نمی‌دهد.
                                         </p>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if(($relatedModOrders ?? collect())->isNotEmpty())
+                                <div class="lg:col-span-12 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+                                     x-show="selectedStatus === 'refunded'" x-cloak>
+                                    <div class="text-xs font-extrabold text-slate-800">مادهای پولی خریداری‌شده برای این محصول</div>
+                                    <p class="mt-1 text-xs leading-6 text-slate-600">
+                                        هر سفارش ماد تیک‌خورده همراه این سفارش، با همان روش استرداد و مبلغ دلخواه، مرجوع می‌شود
+                                        (دسترسی ماد در لانچر بسته و امتیاز خرید آن کسر می‌شود).
+                                    </p>
+
+                                    @if(!($order->status === \App\Domain\Commerce\Enums\OrderStatusEnum::PAID && $totalAmount > 0))
+                                        <select name="refund_method" x-bind:disabled="selectedStatus !== 'refunded'"
+                                                class="mt-3 h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none focus:border-brand-300 focus:ring-4 focus:ring-brand-100">
+                                            <option value="">روش استرداد مادها</option>
+                                            <option value="wallet" @selected(old('refund_method') === 'wallet')>بازگشت خودکار به کیف پول</option>
+                                            <option value="manual_bank_transfer" @selected(old('refund_method') === 'manual_bank_transfer')>واریز دستی به حساب کاربر</option>
+                                        </select>
+                                        @error('refund_method')
+                                            <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                                        @enderror
+                                    @endif
+
+                                    <div class="mt-3 space-y-2">
+                                        @foreach($relatedModOrders as $modOrder)
+                                            @php
+                                                $modTitles = $modOrder->items
+                                                    ->map(fn ($item) => $item->purchasable?->getPurchasableTitle())
+                                                    ->filter()
+                                                    ->implode('، ');
+                                                $modPayable = (int) $modOrder->getPayableAmount();
+                                            @endphp
+                                            <div class="flex flex-col gap-2 rounded-xl border border-amber-200 bg-white p-3 md:flex-row md:items-center">
+                                                <label class="flex flex-1 items-center gap-2 text-xs font-bold text-slate-700">
+                                                    <input type="hidden" name="related_mod_orders[{{ $modOrder->id }}][refund]" value="0"
+                                                           x-bind:disabled="selectedStatus !== 'refunded'">
+                                                    <input type="checkbox" name="related_mod_orders[{{ $modOrder->id }}][refund]" value="1"
+                                                           x-bind:disabled="selectedStatus !== 'refunded'"
+                                                           @checked(old('related_mod_orders.' . $modOrder->id . '.refund', true))>
+                                                    <span>
+                                                        <a href="{{ route('admin.orders.edit', $modOrder) }}" target="_blank" class="text-brand-600 underline">{{ $modOrder->order_number }}</a>
+                                                        — {{ $modTitles ?: 'ماد لانچر' }} ({{ $money($modPayable) }})
+                                                    </span>
+                                                </label>
+                                                <input type="number" min="0" max="{{ $modPayable }}" step="1"
+                                                       name="related_mod_orders[{{ $modOrder->id }}][amount]"
+                                                       value="{{ old('related_mod_orders.' . $modOrder->id . '.amount', $modPayable) }}"
+                                                       x-bind:disabled="selectedStatus !== 'refunded'"
+                                                       title="مبلغ استرداد این ماد (تومان)"
+                                                       class="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-bold md:w-40">
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             @endif

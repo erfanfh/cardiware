@@ -10,6 +10,7 @@ use App\Domain\Loyalty\Enums\PointEntryTypeEnum;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -74,11 +75,19 @@ class ReversePointEntryAction
 
                 $changes = ['balance' => $balanceAfter];
 
+                $xpLowered = false;
                 if ($original->type === PointEntryTypeEnum::EARN) {
                     $changes['lifetime_earned'] = max(
                         0,
                         (int)$account->lifetime_earned - $data->amount,
                     );
+
+                    // امتیازی که XP داده بود (خرید، دیدگاه، مأموریت...) با برگشتش XP را هم
+                    // برمی‌گرداند؛ وگرنه سطحِ به‌دست‌آمده از سفارش مرجوعی برای کاربر می‌ماند.
+                    if ($original->grantedXp() && (int)$account->lifetime_xp > 0) {
+                        $changes['lifetime_xp'] = max(0, (int)$account->lifetime_xp - $data->amount);
+                        $xpLowered = true;
+                    }
                 } elseif ($original->type === PointEntryTypeEnum::SPEND) {
                     $changes['lifetime_spent'] = max(
                         0,
@@ -109,6 +118,12 @@ class ReversePointEntryAction
                         'original_entry_reason' => $original->reason,
                     ]),
                 ]);
+
+                // سطحی که دیگر XP کافی برایش نیست، پاداش رسیدنش هم برمی‌گردد.
+                // (پاداش سطح XP نمی‌دهد، پس این زنجیره بیش از یک مرحله نمی‌رود.)
+                if ($xpLowered) {
+                    App::make(RevokeLevelRewardsAboveXpAction::class)->execute($account->refresh());
+                }
 
                 return $this->loadRelations($entry);
             }, 3);

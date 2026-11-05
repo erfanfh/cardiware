@@ -32,12 +32,14 @@ class GetHomeClubCardsAction
             'vip' => [
                 'title' => (string)get_setting('home', 'subscription_title', 'اشتراک ویژه VIP'),
                 'subtitle' => (string)get_setting('home', 'subscription_subtitle', ''),
+                'description' => (string)get_setting('home', 'subscription_description', ''),
+                'image_path' => get_setting('home', 'subscription_image')?->path,
                 'button_title' => (string)get_setting('home', 'subscription_button_title', 'عضویت VIP'),
                 'button_url' => (string)get_setting('home', 'subscription_button_url', ''),
             ],
             'projectsTitle' => $projectsBlock['title'],
-            'projects' => $projectsBlock['items']->take(3)->values(),
-            'topUsers' => collect($leaderboard['leaders'] ?? [])->take(5)->values(),
+            'projects' => $projectsBlock['items']->take(8)->values(),
+            'topUsers' => collect($leaderboard['leaders'] ?? [])->take(12)->values(),
         ];
     }
 }

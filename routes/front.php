@@ -57,5 +57,6 @@ Route::middleware(['web', RedirectToCanonicalUrl::class, HandleSeoRedirectsMiddl
         require __DIR__.'/front/gallery.php';
         require __DIR__.'/front/landings.php';
         require __DIR__.'/front/players.php';
+        require __DIR__.'/front/festival.php';
         require __DIR__.'/front/content.php'; // This must be the last
     });

@@ -13,6 +13,11 @@
         $remainingLeaders = $leaders->slice(3);
         $currentMember = $leaderboard['currentMember'];
         $stats = $leaderboard['stats'];
+        $period = $leaderboard['period'];
+        $levelResolver = app(\App\Application\Loyalty\Actions\ResolveUserLevelAction::class);
+        $levelFor = static fn ($account) => $account && (int) $account->lifetime_xp > 0
+            ? $levelResolver->execute((int) $account->lifetime_xp)
+            : null;
         $nameFor = static function ($member): string {
             foreach ([$member?->display_name, $member?->full_name, $member?->username] as $candidate) {
                 $candidate = trim((string) $candidate);
@@ -44,7 +49,8 @@
                         برترین‌های باشگاه مخاطبان
                     </h1>
                     <p class="mt-2 max-w-2xl text-xs font-medium leading-7 text-slate-600 sm:text-sm dark:text-slate-300">
-                        اعضایی که با بیشترین امتیاز در صدر باشگاه ایستاده‌اند. فعالیت کن، امتیاز بگیر و جایگاهت را هر روز بالاتر ببر.
+                        رقابت {{ $period->label }}: رتبه با XP کسب‌شده در همین دوره تعیین می‌شود؛ خرج کردن امتیاز برای جایزه رتبه‌ات را پایین نمی‌آورد.
+                        خرید، اشتراک ویژه و فروش با لینک همکاری بیشترین XP را می‌دهند.
                     </p>
 
                     <div class="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -52,6 +58,10 @@
                            class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-xs font-extrabold text-white shadow-lg shadow-slate-950/10 transition hover:-translate-y-0.5 hover:bg-brand-600 dark:bg-white dark:text-slate-900 dark:hover:bg-brand-300">
                             بازگشت به صفحه اصلی
                             <span class="rotate-180 [&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                        </a>
+                        <a href="{{ route('loyalty.hall-of-fame') }}"
+                           class="inline-flex h-11 items-center justify-center rounded-2xl bg-amber-400 px-4 text-xs font-extrabold text-slate-950 transition hover:bg-amber-300">
+                            👑 تالار افتخار
                         </a>
                         <a href="{{ auth()->check() ? route('account.loyalty') : route('login') }}"
                            class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white/70 px-4 text-xs font-extrabold text-slate-700 backdrop-blur transition hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:text-brand-300">
@@ -85,22 +95,26 @@
 
                             <div class="relative mt-4 grid grid-cols-2 gap-2">
                                 <div class="rounded-2xl bg-slate-50 px-3 py-3 dark:bg-slate-900/80">
-                                    <div class="text-[9px] font-extrabold text-slate-400">امتیاز فعلی</div>
-                                    <div class="mt-1 text-base font-black text-brand-600 dark:text-brand-300">{{ number_format($currentMember['balance']) }}</div>
+                                    <div class="text-[9px] font-extrabold text-slate-400">XP در {{ $period->key === 'all' ? 'کل دوران' : 'این دوره' }}</div>
+                                    <div class="mt-1 text-base font-black text-brand-600 dark:text-brand-300">{{ number_format($currentMember['score']) }}</div>
                                 </div>
                                 <div class="rounded-2xl bg-slate-50 px-3 py-3 dark:bg-slate-900/80">
-                                    <div class="text-[9px] font-extrabold text-slate-400">کل امتیاز کسب‌شده</div>
-                                    <div class="mt-1 text-base font-black text-slate-800 dark:text-slate-100">{{ number_format($currentMember['lifetime_earned']) }}</div>
+                                    <div class="text-[9px] font-extrabold text-slate-400">امتیاز قابل خرج</div>
+                                    <div class="mt-1 text-base font-black text-slate-800 dark:text-slate-100">{{ number_format($currentMember['balance']) }}</div>
                                 </div>
                             </div>
 
-                            @if($currentMember['rank'] && !$currentMember['is_visible'])
+                            @if($currentMember['is_staff'])
+                                <p class="relative mt-3 rounded-xl bg-slate-100 px-3 py-2 text-[10px] font-bold leading-5 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                    حساب‌های کارمندان سایت در رتبه‌بندی شرکت داده نمی‌شوند تا رقابت برای همه منصفانه بماند.
+                                </p>
+                            @elseif($currentMember['rank'] && !$currentMember['is_visible'])
                                 <p class="relative mt-3 rounded-xl bg-brand-50 px-3 py-2 text-[10px] font-bold leading-5 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300">
                                     رتبه شما خارج از فهرست ۵۰ نفر برتر است؛ با کسب امتیاز بیشتر دوباره به این صفحه سر بزن.
                                 </p>
                             @elseif(!$currentMember['rank'])
                                 <p class="relative mt-3 rounded-xl bg-amber-50 px-3 py-2 text-[10px] font-bold leading-5 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
-                                    اولین امتیازت را بگیر تا وارد جدول رتبه‌بندی شوی.
+                                    در این دوره هنوز XP نگرفته‌ای؛ اولین امتیازت را بگیر تا وارد جدول شوی.
                                 </p>
                             @endif
                         @else
@@ -120,12 +134,26 @@
             </div>
         </section>
 
+        <nav class="flex flex-wrap items-center gap-2" aria-label="دوره رقابت">
+            @foreach($leaderboard['periods'] as $periodKey => $periodLabel)
+                <a href="{{ route('loyalty.leaderboard', $periodKey === 'month' ? [] : ['period' => $periodKey]) }}"
+                   @class([
+                       'inline-flex h-10 items-center rounded-2xl border px-4 text-xs font-extrabold transition',
+                       'border-brand-500 bg-brand-500 text-white shadow-lg shadow-brand-500/20' => $period->key === $periodKey,
+                       'border-slate-200 bg-white text-slate-600 hover:border-brand-200 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300' => $period->key !== $periodKey,
+                   ])>
+                    {{ $periodLabel }}
+                </a>
+            @endforeach
+            <span class="ms-auto text-[11px] font-bold text-slate-400">{{ $period->label }}</span>
+        </nav>
+
         <section class="grid grid-cols-2 gap-3 xl:grid-cols-4">
             @foreach([
                 ['label' => 'اعضای رتبه‌دار', 'value' => $stats['members'], 'icon' => 'icons.user-multiple-02', 'tone' => 'brand'],
-                ['label' => 'مجموع امتیازها', 'value' => $stats['total_points'], 'icon' => 'icons.star', 'tone' => 'amber'],
-                ['label' => 'میانگین امتیاز', 'value' => $stats['average_points'], 'icon' => 'icons.chart-03', 'tone' => 'sky'],
-                ['label' => 'بالاترین امتیاز', 'value' => $stats['highest_points'], 'icon' => 'icons.crown-02', 'tone' => 'rose'],
+                ['label' => 'مجموع XP دوره', 'value' => $stats['total_points'], 'icon' => 'icons.star', 'tone' => 'amber'],
+                ['label' => 'میانگین XP', 'value' => $stats['average_points'], 'icon' => 'icons.chart-03', 'tone' => 'sky'],
+                ['label' => 'بالاترین XP', 'value' => $stats['highest_points'], 'icon' => 'icons.crown-02', 'tone' => 'rose'],
             ] as $stat)
                 @php
                     $toneClasses = match($stat['tone']) {
@@ -162,6 +190,7 @@
                 <div class="grid gap-3 xl:grid-cols-12">
                     @php
                         $championName = $nameFor($champion->user);
+                        $championLevel = $levelFor($champion);
                     @endphp
                     <article class="relative isolate overflow-hidden rounded-3xl border border-amber-300 bg-gradient-to-br from-amber-400 via-brand-500 to-orange-600 p-5 text-white shadow-xl shadow-brand-500/15 sm:p-6 xl:col-span-5">
                         <div class="absolute -left-12 -top-12 -z-10 h-40 w-40 rounded-full bg-white/20 blur-3xl"></div>
@@ -178,8 +207,13 @@
                                 </div>
                                 <div class="min-w-0">
                                     <div class="text-[10px] font-extrabold text-white/70">قهرمان باشگاه</div>
-                                    <h3 class="mt-1 truncate text-lg font-black sm:text-xl">{{ $championName }}</h3>
-                                    <div class="mt-1 text-[10px] font-bold text-white/70">رتبه اول جدول امتیازها</div>
+                                    <h3 class="mt-1 flex items-center gap-2 truncate text-lg font-black sm:text-xl"><a href="{{ route('loyalty.members.show', $champion->user_id) }}" class="truncate hover:underline">{{ $championName }}</a>@if($champion->user?->has_active_vip_subscription)<x-front.discussion.comment-vip-badge :user-id="$champion->user_id" />@endif</h3>
+                                    <div class="mt-1 text-[10px] font-bold text-white/70">
+                                        رتبه اول {{ $period->label }}
+                                        @if($championLevel && (int) $championLevel->min_xp > 0)
+                                            · {{ $championLevel->badge }} {{ $championLevel->title }}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             <span class="shrink-0 text-amber-100 [&_svg]:h-7 [&_svg]:w-7">@include('icons.crown-02')</span>
@@ -187,12 +221,12 @@
 
                         <div class="relative mt-7 flex items-end justify-between gap-4 rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
                             <div>
-                                <div class="text-[10px] font-bold text-white/65">امتیاز فعلی</div>
-                                <div class="mt-1 text-3xl font-black tracking-tight">{{ number_format($champion->balance) }}</div>
+                                <div class="text-[10px] font-bold text-white/65">XP دوره</div>
+                                <div class="mt-1 text-3xl font-black tracking-tight">{{ number_format($champion->leaderboard_score) }}</div>
                             </div>
                             <div class="text-left">
-                                <div class="text-[10px] font-bold text-white/65">کل کسب‌شده</div>
-                                <div class="mt-1 text-sm font-black">{{ number_format($champion->lifetime_earned) }}</div>
+                                <div class="text-[10px] font-bold text-white/65">XP کل</div>
+                                <div class="mt-1 text-sm font-black">{{ number_format($champion->lifetime_xp) }}</div>
                             </div>
                         </div>
                     </article>
@@ -203,6 +237,7 @@
                                 $rank = (int) $account->leaderboard_rank;
                                 $memberName = $nameFor($account->user);
                                 $isSecond = $rank === 2;
+                                $memberLevel = $levelFor($account);
                             @endphp
                             <article class="relative overflow-hidden rounded-3xl border p-5 shadow-sm {{ $isSecond ? 'border-slate-300 bg-gradient-to-br from-slate-100 via-white to-slate-50 dark:border-slate-600 dark:from-slate-700/70 dark:via-slate-900 dark:to-slate-900' : 'border-orange-200 bg-gradient-to-br from-orange-50 via-white to-amber-50/40 dark:border-orange-500/20 dark:from-orange-500/10 dark:via-slate-900 dark:to-slate-900' }}">
                                 <div class="absolute -left-8 -top-8 h-24 w-24 rounded-full {{ $isSecond ? 'bg-slate-300/35 dark:bg-slate-500/10' : 'bg-orange-200/50 dark:bg-orange-500/10' }} blur-2xl"></div>
@@ -214,7 +249,10 @@
                                                  class="h-14 w-14 shrink-0 rounded-2xl border-2 object-cover shadow-sm {{ $isSecond ? 'border-slate-300 dark:border-slate-600' : 'border-orange-200 dark:border-orange-500/30' }}">
                                             <div class="min-w-0">
                                                 <div class="text-[9px] font-extrabold {{ $isSecond ? 'text-slate-500 dark:text-slate-400' : 'text-orange-600 dark:text-orange-300' }}">رتبه {{ number_format($rank) }}</div>
-                                                <h3 class="mt-1 truncate text-sm font-black text-slate-900 dark:text-white">{{ $memberName }}</h3>
+                                                <h3 class="mt-1 flex items-center gap-1.5 truncate text-sm font-black text-slate-900 dark:text-white"><a href="{{ route('loyalty.members.show', $account->user_id) }}" class="truncate hover:text-brand-600">{{ $memberName }}</a>@if($account->user?->has_active_vip_subscription)<x-front.discussion.comment-vip-badge :user-id="$account->user_id" />@endif</h3>
+                                                @if($memberLevel && (int) $memberLevel->min_xp > 0)
+                                                    <span class="mt-1 inline-flex rounded-lg border px-1.5 py-0.5 text-[9px] font-black {{ $memberLevel->colorClasses()['chip'] }}">{{ $memberLevel->badge }} {{ $memberLevel->title }}</span>
+                                                @endif
                                             </div>
                                         </div>
                                         <span class="grid h-9 min-w-9 shrink-0 place-items-center rounded-xl px-1 text-sm font-black {{ $isSecond ? 'bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-200' : 'bg-orange-100 text-orange-700 dark:bg-orange-500/10 dark:text-orange-300' }}">
@@ -224,12 +262,12 @@
 
                                     <div class="mt-5 grid grid-cols-2 gap-2 border-t border-slate-200/70 pt-4 dark:border-slate-700/70">
                                         <div>
-                                            <div class="text-[9px] font-bold text-slate-400">امتیاز فعلی</div>
-                                            <div class="mt-1 text-xl font-black text-slate-900 dark:text-white">{{ number_format($account->balance) }}</div>
+                                            <div class="text-[9px] font-bold text-slate-400">XP دوره</div>
+                                            <div class="mt-1 text-xl font-black text-slate-900 dark:text-white">{{ number_format($account->leaderboard_score) }}</div>
                                         </div>
                                         <div>
-                                            <div class="text-[9px] font-bold text-slate-400">کل کسب‌شده</div>
-                                            <div class="mt-1 text-sm font-black text-slate-600 dark:text-slate-300">{{ number_format($account->lifetime_earned) }}</div>
+                                            <div class="text-[9px] font-bold text-slate-400">XP کل</div>
+                                            <div class="mt-1 text-sm font-black text-slate-600 dark:text-slate-300">{{ number_format($account->lifetime_xp) }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -264,6 +302,7 @@
                                 $rank = (int) $account->leaderboard_rank;
                                 $memberName = $nameFor($account->user);
                                 $isCurrentUser = $user && $account->user_id === $user->getKey();
+                                $memberLevel = $levelFor($account);
                             @endphp
                             <article class="group flex items-center gap-3 px-4 py-3.5 transition sm:gap-4 sm:px-5 {{ $isCurrentUser ? 'bg-brand-50/80 dark:bg-brand-500/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50' }}">
                                 <span class="grid h-9 min-w-9 shrink-0 place-items-center rounded-xl px-1 text-xs font-black {{ $rank <= 10 ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' }}">
@@ -272,21 +311,29 @@
 
                                 <img src="{{ $account->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}"
                                      alt="{{ $memberName }}"
-                                     class="h-11 w-11 shrink-0 rounded-2xl border border-slate-200 object-cover shadow-sm dark:border-slate-700">
+                                     class="h-11 w-11 shrink-0 rounded-2xl border object-cover shadow-sm {{ $account->user?->has_active_vip_subscription ? 'border-amber-400 ring-2 ring-amber-400/60' : 'border-slate-200 dark:border-slate-700' }}">
 
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2">
-                                        <h3 class="truncate text-xs font-black text-slate-800 sm:text-sm dark:text-slate-100">{{ $memberName }}</h3>
+                                        <h3 class="truncate text-xs font-black text-slate-800 sm:text-sm dark:text-slate-100"><a href="{{ route('loyalty.members.show', $account->user_id) }}" class="hover:text-brand-600">{{ $memberName }}</a></h3>
+                                        @if($account->user?->has_active_vip_subscription)
+                                            <x-front.discussion.comment-vip-badge :user-id="$account->user_id" />
+                                        @endif
                                         @if($isCurrentUser)
                                             <span class="shrink-0 rounded-lg bg-brand-500 px-2 py-0.5 text-[8px] font-black text-white">شما</span>
                                         @endif
                                     </div>
-                                    <div class="mt-1 hidden text-[10px] font-bold text-slate-400 sm:block">{{ number_format($account->lifetime_earned) }} امتیاز کسب‌شده در مجموع</div>
+                                    <div class="mt-1 hidden text-[10px] font-bold text-slate-400 sm:block">
+                                        @if($memberLevel && (int) $memberLevel->min_xp > 0)
+                                            {{ $memberLevel->badge }} {{ $memberLevel->title }} ·
+                                        @endif
+                                        {{ number_format($account->lifetime_xp) }} XP کل
+                                    </div>
                                 </div>
 
                                 <div class="shrink-0 text-left">
-                                    <div class="text-sm font-black text-slate-900 sm:text-base dark:text-white">{{ number_format($account->balance) }}</div>
-                                    <div class="mt-0.5 text-[9px] font-bold text-slate-400">امتیاز</div>
+                                    <div class="text-sm font-black text-slate-900 sm:text-base dark:text-white">{{ number_format($account->leaderboard_score) }}</div>
+                                    <div class="mt-0.5 text-[9px] font-bold text-slate-400">XP دوره</div>
                                 </div>
                             </article>
                         @endforeach
@@ -306,7 +353,7 @@
         @endif
 
         <p class="px-2 text-center text-[10px] font-medium leading-6 text-slate-400 dark:text-slate-500">
-            رتبه‌بندی بر اساس امتیاز فعلی است؛ در امتیاز برابر، مجموع امتیاز کسب‌شده و سپس سابقه حساب تعیین‌کننده خواهد بود.
+            رتبه‌بندی بر اساس XP کسب‌شده در دوره است (امتیاز برگشت‌خورده‌ی سفارش مرجوعی کم می‌شود)؛ در XP برابر، XP کل و سپس سابقه حساب تعیین‌کننده است. کارمندان سایت در رقابت شرکت ندارند.
         </p>
     </div>
     </section>

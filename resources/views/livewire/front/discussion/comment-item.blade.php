@@ -40,6 +40,7 @@
                 $this->avatarColor(),
                 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-[0_0_12px_rgba(245,158,11,0.18)] dark:border-amber-400 dark:ring-amber-400 dark:ring-offset-slate-900' => $this->isVipAuthor,
                 'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
+                $this->authorLevel?->colorClasses()['frame'] ?? '' => ! $this->isVipAuthor && $this->authorLevel,
             ])
         >
             @if($this->comment->user?->profileAvatarUrl())
@@ -66,7 +67,11 @@
                 @endforeach
 
                 @if($this->isVipAuthor)
-                    <x-front.discussion.comment-vip-badge />
+                    <x-front.discussion.comment-vip-badge :user-id="$this->comment->user_id" />
+                @endif
+
+                @if($this->authorLevel)
+                    <x-front.discussion.comment-level-badge :level="$this->authorLevel" :user-id="$this->comment->user_id" />
                 @endif
 
                 @if($this->comment->is_pinned)
@@ -105,6 +110,7 @@
                 $this->avatarColor(),
                 'border-amber-400 ring-2 ring-amber-400 ring-offset-2 ring-offset-white shadow-[0_0_12px_rgba(245,158,11,0.18)] dark:border-amber-400 dark:ring-amber-400 dark:ring-offset-slate-900' => $this->isVipAuthor,
                 'border-slate-200 dark:border-slate-700' => ! $this->isVipAuthor,
+                $this->authorLevel?->colorClasses()['frame'] ?? '' => ! $this->isVipAuthor && $this->authorLevel,
             ])
         >
             @if($this->comment->user?->profileAvatarUrl())
@@ -133,7 +139,11 @@
                         @endforeach
 
                         @if($this->isVipAuthor)
-                            <x-front.discussion.comment-vip-badge />
+                            <x-front.discussion.comment-vip-badge :user-id="$this->comment->user_id" />
+                        @endif
+
+                        @if($this->authorLevel)
+                            <x-front.discussion.comment-level-badge :level="$this->authorLevel" :user-id="$this->comment->user_id" />
                         @endif
 
                         @if($this->comment->is_pinned)

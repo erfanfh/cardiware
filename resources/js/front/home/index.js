@@ -28,41 +28,7 @@ import './free-posts.js';
     // default
     setActive("fc");
 
-    /*** ==================== Start Physical Products ==================== ***/
-    const el = document.querySelector(".physicalSwiper");
-    const total = el.querySelectorAll(".swiper-slide").length;
-    const mid = Math.floor(total / 2); // آیتم وسط
-
-    const swiper = new Swiper(".physicalSwiper", {
-        effect: "coverflow",
-        grabCursor: true,
-        centeredSlides: true,
-        slidesPerView: "auto",
-        loop: true,
-        spaceBetween: 30,
-
-        // خیلی مهم: pagination رو داخل همین اسلایدر هدف بگیر (تداخل نداشته باشه)
-        pagination: {
-            el: ".physicalSwiper .swiper-pagination",
-            clickable: true,
-        },
-
-        coverflowEffect: {
-            rotate: 10,
-            stretch: 120,
-            depth: 200,
-            modifier: 1,
-            slideShadows: false,
-        },
-
-        on: {
-            init(sw) {
-                // 👇 قطعی‌ترین روش برای شروع از آیتم وسط در حالت loop
-                sw.slideToLoop(mid, 0, false);
-            },
-        },
-    });
-    /*** ==================== End Physical Products ==================== ***/
+    // اسلایدر محصولات فیزیکی در physical-products.js مقداردهی می‌شود.
 })();
 
 /*** ==================== Team slider ==================== ***/

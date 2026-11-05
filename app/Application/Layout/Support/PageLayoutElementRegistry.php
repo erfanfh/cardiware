@@ -152,6 +152,17 @@ class PageLayoutElementRegistry
                 ],
                 'settings_route' => 'admin.settings.team',
             ],
+            'featured-store' => [
+                'type' => 'featured_store',
+                'type_label' => 'فروشگاه ویژه (برترین فروشنده)',
+                'type_color' => 'emerald',
+                'allowed_areas' => [
+                    'header_primary',
+                    'content_main',
+                    'footer_primary',
+                ],
+                'settings_route' => 'admin.seller-rewards.index',
+            ],
             'gallery-cta' => [
                 'type' => 'gallery_cta',
                 'type_label' => 'باکس دعوت به گالری کاربران',

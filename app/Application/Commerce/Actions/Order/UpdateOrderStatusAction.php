@@ -10,6 +10,8 @@ use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Models\User;
+use App\Application\Launcher\Actions\GrantLauncherModAccessForOrderAction;
+use App\Application\Launcher\Actions\RevokeLauncherModAccessForOrderAction;
 use App\Application\Vip\Actions\GrantVipSubscriptionsForOrderAction;
 use App\Application\Vip\Actions\RevokeVipSubscriptionsForOrderAction;
 use DomainException;
@@ -26,6 +28,8 @@ class UpdateOrderStatusAction
         private readonly SnapshotOrderItemCommissionsAction        $snapshotCommissions,
         private readonly GrantVipSubscriptionsForOrderAction       $grantVipSubscriptions,
         private readonly RevokeVipSubscriptionsForOrderAction      $revokeVipSubscriptions,
+        private readonly GrantLauncherModAccessForOrderAction      $grantLauncherModAccess,
+        private readonly RevokeLauncherModAccessForOrderAction     $revokeLauncherModAccess,
     )
     {
     }
@@ -38,9 +42,10 @@ class UpdateOrderStatusAction
         OrderStatusEnum $newStatus,
         ?OrderRefundMethodEnum $refundMethod = null,
         ?User $admin = null,
+        ?int $refundAmount = null,
     ): Order
     {
-        return DB::transaction(function () use ($order, $newStatus, $refundMethod, $admin): Order {
+        return DB::transaction(function () use ($order, $newStatus, $refundMethod, $admin, $refundAmount): Order {
             /** @var Order $order */
             $order = Order::query()
                 ->whereKey($order->id)
@@ -76,6 +81,7 @@ class UpdateOrderStatusAction
                         order: $order,
                         method: $refundMethod,
                         admin: $admin,
+                        amount: $refundAmount,
                     );
                 }
             }
@@ -100,8 +106,10 @@ class UpdateOrderStatusAction
 
             if (!$oldStatus->isPaid() && $newStatus->isPaid()) {
                 $this->grantVipSubscriptions->execute($order);
+                $this->grantLauncherModAccess->execute($order);
             } elseif ($oldStatus->isPaid() && !$newStatus->isPaid()) {
                 $this->revokeVipSubscriptions->execute($order);
+                $this->revokeLauncherModAccess->execute($order);
             }
 
             app(UserCacheInvalidator::class)->flushForUser((int) $order->user_id);

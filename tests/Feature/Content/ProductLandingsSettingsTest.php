@@ -164,12 +164,11 @@ class ProductLandingsSettingsTest extends TestCase
     {
         $this->actingAs($this->admin());
         $original = app(ProductLandingsSettings::class)->document('ultimate');
-        foreach (['link', 'type', 'missing', 'extra', 'shape', 'theme'] as $case) {
+        foreach (['link', 'type', 'extra', 'shape', 'theme'] as $case) {
             $content = $original;
             match ($case) {
                 'link' => $content['buy_url'] = 'javascript:alert(1)',
                 'type' => $content['sections'][0]['type'] = '../master',
-                'missing' => $content = array_diff_key($content, ['sections' => true]),
                 'extra' => $content['unexpected'] = 'value',
                 'shape' => $content['sections'] = 'invalid',
                 'theme' => $content['theme'] = 'other-theme',
@@ -178,6 +177,22 @@ class ProductLandingsSettingsTest extends TestCase
             self::assertSame($original, app(ProductLandingsSettings::class)->document('ultimate'));
         }
         self::assertSame(0, Setting::query()->where('group', 'product_landings')->count());
+    }
+
+    public function test_omitted_legacy_sections_are_filled_from_defaults(): void
+    {
+        $this->actingAs($this->admin());
+        $original = app(ProductLandingsSettings::class)->document('ultimate');
+        $content = $original;
+        unset($content['sections']);
+        $content['brand'] = 'UPDATED BRAND';
+
+        $this->put(route('admin.settings.product-landings.store', 'ultimate'), $this->payload('ultimate', $content))
+            ->assertSessionHasNoErrors()->assertRedirect();
+
+        $saved = app(ProductLandingsSettings::class)->document('ultimate');
+        self::assertSame('UPDATED BRAND', $saved['brand']);
+        self::assertSame($original['sections'], $saved['sections']);
     }
 
     public function test_admin_without_setting_permission_cannot_read_or_write(): void

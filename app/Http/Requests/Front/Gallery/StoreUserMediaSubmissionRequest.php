@@ -22,15 +22,18 @@ class StoreUserMediaSubmissionRequest extends FormRequest
             'image_url' => [
                 'required_if:type,image',
                 'nullable',
-                'url',
+                'url:http,https',
                 'max:600',
             ],
             'video_url' => [
                 'required_if:type,video',
                 'nullable',
-                'url',
+                'url:http,https',
                 'max:600',
             ],
+            'order_number' => ['nullable', 'string', 'max:64'],
+            'purchaser_mobile' => ['nullable', 'string', 'regex:/^09[0-9]{9}$/', 'max:20'],
+
         ];
     }
 
@@ -44,6 +47,7 @@ class StoreUserMediaSubmissionRequest extends FormRequest
             'image_url.url' => 'لینک تصویر معتبر نیست.',
             'video_url.required_if' => 'لینک ویدیو (آپارات یا یوتیوب) را وارد کنید.',
             'video_url.url' => 'لینک ویدیو معتبر نیست.',
+            'purchaser_mobile.regex' => 'شماره موبایل باید با ۰۹ شروع شود و ۱۱ رقم باشد.',
         ];
     }
 }

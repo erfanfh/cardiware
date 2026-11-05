@@ -16,6 +16,7 @@ use App\Domain\Content\Models\Page;
 use App\Domain\Content\Models\Post;
 use App\Domain\Content\Scopes\ActivePageScope;
 use App\Domain\Content\Scopes\ActivePostScope;
+use App\Infrastructure\Services\Setting\Groups\ProductLandingsSettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,6 +48,12 @@ final class ContentController
         }
 
         if ($resolvedContent->isNotFound()) {
+            // لندینگ محصولی که از پنل اضافه شده (مثل /pgl-6) و برگه‌ای با این نامک ندارد.
+            $rawSlug = (string) $request->route()?->originalParameter('slug', '');
+            if (preg_match(ProductLandingsSettings::CUSTOM_SLUG_PATTERN, $rawSlug) === 1) {
+                return view('front.landings.page', $this->getProductLandingPageDataAction->execute($rawSlug));
+            }
+
             throw new NotFoundHttpException;
         }
 

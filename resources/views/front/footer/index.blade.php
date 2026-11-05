@@ -18,7 +18,21 @@
     ];
 @endphp
 
-<footer id="footer" dir="rtl" class="bg-white dark:bg-slate-950">
+@php
+    $footerBgImage = get_setting('footer', 'background_image')?->path;
+    $footerPattern = (string) get_setting('footer', 'background_pattern', 'none');
+@endphp
+
+<footer id="footer" dir="rtl" class="mw-footer-glass relative isolate overflow-hidden bg-white dark:bg-slate-950">
+    {{-- پس‌زمینه اختیاری + پترن از تنظیمات --}}
+    @if($footerBgImage)
+        <img src="{{ $footerBgImage }}" alt="" class="mw-footer-bg" loading="lazy">
+    @endif
+
+    @if(in_array($footerPattern, ['dots', 'grid', 'diag'], true))
+        <span class="mw-footer-pattern is-{{ $footerPattern }}" aria-hidden="true"></span>
+    @endif
+
     <div class="h-px w-full bg-gray-200 dark:bg-slate-800"></div>
 
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -88,7 +102,7 @@
         <div class="pt-14 pb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div
-                    class="bg-white rounded-3xl p-8 border border-neutral-200 text-center hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/20">
+                    class="mw-glass-card rounded-3xl p-8 text-center transition duration-300 hover:-translate-y-1">
                     <div class="flex justify-center mb-4">
                         <div class="grid place-items-center h-14 w-14 rounded-full
                         bg-orange-100 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:ring-orange-500/20">
@@ -106,7 +120,7 @@
                 </div>
 
                 <div
-                    class="bg-white rounded-3xl p-8 border border-neutral-200 text-center hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/20">
+                    class="mw-glass-card rounded-3xl p-8 text-center transition duration-300 hover:-translate-y-1">
                     <div class="flex justify-center mb-4">
                         <div class="grid place-items-center h-14 w-14 rounded-full
                         bg-orange-100 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:ring-orange-500/20">
@@ -129,7 +143,7 @@
                 </div>
 
                 <div
-                    class="bg-white rounded-3xl p-8 border border-neutral-200 text-center hover:shadow-md transition dark:border-slate-800 dark:bg-slate-900 dark:hover:shadow-black/20">
+                    class="mw-glass-card rounded-3xl p-8 text-center transition duration-300 hover:-translate-y-1">
                     <div class="flex justify-center mb-4">
                         <div class="grid place-items-center h-14 w-14 rounded-full
                         bg-orange-100 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:ring-orange-500/20">

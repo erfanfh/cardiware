@@ -21,6 +21,9 @@
                 ->where('status', \App\Domain\Marketplace\Enums\StoreWithdrawalStatusEnum::PENDING)
                 ->count()
             : 0,
+        'pending_gallery_submissions' => \Illuminate\Support\Facades\Gate::allows('gallery.manage')
+            ? \App\Domain\Content\Models\UserMediaSubmission::query()->pending()->count()
+            : 0,
     ];
     $sidebarBadges['pending_financial_requests'] = $sidebarBadges['unresolved_wallet_withdrawals'] + $sidebarBadges['pending_store_withdrawals'];
 @endphp

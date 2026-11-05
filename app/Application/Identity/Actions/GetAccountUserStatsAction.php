@@ -61,6 +61,7 @@ final class GetAccountUserStatsAction
                 ->count(),
 
             'purchase_accesses_count' => $user->purchaseAccesses()
+                ->owned()
                 ->count(),
 
             'favorite_products_count' => $this->getUserFavoriteProductIdsAction

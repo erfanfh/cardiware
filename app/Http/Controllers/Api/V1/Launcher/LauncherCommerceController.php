@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api\V1\Launcher;
 use App\Application\Launcher\Actions\ClaimFreeSaleItemAction;
 use App\Application\Launcher\Exceptions\LauncherCommerceException;
 use App\Domain\Commerce\Models\PurchaseAccess;
+use App\Application\Launcher\Actions\AddLauncherModToCartAction;
 use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Launcher\Models\LauncherCheckoutSession;
 use App\Domain\Launcher\Models\LauncherDevice;
+use App\Domain\Launcher\Models\LauncherMod;
+use App\Domain\Launcher\Models\LauncherModGrant;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,6 +55,9 @@ class LauncherCommerceController extends Controller
             ->withoutGlobalScopes()
             ->where('user_id', $request->user()->getKey())
             ->where('product_sale_item_id', $saleItem)
+            // دسترسی امانی VIP مالکیت نیست؛ کاربر همچنان می‌تواند نسخه را
+            // بخرد تا دسترسی دائمی بگیرد.
+            ->owned()
             ->latest('id')
             ->get()
             ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
@@ -97,6 +103,78 @@ class LauncherCommerceController extends Controller
         ], 201);
     }
 
+    /**
+     * خرید تکی ماد: لانچر نشست پرداخت می‌گیرد، مرورگر را باز می‌کند و پس از
+     * پرداخت با checkout/consume گرانت ماد را می‌پرسد.
+     */
+    public function modCheckout(Request $request, int $mod): JsonResponse
+    {
+        $data = validator($request->all(), [
+            'return_uri' => ['required', Rule::in(['mwlauncher://purchase-complete'])],
+        ])->validate();
+
+        $item = LauncherMod::query()
+            ->whereKey($mod)
+            ->published()
+            ->firstOrFail();
+
+        abort_unless($item->isPurchasableAvailable(), 422, 'این ماد به صورت تکی فروخته نمی‌شود.');
+
+        $existingGrant = LauncherModGrant::query()
+            ->where('user_id', $request->user()->getKey())
+            ->where('launcher_mod_id', $item->getKey())
+            ->first();
+
+        if ($existingGrant instanceof LauncherModGrant) {
+            return response()->json([
+                'message' => 'این ماد قبلاً برای حساب شما فعال شده است.',
+                'data' => [
+                    'launcher_mod_id' => (int)$item->getKey(),
+                    'mod_grant_source' => $existingGrant->source,
+                ],
+            ]);
+        }
+
+        abort_unless(
+            AddLauncherModToCartAction::userHasProductAccess($item, $request->user()),
+            403,
+            'برای خرید این ماد ابتدا باید خودِ محصول را داشته باشید.',
+        );
+
+        $device = $request->attributes->get('launcher_device');
+        abort_unless($device instanceof LauncherDevice, 401);
+
+        $rawState = Str::random(64);
+        $expiresAt = now()->addMinutes(
+            max(1, (int)config('launcher.checkout_session_ttl_minutes', 15))
+        );
+
+        $session = LauncherCheckoutSession::query()->create([
+            'user_id' => $request->user()->getKey(),
+            'launcher_device_id' => $device->getKey(),
+            // ستون product_sale_item_id اجباری است؛ نسخه‌ی مادرِ ماد ثبت می‌شود.
+            'product_sale_item_id' => $item->product_sale_item_id,
+            'launcher_mod_id' => $item->getKey(),
+            'state_hash' => hash('sha256', $rawState),
+            'expires_at' => $expiresAt,
+        ]);
+
+        $browserUrl = URL::temporarySignedRoute(
+            'launcher.checkout.entry',
+            $expiresAt,
+            ['checkoutSession' => $session->getKey(), 'state' => $rawState],
+        );
+
+        return response()->json([
+            'data' => [
+                'browser_url' => $browserUrl,
+                'state' => $rawState,
+                'return_uri' => $data['return_uri'],
+                'expires_at' => $expiresAt->toISOString(),
+            ],
+        ], 201);
+    }
+
     public function consume(Request $request): JsonResponse
     {
         $data = validator($request->all(), [
@@ -113,8 +191,27 @@ class LauncherCommerceController extends Controller
                 ->lockForUpdate()
                 ->first();
 
-            if (!$session || $session->consumed_at !== null || $session->expires_at->isPast()) {
+            // تا یک روز بعد از مهلت هم نتیجه تحویل می‌شود (ورود + پرداخت ممکن است طول بکشد).
+            if (!$session || !$session->canDeliverResult()) {
                 throw LauncherCommerceException::checkoutExpired();
+            }
+
+            if ($session->launcher_mod_id !== null) {
+                $grant = LauncherModGrant::query()
+                    ->where('user_id', $request->user()->getKey())
+                    ->where('launcher_mod_id', $session->launcher_mod_id)
+                    ->first();
+
+                if (!$grant) {
+                    throw LauncherCommerceException::purchaseNotCompleted();
+                }
+
+                $session->forceFill(['consumed_at' => now()])->save();
+
+                return [
+                    'launcher_mod_id' => (int) $session->launcher_mod_id,
+                    'mod_grant_source' => $grant->source,
+                ];
             }
 
             $access = PurchaseAccess::query()

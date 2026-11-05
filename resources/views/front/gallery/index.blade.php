@@ -5,8 +5,10 @@
 @endsection
 
 @php
-    $galleryImagePoints = (int) get_setting('gallery', 'image_points', 150);
-    $galleryVideoPoints = (int) get_setting('gallery', 'video_points', 500);
+    $galleryImagePoints = (int) get_setting('gallery', 'image_points', 80);
+    $galleryVideoPoints = (int) get_setting('gallery', 'video_points', 200);
+    $gallerySecondPercent = (int) get_setting('gallery', 'second_points_percent', 50);
+    $galleryRewardedLimit = (int) get_setting('gallery', 'monthly_rewarded_limit', 3);
 @endphp
 
 @section('content')
@@ -54,8 +56,12 @@
                         با هر ارسال، امتیاز باشگاه مشتریان بگیر!
                     </h2>
                     <p class="mt-1 text-xs leading-7 text-amber-700/80 sm:text-sm dark:text-amber-200/70">
-                        تصویر تأییدشده <b class="font-black">{{ number_format($galleryImagePoints) }} امتیاز</b>
-                        و ویدیوی تأییدشده <b class="font-black text-orange-600 dark:text-orange-400">{{ number_format($galleryVideoPoints) }} امتیاز</b>
+                        اولین تصویر تأییدشده <b class="font-black">{{ number_format($galleryImagePoints) }} امتیاز</b>
+                        و اولین ویدیوی تأییدشده <b class="font-black text-orange-600 dark:text-orange-400">{{ number_format($galleryVideoPoints) }} امتیاز</b>؛
+                        ارسال دوم {{ number_format($gallerySecondPercent) }}٪ و بعدی‌ها کمتر
+                        @if($galleryRewardedLimit > 0)
+                            (حداکثر {{ number_format($galleryRewardedLimit) }} رسانه امتیازدار در ماه)
+                        @endif
                         — امتیازها بلافاصله بعد از تأیید مدیر به حساب شما اضافه می‌شوند.
                     </p>
                 </div>
@@ -113,25 +119,35 @@
 
                             <label class="lg:col-span-3">
                                 <input type="text" name="title" value="{{ old('title') }}" required maxlength="120" placeholder="عنوان (مثلا: گیم‌پلی دربی)"
-                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
                             </label>
 
                             <label class="lg:col-span-4" id="g-img">
                                 <input type="url" name="image_url" value="{{ old('image_url') }}" dir="ltr" placeholder="https://picofile.com/..." required
-                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
                             </label>
 
                             <label class="lg:col-span-4" id="g-vid" hidden>
                                 <input type="url" name="video_url" value="{{ old('video_url') }}" dir="ltr" placeholder="https://www.aparat.com/v/..."
-                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
                             </label>
 
-                            <label class="lg:col-span-2">
+                            <label class="lg:col-span-3">
                                 <input type="text" name="description" value="{{ old('description') }}" maxlength="500" placeholder="توضیح (اختیاری)"
-                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
                             </label>
 
-                            <div class="lg:col-span-1">
+                            <label class="lg:col-span-5">
+                                <input type="text" name="order_number" value="{{ old('order_number') }}" maxlength="64" placeholder="شماره سفارش (اختیاری؛ برای رسانه‌ی محصول خریداری‌شده)"
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                            </label>
+
+                            <label class="lg:col-span-5">
+                                <input type="tel" name="purchaser_mobile" value="{{ old('purchaser_mobile') }}" maxlength="20" dir="auto" inputmode="numeric" placeholder="موبایل خریدار، مثل ۰۹۱۲۳۴۵۶۷۸۹ (اختیاری)"
+                                       class="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none transition focus:border-brand-300 focus:bg-white focus:ring-4 focus:ring-brand-100 dark:focus:bg-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10">
+                            </label>
+
+                            <div class="lg:col-span-2">
                                 <button type="submit"
                                         class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white shadow-lg transition hover:bg-brand-600 dark:shadow-black/20 dark:hover:bg-brand-400">
                                     ارسال

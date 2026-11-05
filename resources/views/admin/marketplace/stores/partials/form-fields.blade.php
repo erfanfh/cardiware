@@ -53,7 +53,7 @@
         basePath="{{ route('home') }}/stores/"
         :scope="\App\Domain\Slug\Enums\SlugScopeEnum::STORE"
         :currentId="$store->id ?? null"
-        :itemUrl="$store ? route('stores.detail', $store) : null"
+        :itemUrl="filled($store?->slug) ? route('stores.detail', $store) : null"
     />
 
     <x-admin.metabox title="توضیحات">

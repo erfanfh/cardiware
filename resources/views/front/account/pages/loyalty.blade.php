@@ -234,7 +234,12 @@
                                     رکورد شما: {{ number_format($club['streak']['longestDays']) }} روز
                                     @if($club['streak']['nextMilestone'])
                                         · {{ number_format($club['streak']['nextMilestone']['days'] - $club['streak']['currentDays']) }} روز تا پاداش
-                                        +{{ number_format($club['streak']['nextMilestone']['points']) }} امتیاز
+                                        @if(($club['streak']['nextMilestone']['points'] ?? 0) > 0)
+                                            +{{ number_format($club['streak']['nextMilestone']['points']) }} امتیاز
+                                        @endif
+                                        @if(($club['streak']['nextMilestone']['vip_days'] ?? 0) > 0)
+                                            <span class="text-amber-600 dark:text-amber-300">+{{ number_format($club['streak']['nextMilestone']['vip_days']) }} روز VIP رایگان</span>
+                                        @endif
                                     @endif
                                 </div>
 
@@ -280,6 +285,8 @@
                         </div>
                     @endforeach
                 </div>
+
+                @include('front.account.partials.loyalty.vip-and-spending')
 
                 @if(!empty($club['monthlySummary']))
                     @php
@@ -662,6 +669,14 @@
                     <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">تاریخچه امتیاز</h2>
                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">تمام کسب، مصرف، برگشت و اصلاحات
                         امتیاز حساب شما.</p>
+                    <div class="mt-3 flex flex-wrap gap-2">
+                        @foreach([null => 'همه', 'earned' => 'کسب‌شده', 'spent' => 'مصرف‌شده'] as $filterKey => $filterLabel)
+                            <a href="{{ route('account.loyalty', $filterKey ? ['points_filter' => $filterKey] : []) }}#point-history"
+                               class="rounded-xl border px-3 py-1.5 text-[11px] font-extrabold transition {{ ($club['historyFilter'] ?? null) === ($filterKey ?: null) ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800' }}">
+                                {{ $filterLabel }}
+                            </a>
+                        @endforeach
+                    </div>
                 </div>
 
                 <div class="space-y-2">
@@ -701,8 +716,17 @@
                                 <div class="min-w-0">
                                     <div
                                         class="truncate text-xs font-extrabold text-slate-800 dark:text-slate-200">{{ $entry->description ?: $entry->type->label() }}</div>
-                                    <div
-                                        class="mt-1 text-[10px] text-slate-400">{{ jalali_date($entry->occurred_at ?? $entry->created_at, 'Y/m/d H:i') }}</div>
+                                    <div class="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400">
+                                        <span>{{ jalali_date($entry->occurred_at ?? $entry->created_at, 'Y/m/d H:i') }}</span>
+                                        @if($entry->type === \App\Domain\Loyalty\Enums\PointEntryTypeEnum::SPEND)
+                                            <span class="rounded-md bg-rose-50 px-1.5 py-0.5 font-bold text-rose-600 dark:bg-rose-500/10 dark:text-rose-300">{{ \App\Application\Loyalty\Actions\GetAudienceClubOverviewAction::spendCategory($entry, $entry->reference instanceof \App\Domain\Loyalty\Models\RewardOffer ? $entry->reference->type : null)[1] }}</span>
+                                        @elseif(data_get($entry->metadata, 'vip_bonus_percent'))
+                                            <span class="rounded-md bg-amber-50 px-1.5 py-0.5 font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">👑 +{{ number_format((int) data_get($entry->metadata, 'vip_bonus_percent')) }}٪ VIP</span>
+                                        @endif
+                                        @if($entry->reversalOf)
+                                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300">برگشت</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 

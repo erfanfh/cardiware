@@ -23,6 +23,9 @@ Route::prefix('posts')->name('posts.')->controller(PostController::class)->group
 });
 
 Route::resource('pages', PageController::class)->except(['show']);
+Route::resource('landing-pages', \App\Http\Controllers\Admin\Content\LandingPageController::class)->except(['show']);
+Route::post('landing-pages/{landing_page}/duplicate', [\App\Http\Controllers\Admin\Content\LandingPageController::class, 'duplicate'])
+    ->name('landing-pages.duplicate');
 Route::prefix('pages')->name('pages.')->controller(PageController::class)->group(function () {
     Route::post('bulk-action', PageBulkActionController::class)->name('bulk-action');
     Route::patch('{page}/quick-update', QuickUpdatePageController::class)->name('quick-update');

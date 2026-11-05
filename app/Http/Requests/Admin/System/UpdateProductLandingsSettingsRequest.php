@@ -30,7 +30,9 @@ class UpdateProductLandingsSettingsRequest extends FormRequest
         }
 
         $schema = app(ProductLandingContentSchema::class);
-        $default = ProductLandingsSettings::defaults()[$this->route('document')];
+        $settings = app(ProductLandingsSettings::class);
+        abort_unless($settings->isDocument((string) $this->route('document')), 404);
+        $default = $settings->documentDefaults((string) $this->route('document'));
         $schema->validate($content, $schema->infer([$default]));
 
         return $content;

@@ -49,6 +49,9 @@ class PageLayoutFrontRegistry
             'gallery-cta' => [
                 'view' => 'front.home.partials.gallery-cta',
             ],
+            'featured-store' => [
+                'view' => 'front.home.partials.featured-store',
+            ],
             'videos' => [
                 'view' => 'front.home.partials.videos',
             ],

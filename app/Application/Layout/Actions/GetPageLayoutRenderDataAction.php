@@ -91,10 +91,11 @@ class GetPageLayoutRenderDataAction
                 }
 
                 return [
+                    // چیدمان هنوز ساخته نشده (نصب تازه): صفحه خالی به‌جای خطای ۵۰۰.
                     'layout' => [
-                        'id' => $pageLayout->id,
-                        'key' => $pageLayout->key,
-                        'title' => $pageLayout->title,
+                        'id' => $pageLayout?->id,
+                        'key' => $pageLayout?->key ?? $pageLayoutKey,
+                        'title' => $pageLayout?->title,
                     ],
                     'rows' => $rows,
                 ];

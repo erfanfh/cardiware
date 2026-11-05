@@ -486,6 +486,36 @@
                         </x-admin.field>
                     </div>
                 </x-admin.metabox>
+
+        <x-admin.metabox title="پس‌زمینه و پترن فوتر">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <x-admin.field label="تصویر پس‌زمینه فوتر (اختیاری)"
+                               hint="پشت ستون‌های فوتر با شفافیت کم نمایش داده می‌شود.">
+                    <x-admin.form.media-picker
+                        mode="field"
+                        name="background_image"
+                        :value="[
+                            'id' => old('background_image.id', get_setting('footer', 'background_image')?->id),
+                            'path' => old('background_image.path', get_setting('footer', 'background_image')?->path),
+                        ]"
+                    />
+                </x-admin.field>
+
+                <x-admin.field label="پترن پس‌زمینه"
+                               hint="نقش ماهورانه سبک روی پس‌زمینه فوتر.">
+                    <x-admin.form.select
+                        name="background_pattern"
+                        :value="old('background_pattern', get_setting('footer', 'background_pattern', 'none'))"
+                        :options="[
+                            ['value' => 'none', 'label' => 'بدون پترن'],
+                            ['value' => 'dots', 'label' => 'نقطه‌ای'],
+                            ['value' => 'grid', 'label' => 'شبکه‌ای'],
+                            ['value' => 'diag', 'label' => 'مورب'],
+                        ]"
+                    />
+                </x-admin.field>
+            </div>
+        </x-admin.metabox>
             </div>
         </x-admin.page>
 

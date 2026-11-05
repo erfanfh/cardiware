@@ -27,12 +27,14 @@ class AdjustAudienceMemberPointsController extends Controller
         $data = $request->validated();
         $direction = PointEntryDirectionEnum::from($data['direction']);
         $account = $getOrCreatePointAccount->execute($user);
+        $affectsXp = (bool)($data['affects_xp'] ?? false);
 
         $entry = $adjustPoints->execute(new AdjustPointsDTO(
             account: $account,
             direction: $direction,
             amount: (int)$data['amount'],
-            reason: 'manual_adjustment',
+            // reason جدا تا جدول برترین‌ها اصلاح XP را در امتیاز دوره حساب کند.
+            reason: $affectsXp ? 'manual_xp_adjustment' : 'manual_adjustment',
             idempotencyKey: $data['idempotency_key'],
             actor: $request->user(),
             description: $data['note'],
@@ -40,6 +42,7 @@ class AdjustAudienceMemberPointsController extends Controller
                 'source' => 'admin',
                 'manual_adjustment' => true,
             ],
+            affectsXp: $affectsXp,
         ));
 
         $verb = $direction->isCredit() ? 'افزایش' : 'کاهش';

@@ -14,6 +14,7 @@
         $referrerPoints = old('referral_bonus_referrer_points', get_setting('affiliate', 'referral_bonus_referrer_points', 1000));
         $refereePoints = old('referral_bonus_referee_points', get_setting('affiliate', 'referral_bonus_referee_points', 500));
         $bonusMinOrder = old('referral_bonus_min_order_amount', get_setting('affiliate', 'referral_bonus_min_order_amount', 100000));
+        $salePointsPer1000 = old('referral_sale_points_per_1000', get_setting('affiliate', 'referral_sale_points_per_1000', 2));
     @endphp
 
     <x-admin.form action="{{ route('admin.settings.affiliate.store') }}" method="put">
@@ -108,6 +109,14 @@
                             hint="سفارش‌های کوچک‌تر از این مبلغ پاداش معرفی فعال نمی‌کنند (ضد سوءاستفاده)."
                         >
                             <x-admin.form.input name="referral_bonus_min_order_amount" type="number" min="0" step="1" dir="ltr" :value="$bonusMinOrder"/>
+                        </x-admin.field>
+
+                        <x-admin.field
+                            required
+                            label="امتیاز همکار برای هر ۱۰۰۰ تومان فروش"
+                            hint="برای هر سفارش پرداخت‌شده با کد یا لینک همکار (نه فقط اولین خرید). ۲ یعنی یک امتیاز برای هر ۵۰۰ تومان. با مرجوعی سفارش برمی‌گردد. صفر = خاموش."
+                        >
+                            <x-admin.form.input name="referral_sale_points_per_1000" type="number" min="0" step="1" dir="ltr" :value="$salePointsPer1000"/>
                         </x-admin.field>
                     </div>
                 </x-admin.metabox>

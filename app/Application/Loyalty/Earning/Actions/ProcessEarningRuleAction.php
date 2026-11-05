@@ -4,6 +4,7 @@ namespace App\Application\Loyalty\Earning\Actions;
 
 use App\Application\Loyalty\Actions\AwardPointsAction;
 use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
+use App\Application\Loyalty\Actions\ResolveVipPointsBonusAction;
 use App\Application\Loyalty\DTOs\AwardPointsDTO;
 use App\Application\Loyalty\Earning\Contracts\EarningContext;
 use App\Application\Loyalty\Earning\DTOs\EarningRuleEvaluation;
@@ -23,6 +24,7 @@ class ProcessEarningRuleAction
         private readonly GetOrCreatePointAccountAction $getOrCreatePointAccountAction,
         private readonly AwardPointsAction $awardPointsAction,
         private readonly EarningIdempotencyKeyFactory $idempotencyKeyFactory,
+        private readonly ResolveVipPointsBonusAction $vipPointsBonus,
     ) {}
 
     /** @throws Throwable */
@@ -82,15 +84,23 @@ class ProcessEarningRuleAction
                 throw new LogicException('Earning rule idempotency key mismatch.');
             }
 
+            // پاداش اشتراک ویژه روی امتیاز نهایی قانون (بعد از ضریب سطح) اعمال
+            // می‌شود و در metadata ثبت می‌شود تا برگشت امتیاز همان مقدار را بردارد.
+            $vipBonusPercent = $this->vipPointsBonus->percentFor($context->user());
+            $points = $this->vipPointsBonus->apply($evaluation->points, $vipBonusPercent);
+            $vipMetadata = $vipBonusPercent > 0
+                ? ['vip_bonus_percent' => $vipBonusPercent, 'points_before_vip_bonus' => $evaluation->points]
+                : [];
+
             $entry = $this->awardPointsAction->execute(new AwardPointsDTO(
                 account: $lockedAccount,
-                amount: $evaluation->points,
+                amount: $points,
                 reason: $evaluation->reason,
                 idempotencyKey: $evaluation->idempotencyKey,
                 earningRule: $evaluation->rule,
                 reference: $evaluation->reference ?? $context->reference(),
                 description: $evaluation->description,
-                metadata: array_merge($evaluation->metadata, [
+                metadata: array_merge($evaluation->metadata, $vipMetadata, [
                     'occurred_at' => $context->occurredAt()->toISOString(),
                 ]),
                 occurredAt: $context->occurredAt(),

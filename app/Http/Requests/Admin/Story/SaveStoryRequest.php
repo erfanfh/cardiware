@@ -24,6 +24,7 @@ class SaveStoryRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:180'],
             'subtitle' => ['nullable', 'string', 'max:255'],
+            'badge' => ['nullable', 'string', 'max:40'],
             'caption' => ['nullable', 'string', 'max:2000'],
             'image.id' => ['required', 'integer', $image()],
             'thumbnail.id' => ['nullable', 'integer', $image()],
@@ -40,7 +41,7 @@ class SaveStoryRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'title' => 'عنوان', 'subtitle' => 'زیرعنوان', 'caption' => 'توضیحات',
+            'title' => 'عنوان', 'subtitle' => 'زیرعنوان', 'badge' => 'بج', 'caption' => 'توضیحات',
             'image.id' => 'تصویر اصلی', 'thumbnail.id' => 'کاور', 'link_url' => 'لینک',
             'link_label' => 'متن دکمه', 'duration_seconds' => 'مدت نمایش',
             'sort_order' => 'ترتیب نمایش', 'starts_at' => 'زمان شروع', 'ends_at' => 'زمان پایان',

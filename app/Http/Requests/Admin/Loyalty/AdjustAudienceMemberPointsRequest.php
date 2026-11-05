@@ -18,6 +18,7 @@ class AdjustAudienceMemberPointsRequest extends FormRequest
         return [
             'direction' => ['required', Rule::enum(PointEntryDirectionEnum::class)],
             'amount' => ['required', 'integer', 'min:1', 'max:1000000000'],
+            'affects_xp' => ['nullable', 'boolean'],
             'note' => ['required', 'string', 'max:1000'],
             'idempotency_key' => ['required', 'string', 'max:160'],
         ];

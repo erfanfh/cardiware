@@ -13,6 +13,13 @@
         $maxCreditPercent = old('max_credit_percent_per_order', get_setting('loyalty', 'max_credit_percent_per_order', 100));
         $streakMilestones = old('streak_milestones', json_encode(get_setting('loyalty', 'streak_milestones', []), JSON_UNESCAPED_UNICODE));
         $expiryMonths = old('points_inactivity_expiry_months', get_setting('loyalty', 'points_inactivity_expiry_months', 12));
+        $vipPointsBonusPercent = old('vip_points_bonus_percent', get_setting('loyalty', 'vip_points_bonus_percent', 0));
+        $loyaltySettings = app(\App\Infrastructure\Services\Setting\Groups\LoyaltySettings::class);
+        $championPrizes = old('champion_prizes', [
+            'month' => $loyaltySettings->championPrizes('month'),
+            'season' => $loyaltySettings->championPrizes('season'),
+            'year' => $loyaltySettings->championPrizes('year'),
+        ]);
         $registrationGiftEnabled = old('registration_gift_enabled', get_setting('loyalty', 'registration_gift_enabled', false));
         $registrationGiftOfferId = old('registration_gift_reward_offer_id', get_setting('loyalty', 'registration_gift_reward_offer_id'));
         $registrationGiftOfferOptions = ['' => 'انتخاب پاداش...'] + $registrationGiftOffers
@@ -258,11 +265,103 @@
                     </div>
                 </x-admin.metabox>
 
+                <x-admin.metabox title="مزیت اشتراک ویژه (VIP) در باشگاه">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <x-admin.field
+                            label="پاداش امتیاز کاربران VIP (درصد)"
+                            hint="کاربر دارای اشتراک ویژه فعال از هر امتیاز قوانین کسب امتیاز (خرید، ورود روزانه، دیدگاه، زمان حضور و ...) این درصد بیشتر می‌گیرد. چون سطح باشگاه هم با همین امتیاز بالا می‌رود، ارتقای سطحش سریع‌تر است. مثال: ۵۰ یعنی ۱٫۵ برابر. صفر = خاموش. حداکثر ۵۰۰."
+                            :error="$errors->first('vip_points_bonus_percent')"
+                            required
+                        >
+                            <x-admin.form.input
+                                type="number"
+                                min="0"
+                                max="500"
+                                step="1"
+                                name="vip_points_bonus_percent"
+                                :value="$vipPointsBonusPercent"
+                            />
+                        </x-admin.field>
+                    </div>
+                </x-admin.metabox>
+
+                <x-admin.metabox title="برترین‌های ماه، فصل و سال">
+                    <p class="mb-4 text-xs leading-7 text-slate-500">
+                        نفرات ۱ تا ۳ هر دوره (بر اساس XP همان دوره) به‌صورت خودکار این جوایز را می‌گیرند. امتیاز جایزه قابل خرج است و XP نمی‌دهد؛
+                        کد تخفیف شخصی و یک‌بارمصرف است؛ کدهای قرعه‌کشی در «قرعه‌کشی باشگاه» ثبت می‌شوند.
+                    </p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead>
+                            <tr class="border-b border-slate-200 text-right text-slate-400">
+                                <th class="px-2 py-2">دوره / رتبه</th>
+                                <th class="px-2 py-2">امتیاز</th>
+                                <th class="px-2 py-2">درصد کد تخفیف</th>
+                                <th class="px-2 py-2">سقف تخفیف (تومان)</th>
+                                <th class="px-2 py-2">اعتبار کد (روز)</th>
+                                <th class="px-2 py-2">کد قرعه‌کشی</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach(['month' => 'ماه', 'season' => 'فصل', 'year' => 'سال'] as $periodKey => $periodName)
+                                @foreach(range(0, 2) as $rankIndex)
+                                    <tr class="border-b border-slate-100">
+                                        <td class="px-2 py-2 font-bold">{{ $periodName }} — نفر {{ ['اول', 'دوم', 'سوم'][$rankIndex] }}</td>
+                                        @foreach(['points', 'coupon_percent', 'coupon_max_amount', 'coupon_days', 'raffle_tickets'] as $field)
+                                            <td class="px-2 py-1.5">
+                                                <input type="number" min="0" dir="ltr"
+                                                       name="champion_prizes[{{ $periodKey }}][{{ $rankIndex }}][{{ $field }}]"
+                                                       value="{{ $championPrizes[$periodKey][$rankIndex][$field] ?? 0 }}"
+                                                       class="h-9 w-24 rounded-lg border border-slate-200 px-2 text-xs">
+                                            </td>
+                                        @endforeach
+                                    </tr>
+                                @endforeach
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @error('champion_prizes')<p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>@enderror
+
+                    <div class="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <x-admin.field label="جایزه ویژه نفر اول سال" hint="مثلاً «کنسول PS5». مدیر آن را دستی تحویل می‌دهد و در «برترین‌ها و جوایز» ثبت می‌کند.">
+                            <x-admin.form.input name="champion_year_grand_prize" :value="old('champion_year_grand_prize', get_setting('loyalty', 'champion_year_grand_prize', 'کنسول بازی'))"/>
+                        </x-admin.field>
+                        <x-admin.field label="حد نصاب سالانه: حداقل XP سال">
+                            <x-admin.form.input type="number" min="0" name="champion_year_min_xp" :value="old('champion_year_min_xp', get_setting('loyalty', 'champion_year_min_xp', 20000))"/>
+                        </x-admin.field>
+                        <x-admin.field label="حد نصاب سالانه: مأموریت‌های کامل‌شده">
+                            <x-admin.form.input type="number" min="0" name="champion_year_min_missions" :value="old('champion_year_min_missions', get_setting('loyalty', 'champion_year_min_missions', 20))"/>
+                        </x-admin.field>
+                        <x-admin.field label="حد نصاب سالانه: تعداد خرید">
+                            <x-admin.form.input type="number" min="0" name="champion_year_min_orders" :value="old('champion_year_min_orders', get_setting('loyalty', 'champion_year_min_orders', 3))"/>
+                        </x-admin.field>
+                    </div>
+                </x-admin.metabox>
+
+                <x-admin.metabox title="قرعه‌کشی باشگاه و کانون نخبگان">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <x-admin.field label="قرعه‌کشی باشگاه" hint="کدهای قرعه‌کشی برترین‌ها و خریدها در این قرعه‌کشی ثبت می‌شوند (باید در حال دریافت کد باشد). هر ماه قرعه‌کشی جدید را اینجا انتخاب کنید.">
+                            <x-admin.form.select name="club_raffle_campaign_id"
+                                                 :options="['' => 'بدون قرعه‌کشی'] + $raffleCampaigns->all()"
+                                                 :value="old('club_raffle_campaign_id', get_setting('loyalty', 'club_raffle_campaign_id'))"/>
+                        </x-admin.field>
+                        <x-admin.field label="یک کد قرعه‌کشی به ازای هر … تومان خرید" hint="مثلاً ۲۰۰۰۰۰ یعنی خرید ۱ میلیونی = ۵ کد. با مرجوعی باطل می‌شود. صفر = خاموش.">
+                            <x-admin.form.input type="number" min="0" name="purchase_raffle_toman_per_ticket" :value="old('purchase_raffle_toman_per_ticket', get_setting('loyalty', 'purchase_raffle_toman_per_ticket', 0))"/>
+                        </x-admin.field>
+                        <x-admin.field label="کانون نخبگان: از سطح" hint="اعضای این سطح به بالا در نظرسنجی‌های «فقط کانون نخبگان» رأی می‌دهند و نشان کانون می‌گیرند.">
+                            <x-admin.form.select name="elite_min_level_id"
+                                                 :options="['' => 'غیرفعال'] + $loyaltyLevels->mapWithKeys(fn ($level) => [$level->id => $level->title . ' (از ' . number_format($level->min_xp) . ' XP)'])->all()"
+                                                 :value="old('elite_min_level_id', get_setting('loyalty', 'elite_min_level_id'))"/>
+                        </x-admin.field>
+                    </div>
+                </x-admin.metabox>
+
                 <x-admin.metabox title="زنجیره ورود روزانه و انقضای امتیاز">
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <x-admin.field
                             label="مایل‌استون‌های زنجیره ورود (JSON)"
-                            hint='ساختار: [{"days":7,"points":200},{"days":14,"points":300},{"days":30,"points":1000}] — وقتی روزهای زنجیره فعلی دقیقاً به days برسد، points به‌صورت خودکار پرداخت می‌شود. با قطع زنجیره، شمارش از روز اول شروع می‌شود.'
+                            hint='ساختار: [{"days":7,"points":50,"repeat":true},{"days":30,"points":500,"repeat":true},{"days":60,"points":0,"vip_days":7},{"days":90,"points":0,"vip_days":30,"repeat":true}] — points امتیاز و vip_days روزهای اشتراک VIP هدیه است. repeat:true یعنی در هر مضرب days تکرار می‌شود (۹۰، ۱۸۰، ...)، وگرنه فقط یک‌بار در هر زنجیره. با قطع زنجیره، شمارش از روز اول شروع می‌شود.'
                             :error="$errors->first('streak_milestones')"
                         >
                             <x-admin.form.input

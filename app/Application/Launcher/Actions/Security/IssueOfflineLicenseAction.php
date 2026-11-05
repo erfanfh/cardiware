@@ -73,6 +73,27 @@ final class IssueOfflineLicenseAction
             ->orderBy('id')
             ->get(['id', 'product_id', 'product_sale_item_id', 'expires_at']);
 
+        // محصولات بازشده با اشتراک ویژه: فقط تا پایان اشتراک VIP در مجوز
+        // آفلاین معتبرند (launcher روی access_expires_at هر مورد فیلتر می‌کند).
+        $hasBorrow = $user->purchaseAccesses()->withoutGlobalScopes()->vipBorrow()->exists();
+        $vipExpiresAt = $hasBorrow ? $user->vipExpiresAt() : null;
+        if ($vipExpiresAt !== null) {
+            $ownedSaleItemIds = $usableAccesses->pluck('product_sale_item_id')->map(fn($id) => (int)$id)->all();
+            $vipAccesses = $user->purchaseAccesses()
+                ->vipBorrow()
+                ->active()
+                ->whereNotIn('product_sale_item_id', $ownedSaleItemIds)
+                ->whereHas('productSaleItem', fn($query) => $query
+                    ->where('launcher_enabled', true)
+                    ->where('vip_access_enabled', true))
+                ->with('productSaleItem.manifest:id,product_sale_item_id,content_key_id,content_key_value')
+                ->orderBy('id')
+                ->get(['id', 'product_id', 'product_sale_item_id', 'expires_at'])
+                ->each(fn(PurchaseAccess $access) => $access->expires_at = $vipExpiresAt);
+
+            $usableAccesses = $usableAccesses->concat($vipAccesses)->values();
+        }
+
         $entitlements = $usableAccesses
             ->map(fn($access): array => [
                 'purchase_access_id' => (int)$access->id,

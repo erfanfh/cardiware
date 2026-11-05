@@ -86,6 +86,8 @@ class AttributeAffiliateOrderAction
                 ? $this->awardReferralBonuses($affiliate, $user, $order)
                 : ['referrer' => 0, 'referee' => 0];
 
+            $this->awardReferralSalePoints($affiliate, $order);
+
             return new AffiliateAttributionResult($affiliateOrder, $bonuses['referrer'], $bonuses['referee']);
         });
 
@@ -132,6 +134,36 @@ class AttributeAffiliateOrderAction
         }
 
         return [null, AffiliateOrderSourceEnum::REFERRAL];
+    }
+
+    /**
+     * امتیاز فروش همکار: برای هر سفارش پرداخت‌شده با کد یا لینک او، به نسبت مبلغ.
+     * همکاری فعال (فروش واقعی) از فعالیت روزمره ارزش امتیازی بیشتری دارد.
+     * با مرجوعی سفارش، ReversePurchasePointsListener این امتیاز را برمی‌گرداند.
+     */
+    private function awardReferralSalePoints(Affiliate $affiliate, Order $order): void
+    {
+        $perThousand = $this->settings->referralSalePointsPer1000();
+        $points = intdiv(max(0, (int) $order->total_amount), 1000) * $perThousand;
+
+        if ($points <= 0 || $affiliate->user_id === null) {
+            return;
+        }
+
+        $referrer = $affiliate->user()->first();
+        if ($referrer === null) {
+            return;
+        }
+
+        app(AwardPointsAction::class)->execute(new AwardPointsDTO(
+            account: app(\App\Application\Loyalty\Actions\GetOrCreatePointAccountAction::class)->execute($referrer),
+            amount: $points,
+            reason: 'referral_sale',
+            idempotencyKey: 'referral-sale:' . $order->getKey(),
+            reference: $order,
+            description: "امتیاز فروش همکاری (سفارش {$order->order_number})",
+            metadata: ['order_amount' => (int) $order->total_amount, 'points_per_1000' => $perThousand],
+        ));
     }
 
     /**

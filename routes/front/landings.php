@@ -27,6 +27,11 @@ $landingPattern = implode('|', array_map(
     array_keys(config('product-landings.landings', [])),
 )) ?: '(?!)';
 
+// Sub-pages also match pgl-* (landings added from the panel, e.g. pgl-6): no CMS
+// route has two segments. The landing home of a panel landing (/pgl-6) is served by
+// the CMS catch-all (ContentController) when no post or page owns that slug.
+$subPagePattern = $landingPattern . '|pgl-[a-z0-9]+(?:-[a-z0-9]+)*';
+
 /* --- فارسی (بدون پیشوند) --- */
 Route::get('/{landing}', [ProductLandingController::class, 'show'])
     ->where('landing', $landingPattern)
@@ -34,23 +39,24 @@ Route::get('/{landing}', [ProductLandingController::class, 'show'])
     ->name('landings.show');
 
 Route::get('/{landing}/leagues/{league}', [LandingPageController::class, 'league'])
-    ->where('landing', $landingPattern)
+    ->where('landing', $subPagePattern)
     ->where('league', '[a-z0-9][a-z0-9-]*')
     ->name('landings.league');
 
 Route::get('/{landing}/leagues/{league}/{team}', [LandingPageController::class, 'team'])
-    ->where('landing', $landingPattern)
+    ->where('landing', $subPagePattern)
     ->where('league', '[a-z0-9][a-z0-9-]*')
     ->where('team', '[a-z0-9][a-z0-9-]*')
     ->name('landings.team');
 
 Route::get('/{landing}/{page}', [LandingPageController::class, 'show'])
-    ->where('landing', $landingPattern)
+    ->where('landing', $subPagePattern)
     ->where('page', '[a-z0-9][a-z0-9-]*')
     ->name('landings.page');
 
 /* --- انگلیسی (پیشوند /en) --- */
-Route::prefix('en')->name('en.')->group(function () use ($landingPattern) {
+Route::prefix('en')->name('en.')->group(function () use ($subPagePattern) {
+    $landingPattern = $subPagePattern;
     Route::get('/{landing}', [ProductLandingController::class, 'show'])
         ->where('landing', $landingPattern)
         ->name('landings.show');

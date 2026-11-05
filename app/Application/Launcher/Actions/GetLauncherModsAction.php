@@ -177,6 +177,12 @@ class GetLauncherModsAction
                 'title' => $mod->group->title,
                 'is_exclusive' => (bool) $mod->group->is_exclusive,
             ] : null,
+            // بلوک مستقل از کاربر؛ وضعیت قفل/باز بودن به ازای هر کاربر در
+            // ResolveLauncherModAccessForUserAction روی همین بلوک سوار می‌شود.
+            'access' => [
+                'type' => ($mod->access_type ?? \App\Domain\Launcher\Enums\LauncherModAccessTypeEnum::FREE)->value,
+                'price_toman' => $mod->isPurchaseAccess() ? (int) $mod->price_toman : null,
+            ],
             'compatibility' => [
                 'base_version' => $baseVersion !== '' ? $baseVersion : null,
                 'update_version' => $currentUpdateVersion,

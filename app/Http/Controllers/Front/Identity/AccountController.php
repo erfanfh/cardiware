@@ -117,7 +117,7 @@ class AccountController extends Controller
     ): View
     {
         $user = $this->getHydratedUser();
-        $club = $getAudienceClubOverviewAction->execute($user);
+        $club = $getAudienceClubOverviewAction->execute($user, request()->query('points_filter'));
 
         // کد دعوت/همکاری کاربر برای تب «دعوت دوستان» به‌صورت تنبل ساخته می‌شود
         $affiliate = $affiliateSettings->isEnabled()

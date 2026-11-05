@@ -108,7 +108,10 @@
                             />
                         </x-admin.field>
 
-                        <div class="lg:col-span-1"></div>
+                        <x-admin.field label="XP سطح هم تغییر کند؟" class="switch-field"
+                                       hint="خاموش: فقط امتیاز قابل خرج. روشن: XP سطح و رتبه‌ی دوره هم به همین اندازه تغییر می‌کند (پاداش سطح هم خودکار داده یا پس گرفته می‌شود).">
+                            <x-admin.form.switch name="affects_xp" :checked="(bool) old('affects_xp', false)"/>
+                        </x-admin.field>
 
                         <div class="lg:col-span-3">
                             <x-admin.field required label="دلیل تغییر">
@@ -123,8 +126,8 @@
 
                     <div
                         class="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-7 text-amber-800">
-                        اصلاح دستی فقط موجودی فعلی را تغییر می‌دهد و شاخص‌های «کل کسب شده» و «کل مصرف شده» را دستکاری
-                        نمی‌کند. کاهش دستی می‌تواند در صورت نیاز موجودی کاربر را منفی کند و بدهی امتیاز ایجاد کند.
+                        اصلاح دستی موجودی فعلی را تغییر می‌دهد و شاخص‌های «کل کسب شده» و «کل مصرف شده» را دستکاری
+                        نمی‌کند؛ XP سطح فقط وقتی تغییر می‌کند که گزینه‌اش روشن باشد. کاهش دستی می‌تواند در صورت نیاز موجودی کاربر را منفی کند و بدهی امتیاز ایجاد کند.
                     </div>
 
                     <div class="flex justify-end mt-3">

@@ -155,24 +155,34 @@ class PublicPageCacheTest extends TestCase
 
     public function test_leaderboard_does_not_share_current_user_data_and_points_invalidate_public_results(): void
     {
+        // رتبه‌بندی با XP کسب‌شده در دوره (دفتر امتیاز) است، نه موجودی حساب.
         $first = User::factory()->create();
         $second = User::factory()->create();
-        $account = new PointAccount;
-        $account->forceFill(['user_id' => $first->id, 'balance' => 100, 'lifetime_earned' => 100])->save();
-        $other = new PointAccount;
-        $other->forceFill(['user_id' => $second->id, 'balance' => 50, 'lifetime_earned' => 50])->save();
+        $this->earnPoints($first, 100);
+        $this->earnPoints($second, 50);
         $action = app(GetAudienceClubLeaderboardAction::class);
 
         self::assertSame(1, $action->execute($first)['currentMember']['rank']);
         self::assertSame(2, $action->execute($second)['currentMember']['rank']);
         self::assertNull($action->execute(null)['currentMember']['rank']);
         $this->assertNoQueries(fn () => $action->execute(null));
-        $other->forceFill(['balance' => 200, 'lifetime_earned' => 200])->save();
+        $this->earnPoints($second, 150);
         self::assertSame($second->id, $action->execute(null)['leaders']->first()->user_id);
         $second->delete();
         self::assertSame([$first->id], $action->execute(null)['leaders']->pluck('user_id')->all());
         $second->restore();
         self::assertSame($second->id, $action->execute(null)['leaders']->first()->user_id);
+    }
+
+    private function earnPoints(User $user, int $amount): void
+    {
+        app(\App\Application\Loyalty\Actions\AwardPointsAction::class)->execute(new \App\Application\Loyalty\DTOs\AwardPointsDTO(
+            account: app(\App\Application\Loyalty\Actions\GetOrCreatePointAccountAction::class)->execute($user),
+            amount: $amount,
+            reason: 'test_activity',
+            idempotencyKey: 'cache-test:' . $user->id . ':' . uniqid(),
+            reference: $user,
+        ));
     }
 
     public function test_poll_filters_and_counts_change_exactly_at_the_start_and_end(): void

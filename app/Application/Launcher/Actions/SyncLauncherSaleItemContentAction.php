@@ -3,6 +3,7 @@
 namespace App\Application\Launcher\Actions;
 
 use App\Domain\Catalog\Models\ProductSaleItem;
+use App\Domain\Launcher\Enums\LauncherModAccessTypeEnum;
 use App\Domain\Launcher\Enums\LauncherModInstallTargetEnum;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
@@ -126,6 +127,7 @@ class SyncLauncherSaleItemContentAction
                 'priority' => (int)($data['priority'] ?? $index),
                 'is_enabled' => (bool)($data['is_enabled'] ?? false),
                 'is_required' => (bool)($data['is_required'] ?? false),
+                ...$this->accessAttributes($data),
                 'compatible_base_versions' => array_values((array)($data['compatible_base_versions'] ?? [])),
                 'compatible_update_versions' => array_values((array)($data['compatible_update_versions'] ?? [])),
                 'published_at' => filled($data['published_at'] ?? null)
@@ -140,6 +142,33 @@ class SyncLauncherSaleItemContentAction
             ->when($kept !== [], fn($q) => $q->whereNotIn('id', $kept))
             ->get()
             ->each(static fn(LauncherMod $mod) => $mod->delete());
+    }
+
+    /**
+     * نوع دسترسی ماد (رایگان / خرید تکی). مقدار نامعتبر (از جمله vip قدیمی)
+     * به رایگان برمی‌گردد؛ قیمت فقط برای خرید تکی نگه داشته می‌شود. ماد پولی
+     * هرگز الزامی نیست.
+     *
+     * @return array<string, mixed>
+     */
+    private function accessAttributes(array $data): array
+    {
+        $type = in_array($data['access_type'] ?? null, LauncherModAccessTypeEnum::values(), true)
+            ? (string)$data['access_type']
+            : LauncherModAccessTypeEnum::FREE->value;
+
+        $attributes = [
+            'access_type' => $type,
+            'price_toman' => $type === LauncherModAccessTypeEnum::PURCHASE->value && filled($data['price_toman'] ?? null)
+                ? max(0, (int)$data['price_toman'])
+                : null,
+        ];
+
+        if ($type !== LauncherModAccessTypeEnum::FREE->value) {
+            $attributes['is_required'] = false;
+        }
+
+        return $attributes;
     }
 
     private function files(

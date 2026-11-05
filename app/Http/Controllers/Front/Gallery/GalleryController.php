@@ -39,6 +39,22 @@ class GalleryController extends Controller
     {
         $data = $request->validated();
 
+        // سقف ارسال ماهانه هر کاربر (عدالت بین کاربران و جلوگیری از ارسال انبوه).
+        $limit = (int) get_setting('gallery', 'monthly_submission_limit', 10);
+        if ($limit > 0) {
+            $sentThisMonth = UserMediaSubmission::query()
+                ->where('user_id', auth()->id())
+                ->where('created_at', '>=', \App\Application\Content\Actions\Gallery\ResolveGallerySubmissionPointsAction::monthStart())
+                ->count();
+
+            if ($sentThisMonth >= $limit) {
+                return redirect()
+                    ->route('gallery.index')
+                    ->withInput()
+                    ->withErrors(['title' => "سقف ارسال این ماه ({$limit} رسانه) پر شده است؛ ماه بعد دوباره ارسال کنید."]);
+            }
+        }
+
         UserMediaSubmission::query()->create([
             'user_id' => auth()->id(),
             'type' => $data['type'],
@@ -46,6 +62,8 @@ class GalleryController extends Controller
             'description' => $data['description'] ?? null,
             'image_url' => $data['image_url'] ?? null,
             'video_url' => $data['video_url'] ?? null,
+            'order_number' => $data['order_number'] ?? null,
+            'purchaser_mobile' => $data['purchaser_mobile'] ?? null,
             'status' => 'pending',
         ]);
 

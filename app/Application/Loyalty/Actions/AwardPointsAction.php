@@ -76,15 +76,18 @@ class AwardPointsAction
                     'idempotency_fingerprint' => $fingerprint,
                     'description' => $data->description,
                     'occurred_at' => $data->occurredAt ?? now(),
-                    'metadata' => $data->earningRule
-                        ? array_merge($data->metadata, [
+                    // awards_xp: برگشت این ردیف (مثلاً مرجوعی سفارش) باید بداند XP را هم کم کند یا نه.
+                    'metadata' => array_merge(
+                        $data->metadata,
+                        ['awards_xp' => $data->awardsXp],
+                        $data->earningRule ? [
                             'earning_rule_snapshot' => [
                                 'code' => $data->earningRule->code,
                                 'type' => $data->earningRule->type->value,
                                 'config' => $data->earningRule->config,
                             ],
-                        ])
-                        : $data->metadata,
+                        ] : [],
+                    ),
                 ]);
 
                 // پاداش ارتقای سطح فقط برای امتیازهای XP-دار پردازش می‌شود تا

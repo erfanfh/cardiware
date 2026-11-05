@@ -30,6 +30,18 @@ class SubmitPollVoteAction
             throw ValidationException::withMessages(['poll' => 'برای شرکت در این نظرسنجی باید وارد حساب کاربری شوید.']);
         }
 
+        if ($poll->audience === PollAudienceEnum::CLUB_ELITE) {
+            $elite = app(\App\Application\Loyalty\Support\ClubEliteMembership::class);
+            $voter = $identity->userId ? \App\Domain\Identity\Models\User::query()->find($identity->userId) : null;
+
+            if (! $elite->isMember($voter)) {
+                $levelTitle = $elite->level()?->title;
+                throw ValidationException::withMessages(['poll' => $levelTitle
+                    ? "این نظرسنجی مخصوص کانون نخبگان باشگاه است (سطح «{$levelTitle}» به بالا)."
+                    : 'این نظرسنجی مخصوص کانون نخبگان باشگاه است.']);
+            }
+        }
+
         $optionIds = collect($optionIds)->map(fn ($id) => (int) $id)->filter()->unique()->values()->all();
         $count = count($optionIds);
 

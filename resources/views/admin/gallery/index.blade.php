@@ -44,7 +44,7 @@
                             <x-admin.form.input
                                 name="image_points"
                                 type="number"
-                                value="{{ old('image_points', get_setting('gallery', 'image_points', 150)) }}"
+                                value="{{ old('image_points', get_setting('gallery', 'image_points', 80)) }}"
                             />
                         </x-admin.field>
 
@@ -52,7 +52,39 @@
                             <x-admin.form.input
                                 name="video_points"
                                 type="number"
-                                value="{{ old('video_points', get_setting('gallery', 'video_points', 500)) }}"
+                                value="{{ old('video_points', get_setting('gallery', 'video_points', 200)) }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="درصد امتیاز دومین رسانه کاربر" hint="اولین رسانه‌ی تأییدشده‌ی هر کاربر امتیاز کامل می‌گیرد؛ دومی این درصد.">
+                            <x-admin.form.input
+                                name="second_points_percent"
+                                type="number" min="0" max="100"
+                                value="{{ old('second_points_percent', get_setting('gallery', 'second_points_percent', 50)) }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="درصد امتیاز سومین رسانه به بعد">
+                            <x-admin.form.input
+                                name="later_points_percent"
+                                type="number" min="0" max="100"
+                                value="{{ old('later_points_percent', get_setting('gallery', 'later_points_percent', 25)) }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="سقف رسانه‌های امتیازدار در ماه" hint="بیش از این تعداد در یک ماه شمسی تأیید می‌شود ولی امتیاز نمی‌گیرد. صفر = بدون سقف.">
+                            <x-admin.form.input
+                                name="monthly_rewarded_limit"
+                                type="number" min="0"
+                                value="{{ old('monthly_rewarded_limit', get_setting('gallery', 'monthly_rewarded_limit', 3)) }}"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="سقف ارسال هر کاربر در ماه" hint="بعد از این تعداد، فرم ارسال تا ماه بعد بسته می‌شود. صفر = بدون سقف.">
+                            <x-admin.form.input
+                                name="monthly_submission_limit"
+                                type="number" min="0"
+                                value="{{ old('monthly_submission_limit', get_setting('gallery', 'monthly_submission_limit', 10)) }}"
                             />
                         </x-admin.field>
 
@@ -100,10 +132,12 @@
                             @foreach($submissions as $submission)
                                 <tr class="border-t border-slate-100 dark:border-slate-800">
                                     <td class="p-3">
-                                        @php($adminThumb = $submission->image_url ?: ($submission->image_path ? asset($submission->image_path) : null))
-                                        @if($submission->type->value === 'image' && $adminThumb)
-                                            <img src="{{ $adminThumb }}" alt="{{ $submission->title }}"
-                                                 class="h-14 w-20 rounded-xl border border-slate-200 object-cover dark:border-slate-700">
+                                        @php($mediaUrl = $submission->mediaUrl())
+                                        @if($submission->type->value === 'image' && $mediaUrl)
+                                            <a href="{{ $mediaUrl }}" target="_blank" rel="noopener noreferrer" title="نمایش تصویر در اندازه اصلی">
+                                                <img src="{{ $mediaUrl }}" alt="{{ $submission->title }}" loading="lazy"
+                                                     class="h-14 w-20 rounded-xl border border-slate-200 object-cover dark:border-slate-700">
+                                            </a>
                                         @else
                                             <span class="grid h-14 w-20 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800 [&_svg]:h-5 [&_svg]:w-5">
                                                 @include('icons.play')
@@ -114,9 +148,29 @@
                                     <td class="max-w-[220px] p-3">
                                         <div class="truncate font-bold dark:text-slate-100">{{ $submission->title }}</div>
                                         <div class="truncate text-xs text-slate-500 dark:text-slate-400">{{ $submission->description }}</div>
-                                        @if($submission->video_url)
-                                            <a href="{{ $submission->video_url }}" target="_blank" rel="noopener"
-                                               class="mt-1 inline-block text-[11px] font-bold text-brand-600 hover:underline dark:text-brand-400">مشاهده ویدیو ↗</a>
+                                        <div class="mt-1 flex flex-wrap gap-1.5 text-[10px] font-bold">
+                                            @if($submission->order_number)
+                                                <span class="rounded-lg bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300" dir="ltr">سفارش: {{ $submission->order_number }}</span>
+                                            @endif
+                                            @if($submission->purchaser_mobile)
+                                                <span class="rounded-lg bg-slate-100 px-2 py-0.5 text-slate-600 dark:bg-slate-800 dark:text-slate-300" dir="ltr">{{ $submission->purchaser_mobile }}</span>
+                                            @endif
+                                        </div>
+                                        @if($mediaUrl)
+                                            <div class="mt-2 flex max-w-[320px] items-center gap-1.5" x-data="{ copied: false }">
+                                                <input type="text" readonly value="{{ $mediaUrl }}" dir="ltr" onclick="this.select()"
+                                                       class="h-8 min-w-0 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 text-[11px] text-slate-600 outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                                                <a href="{{ $mediaUrl }}" target="_blank" rel="noopener noreferrer" download
+                                                   class="inline-flex h-8 shrink-0 items-center rounded-lg bg-brand-500 px-2.5 text-[11px] font-extrabold text-white transition hover:bg-brand-600">
+                                                    {{ $submission->type->value === 'video' ? 'باز کردن ویدیو' : 'دانلود' }}
+                                                </a>
+                                                <button type="button"
+                                                        x-on:click="navigator.clipboard.writeText(@js($mediaUrl)); copied = true; setTimeout(() => copied = false, 1500)"
+                                                        class="inline-flex h-8 shrink-0 cursor-pointer items-center rounded-lg border border-slate-200 px-2 text-[11px] font-extrabold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+                                                        x-text="copied ? 'کپی شد' : 'کپی'">کپی</button>
+                                            </div>
+                                        @else
+                                            <div class="mt-1 text-[11px] font-bold text-red-500">لینک رسانه معتبر نیست (فقط http/https).</div>
                                         @endif
                                     </td>
 
@@ -139,10 +193,15 @@
                                     <td class="p-3">
                                         <div class="flex flex-wrap items-center gap-2">
                                             @if($submission->status->value !== 'approved')
-                                                <form action="{{ route('admin.gallery.status', $submission) }}" method="post">
+                                                <form action="{{ route('admin.gallery.status', $submission) }}" method="post" class="flex items-center gap-1.5">
                                                     @csrf
                                                     @method('patch')
                                                     <input type="hidden" name="status" value="approved">
+                                                    <label>
+                                                        <input type="number" name="points" min="0" max="1000000" dir="ltr" placeholder="امتیاز"
+                                                               title="خالی = امتیاز پیش‌فرض کاهشی (اولی تصویر {{ get_setting('gallery', 'image_points', 80) }} / ویدیو {{ get_setting('gallery', 'video_points', 200) }}، بعدی‌ها کمتر)"
+                                                               class="h-9 w-24 rounded-xl border border-slate-200 bg-slate-50 px-2 text-xs font-bold text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:ring-emerald-500/10">
+                                                    </label>
                                                     <button type="submit"
                                                             class="inline-flex h-9 cursor-pointer items-center rounded-xl bg-emerald-500 px-3 text-xs font-extrabold text-white transition hover:bg-emerald-600">
                                                         تأیید

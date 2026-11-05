@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
+use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\MediaFileCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
@@ -49,6 +50,8 @@ class FooterSettings extends BaseSettings
         'namad_code',
         'stats_bg_image',
         'stats_animation_enabled',
+        'background_image',
+        'background_pattern',
     ];
 
     protected array $casts = [
@@ -59,6 +62,7 @@ class FooterSettings extends BaseSettings
         'column4_image' => MediaFileCast::class,
         'column4_image_dark' => MediaFileCast::class,
         'stats_bg_image' => MediaFileCast::class,
-        'stats_animation_enabled' => 'boolean',
+        'background_image' => MediaFileCast::class,
+        'stats_animation_enabled' => BooleanCast::class,
     ];
 }

@@ -6,9 +6,12 @@ use App\Http\Controllers\Admin\System\TeamSettingMemberSearchController;
 
 Route::prefix('settings')->name('settings.')->controller(SettingController::class)->group(function () {
     Route::get('product-landings/{document?}', 'productLandings')
-        ->where('document', 'ultimate|fifa23|pages|catalog')->name('product-landings');
+        ->where('document', 'ultimate|fifa23|pages|catalog|p_[a-z0-9_]{1,40}')->name('product-landings');
     Route::put('product-landings/{document}', 'storeProductLandings')
-        ->where('document', 'ultimate|fifa23|pages|catalog')->name('product-landings.store');
+        ->where('document', 'ultimate|fifa23|pages|catalog|p_[a-z0-9_]{1,40}')->name('product-landings.store');
+    Route::post('product-landings-custom', 'storeCustomProductLanding')->name('product-landings.custom.store');
+    Route::delete('product-landings-custom/{document}', 'destroyCustomProductLanding')
+        ->where('document', 'p_[a-z0-9_]{1,40}')->name('product-landings.custom.destroy');
     Route::get('backup', 'backup')->name('backup');
     Route::put('backup', 'storeBackup')->name('backup.store');
     Route::post('backup/run', 'runBackup')->name('backup.run');
@@ -28,6 +31,10 @@ Route::prefix('settings')->name('settings.')->controller(SettingController::clas
     Route::put('footer', 'storeFooter')->name('footer.store');
     Route::get('home', 'home')->name('home');
     Route::put('home', 'storeHome')->name('home.store');
+    Route::get('festival', 'festival')->name('festival');
+    Route::put('festival', 'storeFestival')->name('festival.store');
+    Route::get('integrations', 'integrations')->name('integrations');
+    Route::put('integrations', 'storeIntegrations')->name('integrations.store');
     Route::get('about-us', 'aboutUs')->name('about-us');
     Route::put('about-us', 'storeAboutUs')->name('about-us.store');
     Route::get('team', 'team')->name('team');

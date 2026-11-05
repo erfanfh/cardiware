@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\Launcher\LauncherBootstrapController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherCatalogController;
+use App\Http\Controllers\Api\V1\Launcher\LauncherClubController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherDeviceController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherSlideController;
 use App\Http\Controllers\Api\V1\Launcher\LauncherPortalContentController;
@@ -44,6 +45,9 @@ Route::middleware([
                 ->name('notifications.read');
             Route::get('guides', [LauncherPortalContentController::class, 'guides'])
                 ->name('guides.index');
+            // امتیاز، سطح، رتبه و وضعیت VIP برای کارت پروفایل لانچر.
+            Route::get('club', LauncherClubController::class)
+                ->name('club');
             Route::get('catalog', [LauncherCatalogController::class, 'index'])
                 ->name('catalog.index');
             Route::get('catalog/{saleItem}', [LauncherCatalogController::class, 'show'])
@@ -56,7 +60,12 @@ Route::middleware([
             Route::post('sale-items/{saleItem}/checkout', [LauncherCommerceController::class, 'checkout'])
                 ->whereNumber('saleItem')
                 ->name('sale-items.checkout');
+            Route::post('mods/{mod}/checkout', [LauncherCommerceController::class, 'modCheckout'])
+                ->whereNumber('mod')
+                ->name('mods.checkout');
+            // لانچر تا پایان پرداخت هر ۱۰ ثانیه وضعیت را می‌پرسد.
             Route::post('checkout/consume', [LauncherCommerceController::class, 'consume'])
+                ->middleware('throttle:30,1')
                 ->name('checkout.consume');
         });
 

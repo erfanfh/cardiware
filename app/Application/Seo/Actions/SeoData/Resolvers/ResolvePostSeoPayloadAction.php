@@ -107,7 +107,8 @@ final class ResolvePostSeoPayloadAction
             modifiedTime: $modifiedTime,
 
             authorName: $author?->display_name,
-            authorUrl: $author ? front_route('author', $author) : null,
+            // نویسنده‌ی بدون نام کاربری صفحه‌ی نویسنده ندارد؛ لینک نمی‌سازیم تا صفحه خطا ندهد.
+            authorUrl: $author && filled($author->username) ? front_route('author', $author) : null,
             authorIdentifier: $author?->id ? (string)$author->id : $author?->display_name,
             authorSameAs: $this->resolveAuthorSameAs($author),
 

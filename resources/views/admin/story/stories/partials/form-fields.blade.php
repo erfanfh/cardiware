@@ -31,6 +31,10 @@
                            hint="زیر عنوان در بالای نمایشگر استوری دیده می‌شود.">
                 <x-admin.form.input name="subtitle" :value="old('subtitle', $story?->subtitle)" maxlength="255"/>
             </x-admin.field>
+            <x-admin.field label="بج دایره (اختیاری)" :error="$errors->first('badge')"
+                           hint="مثل: ویدیو، لایو، جدید — به‌صورت قرص کوچک پایین دایره استوری نشان داده می‌شود.">
+                <x-admin.form.input name="badge" :value="old('badge', $story?->badge)" maxlength="40"/>
+            </x-admin.field>
             <div class="md:col-span-2">
                 <x-admin.field label="توضیحات" :error="$errors->first('caption')"
                                hint="متن ساده در پایین استوری؛ حداکثر ۲۰۰۰ کاراکتر.">

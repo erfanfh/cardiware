@@ -22,6 +22,7 @@
 
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
 @include('front.header.index')
+@include('front.partials.integrations-embeds')
 @if(request()->routeIs('preview.*'))
     <div
         class="sticky top-0 z-10 border-y border-amber-300 bg-amber-100 px-4 py-2 text-center text-xs font-black text-amber-950 shadow-sm">

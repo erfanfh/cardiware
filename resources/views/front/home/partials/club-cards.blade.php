@@ -32,6 +32,23 @@
                     {{ $clubCards['vip']['subtitle'] }}
                 </p>
 
+                {{-- تصویر اختیاری کارت --}}
+                @if(!empty($clubCards['vip']['image_path']))
+                    <div class="relative mt-3 overflow-hidden rounded-2xl ring-1 ring-amber-500/20">
+                        <img src="{{ $clubCards['vip']['image_path'] }}" alt="{{ $clubCards['vip']['title'] }}"
+                             class="h-36 w-full object-cover transition duration-500 group-hover:scale-[1.04] sm:h-40"
+                             loading="lazy">
+                        <span class="absolute inset-0 bg-gradient-to-t from-amber-950/45 via-transparent to-transparent" aria-hidden="true"></span>
+                    </div>
+                @endif
+
+                {{-- توضیح کامل؛ وسط کارت خالی نمی‌ماند --}}
+                @if(!empty($clubCards['vip']['description']))
+                    <div class="mt-3 rounded-2xl border border-amber-500/15 bg-amber-50/60 px-3.5 py-3 text-[11.5px] leading-6 whitespace-pre-line text-slate-700 dark:border-amber-500/15 dark:bg-amber-500/5 dark:text-slate-300">
+                        {{ $clubCards['vip']['description'] }}
+                    </div>
+                @endif
+
                 <span class="mt-auto pt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-amber-400 to-yellow-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-amber-500/30 transition group-hover:shadow-amber-500/50 group-hover:brightness-110">
                     {{ $clubCards['vip']['button_title'] }}
                     <span class="[&_svg]:h-4 [&_svg]:w-4">
@@ -60,35 +77,42 @@
                 </a>
             </div>
 
-            <div class="space-y-2.5">
+            <div class="mw-club-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pl-1 [-ms-overflow-style:none] [scrollbar-width:thin]">
                 @forelse($clubCards['projects'] as $project)
                     @php
-                        $projectDone = ((int)($project->progress_percent ?? 0)) >= 100;
+                        $clubProgress = max(0, min(100, (int)($project->progress_percent ?? 0)));
+                        $projectDone = $clubProgress >= 100;
+                        $clubHue = (int) round($clubProgress * 1.42);
                     @endphp
                     <a href="{{ front_route('projects.detail', $project) }}"
-                       class="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 transition hover:border-brand-200 hover:bg-white dark:border-slate-700/70 dark:bg-slate-900/60 dark:hover:border-brand-500/30 dark:hover:bg-slate-900">
-                        <span class="mw-club-projects-dot {{ $projectDone ? 'is-done' : '' }}" aria-hidden="true"></span>
+                       class="group relative block overflow-hidden rounded-2xl border border-transparent bg-slate-50/80 px-4 py-3 ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-0.5 hover:bg-white hover:ring-brand-300/60 dark:bg-slate-900/70 dark:ring-slate-800 dark:hover:bg-slate-900 dark:hover:ring-brand-700/50">
+                        <span class="absolute inset-y-0 right-0 w-1 rounded-full {{ $projectDone ? 'bg-emerald-500' : 'bg-brand-500' }}" aria-hidden="true"></span>
 
-                        <span class="min-w-0 flex-1">
-                            <span class="block truncate text-sm font-bold text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">
-                                {{ $project->title }}
+                        <span class="flex items-center justify-between gap-2">
+                            <span class="flex min-w-0 items-center gap-2">
+                                <span class="mw-club-projects-dot {{ $projectDone ? 'is-done' : '' }}" aria-hidden="true"></span>
+
+                                <span class="truncate text-sm font-extrabold text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">
+                                    {{ $project->title }}
+                                </span>
                             </span>
-                            <span class="block truncate text-[11px] text-slate-500 dark:text-slate-400">
-                                {{ $project->excerpt() }}
+
+                            <span class="shrink-0 text-[11px] font-black {{ $projectDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-brand-600 dark:text-brand-400' }}">
+                                {{ $clubProgress }}٪
                             </span>
                         </span>
 
-                        @if($projectDone)
-                            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10.5px] font-extrabold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 mw-pulse-dot"></span>
-                                تکمیل شد
-                            </span>
-                        @else
-                            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-2.5 py-1 text-[10.5px] font-extrabold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                <span class="h-1.5 w-1.5 rounded-full bg-brand-500 mw-pulse-dot"></span>
-                                در حال ساخت
+                        @if($project->excerpt())
+                            <span class="mt-1.5 block text-[11px] leading-5 text-slate-500 line-clamp-2 dark:text-slate-400">
+                                {{ $project->excerpt() }}
                             </span>
                         @endif
+
+                        {{-- نوار پیشرفت مینی‌مال هم‌رنگ درصد --}}
+                        <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-slate-800" aria-hidden="true">
+                            <span class="block h-full rounded-full transition-all duration-700"
+                                  style="width: {{ $clubProgress }}%; background: linear-gradient(to left, hsl({{ min(160, $clubHue + 16) }} 82% 46%), hsl({{ $projectDone ? 152 : $clubHue }} 84% 52%));"></span>
+                        </span>
                     </a>
                 @empty
                     <div class="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -115,7 +139,7 @@
                     </div>
                 </div>
 
-                <div class="space-y-1.5">
+                <div class="mw-club-scroll max-h-[26rem] space-y-1.5 overflow-y-auto pl-1 [-ms-overflow-style:none] [scrollbar-width:thin]">
                     @forelse($clubCards['topUsers'] as $index => $leader)
                         @php
                             $leaderUser = $leader->user;

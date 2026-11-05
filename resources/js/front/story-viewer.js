@@ -13,6 +13,32 @@ export default function storyViewer(stories = []) {
         elapsedMs: 0,
         paused: false,
         imageError: false,
+        seen: {},
+
+        init() {
+            try {
+                this.seen = JSON.parse(localStorage.getItem('mw:stories-seen') || '{}') || {};
+            } catch (e) {
+                this.seen = {};
+            }
+        },
+
+        isSeen(id) {
+            return Boolean(this.seen[id]);
+        },
+
+        markSeen() {
+            const id = this.current.id;
+            if (id === undefined || this.seen[id]) return;
+            this.seen = { ...this.seen, [id]: Date.now() };
+            try {
+                // فقط آخرین ۲۰۰ استوری دیده‌شده نگه داشته می‌شود.
+                const recent = Object.entries(this.seen).sort((a, b) => b[1] - a[1]).slice(0, 200);
+                localStorage.setItem('mw:stories-seen', JSON.stringify(Object.fromEntries(recent)));
+            } catch (e) {
+                // حالت خصوصی مرورگر: فقط در همین صفحه یادش می‌ماند.
+            }
+        },
 
         get current() {
             return this.stories[this.index] || {};
@@ -53,6 +79,7 @@ export default function storyViewer(stories = []) {
             resumeAfterHold = false;
             resumeAfterVisibility = false;
             lastTick = Date.now();
+            this.markSeen();
         },
 
         tick() {

@@ -178,7 +178,7 @@
                                class="mt-1 rounded border-violet-300 text-violet-600 focus:ring-violet-200">
                         <span>
                             <span class="block text-sm font-bold text-slate-800">دسترسی با اشتراک VIP</span>
-                            <span class="mt-1 block text-xs leading-6 text-slate-600">برای نسخه‌های دارای دانلود مستقیم: کاربر با اشتراک فعال این نسخه را به دانلودهای خود اضافه می‌کند. با پایان اشتراک، دانلود قطع می‌شود و سابقه انتخاب باقی می‌ماند.</span>
+                            <span class="mt-1 block text-xs leading-6 text-slate-600">دانلود مستقیم: کاربر با اشتراک فعال این نسخه را به دانلودهای خود اضافه می‌کند. لانچر: نسخه برای کاربر VIP در لانچر باز و قابل نصب می‌شود. در هر دو حالت با پایان اشتراک، دسترسی دوباره قفل می‌شود (خرید دائمی همچنان ممکن است).</span>
                         </span>
                     </label>
                 </div>

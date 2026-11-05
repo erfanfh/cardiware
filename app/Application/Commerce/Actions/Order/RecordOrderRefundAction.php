@@ -24,18 +24,27 @@ class RecordOrderRefundAction
         Order $order,
         OrderRefundMethodEnum $method,
         ?User $admin,
+        ?int $amount = null,
     ): OrderRefund {
         if ($order->refund()->exists()) {
             throw new DomainException('This order has already been refunded.');
         }
 
-        $amount = (int) $order->getPayableAmount();
-        if ($amount <= 0) {
+        $payable = (int) $order->getPayableAmount();
+        if ($payable <= 0) {
             throw new DomainException('This order has no refundable amount.');
         }
 
+        // مبلغ استرداد دلخواه است (مثلاً مرجوعی ماد با کسر بخشی از مبلغ)؛ پیش‌فرض
+        // کل مبلغ پرداختی است و هرگز بیشتر از آن نمی‌شود. صفر یعنی مرجوعی بدون
+        // بازگشت وجه: دسترسی و امتیاز برگردانده می‌شود ولی پولی جابه‌جا نمی‌شود.
+        $amount ??= $payable;
+        if ($amount < 0 || $amount > $payable) {
+            throw new DomainException('Refund amount is out of range.');
+        }
+
         $walletTransaction = null;
-        if ($method === OrderRefundMethodEnum::WALLET) {
+        if ($method === OrderRefundMethodEnum::WALLET && $amount > 0) {
             $user = User::query()->withTrashed()->findOrFail($order->user_id);
             $wallet = $this->getOrCreateWallet->execute($user);
             if (!$wallet->allowsUserTransactions()) {

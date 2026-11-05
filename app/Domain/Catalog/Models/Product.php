@@ -356,6 +356,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
     {
         return PurchaseAccess::query()
             ->where('user_id', $userId)
+            ->owned()
             ->whereIn('status', [
                 PurchaseAccessStatusEnum::ACTIVE->value,
                 PurchaseAccessStatusEnum::EXPIRED->value,

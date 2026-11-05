@@ -60,7 +60,7 @@
     </p>
 
     <a
-        href="{{ route('stores.detail', $product->store) }}"
+        href="{{ filled($product->store?->slug) ? route('stores.detail', $product->store) : '#' }}"
         class="mt-4 flex h-10 w-full items-center justify-center rounded-xl bg-brand-500 px-4 text-xs font-bold text-white transition hover:bg-brand-600"
     >
         مشاهده فروشگاه

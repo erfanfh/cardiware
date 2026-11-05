@@ -1,0 +1,47 @@
+/* ===== Festival landing (لندینگ جشنواره‌های مناسبتی) ===== */
+
+.mw-festival {
+    background:
+        radial-gradient(70% 50% at 85% -5%, var(--festival-accent-soft), transparent 65%),
+        radial-gradient(55% 40% at 5% 15%, var(--festival-accent-soft), transparent 70%);
+}
+
+.mw-festival-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: .12;
+    pointer-events: none;
+}
+
+.dark .mw-festival-bg { opacity: .16; }
+
+/* پترن با کلاس مشترک mw-footer-pattern رندر می‌شود؛ اینجا فقط z-index پشت محتوا تثبیت می‌شود */
+.mw-festival-pattern {
+    z-index: -1;
+    opacity: .45;
+}
+
+.mw-festival-pattern.is-dots {
+    background-image: radial-gradient(circle, var(--festival-accent) 1px, transparent 1.5px);
+    background-size: 24px 24px;
+}
+
+.mw-festival-pattern.is-grid {
+    background-image:
+        linear-gradient(to left, color-mix(in srgb, var(--festival-accent) 9%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in srgb, var(--festival-accent) 9%, transparent) 1px, transparent 1px);
+    background-size: 38px 38px;
+}
+
+.mw-festival-pattern.is-diag {
+    background-image: repeating-linear-gradient(
+        -45deg,
+        color-mix(in srgb, var(--festival-accent) 6%, transparent) 0 2px,
+        transparent 2px 15px
+    );
+}

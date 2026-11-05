@@ -2,16 +2,49 @@
     <section x-data="storyViewer(@js($stories))" @keydown.window="handleKeydown($event)"
              @visibilitychange.document="visibilityChanged()" aria-label="استوری‌ها">
         <div class="mx-auto max-w-7xl px-4">
-            <div class="flex items-center gap-6 overflow-x-auto pb-2 sm:gap-9 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div class="mw-stories-row flex snap-x items-start gap-4 overflow-x-auto px-1 pb-3 pt-1 sm:gap-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 @foreach($stories as $story)
-                    <button type="button" class="group flex shrink-0 flex-col items-center gap-2 text-center"
+                    @php
+                        // هر استوری رنگ خودش را دارد (حلقه + برچسب)؛ بعد از دیدن، حلقه خاکستری می‌شود.
+                        $palette = [
+                            ['ring' => 'from-[#f97316] via-[#f43f5e] to-[#a855f7]', 'pill' => 'from-[#f97316] to-[#f43f5e]'],
+                            ['ring' => 'from-[#10b981] via-[#06b6d4] to-[#3b82f6]', 'pill' => 'from-[#10b981] to-[#06b6d4]'],
+                            ['ring' => 'from-[#ef4444] via-[#f97316] to-[#facc15]', 'pill' => 'from-[#ef4444] to-[#f97316]'],
+                            ['ring' => 'from-[#8b5cf6] via-[#d946ef] to-[#ec4899]', 'pill' => 'from-[#8b5cf6] to-[#d946ef]'],
+                            ['ring' => 'from-[#0ea5e9] via-[#14b8a6] to-[#84cc16]', 'pill' => 'from-[#0ea5e9] to-[#14b8a6]'],
+                        ];
+                        $colors = $palette[$loop->index % count($palette)];
+                        $badgeText = trim((string) ($story['badge'] ?? ''));
+                        $isLive = mb_strpos($badgeText, 'لایو') !== false;
+                    @endphp
+
+                    <button type="button" class="group flex w-[5.5rem] shrink-0 snap-start flex-col items-center gap-2.5 text-center sm:w-24"
                             @click="openByIndex({{ $loop->index }})" aria-haspopup="dialog" aria-label="مشاهده استوری {{ $story['title'] }}">
-                        <span class="h-16 w-16 rounded-full bg-gradient-to-tr from-brand-400 to-brand-600 p-[2px]">
-                            <span class="grid h-full w-full place-items-center rounded-full bg-white dark:bg-slate-900">
-                                <img src="{{ $story['thumb'] }}" alt="" class="h-14 w-14 rounded-full object-cover" loading="lazy" width="56" height="56">
+                        <span class="relative block">
+                            {{-- حلقه رنگی ضخیم + فاصله سفید؛ استوری دیده‌شده حلقه خاکستری نازک دارد --}}
+                            <span class="block h-[5.25rem] w-[5.25rem] rounded-full p-[3px] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_10px_24px_-10px_rgba(244,63,94,.55)] sm:h-[5.75rem] sm:w-[5.75rem]"
+                                  :class="isSeen(@js($story['id'])) ? 'bg-slate-300 dark:bg-slate-700 p-[2px]' : 'bg-gradient-to-tr {{ $colors['ring'] }}'">
+                                <span class="block h-full w-full rounded-full bg-white p-[2px] dark:bg-slate-950">
+                                    {{-- کمی بزرگ‌نمایی تا لوگوهایی که حاشیه سفید دارند دایره را پر کنند --}}
+                                    <span class="block h-full w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                                    <img src="{{ $story['thumb'] }}" alt=""
+                                         class="h-full w-full scale-[1.18] object-cover transition duration-300 group-hover:scale-[1.24]"
+                                         loading="lazy" width="88" height="88">
+                                    </span>
+                                </span>
                             </span>
+
+                            @if($badgeText !== '')
+                                <span class="absolute -bottom-2 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full border-2 border-white bg-gradient-to-l px-2.5 py-[3px] text-[10px] font-black leading-none text-white shadow-md dark:border-slate-950 {{ $isLive ? 'from-red-600 to-red-500' : $colors['pill'] }}">
+                                    @if($isLive)
+                                        <span class="ml-1 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-white align-middle"></span>
+                                    @endif
+                                    {{ $badgeText }}
+                                </span>
+                            @endif
                         </span>
-                        <span class="max-w-24 truncate text-xs font-semibold text-slate-600 transition group-hover:text-slate-800 dark:text-slate-400 dark:group-hover:text-slate-200">{{ $story['title'] }}</span>
+
+                        <span class="line-clamp-2 w-full text-[12px] font-extrabold leading-5 text-slate-700 transition group-hover:text-brand-600 dark:text-slate-300 dark:group-hover:text-brand-300">{{ $story['title'] }}</span>
                     </button>
                 @endforeach
             </div>

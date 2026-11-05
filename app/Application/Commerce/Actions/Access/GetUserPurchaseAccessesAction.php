@@ -15,6 +15,8 @@ class GetUserPurchaseAccessesAction
     {
         return PurchaseAccess::query()
             ->where('user_id', $userId)
+            // دسترسی امانی VIP خرید نیست و در «دانلودهای من» نمایش داده نمی‌شود.
+            ->owned()
             ->with([
                 'product.picture',
                 'product.installationSteps',

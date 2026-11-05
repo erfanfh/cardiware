@@ -14,12 +14,14 @@ use App\Domain\Launcher\Models\LauncherDevice;
 use App\Domain\Launcher\Models\LauncherDownloadSession;
 use App\Domain\Launcher\Models\LauncherMod;
 use App\Domain\Launcher\Models\LauncherModFile;
+use App\Domain\Launcher\Models\LauncherModGrant;
 use App\Domain\Launcher\Models\LauncherUpdate;
 use App\Domain\Launcher\Models\LauncherUpdateFile;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PrepareLauncherContentDownloadAction
@@ -373,6 +375,12 @@ class PrepareLauncherContentDownloadAction
                 ->published()
                 ->first();
 
+            // مادهای پولی/VIP فقط با گرانت خرید (دائمی) یا اشتراک VIP فعال؛
+            // داشتنِ خودِ محصول کافی نیست.
+            if ($content instanceof LauncherMod && !$this->userCanAccessMod($content, $userId)) {
+                throw new HttpException(403, 'دسترسی به این ماد فعال نیست.');
+            }
+
             $file = $content
                 ? $this->resolveContentFile(
                     LauncherModFile::query()->where('launcher_mod_id', $content->getKey()),
@@ -403,6 +411,22 @@ class PrepareLauncherContentDownloadAction
         }
 
         return [$content, $file];
+    }
+
+    /**
+     * آیا این کاربر به مادِ پولی دسترسی دارد؟ فقط گرانت (خرید تکی، یا
+     * vip_permanent قدیمی) دسترسی می‌دهد؛ اشتراک ویژه ماد باز نمی‌کند.
+     */
+    private function userCanAccessMod(LauncherMod $mod, int $userId): bool
+    {
+        if ($mod->isFreeAccess()) {
+            return true;
+        }
+
+        return LauncherModGrant::query()
+            ->where('user_id', $userId)
+            ->where('launcher_mod_id', $mod->getKey())
+            ->exists();
     }
 
     /**

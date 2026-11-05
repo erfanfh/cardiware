@@ -31,8 +31,9 @@ class GetAudienceClubOverviewAction
     ) {}
 
     /** @return array<string, mixed> */
-    public function execute(User $user): array
+    public function execute(User $user, ?string $historyFilter = null): array
     {
+        $historyFilter = in_array($historyFilter, ['earned', 'spent'], true) ? $historyFilter : null;
         $account = $user->pointAccount()->first();
         $balance = (int) ($account?->balance ?? 0);
         $wallet = $user->wallet()->first();
@@ -63,7 +64,9 @@ class GetAudienceClubOverviewAction
             $maximumConvertiblePoints,
         );
 
-        $pointEntries = $this->pointEntries($account?->getKey());
+        $pointEntries = $this->pointEntries($account?->getKey(), $historyFilter);
+        $vipBonus = app(ResolveVipPointsBonusAction::class);
+        $isVip = $user->hasActiveVipSubscription();
         $lifetimeEarned = (int) ($account?->lifetime_earned ?? 0);
         $lifetimeXp = (int) ($account?->lifetime_xp ?? 0);
         $level = $this->resolveUserLevel->execute($account);
@@ -145,6 +148,16 @@ class GetAudienceClubOverviewAction
                 'ladder' => $this->resolveUserLevel->activeLevels(),
             ],
             'pointEntries' => $pointEntries,
+            'historyFilter' => $historyFilter,
+            'spendBreakdown' => $this->spendBreakdown($account?->getKey()),
+            'vip' => [
+                'isVip' => $isVip,
+                'bonusPercent' => $vipBonus->percent(),
+                'bonusEarned' => $this->vipBonusEarned($account?->getKey()),
+                'since' => $isVip ? \App\Application\Loyalty\Support\VipClubProfile::activeSince($user) : null,
+                'bio' => $user->club_bio,
+                'theme' => \App\Application\Loyalty\Support\VipClubProfile::themeKey($user->club_theme),
+            ],
             'monthlySummary' => $this->monthlySummary($account?->getKey(), $user),
             'streak' => $gamification['streak'],
             'missions' => $gamification['missions'],
@@ -175,7 +188,75 @@ class GetAudienceClubOverviewAction
         ];
     }
 
-    private function pointEntries(?int $accountId): LengthAwarePaginator
+    /**
+     * امتیازهای مصرف‌شده به تفکیک کاربرد (مصرف‌های برگشت‌خورده حساب نمی‌شوند).
+     *
+     * @return list<array{key: string, label: string, points: int, count: int}>
+     */
+    private function spendBreakdown(?int $accountId): array
+    {
+        if (! $accountId) {
+            return [];
+        }
+
+        $entries = PointLedgerEntry::query()
+            ->where('point_account_id', $accountId)
+            ->where('type', \App\Domain\Loyalty\Enums\PointEntryTypeEnum::SPEND->value)
+            ->whereNotExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('point_ledger_entries as reversals')
+                ->whereColumn('reversals.reversal_of_id', 'point_ledger_entries.id'))
+            ->get(['id', 'reason', 'amount', 'reference_type', 'reference_id']);
+
+        $offerTypes = RewardOffer::query()
+            ->whereIn('id', $entries->where('reference_type', (new RewardOffer)->getMorphClass())->pluck('reference_id')->filter()->unique())
+            ->pluck('type', 'id');
+
+        $groups = [];
+        foreach ($entries as $entry) {
+            [$key, $label] = self::spendCategory($entry, $offerTypes->get($entry->reference_id));
+            $groups[$key] ??= ['key' => $key, 'label' => $label, 'points' => 0, 'count' => 0];
+            $groups[$key]['points'] += (int) $entry->amount;
+            $groups[$key]['count']++;
+        }
+
+        usort($groups, fn (array $a, array $b): int => $b['points'] <=> $a['points']);
+
+        return $groups;
+    }
+
+    /** @return array{0: string, 1: string} */
+    public static function spendCategory(PointLedgerEntry $entry, mixed $offerType = null): array
+    {
+        $offerType = $offerType instanceof RewardTypeEnum ? $offerType : RewardTypeEnum::tryFrom((string) $offerType);
+
+        return match (true) {
+            $offerType === RewardTypeEnum::COUPON => ['coupon', 'خرید کد تخفیف'],
+            $offerType === RewardTypeEnum::RAFFLE_TICKET => ['raffle', 'ثبت کد قرعه‌کشی'],
+            $entry->reason === 'wallet_conversion' => ['wallet', 'تبدیل به موجودی کیف پول'],
+            in_array($entry->reason, ['reward_redemption', 'reward_redeem'], true) => ['reward', 'دریافت پاداش'],
+            default => ['other', 'سایر مصرف‌ها'],
+        };
+    }
+
+    /** امتیاز اضافه‌ای که به‌خاطر VIP بودن گرفته شده. */
+    private function vipBonusEarned(?int $accountId): int
+    {
+        if (! $accountId) {
+            return 0;
+        }
+
+        return (int) PointLedgerEntry::query()
+            ->where('point_account_id', $accountId)
+            ->where('type', \App\Domain\Loyalty\Enums\PointEntryTypeEnum::EARN->value)
+            ->where('metadata', 'like', '%vip_bonus_percent%')
+            ->whereNotExists(fn ($query) => $query->select(DB::raw(1))
+                ->from('point_ledger_entries as reversals')
+                ->whereColumn('reversals.reversal_of_id', 'point_ledger_entries.id'))
+            ->get(['amount', 'metadata'])
+            ->sum(fn (PointLedgerEntry $entry): int => max(0, (int) $entry->amount - (int) data_get($entry->metadata, 'points_before_vip_bonus', $entry->amount)));
+    }
+
+    private function pointEntries(?int $accountId, ?string $filter = null): LengthAwarePaginator
     {
         if (! $accountId) {
             return PointLedgerEntry::query()
@@ -186,6 +267,8 @@ class GetAudienceClubOverviewAction
 
         return PointLedgerEntry::query()
             ->where('point_account_id', $accountId)
+            ->when($filter === 'earned', fn ($query) => $query->where('direction', \App\Domain\Loyalty\Enums\PointEntryDirectionEnum::CREDIT->value))
+            ->when($filter === 'spent', fn ($query) => $query->where('direction', \App\Domain\Loyalty\Enums\PointEntryDirectionEnum::DEBIT->value))
             ->with(['earningRule', 'reference', 'reversalOf'])
             ->orderByDesc('occurred_at')
             ->orderByDesc('id')
@@ -213,12 +296,25 @@ class GetAudienceClubOverviewAction
             ->first();
 
         $milestones = app(RecordDailyStreakAction::class)->milestones();
+        $currentDays = (int) ($streakModel?->current_days ?? 0);
         $nextMilestone = null;
 
+        // نزدیک‌ترین پاداش بعدی؛ مایل‌استون تکرارشونده در مضرب بعدی‌اش می‌افتد.
+        // پاداش‌هایی که در یک روز می‌افتند (مثلاً روز ۹۰: امتیاز + VIP) با هم نمایش داده می‌شوند.
         foreach ($milestones as $milestone) {
-            if ((int) $milestone['days'] > (int) ($streakModel?->current_days ?? 0)) {
-                $nextMilestone = $milestone;
-                break;
+            $target = $milestone['repeat']
+                ? (intdiv($currentDays, $milestone['days']) + 1) * $milestone['days']
+                : $milestone['days'];
+
+            if ($target <= $currentDays) {
+                continue;
+            }
+
+            if ($nextMilestone === null || $target < $nextMilestone['days']) {
+                $nextMilestone = ['days' => $target, 'points' => $milestone['points'], 'vip_days' => $milestone['vip_days']];
+            } elseif ($target === $nextMilestone['days']) {
+                $nextMilestone['points'] += $milestone['points'];
+                $nextMilestone['vip_days'] += $milestone['vip_days'];
             }
         }
 

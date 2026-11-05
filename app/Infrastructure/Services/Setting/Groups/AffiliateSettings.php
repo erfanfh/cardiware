@@ -21,6 +21,7 @@ class AffiliateSettings extends BaseSettings
         'referral_bonus_referrer_points',
         'referral_bonus_referee_points',
         'referral_bonus_min_order_amount',
+        'referral_sale_points_per_1000',
     ];
 
     protected array $casts = [
@@ -31,6 +32,7 @@ class AffiliateSettings extends BaseSettings
         'default_min_withdrawal_amount' => IntegerCast::class,
         'referral_bonus_enabled' => BooleanCast::class,
         'referral_bonus_referrer_points' => IntegerCast::class,
+        'referral_sale_points_per_1000' => IntegerCast::class,
         'referral_bonus_referee_points' => IntegerCast::class,
         'referral_bonus_min_order_amount' => IntegerCast::class,
     ];
@@ -72,12 +74,21 @@ class AffiliateSettings extends BaseSettings
 
     public function referralBonusReferrerPoints(): int
     {
-        return max(0, (int) $this->get('referral_bonus_referrer_points', 1000));
+        return max(0, (int) $this->get('referral_bonus_referrer_points', 200));
     }
 
     public function referralBonusRefereePoints(): int
     {
         return max(0, (int) $this->get('referral_bonus_referee_points', 500));
+    }
+
+    /**
+     * امتیاز همکار به ازای هر ۱۰۰۰ تومان از هر فروش با کد یا لینک او (نه فقط اولین
+     * خرید). پیش‌فرض ۲ = یک امتیاز برای هر ۵۰۰ تومان فروش.
+     */
+    public function referralSalePointsPer1000(): int
+    {
+        return max(0, (int) $this->get('referral_sale_points_per_1000', 2));
     }
 
     public function referralBonusMinOrderAmount(): int

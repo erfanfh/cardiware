@@ -128,16 +128,9 @@ class PaymentResultController extends Controller
             ->whereNull('consumed_at')
             ->first();
 
-        if (!$checkout || $checkout->expires_at->isPast()) {
-            return null;
-        }
-
-        $ownsSaleItem = $order->items()
-            ->where('purchasable_type', 'product_sale_item')
-            ->where('purchasable_id', $checkout->product_sale_item_id)
-            ->exists();
-
-        if (!$ownsSaleItem) {
+        // ماد تکی هم باید به لانچر برگردد (قبلاً فقط سفارشِ نسخه‌ی محصول تطبیق داده می‌شد
+        // و خرید ماد هیچ‌وقت به لانچر خبر داده نمی‌شد).
+        if (!$checkout || !$checkout->canDeliverResult() || !$checkout->isPaidBy($order)) {
             return null;
         }
 
@@ -146,7 +139,7 @@ class PaymentResultController extends Controller
         return redirect()->to(
             URL::temporarySignedRoute(
                 'launcher.purchase-complete',
-                $checkout->expires_at,
+                now()->addMinutes(30),
                 ['state' => $state],
             )
         );

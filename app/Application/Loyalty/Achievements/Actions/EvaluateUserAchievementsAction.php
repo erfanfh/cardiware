@@ -2,6 +2,7 @@
 
 namespace App\Application\Loyalty\Achievements\Actions;
 
+use App\Application\Loyalty\Support\ReawardableLedgerKey;
 use App\Application\Loyalty\Actions\AwardPointsAction;
 use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
 use App\Application\Loyalty\DTOs\AwardPointsDTO;
@@ -123,11 +124,20 @@ final class EvaluateUserAchievementsAction
                 return;
             }
 
+            $account = $this->getOrCreatePointAccount->execute($user);
+            // نشانی که بعد از مرجوعی سفارش پس گرفته شده بود، با کسب دوباره از نو پاداش دارد.
+            $idempotencyKey = app(ReawardableLedgerKey::class)
+                ->resolve((int) $account->getKey(), "achievement:{$achievement->getKey()}:{$user->getKey()}");
+
+            if ($idempotencyKey === null) {
+                return;
+            }
+
             $entry = $this->awardPoints->execute(new AwardPointsDTO(
-                account: $this->getOrCreatePointAccount->execute($user),
+                account: $account,
                 amount: $achievement->reward_points,
                 reason: 'achievement_earned',
-                idempotencyKey: "achievement:{$achievement->getKey()}:{$user->getKey()}",
+                idempotencyKey: $idempotencyKey,
                 description: "پاداش نشان «{$achievement->title}»",
                 metadata: [
                     'achievement_id' => $achievement->getKey(),

@@ -219,6 +219,10 @@
                         </x-admin.form.repeater>
                     </div>
                 </x-admin.metabox>
+
+                <div class="mt-6 flex justify-end">
+                    <x-admin.form.button type="submit" color="brand">ذخیره تغییرات لانچر</x-admin.form.button>
+                </div>
             </div>
         </x-admin.page>
     </x-admin.form>

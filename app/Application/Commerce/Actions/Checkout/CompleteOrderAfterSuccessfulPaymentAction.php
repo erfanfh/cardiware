@@ -4,6 +4,7 @@ namespace App\Application\Commerce\Actions\Checkout;
 
 use App\Application\Commerce\Actions\Access\GrantPurchaseAccessesForOrderAction;
 use App\Application\Commerce\Actions\Order\MarkOrderAsPaidAction;
+use App\Application\Launcher\Actions\GrantLauncherModAccessForOrderAction;
 use App\Application\Promotion\Actions\Coupon\RedeemCouponForOrderAction;
 use App\Domain\Commerce\Models\Order;
 use App\Application\Vip\Actions\GrantVipSubscriptionsForOrderAction;
@@ -16,6 +17,7 @@ class CompleteOrderAfterSuccessfulPaymentAction
         private readonly GrantPurchaseAccessesForOrderAction $grantPurchaseAccessesForOrderAction,
         private readonly RedeemCouponForOrderAction          $redeemCouponForOrderAction,
         private readonly GrantVipSubscriptionsForOrderAction $grantVipSubscriptionsForOrderAction,
+        private readonly GrantLauncherModAccessForOrderAction $grantLauncherModAccessForOrderAction,
     )
     {
     }
@@ -33,6 +35,7 @@ class CompleteOrderAfterSuccessfulPaymentAction
 
         $this->grantPurchaseAccessesForOrderAction->execute($order);
         $this->grantVipSubscriptionsForOrderAction->execute($order);
+        $this->grantLauncherModAccessForOrderAction->execute($order);
 
         return $order->refresh();
     }

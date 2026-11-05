@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Commerce\AbandonedCartController;
 use App\Http\Controllers\Admin\Commerce\AnalyticsController;
+use App\Http\Controllers\Admin\Commerce\BuyerListController;
 use App\Http\Controllers\Admin\Commerce\OrderController;
 use App\Http\Controllers\Admin\Commerce\PurchaseDownloadResetController;
 use App\Http\Controllers\Admin\Commerce\PurchaseDownloadResetUserSearchController;
@@ -25,6 +26,7 @@ Route::prefix('purchase-download-resets')
         Route::post('/{purchaseAccess}/reset', [PurchaseDownloadResetController::class, 'reset'])->name('reset');
     });
 
+Route::get('buyers', BuyerListController::class)->name('buyers.index');
 Route::resource('orders', OrderController::class)->only(['index', 'edit', 'update']);
 Route::prefix('wallet-withdrawals')->name('wallet-withdrawals.')->group(function () {
     Route::get('/', [WalletWithdrawalController::class, 'index'])->name('index');

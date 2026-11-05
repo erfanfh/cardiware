@@ -145,6 +145,7 @@ class PermissionSeeder extends Seeder
             'order' => [
                 'list' => 'لیست سفارش ها',
                 'edit' => 'ویرایش سفارش',
+                'buyers' => 'لیست خریداران (بدون مبالغ)',
             ],
             'cart' => [
                 'abandoned' => 'مدیریت سبدهای خرید رها شده',

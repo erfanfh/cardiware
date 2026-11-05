@@ -132,6 +132,57 @@ class User extends Authenticatable implements HasDiscussionOwner
     }
 
     /**
+     * کارمند سایت (مدیر کل یا نقشی که به پنل مدیریت دسترسی دارد). کارمندان در رقابت
+     * باشگاه (جدول برترین‌ها، امتیاز دیدگاه) شرکت داده نمی‌شوند تا رقابت عادلانه بماند.
+     */
+    public function isLoyaltyStaff(): bool
+    {
+        $role = $this->relationLoaded('role') ? $this->role : $this->role()->first();
+        if ($role === null) {
+            return false;
+        }
+
+        return (bool) $role->is_super_admin
+            || $role->permissions()->where('group', 'admin')->where('ability', 'display')->exists();
+    }
+
+    /** عضو یک فروشگاه (فروشنده)؛ پاسخ‌های فروش در دیدگاه‌ها امتیاز باشگاه نمی‌گیرند. */
+    public function isSeller(): bool
+    {
+        return $this->stores()->exists();
+    }
+
+    /** کاربرانی که کارمند سایت نیستند (برای جدول برترین‌های باشگاه). */
+    /** ستون has_active_vip_subscription برای نمایش نشان VIP بدون کوئری جدا در هر ردیف. */
+    public function scopeWithActiveVipFlag(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->withExists([
+            'vipSubscriptions as has_active_vip_subscription' => fn ($subscriptions) => $subscriptions
+                ->whereNull('revoked_at')
+                ->where('starts_at', '<=', now())
+                ->where('expires_at', '>', now()),
+        ]);
+    }
+
+    public function isVipMember(): bool
+    {
+        $flag = $this->getAttribute('has_active_vip_subscription');
+
+        return $flag === null ? $this->hasActiveVipSubscription() : (bool) $flag;
+    }
+
+    public function scopeWithoutLoyaltyStaff(\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder
+    {
+        return $query->where(fn($query) => $query
+            ->whereNull('role_id')
+            ->orWhereHas('role', fn($role) => $role
+                ->where('is_super_admin', false)
+                ->whereDoesntHave('permissions', fn($permission) => $permission
+                    ->where('group', 'admin')
+                    ->where('ability', 'display'))));
+    }
+
+    /**
      * @return HasMany
      */
     public function posts(): HasMany
@@ -192,6 +243,11 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function vipSaleItemClaims(): HasMany
     {
         return $this->hasMany(\App\Domain\Vip\Models\VipSaleItemClaim::class);
+    }
+
+    public function launcherModGrants(): HasMany
+    {
+        return $this->hasMany(\App\Domain\Launcher\Models\LauncherModGrant::class);
     }
 
     public function hasActiveVipSubscription(): bool

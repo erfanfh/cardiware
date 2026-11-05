@@ -7,7 +7,7 @@ return [
 
     'max_active_devices_per_user' => (int)env('LAUNCHER_MAX_ACTIVE_DEVICES', 2),
     'token_ttl_days' => (int)env('LAUNCHER_TOKEN_TTL_DAYS', 30),
-    'checkout_session_ttl_minutes' => (int)env('LAUNCHER_CHECKOUT_SESSION_TTL_MINUTES', 15),
+    'checkout_session_ttl_minutes' => (int)env('LAUNCHER_CHECKOUT_SESSION_TTL_MINUTES', 30),
     'windows' => [
         'stable' => [
             'latest_version' => env('LAUNCHER_LATEST_VERSION', '1.0.0'),

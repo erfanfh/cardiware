@@ -42,6 +42,8 @@ class PurchaseDownloadResetController extends Controller
             $purchaseAccesses = PurchaseAccess::query()
                 ->withoutGlobalScope(ActivePurchaseAccessScope::class)
                 ->where('user_id', $selectedUser->getKey())
+                // دسترسی امانی VIP خرید نیست و ریست دانلود ندارد.
+                ->owned()
                 ->with([
                     'product' => function (BelongsTo $query): void {
                         $query->withoutGlobalScopes()->withTrashed();

@@ -33,6 +33,12 @@ class SchedulerServiceProvider extends ServiceProvider
             ->cron("*/{$downloadClicksSchedule} * * * *")
             ->withoutOverlapping();
 
+        // برترین فروشنده‌های هفته/ماه/سال: جایزه‌ی کمیسیون، کد تخفیف و نمایش در صفحه اصلی.
+        $schedule->command('marketplace:close-seller-periods')
+            ->dailyAt('00:30')
+            ->withoutOverlapping(120)
+            ->onOneServer();
+
         $schedule->command('wallet-holds:expire')
             ->everyMinute()
             ->withoutOverlapping(5)

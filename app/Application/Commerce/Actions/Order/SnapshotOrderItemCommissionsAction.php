@@ -45,6 +45,15 @@ class SnapshotOrderItemCommissionsAction
                     $sellerRate = min(10000, max(0, (int) $addon->seller_commission_basis_points));
                 }
             }
+            // جایزه‌ی برترین فروشنده: سهم اضافه در بازه‌ی جایزه (کمیسیون کمتر برای سایت).
+            // فقط برای محصولاتی که سهم فروشنده دارند؛ محصولات خود سایت تغییری نمی‌کنند.
+            if ($sellerRate > 0 && $item->store_id !== null) {
+                $bonus = (int) \App\Domain\Marketplace\Models\StoreReward::query()
+                    ->activeBonusFor((int) $item->store_id)
+                    ->max('commission_bonus_bp');
+                $sellerRate = min(10000, $sellerRate + $bonus);
+            }
+
             $platformRate = 10000 - $sellerRate;
             $amount = max(0, (int) $item->final_total_amount);
             $sellerAmount = intdiv($amount, 10000) * $sellerRate

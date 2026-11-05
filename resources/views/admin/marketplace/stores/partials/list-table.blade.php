@@ -61,7 +61,7 @@
                     <x-admin.list.td>
                         <div class="min-w-[280px]">
                             <a
-                                href="{{ route('stores.detail', $store->slug) }}"
+                                href="{{ filled($store->slug) ? route('stores.detail', $store->slug) : '#' }}"
                                 class="inline-block leading-6 text-sm font-bold text-slate-800 transition hover:text-brand-600"
                             >
                                 {{ $store->title }}

@@ -38,6 +38,10 @@ Route::prefix('account')->middleware('auth')->name('account.')->group(function (
         Route::get('loyalty', 'loyalty')->name('loyalty');
     });
 
+    Route::put('loyalty/vip-profile', \App\Http\Controllers\Front\Loyalty\UpdateVipClubProfileController::class)
+        ->middleware('throttle:10,1')
+        ->name('loyalty.vip-profile.update');
+
     Route::post('loyalty/rewards/{rewardOffer}/redeem', RedeemRewardOfferController::class)
         ->middleware('throttle:20,1')
         ->name('loyalty.rewards.redeem');

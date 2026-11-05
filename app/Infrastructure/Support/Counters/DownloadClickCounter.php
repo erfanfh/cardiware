@@ -4,9 +4,12 @@ namespace App\Infrastructure\Support\Counters;
 
 use Illuminate\Redis\Connections\Connection;
 use Illuminate\Support\Facades\Redis;
+use Throwable;
 
 class DownloadClickCounter
 {
+    private static bool $failureReported = false;
+
     private const DIRTY_KEY = 'counter:download_clicks:dirty';
 
     private const LEGACY_DIRTY_KEY = 'download_entry_clicks:dirty';
@@ -17,22 +20,31 @@ class DownloadClickCounter
         $visitor = hash_hmac('sha256', $ip, (string) config('app.key'));
         $ttl = max(1, (int) config('cache.download_clicks_dedup_minutes', 30)) * 60;
 
-        $this->connection()->eval(<<<'LUA'
-            if redis.call('EXISTS', KEYS[1]) == 1 then
-                return 0
-            end
-            redis.call('INCR', KEYS[2])
-            redis.call('SADD', KEYS[3], ARGV[2])
-            redis.call('SET', KEYS[1], '1', 'EX', ARGV[1])
-            return 1
-            LUA,
-            3,
-            "download_clicks:seen:{$entryId}:{$visitor}",
-            $this->counterKey($entryId),
-            self::DIRTY_KEY,
-            $ttl,
-            "DownloadEntry:{$entryId}",
-        );
+        // A click counter must never block the download itself: without Redis the click
+        // is simply not counted (reported once per request).
+        try {
+            $this->connection()->eval(<<<'LUA'
+                if redis.call('EXISTS', KEYS[1]) == 1 then
+                    return 0
+                end
+                redis.call('INCR', KEYS[2])
+                redis.call('SADD', KEYS[3], ARGV[2])
+                redis.call('SET', KEYS[1], '1', 'EX', ARGV[1])
+                return 1
+                LUA,
+                3,
+                "download_clicks:seen:{$entryId}:{$visitor}",
+                $this->counterKey($entryId),
+                self::DIRTY_KEY,
+                $ttl,
+                "DownloadEntry:{$entryId}",
+            );
+        } catch (Throwable $exception) {
+            if (! self::$failureReported) {
+                self::$failureReported = true;
+                report($exception);
+            }
+        }
     }
 
     /** @return list<int> */

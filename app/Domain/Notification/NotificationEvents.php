@@ -10,6 +10,8 @@ final class NotificationEvents
     public const COMMENT_REPLIED = 'comment.replied';
     public const COMMENT_APPROVED = 'comment.approved';
     public const WITHDRAWAL_RESOLVED = 'withdrawal.resolved';
+    public const LOYALTY_CHAMPION = 'loyalty.champion';
+    public const SELLER_REWARD = 'seller.reward';
 
     public const LABELS = [
         self::COMMENT_CREATED => 'ثبت دیدگاه برای نویسنده مطلب',
@@ -18,5 +20,7 @@ final class NotificationEvents
         self::COMMENT_REPLIED => 'ثبت پاسخ برای صاحب دیدگاه والد',
         self::COMMENT_APPROVED => 'تأیید دیدگاه برای نویسنده دیدگاه',
         self::WITHDRAWAL_RESOLVED => 'نتیجه نهایی درخواست برداشت وجه',
+        self::LOYALTY_CHAMPION => 'اعلام برترین‌های ماه، فصل و سال باشگاه به برندگان',
+        self::SELLER_REWARD => 'اعلام برترین فروشنده‌های هفته، ماه و سال به فروشندگان',
     ];
 }

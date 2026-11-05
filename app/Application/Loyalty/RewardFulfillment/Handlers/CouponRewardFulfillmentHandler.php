@@ -30,7 +30,11 @@ class CouponRewardFulfillmentHandler implements RewardFulfillmentHandler
     ): Model {
         $config = $offer->config ?? [];
         $isRegistrationGift = data_get($redemption->metadata, 'source') === 'registration_gift';
-        $couponType = CouponTypeEnum::from((string) $config['coupon_type']);
+        // «fixed» نام قدیمی (داده‌ی نمونه) برای fixed_amount است؛ مقدار ناشناخته خطای قابل‌فهم می‌دهد نه ۵۰۰ مبهم.
+        $couponType = CouponTypeEnum::tryFrom(match ((string) ($config['coupon_type'] ?? '')) {
+            'fixed' => CouponTypeEnum::FIXED_AMOUNT->value,
+            default => (string) ($config['coupon_type'] ?? ''),
+        }) ?? throw new \DomainException('نوع کد تخفیف این پاداش در پنل درست تنظیم نشده است.');
         $expiresAfterDays = filled($config['expires_after_days'] ?? null)
             ? (int) $config['expires_after_days']
             : null;

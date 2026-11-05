@@ -168,17 +168,36 @@ class GetLauncherCatalogAction
             ->whereIn('product_sale_item_id', $saleItems->modelKeys())
             ->with([
                 'order:id,metadata',
-                'productSaleItem:id,launcher_free_claim_enabled',
+                'productSaleItem:id,launcher_free_claim_enabled,launcher_enabled,vip_access_enabled',
             ])
             ->latest('id')
             ->get()
+            ->each(static fn(PurchaseAccess $access) => $access->setRelation('user', $user))
             ->groupBy('product_sale_item_id');
 
+        // فقط وقتی نسخه‌ی VIP-دار در این صفحه هست اشتراک را بپرس.
+        $hasActiveVip = $saleItems->contains(fn(ProductSaleItem $item): bool => (bool)$item->vip_access_enabled)
+            && $user->hasActiveVipSubscription();
+
         foreach ($saleItems as $saleItem) {
-            $saleItem->setRelation(
-                'purchaseAccesses',
-                $accesses->get($saleItem->getKey(), new Collection())->values(),
-            );
+            $itemAccesses = $accesses->get($saleItem->getKey(), new Collection())->values();
+
+            // فعال‌سازی محصول با اشتراک ویژه: برای آیتم‌های دارای دسترسی VIP
+            // که کاربر هنوز نخریده، یک دسترسی امانی (vip_borrow) ساخته/نوسازی
+            // می‌شود؛ اعتبارش در isUsableForLauncher زنده چک می‌شود و با پایان
+            // اشتراک، محصول دوباره قفل خواهد شد.
+            $hasUsablePurchase = $itemAccesses
+                ->first(fn(PurchaseAccess $access): bool => $access->isUsableForLauncher());
+
+            if (!$hasUsablePurchase
+                && (bool)$saleItem->vip_access_enabled
+                && (bool)$saleItem->launcher_enabled
+                && $saleItem->isPurchasableAvailable()
+                && $hasActiveVip) {
+                $itemAccesses->prepend(PurchaseAccess::ensureVipBorrowAccess($user, $saleItem));
+            }
+
+            $saleItem->setRelation('purchaseAccesses', $itemAccesses->values());
         }
     }
 }

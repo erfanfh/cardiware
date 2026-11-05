@@ -41,7 +41,11 @@ function surroundingScript(value, start, end) {
 }
 
 export function localizeDisplayDigits(value, fallbackLanguage = 'fa') {
-    return value.replace(/[0-9۰-۹٠-٩]+/g, (digits, start) => {
+    // بازه‌های عددی متصل با جداکننده (26-27، 1405/06/15) یک واحد تلقی می‌شوند
+    // تا هر دو سر بازه همیشه یک زبان بگیرند و ترکیب «۲۶-27» رخ ندهد.
+    const digitRange = /[0-9۰-۹٠-٩]+(?:\s*[-–—/]?\s*[0-9۰-۹٠-٩]+)*/g;
+
+    return value.replace(digitRange, (digits, start) => {
         const language = surroundingScript(value, start, start + digits.length) ?? fallbackLanguage;
         const ascii = digits.replace(/[۰-۹٠-٩]/g, digit => {
             const persianIndex = PERSIAN_DIGITS.indexOf(digit);

@@ -86,8 +86,15 @@ return [
             ['label' => 'افزودن ویدیو', 'route' => 'admin.videos.create', 'icon' => 'icons.plus-sign', 'gate' => 'video.create'],
             ['label' => 'دسته‌ها', 'route' => 'admin.videos.categories.index', 'icon' => 'icons.tag-02', 'gate' => 'video.category'],
             ['label' => 'برچسب‌ها', 'route' => 'admin.videos.tags.index', 'icon' => 'icons.tag-02', 'gate' => 'video.tag'],
-            ['label' => 'رسانه‌های کاربران', 'route' => 'admin.gallery.index', 'icon' => 'icons.image-03', 'gate' => 'gallery.manage'],
         ],
+    ],
+
+    [
+        'label' => 'رسانه‌های کاربران',
+        'route' => 'admin.gallery.index',
+        'icon' => 'icons.image-03',
+        'gate' => 'gallery.manage',
+        'badge' => 'pending_gallery_submissions',
     ],
 
     [
@@ -191,6 +198,12 @@ return [
                 'gate' => 'order.list',
             ],
             [
+                'label' => 'لیست خریداران',
+                'route' => 'admin.buyers.index',
+                'icon' => 'icons.user-multiple-02',
+                'gate' => 'order.buyers',
+            ],
+            [
                 'label' => 'سبدهای رها شده',
                 'route' => 'admin.abandoned-carts.index',
                 'icon' => 'icons.shopping-cart-02',
@@ -213,6 +226,12 @@ return [
                 'label' => 'فروشنده ها',
                 'route' => 'admin.stores.index',
                 'icon' => 'icons.user-multiple-02',
+                'gate' => 'store.list',
+            ],
+            [
+                'label' => 'برترین فروشندگان و جوایز',
+                'route' => 'admin.seller-rewards.index',
+                'icon' => 'icons.crown-02',
                 'gate' => 'store.list',
             ],
             [
@@ -332,6 +351,12 @@ return [
                 'label' => 'مأموریت‌های هفتگی',
                 'route' => 'admin.loyalty-missions.index',
                 'icon' => 'icons.target-01',
+                'gate' => 'loyalty-rule.list',
+            ],
+            [
+                'label' => 'برترین‌ها و جوایز',
+                'route' => 'admin.loyalty-champions.index',
+                'icon' => 'icons.crown-02',
                 'gate' => 'loyalty-rule.list',
             ],
             [
@@ -662,6 +687,12 @@ return [
                 'route' => 'admin.settings.products',
                 'icon' => 'icons.settings-02',
                 'gate' => 'setting.products',
+            ],
+            [
+                'label' => 'لندینگ‌ساز (لندینگ دلخواه)',
+                'route' => 'admin.landing-pages.index',
+                'icon' => 'icons.settings-02',
+                'gate' => 'setting.product-landings',
             ],
             [
                 'label' => 'لندینگ‌های PGL',

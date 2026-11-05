@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Setting\Groups;
 
 use App\Infrastructure\Casts\ArrayCast;
+use App\Infrastructure\Casts\MediaFileCast;
 use App\Infrastructure\Casts\BooleanCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
@@ -21,6 +22,8 @@ class HomeSettings extends BaseSettings
         'special_posts_items',
         'subscription_title',
         'subscription_subtitle',
+        'subscription_description',
+        'subscription_image',
         'subscription_button_title',
         'subscription_button_url',
         'products_title',
@@ -52,6 +55,7 @@ class HomeSettings extends BaseSettings
     ];
 
     protected array $casts = [
+        'subscription_image' => MediaFileCast::class,
         'hero_slider' => RepeaterArrayCast::class,
         'download_products_items' => RepeaterArrayCast::class,
         'special_posts_items' => RepeaterArrayCast::class,

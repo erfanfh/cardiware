@@ -107,6 +107,45 @@ class SendInAppNotification
         );
     }
 
+    public function loyaltyChampion(\App\Domain\Loyalty\Models\LoyaltyChampion $champion): void
+    {
+        $parts = array_filter([
+            $champion->points_awarded > 0 ? number_format($champion->points_awarded) . ' امتیاز' : null,
+            $champion->coupon_code ? 'کد تخفیف ' . $champion->coupon_code : null,
+            $champion->raffle_tickets > 0 ? number_format($champion->raffle_tickets) . ' کد قرعه‌کشی' : null,
+            $champion->grand_prize ? 'جایزه ویژه: ' . $champion->grand_prize : null,
+        ]);
+
+        $this->send(
+            NotificationEvents::LOYALTY_CHAMPION, (int) $champion->user_id, $champion,
+            'تبریک! ' . $champion->title(),
+            'جایزه‌های شما: ' . implode('، ', $parts) . '.',
+            parse_url(route('loyalty.hall-of-fame'), PHP_URL_PATH),
+        );
+    }
+
+    public function sellerReward(\App\Domain\Marketplace\Models\StoreReward $reward): void
+    {
+        $parts = array_filter([
+            $reward->commission_bonus_bp > 0
+                ? number_format($reward->commission_bonus_bp / 100, 1) . '٪ سهم بیشتر از هر فروش تا ' . jalali_date($reward->bonus_ends_at)
+                : null,
+            $reward->coupon_code ? 'کد تخفیف ' . $reward->coupon_code : null,
+            \App\Domain\Marketplace\Models\StoreSpotlight::query()->where('store_reward_id', $reward->getKey())->exists()
+                ? 'نمایش محصولات در صفحه اصلی'
+                : null,
+        ]);
+
+        foreach ($reward->store?->sellers ?? [] as $seller) {
+            $this->send(
+                NotificationEvents::SELLER_REWARD, (int) $seller->getKey(), $reward,
+                'تبریک! ' . $reward->title(),
+                'فروشگاه ' . $reward->store->title . ' جایزه گرفت: ' . implode('، ', $parts) . '.',
+                null,
+            );
+        }
+    }
+
     private function commentUrl(Comment $comment): ?string
     {
         $commentable = $comment->commentable;

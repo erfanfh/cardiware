@@ -70,6 +70,15 @@ class CommentEarningRuleHandler implements EarningRuleHandler
             );
         }
 
+        // فروشنده‌ها و کارمندان سایت به‌خاطر کارشان روزانه زیاد دیدگاه می‌نویسند؛
+        // امتیاز دیدگاه برای آن‌ها حساب نمی‌شود تا رقابت با کاربران عادی منصفانه بماند.
+        if ($user->isLoyaltyStaff() || $user->isSeller()) {
+            return EarningRuleEvaluation::skip(
+                $rule,
+                EarningRuleSkipReasonEnum::NOT_ELIGIBLE,
+            );
+        }
+
         $points = $this->config->positiveInt($rule, 'points');
         $dailyLimit = $this->config->positiveInt($rule, 'daily_limit');
         $usedToday = $this->usageCounter->countAwardsOnDate(
