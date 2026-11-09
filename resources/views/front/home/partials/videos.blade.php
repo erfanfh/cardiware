@@ -29,7 +29,7 @@
             @foreach($videosBlock['posts'] as $post)
                 <a href="{{ front_route('contents.detail', $post) }}"
                    class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-900 shadow-sm transition duration-300 hover:scale-[1.015] hover:border-brand-500/40 hover:shadow-xl dark:border-slate-700 dark:shadow-black/20 dark:hover:shadow-black/40">
-                    <div class="relative h-40 bg-slate-950">
+                    <div class="relative aspect-video bg-slate-950">
                         <x-front.responsive-image
                             :media="$post->picture"
                             :fallback="$post->picture?->url"

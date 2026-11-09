@@ -32,19 +32,24 @@
     .heroSwiper .home-hero-slide {
         display: flex;
         flex-direction: column;
-        min-height: 0;
+        justify-content: flex-end;
+        min-height: clamp(430px, 118vw, 560px);
     }
 
-    .home-hero-image {
-        height: clamp(120px, 32vw, 240px);
-        flex: none;
+    /* تصویر پس‌زمینهٔ کامل اسلاید می‌شود تا پایینش کات نشود و نوار تیرهٔ خالی نماند */
+    .heroSwiper .home-hero-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .home-hero-content {
         position: relative;
         inset: auto;
-        padding: 20px 20px 8px;
-        background: linear-gradient(180deg, #0f172a, #111b33);
+        padding: 24px 20px 46px;
+        background: linear-gradient(180deg, rgba(2, 6, 23, .18) 0%, rgba(2, 6, 23, .45) 42%, rgba(2, 6, 23, .88) 100%);
     }
 
     .home-hero-content > div,
@@ -64,10 +69,12 @@
         font-size: clamp(1.25rem, 5.4vw, 1.5rem);
         line-height: 1.35;
         overflow-wrap: anywhere;
+        text-shadow: 0 1px 14px rgba(2, 6, 23, .55);
     }
 
     .home-hero-content p {
         line-height: 1.9;
+        text-shadow: 0 1px 12px rgba(2, 6, 23, .55);
     }
 
     .home-hero-actions {
@@ -89,14 +96,9 @@
         flex: none;
     }
 
-    .home-hero-dots {
-        position: relative;
-        inset: auto;
-        translate: none;
-        transform: none;
-        justify-content: center;
-        padding: 8px 0 16px;
-        background: #111b33;
+    /* چیپ‌های آمار روی دکمه‌ها می‌افتادند؛ زیر ۱۲۸۰ نمایش داده نمی‌شوند */
+    .hero-slider .home-hero-stats {
+        display: none;
     }
 }
 
@@ -349,6 +351,18 @@
 .mw-club-projects-dot.is-done {
     background: #10b981;
     box-shadow: 0 0 0 4px rgba(16, 185, 129, .14);
+}
+
+/* اسکرول بدون نوار: جعبهٔ پروژه‌ها و کاربران برتر هفته */
+.mw-club-scroll {
+    -ms-overflow-style: none; /* IE / Legacy Edge */
+    scrollbar-width: none; /* Firefox */
+}
+
+.mw-club-scroll::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none; /* Chrome / Safari / Edge */
 }
 
 .mw-pulse-dot {

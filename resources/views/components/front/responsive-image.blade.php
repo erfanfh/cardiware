@@ -18,7 +18,7 @@
                 }
             })
         "
-        class="relative overflow-hidden {{ $wrapperClass }}"
+        class="overflow-hidden {{ $wrapperClass }} {{ $wrapperClass && str_contains($wrapperClass, 'absolute') ? '' : 'relative' }}"
         x-bind:class="loaded ? 'bg-transparent' : 'bg-slate-100 dark:bg-slate-800'"
     >
         @if($skeleton)

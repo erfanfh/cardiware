@@ -77,7 +77,7 @@
                 </a>
             </div>
 
-            <div class="mw-club-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pl-1 [-ms-overflow-style:none] [scrollbar-width:thin]">
+            <div class="mw-club-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pl-1">
                 @forelse($clubCards['projects'] as $project)
                     @php
                         $clubProgress = max(0, min(100, (int)($project->progress_percent ?? 0)));
@@ -139,7 +139,7 @@
                     </div>
                 </div>
 
-                <div class="mw-club-scroll max-h-[26rem] space-y-1.5 overflow-y-auto pl-1 [-ms-overflow-style:none] [scrollbar-width:thin]">
+                <div class="mw-club-scroll max-h-[26rem] space-y-1.5 overflow-y-auto pl-1">
                     @forelse($clubCards['topUsers'] as $index => $leader)
                         @php
                             $leaderUser = $leader->user;

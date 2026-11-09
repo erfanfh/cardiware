@@ -76,6 +76,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Windows + `php artisan serve`: the php -S child process only receives whitelisted
+        // env vars; without TMP/TEMP, sys_get_temp_dir() falls back to C:\WINDOWS and SQLite
+        // dies with "SQLSTATE[HY000]: 14 unable to open database file" when it needs temp
+        // files (e.g. the statement journal inside a SAVEPOINT).
+        foreach (['TMP', 'TEMP'] as $windowsTempVar) {
+            if (! in_array($windowsTempVar, \Illuminate\Foundation\Console\ServeCommand::$passthroughVariables, true)) {
+                \Illuminate\Foundation\Console\ServeCommand::$passthroughVariables[] = $windowsTempVar;
+            }
+        }
+
         Queue::before(function (): void {
             BaseSettings::clearResolvedGroups();
         });
