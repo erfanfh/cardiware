@@ -63,6 +63,11 @@ class LauncherCatalogItemResource extends JsonResource
                 'can_install' => $hasAccess,
             ],
             'web_url' => $this->product?->url,
+            // بازکردن تنظیمات بازی (مثلاً Settings.exe) — فقط برای دارندگان دسترسی.
+            'game_settings' => $this->when(
+                $hasAccess && filled($this->product?->game_settings_command),
+                fn() => ['command' => (string)$this->product->game_settings_command],
+            ),
             'capabilities' => $this->when(
                 $hasAccess && $this->relationLoaded('manifest') && $this->manifest !== null,
                 fn() => $this->manifest->resolvedCapabilities(),

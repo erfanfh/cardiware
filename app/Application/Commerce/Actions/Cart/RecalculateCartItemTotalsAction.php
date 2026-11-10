@@ -17,7 +17,7 @@ class RecalculateCartItemTotalsAction
 
     public function execute(CartItem $cartItem): CartItem
     {
-        $cartItem->loadMissing('purchasable');
+        $cartItem->loadMissing('purchasable', 'cart.user');
 
         $purchasable = $cartItem->purchasable;
 
@@ -31,7 +31,10 @@ class RecalculateCartItemTotalsAction
             $quantity = 1;
         }
 
-        $price = $this->resolvePurchasablePriceAction->execute($purchasable);
+        // خریدار برای اعمال تخفیف عمومی اعضای فعال VIP (ResolvePurchasablePriceAction)
+        $buyer = $cartItem->cart?->user;
+
+        $price = $this->resolvePurchasablePriceAction->execute($purchasable, $buyer);
 
         $snapshot = $purchasable->getPurchasableSnapshot();
 

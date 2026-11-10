@@ -172,6 +172,11 @@ class GetLauncherModsAction
             'size_bytes' => $totalSizeBytes,
             'priority' => (int) $mod->priority,
             'is_required' => (bool) $mod->is_required,
+            // هشدار فعال‌سازی (مثلاً افت فریم)؛ لانچر قبل از فعال‌سازی به کاربر نشان می‌دهد.
+            'warning' => filled($mod->warning_text) ? [
+                'text' => (string) $mod->warning_text,
+                'level' => $mod->warning_level ?: 'warning',
+            ] : null,
             'group' => $mod->group ? [
                 'key' => $mod->group->key,
                 'title' => $mod->group->title,

@@ -68,19 +68,46 @@
                         role="tooltip"
                         x-show="open"
                         x-cloak
-                        x-transition.opacity.duration.150ms
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-1.5 scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
                         @class([
-                            'absolute bottom-full z-50 w-64 max-w-[calc(100vw-2rem)] pb-2',
+                            'absolute bottom-full z-50 w-72 max-w-[calc(100vw-2rem)] pb-2.5',
                             'right-0' => $loop->odd,
                             'left-0' => $loop->even,
                         ])
                     >
-                        <div class="relative rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-right text-xs leading-6 text-slate-700 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:shadow-black/30">
-                            <p class="break-words">{{ $item['description'] }}</p>
+                        <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-right shadow-xl shadow-slate-900/15 ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-800 dark:shadow-black/40 dark:ring-white/5">
+                            {{-- سربرگ پاپ‌آپ: تصویر + عنوان ابزار --}}
+                            <div class="flex items-center gap-2.5 border-b border-slate-100 bg-slate-50/70 px-3 py-2.5 dark:border-slate-700/70 dark:bg-slate-900/60">
+                                <span class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
+                                    <x-front.responsive-image
+                                        :fallback="$item['image']['path'] ?? null"
+                                        :alt="''"
+                                        variant="thumbnail"
+                                        class="w-full h-full object-cover"
+                                        wrapper-class="h-9 w-9 rounded-xl"
+                                        :lazy="true"
+                                        :async="true"
+                                        sizes="36px"
+                                    />
+                                </span>
+                                <span class="min-w-0">
+                                    <span class="block truncate text-xs font-extrabold text-slate-900 dark:text-slate-100">{{ $item['title'] }}</span>
+                                    @if(filled($item['subtitle'] ?? null))
+                                        <span class="block truncate text-[0.65rem] text-slate-500 dark:text-slate-400">{{ $item['subtitle'] }}</span>
+                                    @endif
+                                </span>
+                            </div>
+                            {{-- توضیح کامل ابزار --}}
+                            <p class="max-h-44 overflow-y-auto px-3.5 py-2.5 text-xs leading-6 break-words text-slate-600 dark:text-slate-300">{{ $item['description'] }}</p>
                             <span
                                 aria-hidden="true"
                                 @class([
-                                    'absolute -bottom-1 h-2 w-2 rotate-45 border-b border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800',
+                                    'absolute -bottom-1 h-2.5 w-2.5 rotate-45 border-b border-r border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800',
                                     'right-6' => $loop->odd,
                                     'left-6' => $loop->even,
                                 ])

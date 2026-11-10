@@ -48,7 +48,12 @@
                     </div>
 
                     <div class="flex items-center justify-between gap-3 text-xs">
-                        <span class="text-slate-500 dark:text-slate-400">تخفیف</span>
+                        <span class="text-slate-500 dark:text-slate-400">
+                            تخفیف
+                            @if($this->vipDiscountLabel)
+                                <span class="mr-1 rounded-lg bg-amber-50 px-1.5 py-0.5 text-[10px] font-black text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">👑 {{ $this->vipDiscountLabel }}</span>
+                            @endif
+                        </span>
                         <span
                             class="font-extrabold text-emerald-700 dark:text-emerald-400">{{ $this->money($this->cartDiscount) }}</span>
                     </div>

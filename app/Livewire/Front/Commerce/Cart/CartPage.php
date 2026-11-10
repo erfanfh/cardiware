@@ -894,6 +894,38 @@ class CartPage extends Component
         );
     }
 
+    /**
+     * برچسب تخفیف فعال VIP برای نمایش در جمع‌بندی سبد (مثلاً «تخفیف ۸٪ اشتراک الماس»)؛
+     * اگر هیچ قلمی مشمول تخفیف VIP نباشد null برمی‌گردد.
+     */
+    #[Computed]
+    public function vipDiscountLabel(): ?string
+    {
+        $user = auth()->user();
+
+        if (! $user?->hasActiveVipSubscription()) {
+            return null;
+        }
+
+        $resolvePrice = app(\App\Application\Commerce\Actions\Pricing\ResolvePurchasablePriceAction::class);
+
+        foreach ($this->cartItems ?? collect() as $item) {
+            $purchasable = $item->purchasable;
+
+            if (! $purchasable instanceof \App\Application\Commerce\Contracts\Purchasable) {
+                continue;
+            }
+
+            $price = $resolvePrice->execute($purchasable, $user);
+
+            if ($price->discountSourceType === 'vip_purchase_discount') {
+                return $price->discountTitle;
+            }
+        }
+
+        return null;
+    }
+
     public function money(int $amount): string
     {
         return number_format($amount) . ' تومان';

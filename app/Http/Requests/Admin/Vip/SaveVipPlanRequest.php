@@ -25,6 +25,7 @@ class SaveVipPlanRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:5000'],
             'duration_days' => ['required', 'integer', 'min:1', 'max:36500'],
             'price_toman' => ['required', 'integer', 'min:0', 'max:999999999999'],
+            'purchase_discount_percent' => ['nullable', 'integer', 'min:0', 'max:90'],
             'is_active' => ['required', 'boolean'],
             'sort_order' => ['required', 'integer', 'min:0', 'max:65535'],
         ];
@@ -38,6 +39,7 @@ class SaveVipPlanRequest extends FormRequest
             'description' => 'توضیحات',
             'duration_days' => 'مدت اعتبار',
             'price_toman' => 'قیمت',
+            'purchase_discount_percent' => 'درصد تخفیف خرید تکی',
             'is_active' => 'وضعیت',
             'sort_order' => 'ترتیب نمایش',
         ];
@@ -51,6 +53,9 @@ class SaveVipPlanRequest extends FormRequest
                 ? null : $this->input('description'),
             'is_active' => $this->boolean('is_active'),
             'sort_order' => $this->input('sort_order', 0),
+            'purchase_discount_percent' => $this->filled('purchase_discount_percent')
+                ? $this->input('purchase_discount_percent')
+                : null,
         ];
 
         if (! $this->route('vip_plan')) {

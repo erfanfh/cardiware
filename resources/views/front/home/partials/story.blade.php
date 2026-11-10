@@ -79,11 +79,23 @@
                             </div>
                             <div class="flex shrink-0 gap-2">
                                 <button type="button" @click="paused ? resume() : pause()" :aria-label="paused ? 'ادامه نمایش' : 'توقف نمایش'" :aria-pressed="paused"
-                                        class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-sm font-bold text-white hover:bg-white/25">
-                                    <span x-text="paused ? '▶' : 'Ⅱ'" aria-hidden="true"></span>
+                                        class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-white hover:bg-white/25">
+                                    {{-- آیکون توقف: دو میلهٔ گرد استاندارد --}}
+                                    <svg x-show="!paused" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <rect x="5" y="4" width="5.5" height="16" rx="2"></rect>
+                                        <rect x="13.5" y="4" width="5.5" height="16" rx="2"></rect>
+                                    </svg>
+                                    {{-- آیکون پخش: مثلث گرد --}}
+                                    <svg x-show="paused" x-cloak aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M8 5.5a2 2 0 0 1 3.09-1.67l8.09 5.6a2.36 2.36 0 0 1 0 3.88l-8.09 5.6A2 2 0 0 1 8 17.24V5.5Z"></path>
+                                    </svg>
                                 </button>
                                 <button x-ref="closeButton" type="button" @click="close()" aria-label="بستن استوری"
-                                        class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-xl text-white hover:bg-white/25">×</button>
+                                        class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-white hover:bg-white/25">
+                                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                                        <path d="M6 6l12 12M18 6L6 18"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>

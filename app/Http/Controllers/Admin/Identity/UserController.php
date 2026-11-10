@@ -18,6 +18,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
@@ -134,6 +136,32 @@ class UserController extends Controller
             ->get();
 
         return view('admin.identity.users.edit', compact('user', 'roles'));
+    }
+
+    /**
+     * تایید/رد معرفی VIP کاربر (نمایش عمومی فقط پس از تایید).
+     */
+    public function moderateClubBio(Request $request, User $user): RedirectResponse
+    {
+        Gate::authorize('user.edit');
+
+        $validated = $request->validate([
+            'action' => ['required', Rule::in(['approve', 'reject', 'clear'])],
+        ]);
+
+        match ($validated['action']) {
+            'approve' => $user->forceFill(['club_bio_status' => 'approved'])->save(),
+            'reject' => $user->forceFill(['club_bio_status' => 'rejected'])->save(),
+            'clear' => $user->forceFill(['club_bio' => null, 'club_bio_status' => 'none', 'club_bio_edited_at' => null])->save(),
+        };
+
+        Cache::forget('loyalty:member-card:' . $user->getKey());
+
+        $labels = ['approve' => 'تایید شد', 'reject' => 'رد شد', 'clear' => 'پاک‌سازی شد'];
+
+        return redirect()
+            ->route('admin.users.edit', $user)
+            ->with('success', 'وضعیت معرفی باشگاه: ' . $labels[$validated['action']]);
     }
 
     /**

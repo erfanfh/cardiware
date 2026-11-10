@@ -22,6 +22,7 @@ class LauncherMod extends Model implements Purchasable
         'short_description', 'description', 'version', 'archive_password', 'install_target', 'install_mode', 'image_media_id',
         'size_bytes', 'priority', 'is_enabled', 'is_required',
         'access_type', 'price_toman',
+        'warning_text', 'warning_level',
         'compatible_base_versions', 'compatible_update_versions', 'published_at',
     ];
 
@@ -34,6 +35,7 @@ class LauncherMod extends Model implements Purchasable
         'priority' => 'integer',
         'is_enabled' => 'boolean',
         'is_required' => 'boolean',
+        'warning_level' => 'string',
         'price_toman' => 'integer',
         'compatible_base_versions' => 'array',
         'compatible_update_versions' => 'array',

@@ -53,6 +53,17 @@ class UpdateProductRequest extends FormRequest
             'status' => ['required', Rule::enum(ProductStatusEnum::class)],
             'type' => ['required', Rule::enum(ProductTypeEnum::class)],
             'content_type' => ['nullable', Rule::enum(ProductContentTypeEnum::class)],
+            'game_settings_command' => [
+                'nullable', 'string', 'max:255',
+                'not_regex:/[:*?"<>|\x00-\x1F]/',
+                'regex:/\.exe$/iu',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $segments = explode('/', str_replace('\\', '/', (string) $value));
+                    if (array_intersect($segments, ['', '.', '..']) !== []) {
+                        $fail('مسیر تنظیمات باید یک فایل اجرایی داخل پوشه نصب بازی باشد.');
+                    }
+                },
+            ],
             'structure' => ['required', Rule::enum(ProductStructureEnum::class)],
             'store_id' => ['required', 'integer', 'exists:stores,id'],
             'seller_commission_percent' => ['sometimes', 'required', 'numeric', 'between:0,100', 'decimal:0,2'],
@@ -402,6 +413,8 @@ class UpdateProductRequest extends FormRequest
             'sale_items.*.launcher_mods.*.install_target' => ['required_with:sale_items.*.launcher_mods', Rule::enum(LauncherModInstallTargetEnum::class)],
             'sale_items.*.launcher_mods.*.install_mode' => ['nullable', 'in:toggle,permanent'],
             'sale_items.*.launcher_mods.*.access_type' => ['nullable', 'in:free,purchase'],
+            'sale_items.*.launcher_mods.*.warning_text' => ['nullable', 'string', 'max:500'],
+            'sale_items.*.launcher_mods.*.warning_level' => ['nullable', 'in:info,warning,danger'],
             'sale_items.*.launcher_mods.*.price_toman' => ['nullable', 'required_if:sale_items.*.launcher_mods.*.access_type,purchase', 'integer', 'min:1000', 'max:1000000000'],
             'sale_items.*.launcher_mods.*.group_key' => ['nullable', 'alpha_dash', 'max:100'],
             'sale_items.*.launcher_mods.*.short_description' => ['nullable', 'string', 'max:2000'],

@@ -252,6 +252,19 @@
 
                 <x-admin.field
                     class="col-span-12"
+                    label="دستور بازکردن تنظیمات بازی (لانچر)"
+                    hint="نام فایل اجرایی تنظیمات بازی نسبت به ریشهٔ پوشهٔ نصب — مثال: Settings.exe یا tools/settings.exe. اگر پر شود، لانچر دکمهٔ «تنظیمات بازی» برای این محصول نشان می‌دهد."
+                >
+                    <x-admin.form.input
+                        name="game_settings_command"
+                        dir="ltr"
+                        placeholder="Settings.exe"
+                        :value="old('game_settings_command', $product?->game_settings_command)"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
                     label="نمایش تعداد فروش"
                 >
                     <x-admin.form.select

@@ -127,6 +127,10 @@ class SyncLauncherSaleItemContentAction
                 'priority' => (int)($data['priority'] ?? $index),
                 'is_enabled' => (bool)($data['is_enabled'] ?? false),
                 'is_required' => (bool)($data['is_required'] ?? false),
+                'warning_text' => filled($data['warning_text'] ?? null) ? trim((string)$data['warning_text']) : null,
+                'warning_level' => in_array($data['warning_level'] ?? null, ['info', 'warning', 'danger'], true)
+                    ? $data['warning_level']
+                    : 'warning',
                 ...$this->accessAttributes($data),
                 'compatible_base_versions' => array_values((array)($data['compatible_base_versions'] ?? [])),
                 'compatible_update_versions' => array_values((array)($data['compatible_update_versions'] ?? [])),

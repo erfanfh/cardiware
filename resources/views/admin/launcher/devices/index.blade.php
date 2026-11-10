@@ -332,6 +332,99 @@
                 @endif
             </section>
 
+            {{-- ═══ خریدها و دسترسی تک‌محصول: ابطال/بازگردانی فقط همان محصول ═══ --}}
+            <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-5 py-4">
+                    <h2 class="text-sm font-black text-slate-900">محصولات خریداری‌شده و دسترسی‌ها</h2>
+                    <p class="mt-1 text-xs font-bold leading-6 text-slate-500">
+                        برای مرجوعی جزئی (وقتی چند محصول خریده و فقط یکی عودت داده می‌شود) فقط دسترسی همان محصول را ابطال کنید؛
+                        بقیه خریدها و لانچر کاربر دست‌نخورده می‌مانند. محصول ابطال‌شده از کتابخانه و لانچر حذف می‌شود.
+                    </p>
+                </div>
+                @if($purchaseAccesses->isEmpty())
+                    <div class="px-5 py-8 text-center text-sm font-bold text-slate-500">خریدی برای این حساب ثبت نشده است.</div>
+                @else
+                    <div class="divide-y divide-slate-100">
+                        @php
+                            $statusStyles = [
+                                'active'  => ['label' => 'فعال', 'classes' => 'bg-emerald-50 text-emerald-700'],
+                                'revoked' => ['label' => 'ابطال‌شده', 'classes' => 'bg-red-50 text-red-700'],
+                                'expired' => ['label' => 'منقضی', 'classes' => 'bg-amber-50 text-amber-700'],
+                            ];
+                        @endphp
+                        @foreach($purchaseAccesses as $access)
+                            @php
+                                $statusKey = $access->status->value;
+                                $status = $statusStyles[$statusKey] ?? ['label' => $statusKey, 'classes' => 'bg-slate-100 text-slate-600'];
+                                $revokedAt = $access->metadata['revoked_at'] ?? null;
+                                $revokedReason = $access->metadata['revoked_reason'] ?? null;
+                                $orderStatus = $access->order?->status?->label() ?? '—';
+                            @endphp
+                            <div class="p-4">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div class="flex min-w-0 flex-wrap items-center gap-2">
+                                        <span class="text-xs font-black text-slate-900">{{ $access->product?->title ?: 'محصول حذف‌شده' }}</span>
+                                        <span class="rounded-lg px-2 py-1 text-[11px] font-extrabold {{ $status['classes'] }}">{{ $status['label'] }}</span>
+                                        @if($access->order)
+                                            <span class="rounded-lg bg-slate-100 px-2 py-1 text-[11px] font-bold text-slate-500">سفارش: {{ $orderStatus }}</span>
+                                        @endif
+                                        <span class="text-[11px] font-bold text-slate-400">{{ jalali_date($access->created_at) }}</span>
+                                    </div>
+
+                                    @if($statusKey === 'active' && ($access->order === null || $access->order->status->grantsPurchaseAccess()))
+                                        <details class="group">
+                                            <summary class="cursor-pointer list-none rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[11px] font-black text-red-700 transition hover:bg-red-100">
+                                                ابطال دسترسی این محصول
+                                            </summary>
+                                            <form method="POST" action="{{ route('admin.launcher-devices.access.revoke', $access) }}" class="mt-3 space-y-3 rounded-2xl border border-red-100 bg-red-50/50 p-4">
+                                                @csrf
+                                                <input type="hidden" name="access_id" value="{{ $access->getKey() }}">
+                                                <div>
+                                                    <label class="mb-2 block text-[11px] font-black text-slate-700">دلیل ابطال (مثلاً: عودت مبلغ این محصول)</label>
+                                                    <textarea name="revoke_reason" rows="2" required minlength="5" placeholder="مثلاً: مبلغ این محصول در تاریخ ... عودت داده شد" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold"></textarea>
+                                                    @error('revoke_reason')<p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>@enderror
+                                                </div>
+                                                <label class="flex items-center gap-2 text-[11px] font-black text-red-700">
+                                                    <input type="checkbox" name="confirm_revoke" value="1" required class="h-4 w-4">
+                                                    می‌دانم این محصول از لانچر و کتابخانه کاربر حذف می‌شود و سایر خریدها دست‌نخورده می‌مانند.
+                                                </label>
+                                                <button type="submit" class="rounded-xl bg-red-600 px-4 py-2 text-[11px] font-black text-white transition hover:bg-red-700">
+                                                    تأیید ابطال دسترسی
+                                                </button>
+                                            </form>
+                                        </details>
+                                    @elseif($statusKey === 'revoked')
+                                        <details class="group">
+                                            <summary class="cursor-pointer list-none rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] font-black text-emerald-700 transition hover:bg-emerald-100">
+                                                بازگردانی دسترسی
+                                            </summary>
+                                            <form method="POST" action="{{ route('admin.launcher-devices.access.restore', $access) }}" class="mt-3 space-y-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 p-4">
+                                                @csrf
+                                                <input type="hidden" name="access_id" value="{{ $access->getKey() }}">
+                                                <div>
+                                                    <label class="mb-2 block text-[11px] font-black text-slate-700">دلیل بازگردانی</label>
+                                                    <textarea name="restore_reason" rows="2" required minlength="5" placeholder="مثلاً: اشتباه در ابطال، اصلاح شد" class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold"></textarea>
+                                                    @error('restore_reason')<p class="mt-1 text-[11px] font-bold text-red-600">{{ $message }}</p>@enderror
+                                                </div>
+                                                <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-[11px] font-black text-white transition hover:bg-emerald-700">
+                                                    تأیید بازگردانی
+                                                </button>
+                                            </form>
+                                        </details>
+                                    @endif
+                                </div>
+
+                                @if($revokedAt)
+                                    <div class="mt-2 text-[11px] font-bold leading-6 text-slate-400">
+                                        ابطال: {{ jalali_date($revokedAt) }}{{ $revokedReason ? ' · ' . $revokedReason : '' }}
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </section>
+
             <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-5 py-4">
                     <h2 class="text-sm font-black text-slate-900">۲۰ تغییر آخر دسترسی لانچر</h2>

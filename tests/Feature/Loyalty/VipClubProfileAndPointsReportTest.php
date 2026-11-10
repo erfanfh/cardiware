@@ -39,7 +39,7 @@ class VipClubProfileAndPointsReportTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_vip_member_saves_a_profile_that_everyone_sees_on_the_club_card(): void
+    public function test_vip_member_bio_is_public_only_after_moderation(): void
     {
         $user = User::factory()->create(['username' => 'vipfan']);
         $this->giveVip($user);
@@ -49,8 +49,14 @@ class VipClubProfileAndPointsReportTest extends TestCase
             ->assertSessionHasNoErrors();
 
         $this->assertSame('violet', $user->fresh()->club_theme);
+        $this->assertSame('pending', $user->fresh()->club_bio_status);
 
         auth()->logout();
+        $this->get(route('loyalty.members.show', $user))
+            ->assertOk()
+            ->assertDontSee('طرفدار مادهای لیگ برتر');
+
+        $user->forceFill(['club_bio_status' => 'approved'])->save();
         $this->get(route('loyalty.members.show', $user))
             ->assertOk()
             ->assertSee('طرفدار مادهای لیگ برتر')

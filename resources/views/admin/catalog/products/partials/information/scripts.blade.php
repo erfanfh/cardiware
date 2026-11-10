@@ -702,6 +702,10 @@
                                 ? item.access_type
                                 : 'free',
                             price_toman: item.price_toman ?? '',
+                            warning_text: item.warning_text ?? '',
+                            warning_level: ['info', 'warning', 'danger'].includes(item.warning_level)
+                                ? item.warning_level
+                                : 'warning',
                             group_key: item.group_key ?? '',
                             short_description: item.short_description ?? '',
                             description: item.description ?? '',

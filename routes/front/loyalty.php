@@ -15,6 +15,11 @@ Route::get('loyalty/hall-of-fame', App\Http\Controllers\Front\Loyalty\HallOfFame
     ->name('loyalty.hall-of-fame');
 
 // کارت عمومی باشگاه هر عضو (جام‌ها، سطح، نشان‌ها).
+Route::post('loyalty/members/{user}/follow', \App\Http\Controllers\Front\Loyalty\ToggleMemberFollowController::class)
+    ->whereNumber('user')
+    ->middleware(['auth', 'throttle:60,1'])
+    ->name('loyalty.members.follow');
+
 Route::get('loyalty/members/{user}', App\Http\Controllers\Front\Loyalty\MemberProfileController::class)
     ->whereNumber('user')
     ->middleware('throttle:60,1')

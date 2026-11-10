@@ -23,6 +23,10 @@
                 <x-admin.form.input name="price_toman" type="number" min="0" dir="ltr" :value="old('price_toman', $plan?->price_toman)" required/>
             </x-admin.field>
 
+            <x-admin.field label="درصد تخفیف خرید تکی (۰ تا ۹۰)" hint="خریداران این پلن، روی قیمت نهایی پس از تخفیف محصول، این درصد تخفیف می‌گیرند. خالی = استفاده از درصد سراسری تنظیمات VIP؛ ۰ = بدون تخفیف برای این پلن." :error="$errors->first('purchase_discount_percent')">
+                <x-admin.form.input name="purchase_discount_percent" type="number" min="0" max="90" dir="ltr" :value="old('purchase_discount_percent', $plan?->purchase_discount_percent)" placeholder="مثلاً 5"/>
+            </x-admin.field>
+
             <x-admin.field required label="ترتیب نمایش" hint="عدد کوچک‌تر زودتر نمایش داده می‌شود." :error="$errors->first('sort_order')">
                 <x-admin.form.input name="sort_order" type="number" min="0" max="65535" dir="ltr" :value="old('sort_order', $plan?->sort_order ?? 0)" required/>
             </x-admin.field>

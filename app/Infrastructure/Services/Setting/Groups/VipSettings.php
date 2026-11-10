@@ -29,6 +29,7 @@ class VipSettings extends BaseSettings
         'hero_benefit_2',
         'hero_benefit_3',
         'featured_plan_id',
+        'purchase_discount_percent',
     ];
 
     public function hero(): array
@@ -40,5 +41,15 @@ class VipSettings extends BaseSettings
         }
 
         return $hero;
+    }
+
+    /**
+     * درصد تخفیف عمومی اعضای فعال VIP روی خرید تکی محصولات (۰ = غیرفعال).
+     * فقط روی اقلام پولیِ قابلِ خرید اعمال می‌شود؛ پلن‌های اشتراک خودِ VIP و
+     * اقلامی که با خود اشتراک باز می‌شوند (vip_access_enabled) شامل نمی‌شوند.
+     */
+    public function purchaseDiscountPercent(): int
+    {
+        return max(0, min(90, (int)$this->get('purchase_discount_percent', 0)));
     }
 }

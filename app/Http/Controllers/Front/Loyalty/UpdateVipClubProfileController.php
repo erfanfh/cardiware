@@ -9,7 +9,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\Rule;
 
-/** ذخیره‌ی معرفی و تم کارت باشگاه؛ فقط برای کاربران VIP. */
+/**
+ * ذخیرهٔ معرفی و تم کارت باشگاه؛ فقط برای کاربران VIP.
+ *
+ * معرفی (club_bio) تا تایید مدیر به‌صورت عمومی نمایش داده نمی‌شود و تا وقتی
+ * «در انتظار تایید» است کاربر نمی‌تواند آن یا تم را تغییر دهد. نوشتن فقط
+ * یک‌بار ممکن است؛ برای ویرایش مجدد باید اشتراکِ ماهِ بعدِ آخرین ویرایش
+ * خریداری شده باشد (User::canEditClubBio).
+ */
 final class UpdateVipClubProfileController extends Controller
 {
     public function __invoke(Request $request): RedirectResponse
@@ -19,6 +26,11 @@ final class UpdateVipClubProfileController extends Controller
         if (! $user->hasActiveVipSubscription()) {
             return redirect()->to(route('account.loyalty') . '#overview')
                 ->withErrors(['club_bio' => 'پروفایل اختصاصی فقط برای اعضای VIP فعال است.']);
+        }
+
+        if (! $user->canEditClubBio()) {
+            return redirect()->to(route('account.loyalty') . '#overview')
+                ->withErrors(['club_bio' => 'معرفی شما در انتظار تایید مدیر است و تا تعیین تکلیف نمی‌توانید آن را تغییر دهید. برای ویرایش بعدی، اشتراک ماه بعد را تهیه کنید.']);
         }
 
         $data = $request->validate([
@@ -33,14 +45,25 @@ final class UpdateVipClubProfileController extends Controller
             'club_bio.not_regex' => 'در معرفی، لینک، ایمیل یا شماره تماس مجاز نیست.',
         ]);
 
+        $bio = filled($data['club_bio'] ?? null)
+            ? trim(preg_replace('/\s+/u', ' ', $data['club_bio']))
+            : null;
+
         $user->forceFill([
-            'club_bio' => filled($data['club_bio'] ?? null) ? trim(preg_replace('/\s+/u', ' ', $data['club_bio'])) : null,
+            'club_bio' => $bio,
             'club_theme' => $data['club_theme'],
+            // متن جدید همیشه باید دوباره تایید شود؛ تم فقط همراه همان متن قابل تغییر است.
+            'club_bio_status' => $bio === null ? 'none' : 'pending',
+            'club_bio_edited_at' => now(),
         ])->save();
 
         Cache::forget('loyalty:member-card:' . $user->getKey());
 
+        $message = $bio === null
+            ? 'معرفی شما حذف شد.'
+            : 'معرفی شما ثبت شد و پس از تایید مدیر روی کارت عمومی شما نمایش داده می‌شود.';
+
         return redirect()->to(route('account.loyalty') . '#overview')
-            ->with('success', 'پروفایل VIP شما ذخیره شد.');
+            ->with('success', $message);
     }
 }

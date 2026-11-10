@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Launcher;
 
+use App\Application\Commerce\Actions\Access\AdminRestorePurchaseAccessAction;
+use App\Application\Commerce\Actions\Access\AdminRevokePurchaseAccessAction;
 use App\Application\Launcher\Actions\Security\ResetLauncherDeviceSecurityAction;
 use App\Application\Launcher\Actions\Security\ChangeLauncherAccountSuspensionAction;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Identity\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -49,6 +53,7 @@ final class LauncherDeviceManagementController extends Controller
         $resetStats = null;
         $suspensionLogs = collect();
         $transferBlockLogs = collect();
+        $purchaseAccesses = collect();
 
         // Accounts that keep asking for device resets. One reset is a new laptop; five in a
         // month is an account being passed around. Listed before any search, like the
@@ -197,6 +202,15 @@ final class LauncherDeviceManagementController extends Controller
                 ->limit(20)
                 ->get();
 
+            $purchaseAccesses = PurchaseAccess::query()
+                ->withoutGlobalScopes()
+                ->owned()
+                ->with(['product:id,title,slug', 'order:id,status,created_at'])
+                ->where('user_id', $selectedUser->getKey())
+                ->latest('id')
+                ->limit(50)
+                ->get();
+
             $transferBlockLogs = DB::table('launcher_device_transfer_blocks')
                 ->where('user_id', $selectedUser->getKey())
                 ->latest('id')
@@ -225,6 +239,7 @@ final class LauncherDeviceManagementController extends Controller
             'resetFrequent',
             'suspensionLogs',
             'transferBlockLogs',
+            'purchaseAccesses',
             'watchlist',
             'cloneSuspects',
         ));
@@ -303,6 +318,77 @@ final class LauncherDeviceManagementController extends Controller
             ->route('admin.launcher-devices.index', ['user_id' => $targetUser->getKey()])
             ->with('success', 'محرومیت لانچر رفع شد. کاربر باید یک‌بار به‌صورت آنلاین وارد شود.')
             ->with('success_title', 'رفع محرومیت لانچر');
+    }
+
+    /**
+     * ابطال دسترسی «یک محصول» کاربر (مکمل مرجوعی جزئی) — بقیه خریدها دست‌نخورده می‌مانند.
+     */
+    public function revokeAccess(
+        Request $request,
+        AdminRevokePurchaseAccessAction $revokeAccess,
+        int $accessId,
+    ): RedirectResponse {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'revoke_reason' => ['required', 'string', 'min:5', 'max:1000'],
+            'confirm_revoke' => ['accepted'],
+        ], [
+            'revoke_reason.required' => 'ثبت دلیل ابطال الزامی است.',
+            'revoke_reason.min' => 'دلیل ابطال باید حداقل ۵ کاراکتر باشد.',
+            'confirm_revoke.accepted' => 'برای ابطال دسترسی باید تأیید نهایی را فعال کنید.',
+        ]);
+
+        $access = PurchaseAccess::query()
+            ->withoutGlobalScopes()
+            ->owned()
+            ->whereKey($accessId)
+            ->firstOrFail();
+
+        $revokeAccess->execute($access, $request->user(), $validated['revoke_reason']);
+
+        return redirect()
+            ->route('admin.launcher-devices.index', ['user_id' => $access->user_id])
+            ->with('success', 'دسترسی این محصول ابطال شد؛ از کتابخانه و لانچر کاربر حذف می‌شود.')
+            ->with('success_title', 'ابطال دسترسی محصول');
+    }
+
+    /**
+     * بازگردانی دسترسی یک محصولِ ابطال‌شده (سفارش باید همچنان پرداخت‌شده باشد).
+     */
+    public function restoreAccess(
+        Request $request,
+        AdminRestorePurchaseAccessAction $restoreAccess,
+        int $accessId,
+    ): RedirectResponse {
+        Gate::authorize('launcher-device.manage');
+
+        $validated = $request->validate([
+            'restore_reason' => ['required', 'string', 'min:5', 'max:1000'],
+        ], [
+            'restore_reason.required' => 'ثبت دلیل بازگردانی الزامی است.',
+            'restore_reason.min' => 'دلیل بازگردانی باید حداقل ۵ کاراکتر باشد.',
+        ]);
+
+        $access = PurchaseAccess::query()
+            ->withoutGlobalScopes()
+            ->owned()
+            ->whereKey($accessId)
+            ->firstOrFail();
+
+        try {
+            $restoreAccess->execute($access, $request->user(), $validated['restore_reason']);
+        } catch (ModelNotFoundException) {
+            return redirect()
+                ->route('admin.launcher-devices.index', ['user_id' => $access->user_id])
+                ->with('error', 'سفارش این محصول در وضعیت پرداخت‌شده نیست؛ بازگردانی ممکن نیست.')
+                ->with('error_title', 'بازگردانی ناموفق');
+        }
+
+        return redirect()
+            ->route('admin.launcher-devices.index', ['user_id' => $access->user_id])
+            ->with('success', 'دسترسی محصول بازگردانی شد.')
+            ->with('success_title', 'بازگردانی دسترسی محصول');
     }
 
     public function reset(

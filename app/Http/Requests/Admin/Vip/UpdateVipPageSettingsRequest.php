@@ -27,6 +27,9 @@ class UpdateVipPageSettingsRequest extends FormRequest
             Rule::exists('vip_plans', 'id')->where('is_active', true)->whereNull('deleted_at'),
         ];
 
+        // درصد تخفیف عمومی اعضای فعال VIP روی خرید تکی محصولات (۰ = غیرفعال)
+        $rules['purchase_discount_percent'] = ['nullable', 'integer', 'min:0', 'max:90'];
+
         return $rules;
     }
 
@@ -43,6 +46,10 @@ class UpdateVipPageSettingsRequest extends FormRequest
         $values['featured_plan_id'] = $this->input('featured_plan_id') === ''
             ? null
             : $this->input('featured_plan_id');
+
+        $values['purchase_discount_percent'] = $this->filled('purchase_discount_percent')
+            ? $this->input('purchase_discount_percent')
+            : 0;
 
         $this->merge($values);
     }

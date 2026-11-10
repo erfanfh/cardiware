@@ -35,7 +35,7 @@
 
     <div class="h-px w-full bg-gray-200 dark:bg-slate-800"></div>
 
-    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="py-12">
             <section class="mw-footer-stats {{ $footerStatsAnimated ? 'is-animated' : '' }}">
                 @if($footerStatsBg)

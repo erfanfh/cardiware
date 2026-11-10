@@ -8,6 +8,7 @@ use App\Application\Loyalty\Support\ClubEliteMembership;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Models\LoyaltyAchievement;
+use App\Domain\Loyalty\Models\ClubFollow;
 use App\Domain\Loyalty\Models\LoyaltyChampion;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
@@ -60,6 +61,12 @@ final class MemberProfileController extends Controller
             'vipSince' => $isVip ? \App\Application\Loyalty\Support\VipClubProfile::activeSince($user) : null,
             'isElite' => $elite->enabled() && $elite->isMember($user),
             'monthRank' => $user->isLoyaltyStaff() ? null : $leaderboard->execute($user, 'month')['currentMember']['rank'],
+            'followersCount' => ClubFollow::query()->where('target_id', $user->getKey())->count(),
+            'isFollowing' => auth()->check()
+                && ClubFollow::query()
+                    ->where('follower_id', auth()->id())
+                    ->where('target_id', $user->getKey())
+                    ->exists(),
         ]);
     }
 }

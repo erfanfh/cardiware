@@ -17,6 +17,12 @@ Route::prefix('launcher-devices')
         Route::post('/reset', [LauncherDeviceManagementController::class, 'reset'])->name('reset');
         Route::post('/suspend', [LauncherDeviceManagementController::class, 'suspend'])->name('suspend');
         Route::post('/restore', [LauncherDeviceManagementController::class, 'restore'])->name('restore');
+        Route::post('/access/{accessId}/revoke', [LauncherDeviceManagementController::class, 'revokeAccess'])
+            ->whereNumber('accessId')
+            ->name('access.revoke');
+        Route::post('/access/{accessId}/restore', [LauncherDeviceManagementController::class, 'restoreAccess'])
+            ->whereNumber('accessId')
+            ->name('access.restore');
     });
 
 Route::get('launcher-security', [LauncherSecurityMonitorController::class, 'index'])

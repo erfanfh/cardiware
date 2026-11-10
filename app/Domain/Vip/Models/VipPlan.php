@@ -20,6 +20,7 @@ class VipPlan extends Model implements Purchasable
         'description',
         'duration_days',
         'price_toman',
+        'purchase_discount_percent',
         'is_active',
         'sort_order',
     ];
@@ -27,6 +28,7 @@ class VipPlan extends Model implements Purchasable
     protected $casts = [
         'duration_days' => 'integer',
         'price_toman' => 'integer',
+        'purchase_discount_percent' => 'integer',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];

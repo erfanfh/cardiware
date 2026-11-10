@@ -1,5 +1,21 @@
+@php
+    // کاربر فعال VIP: منو در هر دو تم ظاهر عادی دارد؛ تمایز با لهجه‌های طلایی
+    // (نوار بالایی، نشان تاج، آیتم فعال طلایی) و استروک طلایی متحرک در تم تیره.
+    $isVipUser = $user->hasActiveVipSubscription();
+@endphp
+
 <x-front.cart
-    class="hidden space-y-5 border-slate-200 bg-white/90 text-sm dark:border-slate-800 dark:bg-slate-900/90 lg:block [&_button]:cursor-pointer [&_svg]:h-[18px] [&_svg]:w-[18px]">
+    @class([
+        'hidden space-y-5 text-sm lg:block [&_button]:cursor-pointer [&_svg]:h-[18px] [&_svg]:w-[18px]',
+        'border-slate-200 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90' => ! $isVipUser,
+        'mw-vip-sidebar relative border-slate-200 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90' => $isVipUser,
+    ])>
+    @if($isVipUser)
+        {{-- نوار طلایی باریک بالای منو (در هر دو تم) + استروک متحرک فقط در تم تیره --}}
+        <span class="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l from-amber-200 via-amber-500 to-orange-500" aria-hidden="true"></span>
+        <span class="pointer-events-none absolute right-3 top-3 text-[11px] opacity-80" aria-hidden="true">👑</span>
+        <span class="mw-vip-sidebar-stroke" aria-hidden="true"></span>
+    @endif
     @php
         $groups = [
             [
@@ -23,7 +39,8 @@
                 'links' => [
                     ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
                     ['route' => 'account.raffles', 'label' => 'قرعه کشی‌های من', 'icon' => 'icons.award-03', 'end' => 'arrow'],
-                    ['route' => 'account.loyalty', 'label' => 'باشگاه مخاطبان', 'icon' => 'icons.medal-06', 'end' => $user->loyalty_points],
+                    // امتیاز عمداً اینجا نمایش داده نمی‌شود؛ اعداد بزرگ استایل منو را خراب می‌کنند (عدد در خود صفحهٔ باشگاه دیده می‌شود)
+                    ['route' => 'account.loyalty', 'label' => 'باشگاه مخاطبان', 'icon' => 'icons.medal-06', 'end' => 'arrow'],
                     ['route' => 'account.affiliate', 'label' => 'همکاری در فروش', 'icon' => 'icons.user-multiple-02', 'end' => 'arrow'],
                 ],
             ],

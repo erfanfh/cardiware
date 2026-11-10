@@ -479,6 +479,8 @@
                     'install_mode' => $mod->install_mode?->value ?? 'toggle',
                     'access_type' => $mod->access_type?->value ?? 'free',
                     'price_toman' => $mod->price_toman,
+                    'warning_text' => $mod->warning_text,
+                    'warning_level' => $mod->warning_level ?? 'warning',
                     'group_key' => $mod->group?->key,
                     'short_description' => $mod->short_description,
                     'description' => $mod->description,

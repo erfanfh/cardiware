@@ -103,6 +103,7 @@ class User extends Authenticatable implements HasDiscussionOwner
             'launcher_suspended_at' => 'datetime',
             'launcher_suspended_until' => 'datetime',
             'launcher_suspended_by' => 'integer',
+            'club_bio_edited_at' => 'datetime',
         ];
     }
 
@@ -248,6 +249,38 @@ class User extends Authenticatable implements HasDiscussionOwner
     public function launcherModGrants(): HasMany
     {
         return $this->hasMany(\App\Domain\Launcher\Models\LauncherModGrant::class);
+    }
+
+    /**
+     * آیا کاربر الان اجازهٔ نوشتن/ویرایش معرفی VIP را دارد؟
+     *  - هرگز نوشته (none) یا رد‌شده: یک‌بار امکان نوشتن.
+     *  - در انتظار تایید (pending): قفل تا تعیین تکلیف مدیر.
+     *  - تایید‌شده: فقط با خرید اشتراک در ماهِ بعدِ آخرین ویرایش (ماهی یک‌بار).
+     */
+    public function canEditClubBio(): bool
+    {
+        $status = (string)($this->club_bio_status ?? 'none');
+
+        if (in_array($status, ['none', 'rejected'], true)) {
+            return true;
+        }
+
+        if ($status === 'pending') {
+            return false;
+        }
+
+        $editedAt = $this->club_bio_edited_at;
+
+        if ($editedAt === null) {
+            return true;
+        }
+
+        return $this->vipSubscriptions()
+            ->whereNull('revoked_at')
+            ->where('starts_at', '<=', now())
+            ->where('expires_at', '>', now())
+            ->where('starts_at', '>=', $editedAt->copy()->startOfMonth()->addMonth())
+            ->exists();
     }
 
     public function hasActiveVipSubscription(): bool

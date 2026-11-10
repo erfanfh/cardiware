@@ -46,6 +46,12 @@
                 </x-admin.field>
             </x-admin.metabox>
 
+            <x-admin.metabox title="تخفیف خرید اعضای VIP">
+                <x-admin.field label="درصد تخفیف خرید تکی (۰ تا ۹۰)" hint="اعضای فعال VIP هنگام خرید تکی محصولات، این درصد تخفیف را روی قیمت نهایی (پس از تخفیف محصول) می‌گیرند. عدد ۰ یعنی تخفیف غیرفعال است. پلن‌های اشتراک خودِ VIP و اقلامی که با اشتراک باز می‌شوند مشمول این تخفیف نیستند." :error="$errors->first('purchase_discount_percent')">
+                    <x-admin.form.input type="number" name="purchase_discount_percent" min="0" max="90" :value="old('purchase_discount_percent', $purchaseDiscountPercent)"/>
+                </x-admin.field>
+            </x-admin.metabox>
+
             <x-admin.form.save-button label="ذخیره تنظیمات صفحه VIP"/>
         </x-admin.page>
     </x-admin.form>

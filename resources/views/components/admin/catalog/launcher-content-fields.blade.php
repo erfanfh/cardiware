@@ -783,6 +783,33 @@
                                 />
                             </x-admin.field>
 
+                            <x-admin.field
+                                label="هشدار فعال‌سازی ماد"
+                                hint="اگر پر شود، لانچر قبل از فعال‌سازی این ماد یک هشدار رنگی به کاربر نشان می‌دهد (مثلاً درباره افت فریم یا لگ)."
+                                class="col-span-12 md:col-span-5"
+                            >
+                                <x-admin.form.input
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][warning_text]`"
+                                    x-model="mod.warning_text"
+                                    placeholder="مثلاً: این ماد در سیستم‌های ضعیف باعث افت فریم می‌شود"
+                                />
+                            </x-admin.field>
+
+                            <x-admin.field
+                                label="سطح هشدار"
+                                hint="رنگ هشدار در لانچر: زرد = نکته مهم، قرمز = ریسک جدی."
+                                class="col-span-6 md:col-span-2"
+                            >
+                                <x-admin.form.select
+                                    x-bind:name="`sale_items[{{ $indexToken }}][launcher_mods][${modIndex}][warning_level]`"
+                                    x-model="mod.warning_level"
+                                >
+                                    <option value="warning">زرد (هشدار)</option>
+                                    <option value="danger">قرمز (جدی)</option>
+                                    <option value="info">آبی (نکته)</option>
+                                </x-admin.form.select>
+                            </x-admin.field>
+
                             <x-admin.field label="کلید گروه" class="col-span-6 md:col-span-2">
                                 <x-admin.form.input
                                     class="direction-ltr"

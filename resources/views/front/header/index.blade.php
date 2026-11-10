@@ -122,18 +122,18 @@
                     <livewire:front.commerce.cart.header-cart-dropdown/>
                 @endif
 
+                {{-- سوئیچ روز/شب: خورشید و ابر ↔ ماه و ستاره‌ها --}}
                 <button
                     x-data="themeSwitcher()"
                     x-on:click="toggle()"
                     :aria-label="dark ? 'حالت روشن' : 'حالت شب'"
-                    class="cursor-pointer h-10 w-10 [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 transition grid place-items-center text-slate-700 dark:text-slate-100"
+                    :title="dark ? 'حالت روشن' : 'حالت شب'"
+                    :class="dark ? 'theme-toggle is-dark' : 'theme-toggle'"
                 >
-                    <span x-show="!dark">
-                        @include('icons.moon-02')
-                    </span>
-
-                    <span x-show="dark" x-cloak>
-                        @include('icons.sun-01')
+                    <span class="tt-stars" aria-hidden="true"></span>
+                    <span class="tt-knob" aria-hidden="true">
+                        <span class="tt-cloud"></span>
+                        <span class="tt-moon"></span>
                     </span>
                 </button>
 

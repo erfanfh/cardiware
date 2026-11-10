@@ -116,7 +116,16 @@
 
                         <x-admin.list.td>
                             <div class="text-xs leading-6">
-                                <div>{{ $user->display_name }}</div>
+                                <div class="flex items-center gap-1.5">
+                                    <span>{{ $user->display_name }}</span>
+                                    @if(($user->club_bio_status ?? null) === 'pending')
+                                        <a href="{{ route('admin.users.edit', $user) }}"
+                                           class="rounded-lg bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-800 transition hover:bg-amber-200"
+                                           title="معرفی باشگاه این کاربر در انتظار تایید است — برای بررسی کلیک کنید">
+                                            بیو در انتظار تایید
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         </x-admin.list.td>
 

@@ -23,6 +23,8 @@ Route::prefix('users')->name('users.')->group(function () {
     Route::post('{user}/wallet', [UserWalletController::class, 'adjust'])->name('wallet.adjust');
     Route::post('bulk-action', UserBulkActionController::class)->name('bulk-action');
 
+    Route::post('{user}/club-bio', [UserController::class, 'moderateClubBio'])->name('club-bio.moderate');
+
     Route::get('fetch', [UserController::class, 'usersFetch'])->name('fetch');
 
     Route::get('ajax-search', UserSearchController::class)->name('ajax-search');

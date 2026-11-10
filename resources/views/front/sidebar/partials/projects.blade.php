@@ -19,7 +19,7 @@
             @endphp
 
             <div class="sb-project-card {{ $sbProjectDone ? 'is-done' : '' }}">
-                <div class="{{ $sbProjectDone ? 'p-2.5' : '' }}">
+                <div class="relative">
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
                             <div class="text-sm font-extrabold truncate dark:text-slate-100">

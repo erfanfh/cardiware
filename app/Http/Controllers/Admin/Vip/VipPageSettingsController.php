@@ -22,6 +22,7 @@ class VipPageSettingsController extends Controller
         return view('admin.vip.page-settings', [
             'hero' => $settings->hero(),
             'featuredPlanId' => $settings->get('featured_plan_id'),
+            'purchaseDiscountPercent' => $settings->purchaseDiscountPercent(),
             'plans' => VipPlan::query()->available()->get(),
         ]);
     }

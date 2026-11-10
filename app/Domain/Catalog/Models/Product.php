@@ -49,6 +49,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'file_size_body',
         'type',
         'content_type',
+        'game_settings_command',
         'structure',
         'status',
         'picture_id',
