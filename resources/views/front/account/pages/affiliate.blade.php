@@ -23,6 +23,22 @@
             </div>
         @endif
 
+        {{-- اطلاعیهٔ افزایش کمیسیون برای تولیدکنندگان محتوا --}}
+        <div class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/25 dark:bg-amber-500/10">
+            <div class="flex items-start gap-3">
+                <span class="mt-0.5 shrink-0 text-lg">📢</span>
+                <p class="text-xs font-bold leading-6 text-amber-900 dark:text-amber-200">
+                    <b class="font-black">تولیدکنندهٔ محتوا هستید یا جامعهٔ کاربری بزرگی دارید؟</b>
+                    درصد کمیسیون شما ثابت نیست؛ با رشد فروش می‌توانید کمیسیون بالاتری بگیرید.
+                    کافیست از بخش پشتیبانی، تیکتی با موضوع «درخواست افزایش کمیسیون همکاری در فروش» ارسال کنید تا پس از بررسی، درصد شما افزایش یابد.
+                </p>
+            </div>
+            <a href="{{ route('account.tickets') }}"
+               class="shrink-0 self-start rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-black text-white transition hover:bg-amber-600 sm:self-auto">
+                ارسال تیکت به پشتیبانی
+            </a>
+        </div>
+
         {{-- ===================== Hero ===================== --}}
         <x-front.cart class="relative overflow-hidden !p-0 dark:border-slate-700 dark:bg-slate-900">
             <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-emerald-50/60 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-950/20"></div>

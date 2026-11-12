@@ -7,6 +7,7 @@ use App\Application\Loyalty\Exceptions\PointReversalExceededException;
 use App\Application\Loyalty\Missions\Actions\RecordMissionProgressAction;
 use App\Application\Loyalty\Support\ReawardableLedgerKey;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Commerce\Models\PurchaseAccess;
 use App\Domain\Loyalty\Enums\AchievementMetricEnum;
 use App\Domain\Loyalty\Enums\MissionMetricEnum;
 use App\Domain\Loyalty\Models\LoyaltyAchievement;
@@ -111,6 +112,8 @@ final class RevokePurchaseGamificationForOrderAction
         $metrics = [
             AchievementMetricEnum::PAID_ORDERS_COUNT->value => (int) (clone $paidOrders)->count(),
             AchievementMetricEnum::TOTAL_PURCHASE_AMOUNT->value => (int) (clone $paidOrders)->sum('total_amount'),
+            AchievementMetricEnum::PRODUCTS_OWNED->value => (int) PurchaseAccess::query()
+                ->where('user_id', $order->user_id)->usable()->distinct()->count('product_id'),
         ];
 
         $earnedIds = DB::table('loyalty_achievement_user')

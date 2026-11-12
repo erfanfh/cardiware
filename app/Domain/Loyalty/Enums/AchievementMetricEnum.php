@@ -10,6 +10,9 @@ enum AchievementMetricEnum: string
     case LIFETIME_XP = 'lifetime_xp';
     case MEMBERSHIP_DAYS = 'membership_days';
     case TOTAL_PURCHASE_AMOUNT = 'total_purchase_amount';
+    case POLL_VOTES_COUNT = 'poll_votes_count';
+    case DAILY_VISIT_DAYS = 'daily_visit_days';
+    case PRODUCTS_OWNED = 'products_owned';
 
     public function label(): string
     {
@@ -20,6 +23,9 @@ enum AchievementMetricEnum: string
             self::LIFETIME_XP => 'کل XP',
             self::MEMBERSHIP_DAYS => 'روز عضویت',
             self::TOTAL_PURCHASE_AMOUNT => 'مجموع مبلغ خریدها (تومان)',
+            self::POLL_VOTES_COUNT => 'تعداد نظرسنجی‌های شرکت‌کرده',
+            self::DAILY_VISIT_DAYS => 'تعداد روزهای بازدید',
+            self::PRODUCTS_OWNED => 'تعداد محصولات تحت مالکیت',
         };
     }
 }

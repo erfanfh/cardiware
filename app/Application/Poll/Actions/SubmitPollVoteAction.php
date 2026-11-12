@@ -65,7 +65,7 @@ class SubmitPollVoteAction
             throw ValidationException::withMessages(['option_ids' => 'یکی از گزینه‌های انتخاب‌شده معتبر نیست.']);
         }
 
-        return DB::transaction(function () use ($poll, $identity, $validIds, $userAgent, $referrer): PollResponse {
+        $response = DB::transaction(function () use ($poll, $identity, $validIds, $userAgent, $referrer): PollResponse {
             $response = PollResponse::query()->firstOrCreate(
                 ['poll_id' => $poll->getKey(), 'identity_key' => $identity->key],
                 [
@@ -111,5 +111,20 @@ class SubmitPollVoteAction
 
             return $response->load('options');
         });
+
+        // نشان‌ها: شرکت در نظرسنجی هم مثل خرید/دیدگاه ارزیابی می‌شود.
+        if ($identity->userId !== null) {
+            try {
+                app(\App\Application\Loyalty\Achievements\Actions\EvaluateUserAchievementsAction::class)
+                    ->execute(\App\Domain\Identity\Models\User::query()->findOrFail($identity->userId));
+            } catch (\Throwable $exception) {
+                \Illuminate\Support\Facades\Log::warning('Poll achievement evaluation failed.', [
+                    'user_id' => $identity->userId,
+                    'message' => $exception->getMessage(),
+                ]);
+            }
+        }
+
+        return $response;
     }
 }

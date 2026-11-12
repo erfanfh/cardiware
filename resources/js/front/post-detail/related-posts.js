@@ -18,7 +18,7 @@ const initRelatedPostsSwiper = () => {
 
         const slidesCount = element.querySelectorAll('.swiper-slide').length;
 
-        if (slidesCount <= 1) {
+        if (slidesCount === 0) {
             return;
         }
 

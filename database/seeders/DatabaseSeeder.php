@@ -6,6 +6,7 @@ use Database\Seeders\Feature\FeatureDefinitionSeeder;
 use Database\Seeders\Identity\PermissionSeeder;
 use Database\Seeders\Identity\RoleSeeder;
 use Database\Seeders\Layout\PageLayoutSeeder;
+use Database\Seeders\Loyalty\LoyaltyDiverseAchievementsSeeder;
 use Database\Seeders\Navigation\NavigationMenuSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
             PageLayoutSeeder::class,
             FeatureDefinitionSeeder::class,
             NavigationMenuSeeder::class,
+            LoyaltyDiverseAchievementsSeeder::class,
         ]);
     }
 }

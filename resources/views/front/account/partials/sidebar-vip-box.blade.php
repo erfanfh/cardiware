@@ -3,7 +3,14 @@
     $remainingDays = $vipExpiresAt ? max(1, now()->diffInDays($vipExpiresAt, false)) : 0;
 @endphp
 
-<x-front.cart class="overflow-hidden border-slate-200 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90">
+<x-front.cart @class([
+    'overflow-hidden border-slate-200 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90',
+    // اشتراک فعال: استروک طلایی متحرک دور همین باکس (در تم تیره)
+    'relative' => $vipExpiresAt,
+])>
+    @if($vipExpiresAt)
+        <span class="mw-vip-sidebar-stroke" aria-hidden="true"></span>
+    @endif
     <div class="flex items-center gap-3">
         <span class="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300 [&_svg]:h-5 [&_svg]:w-5">@include('icons.crown-03')</span>
         <div>

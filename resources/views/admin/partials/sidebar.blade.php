@@ -25,6 +25,10 @@
             ? \App\Domain\Content\Models\UserMediaSubmission::query()->pending()->count()
             : 0,
     ];
+    $sidebarBadges['pending_club_bios'] = \Illuminate\Support\Facades\Gate::allows('user.edit')
+        ? \App\Domain\Identity\Models\User::query()->where('club_bio_status', 'pending')->count()
+        : 0;
+
     $sidebarBadges['pending_financial_requests'] = $sidebarBadges['unresolved_wallet_withdrawals'] + $sidebarBadges['pending_store_withdrawals'];
 @endphp
 

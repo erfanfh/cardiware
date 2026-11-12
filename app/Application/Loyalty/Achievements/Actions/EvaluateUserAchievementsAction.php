@@ -99,6 +99,22 @@ final class EvaluateUserAchievementsAction
                 ->where('user_id', $user->getKey())
                 ->paid()
                 ->sum('total_amount'),
+
+            AchievementMetricEnum::POLL_VOTES_COUNT => (int) \App\Domain\Poll\Models\PollResponse::query()
+                ->where('user_id', $user->getKey())
+                ->count(),
+
+            AchievementMetricEnum::DAILY_VISIT_DAYS => (int) PointLedgerEntry::query()
+                ->where('reason', 'daily_visit')
+                ->whereHas('account', fn ($query) => $query->where('user_id', $user->getKey()))
+                ->distinct()
+                ->count(DB::raw('date(occurred_at)')),
+
+            AchievementMetricEnum::PRODUCTS_OWNED => (int) \App\Domain\Commerce\Models\PurchaseAccess::query()
+                ->where('user_id', $user->getKey())
+                ->usable()
+                ->distinct('product_id')
+                ->count('product_id'),
         };
     }
 

@@ -72,7 +72,6 @@ class RecordDailyLoyaltyVisit
 
                 if ($streakResult['isNewDay']) {
                     $this->recordMissionProgressAction->execute($user, MissionMetricEnum::DAILY_VISITS);
-                    $this->evaluateUserAchievementsAction->execute($user);
                 }
             } catch (Throwable $gamificationException) {
                 Log::warning('Daily loyalty gamification tracking failed.', [
@@ -81,13 +80,25 @@ class RecordDailyLoyaltyVisit
                 ]);
             }
 
-            $result = $this->processEarningRuleAction->execute(
-                EarningRuleTypeEnum::DAILY_VISIT,
-                new DailyVisitEarningContext(
-                    user: $user,
-                    occurredAt: $occurredAt,
-                ),
-            );
+            try {
+                $result = $this->processEarningRuleAction->execute(
+                    EarningRuleTypeEnum::DAILY_VISIT,
+                    new DailyVisitEarningContext(
+                        user: $user,
+                        occurredAt: $occurredAt,
+                    ),
+                );
+            } finally {
+                // Include today's visit, keeping badges independent of earning-rule failures.
+                try {
+                    $this->evaluateUserAchievementsAction->execute($user);
+                } catch (Throwable $gamificationException) {
+                    Log::warning('Daily loyalty achievement evaluation failed.', [
+                        'user_id' => $user->getKey(),
+                        'message' => $gamificationException->getMessage(),
+                    ]);
+                }
+            }
 
             if ($result->wasNewlyAwarded()) {
                 $this->pendingNotifications->push(

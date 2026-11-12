@@ -25,6 +25,9 @@ Route::prefix('users')->name('users.')->group(function () {
 
     Route::post('{user}/club-bio', [UserController::class, 'moderateClubBio'])->name('club-bio.moderate');
 
+    Route::get('club-bios', [\App\Http\Controllers\Admin\Identity\ClubBioModerationController::class, 'index'])
+        ->name('club-bios.index');
+
     Route::get('fetch', [UserController::class, 'usersFetch'])->name('fetch');
 
     Route::get('ajax-search', UserSearchController::class)->name('ajax-search');

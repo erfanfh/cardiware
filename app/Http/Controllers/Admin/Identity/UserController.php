@@ -147,6 +147,8 @@ class UserController extends Controller
 
         $validated = $request->validate([
             'action' => ['required', Rule::in(['approve', 'reject', 'clear'])],
+            'from' => ['sometimes', Rule::in(['club-bios'])],
+            'status' => ['sometimes', Rule::in(['pending', 'approved', 'rejected', 'all'])],
         ]);
 
         match ($validated['action']) {
@@ -158,6 +160,11 @@ class UserController extends Controller
         Cache::forget('loyalty:member-card:' . $user->getKey());
 
         $labels = ['approve' => 'تایید شد', 'reject' => 'رد شد', 'clear' => 'پاک‌سازی شد'];
+
+        if (($validated['from'] ?? null) === 'club-bios') {
+            return redirect()->route('admin.users.club-bios.index', ['status' => $validated['status'] ?? 'pending'])
+                ->with('success', 'وضعیت معرفی باشگاه: ' . $labels[$validated['action']]);
+        }
 
         return redirect()
             ->route('admin.users.edit', $user)

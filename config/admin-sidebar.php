@@ -492,6 +492,13 @@ return [
         'icon' => 'icons.user',
         'children' => [
             [
+                'label' => 'تایید بیوهای باشگاه',
+                'route' => 'admin.users.club-bios.index',
+                'icon' => 'icons.checkmark-badge-01',
+                'gate' => 'user.edit',
+                'badge' => 'pending_club_bios',
+            ],
+            [
                 'label' => 'لیست کاربران',
                 'route' => 'admin.users.index',
                 'icon' => 'icons.menu-01',

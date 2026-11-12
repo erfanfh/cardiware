@@ -1,6 +1,6 @@
 @php
-    // کاربر فعال VIP: منو در هر دو تم ظاهر عادی دارد؛ تمایز با لهجه‌های طلایی
-    // (نوار بالایی، نشان تاج، آیتم فعال طلایی) و استروک طلایی متحرک در تم تیره.
+    // کاربر فعال VIP: منو ظاهر عادی دارد؛ تمایز فقط با لهجه‌های طلایی ملایم
+    // (تاج، آیتم فعال/هاور طلایی). استروک متحرک روی «باکس اشتراک VIP» پایین است.
     $isVipUser = $user->hasActiveVipSubscription();
 @endphp
 
@@ -11,10 +11,7 @@
         'mw-vip-sidebar relative border-slate-200 bg-white/90 dark:border-slate-800 dark:bg-slate-900/90' => $isVipUser,
     ])>
     @if($isVipUser)
-        {{-- نوار طلایی باریک بالای منو (در هر دو تم) + استروک متحرک فقط در تم تیره --}}
-        <span class="pointer-events-none absolute inset-x-0 top-0 h-[3px] bg-gradient-to-l from-amber-200 via-amber-500 to-orange-500" aria-hidden="true"></span>
-        <span class="pointer-events-none absolute right-3 top-3 text-[11px] opacity-80" aria-hidden="true">👑</span>
-        <span class="mw-vip-sidebar-stroke" aria-hidden="true"></span>
+        <span class="pointer-events-none absolute left-3 top-2.5 text-[11px] opacity-70" aria-hidden="true">👑</span>
     @endif
     @php
         $groups = [
@@ -114,7 +111,8 @@
         </div>
     @endforeach
 
-    <div class="border-t border-slate-100 pt-4 dark:border-slate-800">
+    {{-- فوتر خروج: فول‌عرض و چسبیده به لبهٔ پایین کارت تا فضای مرده زیر دکمه نماند --}}
+    <div class="-mx-5 -mb-5 mt-4 rounded-b-2xl border-t border-slate-100 bg-slate-50/70 px-5 py-4 dark:border-slate-800 dark:bg-slate-950/40">
         <button
             type="button"
             x-data
