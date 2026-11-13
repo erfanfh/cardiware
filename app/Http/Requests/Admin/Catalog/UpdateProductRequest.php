@@ -139,8 +139,22 @@ class UpdateProductRequest extends FormRequest
             'custom_attributes.*.values.*.sort_order' => ['nullable', 'integer', 'min:0'],
 
             'sale_items' => ['nullable', 'array'],
-            'sale_items.*.id' => ['nullable', 'integer', 'exists:product_sale_items,id'],
-            'sale_items.*.sku' => ['nullable', 'string', 'max:255'],
+            'sale_items.*.id' => [
+                'nullable', 'integer', 'distinct',
+                Rule::exists('product_sale_items', 'id')
+                    ->where('product_id', $this->route('product')?->id)
+                    ->withoutTrashed(),
+            ],
+            'sale_items.*.sku' => Rule::forEach(function (mixed $value, string $attribute): array {
+                $idAttribute = substr($attribute, 0, -3).'id';
+                $saleItem = $this->route('product')?->saleItems()
+                    ->whereKey($this->input($idAttribute))->first();
+
+                return [
+                    'nullable', 'string', 'max:255', 'distinct:ignore_case',
+                    Rule::unique('product_sale_items', 'sku')->withoutTrashed()->ignore($saleItem),
+                ];
+            }),
             'sale_items.*.title' => ['nullable', 'string', 'max:255'],
             'sale_items.*.edition_key' => ['nullable', 'string', 'max:80'],
             'sale_items.*.version' => ['nullable', 'string', 'max:50'],
@@ -1258,6 +1272,7 @@ class UpdateProductRequest extends FormRequest
             'video_gallery_items.*.video_url' => 'لینک ویدیو',
             'video_gallery_items.*.cover.id' => 'کاور ویدیو',
             'sale_items.*.base_price' => 'قیمت پایه آیتم فروش',
+            'sale_items.*.sku' => 'شناسه آیتم فروش',
             'sale_items.*.title' => 'عنوان آیتم فروش',
             'sale_items.*.edition_key' => 'کلید نسخه آیتم فروش',
             'sale_items.*.version' => 'نسخه آیتم فروش',
@@ -1297,6 +1312,8 @@ class UpdateProductRequest extends FormRequest
     {
         return [
             'status.enum' => 'وضعیت انتخاب‌شده معتبر نیست.',
+            'sale_items.*.sku.unique' => 'این شناسه قبلاً برای یک آیتم فروش استفاده شده است.',
+            'sale_items.*.sku.distinct' => 'شناسه آیتم‌های فروش نباید تکراری باشد.',
             'store_id.required' => 'انتخاب فروشنده الزامی است.',
             'store_id.exists' => 'فروشنده انتخاب‌شده معتبر نیست.',
             'video_gallery_items.*.title.required' => 'عنوان ویدیو الزامی است.',
