@@ -26,6 +26,10 @@ class LoginRequest extends FormRequest
             'device.proof_nonce' => ['required', 'string', 'max:128', 'regex:/^[A-Za-z0-9+\/_=-]+$/'],
             'device.proof_signature' => ['required', 'string', 'max:512', 'regex:/^[A-Za-z0-9+\/_=-]+$/'],
             'device.platform' => ['required', 'in:windows'],
+            // Launcher 1.21.118+: SMBIOS/CPU-based hash that survives a Windows reinstall.
+            // Optional so older launchers (and machines with an unreadable firmware table)
+            // keep working; see AuthController::isHardwareReactivation.
+            'device.hardware_fingerprint_hash' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/'],
             'device.app_version' => [
                 'required',
                 'string',
@@ -73,6 +77,7 @@ class LoginRequest extends FormRequest
                     'id' => '7e02c735-794f-4c63-ae2e-98dbf5d1d4ab',
                     'name' => 'My Desktop PC',
                     'fingerprint_hash' => null,
+                    'hardware_fingerprint_hash' => str_repeat('b', 64),
                     'public_key' => 'base64-subject-public-key-info',
                     'public_key_fingerprint' => str_repeat('a', 64),
                     'proof_timestamp' => 1760000000,

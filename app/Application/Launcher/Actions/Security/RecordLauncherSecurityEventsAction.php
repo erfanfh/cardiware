@@ -37,6 +37,23 @@ final class RecordLauncherSecurityEventsAction
         // WITHOUT encryption: sider serves it with or without the launcher. Either an
         // update shipped it in the clear or the user installed a leaked copy.
         'protected_plaintext_present' => 2,
+
+        // ---- launcher 1.21.118+ ----
+        // Signed content-protection policy failed verification (tampered manifest, wrong key,
+        // policy of another product replayed). The launch is refused.
+        'content_policy_invalid' => 3,
+        // DOTNET_STARTUP_HOOKS / a CLR profiler is configured in the launcher's environment:
+        // foreign code inside the process that holds the content keys.
+        'launcher_runtime_injection_env' => 3,
+        // A private .NET runtime file (hostfxr.dll, coreclr.dll...) next to the game gate.
+        'gate_host_file_present' => 3,
+        // The gate's deps.json / runtimeconfig.json was edited to load extra assemblies.
+        // subject = "<file> (<reason>)", sha256 = null.
+        'gate_host_config_tampered' => 3,
+        // sider.exe (the loader) with a hash we do not know. Report-only in the launcher until
+        // EnforceSiderExe is turned on; the admin page should list distinct hashes so the
+        // legitimate ones can be pinned first.
+        'sider_exe_unlisted' => 2,
     ];
 
     /**

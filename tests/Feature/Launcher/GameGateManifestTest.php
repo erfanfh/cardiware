@@ -17,12 +17,16 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
+use Tests\Support\UsesEphemeralLauncherSigningKeys;
 
 class GameGateManifestTest extends TestCase
 {
+    use UsesEphemeralLauncherSigningKeys;
+
     protected function setUp(): void
     {
         parent::setUp();
+        $this->useEphemeralLauncherSigningKeys();
 
         // Isolate this contract from the historical MySQL-only migration chain.
         config(['database.default' => 'game_gate_test', 'database.connections.game_gate_test' => [
@@ -97,6 +101,8 @@ class GameGateManifestTest extends TestCase
         $this->assertSame('FIFA23.exe', $launch['monitor_process_name']);
         $this->assertSame(['Data\\layout.toc', 'Data\\other.bin'], $launch['content_protection']['gate_files']);
         $this->assertArrayNotHasKey('content_key_value', $launch);
+        $this->assertSame(1, $this->verifyPolicySignature($launch));
+        $this->assertSame('fifa23-test-01', json_decode($launch['content_protection_json'], true)['content_key_id']);
 
         // Clearing the optional list and disabling the gate must also persist.
         Model::withoutEvents(fn () => app(SyncProductSaleItemManifestAction::class)->execute($saleItem, [
@@ -107,6 +113,13 @@ class GameGateManifestTest extends TestCase
         $this->assertFalse($manifest->content_gate);
         $this->assertFalse($launch['content_gate']);
         $this->assertSame([], $launch['content_protection']['gate_files']);
+
+        $manifest->content_key_id = null;
+        $launch = app(BuildPurchaseAccessManifestAction::class)->execute($access)['launch'];
+        $this->assertNull($launch['content_protection']);
+        foreach (['content_protection_json', 'content_protection_signature', 'content_protection_key_id'] as $field) {
+            $this->assertArrayNotHasKey($field, $launch);
+        }
     }
 
     public function test_migration_is_repeatable_and_existing_manifests_default_to_gate_off(): void

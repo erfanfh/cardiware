@@ -235,8 +235,8 @@
                     </div>
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                         <div class="text-xs font-bold text-slate-500">فرصت انتقال</div>
-                        <div class="mt-2 text-sm font-black {{ $selectedUser->device_transfer_used ? 'text-red-700' : 'text-emerald-700' }}">
-                            {{ $selectedUser->device_transfer_used ? 'استفاده شده' : 'قابل استفاده' }}
+                        <div class="mt-2 text-sm font-black {{ $selectedUser->isLauncherDeviceTransferBlocked() ? 'text-red-700' : 'text-emerald-700' }}">
+                            {{ $selectedUser->isLauncherDeviceTransferBlocked() ? 'استفاده شده؛ فعلاً مسدود' : 'قابل استفاده' }}
                         </div>
                     </div>
                     <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">

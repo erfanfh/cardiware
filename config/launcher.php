@@ -6,6 +6,22 @@ return [
     'public_download_url' => env('LAUNCHER_PUBLIC_DOWNLOAD_URL'),
 
     'max_active_devices_per_user' => (int)env('LAUNCHER_MAX_ACTIVE_DEVICES', 2),
+
+    /*
+     * Device transfer policy (launcher 1.21.118+, see AuthController::isTransferBlocked).
+     * A used transfer unblocks again after this many days; 0 = legacy "once per account,
+     * ever". Windows reinstalls on the same hardware no longer count as transfers at all
+     * (hardware re-activation), so this limit only governs real moves to another PC.
+     */
+    'device_transfer_cooldown_days' => (int)env('LAUNCHER_DEVICE_TRANSFER_COOLDOWN_DAYS', 30),
+
+    /*
+     * Hardware re-activation rate limit: at most N re-binds of the active slot per account
+     * within the window. The hardware hash can be copied, so this is what stops two people
+     * from bouncing one account between two PCs indefinitely.
+     */
+    'device_reactivation_limit' => (int)env('LAUNCHER_DEVICE_REACTIVATION_LIMIT', 3),
+    'device_reactivation_window_days' => (int)env('LAUNCHER_DEVICE_REACTIVATION_WINDOW_DAYS', 30),
     'token_ttl_days' => (int)env('LAUNCHER_TOKEN_TTL_DAYS', 30),
     'checkout_session_ttl_minutes' => (int)env('LAUNCHER_CHECKOUT_SESSION_TTL_MINUTES', 30),
     'windows' => [

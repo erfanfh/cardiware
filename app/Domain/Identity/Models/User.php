@@ -81,6 +81,8 @@ class User extends Authenticatable implements HasDiscussionOwner
         'first_device_fingerprint',
         'second_device_public_key',
         'second_device_fingerprint',
+        'first_device_hardware_fingerprint',
+        'second_device_hardware_fingerprint',
     ];
 
     /**
@@ -107,9 +109,20 @@ class User extends Authenticatable implements HasDiscussionOwner
         ];
     }
 
-    /**
-     * Create a new factory instance for the model.
-     */
+    /** Whether the most recent transfer still blocks another device transfer. */
+    public function isLauncherDeviceTransferBlocked(): bool
+    {
+        if (! $this->device_transfer_used) {
+            return false;
+        }
+
+        $days = (int) config('launcher.device_transfer_cooldown_days', 30);
+
+        return $days <= 0 || $this->transferred_at === null
+            || $this->transferred_at->gt(now()->subDays($days));
+    }
+
+    /** Create a new factory instance for the model. */
     protected static function newFactory(): UserFactory
     {
         return UserFactory::new();

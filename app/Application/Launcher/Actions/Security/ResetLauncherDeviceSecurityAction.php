@@ -74,8 +74,10 @@ final class ResetLauncherDeviceSecurityAction
             $user->forceFill([
                 'first_device_public_key' => null,
                 'first_device_fingerprint' => null,
+                'first_device_hardware_fingerprint' => null,
                 'second_device_public_key' => null,
                 'second_device_fingerprint' => null,
+                'second_device_hardware_fingerprint' => null,
                 'active_device_slot' => null,
                 'device_transfer_used' => false,
                 'first_activated_at' => null,

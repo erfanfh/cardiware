@@ -30,6 +30,10 @@ class LoginWithLauncherOtpRequest extends FormRequest
             'device.proof_nonce' => ['required', 'string', 'max:128', 'regex:/^[A-Za-z0-9+\/_=-]+$/'],
             'device.proof_signature' => ['required', 'string', 'max:512', 'regex:/^[A-Za-z0-9+\/_=-]+$/'],
             'device.platform' => ['required', 'in:windows'],
+            // Launcher 1.21.118+: SMBIOS/CPU-based hash that survives a Windows reinstall.
+            // Optional so older launchers (and machines with an unreadable firmware table)
+            // keep working; see AuthController::isHardwareReactivation.
+            'device.hardware_fingerprint_hash' => ['nullable', 'string', 'regex:/^[a-f0-9]{64}$/'],
             'device.app_version' => [
                 'required',
                 'string',

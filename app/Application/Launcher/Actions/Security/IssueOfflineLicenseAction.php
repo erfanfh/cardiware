@@ -186,8 +186,13 @@ final class IssueOfflineLicenseAction
         return $contentKeys;
     }
 
-    /** @return array{0: string, 1: string} */
-    private function loadOrCreateSigningKey(): array
+    /**
+     * Also used by SignContentProtectionPolicyAction: the policy is signed with the SAME key
+     * as the licence so the launcher needs only the one pinned key id.
+     *
+     * @return array{0: string, 1: string} [private PEM, public PEM]
+     */
+    public function loadOrCreateSigningKey(): array
     {
         $directory = storage_path('app/private/launcher');
         $privatePath = $directory . DIRECTORY_SEPARATOR . 'offline-license-private.pem';

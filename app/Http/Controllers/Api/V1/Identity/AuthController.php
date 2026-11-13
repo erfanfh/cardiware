@@ -30,6 +30,13 @@ use App\Application\Launcher\Exceptions\LauncherAccountSuspendedException;
 class AuthController extends Controller
 {
     /**
+     * Set by isDeviceTransfer() when the incoming device is the active slot's HARDWARE with a
+     * new Windows identity (reinstalled Windows: new device id, new key, new MachineGuid).
+     * completeDeviceLogin() then re-binds the slot to the new key instead of transferring.
+     */
+    private bool $pendingReactivation = false;
+
+    /**
      * Authenticate user
      *
      * Authenticates a user using an email address or mobile number and password.
@@ -90,14 +97,21 @@ class AuthController extends Controller
             $isTransfer,
         );
 
-        [$device, $token, $freshUser] = $isTransfer
-            ? $consumeOtp->execute(
-                $user->mobile,
-                (string)$data['device_transfer_code'],
-                OtpTypeEnum::DEVICE_TRANSFER,
-                fn() => $complete(),
-            )
-            : $complete();
+        try {
+            [$device, $token, $freshUser] = $isTransfer
+                ? $consumeOtp->execute(
+                    $user->mobile,
+                    (string)$data['device_transfer_code'],
+                    OtpTypeEnum::DEVICE_TRANSFER,
+                    fn() => $complete(),
+                )
+                : $complete();
+        } catch (DomainException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+                'code' => 'invalid_otp',
+            ], 422);
+        }
 
         return $this->loginResponse($device, $token, $freshUser);
     }
@@ -178,6 +192,7 @@ class AuthController extends Controller
 
     private function isDeviceTransfer(User $user, array $deviceData, ?string $ip = null): bool
     {
+        $this->pendingReactivation = false;
         $activeSlot = (int)($user->active_device_slot ?: 0);
         $activeKeyFingerprint = $this->publicKeyFingerprintForSlot($user, $activeSlot);
         $isFirstActivation = $activeSlot === 0 || blank($activeKeyFingerprint);
@@ -197,6 +212,7 @@ class AuthController extends Controller
         }
 
         $isTransfer = !$isFirstActivation && !$isActiveDevice;
+
         // Emergency-offline mode hands out licences of up to 30 days; moving an account to
         // a new machine meanwhile would let one purchase run on two PCs for that long.
         // Covers both the password and the SMS login paths (both call this method).
@@ -204,12 +220,59 @@ class AuthController extends Controller
             $this->logBlockedTransferAttempt($user, $deviceData, $ip, 'emergency_paused');
             throw new \App\Application\Launcher\Exceptions\DeviceTransferPausedException();
         }
-        if ($isTransfer && $user->device_transfer_used) {
+
+        // Hardware hashes are client-reported: a key change must still respect the
+        // emergency-offline pause before it can qualify for reactivation.
+        if ($isTransfer && $this->isHardwareReactivation($user, $activeSlot, $deviceData)) {
+            $this->pendingReactivation = true;
+            return false;
+        }
+        if ($isTransfer && $this->isTransferBlocked($user)) {
             $this->logBlockedTransferAttempt($user, $deviceData, $ip, 'transfer_already_used');
             throw new DeviceLimitReachedException(1, []);
         }
 
         return $isTransfer;
+    }
+
+    /**
+     * The incoming device carries the hardware fingerprint registered for the account's
+     * active slot, and the account has not re-activated too often lately.
+     *
+     * @param array<string, mixed> $deviceData
+     */
+    private function isHardwareReactivation(User $user, int $activeSlot, array $deviceData): bool
+    {
+        $incoming = $deviceData['hardware_fingerprint_hash'] ?? null;
+        if (!is_string($incoming) || $incoming === '') {
+            return false;
+        }
+
+        $registered = $activeSlot === 2
+            ? $user->second_device_hardware_fingerprint
+            : $user->first_device_hardware_fingerprint;
+        if (blank($registered) || !hash_equals((string)$registered, $incoming)) {
+            return false;
+        }
+
+        $limit = max(0, (int)config('launcher.device_reactivation_limit', 3));
+        $windowDays = max(1, (int)config('launcher.device_reactivation_window_days', 30));
+        $recent = DB::table('launcher_device_reactivations')
+            ->where('user_id', $user->getKey())
+            ->where('created_at', '>=', now()->subDays($windowDays))
+            ->count();
+
+        return $recent < $limit;
+    }
+
+    /**
+     * Transfer policy. device_transfer_used alone meant "once per account, ever"; with
+     * launcher.device_transfer_cooldown_days > 0 a used transfer unblocks again after that
+     * many days (0 keeps the legacy once-only behaviour).
+     */
+    private function isTransferBlocked(User $user): bool
+    {
+        return $user->isLauncherDeviceTransferBlocked();
     }
 
     /**
@@ -274,39 +337,78 @@ class AuthController extends Controller
         return DB::transaction(function () use ($userId, $deviceData, $ip, $transfer): array {
             $user = User::query()->whereKey($userId)->lockForUpdate()->firstOrFail();
             $this->ensureLauncherAccess($user);
+            // Re-evaluate the current slot, fingerprint, emergency pause and counters
+            // under the same account lock used to commit the new device identity.
+            $this->isDeviceTransfer($user, $deviceData, $ip);
             $slot = (int)($user->active_device_slot ?: 0);
             $activeFingerprint = $this->publicKeyFingerprintForSlot($user, $slot);
             $incomingFingerprint = (string)$deviceData['public_key_fingerprint'];
+            $hardwareHash = isset($deviceData['hardware_fingerprint_hash'])
+                && is_string($deviceData['hardware_fingerprint_hash'])
+                && $deviceData['hardware_fingerprint_hash'] !== ''
+                ? strtolower($deviceData['hardware_fingerprint_hash'])
+                : null;
 
             if ($slot === 0 || blank($activeFingerprint)) {
                 $slot = 1;
                 $user->forceFill([
                     'first_device_public_key' => $deviceData['public_key'],
                     'first_device_fingerprint' => $deviceData['fingerprint_hash'],
+                    'first_device_hardware_fingerprint' => $hardwareHash,
                     'active_device_slot' => 1,
                     'device_transfer_used' => false,
                     'first_activated_at' => now(),
                     'transferred_at' => null,
                 ])->save();
             } elseif (!hash_equals((string)$activeFingerprint, $incomingFingerprint)) {
-                if (!$transfer || $user->device_transfer_used) {
-                    $this->logBlockedTransferAttempt(
-                        $user,
-                        $deviceData,
-                        $ip,
-                        $transfer ? 'transfer_already_used' : 'transfer_not_authorized',
-                    );
-                    throw new DeviceLimitReachedException(1, []);
-                }
+                // Re-checked under the row lock: isDeviceTransfer() ran before the transaction.
+                if ($this->pendingReactivation && $this->isHardwareReactivation($user, $slot, $deviceData)) {
+                    $prefix = $slot === 2 ? 'second' : 'first';
+                    $user->forceFill([
+                        "{$prefix}_device_public_key" => $deviceData['public_key'],
+                        "{$prefix}_device_fingerprint" => $deviceData['fingerprint_hash'],
+                        "{$prefix}_device_hardware_fingerprint" => $hardwareHash,
+                    ])->save();
+                    DB::table('launcher_device_reactivations')->insert([
+                        'user_id' => $user->getKey(),
+                        'device_slot' => $slot,
+                        'previous_public_key_fingerprint' => $activeFingerprint,
+                        'new_public_key_fingerprint' => $incomingFingerprint,
+                        'hardware_fingerprint_hash' => $hardwareHash,
+                        'device_name' => mb_substr((string)($deviceData['name'] ?? ''), 0, 255),
+                        'app_version' => mb_substr((string)($deviceData['app_version'] ?? ''), 0, 32),
+                        'ip_address' => $ip,
+                        'created_at' => now(),
+                    ]);
+                } else {
+                    if (!$transfer || $this->isTransferBlocked($user)) {
+                        $this->logBlockedTransferAttempt(
+                            $user,
+                            $deviceData,
+                            $ip,
+                            $transfer ? 'transfer_already_used' : 'transfer_not_authorized',
+                        );
+                        throw new DeviceLimitReachedException(1, []);
+                    }
 
-                $slot = 2;
-                $user->forceFill([
-                    'second_device_public_key' => $deviceData['public_key'],
-                    'second_device_fingerprint' => $deviceData['fingerprint_hash'],
-                    'active_device_slot' => 2,
-                    'device_transfer_used' => true,
-                    'transferred_at' => now(),
-                ])->save();
+                    $slot = 2;
+                    $user->forceFill([
+                        'second_device_public_key' => $deviceData['public_key'],
+                        'second_device_fingerprint' => $deviceData['fingerprint_hash'],
+                        'second_device_hardware_fingerprint' => $hardwareHash,
+                        'active_device_slot' => 2,
+                        'device_transfer_used' => true,
+                        'transferred_at' => now(),
+                    ])->save();
+                }
+            } elseif ($hardwareHash !== null) {
+                // Same key, same slot: keep the hardware fingerprint current for devices that
+                // activated before this column existed.
+                $prefix = $slot === 2 ? 'second' : 'first';
+                $column = "{$prefix}_device_hardware_fingerprint";
+                if ($user->{$column} !== $hardwareHash) {
+                    $user->forceFill([$column => $hardwareHash])->save();
+                }
             }
 
             $oldDevices = LauncherDevice::query()
@@ -326,6 +428,7 @@ class AuthController extends Controller
                 [
                     'name' => $deviceData['name'],
                     'fingerprint_hash' => $deviceData['fingerprint_hash'],
+                    ...($hardwareHash !== null ? ['hardware_fingerprint_hash' => $hardwareHash] : []),
                     'public_key' => $deviceData['public_key'],
                     'public_key_fingerprint' => $incomingFingerprint,
                     'device_slot' => $slot,

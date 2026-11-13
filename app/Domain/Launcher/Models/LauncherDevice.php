@@ -15,6 +15,7 @@ class LauncherDevice extends Model
         'device_id',
         'name',
         'fingerprint_hash',
+        'hardware_fingerprint_hash',
         'public_key',
         'public_key_fingerprint',
         'device_slot',
@@ -27,7 +28,7 @@ class LauncherDevice extends Model
         'revoked_at',
     ];
 
-    protected $hidden = ['fingerprint_hash', 'public_key'];
+    protected $hidden = ['fingerprint_hash', 'hardware_fingerprint_hash', 'public_key'];
 
     protected $casts = [
         'last_seen_at' => 'datetime',

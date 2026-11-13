@@ -11,6 +11,11 @@ use Illuminate\Support\Collection;
 
 class BuildPurchaseAccessManifestAction
 {
+    public function __construct(
+        private readonly \App\Application\Launcher\Actions\Security\SignContentProtectionPolicyAction $signPolicy,
+    ) {
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -86,7 +91,7 @@ class BuildPurchaseAccessManifestAction
                 ? (int)$files->sum('size_bytes')
                 : null);
 
-        return [
+        $response = [
             'schema_version' => $manifest->schema_version,
             'manifest_revision' => $saleItem->manifest_revision,
             'manifest_id' => sprintf(
@@ -270,6 +275,18 @@ class BuildPurchaseAccessManifestAction
 
             'metadata' => $manifest->metadata ?: new \stdClass(),
         ];
+
+        /*
+         * Signed copy of the policy for launchers 1.21.118+ (SignContentProtectionPolicyAction).
+         * The loose content_protection block above stays for older launchers; a new launcher
+         * ignores it and trusts only the signed string.
+         */
+        $policy = $response['launch']['content_protection'];
+        if (is_array($policy)) {
+            $response['launch'] += $this->signPolicy->execute($policy, (string)$manifest->content_key_id);
+        }
+
+        return $response;
     }
 
     /**
