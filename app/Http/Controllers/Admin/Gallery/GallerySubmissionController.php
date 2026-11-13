@@ -40,6 +40,27 @@ class GallerySubmissionController extends Controller
         ]);
     }
 
+    public function update(Request $request, UserMediaSubmission $submission): RedirectResponse
+    {
+        Gate::authorize('gallery.manage');
+
+        $rules = [
+            'title' => ['sometimes', 'required', 'string', 'min:3', 'max:120'],
+            'description' => ['sometimes', 'nullable', 'string', 'max:500'],
+        ];
+        if ($submission->type->value === 'video') {
+            $rules['video_url'] = ['sometimes', 'required', 'url:http,https', 'max:600'];
+            $rules['video_thumbnail_url'] = ['sometimes', 'nullable', 'url:http,https', 'max:1000'];
+        } else {
+            $rules['image_url'] = ['sometimes', 'nullable', 'url:http,https', 'max:600'];
+        }
+
+        $submission->update($request->validate($rules));
+
+        return redirect()->route('admin.gallery.index', ['status' => $submission->status->value])
+            ->with('success', 'اطلاعات رسانه ذخیره شد.');
+    }
+
     public function updateStatus(Request $request, UserMediaSubmission $submission): RedirectResponse
     {
         Gate::authorize('gallery.manage');

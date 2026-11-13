@@ -48,18 +48,16 @@
             <div class="mt-5 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
                 @foreach(get_setting('home', 'testimonials_items') as $item)
                     <article
-                        class="rounded-2xl border @if($item['special_experience']) border-brand-100 shadow-lg dark:border-brand-500/20 @else border-slate-200 shadow-sm dark:border-slate-700 @endif bg-white/70 backdrop-blur-sm p-5 hover:shadow-lg transition overflow-hidden dark:bg-slate-950/60 dark:hover:shadow-black/20">
+                        class="relative rounded-2xl border @if($item['special_experience']) border-brand-100 shadow-lg dark:border-brand-500/20 @else border-slate-200 shadow-sm dark:border-slate-700 @endif bg-white/70 backdrop-blur-sm p-5 hover:shadow-lg transition overflow-hidden dark:bg-slate-950/60 dark:hover:shadow-black/20">
                         @if($item['special_experience'])
                             <div
                                 class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-700 via-brand-500 to-brand-300"></div>
 
-                            <div
-                                class="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-56 rounded-full bg-brand-200/45 blur-3xl dark:bg-brand-500/10"></div>
-
-                            <div class="absolute top-4 left-4">
+                            {{-- نشان پیشنهاد: بالای کارت وسط، جدا از آواتار --}}
+                            <div class="mb-3">
                                 <span
-                                    class="inline-flex items-center gap-2 rounded-2xl bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                  ★ پیشنهاد کاربران
+                                    class="inline-flex items-center gap-1.5 rounded-xl bg-brand-50 border border-brand-100 px-2.5 py-1 text-[11px] font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
+                                    ★ پیشنهاد کاربران
                                 </span>
                             </div>
                         @endif

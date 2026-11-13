@@ -7,9 +7,11 @@ use App\Application\System\Actions\Home\GetHomePostTabsAction;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
+use Livewire\Attributes\Locked;
 
 class FreePosts extends Component
 {
+    #[Locked]
     public Collection $postTabs;
     public ?string $activeTabKey;
     public string $mainTitle = '';
@@ -18,6 +20,9 @@ class FreePosts extends Component
     public Collection $mainPosts;
     public Collection $list1Posts;
     public Collection $list2Posts;
+
+    /** تعداد کارت‌های بزرگ (۳ پایه؛ پین‌شده‌ها اضافه می‌شوند) */
+    public int $heroCount = 3;
 
     public function mount(): void
     {
@@ -33,8 +38,6 @@ class FreePosts extends Component
 
     public function changeTab(?string $key): void
     {
-        $this->activeTabKey = $key;
-
         $activeItem = collect($this->postTabs)
             ->where('key', $key)
             ->first();
@@ -43,12 +46,14 @@ class FreePosts extends Component
             return;
         }
 
+        $this->activeTabKey = $key;
         $this->mainTitle = $activeItem['main_title'] ?? '';
         $this->list1Title = $activeItem['list_box_1_title'] ?? '';
         $this->list2Title = $activeItem['list_box_2_title'] ?? '';
 
         $data = app(GetHomeFreePostsTabDataAction::class)->execute($activeItem);
 
+        $this->heroCount = $activeItem['hero_count'];
         $this->mainPosts = $data['mainPosts'];
         $this->list1Posts = $data['list1Posts'];
         $this->list2Posts = $data['list2Posts'];

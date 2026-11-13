@@ -19,6 +19,7 @@ class UserMediaSubmission extends Model
         'image_path',
         'image_url',
         'video_url',
+        'video_thumbnail_url',
         'order_number',
         'purchaser_mobile',
         'status',
@@ -77,25 +78,40 @@ class UserMediaSubmission extends Model
         return null;
     }
 
+    /** تصویر شاخص ویدیو: کاور مدیرانتخابی یا null (فقط برای ویدیو). */
+    public function videoThumbnailUrl(): ?string
+    {
+        $url = trim((string)$this->video_thumbnail_url);
+        return $url !== '' && preg_match('#^https?://#i', $url) ? $url : null;
+    }
+
     /** آدرس embed-ready ویدیو از لینکهای معمول آپارات/یوتیوب */
     public function videoEmbedUrl(): ?string
     {
-        $url = trim((string)$this->video_url);
-
-        if ($url === '') {
+        $url = trim((string) $this->video_url);
+        $parts = parse_url($url);
+        if (! is_array($parts) || ! in_array(strtolower($parts['scheme'] ?? ''), ['http', 'https'], true)) {
             return null;
         }
-
-        // آپارات: https://www.aparat.com/v/XXXX → https://www.aparat.com/video/video/embed/videohash/XXXX/vt/frame
-        if (preg_match('#aparat\.com/v/([A-Za-z0-9_-]+)#', $url, $m)) {
-            return 'https://www.aparat.com/video/video/embed/videohash/' . $m[1] . '/vt/frame';
+        $host = strtolower($parts['host'] ?? '');
+        $path = $parts['path'] ?? '';
+        if (in_array($host, ['aparat.com', 'www.aparat.com'], true)
+            && preg_match('#^/(?:v/|video/video/embed/videohash/)([A-Za-z0-9_-]+)(?:/|$)#', $path, $match)) {
+            return 'https://www.aparat.com/video/video/embed/videohash/' . $match[1] . '/vt/frame';
+        }
+        $videoId = null;
+        if (in_array($host, ['youtube.com', 'www.youtube.com', 'm.youtube.com'], true)) {
+            parse_str($parts['query'] ?? '', $query);
+            $videoId = $path === '/watch' ? ($query['v'] ?? null) : null;
+            if (preg_match('#^/(?:embed|shorts)/([A-Za-z0-9_-]+)(?:/|$)#', $path, $match)) {
+                $videoId = $match[1];
+            }
+        } elseif (in_array($host, ['youtu.be', 'www.youtu.be'], true)) {
+            $videoId = trim($path, '/');
         }
 
-        // یوتیوب: watch?v= یا youtu.be/
-        if (preg_match('#(?:youtube\.com/watch\?v=|youtu\.be/)([A-Za-z0-9_-]{6,})#', $url, $m)) {
-            return 'https://www.youtube.com/embed/' . $m[1];
-        }
-
-        return $url;
+        return is_string($videoId) && preg_match('/^[A-Za-z0-9_-]{6,}$/', $videoId)
+            ? 'https://www.youtube.com/embed/' . $videoId
+            : null;
     }
 }

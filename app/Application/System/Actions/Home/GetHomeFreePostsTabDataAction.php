@@ -7,9 +7,9 @@ use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
 use App\Domain\Content\Models\Post;
+use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class GetHomeFreePostsTabDataAction
@@ -29,21 +29,19 @@ class GetHomeFreePostsTabDataAction
         ])->remember(
             CacheKey::homeFreePostsTab($this->cachePayload($activeItem)),
             CacheTtl::short(),
-            fn() => [
-                'mainPosts' => $this->getMainPosts($activeItem),
-                'list1Posts' => $this->getList1Posts($activeItem),
-                'list2Posts' => $this->getList2Posts($activeItem),
-            ]
+            fn() => $this->getPosts($activeItem)
         );
     }
 
-    protected function getMainPosts(array $activeItem): Collection
+    protected function getPosts(array $activeItem): array
     {
         $categoryIds = $this->resolveCategoryIdsWithDescendants(
             $activeItem['main_category_ids'] ?? []
         );
 
-        return Post::query()
+        $heroCount = min(12, max(3, (int) ($activeItem['hero_count'] ?? 3)));
+        $listCount = min(30, max(0, (int) ($activeItem['list_count'] ?? 8)));
+        $query = Post::query()
             ->with([
                 'picture.primaryVariant',
                 'picture.variants',
@@ -53,51 +51,33 @@ class GetHomeFreePostsTabDataAction
             ->whereHas('categories', function ($query) use ($categoryIds): void {
                 $query->whereIn('taxonomy_terms.id', $categoryIds);
             })
+            // Livewire update routes bypass ActivePostScope, so always enforce visibility here.
+            ->where('status', PostStatusEnum::ACTIVE)
+            ->where('published_at', '<=', now())
             ->latest('published_at')
-            ->limit((int)($activeItem['main_count'] ?? 6))
-            ->get()
-            ->map(function (Post $post) {
-                $post->features = $this->getPostFeaturesAction->execute($post);
+            ->orderByDesc('id');
 
-                return $post;
-            });
-    }
+        $pinned = (clone $query)->where('is_pinned', true)->get();
+        $fresh = (clone $query)->where(function ($query): void {
+            $query->where('is_pinned', false)->orWhereNull('is_pinned');
+        })->limit($heroCount + $listCount)->get();
+        $heroes = $pinned->concat($fresh->take($heroCount))->values();
+        $heroes->each(function (Post $post): void {
+            $post->features = $this->getPostFeaturesAction->execute($post);
+        });
 
-    protected function getList1Posts(array $activeItem): Collection
-    {
-        $categoryIds = $this->resolveCategoryIdsWithDescendants(
-            $activeItem['list_box_1_category_ids'] ?? []
-        );
-
-        return Post::query()
-            ->whereHas('categories', function ($query) use ($categoryIds): void {
-                $query->whereIn('taxonomy_terms.id', $categoryIds);
-            })
-            ->latest('published_at')
-            ->limit((int)($activeItem['list_box_1_count'] ?? 5))
-            ->get();
-    }
-
-    protected function getList2Posts(array $activeItem): Collection
-    {
-        $categoryIds = $this->resolveCategoryIdsWithDescendants(
-            $activeItem['list_box_2_category_ids'] ?? []
-        );
-
-        return Post::query()
-            ->whereHas('categories', function ($query) use ($categoryIds): void {
-                $query->whereIn('taxonomy_terms.id', $categoryIds);
-            })
-            ->latest('published_at')
-            ->limit((int)($activeItem['list_box_2_count'] ?? 5))
-            ->get();
+        return [
+            'mainPosts' => $heroes,
+            'list1Posts' => $fresh->skip($heroCount)->values(),
+            'list2Posts' => collect(),
+        ];
     }
 
     /**
      * @param array<int|string> $categoryIds
      * @return array<int>
      */
-    protected function resolveCategoryIdsWithDescendants(array $categoryIds): array
+    public function resolveCategoryIdsWithDescendants(array $categoryIds): array
     {
         $categoryIds = collect($categoryIds)
             ->filter()
@@ -124,13 +104,11 @@ class GetHomeFreePostsTabDataAction
     protected function cachePayload(array $activeItem): array
     {
         return [
+            'layout' => 'hero-list-v2',
             'key' => $activeItem['key'] ?? null,
             'main_category_ids' => $activeItem['main_category_ids'] ?? [],
-            'main_count' => $activeItem['main_count'] ?? null,
-            'list_box_1_category_ids' => $activeItem['list_box_1_category_ids'] ?? [],
-            'list_box_1_count' => $activeItem['list_box_1_count'] ?? null,
-            'list_box_2_category_ids' => $activeItem['list_box_2_category_ids'] ?? [],
-            'list_box_2_count' => $activeItem['list_box_2_count'] ?? null,
+            'hero_count' => min(12, max(3, (int) ($activeItem['hero_count'] ?? 3))),
+            'list_count' => min(30, max(0, (int) ($activeItem['list_count'] ?? 8))),
         ];
     }
 }

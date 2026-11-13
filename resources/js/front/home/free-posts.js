@@ -4,10 +4,13 @@ import {Autoplay, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-function initFreeModsMainPostsSwiper() {
-    document.querySelectorAll('.mwFreeModsMainPosts').forEach((element) => {
+// کاروسل کارت‌های بزرگ: فقط وقتی بیش از ۳ کارت هست (پین‌شده + جدید)
+// الگوی .mwFreeHeroCards در Blade شرطی render شده.
+function initFreeHeroCardsSwiper() {
+    document.querySelectorAll('.mwFreeHeroCards').forEach((element) => {
         if (element.swiper) {
-            element.swiper.destroy(true, true);
+            element.swiper.update();
+            return;
         }
 
         new Swiper(element, {
@@ -16,21 +19,24 @@ function initFreeModsMainPostsSwiper() {
             spaceBetween: 16,
             loop: false,
             speed: 700,
+            watchOverflow: true,
             autoplay: {
-                delay: 4000,
+                delay: 5000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
             },
             pagination: {
-                el: element.querySelector('.mwFreeModsMainPostsPagination'),
+                el: element.querySelector('.mwFreeHeroPagination'),
                 clickable: true,
                 renderBullet(index, className) {
-                    return `
-                        <span class="${className} transition-all duration-300"></span>
-                    `;
+                    return `<span class="${className} transition-all duration-300"></span>`;
                 },
             },
             breakpoints: {
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 14,
+                },
                 1024: {
                     slidesPerView: 3,
                     spaceBetween: 16,
@@ -40,11 +46,19 @@ function initFreeModsMainPostsSwiper() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', initFreeModsMainPostsSwiper);
-document.addEventListener('livewire:navigated', initFreeModsMainPostsSwiper);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFreeHeroCardsSwiper);
+} else {
+    initFreeHeroCardsSwiper();
+}
+document.addEventListener('livewire:navigated', initFreeHeroCardsSwiper);
 
 document.addEventListener('livewire:initialized', () => {
-    Livewire.hook('morph.updated', () => {
-        initFreeModsMainPostsSwiper();
+    Livewire.hook('morphed', initFreeHeroCardsSwiper);
+    Livewire.hook('morph.removing', ({el}) => {
+        if (el.matches('.mwFreeHeroCards')) {
+            el.swiper?.destroy(true, true);
+        }
+        el.querySelectorAll('.mwFreeHeroCards').forEach(element => element.swiper?.destroy(true, true));
     });
 });

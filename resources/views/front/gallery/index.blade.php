@@ -197,6 +197,12 @@
                                                 frameborder="0"
                                                 allowfullscreen
                                                 loading="lazy"></iframe>
+                                    @elseif($submission->mediaUrl())
+                                        <video controls preload="none" poster="{{ $submission->videoThumbnailUrl() }}"
+                                               aria-label="{{ $submission->title }}" class="h-full w-full object-contain">
+                                            <source src="{{ $submission->mediaUrl() }}">
+                                            <a href="{{ $submission->mediaUrl() }}">مشاهده ویدیو</a>
+                                        </video>
                                     @endif
                                 </div>
                             @endif

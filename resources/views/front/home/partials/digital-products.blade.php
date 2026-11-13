@@ -83,9 +83,10 @@
                             </div>
                         @endif
 
+                        {{-- دکمهٔ دریافت: در حالت عادی محو، روی hover ظاهر می‌شود --}}
                         <div class="mt-auto pt-4">
-                            <span class="inline-flex w-full items-center justify-center gap-1.5 rounded-2xl bg-gradient-to-l from-brand-600 to-brand-500 px-3.5 py-2.5 text-xs font-extrabold text-white shadow-lg shadow-brand-500/25 transition duration-300 group-hover:shadow-brand-500/45 group-hover:brightness-110 [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:transition-transform [&_svg]:group-hover:-translate-x-0.5">
-                                {{ $item['button_text'] ?? 'خرید' }}
+                            <span class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-50/50 px-3.5 py-2 text-xs font-extrabold text-brand-700 transition duration-300 group-hover:border-brand-500 group-hover:bg-gradient-to-l group-hover:from-brand-600 group-hover:to-brand-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-500/25 dark:border-brand-500/20 dark:bg-brand-500/5 dark:text-brand-300 dark:group-hover:border-brand-500 dark:group-hover:bg-gradient-to-l dark:group-hover:from-brand-600 dark:group-hover:to-brand-500 dark:group-hover:text-white [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:transition-transform [&_svg]:group-hover:-translate-x-0.5">
+                                {{ ($item['button_text'] ?? '') ?: 'دریافت' }}
                                 @include('icons.arrow-left-02')
                             </span>
                         </div>

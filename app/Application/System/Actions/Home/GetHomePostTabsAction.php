@@ -21,19 +21,26 @@ class GetHomePostTabsAction
                     ->map(fn($id) => (int)$id)
                     ->values();
 
+                $categoryIds = app(GetHomeFreePostsTabDataAction::class)
+                    ->resolveCategoryIdsWithDescendants($mainCategoryIds->all());
+
                 return [
                     'key' => 'tab-' . ($index + 1),
 
                     'main_title' => $item['main_title'] ?? '',
-                    'main_count' => max(1, (int)($item['main_count'] ?? 10)),
+                    'main_count' => max(1, (int)($item['main_count'] ?? 11)),
+                    'hero_count' => min(12, max(3, (int)($item['hero_count'] ?? 3))),
+                    'list_count' => min(30, max(0, (int)($item['list_count'] ?? 8))),
                     'main_category_ids' => $mainCategoryIds->all(),
                     'main_category' => $mainCategoryIds->isNotEmpty()
                         ? TaxonomyTerm::query()->find($mainCategoryIds->first())
                         : null,
-                    'posts_count' => $mainCategoryIds->isNotEmpty()
+                    'today_count' => $categoryIds !== []
                         ? (int)Post::query()
                             ->where('status', PostStatusEnum::ACTIVE)
-                            ->whereHas('categories', fn($query) => $query->whereIn('taxonomy_terms.id', $mainCategoryIds->all()))
+                            ->where('published_at', '>=', now()->startOfDay())
+                            ->where('published_at', '<=', now())
+                            ->whereHas('categories', fn($query) => $query->whereIn('taxonomy_terms.id', $categoryIds))
                             ->count()
                         : 0,
 

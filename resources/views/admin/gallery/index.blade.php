@@ -138,6 +138,9 @@
                                                 <img src="{{ $mediaUrl }}" alt="{{ $submission->title }}" loading="lazy"
                                                      class="h-14 w-20 rounded-xl border border-slate-200 object-cover dark:border-slate-700">
                                             </a>
+                                        @elseif($submission->type->value === 'video' && $submission->videoThumbnailUrl())
+                                            <img src="{{ $submission->videoThumbnailUrl() }}" alt="{{ $submission->title }}" loading="lazy"
+                                                 class="h-14 w-20 rounded-xl border border-slate-200 object-cover dark:border-slate-700">
                                         @else
                                             <span class="grid h-14 w-20 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800 [&_svg]:h-5 [&_svg]:w-5">
                                                 @include('icons.play')
@@ -171,6 +174,25 @@
                                             </div>
                                         @else
                                             <div class="mt-1 text-[11px] font-bold text-red-500">لینک رسانه معتبر نیست (فقط http/https).</div>
+                                        @endif
+                                        @if($submission->type->value === 'video')
+                                            <details class="mt-3 min-w-64 text-xs">
+                                                <summary class="cursor-pointer font-bold text-brand-600 dark:text-brand-300">ویرایش ویدیو و تصویر شاخص</summary>
+                                                <form method="POST" action="{{ route('admin.gallery.update', $submission) }}" class="mt-3 space-y-3">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <x-admin.field label="عنوان">
+                                                        <x-admin.form.input name="title" :value="$submission->title" maxlength="120" required />
+                                                    </x-admin.field>
+                                                    <x-admin.field label="لینک ویدیو">
+                                                        <x-admin.form.input name="video_url" type="url" dir="ltr" :value="$submission->video_url" maxlength="600" required />
+                                                    </x-admin.field>
+                                                    <x-admin.field label="لینک تصویر شاخص" hint="برای فایل ویدیویی مستقیم، تصویر پیش از پخش نمایش داده می‌شود. خالی = حذف تصویر شاخص.">
+                                                        <x-admin.form.input name="video_thumbnail_url" type="url" dir="ltr" :value="$submission->video_thumbnail_url" maxlength="1000" />
+                                                    </x-admin.field>
+                                                    <button type="submit" class="rounded-xl bg-brand-500 px-3 py-2 font-bold text-white">ذخیره اطلاعات ویدیو</button>
+                                                </form>
+                                            </details>
                                         @endif
                                     </td>
 

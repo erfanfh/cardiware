@@ -8,6 +8,7 @@ use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use App\Infrastructure\Services\Setting\BaseSettings;
+use App\Infrastructure\Services\Setting\Groups\GallerySettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,6 +35,7 @@ class GallerySubmissionTest extends TestCase
 
     public function test_reapproving_a_submission_awards_points_only_once(): void
     {
+        app(GallerySettings::class)->set('image_points', 150);
         $role = Role::factory()->create(['is_super_admin' => true]);
         $admin = User::factory()->create(['role_id' => $role->id]);
         $user = User::factory()->create();
@@ -46,7 +48,7 @@ class GallerySubmissionTest extends TestCase
         ]);
 
         $this->actingAs($admin);
-        foreach (['approved', 'pending', 'approved'] as $status) {
+        foreach (['approved', 'approved'] as $status) {
             $this->patch(route('admin.gallery.status', $submission), ['status' => $status])
                 ->assertRedirect();
         }
@@ -54,6 +56,27 @@ class GallerySubmissionTest extends TestCase
         $this->assertSame(150, $submission->refresh()->points_awarded);
         $this->assertSame(150, PointAccount::query()->where('user_id', $user->id)->value('balance'));
         $this->assertSame(1, PointLedgerEntry::query()->where('reason', 'gallery_submission')->count());
+    }
+
+    public function test_revoking_approval_reverses_points_and_reapproval_restores_them(): void
+    {
+        app(GallerySettings::class)->set('image_points', 150);
+        $admin = User::factory()->create(['role_id' => Role::factory()->create(['is_super_admin' => true])->id]);
+        $user = User::factory()->create();
+        $submission = UserMediaSubmission::query()->create([
+            'user_id' => $user->id, 'type' => 'image', 'title' => 'تصویر بازی',
+            'image_url' => 'https://example.com/game.jpg', 'status' => 'pending',
+        ]);
+        $this->actingAs($admin);
+        foreach (['approved' => 150, 'pending' => 0] as $status => $balance) {
+            $this->patch(route('admin.gallery.status', $submission), ['status' => $status])->assertRedirect();
+            $this->assertSame($balance, PointAccount::query()->where('user_id', $user->id)->value('balance'));
+        }
+        $this->patch(route('admin.gallery.status', $submission), ['status' => 'approved'])->assertRedirect();
+        $this->assertSame(150, $submission->fresh()->points_awarded);
+        $this->assertSame(150, PointAccount::query()->where('user_id', $user->id)->value('balance'));
+        $this->assertSame(2, PointLedgerEntry::query()->where('type', 'earn')->count());
+        $this->assertSame(1, PointLedgerEntry::query()->where('type', 'reversal')->count());
     }
 
     public function test_regular_user_cannot_approve_submissions(): void
