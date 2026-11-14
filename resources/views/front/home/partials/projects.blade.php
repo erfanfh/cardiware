@@ -24,7 +24,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         @foreach($projectsBlock['items'] as $project)
-            <x-front.project.card :project="$project"/>
+            <x-front.project.card :project="$project" :animated="false"/>
         @endforeach
     </div>
 </section>

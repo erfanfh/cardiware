@@ -236,3 +236,19 @@
 .sb-project-fill.mw-fill-anim {
     transition: width 1.1s cubic-bezier(.22, 1, .36, 1);
 }
+
+.mw-prj-card.is-static,
+.mw-prj-card.is-static .mw-prj-fill,
+.mw-prj-card.is-static .mw-prj-tip {
+    transition: none;
+}
+
+.mw-prj-card.is-static:hover {
+    transform: none;
+}
+
+.mw-prj-card.is-static::before,
+.mw-prj-card.is-static .mw-prj-status-dot,
+.mw-prj-card.is-static .mw-prj-tip {
+    animation: none;
+}
