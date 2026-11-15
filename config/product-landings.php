@@ -40,6 +40,11 @@ return [
 ]
 ],
       'buy_url' => '#pricing',
+      'buy_label' =>
+      [
+        'fa' => 'خرید پچ',
+        'en' => 'Buy the mod'
+],
       'launcher_url' => '#install',
       'product_url' => '#',
       'nav' =>
@@ -1287,6 +1292,11 @@ return [
 ]
 ],
       'buy_url' => '#pricing',
+      'buy_label' =>
+      [
+        'fa' => 'خرید پچ',
+        'en' => 'Buy the mod'
+],
       'launcher_url' => '#install',
       'product_url' => '#',
       'nav' =>

@@ -38,6 +38,7 @@ final class SellerRewardController extends Controller
             'minNetSales' => collect(SellerRewardSettings::PERIODS)->mapWithKeys(fn ($label, $type) => [$type => $settings->minNetSales($type)]),
             'enabled' => $settings->enabled(),
             'spotlightTitle' => $settings->get('spotlight_title', 'فروشگاه ویژه'),
+            'excludedStoreIds' => $settings->excludedStoreIds(),
         ]);
     }
 
@@ -48,6 +49,8 @@ final class SellerRewardController extends Controller
         $data = $request->validate([
             'enabled' => ['required', 'boolean'],
             'spotlight_title' => ['nullable', 'string', 'max:80'],
+            'excluded_store_ids' => ['nullable', 'array'],
+            'excluded_store_ids.*' => ['integer', 'exists:stores,id'],
             'prizes' => ['required', 'array'],
             'prizes.*' => ['array', 'size:3'],
             'prizes.*.*.commission_bonus_bp' => ['required', 'integer', 'min:0', 'max:5000'],
@@ -62,6 +65,10 @@ final class SellerRewardController extends Controller
 
         $settings->set('enabled', (bool) $data['enabled']);
         $settings->set('spotlight_title', (string) ($data['spotlight_title'] ?? ''));
+        $settings->set('excluded_store_ids', array_values(array_unique(array_map(
+            static fn ($id): int => (int) $id,
+            array_filter($data['excluded_store_ids'] ?? [], static fn ($id): bool => (int) $id > 0),
+        ))));
         $settings->set('prizes', array_intersect_key($data['prizes'], SellerRewardSettings::PERIODS));
         $settings->set('min_net_sales', array_intersect_key($data['min_net_sales'], SellerRewardSettings::PERIODS));
 

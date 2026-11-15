@@ -5,6 +5,7 @@ namespace App\Infrastructure\Services\Setting\Groups;
 use App\Infrastructure\Casts\ArrayCast;
 use App\Infrastructure\Casts\MediaFileCast;
 use App\Infrastructure\Casts\BooleanCast;
+use App\Infrastructure\Casts\IntegerCast;
 use App\Infrastructure\Casts\RepeaterArrayCast;
 use App\Infrastructure\Services\Setting\BaseSettings;
 
@@ -52,6 +53,15 @@ class HomeSettings extends BaseSettings
         'ads_5_body',
         'services_options_items',
         'hero_stats',
+        'club_cards_show_vip',
+        'club_cards_show_projects',
+        'club_cards_show_leaders',
+        'club_cards_vip_badge',
+        'club_cards_projects_subtitle',
+        'club_cards_leaders_title',
+        'club_cards_leaders_subtitle',
+        'club_cards_leaders_limit',
+        'club_cards_projects_limit',
     ];
 
     protected array $casts = [
@@ -71,5 +81,10 @@ class HomeSettings extends BaseSettings
         'ads_5_display_background' => BooleanCast::class,
         'services_options_items' => RepeaterArrayCast::class,
         'hero_stats' => RepeaterArrayCast::class,
+        'club_cards_show_vip' => BooleanCast::class,
+        'club_cards_show_projects' => BooleanCast::class,
+        'club_cards_show_leaders' => BooleanCast::class,
+        'club_cards_leaders_limit' => IntegerCast::class,
+        'club_cards_projects_limit' => IntegerCast::class,
     ];
 }

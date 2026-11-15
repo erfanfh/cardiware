@@ -3,12 +3,27 @@
     $vipUrl = in_array($clubCards['vip']['button_url'], [null, '', '#'], true)
         ? route('vip.index')
         : $clubCards['vip']['button_url'];
+
+    // چیدمان بر اساس تعداد کارت‌های فعال: با یک یا دو کارت، ستون خالی نمی‌ماند.
+    $clubVisible = [
+        'vip' => $clubCards['cards']['show_vip'],
+        'projects' => $clubCards['cards']['show_projects'],
+        'leaders' => $clubCards['cards']['show_leaders'],
+    ];
+    $clubVisibleCount = count(array_filter($clubVisible));
+    $clubGridClass = match ($clubVisibleCount) {
+        1 => 'grid-cols-1',
+        2 => 'grid-cols-1 lg:grid-cols-2',
+        default => 'grid-cols-1 lg:grid-cols-3',
+    };
 @endphp
 
+@if($clubVisibleCount > 0)
 <section class="mw-club-cards">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+    <div class="grid {{ $clubGridClass }} gap-4 items-stretch">
 
         {{-- اشتراک ویژه (طلایی) --}}
+        @if($clubVisible['vip'])
         <a href="{{ $vipUrl }}" class="mw-club-vip group">
             <span class="mw-club-vip-ring" aria-hidden="true"></span>
             <span class="mw-club-vip-sheen" aria-hidden="true"></span>
@@ -23,7 +38,7 @@
                             {{ $clubCards['vip']['title'] }}
                         </div>
                         <div class="text-[11px] font-bold text-amber-600/70 dark:text-amber-200/60">
-                            دسترسی نامحدود به همه پچ‌ها
+                            {{ $clubCards['vip']['badge'] ?: 'دسترسی نامحدود به همه پچ‌ها' }}
                         </div>
                     </div>
                 </div>
@@ -57,8 +72,10 @@
                 </span>
             </div>
         </a>
+        @endif
 
         {{-- پروژه‌ها (کارت ثابت بدون نوار پیشرفت) --}}
+        @if($clubVisible['projects'])
         <div class="mw-club-projects">
             <div class="flex items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
@@ -76,6 +93,10 @@
                     </span>
                 </a>
             </div>
+
+            @if(filled($clubCards['projectsSubtitle']))
+                <p class="-mt-2 mb-3 text-[11px] leading-6 text-slate-500 dark:text-slate-400">{{ $clubCards['projectsSubtitle'] }}</p>
+            @endif
 
             <div class="mw-club-scroll max-h-[26rem] space-y-2.5 overflow-y-auto pl-1">
                 @forelse($clubCards['projects'] as $project)
@@ -121,8 +142,10 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
         {{-- کاربران برتر هفته (هاله طلایی چرخان) --}}
+        @if($clubVisible['leaders'])
         <a href="{{ route('loyalty.leaderboard') }}" class="mw-club-top-users group">
             <span class="mw-club-gold-ring" aria-hidden="true"></span>
 
@@ -133,8 +156,8 @@
                             @include('icons.medal-06')
                         </span>
                         <div>
-                            <h3 class="text-sm font-extrabold dark:text-slate-100">کاربران برتر هفته</h3>
-                            <div class="text-[10.5px] text-slate-500 dark:text-slate-400">فعال‌ترین اعضای باشگاه مخاطبان</div>
+                            <h3 class="text-sm font-extrabold dark:text-slate-100">{{ $clubCards['leadersTitle'] }}</h3>
+                            <div class="text-[10.5px] text-slate-500 dark:text-slate-400">{{ $clubCards['leadersSubtitle'] ?: 'فعال‌ترین اعضای باشگاه مخاطبان' }}</div>
                         </div>
                     </div>
                 </div>
@@ -178,5 +201,7 @@
                 </span>
             </div>
         </a>
+        @endif
     </div>
 </section>
+@endif

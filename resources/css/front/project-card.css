@@ -47,26 +47,20 @@
     to { transform: translateX(-60%); }
 }
 
-/* پروژه تکمیل‌شده: هاله سبز آرام */
+/* پروژه تکمیل‌شده: به‌جای هاله‌ی چرخان، یک نوار سبز ثابت و آرام در لبه‌ی کارت.
+   (هاله‌ی conic-gradient قبلی روی کارت‌های کوچک شلوغ و پرتحرک بود.) */
+.mw-prj-card.is-done {
+    border-color: rgba(16, 185, 129, .35);
+}
+
 .mw-prj-card.is-done::before {
     content: '';
     position: absolute;
-    inset: -160%;
-    z-index: -1;
-    background: conic-gradient(
-        from 0deg,
-        rgba(16, 185, 129, 0) 0deg,
-        rgba(16, 185, 129, .55) 70deg,
-        rgba(52, 211, 153, .2) 150deg,
-        rgba(16, 185, 129, 0) 230deg,
-        rgba(16, 185, 129, .35) 330deg,
-        rgba(16, 185, 129, 0) 360deg
-    );
-    animation: mwPrjRing 6s linear infinite;
-}
-
-@keyframes mwPrjRing {
-    to { transform: rotate(360deg); }
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 9999px;
+    background: linear-gradient(to bottom, rgb(16 185 129), rgba(16, 185, 129, .25));
 }
 
 .mw-prj-status {
@@ -251,4 +245,52 @@
 .mw-prj-card.is-static .mw-prj-status-dot,
 .mw-prj-card.is-static .mw-prj-tip {
     animation: none;
+}
+
+/* ===== ریل افقی پروژه‌های صفحه اصلی =====
+   سه کارت در یک ردیف؛ بقیه با اسکرول افقی (scroll-snap) و بدون نوار اسکرول دیده‌شده. */
+.mw-projects-rail {
+    display: grid;
+    grid-auto-flow: column;
+    /* دقیقاً سه کارت هم‌عرض در عرض قابل مشاهده (منهای دو فاصله‌ی ۱۶px). */
+    grid-auto-columns: calc((100% - 32px) / 3);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 4px;
+    /* نوار اسکرول پنهان می‌شود، ولی اسکرول با چرخ ماوس/لمس/کیبورد باقی می‌ماند. */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+}
+
+.mw-projects-rail::-webkit-scrollbar {
+    display: none;
+    height: 0;
+}
+
+.mw-projects-rail:focus-visible {
+    outline: 2px solid rgba(249, 115, 22, .5);
+    outline-offset: 4px;
+    border-radius: 22px;
+}
+
+.mw-projects-rail-item {
+    min-width: 0;
+    scroll-snap-align: start;
+}
+
+/* زیر ۱۰۲۴ پیکسل: هر کارت تقریباً تمام عرض، تا محتوا فشرده نشود. */
+@media (max-width: 1023px) {
+    .mw-projects-rail {
+        grid-auto-columns: 86%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mw-projects-rail {
+        scroll-behavior: auto;
+    }
 }

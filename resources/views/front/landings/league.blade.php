@@ -68,7 +68,7 @@
                         <span class="font-num mr-2 align-middle text-sm font-bold text-muted">({{ count($league['teams']) }})</span>
                     </h2>
                     <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary !px-5 !py-2.5 text-xs">
-                        {{ $locale === 'en' ? 'Buy the mod' : 'خرید پچ' }}
+                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
                     </a>
                 </div>
 

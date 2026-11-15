@@ -8,6 +8,7 @@ use App\Application\Content\Support\ProductLandingContentSchema;
 use App\Application\System\Backup\BackupEnvironment;
 use App\Application\System\Backup\BackupRunDispatcher;
 use App\Domain\Loyalty\Models\RewardOffer;
+use App\Domain\Affiliate\Models\Affiliate;
 use App\Domain\Organization\Models\TeamMember;
 use App\Domain\System\Models\BackupRun;
 use App\Http\Controllers\Controller;
@@ -20,6 +21,7 @@ use App\Http\Requests\Admin\System\UpdateCareersSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTeamSettingsRequest;
 use App\Http\Requests\Admin\System\UpdateTicketSettingsRequest;
 use App\Infrastructure\Services\Setting\Groups\BackupSettings;
+use App\Infrastructure\Services\Setting\Groups\AffiliateSettings;
 use App\Infrastructure\Services\Setting\Groups\LoyaltySettings;
 use App\Infrastructure\Services\Setting\Groups\TeamSettings;
 use App\Infrastructure\Services\Setting\Groups\ProductLandingsSettings;
@@ -294,17 +296,70 @@ class SettingController extends Controller
             'referral_sale_points_per_1000' => ['required', 'integer', 'min:0', 'max:1000'],
         ]);
 
-        DB::transaction(function () use ($validated): void {
+        // پیش‌فرض‌های فعلی، پیش از ذخیره؛ برای انتشار تغییر روی همکاران موجود لازم است.
+        $settings = app(AffiliateSettings::class);
+        $previousDefaults = [
+            'commission_type' => $settings->defaultCommissionType(),
+            'commission_value' => (float) $settings->defaultCommissionValue(),
+            'attribution_days' => $settings->defaultAttributionDays(),
+            'cookie_days' => $settings->defaultCookieDays(),
+            'min_withdrawal_amount' => $settings->defaultMinWithdrawalAmount(),
+        ];
+
+        DB::transaction(function () use ($validated, $previousDefaults): void {
             foreach ($validated as $field => $value) {
                 if (! app(UpdateSettingAction::class)->execute('affiliate', $field, $value)) {
                     throw new RuntimeException('Unable to persist affiliate settings.');
                 }
             }
+
+            $this->applyAffiliateDefaultsToExisting($validated, $previousDefaults);
         });
 
         return redirect()
             ->route('admin.settings.affiliate')
             ->with('success', 'تنظیمات همکاری در فروش با موفقیت ذخیره شد.');
+    }
+
+    /**
+     * تغییر «پیش‌فرض»ها را به همکاران موجود هم می‌رساند.
+     *
+     * هر رکورد همکاری موقع ساخته‌شدن یک کپی از پیش‌فرض‌ها می‌گیرد (تا سابقه‌ی مالی
+     * دست‌نخورده بماند). نتیجه این بود که ادمین درصد را از ۱۱ به ۱۰ تغییر می‌داد ولی
+     * پنل کاربر همان ۱۱ را نشان می‌داد. این‌جا فقط رکوردهایی به‌روز می‌شوند که مقدارشان
+     * عیناً برابر پیش‌فرض *قبلی* بوده است؛ یعنی همکارهایی که ادمین دستی برایشان مقدار
+     * اختصاصی گذاشته، دست‌نخورده می‌مانند.
+     *
+     * @param array<string, mixed> $validated
+     * @param array<string, mixed> $previousDefaults
+     */
+    private function applyAffiliateDefaultsToExisting(array $validated, array $previousDefaults): void
+    {
+        $map = [
+            'default_commission_type' => 'commission_type',
+            'default_commission_value' => 'commission_value',
+            'default_attribution_days' => 'attribution_days',
+            'default_cookie_days' => 'cookie_days',
+            'default_min_withdrawal_amount' => 'min_withdrawal_amount',
+        ];
+
+        foreach ($map as $settingKey => $column) {
+            if (! array_key_exists($settingKey, $validated)) {
+                continue;
+            }
+
+            $oldValue = $previousDefaults[$column] ?? null;
+
+            if ($oldValue === null || (string) $oldValue === (string) $validated[$settingKey]) {
+                continue;
+            }
+
+            Affiliate::query()
+                ->where(function ($query) use ($column, $oldValue): void {
+                    $query->where($column, $oldValue)->orWhereNull($column);
+                })
+                ->update([$column => $validated[$settingKey]]);
+        }
     }
 
     public function storeLoyalty(UpdateLoyaltySettingsRequest $request): RedirectResponse

@@ -53,6 +53,33 @@ class AffiliateAttributionTest extends TestCase
         ]);
     }
 
+    public function test_updating_defaults_changes_existing_default_affiliates_and_preserves_custom_commissions(): void
+    {
+        \App\Infrastructure\Services\Setting\BaseSettings::clearResolvedGroups();
+        $settings = app(\App\Infrastructure\Services\Setting\Groups\AffiliateSettings::class);
+        $settings->set('default_commission_value', 11);
+        $defaultAffiliate = Affiliate::query()->create([
+            'user_id' => User::factory()->create()->id, 'code' => 'DEFAULT', 'is_active' => true,
+            'commission_type' => 'percent', 'commission_value' => 11, 'cookie_days' => 30,
+            'attribution_days' => 90, 'min_withdrawal_amount' => 100000,
+        ]);
+        $admin = User::factory()->create([
+            'role_id' => \App\Domain\Identity\Models\Role::factory()->create(['is_super_admin' => true])->id,
+        ]);
+
+        $this->actingAs($admin)->put(route('admin.settings.affiliate.store'), [
+            'affiliate_enabled' => '1', 'default_commission_type' => 'percent', 'default_commission_value' => 10,
+            'default_attribution_days' => 90, 'default_cookie_days' => 30, 'default_min_withdrawal_amount' => 100000,
+            'referral_bonus_enabled' => '1', 'referral_bonus_referrer_points' => 200,
+            'referral_bonus_referee_points' => 500, 'referral_bonus_min_order_amount' => 100000,
+            'referral_sale_points_per_1000' => 2,
+        ])->assertSessionHasNoErrors()->assertRedirect(route('admin.settings.affiliate'));
+
+        $this->assertSame(10.0, $defaultAffiliate->fresh()->commission_value);
+        $this->assertSame(25.0, $this->affiliate->fresh()->commission_value);
+        $this->assertSame(10, $settings->defaultCommissionValue());
+    }
+
     public function test_coupon_redemption_with_affiliate_code_records_commission(): void
     {
         $buyer = User::factory()->create();

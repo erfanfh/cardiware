@@ -14,7 +14,7 @@
     </div>
 
     <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary mt-5 w-full justify-center !py-3 text-sm">
-        {{ $locale === 'en' ? 'Buy the mod' : 'خرید پچ' }}
+        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
     </a>
     <p class="mt-3 text-center text-[11px] text-muted">
         {{ $locale === 'en' ? 'Instant activation · 7-day refund' : 'فعال‌سازی آنی · بازگشت وجه ۷ روزه' }}

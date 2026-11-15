@@ -32,7 +32,64 @@
                     </div>
 
                     <div class="text-xs text-slate-500">
-                        آمار نمایش‌داده‌شده: تعداد کاربران، تیکت‌ها، نوشته‌های منتشرشده و محصولات فعال فروشگاه — به‌صورت خودکار از دیتابیس محاسبه می‌شود.
+                        متن‌ها و ردیف‌های این باکس از همین‌جا قابل ویرایش است. ردیف‌هایی که «مقدار دستی» ندارند،
+                        عددشان خودکار از دیتابیس خوانده می‌شود.
+                    </div>
+
+                    <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        <x-admin.field label="برچسب بالای باکس">
+                            <x-admin.form.input
+                                name="stats_badge"
+                                value="{{ get_setting('footer', 'stats_badge') }}"
+                                placeholder="مودینگ‌وی در یک نگاه"
+                                maxlength="120"
+                            />
+                        </x-admin.field>
+
+                        <x-admin.field label="عنوان باکس (HTML ساده مجاز است)">
+                            <x-admin.form.input
+                                name="stats_title"
+                                value="{{ get_setting('footer', 'stats_title') }}"
+                                placeholder="یک جامعه واقعی از گیمرهای فوتبال"
+                                maxlength="200"
+                            />
+                        </x-admin.field>
+                    </div>
+
+                    <div class="mt-5">
+                        <x-admin.form.repeater
+                            :items="old('stats_items', get_setting('footer', 'stats_items', []))"
+                            name="stats_items"
+                            title="ردیف‌های آمار"
+                            addText="افزودن ردیف"
+                            emptyText="ردیف پیش‌فرض (کاربران، تیکت‌ها، نوشته‌ها، محصولات) نمایش داده می‌شود."
+                            :defaultItem="['source' => 'users', 'label' => '', 'value' => '', 'is_active' => '1']"
+                        >
+                            <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+                                <x-admin.field label="منبع عدد">
+                                    <select x-model="it.source" x-bind:name="field(i, 'source')"
+                                            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
+                                        <option value="users">کاربران ثبت‌نام‌شده</option>
+                                        <option value="tickets">تیکت‌های پشتیبانی</option>
+                                        <option value="posts">نوشته‌ها و مودها</option>
+                                        <option value="products">محصولات فروشگاه</option>
+                                        <option value="custom">دستی</option>
+                                    </select>
+                                </x-admin.field>
+
+                                <x-admin.field label="برچسب">
+                                    <x-admin.form.input x-model="it.label" x-bind:name="field(i, 'label')" maxlength="60"/>
+                                </x-admin.field>
+
+                                <x-admin.field label="مقدار دستی (اختیاری)">
+                                    <x-admin.form.input x-model="it.value" x-bind:name="field(i, 'value')" dir="ltr" maxlength="20"/>
+                                </x-admin.field>
+
+                                <x-admin.field label="نمایش">
+                                    <x-admin.form.switch x-model="it.is_active" x-bind:name="field(i, 'is_active')"/>
+                                </x-admin.field>
+                            </div>
+                        </x-admin.form.repeater>
                     </div>
                 </x-admin.metabox>
 

@@ -46,14 +46,28 @@ class GetFooterStatsAction
                     'users' => $this->roundDownToHundred(User::query()->count()),
                     'tickets' => $this->roundDownToHundred(Ticket::query()->count()),
                     'posts' => $this->roundDownToHundred($activePostsCount),
-                    'products' => $this->roundDownToHundred(max(1, $activeProductsCount)),
+                    'products' => $activeProductsCount,
                 ];
             }
         );
     }
 
+    /**
+     * گرد کردن به پایین برای اعداد بزرگ (نمایش «+۱۲٬۳۰۰» به‌جای عدد دقیق).
+     *
+     * مقادیر کوچک نباید صفر شوند: قبلاً با ۵ محصول فعال، خروجی ۰ بود و باکس
+     * «در یک نگاه» عدد «+۰» نشان می‌داد.
+     */
     protected function roundDownToHundred(int $value): int
     {
+        if ($value <= 0) {
+            return 0;
+        }
+
+        if ($value < 100) {
+            return $value;
+        }
+
         return (int)(floor($value / 100) * 100);
     }
 }

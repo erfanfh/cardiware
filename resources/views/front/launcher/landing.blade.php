@@ -268,144 +268,119 @@
 
 @push('scripts')
     <script>
+        /*
+         * پس‌زمینه‌ی هیرو: شبکه‌ی نوری «زمین بازی» با جاروی نور آرام.
+         *
+         * جای افکت بارانی ماتریکس قبلی (کاراکترهای در حال سقوط + موج کلیک) که
+         * شلوغ و در موبایل سنگین بود. این نسخه ساده و کم‌مصرف است: فقط چند خط
+         * شبکه با یک باند نور که آرام رد می‌شود، بدون هیچ واکنش به کلیک.
+         * اگر کاربر prefers-reduced-motion داشته باشد، یک فریم ثابت رسم و متوقف می‌شود.
+         */
         (function () {
             var canvas = document.getElementById('mwl-matrix');
 
             if (!canvas) return;
 
-            var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            if (reducedMotion) return;
-
-            var letters = {!! json_encode(preg_split('//u', strtoupper((string)get_setting('launcher', 'matrix_letters', 'MODDINGWAYLAUNCHER')), -1, PREG_SPLIT_NO_EMPTY) ?: []) !!};
-            if (!letters.length) {
-                letters = 'MODDINGWAYLAUNCHER'.split('');
-            }
-
-            var fps = Math.max(10, Math.min(60, parseInt('{!! (string)(int) get_setting('launcher', 'matrix_speed', 24) !!}', 10) || 24));
-            var frameInterval = 1000 / fps;
-            var lastFrame = 0;
-
             var ctx = canvas.getContext('2d');
-            var columns = [];
-            var fontSize = 15;
-            var brandColor = '#f97316';
+            if (!ctx) return;
 
-            // موج‌های دایره‌ای ناشی از کلیک ماوس (مثل قطره روی آب)
-            var ripples = [];
-            var RIPPLE_MAX = 6;
+            var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var speed = Math.max(4, Math.min(60, parseInt('{!! (string) (int) get_setting('launcher', 'matrix_speed', 24) !!}', 10) || 24));
 
-            function spawnRipple(x, y) {
-                if (ripples.length >= RIPPLE_MAX) {
-                    ripples.shift();
-                }
-                ripples.push({ x: x, y: y, r: 6, max: 260, alpha: 1 });
-            }
-
-            function toCanvasPoint(clientX, clientY) {
-                var rect = canvas.getBoundingClientRect();
-                return { x: clientX - rect.left, y: clientY - rect.top };
-            }
-
-            window.addEventListener('pointerdown', function (event) {
-                if (event.target && event.target.closest && event.target.closest('a, button, iframe, input, textarea')) return;
-                var p = toCanvasPoint(event.clientX, event.clientY);
-                spawnRipple(p.x, p.y);
-            }, { passive: true });
+            var cell = 56;
+            var brand = '249, 115, 22';
+            var cool = '96, 165, 250';
+            var lastFrame = 0;
+            var frameInterval = 1000 / speed;
+            var phase = 0;
+            var width = 0;
+            var height = 0;
 
             function resize() {
-                canvas.width = canvas.offsetWidth;
-                canvas.height = canvas.offsetHeight;
-                var count = Math.ceil(canvas.width / (fontSize + 4));
-                columns = new Array(count)
-                    .fill(0)
-                    .map(function () { return Math.floor(Math.random() * -40); });
+                var ratio = Math.min(window.devicePixelRatio || 1, 2);
+                width = canvas.offsetWidth;
+                height = canvas.offsetHeight;
+                canvas.width = Math.max(1, Math.round(width * ratio));
+                canvas.height = Math.max(1, Math.round(height * ratio));
+                ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+                drawGrid(reducedMotion ? 0.5 : phase);
             }
 
             window.addEventListener('resize', resize, { passive: true });
             resize();
 
-            function draw(timestamp) {
-                requestAnimationFrame(draw);
+            function drawGrid(glowProgress) {
+                ctx.clearRect(0, 0, width, height);
 
-                if (timestamp - lastFrame < frameInterval) return;
-                lastFrame = timestamp;
+                // باند نور: از پایین-راست به بالا-چپ حرکت می‌کند.
+                var bandWidth = Math.max(width, height) * 0.45;
+                var travel = width + height + bandWidth * 2;
+                var bandCenter = travel * glowProgress - bandWidth;
 
-                ctx.fillStyle = 'rgba(2, 6, 23, 0.16)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.font = '600 ' + fontSize + 'px monospace';
+                for (var x = 0; x <= width + cell; x += cell) {
+                    for (var y = 0; y <= height + cell; y += cell) {
+                        var diagonal = (width - x) + y;
+                        var distance = Math.abs(diagonal - bandCenter);
+                        var intensity = Math.max(0, 1 - distance / bandWidth);
 
-                // پیشبردن موج‌ها
-                for (var ri = ripples.length - 1; ri >= 0; ri--) {
-                    ripples[ri].r += 9;
-                    ripples[ri].alpha = Math.max(0, 1 - ripples[ri].r / ripples[ri].max);
-                    if (ripples[ri].alpha <= 0) ripples.splice(ri, 1);
-                }
+                        var crossX = x === 0 || Math.abs(x - width) < 1;
+                        var crossY = y === 0 || Math.abs(y - height) < 1;
 
-                for (var i = 0; i < columns.length; i++) {
-                    var x = i * (fontSize + 4) + 4;
-                    var y = columns[i] * (fontSize + 6);
-
-                    if (y > canvas.height + 40 && Math.random() > 0.975) {
-                        columns[i] = 0;
-                        continue;
-                    }
-
-                    columns[i]++;
-
-                    var ch = letters[Math.floor(Math.random() * letters.length)];
-
-                    // رنگ پایه به‌عمد کمرنگ است تا با متن‌های اصلی تداخل نکند
-                    var drawX = x;
-                    var drawY = y;
-                    var fill = 'rgba(148, 163, 184, .3)';
-                    var glow = 0;
-                    var size = fontSize;
-
-                    if (Math.random() > 0.94) {
-                        fill = 'rgba(255, 247, 237, .55)';
-                    } else if (Math.random() > 0.8) {
-                        fill = 'rgba(249, 115, 22, .45)';
-                    }
-
-                    // واکنش موج: فقط خودِ کاراکترها به بیرون پرتاب می‌شوند
-                    for (var w = 0; w < ripples.length; w++) {
-                        var wave = ripples[w];
-                        var dx = drawX - wave.x;
-                        var dy = drawY - wave.y;
-                        var dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                        var band = 46;
-                        var offset = dist - wave.r;
-
-                        if (Math.abs(offset) < band) {
-                            var power = (1 - Math.abs(offset) / band) * wave.alpha;
-                            var push = power * 34;
-
-                            drawX += (dx / dist) * push;
-                            drawY += (dy / dist) * push;
-                            size = fontSize * (1 + power * 0.5);
-
-                            if (power > 0.3) {
-                                fill = power > 0.65 ? 'rgba(255, 237, 213, .95)' : 'rgba(251, 146, 60, .9)';
-                                glow = power;
-                            }
+                        // خطوط شبکه: پایه‌ی بسیار کم‌رنگ + هاله در مسیر باند نور.
+                        ctx.strokeStyle = 'rgba(148, 163, 184, ' + (0.05 + intensity * 0.10).toFixed(3) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        if (!crossX) {
+                            ctx.moveTo(x, y);
+                            ctx.lineTo(x, Math.min(y + cell, height));
                         }
-                    }
+                        if (!crossY) {
+                            ctx.moveTo(x, y);
+                            ctx.lineTo(Math.min(x + cell, width), y);
+                        }
+                        ctx.stroke();
 
-                    if (glow > 0) {
-                        ctx.shadowColor = 'rgba(249, 115, 22, ' + (0.9 * glow) + ')';
-                        ctx.shadowBlur = 16 * glow;
-                    } else {
-                        ctx.shadowBlur = 0;
-                    }
+                        // نقطه‌ی تقاطع: در مسیر نور روشن‌تر و بزرگ‌تر.
+                        var dotAlpha = 0.10 + intensity * 0.55;
+                        var dotRadius = 1 + intensity * 1.8;
+                        var color = intensity > 0.55 ? brand : cool;
 
-                    ctx.font = '600 ' + size.toFixed(1) + 'px monospace';
-                    ctx.fillStyle = fill;
-                    ctx.fillText(ch, drawX, drawY);
-                    ctx.shadowBlur = 0;
+                        ctx.fillStyle = 'rgba(' + color + ', ' + dotAlpha.toFixed(3) + ')';
+                        ctx.beginPath();
+                        ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
             }
 
-            requestAnimationFrame(draw);
+            function draw(timestamp) {
+                if (timestamp - lastFrame < frameInterval) return;
+                lastFrame = timestamp;
+
+                phase += 0.0016;
+                if (phase > 1) phase -= 1;
+
+                drawGrid(phase);
+            }
+
+            if (reducedMotion) {
+                drawGrid(0.5);
+                return;
+            }
+
+            // وقتی تب پنهان است انیمیشن را نگه می‌داریم تا CPU/باتری مصرف نکند.
+            var visible = !document.hidden;
+            document.addEventListener('visibilitychange', function () {
+                visible = !document.hidden;
+                if (visible) lastFrame = 0;
+            });
+
+            function loop(timestamp) {
+                if (visible) draw(timestamp);
+                requestAnimationFrame(loop);
+            }
+
+            requestAnimationFrame(loop);
         })();
     </script>
 @endpush
@@ -513,7 +488,15 @@
 
                         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             @foreach($launcherPreviews->take(6) as $preview)
-                                <figure class="mwl-preview">
+                                <figure
+                                    class="mwl-preview cursor-pointer"
+                                    data-lightbox="launcher-preview"
+                                    data-src="{{ $preview['image']['path'] }}"
+                                    data-title="{{ $preview['title'] ?? '' }}"
+                                    role="button"
+                                    tabindex="0"
+                                    aria-label="{{ filled($preview['title'] ?? null) ? $preview['title'] : 'نمایش تصویر' }}"
+                                >
                                     <img src="{{ $preview['image']['path'] }}" alt="{{ $preview['title'] ?? '' }}" loading="lazy">
                                     @if(filled($preview['title'] ?? null))
                                         <figcaption>{{ $preview['title'] }}</figcaption>

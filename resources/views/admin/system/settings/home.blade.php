@@ -15,6 +15,7 @@
                     'services' => 'سرویس ها',
                     'products' => 'محصولات فیزیکی',
                     'projects' => 'پروژه‌ها',
+                    'club-cards' => 'کارت‌های باشگاه',
                     'services-options' => 'خدمات و آپشن ها',
                     'videos' => 'ویدیوهای آموزشی',
                     'testimonials' => 'تجربه کاربران',
@@ -54,6 +55,10 @@
 
                 <x-admin.tabs.panel name="projects">
                     @include('admin.system.settings.partials.home-projects')
+                </x-admin.tabs.panel>
+
+                <x-admin.tabs.panel name="club-cards">
+                    @include('admin.system.settings.partials.home-club-cards')
                 </x-admin.tabs.panel>
 
                 <x-admin.tabs.panel name="posts">

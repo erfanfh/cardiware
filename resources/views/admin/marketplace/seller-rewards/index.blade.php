@@ -132,6 +132,27 @@
                         <x-admin.form.input name="spotlight_title" :value="$spotlightTitle"/>
                     </x-admin.field>
                 </div>
+
+                <x-admin.field
+                    class="mb-4"
+                    label="فروشگاه‌های خارج از رقابت"
+                    hint="فروشگاه اصلی سایت را این‌جا انتخاب کنید تا در رتبه‌بندی برترین فروشنده شرکت نکند و رقابت فقط بین فروشندگان واقعی باشد."
+                >
+                    <select name="excluded_store_ids[]" multiple size="8"
+                            class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
+                        @foreach($stores as $storeId => $storeTitle)
+                            <option value="{{ $storeId }}"
+                                @selected(in_array((string) $storeId, array_map('strval', $excludedStoreIds), true))>
+                                {{ $storeTitle }} (#{{ $storeId }})
+                            </option>
+                        @endforeach
+                    </select>
+
+                    <p class="mt-2 text-[11px] leading-5 text-slate-500">
+                        با Ctrl (یا Cmd) چند فروشگاه را هم‌زمان انتخاب کنید. فروشگاه اصلی معمولاً
+                        <code dir="ltr">moddingway</code> است.
+                    </p>
+                </x-admin.field>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
                         <thead>

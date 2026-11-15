@@ -1,11 +1,27 @@
 @php
-    $teamMemberIds = collect(get_setting('team', 'member_ids') ?? [])->filter()->map(fn($id) => (int)$id);
+    // ترتیب نمایش = همان ترتیبی که ادمین در «تنظیمات → صفحه تیم → انتخاب و ترتیب اعضا»
+    // چیده است (member_ids). قبلاً orderByDesc('id') بود و ترتیب پنل نادیده گرفته می‌شد،
+    // یعنی همیشه جدیدترین عضو اول می‌آمد. سقف هم با راهنمای پنل (۲۴) هم‌تراز شد.
+    $teamMemberIds = collect(get_setting('team', 'member_ids') ?? [])
+        ->filter()
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
     $teamMembers = App\Domain\Organization\Models\TeamMember::query()
-        ->with('picture')
-        ->when($teamMemberIds->isNotEmpty(), fn($query) => $query->whereIn('id', $teamMemberIds->all()))
+        // variants از قبل لود می‌شوند تا کامپوننت تصویر برای هر عضو کوئری اضافه نزند (N+1).
+        ->with(['picture.primaryVariant', 'picture.variants'])
+        ->when($teamMemberIds->isNotEmpty(), fn ($query) => $query->whereIn('id', $teamMemberIds->all()))
         ->orderByDesc('id')
-        ->limit(8)
+        ->limit($teamMemberIds->isNotEmpty() ? 24 : 8)
         ->get();
+
+    if ($teamMemberIds->isNotEmpty()) {
+        // whereIn ترتیب را تضمین نمی‌کند؛ بعد از گرفتن رکوردها بر اساس member_ids مرتب می‌کنیم.
+        $teamMembers = $teamMembers
+            ->sortBy(fn ($member) => $teamMemberIds->search($member->getKey()))
+            ->values();
+    }
 @endphp
 
 @if($teamMembers->isNotEmpty())
@@ -33,10 +49,15 @@
             @foreach($teamMembers as $member)
                 <div class="mw-team-card">
                     @if($member->picture?->path)
-                        <img src="{{ $member->picture->path }}"
-                             alt="{{ $member->full_name }}"
-                             loading="lazy"
-                             class="h-16 w-16 rounded-2xl border border-slate-200 object-cover dark:border-slate-700">
+                        <x-front.responsive-image
+                            :media="$member->picture"
+                            :alt="$member->full_name"
+                            :title="$member->full_name"
+                            variant="thumbnail"
+                            class="h-16 w-16 rounded-2xl border border-slate-200 object-cover dark:border-slate-700"
+                            wrapper-class="h-16 w-16 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700"
+                            sizes="64px"
+                        />
                     @else
                         <span class="grid h-16 w-16 place-items-center rounded-2xl border border-slate-200 bg-gradient-to-br from-brand-500 to-brand-700 text-lg font-black text-white dark:border-slate-700">
                             {{ mb_substr(trim($member->first_name ?: 'م'), 0, 1) }}

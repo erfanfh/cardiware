@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\DB;
  */
 final class GetSellerRankingAction
 {
+    public function __construct(
+        private readonly \App\Infrastructure\Services\Setting\Groups\SellerRewardSettings $settings,
+    ) {
+    }
+
     /** @return Collection<int, object{store_id: int, net_sales: int, orders_count: int, title: string, slug: string}> */
     public function execute(LeaderboardPeriod $period, int $limit = 20): Collection
     {
@@ -34,6 +39,14 @@ final class GetSellerRankingAction
             ->orderByDesc('orders_count')
             ->orderBy('i.store_id')
             ->limit($limit);
+
+        // فروشگاه‌های مستثنی (معمولاً فروشگاه اصلی سایت) در رقابت شرکت نمی‌کنند تا
+        // رتبه‌بندی بین فروشندگان واقعی بماند.
+        $excludedStoreIds = $this->settings->excludedStoreIds();
+
+        if ($excludedStoreIds !== []) {
+            $query->whereNotIn('i.store_id', $excludedStoreIds);
+        }
 
         if ($period->startsAt !== null) {
             $query->where('o.paid_at', '>=', $period->startsAt)->where('o.paid_at', '<', $period->endsAt);

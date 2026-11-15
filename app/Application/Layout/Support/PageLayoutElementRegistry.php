@@ -139,7 +139,7 @@ class PageLayoutElementRegistry
                     'footer_primary',
                 ],
                 'settings_route' => 'admin.settings.home',
-                'settings_route_parameters' => ['tab' => 'projects'],
+                'settings_route_parameters' => ['tab' => 'club-cards'],
             ],
             'team' => [
                 'type' => 'team',

@@ -12,8 +12,19 @@
         ->whereIn('id', $categoryIds)
         ->pluck('title', 'id');
 
+    $featuredPostIds = $rawPostItems
+        ->pluck('featured_post_id')
+        ->filter()
+        ->map(fn ($id) => (int) $id)
+        ->unique()
+        ->values();
+
+    $featuredPostTitles = $featuredPostIds->isEmpty()
+        ? collect()
+        : \App\Domain\Content\Models\Post::query()->whereIn('id', $featuredPostIds)->pluck('title', 'id');
+
     $postItems = $rawPostItems
-        ->map(function ($item) use ($categoryTitles) {
+        ->map(function ($item) use ($categoryTitles, $featuredPostTitles) {
             $mainCategoryIds = collect($item['main_category_ids'] ?? [])
                 ->filter()
                 ->map(fn ($id) => (string) $id)
@@ -33,6 +44,9 @@
                     ])
                     ->values()
                     ->all(),
+                'featured_post_id' => (string) ($item['featured_post_id'] ?? ''),
+                'featured_post_title' => $featuredPostTitles[(int) ($item['featured_post_id'] ?? 0)] ?? null,
+                'featured_category_id' => (string) ($item['featured_category_id'] ?? ''),
                 'sort_order' => $item['sort_order'] ?? 0,
             ];
         })
@@ -62,6 +76,9 @@
                     'list_count' => 8,
                     'main_category_ids' => [],
                     'main_categories' => [],
+                    'featured_post_id' => '',
+                    'featured_post_title' => null,
+                    'featured_category_id' => '',
                     'sort_order' => 0,
                 ]"
             >
@@ -113,6 +130,43 @@
                             min="0"
                             max="30"
                         />
+                    </x-admin.field>
+
+                    <x-admin.field class="col-span-6" label="کارت اصلی — نوشته دلخواه (اختیاری)">
+                        <x-admin.form.async-select
+                            x-bind:name="field(i, 'featured_post_id')"
+                            x-bind:data-initial-option="it.featured_post_id ? JSON.stringify({
+                                value: String(it.featured_post_id),
+                                label: it.featured_post_title || ('#' + it.featured_post_id)
+                            }) : ''"
+                            x-on:mw-async-select-change="
+                                it.featured_post_id = $event.detail.value ?? '';
+                                it.featured_post_title = $event.detail.label ?? '';
+                            "
+                            :multiple="false"
+                            :search-url="route('admin.posts.ajax-search')"
+                            placeholder="یک نوشته را برای کارت اصلی انتخاب کنید..."
+                        />
+                    </x-admin.field>
+
+                    <x-admin.field class="col-span-6" label="کارت اصلی — از دسته‌بندی (اختیاری)">
+                        <x-admin.form.async-select
+                            x-bind:name="field(i, 'featured_category_id')"
+                            x-bind:data-initial-option="it.featured_category_id ? JSON.stringify({
+                                value: String(it.featured_category_id),
+                                label: (it.main_categories || []).find(c => String(c.id) === String(it.featured_category_id))?.title
+                                    || ('#' + it.featured_category_id)
+                            }) : ''"
+                            x-on:mw-async-select-change="it.featured_category_id = $event.detail.value ?? '';"
+                            :multiple="false"
+                            :search-url="route('admin.posts.categories.ajax-search')"
+                            placeholder="تازه‌ترین نوشته این دسته، کارت اول می‌شود..."
+                        />
+
+                        <p class="mt-2 text-[11px] leading-5 text-slate-500">
+                            اگر «نوشته دلخواه» را انتخاب کنید، همان کارت اول تب می‌شود. در غیر این صورت تازه‌ترین
+                            نوشته‌ی دسته‌ی انتخابی کارت اول می‌شود. خالی گذاشتن هر دو = رفتار خودکار قبلی.
+                        </p>
                     </x-admin.field>
                 </div>
             </x-admin.form.repeater>

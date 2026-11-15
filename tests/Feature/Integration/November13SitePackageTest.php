@@ -104,6 +104,63 @@ class November13SitePackageTest extends TestCase
             ->assertSet('mainPosts', fn ($posts) => $posts->pluck('id')->all() === [$otherPost->id]);
     }
 
+    public function test_manual_home_hero_reaches_livewire_and_preserves_pins_and_distinct_list_items(): void
+    {
+        $author = User::factory()->create();
+        $category = $this->category('manual-hero');
+        $fresh = collect();
+        for ($i = 0; $i < 8; $i++) {
+            $fresh->push($this->createPost($author, $category, ['published_at' => now()->subMinutes($i + 1)]));
+        }
+        $pin = $this->createPost($author, $category, ['is_pinned' => true]);
+        $hero = $fresh[4];
+        app(HomeSettings::class)->set('posts_items', [[
+            'main_title' => 'Manual hero', 'main_category_ids' => [$category->id],
+            'featured_post_id' => $hero->id, 'hero_count' => 3, 'list_count' => 4,
+        ]]);
+
+        Livewire::test(FreePosts::class)
+            ->assertSet('mainPosts', fn ($posts) => $posts->pluck('id')->all() === [$hero->id, $pin->id, $fresh[0]->id, $fresh[1]->id])
+            ->assertSet('list1Posts', fn ($posts) => $posts->pluck('id')->all() === [$fresh[2]->id, $fresh[3]->id, $fresh[5]->id, $fresh[6]->id]);
+    }
+
+    public function test_manual_hero_choices_have_separate_cache_entries_and_enforce_public_visibility(): void
+    {
+        $author = User::factory()->create();
+        $category = $this->category('automatic');
+        $other = $this->category('featured');
+        $child = $this->category('featured-child', $other->id);
+        $automatic = $this->createPost($author, $category);
+        $selected = $this->createPost($author, $child, ['published_at' => now()->subMinutes(2)]);
+        $inactive = $this->createPost($author, $child, ['status' => 'inactive']);
+        $future = $this->createPost($author, $child, ['published_at' => now()->addHour()]);
+        $deleted = $this->createPost($author, $child);
+        $deleted->delete();
+        request()->setRouteResolver(fn () => (new Route('POST', 'livewire/update', fn () => null))->name('livewire.update'));
+        $action = app(GetHomeFreePostsTabDataAction::class);
+        $item = ['key' => 'manual-cache', 'main_category_ids' => [$category->id]];
+
+        $this->assertSame($automatic->id, $action->execute($item)['mainPosts']->first()->id);
+        $this->assertSame($selected->id, $action->execute($item + ['featured_post_id' => $selected->id])['mainPosts']->first()->id);
+        $this->assertSame($selected->id, $action->execute($item + ['featured_category_id' => $other->id])['mainPosts']->first()->id);
+        foreach ([$inactive, $future, $deleted] as $hidden) {
+            $this->assertSame($automatic->id, $action->execute($item + ['featured_post_id' => $hidden->id])['mainPosts']->first()->id);
+        }
+    }
+
+    public function test_home_settings_form_has_no_duplicate_club_card_fields_and_saves_visibility(): void
+    {
+        $admin = User::factory()->create(['role_id' => Role::factory()->create(['is_super_admin' => true])->id]);
+        $html = $this->actingAs($admin)->get(route('admin.settings.home', ['tab' => 'club-cards']))->assertOk()->getContent();
+        foreach (['subscription_title', 'subscription_subtitle', 'subscription_button_title', 'subscription_button_url', 'subscription_description', 'projects_title'] as $name) {
+            $this->assertSame(1, substr_count($html, 'name="'.$name.'"'), $name);
+        }
+        $this->put(route('admin.settings.home.store'), [
+            'club_cards_show_vip' => '0', 'club_cards_show_projects' => '0', 'club_cards_show_leaders' => '0',
+        ])->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertStringNotContainsString('<section', view('front.home.partials.club-cards')->render());
+    }
+
     public function test_admin_can_edit_a_video_and_its_cover_without_changing_moderation_or_points(): void
     {
         $admin = User::factory()->create(['role_id' => Role::factory()->create(['is_super_admin' => true])->id]);

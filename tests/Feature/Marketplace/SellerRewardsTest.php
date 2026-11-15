@@ -13,6 +13,7 @@ use App\Domain\Marketplace\Models\StoreReward;
 use App\Domain\Marketplace\Models\StoreSpotlight;
 use App\Domain\Promotion\Models\Coupon;
 use App\Infrastructure\Services\Setting\BaseSettings;
+use App\Infrastructure\Services\Setting\Groups\SellerRewardSettings;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -103,8 +104,35 @@ class SellerRewardsTest extends TestCase
         $this->get(route('admin.seller-rewards.index'))->assertSuccessful()->assertSee('Spotlight store');
 
         $html = view('front.home.partials.featured-store')->render();
-        $this->assertStringContainsString('فروشگاه Spotlight store', $html);
+        $this->assertStringContainsString('Spotlight store', $html);
+        $this->assertStringContainsString('مشاهده فروشگاه', $html);
         $this->assertStringContainsString('Spotlight store product', $html);
+    }
+
+    public function test_admin_can_exclude_and_restore_a_store_in_seller_rankings(): void
+    {
+        [$store, $product] = $this->storeWithProduct('Excluded store', 7000);
+        $period = LeaderboardPeriod::make('week');
+        $this->sale($store, $product, 3000000, now());
+        $settings = app(SellerRewardSettings::class);
+        $data = [
+            'enabled' => '1',
+            'excluded_store_ids' => [(string) $store, (string) $store],
+            'prizes' => collect(SellerRewardSettings::PERIODS)->mapWithKeys(fn ($label, $type) => [$type => $settings->prizes($type)])->all(),
+            'min_net_sales' => collect(SellerRewardSettings::PERIODS)->mapWithKeys(fn ($label, $type) => [$type => $settings->minNetSales($type)])->all(),
+        ];
+
+        $this->actingAs($this->staffUser())
+            ->withoutMiddleware(\App\Http\Middleware\EnsureUserIsAdmin::class)
+            ->put(route('admin.seller-rewards.settings'), $data)
+            ->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertSame([$store], $settings->excludedStoreIds());
+        $this->assertTrue(app(GetSellerRankingAction::class)->execute($period)->isEmpty());
+
+        unset($data['excluded_store_ids']);
+        $this->put(route('admin.seller-rewards.settings'), $data)->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertSame([], $settings->excludedStoreIds());
+        $this->assertSame([$store], app(GetSellerRankingAction::class)->execute($period)->pluck('store_id')->all());
     }
 
     /** @return array{0: int, 1: int} */

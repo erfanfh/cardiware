@@ -10,12 +10,53 @@
         : [];
     $footerStatsBg = get_setting('footer', 'stats_bg_image')->path;
     $footerStatsAnimated = (bool) get_setting('footer', 'stats_animation_enabled', 1);
-    $footerStatsItems = [
-        ['label' => 'کاربر ثبت‌نام‌شده', 'value' => $footerStats['users'], 'icon' => 'icons.user-multiple-02'],
-        ['label' => 'تیکت پشتیبانی', 'value' => $footerStats['tickets'], 'icon' => 'icons.message-search-02'],
-        ['label' => 'نوشته و مود', 'value' => $footerStats['posts'], 'icon' => 'icons.file-02'],
-        ['label' => 'محصول در فروشگاه', 'value' => $footerStats['products'], 'icon' => 'icons.shop-line-duotone'],
+    $footerStatsBadge = get_setting('footer', 'stats_badge') ?: 'مودینگ‌وی در یک نگاه';
+    $footerStatsTitle = get_setting('footer', 'stats_title') ?: 'یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمرهای فوتبال';
+
+    // آیکون هر منبع ثابت است (کلاس آیکون از پنل قابل تغییر نیست)؛ ادمین فقط
+    // برچسب، منبع و مقدار دستی هر ردیف را تعیین می‌کند.
+    $footerStatSources = [
+        'users' => ['label' => 'کاربر ثبت‌نام‌شده', 'icon' => 'icons.user-multiple-02', 'value' => $footerStats['users']],
+        'tickets' => ['label' => 'تیکت پشتیبانی', 'icon' => 'icons.message-search-02', 'value' => $footerStats['tickets']],
+        'posts' => ['label' => 'نوشته و مود', 'icon' => 'icons.file-02', 'value' => $footerStats['posts']],
+        'products' => ['label' => 'محصول در فروشگاه', 'icon' => 'icons.shop-line-duotone', 'value' => $footerStats['products']],
     ];
+
+    $footerStatsRows = collect(get_setting('footer', 'stats_items', []))
+        ->filter(fn ($item) => is_array($item))
+        ->values();
+
+    if ($footerStatsRows->isEmpty()) {
+        $footerStatsRows = collect($footerStatSources)
+            ->map(fn ($source, $key) => ['source' => $key, 'label' => $source['label'], 'value' => ''])
+            ->values();
+    }
+
+    $footerStatsItems = $footerStatsRows
+        ->filter(fn ($item) => ($item['is_active'] ?? '1') !== '0')
+        ->map(function (array $item) use ($footerStatSources): array {
+            $key = (string) ($item['source'] ?? 'custom');
+            $source = $footerStatSources[$key] ?? null;
+            $manual = trim((string) ($item['value'] ?? ''));
+
+            // ارقام فارسی/عربی هم پذیرفته می‌شوند تا «۱۲٬۳۰۰» دستی هم درست خوانده شود.
+            $manualDigits = preg_replace('/\D+/', '', strtr($manual, [
+                '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+                '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+                '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+                '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+            ]));
+            $manualDigits = $manualDigits === '' ? null : (int) $manualDigits;
+
+            return [
+                'label' => (string) ($item['label'] ?? '') !== '' ? $item['label'] : ($source['label'] ?? ''),
+                'value' => $manualDigits ?? (int) ($source['value'] ?? 0),
+                'icon' => $source['icon'] ?? 'icons.file-02',
+            ];
+        })
+        ->filter(fn ($item) => $item['label'] !== '')
+        ->values()
+        ->all();
 @endphp
 
 @php
@@ -52,11 +93,11 @@
                 <div class="relative z-10 text-center">
                     <span class="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-4 py-2 text-xs font-extrabold text-white backdrop-blur">
                         <span class="mw-footer-stats-pulse" aria-hidden="true"></span>
-                        مودینگ‌وی در یک نگاه
+                        {{ $footerStatsBadge }}
                     </span>
 
                     <h2 class="mt-3 text-xl font-black text-white sm:text-2xl">
-                        یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمرهای فوتبال
+                        {!! $footerStatsTitle !!}
                     </h2>
                 </div>
 

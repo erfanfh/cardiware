@@ -28,7 +28,7 @@
                         <a href="{{ $social['href'] }}" class="rounded-xl border border-edge/70 bg-surface px-4 py-2 text-xs font-bold text-muted transition-all hover:border-accent/40 hover:text-accent">{{ $social['label'] }}</a>
                     @endforeach
                 </div>
-                <a href="{{ $data['buy_url'] }}" class="btn-primary mt-6 !px-5 !py-2.5 text-sm">خرید پچ</a>
+                <a href="{{ $data['buy_url'] }}" class="btn-primary mt-6 !px-5 !py-2.5 text-sm">{{ $data['buy_label'] ?? 'خرید پچ' }}</a>
             </div>
         </div>
 

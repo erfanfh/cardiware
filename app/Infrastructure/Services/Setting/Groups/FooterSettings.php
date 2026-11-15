@@ -50,6 +50,9 @@ class FooterSettings extends BaseSettings
         'namad_code',
         'stats_bg_image',
         'stats_animation_enabled',
+        'stats_badge',
+        'stats_title',
+        'stats_items',
         'background_image',
         'background_pattern',
     ];
@@ -64,5 +67,6 @@ class FooterSettings extends BaseSettings
         'stats_bg_image' => MediaFileCast::class,
         'background_image' => MediaFileCast::class,
         'stats_animation_enabled' => BooleanCast::class,
+        'stats_items' => RepeaterArrayCast::class,
     ];
 }

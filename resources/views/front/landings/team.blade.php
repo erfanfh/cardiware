@@ -103,7 +103,7 @@
                         {{ $locale === 'en' ? 'Back to '.$league['name'] : 'بازگشت به '.$league['name'] }}
                     </a>
                     <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary">
-                        {{ $locale === 'en' ? 'Buy the mod' : 'خرید پچ' }}
+                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
                     </a>
                 </div>
             </div>

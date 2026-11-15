@@ -32,6 +32,8 @@ class GetHomePostTabsAction
                     'hero_count' => min(12, max(3, (int)($item['hero_count'] ?? 3))),
                     'list_count' => min(30, max(0, (int)($item['list_count'] ?? 8))),
                     'main_category_ids' => $mainCategoryIds->all(),
+                    'featured_post_id' => max(0, (int) ($item['featured_post_id'] ?? 0)),
+                    'featured_category_id' => max(0, (int) ($item['featured_category_id'] ?? 0)),
                     'main_category' => $mainCategoryIds->isNotEmpty()
                         ? TaxonomyTerm::query()->find($mainCategoryIds->first())
                         : null,

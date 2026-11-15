@@ -52,7 +52,7 @@
             </a>
 
             <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary hidden !px-5 !py-2.5 text-sm sm:inline-flex">
-                {{ $locale === 'en' ? 'Buy the mod' : 'خرید پچ' }}
+                {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
             </a>
 
             {{-- همبرگر موبایل --}}
@@ -72,7 +72,7 @@
             @foreach(($data['pages'] ?? []) as $pageKey => $page)
                 <a href="{{ $prefix }}/{{ $slug }}/{{ $pageKey }}" @click="open = false" class="rounded-lg px-3 py-2.5 text-sm font-medium text-accent/90 transition-colors hover:bg-surface">{{ $page['label'] }}</a>
             @endforeach
-            <a href="{{ $prefix }}/{{ $slug }}#pricing" @click="open = false" class="btn-primary mt-2 justify-center text-sm">{{ $locale === 'en' ? 'Buy the mod' : 'خرید پچ' }}</a>
+            <a href="{{ $prefix }}/{{ $slug }}#pricing" @click="open = false" class="btn-primary mt-2 justify-center text-sm">{{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}</a>
         </div>
     </div>
 </nav>

@@ -10,6 +10,7 @@ use App\Domain\Content\Models\Post;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Taxonomy\Enums\TaxonomyKeyEnum;
 use App\Domain\Taxonomy\Models\TaxonomyTerm;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
 class GetHomeFreePostsTabDataAction
@@ -48,29 +49,83 @@ class GetHomeFreePostsTabDataAction
                 'featureAssignments.featureDefinition',
                 'categories',
             ])
-            ->whereHas('categories', function ($query) use ($categoryIds): void {
-                $query->whereIn('taxonomy_terms.id', $categoryIds);
-            })
             // Livewire update routes bypass ActivePostScope, so always enforce visibility here.
             ->where('status', PostStatusEnum::ACTIVE)
             ->where('published_at', '<=', now())
             ->latest('published_at')
             ->orderByDesc('id');
 
+        $manualHero = $this->resolveManualHero($activeItem, $query);
+        $query->whereHas('categories', function ($query) use ($categoryIds): void {
+            $query->whereIn('taxonomy_terms.id', $categoryIds);
+        });
+
+        if ($manualHero !== null) {
+            $query->whereKeyNot($manualHero->getKey());
+        }
+
         $pinned = (clone $query)->where('is_pinned', true)->get();
+        $freshHeroCount = $heroCount - ($manualHero !== null ? 1 : 0);
         $fresh = (clone $query)->where(function ($query): void {
             $query->where('is_pinned', false)->orWhereNull('is_pinned');
-        })->limit($heroCount + $listCount)->get();
-        $heroes = $pinned->concat($fresh->take($heroCount))->values();
+        })->limit($freshHeroCount + $listCount)->get();
+        $heroes = $pinned->concat($fresh->take($freshHeroCount))->values();
+
+        if ($manualHero !== null) {
+            $heroes->prepend($manualHero);
+        }
+
         $heroes->each(function (Post $post): void {
             $post->features = $this->getPostFeaturesAction->execute($post);
         });
 
         return [
             'mainPosts' => $heroes,
-            'list1Posts' => $fresh->skip($heroCount)->values(),
+            'list1Posts' => $fresh->skip($freshHeroCount)->values(),
             'list2Posts' => collect(),
         ];
+    }
+
+    /**
+     * کارت اصلیِ دستیِ همان تب (اگر ادمین انتخاب کرده باشد).
+     *
+     * اولویت: نوشته‌ی مشخص‌شده، بعد تازه‌ترین نوشته‌ی دسته‌ی انتخابی. نوشته باید
+     * منتشرشده و فعال باشد؛ وگرنه (مثلاً حذف‌شده) نادیده گرفته می‌شود و رفتار
+     * خودکار قبلی برمی‌گردد.
+     *
+     * @param array<string, mixed> $activeItem
+     */
+    protected function resolveManualHero(array $activeItem, Builder $baseQuery): ?Post
+    {
+        $featuredPostId = (int) ($activeItem['featured_post_id'] ?? 0);
+
+        if ($featuredPostId > 0) {
+            $post = (clone $baseQuery)->whereKey($featuredPostId)->first();
+
+            if ($post !== null) {
+                return $post;
+            }
+        }
+
+        $featuredCategoryId = (int) ($activeItem['featured_category_id'] ?? 0);
+
+        if ($featuredCategoryId <= 0) {
+            return null;
+        }
+
+        $categoryIds = $this->resolveCategoryIdsWithDescendants([$featuredCategoryId]);
+
+        if ($categoryIds === []) {
+            return null;
+        }
+
+        return (clone $baseQuery)
+            ->whereHas('categories', function ($query) use ($categoryIds): void {
+                $query->whereIn('taxonomy_terms.id', $categoryIds);
+            })
+            ->latest('published_at')
+            ->orderByDesc('id')
+            ->first();
     }
 
     /**
@@ -107,6 +162,8 @@ class GetHomeFreePostsTabDataAction
             'layout' => 'hero-list-v2',
             'key' => $activeItem['key'] ?? null,
             'main_category_ids' => $activeItem['main_category_ids'] ?? [],
+            'featured_post_id' => (int) ($activeItem['featured_post_id'] ?? 0),
+            'featured_category_id' => (int) ($activeItem['featured_category_id'] ?? 0),
             'hero_count' => min(12, max(3, (int) ($activeItem['hero_count'] ?? 3))),
             'list_count' => min(30, max(0, (int) ($activeItem['list_count'] ?? 8))),
         ];

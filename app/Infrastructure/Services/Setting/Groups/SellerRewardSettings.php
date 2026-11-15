@@ -17,13 +17,29 @@ class SellerRewardSettings extends BaseSettings
 {
     protected string $group = 'seller_rewards';
 
-    protected array $allowedKeys = ['enabled', 'prizes', 'min_net_sales', 'enabled_since', 'spotlight_title'];
+    protected array $allowedKeys = ['enabled', 'prizes', 'min_net_sales', 'enabled_since', 'spotlight_title', 'excluded_store_ids'];
 
     protected array $casts = [
         'enabled' => BooleanCast::class,
         'prizes' => ArrayCast::class,
         'min_net_sales' => ArrayCast::class,
+        'excluded_store_ids' => ArrayCast::class,
     ];
+
+    /**
+     * فروشگاه‌هایی که در رقابت برترین فروشنده شرکت نمی‌کنند (معمولاً فروشگاه اصلی سایت).
+     *
+     * @return list<int>
+     */
+    public function excludedStoreIds(): array
+    {
+        $ids = $this->get('excluded_store_ids', []);
+
+        return array_values(array_filter(array_map(
+            static fn ($id): int => (int) $id,
+            is_array($ids) ? $ids : [],
+        ), static fn (int $id): bool => $id > 0));
+    }
 
     public const PERIODS = ['week' => 'هفته', 'month' => 'ماه', 'year' => 'سال'];
 
