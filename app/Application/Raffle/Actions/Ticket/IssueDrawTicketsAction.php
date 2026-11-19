@@ -2,8 +2,10 @@
 
 namespace App\Application\Raffle\Actions\Ticket;
 
+use App\Application\Raffle\Actions\CheckRaffleEligibilityAction;
 use App\Application\Raffle\DTOs\IssueDrawTicketsDTO;
 use App\Application\Raffle\Exceptions\DrawCampaignNotAcceptingTicketsException;
+use App\Application\Raffle\Exceptions\DrawParticipantIneligibleException;
 use App\Application\Raffle\Exceptions\DrawTicketCapacityExceededException;
 use App\Application\Raffle\Exceptions\DrawUserTicketLimitExceededException;
 use App\Application\Raffle\Support\DrawTicketCodeGenerator;
@@ -26,6 +28,7 @@ class IssueDrawTicketsAction
         private readonly TicketGrantFingerprint $fingerprint,
         private readonly TicketGrantIdempotencyGuard $idempotencyGuard,
         private readonly DrawTicketCodeGenerator $ticketCodeGenerator,
+        private readonly CheckRaffleEligibilityAction $checkEligibility,
     ) {
     }
 
@@ -56,6 +59,14 @@ class IssueDrawTicketsAction
                     throw new DrawCampaignNotAcceptingTicketsException(
                         'This draw campaign is not currently accepting new tickets.'
                     );
+                }
+
+                $isVipGift = ($data->metadata['origin'] ?? null) === 'vip_monthly_gift';
+                if (
+                    ($isVipGift && (!$campaign->vip_monthly_ticket || !$data->user->hasActiveVipSubscription()))
+                    || !$this->checkEligibility->execute($campaign, $data->user)['eligible']
+                ) {
+                    throw new DrawParticipantIneligibleException('شرایط دریافت بلیط این قرعه‌کشی را ندارید.');
                 }
 
                 if (

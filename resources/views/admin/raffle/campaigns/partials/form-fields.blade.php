@@ -70,17 +70,6 @@
         <x-admin.form.editor name="rules" :value="old('rules', $drawCampaign?->rules)"/>
     </x-admin.metabox>
 
-    <x-admin.metabox title="هزینه بلیط">
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <x-admin.field label="امتیاز برای هر بلیط">
-                <x-admin.form.input name="points_per_ticket" type="number" min="1" dir="ltr" :value="old('points_per_ticket', $drawCampaign?->points_per_ticket ?? 100)"/>
-            </x-admin.field>
-            <x-admin.field label="قیمت نقدی هر بلیط (تومان)">
-                <x-admin.form.input name="ticket_price" type="number" min="0" dir="ltr" :value="old('ticket_price', $drawCampaign?->ticket_price)"/>
-            </x-admin.field>
-        </div>
-    </x-admin.metabox>
-
     @if($structureEditable)
         <x-admin.metabox title="زمان بندی و ظرفیت">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -130,4 +119,69 @@
             </div>
         </x-admin.metabox>
     @endif
+
+    <x-admin.metabox title="هزینه بلیط">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <x-admin.field label="امتیاز برای هر بلیط">
+                <x-admin.form.input name="points_per_ticket" type="number" min="1" dir="ltr" :value="old('points_per_ticket', $drawCampaign?->points_per_ticket ?? 100)"/>
+            </x-admin.field>
+            <x-admin.field label="قیمت نقدی هر بلیط (تومان)">
+                <x-admin.form.input name="ticket_price" type="number" min="0" dir="ltr" :value="old('ticket_price', $drawCampaign?->ticket_price)"/>
+            </x-admin.field>
+        </div>
+    </x-admin.metabox>
+
+    <x-admin.metabox title="شرایط واجد شرایط بودن" class="mt-5">
+        <div class="mb-3 rounded-2xl border border-sky-200 bg-sky-50 px-4 py-2.5 text-xs font-bold leading-6 text-sky-700 dark:border-sky-500/20 dark:bg-sky-500/5 dark:text-sky-300">
+            کاربر فقط وقتی می‌تواند کد قرعه‌کشی بگیرد که همهٔ شرط‌های فعال را داشته باشد. مقدار ۰ = بدون شرط.
+        </div>
+        @php($rules = old('eligibility_rules', $drawCampaign?->eligibility_rules ?? []))
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <x-admin.field label="حداقل دعوت ثبت‌نام‌شده" hint="تعداد دوستانی که با لینک شما ثبت‌نام کرده‌اند">
+                <x-admin.form.input name="eligibility_rules[min_referrals]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_referrals', $rules['min_referrals'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل خرید دعوت‌شدگان" hint="خرید انجام‌شده توسط دعوت‌شدگان شما">
+                <x-admin.form.input name="eligibility_rules[min_referral_orders]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_referral_orders', $rules['min_referral_orders'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل خرید شخصی" hint="تعداد خرید خود کاربر">
+                <x-admin.form.input name="eligibility_rules[min_own_orders]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_own_orders', $rules['min_own_orders'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل XP باشگاه" hint="مثلاً 2000 = سطح بازیکن">
+                <x-admin.form.input name="eligibility_rules[min_xp]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_xp', $rules['min_xp'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل دیدگاه تأییدشده">
+                <x-admin.form.input name="eligibility_rules[min_comments]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_comments', $rules['min_comments'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل رسانه تأییدشده" hint="تصویر/ویدیو در گالری کاربران">
+                <x-admin.form.input name="eligibility_rules[min_approved_media]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_approved_media', $rules['min_approved_media'] ?? 0)"/>
+            </x-admin.field>
+            <x-admin.field label="حداقل عمر حساب (روز)">
+                <x-admin.form.input name="eligibility_rules[min_account_days]" type="number" min="0" dir="ltr"
+                                    :value="old('eligibility_rules.min_account_days', $rules['min_account_days'] ?? 0)"/>
+            </x-admin.field>
+                <x-admin.field label="موبایل تأییدشده الزامی" class="switch-field">
+                    <x-admin.form.switch name="eligibility_rules[require_verified_mobile]"
+                                          :checked="old('eligibility_rules.require_verified_mobile', $rules['require_verified_mobile'] ?? false)"/>
+                </x-admin.field>
+                <x-admin.field label="فقط اعضای VIP 👑" class="switch-field" hint="قرعه‌کشی مخصوص اعضای VIP">
+                    <x-admin.form.switch name="eligibility_rules[require_vip]"
+                                          :checked="old('eligibility_rules.require_vip', $rules['require_vip'] ?? false)"/>
+                </x-admin.field>
+            </div>
+
+            <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50/60 p-4 dark:border-amber-500/25 dark:bg-amber-500/5">
+                <x-admin.form.switch name="vip_monthly_ticket"
+                                     label="هدیه ماهانه VIP — ۱ بلیط رایگان"
+                                     :checked="old('vip_monthly_ticket', $drawCampaign?->vip_monthly_ticket ?? false)"/>
+                <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
+                    هر عضو VIP فعال در هر ماه یک بلیط رایگان در این قرعه‌کشی هدیه می‌گیرد. شرط‌های واجد شرایط بودن همچنان رعایت می‌شود.
+                </p>
+            </div>
+    </x-admin.metabox>
 </x-admin.page>

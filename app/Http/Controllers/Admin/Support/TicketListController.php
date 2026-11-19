@@ -24,9 +24,9 @@ class TicketListController extends Controller
         $tickets = $ticketListing
             ->handle(
                 Ticket::query()->with([
-                    'user',
+                    'user' => fn ($query) => $query->withActiveVipFlag(),
                     'department',
-                    'product',
+                    'product.saleItems:id,product_id,base_price',
                     'latestMessage.user',
                 ])->withCount([
                     'messages as visible_messages_count',
@@ -59,6 +59,7 @@ class TicketListController extends Controller
             'open' => (clone $baseQuery)->where('status', TicketStatusEnum::OPEN)->count(),
             'answered' => (clone $baseQuery)->where('status', TicketStatusEnum::ANSWERED)->count(),
             'closed' => (clone $baseQuery)->where('status', TicketStatusEnum::CLOSED)->count(),
+            'under_review' => (clone $baseQuery)->underReview()->count(),
         ];
 
         $selectedProduct = Product::query()

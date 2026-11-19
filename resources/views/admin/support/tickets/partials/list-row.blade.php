@@ -6,12 +6,23 @@
         ? $ticket->status
         : TicketStatusEnum::tryFrom((string) $ticket->status);
 
-    $rowClass = match ($status) {
-        TicketStatusEnum::OPEN => '!bg-amber-50 !border-b-amber-200/70',
-        TicketStatusEnum::ANSWERED => '!bg-emerald-50 !border-b-emerald-200/70',
-        TicketStatusEnum::CLOSED => '!bg-slate-50 !border-b-slate-200',
-        default => '',
-    };
+    $isUnderReview = $ticket->isUnderReview();
+    $isVip = $ticket->user && $ticket->user->isVipMember();
+    $isFreeProduct = $ticket->isFreeProductTicket();
+
+    // اولویت رنگ ردیف: بررسی > VIP > وضعیت عادی
+    if ($isUnderReview) {
+        $rowClass = '!bg-sky-50 !border-b-sky-200/70';
+    } elseif ($isVip) {
+        $rowClass = '!bg-amber-50/70 !border-b-amber-300/60';
+    } else {
+        $rowClass = match ($status) {
+            TicketStatusEnum::OPEN => '!bg-amber-50 !border-b-amber-200/70',
+            TicketStatusEnum::ANSWERED => '!bg-emerald-50 !border-b-emerald-200/70',
+            TicketStatusEnum::CLOSED => '!bg-slate-50 !border-b-slate-200',
+            default => '',
+        };
+    }
 
     $statusLabel = $status?->label() ?? 'نامشخص';
 
@@ -75,6 +86,24 @@
                     {{ $statusLabel }}
                 </span>
 
+                @if($isUnderReview)
+                    <span class="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-100 px-2.5 py-1 text-[11px] font-extrabold text-sky-800">
+                        🔍 در حال بررسی
+                    </span>
+                @endif
+
+                @if($isVip)
+                    <span class="inline-flex items-center gap-1 rounded-xl border border-amber-300 bg-gradient-to-l from-amber-100 to-amber-50 px-2.5 py-1 text-[11px] font-extrabold text-amber-800">
+                        👑 پشتیبانی ویژه VIP
+                    </span>
+                @endif
+
+                @if($isFreeProduct)
+                    <span class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-400" title="تیکتِ محصول رایگان — اولویت آخر">
+                        محصول رایگان
+                    </span>
+                @endif
+
                 <span
                     class="inline-flex rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-500">
                     {{ number_format((int) ($ticket->visible_messages_count ?? 0)) }} پیام
@@ -129,6 +158,19 @@
                         </x-admin.list.action>
                     </form>
                 @endif
+
+                <span class="text-slate-300">|</span>
+
+                @can('ticket.change-status')
+                    <form method="POST" action="{{ route('admin.tickets.under-review', $ticket) }}" class="inline">
+                        @csrf
+                        <input type="hidden" name="mark" value="{{ $isUnderReview ? '0' : '1' }}">
+
+                        <x-admin.list.action tag="button" type="submit">
+                            {{ $isUnderReview ? 'برداشتن بررسی' : 'علامت‌گذاری بررسی' }}
+                        </x-admin.list.action>
+                    </form>
+                @endcan
 
                 <span class="text-slate-300">|</span>
 

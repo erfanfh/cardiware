@@ -6,6 +6,7 @@ use App\Application\Raffle\Actions\Ticket\IssueDrawTicketsAction;
 use App\Application\Raffle\Actions\Ticket\InvalidateTicketGrantAction;
 use App\Application\Raffle\DTOs\InvalidateTicketGrantDTO;
 use App\Application\Raffle\DTOs\IssueDrawTicketsDTO;
+use App\Application\Raffle\Exceptions\DrawParticipantIneligibleException;
 use App\Domain\Commerce\Events\OrderPaidEvent;
 use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
@@ -49,6 +50,8 @@ class IssuePurchaseRaffleTicketsListener
                 source: $order,
                 metadata: ['source' => 'purchase', 'order_number' => $order->order_number],
             ));
+        } catch (DrawParticipantIneligibleException) {
+            return;
         } catch (Throwable $exception) {
             // سقف کد یا بسته‌شدن قرعه‌کشی نباید پرداخت را تحت تأثیر قرار دهد.
             report($exception);

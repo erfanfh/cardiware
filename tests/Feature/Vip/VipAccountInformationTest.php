@@ -11,6 +11,8 @@ use App\Domain\Vip\Models\VipSubscription;
 use App\Http\Middleware\ForceTrailingSlash;
 use App\Livewire\Front\Account\AccountInformationSection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -56,5 +58,33 @@ class VipAccountInformationTest extends TestCase
         Livewire::actingAs($user)->test(AccountInformationSection::class)
             ->assertSee('کاربر عادی')
             ->assertSee('مشاهده پلن‌های VIP');
+    }
+
+    public function test_only_active_vip_members_can_save_an_avatar_up_to_one_megabyte(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['preset_avatar' => 1]);
+        Livewire::actingAs($user)->test(AccountInformationSection::class)
+            ->call('saveCustomAvatar')->assertForbidden();
+
+        $user->vipSubscriptions()->create([
+            'source' => 'gift',
+            'duration_days' => 30,
+            'starts_at' => now()->subDay(),
+            'expires_at' => now()->addDays(29),
+        ]);
+
+        Livewire::actingAs($user)->test(AccountInformationSection::class)
+            ->set('customAvatar', UploadedFile::fake()->image('avatar.png')->size(1025))
+            ->call('saveCustomAvatar')->assertHasErrors(['customAvatar' => 'max']);
+
+        Livewire::actingAs($user)->test(AccountInformationSection::class)
+            ->set('customAvatar', UploadedFile::fake()->image('avatar.png', 160, 160))
+            ->call('saveCustomAvatar')->assertHasNoErrors()->assertRedirect(route('account.information'));
+
+        $user->refresh();
+        $this->assertNull($user->preset_avatar);
+        $this->assertNotNull($user->avatar_id);
+        Storage::disk('public')->assertExists($user->avatar->primaryVariant->path);
     }
 }

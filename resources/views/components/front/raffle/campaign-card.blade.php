@@ -84,6 +84,19 @@
             </div>
         </div>
 
+        @if($campaign->eligibility_rules || $campaign->vip_monthly_ticket)
+            <a href="{{ route('raffles.show', $campaign->slug) }}#raffle-eligibility" class="mt-4 text-xs font-bold text-brand-700 hover:underline dark:text-brand-300">
+                @if($campaign->eligibility_rules['require_vip'] ?? false)
+                    فقط اعضای VIP
+                @elseif($campaign->eligibility_rules)
+                    مشاهده شرایط شرکت
+                @endif
+                @if($campaign->vip_monthly_ticket)
+                    {{ $campaign->eligibility_rules ? ' · ' : '' }}هدیه ماهانه VIP
+                @endif
+            </a>
+        @endif
+
         @if($capacityPercent !== null)
             <div class="mt-4">
                 <div class="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-400">

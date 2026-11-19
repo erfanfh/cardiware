@@ -42,13 +42,18 @@ class CreateTicketAction
                 throw new DomainException('دپارتمان انتخاب‌شده معتبر نیست.');
             }
 
-            $product = null;
+            // اعضای VIP فعال می‌توانند بدون انتخاب محصول تیکت ثبت کنند
+            $vipSkipsProduct = $user->hasActiveVipSubscription();
 
-            if ($department->requiresProduct()) {
-                if (!$productId) {
-                    throw new DomainException('برای این دپارتمان انتخاب محصول الزامی است.');
-                }
+            if (!$vipSkipsProduct && $department->requiresProduct() && !$productId) {
+                throw new DomainException('برای این دپارتمان انتخاب محصول الزامی است.');
+            }
 
+            // محصول ارسالی (در صورت وجود) باید فعال باشد؛ دپارتمان بدون الزامِ
+            // محصول، مقدار آن را نادیده می‌گیرد.
+            $ticketProductId = null;
+
+            if ($productId && ($department->requiresProduct() || $vipSkipsProduct)) {
                 $product = Product::query()
                     ->where('status', 'active')
                     ->find($productId);
@@ -56,6 +61,8 @@ class CreateTicketAction
                 if (!$product) {
                     throw new DomainException('محصول انتخاب‌شده معتبر نیست.');
                 }
+
+                $ticketProductId = $product->id;
             }
 
             $this->ensureCanCreateTicketAction->execute($user);
@@ -63,7 +70,7 @@ class CreateTicketAction
             $ticket = Ticket::query()->create([
                 'user_id' => $user->id,
                 'department_id' => $department->id,
-                'product_id' => $department->requiresProduct() ? $product?->id : null,
+                'product_id' => $ticketProductId,
                 'title' => trim($title),
                 'status' => TicketStatusEnum::OPEN,
                 'last_message_at' => null,

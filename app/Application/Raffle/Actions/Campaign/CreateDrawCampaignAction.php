@@ -2,6 +2,7 @@
 
 namespace App\Application\Raffle\Actions\Campaign;
 
+use App\Application\Raffle\Actions\CheckRaffleEligibilityAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Identity\Models\User;
@@ -39,6 +40,8 @@ class CreateDrawCampaignAction
                 'ticket_limit_per_user' => $data['ticket_limit_per_user'] ?? null,
                 'points_per_ticket' => $data['points_per_ticket'] ?? 100,
                 'ticket_price' => $data['ticket_price'] ?? null,
+                'eligibility_rules' => CheckRaffleEligibilityAction::activeRules($data['eligibility_rules'] ?? []),
+                'vip_monthly_ticket' => (bool) ($data['vip_monthly_ticket'] ?? false),
                 'allow_multiple_wins_per_user' => (bool) ($data['allow_multiple_wins_per_user'] ?? false),
                 'reserve_winners_per_prize' => (int) ($data['reserve_winners_per_prize'] ?? 3),
                 'winner_confirmation_window_hours' => $data['winner_confirmation_window_hours'] ?? 72,

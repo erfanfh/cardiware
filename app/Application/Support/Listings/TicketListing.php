@@ -17,6 +17,7 @@ class TicketListing extends BaseListing
             'title',
             'message',
             'status',
+            'under_review',
             'department_id',
             'product_id',
             'created_at_from',
@@ -24,6 +25,16 @@ class TicketListing extends BaseListing
             'last_message_at_from',
             'last_message_at_to',
         ];
+    }
+
+    /**
+     * ترتیب پیش‌فرض لیست پشتیبانی: اولویت VIP بالاتر، تیکت‌های محصول رایگان آخر.
+     */
+    protected function applySorting(): void
+    {
+        $this->query->orderBySupportPriority();
+        parent::applySorting();
+        $this->query->latestActivity();
     }
 
     protected function allowedSorts(): array
@@ -76,6 +87,12 @@ class TicketListing extends BaseListing
     protected function filterStatus(mixed $value): void
     {
         $this->query->where('status', $value);
+    }
+
+    protected function filterUnderReview(mixed $value): void
+    {
+        // ۱ = فقط تیکت‌های «در حال بررسی»، ۰ = بقیه
+        $this->query->where('is_under_review', (int) $value === 1);
     }
 
     protected function filterDepartmentId(mixed $value): void

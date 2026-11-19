@@ -9,7 +9,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
                 <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-white">تغییر تصویر پروفایل</h2>
-                <p class="mt-1 text-xs leading-6 text-slate-600 dark:text-slate-300">آواتار دلخواهت را از مجموعهٔ زیر انتخاب و ذخیره کن.</p>
+                <p class="mt-1 text-xs leading-6 text-slate-600 dark:text-slate-300">آواتار دلخواهت را از مجموعهٔ زیر انتخاب کن؛ اعضای VIP می‌توانند عکس دلخواه خودشان را هم آپلود کنند.</p>
             </div>
             <img src="{{ auth()->user()->profileAvatarUrl() ?: asset('img/user-avatar.png') }}" alt="تصویر فعلی پروفایل" width="64" height="64" class="size-16 rounded-2xl border-2 border-white object-cover shadow-sm ring-2 ring-brand-200 dark:border-slate-800 dark:ring-brand-500/30">
         </div>
@@ -41,6 +41,80 @@
                 <span wire:loading wire:target="saveAvatar">در حال ذخیره...</span>
             </button>
         </form>
+
+        {{-- ═══ آپلود عکس دلخواه — ویژه اعضای VIP ═══ --}}
+        <div class="mt-5 border-t border-brand-100 pt-5 dark:border-brand-500/20">
+            @if($this->vipActive)
+                @php
+                    $previewUrl = null;
+                    if ($customAvatar) {
+                        try { $previewUrl = $customAvatar->temporaryUrl(); } catch (Throwable) {}
+                    }
+                @endphp
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="grid size-7 place-items-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 [&_svg]:size-4">@include('icons.crown-03')</span>
+                        <h3 class="text-sm font-black text-slate-900 dark:text-white">عکس دلخواه <span class="rounded-lg bg-amber-100 px-1.5 py-0.5 text-[10px] font-black text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">VIP</span></h3>
+                    </div>
+                    @if($this->hasCustomAvatar)
+                        <span class="inline-flex items-center gap-1 rounded-xl border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-extrabold text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/10 dark:text-emerald-300">
+                            عکس اختصاصی فعال است
+                        </span>
+                    @endif
+                </div>
+
+                @if($customAvatarErrorMessage)
+                    <div role="alert" class="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold leading-6 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $customAvatarErrorMessage }}</div>
+                @endif
+                @error('customAvatar')
+                    <div role="alert" class="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-bold leading-6 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">{{ $message }}</div>
+                @enderror
+
+                <div class="mt-4 flex flex-wrap items-center gap-4">
+                    <div class="relative shrink-0">
+                        <img src="{{ $previewUrl ?: (auth()->user()->profileAvatarUrl() ?: asset('img/user-avatar.png')) }}"
+                             alt="پیش‌نمایش عکس پروفایل" width="80" height="80"
+                             class="size-20 rounded-2xl border-2 border-amber-200 bg-white object-cover shadow-sm dark:border-amber-500/30 dark:bg-slate-900">
+                        <span class="pointer-events-none absolute -bottom-1.5 -right-1.5 grid size-6 place-items-center rounded-full bg-amber-400 text-[11px] font-black text-slate-950 shadow-sm" aria-hidden="true">★</span>
+                    </div>
+
+                    <div class="min-w-0 flex-1">
+                        <label class="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50/60 px-4 text-xs font-extrabold text-amber-800 transition hover:border-amber-400 hover:bg-amber-50 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/15">
+                            <span wire:loading.remove wire:target="customAvatar">انتخاب تصویر (JPG / PNG / WebP تا ۱ مگابایت)</span>
+                            <span wire:loading wire:target="customAvatar" class="animate-pulse">در حال دریافت فایل...</span>
+                            <input type="file" wire:model="customAvatar" class="sr-only"
+                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                        </label>
+
+                        @if($customAvatar)
+                            <button type="button" wire:click="saveCustomAvatar" wire:loading.attr="disabled" wire:target="saveCustomAvatar"
+                                    class="mt-3 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl bg-amber-500 px-5 text-sm font-extrabold text-slate-950 shadow-soft transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
+                                <span wire:loading.remove wire:target="saveCustomAvatar">ذخیره عکس دلخواه</span>
+                                <span wire:loading wire:target="saveCustomAvatar" class="animate-pulse">در حال ذخیره...</span>
+                            </button>
+                        @else
+                            <p class="mt-2 text-[11px] leading-5 font-bold text-slate-500 dark:text-slate-400">
+                                با ذخیره عکس دلخواه، آواتار پریست قبلی جای خود را به این تصویر می‌دهد.
+                            </p>
+                        @endif
+                    </div>
+                </div>
+            @else
+                <div class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-gradient-to-l from-amber-50 to-transparent p-4 dark:border-amber-500/25 dark:from-amber-500/10">
+                    <div class="flex min-w-0 items-start gap-3">
+                        <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 [&_svg]:size-5">@include('icons.crown-03')</span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-extrabold text-slate-900 dark:text-white">آپلود عکس دلخواه پروفایل</div>
+                            <p class="mt-1 text-xs leading-6 text-slate-600 dark:text-slate-400">ویژه اعضای VIP — عکس دلخواه خودت را (تا ۱ مگابایت) به‌جای آواتارهای آماده قرار بده.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('vip.index') }}" class="inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2.5 text-xs font-extrabold text-slate-950 transition hover:bg-amber-400">
+                        فعال‌سازی VIP
+                        <span aria-hidden="true">←</span>
+                    </a>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">

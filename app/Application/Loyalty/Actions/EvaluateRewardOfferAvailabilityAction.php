@@ -3,6 +3,7 @@
 namespace App\Application\Loyalty\Actions;
 
 use App\Application\Loyalty\RewardFulfillment\DTOs\RewardOfferAvailabilityDTO;
+use App\Application\Raffle\Actions\CheckRaffleEligibilityAction;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\RewardRedemptionStatusEnum;
 use App\Domain\Loyalty\Enums\RewardTypeEnum;
@@ -14,6 +15,8 @@ use App\Domain\Raffle\Models\DrawTicket;
 
 class EvaluateRewardOfferAvailabilityAction
 {
+    public function __construct(private readonly CheckRaffleEligibilityAction $checkEligibility) {}
+
     public function execute(RewardOffer $offer, User $user): RewardOfferAvailabilityDTO
     {
         if (!$offer->isCurrentlyActive()) {
@@ -82,6 +85,13 @@ class EvaluateRewardOfferAvailabilityAction
             };
 
             return RewardOfferAvailabilityDTO::denied($reason, [
+                'campaign' => $campaign,
+                'ticket_quantity' => $quantity,
+            ]);
+        }
+
+        if (!$this->checkEligibility->execute($campaign, $user)['eligible']) {
+            return RewardOfferAvailabilityDTO::denied('شرایط شرکت در این قرعه‌کشی را ندارید.', [
                 'campaign' => $campaign,
                 'ticket_quantity' => $quantity,
             ]);

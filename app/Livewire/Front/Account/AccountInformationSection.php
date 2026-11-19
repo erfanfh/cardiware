@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Front\Account;
 
+use App\Application\Media\Actions\DeleteMediaFileFromLibraryAction;
+use App\Application\Media\Actions\UploadImageToLibraryAction;
 use App\Application\Shared\Cache\Invalidators\UserCacheInvalidator;
 use App\Domain\Identity\Models\User;
 use App\Domain\Identity\PresetAvatars;
@@ -12,11 +14,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Morilog\Jalali\Jalalian;
 use Throwable;
 
 class AccountInformationSection extends Component
 {
+    use WithFileUploads;
+
+    public $customAvatar = null;
+    public ?string $customAvatarErrorMessage = null;
+
     public string $first_name = '';
     public string $last_name = '';
     public string $display_name = '';
@@ -133,6 +141,60 @@ class AccountInformationSection extends Component
             report($exception);
             $this->avatarErrorMessage = 'ذخیره آواتار با خطا مواجه شد. لطفاً دوباره تلاش کنید.';
         }
+    }
+
+    public function saveCustomAvatar(
+        UploadImageToLibraryAction $uploadImage,
+        DeleteMediaFileFromLibraryAction $deleteImage,
+    ): void {
+        $this->customAvatarErrorMessage = null;
+
+        /** @var User $user */
+        $user = auth()->user();
+        abort_unless($user?->hasActiveVipSubscription(), 403);
+
+        $this->validate([
+            'customAvatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'extensions:jpg,jpeg,png,webp', 'max:1024'],
+        ], [
+            'customAvatar.required' => 'لطفاً یک تصویر انتخاب کنید.',
+            'customAvatar.image' => 'فایل انتخاب‌شده باید تصویر باشد.',
+            'customAvatar.mimes' => 'فرمت تصویر باید JPG، PNG یا WebP باشد.',
+            'customAvatar.extensions' => 'فرمت تصویر باید JPG، PNG یا WebP باشد.',
+            'customAvatar.max' => 'حجم تصویر نباید بیشتر از ۱ مگابایت باشد.',
+        ]);
+
+        $media = null;
+        try {
+            $media = $uploadImage->execute($this->customAvatar, $user->getKey());
+            $user->forceFill(['avatar_id' => $media->getKey(), 'preset_avatar' => null])->save();
+        } catch (Throwable $exception) {
+            if ($media && !User::query()->where('avatar_id', $media->getKey())->exists()) {
+                $deleteImage->execute($media);
+            }
+
+            report($exception);
+            $this->customAvatarErrorMessage = 'ذخیره عکس پروفایل با خطا مواجه شد. لطفاً دوباره تلاش کنید.';
+
+            return;
+        }
+
+        app(UserCacheInvalidator::class)->flushAccountForUser($user);
+        session()->flash('account_information_success', 'عکس پروفایل اختصاصی با موفقیت ذخیره شد.');
+        $this->redirectRoute('account.information');
+    }
+
+    #[Computed]
+    public function vipActive(): bool
+    {
+        return (bool) auth()->user()?->hasActiveVipSubscription();
+    }
+
+    #[Computed]
+    public function hasCustomAvatar(): bool
+    {
+        $user = auth()->user();
+
+        return $user?->avatar !== null && $user->preset_avatar === null;
     }
 
     /**

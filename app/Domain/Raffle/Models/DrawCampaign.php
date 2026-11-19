@@ -40,6 +40,8 @@ class DrawCampaign extends Model
         'metadata',
         'points_per_ticket',
         'ticket_price',
+        'eligibility_rules',
+        'vip_monthly_ticket',
     ];
 
     protected $casts = [
@@ -51,6 +53,8 @@ class DrawCampaign extends Model
         'ticket_limit_per_user' => 'integer',
         'points_per_ticket' => 'integer',
         'ticket_price' => 'integer',
+        'eligibility_rules' => 'array',
+        'vip_monthly_ticket' => 'boolean',
         'allow_multiple_wins_per_user' => 'boolean',
         'reserve_winners_per_prize' => 'integer',
         'winner_confirmation_window_hours' => 'integer',

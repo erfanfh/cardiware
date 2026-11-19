@@ -14,14 +14,14 @@
     <div x-data="adminBulkSelection()" class="space-y-4">
         <div class="rounded-2xl border border-slate-200 bg-white px-4 py-2 transition-all duration-200">
             @php
-                $baseQueryParams = request()->except(['status', 'page']);
+                $baseQueryParams = request()->except(['status', 'page', 'under_review']);
 
                 $statusTabs = [
                     [
                         'label' => 'همه',
                         'count' => $statusCounts['all'],
                         'href' => route('admin.tickets.index', $baseQueryParams),
-                        'active' => !request('status'),
+                        'active' => !request('status') && !request()->filled('under_review'),
                     ],
                     [
                         'label' => 'باز',
@@ -34,6 +34,12 @@
                         'count' => $statusCounts['answered'],
                         'href' => route('admin.tickets.index', array_merge($baseQueryParams, ['status' => 'answered'])),
                         'active' => request('status') === 'answered',
+                    ],
+                    [
+                        'label' => '🔍 در حال بررسی',
+                        'count' => $statusCounts['under_review'],
+                        'href' => route('admin.tickets.index', array_merge($baseQueryParams, ['under_review' => 1])),
+                        'active' => request('under_review') === '1',
                     ],
                     [
                         'label' => 'بسته شده',

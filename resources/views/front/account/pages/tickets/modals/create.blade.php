@@ -1,6 +1,7 @@
 @php
     $ticketDepartments = app(\App\Application\Support\Actions\GetActiveTicketDepartmentsAction::class)->execute();
     $ticketProducts = app(\App\Application\Support\Actions\GetTicketFormProductsAction::class)->execute(auth()->user());
+    $isVipMember = auth()->user()?->hasActiveVipSubscription();
 
     $departmentOptions = $ticketDepartments
         ->map(fn ($department) => [
@@ -33,6 +34,7 @@
         x-data="{
             departments: @js($departmentOptions),
             products: @js($productOptions),
+            isVip: @js((bool) $isVipMember),
 
             selectedDepartmentId: @js((string) old('department_id', '')),
             selectedProductId: @js((string) old('product_id', '')),
@@ -42,6 +44,10 @@
             },
 
             requiresProduct() {
+                return ! this.isVip && this.selectedDepartment()?.requires_product === true;
+            },
+
+            departmentRequiresProduct() {
                 return this.selectedDepartment()?.requires_product === true;
             },
 
@@ -54,7 +60,7 @@
             }
         }"
         x-effect="
-            if (! requiresProduct()) {
+            if (! isVip && ! requiresProduct()) {
                 selectedProductId = '';
             }
         "
@@ -196,11 +202,18 @@
                 </div>
             </div>
         </div>
-        <div x-show="requiresProduct()" x-collapse>
-            <label for="ticket-product-id"
-                   class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                محصول مرتبط
-            </label>
+        <div x-show="departmentRequiresProduct()" x-collapse>
+            <div class="mb-2 flex flex-wrap items-center gap-2">
+                <label for="ticket-product-id"
+                       class="block text-xs font-extrabold text-slate-700 dark:text-slate-200">
+                    محصول مرتبط
+                </label>
+
+                <span x-show="isVip"
+                      class="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-extrabold text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+                    👑 ویژه VIP: انتخاب محصول اختیاری است
+                </span>
+            </div>
 
             <select
                 id="ticket-product-id"

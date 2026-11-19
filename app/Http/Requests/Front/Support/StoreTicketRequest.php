@@ -89,14 +89,17 @@ class StoreTicketRequest extends FormRequest
                 return;
             }
 
-            if ($department->requiresProduct() && !$this->filled('product_id')) {
+            // اعضای VIP فعال می‌توانند بدون انتخاب محصول تیکت ثبت کنند
+            $vipSkipsProduct = $this->user()?->hasActiveVipSubscription();
+
+            if (!$vipSkipsProduct && $department->requiresProduct() && !$this->filled('product_id')) {
                 $validator->errors()->add(
                     'product_id',
                     'برای این دپارتمان انتخاب محصول الزامی است.'
                 );
             }
 
-            if (!$department->requiresProduct() && $this->filled('product_id')) {
+            if (!$vipSkipsProduct && !$department->requiresProduct() && $this->filled('product_id')) {
                 $this->merge([
                     'product_id' => null,
                 ]);

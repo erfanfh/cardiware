@@ -80,6 +80,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ->onOneServer();
 
         // پاک‌سازی ماهانهٔ اعلان‌های قدیمی کاربران (فضای دیتابیس)
+        $schedule->command('raffle:grant-vip-monthly-tickets')
+            ->dailyAt('03:35')
+            ->withoutOverlapping(30)
+            ->onOneServer();
+
         $schedule->command('notifications:cleanup-old')
             ->monthlyOn(1, '03:00')
             ->withoutOverlapping(60)

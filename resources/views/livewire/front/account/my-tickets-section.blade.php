@@ -3,7 +3,9 @@
         @forelse($this->tickets as $ticket)
             <article
                 wire:key="ticket-{{ $ticket->id }}"
-                class="group relative mb-3 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-100/40 sm:mb-4 sm:rounded-3xl dark:border-slate-700 dark:bg-slate-800/70 dark:shadow-black/20 dark:hover:border-brand-500/30 dark:hover:shadow-black/30"
+                class="group relative mb-3 overflow-hidden rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl sm:mb-4 sm:rounded-3xl {{ $this->isVipMember
+                    ? 'border-amber-300 bg-gradient-to-l from-amber-50/80 to-white hover:border-amber-400 hover:shadow-amber-100/50 dark:border-amber-500/30 dark:from-amber-500/10 dark:to-slate-800/70 dark:shadow-black/20 dark:hover:border-amber-500/50'
+                    : 'border-slate-200 bg-white hover:border-brand-200 hover:shadow-brand-100/40 dark:border-slate-700 dark:bg-slate-800/70 dark:shadow-black/20 dark:hover:border-brand-500/30 dark:hover:shadow-black/30' }}"
             >
                 <a href="{{ $this->ticketUrl($ticket) }}" class="block p-3 sm:p-4">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -23,6 +25,20 @@
                                     <span
                                         class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
                                         {{ $ticket->department->title }}
+                                    </span>
+                                @endif
+
+                                @if($this->isVipMember)
+                                    <span
+                                        class="inline-flex items-center gap-1 rounded-xl border border-amber-300 bg-gradient-to-l from-amber-100 to-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-800 sm:text-[11px] dark:border-amber-500/40 dark:from-amber-500/20 dark:to-amber-500/5 dark:text-amber-300">
+                                        👑 پشتیبانی ویژه VIP
+                                    </span>
+                                @endif
+
+                                @if($ticket->isUnderReview())
+                                    <span
+                                        class="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-100 px-2 py-1 text-[10px] font-extrabold text-sky-800 sm:text-[11px] dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">
+                                        🔍 در حال بررسی
                                     </span>
                                 @endif
 

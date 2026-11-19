@@ -40,6 +40,12 @@ class MyTicketsSection extends Component
             : TicketStatusEnum::tryFrom((string)$ticket->status)?->label() ?? 'نامشخص';
     }
 
+    #[Computed]
+    public function isVipMember(): bool
+    {
+        return (bool) auth()->user()?->hasActiveVipSubscription();
+    }
+
     public function statusClass(Ticket $ticket): string
     {
         $status = $ticket->status instanceof TicketStatusEnum

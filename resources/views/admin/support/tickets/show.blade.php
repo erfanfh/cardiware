@@ -12,6 +12,9 @@
             : TicketStatusEnum::tryFrom((string) $ticket->status);
 
         $isClosed = $status === TicketStatusEnum::CLOSED;
+        $isUnderReview = $ticket->isUnderReview();
+        $isVip = $ticket->user && $ticket->user->isVipMember();
+        $isFreeProduct = $ticket->isFreeProductTicket();
 
         $statusBadgeClass = match ($status) {
             TicketStatusEnum::OPEN => 'border-amber-200 bg-amber-50 text-amber-700',
@@ -56,6 +59,24 @@
                                     {{ $ticket->department->title }}
                                 </span>
                             @endif
+
+                            @if($isUnderReview)
+                                <span class="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-100 px-2.5 py-1 text-xs font-black text-sky-800">
+                                    🔍 در حال بررسی
+                                </span>
+                            @endif
+
+                            @if($isVip)
+                                <span class="inline-flex items-center gap-1 rounded-xl border border-amber-300 bg-gradient-to-l from-amber-100 to-amber-50 px-2.5 py-1 text-xs font-black text-amber-800">
+                                    👑 پشتیبانی ویژه VIP
+                                </span>
+                            @endif
+
+                            @if($isFreeProduct)
+                                <span class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-black text-slate-400" title="تیکتِ محصول رایگان — اولویت آخر">
+                                    محصول رایگان
+                                </span>
+                            @endif
                         </div>
 
                         <h1 class="line-clamp-2 text-lg font-black text-slate-900">
@@ -89,6 +110,17 @@
                                 </x-admin.form.button>
                             </form>
                         @endif
+
+                        @can('ticket.change-status')
+                            <form method="POST" action="{{ route('admin.tickets.under-review', $ticket) }}">
+                                @csrf
+                                <input type="hidden" name="mark" value="{{ $isUnderReview ? '0' : '1' }}">
+
+                                <x-admin.form.button type="submit" variant="{{ $isUnderReview ? 'solid' : 'secondary' }}">
+                                    {{ $isUnderReview ? 'برداشتن بررسی' : '🔍 در حال بررسی' }}
+                                </x-admin.form.button>
+                            </form>
+                        @endcan
                     </div>
                 </div>
             </div>

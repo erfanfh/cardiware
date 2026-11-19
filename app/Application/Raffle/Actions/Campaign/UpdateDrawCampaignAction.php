@@ -2,6 +2,7 @@
 
 namespace App\Application\Raffle\Actions\Campaign;
 
+use App\Application\Raffle\Actions\CheckRaffleEligibilityAction;
 use App\Application\Slug\Actions\AssignSlugAction;
 use App\Application\Slug\DTOs\AssignSlugDTO;
 use App\Domain\Identity\Models\User;
@@ -29,7 +30,7 @@ class UpdateDrawCampaignAction
                 'starts_at', 'closes_at', 'draw_at', 'ticket_limit', 'ticket_limit_per_user',
                 'allow_multiple_wins_per_user', 'reserve_winners_per_prize',
                 'winner_confirmation_window_hours', 'show_winners_publicly',
-                'points_per_ticket', 'ticket_price',
+                'points_per_ticket', 'ticket_price', 'eligibility_rules', 'vip_monthly_ticket',
             ]);
 
             $structureEditable = in_array($campaign->status, [
@@ -44,7 +45,11 @@ class UpdateDrawCampaignAction
                 'rules' => $data['rules'] ?? null,
                 'cover_media_file_id' => $data['cover_media_file_id'] ?? null,
                 'show_winners_publicly' => (bool) ($data['show_winners_publicly'] ?? false),
-            ] + array_intersect_key($data, array_flip(['points_per_ticket', 'ticket_price']));
+            ] + array_intersect_key($data, array_flip(['points_per_ticket', 'ticket_price', 'vip_monthly_ticket']));
+
+            if (array_key_exists('eligibility_rules', $data)) {
+                $common['eligibility_rules'] = CheckRaffleEligibilityAction::activeRules($data['eligibility_rules'] ?? []);
+            }
 
             if ($structureEditable) {
                 $common += [

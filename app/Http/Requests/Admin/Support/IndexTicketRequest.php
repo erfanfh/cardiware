@@ -29,6 +29,8 @@ class IndexTicketRequest extends FormRequest
                 Rule::in(array_column(TicketStatusEnum::cases(), 'value')),
             ],
 
+            'under_review' => ['nullable', 'integer', Rule::in([0, 1])],
+
             'department_id' => ['nullable', 'integer', 'exists:ticket_departments,id'],
             'product_id' => ['nullable', 'integer', 'exists:products,id'],
 

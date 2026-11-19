@@ -212,6 +212,12 @@
                     </x-front.cart>
                 @endauth
 
+                @if($campaign->eligibility_rules || $campaign->vip_monthly_ticket)
+                    <div id="raffle-eligibility" class="scroll-mt-24 space-y-4">
+                        @include('front.raffles.partials.eligibility-status', ['campaign' => $campaign])
+                    </div>
+                @endif
+
                 @include('front.raffles.partials.loyalty-rewards')
 
                 <section id="prizes" class="scroll-mt-24">
