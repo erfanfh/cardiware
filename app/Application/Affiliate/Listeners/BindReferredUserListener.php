@@ -2,10 +2,12 @@
 
 namespace App\Application\Affiliate\Listeners;
 
+use App\Application\Loyalty\Achievements\Actions\EvaluateUserAchievementsAction;
+use App\Application\Loyalty\Missions\Actions\RecordMissionProgressAction;
 use App\Domain\Affiliate\Models\Affiliate;
-use App\Domain\Affiliate\Models\AffiliateReferral;
 use App\Domain\Identity\Events\UserRegisteredEvent;
 use App\Domain\Identity\Models\User;
+use App\Domain\Loyalty\Enums\MissionMetricEnum;
 use App\Infrastructure\Services\Setting\Groups\AffiliateSettings;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -20,6 +22,8 @@ class BindReferredUserListener
 
     public function __construct(
         private readonly AffiliateSettings $settings,
+        private readonly RecordMissionProgressAction $missions,
+        private readonly EvaluateUserAchievementsAction $achievements,
     ) {
     }
 
@@ -55,11 +59,16 @@ class BindReferredUserListener
                 return;
             }
 
-            DB::table('affiliate_referrals')->insertOrIgnore([
+            $inserted = DB::table('affiliate_referrals')->insertOrIgnore([
                 'affiliate_id' => $affiliate->getKey(),
                 'referred_user_id' => $user->getKey(),
                 'created_at' => now(),
             ]);
+
+            if ($inserted && $owner !== null) {
+                $this->missions->execute($owner, MissionMetricEnum::REFERRAL_SIGNUPS);
+                $this->achievements->execute($owner);
+            }
         } catch (Throwable $exception) {
             report($exception);
         }

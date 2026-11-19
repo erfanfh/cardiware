@@ -108,6 +108,10 @@
 
         <section class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
             <div class="min-w-0 space-y-6 lg:col-span-8 xl:col-span-9">
+                <div class="rounded-2xl border border-brand-500/25 bg-brand-500/5 px-4 py-3 text-xs font-bold leading-6 text-brand-700 dark:text-brand-300">
+                    از بازدید، ثبت دیدگاه، ارسال رسانه و خرید امتیاز کسب کنید.
+                    <a href="{{ route('account.loyalty') }}#ways-to-earn" class="font-black underline">راهنمای کسب امتیاز</a>
+                </div>
                 @auth
                     <x-front.cart class="relative overflow-hidden !p-0">
                         <div class="absolute inset-0 bg-gradient-to-l from-brand-50/80 via-white to-white dark:from-brand-950/30 dark:via-slate-900 dark:to-slate-900"></div>

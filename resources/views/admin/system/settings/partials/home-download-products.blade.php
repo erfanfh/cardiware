@@ -1,6 +1,6 @@
 <div class="space-y-6">
     <x-admin.metabox title="محصولات دانلودی" :collapsible="false">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 space-y-4">
             <x-admin.field label="عنوان باکس"
             >
                 <x-admin.form.input
@@ -15,6 +15,15 @@
                     dir="ltr"
                     name="download_products_all_url"
                     :value="old('download_products_all_url', get_setting('home', 'download_products_all_url'))"
+                    placeholder="https://moddingway.ir/products"
+                />
+            </x-admin.field>
+
+            <x-admin.field label="حالت اسلایدر" hint="وقتی فعال باشد، محصولات به‌صورت اسلایدر (ردیف متحرک با دکمه‌های قبلی/بعدی و صفحه‌بند) نمایش داده می‌شوند؛ غیرفعال = شبکهٔ گرید."
+            >
+                <x-admin.form.switch
+                    name="download_products_slider"
+                    :checked="old('download_products_slider', get_setting('home', 'download_products_slider'))"
                 />
             </x-admin.field>
         </div>

@@ -263,6 +263,36 @@
                     />
                 </x-admin.field>
 
+                {{-- حالت انتشار: عادی / پیش‌فروش / به‌زودی + تایمر --}}
+                <x-admin.field
+                    class="col-span-6"
+                    label="حالت انتشار"
+                    hint="عادی = فروش معمول. پیش‌فروش = قابل خرید قبل از انتشار (مثلاً PGL 7 ماه دیگه). به‌زودی = بجای قیمت «به‌زودی» نمایش داده می‌شود."
+                >
+                    <x-admin.form.select
+                        name="release_mode"
+                        :value="old('release_mode', $product?->release_mode ?? 'normal')"
+                        :options="[
+                            'normal' => 'عادی (فروش)',
+                            'presale' => 'پیش‌فروش (قابل خرید قبل از انتشار)',
+                            'coming_soon' => 'به‌زودی (بدون قیمت، فقط اطلاع‌رسانی)',
+                        ]"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-6"
+                    label="تاریخ انتشار (برای تایمر شمارش معکوس)"
+                    hint="اگر تاریخ در آینده باشد، تایمر شمارش معکوس تا روز انتشار نمایش داده می‌شود."
+                >
+                    <input
+                        type="datetime-local"
+                        name="release_at"
+                        value="{{ old('release_at', $product?->release_at?->format('Y-m-d\\TH:i')) }}"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                    />
+                </x-admin.field>
+
                 <x-admin.field
                     class="col-span-12"
                     label="نمایش تعداد فروش"

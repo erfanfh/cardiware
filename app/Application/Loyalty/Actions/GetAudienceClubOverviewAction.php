@@ -158,7 +158,7 @@ class GetAudienceClubOverviewAction
                 'bio' => $user->club_bio,
                 'theme' => \App\Application\Loyalty\Support\VipClubProfile::themeKey($user->club_theme),
             ],
-            'monthlySummary' => $this->monthlySummary($account?->getKey(), $user),
+            'monthlySummary' => $this->monthlySummary($account?->getKey()),
             'streak' => $gamification['streak'],
             'missions' => $gamification['missions'],
             'achievements' => $gamification['achievements'],
@@ -364,20 +364,16 @@ class GetAudienceClubOverviewAction
         ];
     }
 
-    private function monthlySummary(?int $accountId, User $user): array
+    private function monthlySummary(?int $accountId): array
     {
-        if (! $accountId) {
-            return [];
-        }
-
-        $gregorian = new \DateTimeImmutable('first day of this month');
+        $currentMonth = now()->startOfMonth()->toImmutable();
         $monthRanges = [];
         for ($i = 3; $i >= 0; $i--) {
-            $start = $gregorian->modify("-{$i} months");
+            $start = $currentMonth->subMonths($i);
             $monthRanges[] = [$start, $start->modify('+1 month')];
         }
 
-        $rows = PointLedgerEntry::query()
+        $rows = $accountId === null ? collect() : PointLedgerEntry::query()
             ->where('point_account_id', $accountId)
             ->where('occurred_at', '>=', $monthRanges[0][0])
             ->where('occurred_at', '<', end($monthRanges)[1])

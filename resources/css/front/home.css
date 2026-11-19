@@ -102,6 +102,75 @@
     }
 }
 
+/* ═══ موبایل: اسلاید کامل بدون انیمیشن ═══ */
+@media (max-width: 640px) {
+    /* بدون ken-burns و zoom-in — اسلاید کامل و فوری رندر می‌شود */
+    .heroSwiper .home-hero-image {
+        animation: none !important;
+        transform: none !important;
+        will-change: auto;
+    }
+
+    .heroSwiper .swiper-slide-active .home-hero-top-label,
+    .heroSwiper .swiper-slide-active .home-hero-heading,
+    .heroSwiper .swiper-slide-active .home-hero-description,
+    .heroSwiper .swiper-slide-active .home-hero-actions {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    /* ارتفاع مناسب موبایل: تصویر کامل + متن روی آن */
+    .heroSwiper .home-hero-slide {
+        min-height: auto;
+    }
+
+    .home-hero-content {
+        padding: 16px 14px 36px;
+    }
+
+    .home-hero-heading-text h3 {
+        font-size: 1.15rem;
+        line-height: 1.5;
+    }
+
+    .home-hero-description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: .8rem;
+        line-height: 1.8;
+    }
+
+    .home-hero-button {
+        min-height: 46px;
+        font-size: .8rem;
+        padding: 0 14px;
+    }
+
+    .home-hero-dots {
+        bottom: 6px;
+    }
+
+    .home-hero-dots span {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .heroSwiper .home-hero-image,
+    .heroSwiper .swiper-slide-active .home-hero-top-label,
+    .heroSwiper .swiper-slide-active .home-hero-heading,
+    .heroSwiper .swiper-slide-active .home-hero-description,
+    .heroSwiper .swiper-slide-active .home-hero-actions {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
 @media (min-width: 480px) and (max-width: 1279px) {
     .home-hero-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -459,30 +528,36 @@
 
 .mw-team-track::-webkit-scrollbar { display: none; }
 
-.mw-team-card {
+.mw-team-flip {
     flex: 0 0 200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px 14px;
-    border-radius: 20px;
-    border: 1px solid rgb(226 232 240);
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
-    transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+    height: 280px;
+    perspective: 1000px;
 }
 
-.dark .mw-team-card {
-    border-color: rgb(30 41 59);
-    background: rgb(15 23 42);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+.mw-team-flip-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform .6s cubic-bezier(.4, 0, .2, 1);
+    transform-style: preserve-3d;
 }
 
-.mw-team-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(249, 115, 22, .35);
-    box-shadow: 0 14px 30px rgba(249, 115, 22, .12);
+.mw-team-flip-inner.is-flipped,
+.mw-team-flip-back {
+    transform: rotateY(180deg);
+}
+
+.mw-team-flip-front,
+.mw-team-flip-back {
+    position: absolute;
+    inset: 0;
+    border-radius: 1.25rem;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mw-team-flip-inner { transition: none; }
 }
 
 .mw-team-nav {
@@ -563,6 +638,55 @@
     background: linear-gradient(165deg, #1c1708, #0f172a 55%);
     box-shadow: 0 2px 10px rgba(0, 0, 0, .3);
 }
+
+/* ═══ استروک انیمیشنی بنر گالری روی hover ═══
+   از همان --sb-ring-angle استفاده می‌کند (comet stroke). */
+.mw-gallery-cta {
+    position: relative;
+}
+
+.mw-gallery-cta::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .3s ease;
+    background: conic-gradient(
+        from var(--sb-ring-angle, 0deg),
+        rgba(249, 115, 22, .15) 0deg,
+        rgba(249, 115, 22, .05) 120deg,
+        rgba(251, 191, 36, .85) 265deg,
+        #fbbf24 300deg,
+        rgba(249, 115, 22, .15) 360deg
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+}
+
+.mw-gallery-cta:hover::after {
+    opacity: 1;
+    animation: mwGalleryCtaSweep 3s linear infinite;
+}
+
+@keyframes mwGalleryCtaSweep {
+    to { --sb-ring-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mw-gallery-cta:hover::after {
+        animation: none;
+        background: conic-gradient(from 270deg,
+            rgba(249, 115, 22, .45) 0deg,
+            rgba(249, 115, 22, .45) 360deg);
+    }
+}
+
+/* ═══ پایان استروک بنر گالری ═══ */
 
 .mw-gallery-cta-link:hover {
     box-shadow: 0 14px 34px rgba(245, 158, 11, .22);

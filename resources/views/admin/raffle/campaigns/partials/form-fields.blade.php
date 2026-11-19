@@ -70,6 +70,17 @@
         <x-admin.form.editor name="rules" :value="old('rules', $drawCampaign?->rules)"/>
     </x-admin.metabox>
 
+    <x-admin.metabox title="هزینه بلیط">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <x-admin.field label="امتیاز برای هر بلیط">
+                <x-admin.form.input name="points_per_ticket" type="number" min="1" dir="ltr" :value="old('points_per_ticket', $drawCampaign?->points_per_ticket ?? 100)"/>
+            </x-admin.field>
+            <x-admin.field label="قیمت نقدی هر بلیط (تومان)">
+                <x-admin.form.input name="ticket_price" type="number" min="0" dir="ltr" :value="old('ticket_price', $drawCampaign?->ticket_price)"/>
+            </x-admin.field>
+        </div>
+    </x-admin.metabox>
+
     @if($structureEditable)
         <x-admin.metabox title="زمان بندی و ظرفیت">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

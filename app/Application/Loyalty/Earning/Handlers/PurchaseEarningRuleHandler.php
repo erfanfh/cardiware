@@ -11,6 +11,7 @@ use App\Application\Loyalty\Earning\Enums\EarningRuleSkipReasonEnum;
 use App\Application\Loyalty\Earning\Exceptions\UnexpectedEarningContextException;
 use App\Application\Loyalty\Earning\Support\EarningRuleConfigReader;
 use App\Application\Loyalty\Earning\Support\EarningIdempotencyKeyFactory;
+use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use App\Domain\Loyalty\Models\EarningRule;
 
@@ -57,13 +58,10 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
             );
         }
 
-        $amountStep = $this->config->positiveInt($rule, 'amount_step');
-        $pointsPerStep = $this->config->positiveInt($rule, 'points');
-        $minimumOrderAmount = $this->config->nonNegativeInt($rule, 'minimum_order_amount');
-        $maximumPointsPerOrder = $this->config->nullablePositiveInt($rule, 'max_points_per_order');
-
         // total_amount in the current commerce model is the final product amount after discount.
         $eligibleAmount = max(0, (int)$order->total_amount);
+        [$basePoints, $amountStep, $pointsPerStep, $minimumOrderAmount, $maximumPointsPerOrder] =
+            $this->calculateBasePoints($rule, $eligibleAmount);
 
         if ($eligibleAmount < $minimumOrderAmount) {
             return EarningRuleEvaluation::skip(
@@ -76,14 +74,7 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
             );
         }
 
-        $steps = intdiv($eligibleAmount, $amountStep);
-        $points = $steps * $pointsPerStep;
-
-        if ($maximumPointsPerOrder !== null) {
-            $points = min($points, $maximumPointsPerOrder);
-        }
-
-        if ($points <= 0) {
+        if ($basePoints <= 0) {
             return EarningRuleEvaluation::skip(
                 $rule,
                 EarningRuleSkipReasonEnum::ZERO_POINTS,
@@ -97,11 +88,7 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
         // ضریب سطح کاربر روی امتیاز خرید؛ سطح از lifetime_xp تعیین می‌شود.
         $level = $this->resolveUserLevel->execute($user->pointAccount()->first());
         $multiplier = (float) $level->purchase_multiplier;
-        $basePoints = $points;
-
-        if ($multiplier > 0 && $multiplier !== 1.0) {
-            $points = (int) round($points * $multiplier);
-        }
+        $points = $this->applyMultiplier($basePoints, $multiplier);
 
         return EarningRuleEvaluation::award(
             rule: $rule,
@@ -115,7 +102,7 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
                 'order_number' => $order->order_number,
                 'eligible_amount' => $eligibleAmount,
                 'amount_step' => $amountStep,
-                'steps' => $steps,
+                'steps' => intdiv($eligibleAmount, $amountStep),
                 'points_per_step' => $pointsPerStep,
                 'max_points_per_order' => $maximumPointsPerOrder,
                 'base_points' => $basePoints,
@@ -124,5 +111,34 @@ class PurchaseEarningRuleHandler implements EarningRuleHandler
                 'level_multiplier' => $multiplier,
             ],
         );
+    }
+
+    public function estimate(EarningRule $rule, int $amount, ?User $user): int
+    {
+        [$points] = $this->calculateBasePoints($rule, $amount);
+        if ($user === null || $points === 0) {
+            return $points;
+        }
+
+        $level = $this->resolveUserLevel->execute($user->pointAccount()->first());
+
+        return $this->applyMultiplier($points, (float) $level->purchase_multiplier);
+    }
+
+    /** @return array{int, int, int, int, int|null} */
+    private function calculateBasePoints(EarningRule $rule, int $amount): array
+    {
+        $amountStep = $this->config->positiveInt($rule, 'amount_step');
+        $pointsPerStep = $this->config->positiveInt($rule, 'points');
+        $minimumAmount = $this->config->nonNegativeInt($rule, 'minimum_order_amount');
+        $maxPoints = $this->config->nullablePositiveInt($rule, 'max_points_per_order');
+        $points = $amount < $minimumAmount ? 0 : intdiv($amount, $amountStep) * $pointsPerStep;
+
+        return [$maxPoints === null ? $points : min($points, $maxPoints), $amountStep, $pointsPerStep, $minimumAmount, $maxPoints];
+    }
+
+    private function applyMultiplier(int $points, float $multiplier): int
+    {
+        return $multiplier > 0 ? (int) round($points * $multiplier) : $points;
     }
 }

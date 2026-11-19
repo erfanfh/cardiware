@@ -25,6 +25,8 @@ class SaveDrawCampaignRequest extends FormRequest
             'draw_at' => ['nullable','date'],
             'ticket_limit' => ['nullable','integer','min:1'],
             'ticket_limit_per_user' => ['nullable','integer','min:1'],
+            'points_per_ticket' => ['sometimes', 'required', 'integer', 'min:1', 'max:4294967295'],
+            'ticket_price' => ['nullable', 'integer', 'min:0'],
             'allow_multiple_wins_per_user' => ['required','boolean'],
             'reserve_winners_per_prize' => ['required','integer','min:0','max:100'],
             'winner_confirmation_window_hours' => ['nullable','integer','min:1','max:8760'],

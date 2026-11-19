@@ -11,7 +11,7 @@
     $footerStatsBg = get_setting('footer', 'stats_bg_image')->path;
     $footerStatsAnimated = (bool) get_setting('footer', 'stats_animation_enabled', 1);
     $footerStatsBadge = get_setting('footer', 'stats_badge') ?: 'مودینگ‌وی در یک نگاه';
-    $footerStatsTitle = get_setting('footer', 'stats_title') ?: 'یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمرهای فوتبال';
+    $footerStatsTitle = get_setting('footer', 'stats_title') ?: 'یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمر های ایران';
 
     // آیکون هر منبع ثابت است (کلاس آیکون از پنل قابل تغییر نیست)؛ ادمین فقط
     // برچسب، منبع و مقدار دستی هر ردیف را تعیین می‌کند.

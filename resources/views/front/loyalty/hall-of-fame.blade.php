@@ -22,9 +22,9 @@
         $progressRow = static fn (int $value, int $target): int => $target > 0 ? (int) min(100, round($value * 100 / $target)) : 100;
         $prizeLine = static function (array $row): string {
             $parts = [];
-            if ($row['points'] > 0) $parts[] = number_format($row['points']) . ' امتیاز';
+            if ($row['points'] > 0) $parts[] = persian_number($row['points']) . ' امتیاز';
             if ($row['coupon_percent'] > 0) $parts[] = 'کد تخفیف ' . $row['coupon_percent'] . '٪';
-            if ($row['raffle_tickets'] > 0) $parts[] = number_format($row['raffle_tickets']) . ' کد قرعه‌کشی';
+            if ($row['raffle_tickets'] > 0) $parts[] = persian_number($row['raffle_tickets']) . ' کد قرعه‌کشی';
 
             return implode(' + ', $parts) ?: '—';
         };
@@ -58,8 +58,8 @@
                         {{ $race['grandPrize'] !== '' ? '🎁 جایزه ویژه نفر اول: ' . $race['grandPrize'] : 'جایزه ویژه نفر اول به‌زودی اعلام می‌شود' }}
                     </div>
                     <p class="mt-2 text-[11px] leading-6 text-slate-300">
-                        حد نصاب شرکت در رقابت سال: حداقل {{ number_format($race['minXp']) }} XP،
-                        {{ number_format($race['minMissions']) }} مأموریت کامل‌شده و {{ number_format($race['minOrders']) }} خرید در طول سال.
+                        حد نصاب شرکت در رقابت سال: حداقل {{ persian_number($race['minXp']) }} XP،
+                        {{ persian_number($race['minMissions']) }} مأموریت کامل‌شده و {{ persian_number($race['minOrders']) }} خرید در طول سال.
                     </p>
 
                     @if($race['me'])
@@ -73,7 +73,7 @@
                                 <div>
                                     <div class="flex justify-between text-[10px] font-bold text-slate-300">
                                         <span>{{ $label }}</span>
-                                        <span>{{ number_format($value) }} / {{ number_format($target) }} {{ $percent >= 100 ? '✓' : '' }}</span>
+                                        <span>{{ persian_number($value) }} / {{ persian_number($target) }} {{ $percent >= 100 ? '✓' : '' }}</span>
                                     </div>
                                     <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
                                         <div class="h-full rounded-full {{ $percent >= 100 ? 'bg-emerald-400' : 'bg-amber-400' }}" style="width: {{ $percent }}%"></div>
@@ -89,7 +89,7 @@
                             @foreach($race['leaders'] as $account)
                                 <li class="flex items-center justify-between gap-2 text-xs">
                                     <a href="{{ route('loyalty.members.show', $account->user_id) }}" class="truncate font-black hover:text-amber-200">{{ $medal[$account->leaderboard_rank] ?? '' }} {{ $nameFor($account->user) }}</a>
-                                    <span class="shrink-0 text-amber-200">{{ number_format($account->leaderboard_score) }} XP</span>
+                                    <span class="shrink-0 text-amber-200">{{ persian_number($account->leaderboard_score) }} XP</span>
                                 </li>
                             @endforeach
                         </ol>
@@ -141,7 +141,7 @@
                                             <img src="{{ $champion->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}" alt="" class="h-9 w-9 rounded-xl object-cover">
                                             <div class="min-w-0 flex-1">
                                                 <a href="{{ route('loyalty.members.show', $champion->user_id) }}" class="block truncate text-sm font-black text-slate-900 hover:text-brand-600 dark:text-white">{{ $nameFor($champion->user) }}</a>
-                                                <div class="text-[10px] font-bold text-slate-400">{{ number_format($champion->score) }} XP</div>
+                                                <div class="text-[10px] font-bold text-slate-400">{{ persian_number($champion->score) }} XP</div>
                                             </div>
                                             @if($champion->grand_prize)
                                                 <span class="rounded-lg bg-amber-400 px-2 py-1 text-[9px] font-black text-slate-950">🎁 {{ $champion->grand_prize }}</span>

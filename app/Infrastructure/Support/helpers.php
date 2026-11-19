@@ -261,6 +261,29 @@ if (!function_exists('first_filled')) {
     }
 }
 
+if (!function_exists('persian_number')) {
+    /**
+     * فرمت عدد با ارقام فارسی و جداکنندهٔ هزارگان فارسی.
+     * جایگزین number_format برای نمایش یکدست اعداد در UI فارسی.
+     */
+    function persian_number(int|float|string|null $number): string
+    {
+        if ($number === null) {
+            return '۰';
+        }
+
+        $formatted = number_format((float)$number);
+        $formatted = str_replace(',', '٬', $formatted);
+        $formatted = str_replace(
+            ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+            ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'],
+            $formatted
+        );
+
+        return $formatted;
+    }
+}
+
 if (!function_exists('approximate_view')) {
     function approximate_view(int $number): string
     {

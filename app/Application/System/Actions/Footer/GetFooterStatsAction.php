@@ -5,7 +5,6 @@ namespace App\Application\System\Actions\Footer;
 use App\Application\Shared\Cache\CacheKey;
 use App\Application\Shared\Cache\CacheTag;
 use App\Application\Shared\Cache\CacheTtl;
-use App\Domain\Catalog\Enums\ProductStatusEnum;
 use App\Domain\Catalog\Models\Product;
 use App\Domain\Content\Enums\PostStatusEnum;
 use App\Domain\Content\Models\Post;
@@ -38,15 +37,15 @@ class GetFooterStatsAction
                     ->where('status', PostStatusEnum::ACTIVE)
                     ->count();
 
-                $activeProductsCount = Product::query()
-                    ->where('status', ProductStatusEnum::ACTIVE)
+                $visibleProductsCount = Product::query()
+                    ->where('status', '!=', 'draft')
                     ->count();
 
                 return [
                     'users' => $this->roundDownToHundred(User::query()->count()),
                     'tickets' => $this->roundDownToHundred(Ticket::query()->count()),
                     'posts' => $this->roundDownToHundred($activePostsCount),
-                    'products' => $activeProductsCount,
+                    'products' => $visibleProductsCount,
                 ];
             }
         );

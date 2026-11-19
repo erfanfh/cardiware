@@ -175,25 +175,37 @@
                                         @else
                                             <div class="mt-1 text-[11px] font-bold text-red-500">لینک رسانه معتبر نیست (فقط http/https).</div>
                                         @endif
-                                        @if($submission->type->value === 'video')
                                             <details class="mt-3 min-w-64 text-xs">
-                                                <summary class="cursor-pointer font-bold text-brand-600 dark:text-brand-300">ویرایش ویدیو و تصویر شاخص</summary>
-                                                <form method="POST" action="{{ route('admin.gallery.update', $submission) }}" class="mt-3 space-y-3">
+                                                <summary class="cursor-pointer font-bold text-brand-600 dark:text-brand-300">
+                                                    {{ $submission->type->value === 'video' ? 'ویرایش ویدیو و تصویر شاخص' : 'ویرایش تصویر' }}
+                                                </summary>
+                                                <form method="POST" enctype="multipart/form-data" action="{{ route('admin.gallery.update', $submission) }}" class="mt-3 space-y-3">
                                                     @csrf
                                                     @method('PUT')
                                                     <x-admin.field label="عنوان">
                                                         <x-admin.form.input name="title" :value="$submission->title" maxlength="120" required />
                                                     </x-admin.field>
-                                                    <x-admin.field label="لینک ویدیو">
-                                                        <x-admin.form.input name="video_url" type="url" dir="ltr" :value="$submission->video_url" maxlength="600" required />
+                                                    <x-admin.field label="توضیحات">
+                                                        <x-admin.form.textarea name="description" :value="$submission->description" maxlength="500" />
                                                     </x-admin.field>
-                                                    <x-admin.field label="لینک تصویر شاخص" hint="برای فایل ویدیویی مستقیم، تصویر پیش از پخش نمایش داده می‌شود. خالی = حذف تصویر شاخص.">
-                                                        <x-admin.form.input name="video_thumbnail_url" type="url" dir="ltr" :value="$submission->video_thumbnail_url" maxlength="1000" />
-                                                    </x-admin.field>
-                                                    <button type="submit" class="rounded-xl bg-brand-500 px-3 py-2 font-bold text-white">ذخیره اطلاعات ویدیو</button>
+                                                    @if($submission->type->value === 'video')
+                                                        <x-admin.field label="لینک ویدیو">
+                                                            <x-admin.form.input name="video_url" type="url" dir="ltr" :value="$submission->video_url" maxlength="600" required />
+                                                        </x-admin.field>
+                                                        <x-admin.field label="لینک تصویر شاخص">
+                                                            <x-admin.form.input name="video_thumbnail_url" type="url" dir="ltr" :value="$submission->video_thumbnail_url" maxlength="1000" />
+                                                        </x-admin.field>
+                                                    @else
+                                                        <x-admin.field label="لینک تصویر">
+                                                            <x-admin.form.input name="image_url" type="url" dir="ltr" :value="$submission->image_url" maxlength="600" />
+                                                        </x-admin.field>
+                                                        <x-admin.field label="بارگذاری تصویر جدید">
+                                                            <x-admin.form.input type="file" name="uploaded_image" accept="image/jpeg,image/png,image/webp" />
+                                                        </x-admin.field>
+                                                    @endif
+                                                    <button type="submit" class="rounded-xl bg-brand-500 px-3 py-2 font-bold text-white">ذخیره رسانه</button>
                                                 </form>
                                             </details>
-                                        @endif
                                     </td>
 
                                     <td class="p-3">

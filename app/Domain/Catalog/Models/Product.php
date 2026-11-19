@@ -52,6 +52,8 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'game_settings_command',
         'structure',
         'status',
+        'release_mode',
+        'release_at',
         'picture_id',
         'published_at',
         'display_views_offset',
@@ -64,6 +66,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
         'content_type' => ProductContentTypeEnum::class,
         'structure' => ProductStructureEnum::class,
         'published_at' => 'datetime',
+        'release_at' => 'datetime',
         'display_views_offset' => 'integer',
         'seller_commission_basis_points' => 'integer',
     ];
@@ -244,7 +247,7 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
      */
     public function saleItems(): HasMany
     {
-        return $this->hasMany(ProductSaleItem::class)->orderBy('sort_order');
+        return $this->hasMany(ProductSaleItem::class)->chaperone()->orderBy('sort_order');
     }
 
     /**
@@ -370,5 +373,15 @@ class Product extends Model implements PageViewableInterface, CommentableContrac
                 )
             )
             ->exists();
+    }
+
+    public function isPresale(): bool
+    {
+        return $this->release_mode === 'presale' && ! $this->release_at?->isPast();
+    }
+
+    public function isComingSoon(): bool
+    {
+        return $this->release_mode === 'coming_soon' && ! $this->release_at?->isPast();
     }
 }

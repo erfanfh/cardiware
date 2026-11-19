@@ -41,7 +41,7 @@
 
         <a href="{{ front_route('projects.detail', $project) }}" class="mt-4 block">
             <h3 class="text-base font-black leading-7 {{ $animated ? 'transition' : '' }} group-hover:text-brand-600 dark:text-slate-100 dark:group-hover:text-brand-300">
-                {{ $project->title }}
+                {{ $project->displayTitle() }}
             </h3>
         </a>
 

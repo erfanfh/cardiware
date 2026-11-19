@@ -162,12 +162,12 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
     /**
      * Determine whether this item can be purchased.
      *
-     * This checks only the sale item status.
      * For full product + sale item availability, use isPurchasableAvailable().
      */
     public function isPurchasable(): bool
     {
-        return $this->status === ProductSaleItemStatusEnum::AVAILABLE;
+        return $this->status === ProductSaleItemStatusEnum::AVAILABLE
+            && ! $this->product?->isComingSoon();
     }
 
     /**
@@ -242,7 +242,7 @@ class ProductSaleItem extends Model implements Purchasable, ProductReportablePur
             return false;
         }
 
-        return $product->status === ProductStatusEnum::ACTIVE;
+        return $product->status === ProductStatusEnum::ACTIVE && ! $product->isComingSoon();
     }
 
     public function getReportProductId(): ?int

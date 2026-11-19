@@ -34,7 +34,7 @@ class DiverseAchievementsTest extends TestCase
     {
         $this->seed(LoyaltyDiverseAchievementsSeeder::class);
         $this->seed(LoyaltyDiverseAchievementsSeeder::class);
-        $this->assertDatabaseCount('loyalty_achievements', 7);
+        $this->assertDatabaseCount('loyalty_achievements', 11);
         foreach (AchievementMetricEnum::cases() as $metric) {
             $this->assertNotEmpty($metric->label());
         }

@@ -78,6 +78,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('04:10')
             ->withoutOverlapping(180)
             ->onOneServer();
+
+        // پاک‌سازی ماهانهٔ اعلان‌های قدیمی کاربران (فضای دیتابیس)
+        $schedule->command('notifications:cleanup-old')
+            ->monthlyOn(1, '03:00')
+            ->withoutOverlapping(60)
+            ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Expected launcher control-flow responses, not faults: each one used to be written

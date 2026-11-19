@@ -20,6 +20,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'title' => ['nullable', 'string', 'max:255'],
+            'short_title' => ['nullable', 'string', 'max:120'],
             'slug' => [
                 'nullable',
                 'string',

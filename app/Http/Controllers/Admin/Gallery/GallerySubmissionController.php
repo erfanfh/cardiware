@@ -3,14 +3,20 @@
 namespace App\Http\Controllers\Admin\Gallery;
 
 use App\Application\Content\Actions\Gallery\ResolveGallerySubmissionPointsAction;
+use App\Application\Loyalty\Achievements\Actions\EvaluateUserAchievementsAction;
+use App\Application\Loyalty\Missions\Actions\RecordMissionProgressAction;
 use App\Domain\Content\Enums\UserMediaSubmissionStatusEnum;
 use App\Domain\Content\Models\UserMediaSubmission;
+use App\Domain\Loyalty\Enums\MissionMetricEnum;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Services\Setting\Groups\GallerySettings;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Throwable;
 
 class GallerySubmissionController extends Controller
 {
@@ -53,9 +59,29 @@ class GallerySubmissionController extends Controller
             $rules['video_thumbnail_url'] = ['sometimes', 'nullable', 'url:http,https', 'max:1000'];
         } else {
             $rules['image_url'] = ['sometimes', 'nullable', 'url:http,https', 'max:600'];
+            $rules['uploaded_image'] = ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'];
         }
 
-        $submission->update($request->validate($rules));
+        $data = $request->validate($rules);
+        $upload = $data['uploaded_image'] ?? null;
+        unset($data['uploaded_image']);
+
+        if ($upload) {
+            $name = Str::uuid() . '.' . $upload->extension();
+            $upload->move(public_path('uploads/gallery'), $name);
+            $data['image_path'] = 'uploads/gallery/' . $name;
+            $data['image_url'] = null;
+        }
+
+        try {
+            $submission->update($data);
+        } catch (Throwable $exception) {
+            if ($upload) {
+                unlink(public_path($data['image_path']));
+            }
+
+            throw $exception;
+        }
 
         return redirect()->route('admin.gallery.index', ['status' => $submission->status->value])
             ->with('success', 'اطلاعات رسانه ذخیره شد.');
@@ -71,24 +97,47 @@ class GallerySubmissionController extends Controller
             'points' => ['nullable', 'integer', 'min:0', 'max:1000000'],
         ]);
 
-        $awardedPoints = $submission->points_awarded;
+        $status = UserMediaSubmissionStatusEnum::from($data['status']);
 
-        if ($data['status'] === 'approved') {
-            $awardedPoints = $this->awardPointsForSubmission($submission, $data['points'] ?? null) ?? $awardedPoints;
-        } elseif ($submission->status->value === 'approved' && (int) $submission->points_awarded > 0) {
-            // تأییدِ پس‌گرفته‌شده: امتیازش هم برمی‌گردد (با تأیید دوباره از نو داده می‌شود).
-            $this->reversePointsForSubmission($submission);
-            $awardedPoints = null;
-        }
+        DB::transaction(function () use ($submission, $status, $data): void {
+            $submission = UserMediaSubmission::query()->lockForUpdate()->findOrFail($submission->getKey());
+            $wasApproved = $submission->status === UserMediaSubmissionStatusEnum::APPROVED;
+            $isApproved = $status === UserMediaSubmissionStatusEnum::APPROVED;
+            $awardedPoints = $submission->points_awarded;
 
-        $submission->update([
-            'status' => $data['status'],
-            'approved_at' => $data['status'] === 'approved' ? now() : null,
-            'points_awarded' => $awardedPoints,
-        ]);
+            if ($isApproved && $submission->user !== null) {
+                $awardedPoints = $this->awardPointsForSubmission($submission, $data['points'] ?? null);
+            } elseif (! $isApproved && $wasApproved && (int) $awardedPoints > 0) {
+                $this->reversePointsForSubmission($submission);
+                $awardedPoints = null;
+            }
+
+            $submission->update([
+                'status' => $status,
+                'approved_at' => $isApproved ? $submission->approved_at ?? now() : null,
+                'points_awarded' => $awardedPoints,
+            ]);
+
+            if ($isApproved && ! $wasApproved && $submission->user !== null) {
+                $missions = app(RecordMissionProgressAction::class);
+                $weekStart = substr($missions->currentPeriodKey(), 2);
+                $approvedThisWeek = UserMediaSubmission::query()
+                    ->approved()
+                    ->where('user_id', $submission->user_id)
+                    ->where('approved_at', '>=', $weekStart)
+                    ->count();
+                $missions->execute(
+                    $submission->user,
+                    MissionMetricEnum::APPROVED_MEDIA_SUBMISSIONS,
+                    $approvedThisWeek,
+                    cumulative: true,
+                );
+                app(EvaluateUserAchievementsAction::class)->execute($submission->user);
+            }
+        });
 
         return redirect()
-            ->route('admin.gallery.index', ['status' => $submission->status->value])
+            ->route('admin.gallery.index', ['status' => $status->value])
             ->with('success', 'وضعیت رسانه به‌روزرسانی شد.');
     }
 

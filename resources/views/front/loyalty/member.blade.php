@@ -191,6 +191,31 @@
             </div>
         </section>
 
+        {{-- ═══════ امتیازات کسب‌شده (به تفکیک فعالیت) ═══════ --}}
+        @if($earnedByReason->isNotEmpty())
+            <section class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <h2 class="flex items-center gap-2 text-base font-black text-slate-900 dark:text-white">
+                        <span class="grid h-9 w-9 place-items-center rounded-2xl bg-brand-50 text-base ring-1 ring-brand-200/70 dark:bg-brand-500/10 dark:ring-brand-500/20">⭐</span>
+                        امتیازات کسب‌شده
+                    </h2>
+                </div>
+                <div class="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($earnedByReason as $row)
+                        <div class="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/60">
+                            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-brand-500/10 text-sm font-black text-brand-600 dark:text-brand-400">
+                                +{{ persian_number($row['total']) }}
+                            </span>
+                            <div class="min-w-0">
+                                <div class="truncate text-xs font-black text-slate-800 dark:text-slate-200">{{ $row['label'] }}</div>
+                                <div class="mt-0.5 text-[10px] font-bold text-slate-400">{{ persian_number($row['count']) }} بار</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
         {{-- ═══════ جام‌ها و افتخارات ═══════ --}}
         <section class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-6">
             <div class="flex items-center justify-between">

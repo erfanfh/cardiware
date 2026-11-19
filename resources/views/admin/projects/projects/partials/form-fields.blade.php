@@ -109,6 +109,19 @@
 
                 <x-admin.field
                     class="col-span-12"
+                    label="عنوان کوتاه (نمایش در کارت صفحهٔ اصلی و سایدبار)"
+                    hint="اگر خالی باشد، عنوان اصلی نمایش داده می‌شود. برای جلوگیری از شکستن استایل کارت با عنوان‌های طولانی، یک عنوان مختصر (حداکثر ۱۲۰ نویسه) وارد کنید."
+                >
+                    <x-admin.form.input
+                        name="short_title"
+                        maxlength="120"
+                        :value="old('short_title', $project?->short_title)"
+                        placeholder="مثلاً: PGL V6"
+                    />
+                </x-admin.field>
+
+                <x-admin.field
+                    class="col-span-12"
                     label="درصد پیشرفت (0 تا 100)"
                 >
                     <div class="flex items-center gap-3">

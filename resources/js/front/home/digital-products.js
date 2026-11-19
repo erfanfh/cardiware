@@ -1,35 +1,44 @@
 import Swiper from 'swiper';
-import {Autoplay, Pagination} from 'swiper/modules';
+import {Autoplay, Navigation, Pagination} from 'swiper/modules';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-export function initDownloadProductsSwiper() {
-    const elements = document.querySelectorAll('.js-download-products-swiper');
+// اسلایدر محصولات دانلودی صفحهٔ اصلی — فقط وقتی کلاس .mwHomeProductsSlider render شده
+// (تنظیمات ادمین: download_products_slider = true) فعال می‌شود.
+function initHomeProductsSlider() {
+    document.querySelectorAll('.mwHomeProductsSlider').forEach((element) => {
+        if (element.swiper) return;
 
-    elements.forEach((element) => {
-        if (element.swiper) {
-            return;
-        }
+        const section = element.closest('#digital-products');
+        const prevBtn = section?.querySelector('[data-mw-products-prev]');
+        const nextBtn = section?.querySelector('[data-mw-products-next]');
+        const pagination = element.querySelector('.mwHomeProductsPagination');
 
         new Swiper(element, {
-            modules: [Pagination, Autoplay],
+            modules: [Navigation, Pagination, Autoplay],
             direction: 'horizontal',
-            rtl: true,
             grabCursor: true,
             watchOverflow: true,
             spaceBetween: 16,
             slidesPerView: 1.15,
-            speed: 600,
+            speed: 650,
 
-            pagination: {
-                el: element.querySelector('.swiper-pagination'),
+            navigation: prevBtn && nextBtn ? {
+                prevEl: prevBtn,
+                nextEl: nextBtn,
+            } : false,
+
+            pagination: pagination ? {
+                el: pagination,
                 clickable: true,
-                dynamicBullets: true,
-            },
+                renderBullet(index, className) {
+                    return `<span class="${className} transition-all duration-300"></span>`;
+                },
+            } : false,
 
-            autoplay: {
-                delay: 4000,
+            autoplay: !window.matchMedia('(prefers-reduced-motion: reduce)').matches && {
+                delay: 4500,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
             },
@@ -42,13 +51,18 @@ export function initDownloadProductsSwiper() {
                     slidesPerView: 2,
                 },
                 1024: {
-                    slidesPerView: 2.4,
+                    slidesPerView: 3,
+                },
+                1280: {
+                    slidesPerView: 4,
                 },
             },
         });
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initDownloadProductsSwiper();
+document.addEventListener('DOMContentLoaded', initHomeProductsSlider);
+document.addEventListener('livewire:navigated', initHomeProductsSlider);
+document.addEventListener('livewire:initialized', () => {
+    Livewire.hook('morph.updated', initHomeProductsSlider);
 });

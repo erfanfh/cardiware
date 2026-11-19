@@ -24,7 +24,7 @@
                         <div class="min-w-0">
                             <div class="text-sm font-extrabold truncate dark:text-slate-100">
                                 <a href="{{ front_route('projects.detail', $project) }}">
-                                    {{ $project->title }}
+                                    {{ $project->displayTitle() }}
                                 </a>
                             </div>
 

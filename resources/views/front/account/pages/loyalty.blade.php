@@ -318,12 +318,12 @@
                             @foreach($club['monthlySummary'] as $month)
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="flex h-28 w-full items-end justify-center gap-1.5">
-                                        <div class="flex w-5 flex-col justify-end sm:w-7" title="کسب: {{ number_format($month['earned']) }}">
+                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="کسب: {{ number_format($month['earned']) }}">
                                             <div
                                                 class="w-full rounded-t-lg bg-gradient-to-t from-emerald-600 to-emerald-400 transition-all duration-700"
                                                 style="height: {{ max(4, (int) round($month['earned'] / $peakMonth * 100)) }}%"></div>
                                         </div>
-                                        <div class="flex w-5 flex-col justify-end sm:w-7" title="مصرف: {{ number_format($month['spent']) }}">
+                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="مصرف: {{ number_format($month['spent']) }}">
                                             <div
                                                 class="w-full rounded-t-lg bg-gradient-to-t from-rose-600 to-rose-400 transition-all duration-700"
                                                 style="height: {{ max(4, (int) round($month['spent'] / $peakMonth * 100)) }}%"></div>

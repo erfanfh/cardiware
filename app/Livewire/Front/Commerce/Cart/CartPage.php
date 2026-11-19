@@ -21,6 +21,10 @@ use App\Application\Financial\Exceptions\InsufficientWalletBalanceException;
 use App\Application\Financial\Exceptions\WalletIntegrityException;
 use App\Application\Financial\Exceptions\WalletTopUpIdempotencyConflictException;
 use App\Application\Financial\Exceptions\WalletUnavailableException;
+use App\Application\Loyalty\Actions\ResolveVipPointsBonusAction;
+use App\Application\Loyalty\Earning\Actions\ResolveActiveEarningRuleAction;
+use App\Application\Loyalty\Earning\Exceptions\InvalidEarningRuleConfigurationException;
+use App\Application\Loyalty\Earning\Handlers\PurchaseEarningRuleHandler;
 use App\Application\Promotion\Actions\Coupon\ApplyCouponToCartAction;
 use App\Application\Promotion\Actions\Coupon\ReleaseCouponReservationForOrderAction;
 use App\Application\Promotion\Actions\Coupon\RemoveCouponFromCartAction;
@@ -31,6 +35,7 @@ use App\Domain\Catalog\Models\ProductSaleItem;
 use App\Domain\Commerce\Models\Cart;
 use App\Domain\Commerce\Models\CartItem;
 use App\Domain\Financial\Models\Wallet;
+use App\Domain\Loyalty\Enums\EarningRuleTypeEnum;
 use App\Domain\Vip\Models\VipPlan;
 use App\Infrastructure\Services\Setting\Groups\GeneralSettings;
 use DomainException;
@@ -61,6 +66,36 @@ class CartPage extends Component
 
     #[Locked]
     public string $checkoutRequestKey;
+
+    #[Computed]
+    public function potentialPurchasePoints(): int
+    {
+        if ($this->cartTotal <= 0) {
+            return 0;
+        }
+
+        $rule = app(ResolveActiveEarningRuleAction::class)->execute(EarningRuleTypeEnum::PURCHASE, now());
+        if ($rule === null) {
+            return 0;
+        }
+
+        $user = auth()->user();
+        try {
+            $points = app(PurchaseEarningRuleHandler::class)->estimate($rule, $this->cartTotal, $user);
+        } catch (InvalidEarningRuleConfigurationException $exception) {
+            report($exception);
+
+            return 0;
+        }
+
+        if ($user === null || $points === 0) {
+            return $points;
+        }
+
+        $bonus = app(ResolveVipPointsBonusAction::class);
+
+        return $bonus->apply($points, $bonus->percentFor($user));
+    }
 
     public function mount(): void
     {
@@ -963,6 +998,7 @@ class CartPage extends Component
         unset($this->cartDiscount);
         unset($this->cartTax);
         unset($this->cartTotal);
+        unset($this->potentialPurchasePoints);
 
         unset($this->walletAvailableBalance);
         unset($this->walletContribution);

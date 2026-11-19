@@ -67,6 +67,14 @@ class CartTermsAcceptanceTest extends TestCase
             $table->unsignedBigInteger('held_withdrawable_balance')->default(0);
             $table->timestamps();
         });
+
+        Schema::create('vip_subscriptions', function (Blueprint $table): void {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->timestamp('starts_at');
+            $table->timestamp('expires_at');
+            $table->timestamp('revoked_at')->nullable();
+        });
     }
 
     public function test_terms_checkbox_and_configured_link_are_shown_when_enabled(): void

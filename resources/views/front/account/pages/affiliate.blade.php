@@ -51,6 +51,15 @@
                     <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1.5 text-xs font-extrabold text-brand-700 backdrop-blur dark:border-brand-900/60 dark:bg-slate-900/70 dark:text-brand-300">
                         پنل همکاری در فروش
                     </div>
+                    @php
+                        $affiliateSettings = app(\App\Infrastructure\Services\Setting\Groups\AffiliateSettings::class);
+                        $referralBonusPoints = $affiliateSettings->referralBonusReferrerPoints();
+                    @endphp
+                    @if($affiliateSettings->referralBonusEnabled() && $referralBonusPoints > 0)
+                        <div class="inline-flex items-center gap-1.5 rounded-full border border-amber-300/50 bg-amber-50/80 px-3 py-1.5 text-xs font-extrabold text-amber-700 backdrop-blur dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+                            🎁 {{ persian_number($referralBonusPoints) }} امتیاز باشگاه پس از اولین خرید دوست دعوت‌شده
+                        </div>
+                    @endif
                     @if($commissionPercent)
                         <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/50 bg-emerald-50/80 px-3 py-1.5 text-xs font-extrabold text-emerald-700 backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
                             کمیسیون {{ $commissionPercent }}٪ از هر سفارش

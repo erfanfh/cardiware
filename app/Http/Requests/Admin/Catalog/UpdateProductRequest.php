@@ -52,6 +52,8 @@ class UpdateProductRequest extends FormRequest
             ],
             'status' => ['required', Rule::enum(ProductStatusEnum::class)],
             'type' => ['required', Rule::enum(ProductTypeEnum::class)],
+            'release_mode' => ['sometimes', 'required', 'in:normal,presale,coming_soon'],
+            'release_at' => ['nullable', 'date'],
             'content_type' => ['nullable', Rule::enum(ProductContentTypeEnum::class)],
             'game_settings_command' => [
                 'nullable', 'string', 'max:255',

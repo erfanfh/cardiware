@@ -6,7 +6,9 @@ use App\Application\Loyalty\Support\ReawardableLedgerKey;
 use App\Application\Loyalty\Actions\AwardPointsAction;
 use App\Application\Loyalty\Actions\GetOrCreatePointAccountAction;
 use App\Application\Loyalty\DTOs\AwardPointsDTO;
+use App\Domain\Affiliate\Models\AffiliateReferral;
 use App\Domain\Commerce\Models\Order;
+use App\Domain\Content\Models\UserMediaSubmission;
 use App\Domain\Discussion\Models\Comment;
 use App\Domain\Identity\Models\User;
 use App\Domain\Loyalty\Enums\AchievementMetricEnum;
@@ -115,6 +117,15 @@ final class EvaluateUserAchievementsAction
                 ->usable()
                 ->distinct('product_id')
                 ->count('product_id'),
+
+            AchievementMetricEnum::APPROVED_MEDIA_SUBMISSIONS => UserMediaSubmission::query()
+                ->where('user_id', $user->getKey())
+                ->approved()
+                ->count(),
+
+            AchievementMetricEnum::REFERRAL_SIGNUPS => AffiliateReferral::query()
+                ->whereHas('affiliate', fn ($query) => $query->where('user_id', $user->getKey()))
+                ->count(),
         };
     }
 

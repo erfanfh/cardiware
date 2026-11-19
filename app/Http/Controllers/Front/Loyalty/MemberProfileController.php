@@ -7,9 +7,11 @@ use App\Application\Loyalty\Actions\ResolveUserLevelAction;
 use App\Application\Loyalty\Support\ClubEliteMembership;
 use App\Domain\Identity\Enums\UserStatusEnum;
 use App\Domain\Identity\Models\User;
+use App\Domain\Loyalty\Enums\PointEntryTypeEnum;
 use App\Domain\Loyalty\Models\LoyaltyAchievement;
 use App\Domain\Loyalty\Models\ClubFollow;
 use App\Domain\Loyalty\Models\LoyaltyChampion;
+use App\Domain\Loyalty\Models\PointLedgerEntry;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Cache;
@@ -49,6 +51,41 @@ final class MemberProfileController extends Controller
             ],
         );
 
+        // امتیازات مهم کسب‌شده به تفکیک دلیل (برای نمایش عمومی)
+        $earnedByReason = PointLedgerEntry::query()
+            ->where('point_account_id', $user->pointAccount?->getKey())
+            ->where('type', PointEntryTypeEnum::EARN)
+            ->whereDoesntHave('reversals')
+            ->selectRaw('reason, SUM(amount) as total, COUNT(*) as count')
+            ->groupBy('reason')
+            ->orderByDesc('total')
+            ->limit(6)
+            ->get()
+            ->map(function ($row) {
+                $labels = [
+                    'daily_visit' => 'بازدید روزانه',
+                    'comment' => 'ارسال دیدگاه',
+                    'purchase' => 'خرید محصول',
+                    'registration' => 'هدیه خوش‌آمدگویی',
+                    'membership_anniversary' => 'سالگرد عضویت',
+                    'gallery_submission' => 'ارسال رسانه در گالری',
+                    'achievement_earned' => 'کسب نشان افتخار',
+                    'mission_completed' => 'مأموریت هفتگی',
+                    'referral_bonus' => 'پاداش دعوت دوستان',
+                    'referral_sale' => 'خرید دوستان دعوت‌شده',
+                    'level_up' => 'ارتقای سطح',
+                    'time_spent' => 'فعالیت در سایت',
+                    'streak_milestone' => 'زنجیره بازدید',
+                    'champion_prize' => 'جایزه تالار افتخارات',
+                ];
+
+                return [
+                    'label' => $labels[$row->reason] ?? $row->reason,
+                    'total' => (int) $row->total,
+                    'count' => (int) $row->count,
+                ];
+            });
+
         return view('front.loyalty.member', [
             'member' => $user,
             'xp' => $xp,
@@ -61,6 +98,7 @@ final class MemberProfileController extends Controller
             'vipSince' => $isVip ? \App\Application\Loyalty\Support\VipClubProfile::activeSince($user) : null,
             'isElite' => $elite->enabled() && $elite->isMember($user),
             'monthRank' => $user->isLoyaltyStaff() ? null : $leaderboard->execute($user, 'month')['currentMember']['rank'],
+            'earnedByReason' => $earnedByReason,
             'followersCount' => ClubFollow::query()->where('target_id', $user->getKey())->count(),
             'isFollowing' => auth()->check()
                 && ClubFollow::query()

@@ -13,6 +13,8 @@ enum AchievementMetricEnum: string
     case POLL_VOTES_COUNT = 'poll_votes_count';
     case DAILY_VISIT_DAYS = 'daily_visit_days';
     case PRODUCTS_OWNED = 'products_owned';
+    case APPROVED_MEDIA_SUBMISSIONS = 'approved_media_submissions';
+    case REFERRAL_SIGNUPS = 'referral_signups';
 
     public function label(): string
     {
@@ -26,6 +28,8 @@ enum AchievementMetricEnum: string
             self::POLL_VOTES_COUNT => 'تعداد نظرسنجی‌های شرکت‌کرده',
             self::DAILY_VISIT_DAYS => 'تعداد روزهای بازدید',
             self::PRODUCTS_OWNED => 'تعداد محصولات تحت مالکیت',
+            self::APPROVED_MEDIA_SUBMISSIONS => 'تعداد رسانه‌های تأییدشده',
+            self::REFERRAL_SIGNUPS => 'تعداد ثبت‌نام‌های دعوت‌شده',
         };
     }
 }

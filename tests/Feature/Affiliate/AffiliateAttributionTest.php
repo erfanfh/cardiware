@@ -16,10 +16,13 @@ use App\Domain\Commerce\Events\OrderPaymentRevokedEvent;
 use App\Domain\Commerce\Models\Order;
 use App\Domain\Identity\Events\UserRegisteredEvent;
 use App\Domain\Identity\Models\User;
+use App\Domain\Loyalty\Enums\MissionMetricEnum;
+use App\Domain\Loyalty\Models\LoyaltyMission;
 use App\Domain\Loyalty\Models\PointAccount;
 use App\Domain\Loyalty\Models\PointLedgerEntry;
 use App\Domain\Promotion\Models\CouponRedemption;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Loyalty\LoyaltyDiverseAchievementsSeeder;
 use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -284,6 +287,28 @@ class AffiliateAttributionTest extends TestCase
             'affiliate_id' => $this->affiliate->getKey(),
             'referred_user_id' => $newUser->getKey(),
         ]);
+    }
+
+    public function test_new_referral_tracks_the_referrer_mission_and_awards_the_badge_once(): void
+    {
+        $this->seed(LoyaltyDiverseAchievementsSeeder::class);
+        $mission = LoyaltyMission::query()->create([
+            'code' => 'weekly-referral',
+            'title' => 'Weekly referral',
+            'metric' => MissionMetricEnum::REFERRAL_SIGNUPS,
+            'target_count' => 2,
+            'reward_points' => 50,
+            'is_active' => true,
+        ]);
+        $newUser = User::factory()->create();
+        request()->cookies->set('mw_ref', (string) $this->affiliate->getKey());
+        $event = new UserRegisteredEvent($newUser->getKey(), CarbonImmutable::now());
+
+        event($event);
+        event($event);
+
+        $this->assertSame(1, $mission->progressEntries()->where('user_id', $this->affiliateOwner->id)->value('progress_count'));
+        $this->assertSame(200, $this->affiliateOwner->pointAccount()->value('balance'));
     }
 
     public function test_ref_link_records_click_and_sets_cookie(): void

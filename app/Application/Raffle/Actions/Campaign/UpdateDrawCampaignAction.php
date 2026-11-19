@@ -29,6 +29,7 @@ class UpdateDrawCampaignAction
                 'starts_at', 'closes_at', 'draw_at', 'ticket_limit', 'ticket_limit_per_user',
                 'allow_multiple_wins_per_user', 'reserve_winners_per_prize',
                 'winner_confirmation_window_hours', 'show_winners_publicly',
+                'points_per_ticket', 'ticket_price',
             ]);
 
             $structureEditable = in_array($campaign->status, [
@@ -43,7 +44,7 @@ class UpdateDrawCampaignAction
                 'rules' => $data['rules'] ?? null,
                 'cover_media_file_id' => $data['cover_media_file_id'] ?? null,
                 'show_winners_publicly' => (bool) ($data['show_winners_publicly'] ?? false),
-            ];
+            ] + array_intersect_key($data, array_flip(['points_per_ticket', 'ticket_price']));
 
             if ($structureEditable) {
                 $common += [

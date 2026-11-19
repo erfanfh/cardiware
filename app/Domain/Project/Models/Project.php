@@ -25,6 +25,7 @@ class Project extends Model implements PageViewableInterface
 
     protected $fillable = [
         'title',
+        'short_title',
         'slug',
         'status',
         'cover_id',
@@ -132,5 +133,16 @@ class Project extends Model implements PageViewableInterface
     public function tags(): MorphToMany
     {
         return $this->taxonomyTermsFor(TaxonomyKeyEnum::PROJECT_TAG);
+    }
+
+    /**
+     * عنوان نمایش در کارت صفحهٔ اصلی و سایدبار:
+     * اگر عنوان کوتاه تنظیم شده باشد همان، وگرنه عنوان اصلی.
+     */
+    public function displayTitle(): string
+    {
+        $shortTitle = trim((string) $this->short_title);
+
+        return $shortTitle !== '' ? $shortTitle : $this->title;
     }
 }

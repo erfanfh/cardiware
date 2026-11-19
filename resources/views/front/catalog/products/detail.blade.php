@@ -34,7 +34,21 @@
 
             <div data-smart-sidebar-column class="min-w-0 lg:col-span-3">
                 <aside data-smart-sidebar-box class="space-y-6">
-                    <livewire:front.catalog.product-buy-box :product="$product"/>
+                    @if($product->isPresale() || $product->isComingSoon())
+                        <x-front.cart>
+                            <h2 class="text-sm font-black text-brand-700 dark:text-brand-300">
+                                {{ $product->isPresale() ? 'پیش‌فروش' : 'به‌زودی' }}
+                            </h2>
+                            @if($product->release_at?->isFuture())
+                                <div class="mt-3">
+                                    <x-front.raffle.countdown :target="$product->release_at" label="تا انتشار محصول" compact />
+                                </div>
+                            @endif
+                        </x-front.cart>
+                    @endif
+                    @unless($product->isComingSoon())
+                        <livewire:front.catalog.product-buy-box :product="$product"/>
+                    @endunless
                     @include('front.catalog.products.partials.detail.sidebar.medals')
                     @include('front.catalog.products.partials.detail.sidebar.update-progress')
                     @include('front.catalog.products.partials.detail.sidebar.product-information')

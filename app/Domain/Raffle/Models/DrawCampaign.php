@@ -38,6 +38,8 @@ class DrawCampaign extends Model
         'show_winners_publicly',
         'created_by_user_id',
         'metadata',
+        'points_per_ticket',
+        'ticket_price',
     ];
 
     protected $casts = [
@@ -47,6 +49,8 @@ class DrawCampaign extends Model
         'draw_at' => 'datetime',
         'ticket_limit' => 'integer',
         'ticket_limit_per_user' => 'integer',
+        'points_per_ticket' => 'integer',
+        'ticket_price' => 'integer',
         'allow_multiple_wins_per_user' => 'boolean',
         'reserve_winners_per_prize' => 'integer',
         'winner_confirmation_window_hours' => 'integer',

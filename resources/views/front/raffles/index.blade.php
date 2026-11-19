@@ -69,6 +69,16 @@
             </div>
         </section>
 
+        {{-- متن راهنمای کسب امتیاز برای قرعه‌کشی --}}
+    <div class="mb-5 flex items-center gap-3 rounded-2xl border border-brand-500/25 bg-brand-500/5 px-4 py-3.5">
+        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-500/10 text-lg">💡</span>
+        <p class="text-xs font-bold leading-6 text-brand-700 dark:text-brand-300">
+            با کسب امتیاز از فعالیت‌های روزانه مودینگ‌وی — بازدید، دیدگاه، ارسال رسانه و خرید — شانس خود را برای بردن جوایز قرعه‌کشی افزایش دهید.
+            <a href="{{ route('account.loyalty') }}#ways-to-earn" class="font-black text-brand-600 hover:text-brand-700 dark:text-brand-400">راهنمای کسب امتیاز ←</a>
+        </p>
+    </div>
+
+
         <section id="campaigns" class="mt-6 scroll-mt-24">
             <x-front.cart class="!p-3 sm:!p-4">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

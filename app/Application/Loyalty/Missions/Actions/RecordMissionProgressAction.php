@@ -33,12 +33,13 @@ final class RecordMissionProgressAction
 
     /**
      * @param MissionMetricEnum $metric رویدادی که رخ داده
-     * @param int $count چند واحد پیشرفت (پیش‌فرض ۱)
+     * @param int $count تعداد رویدادهای جدید یا مجموع رویدادهای دوره
+     * @param bool $cumulative آیا مقدار ورودی مجموع رویدادهای دوره است؟
      * @return array<int, array{mission: LoyaltyMission, progress: LoyaltyMissionProgress, newlyCompleted: bool}>
      *
      * @throws Throwable
      */
-    public function execute(User $user, MissionMetricEnum $metric, int $count = 1): array
+    public function execute(User $user, MissionMetricEnum $metric, int $count = 1, bool $cumulative = false): array
     {
         $missions = LoyaltyMission::query()
             ->active()
@@ -53,7 +54,7 @@ final class RecordMissionProgressAction
         $results = [];
 
         foreach ($missions as $mission) {
-            $results[] = $this->advance($user, $mission, $periodKey, $count);
+            $results[] = $this->advance($user, $mission, $periodKey, $count, $cumulative);
         }
 
         return $results;
@@ -77,9 +78,9 @@ final class RecordMissionProgressAction
      *
      * @throws Throwable
      */
-    private function advance(User $user, LoyaltyMission $mission, string $periodKey, int $count): array
+    private function advance(User $user, LoyaltyMission $mission, string $periodKey, int $count, bool $cumulative): array
     {
-        return DB::transaction(function () use ($user, $mission, $periodKey, $count): array {
+        return DB::transaction(function () use ($user, $mission, $periodKey, $count, $cumulative): array {
             /** @var LoyaltyMissionProgress $progress */
             $progress = LoyaltyMissionProgress::query()
                 ->where('loyalty_mission_id', $mission->getKey())
@@ -101,7 +102,9 @@ final class RecordMissionProgressAction
                 return ['mission' => $mission, 'progress' => $progress, 'newlyCompleted' => false];
             }
 
-            $progress->progress_count += $count;
+            $progress->progress_count = $cumulative
+                ? max($progress->progress_count, $count)
+                : $progress->progress_count + $count;
             $progress->save();
 
             if ($progress->progress_count < $mission->target_count) {
