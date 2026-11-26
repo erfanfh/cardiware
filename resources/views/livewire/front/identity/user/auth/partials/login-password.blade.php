@@ -5,8 +5,8 @@
     @include(
         'livewire.front.identity.user.auth.partials.shared.step-header',
         [
-            'title' => 'ورود به حساب کاربری',
-            'description' => 'رمز عبور حساب خود را وارد کنید',
+            'title' => 'Sign in',
+            'description' => 'Enter your account password',
             'backMethod' => 'goToEnterMobile',
             'mobile' => $resolvedMobile,
         ]
@@ -23,7 +23,7 @@
                     for="login-password"
                     class="text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
-                    رمز عبور
+                    Password
                 </label>
 
                 <button
@@ -37,14 +37,14 @@
                         wire:loading.remove
                         wire:target="requestPasswordResetOtp"
                     >
-                        فراموشی رمز؟
+                        Forgot password?
                     </span>
 
                     <span
                         wire:loading
                         wire:target="requestPasswordResetOtp"
                     >
-                        در حال ارسال کد...
+                        Sending code...
                     </span>
                 </button>
             </div>
@@ -63,7 +63,7 @@
                     type="button"
                     @click="showPassword = !showPassword"
                     class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 transition-colors hover:text-brand-600 dark:text-slate-500 dark:hover:text-brand-400"
-                    aria-label="نمایش یا مخفی کردن رمز عبور"
+                    aria-label="Show or hide password"
                 >
                     <svg
                         x-show="!showPassword"
@@ -123,7 +123,7 @@
                 wire:loading.remove
                 wire:target="loginWithPassword"
             >
-                ورود به حساب
+                Sign in
             </span>
 
             <svg
@@ -157,7 +157,7 @@
 
             <div class="relative flex justify-center">
                 <span class="bg-white px-3 text-[0.7rem] text-slate-400 dark:bg-slate-900 dark:text-slate-500">
-                    یا
+                    or
                 </span>
             </div>
         </div>
@@ -193,7 +193,7 @@
                 wire:loading.remove
                 wire:target="requestLoginOtp"
             >
-                ورود با کد یکبار مصرف
+                Sign in with a one-time code
             </span>
 
             <svg

@@ -3,7 +3,7 @@
         @foreach($section['items'] as $item)
             <div class="reveal py-10 text-center">
                 <div class="font-num text-3xl font-black text-ink sm:text-4xl">
-                    <span data-count="{{ $item['value'] }}">۰</span><span class="text-accent">{{ $item['suffix'] }}</span>
+                    <span data-count="{{ $item['value'] }}">0</span><span class="text-accent">{{ $item['suffix'] }}</span>
                 </div>
                 <div class="mt-2 text-xs font-medium text-muted sm:text-sm">{{ $item['label'] }}</div>
             </div>

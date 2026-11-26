@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" class="scroll-smooth">
+<html lang="en" dir="ltr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -13,8 +13,8 @@
     @stack('styles')
     @livewireStyles
 </head>
-<body dir="rtl" class="bg-slate-950 text-slate-100">
-<h1 class="sr-only">ورود / ثبت نام در {{ get_setting('general', 'title') }}</h1>
+<body dir="ltr" class="bg-slate-950 text-slate-100">
+<h1 class="sr-only">Sign in / Register at {{ get_setting('general', 'title') }}</h1>
 @yield('content')
 @yield('scripts')
 @stack('scripts')

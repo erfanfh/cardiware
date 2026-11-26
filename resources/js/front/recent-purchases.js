@@ -40,7 +40,7 @@ export function validPurchase(purchase, now, origin) {
 
 export function purchaseTime(purchasedAt, now) {
     const minutes = Math.max(0, Math.floor((now - purchasedAt) / 60));
-    return minutes === 0 ? 'کمتر از یک دقیقه پیش' : `${new Intl.NumberFormat('fa-IR').format(minutes)} دقیقه پیش`;
+    return minutes === 0 ? 'Less than a minute ago' : `${new Intl.NumberFormat('en-US').format(minutes)} minutes ago`;
 }
 
 export default function initRecentPurchases() {

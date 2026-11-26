@@ -42,15 +42,15 @@
             <div class="min-w-0">
                 <div
                     class="inline-flex items-center gap-2 rounded-2xl bg-brand-50 px-3 py-1.5 text-xs font-extrabold text-brand-600 ring-1 ring-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:ring-brand-500/20">
-                    اشتراک گذاری
+                    Share
                 </div>
 
                 <h3 class="mt-4 text-base font-black leading-8 text-slate-900 sm:text-xl dark:text-slate-100">
-                    این صفحه را با دیگران به اشتراک بگذارید
+                    Share this page with others
                 </h3>
 
                 <p class="mt-2 text-xs leading-6 text-slate-500 sm:text-sm sm:leading-7 dark:text-slate-400">
-                    لینک محصول را کپی کنید یا از طریق شبکه های اجتماعی ارسال کنید.
+                    Copy the product link or share via social media.
                 </p>
             </div>
 
@@ -58,7 +58,7 @@
                 type="button"
                 x-on:click="$dispatch('close-modal')"
                 class="grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white [&_svg]:h-5 [&_svg]:w-5"
-                aria-label="بستن"
+                aria-label="Close"
             >
                 @include('icons.cancel-01')
             </button>
@@ -80,8 +80,8 @@
                     x-on:click="copyLink()"
                     class="h-11 w-full shrink-0 cursor-pointer rounded-2xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:bg-slate-800 sm:w-auto dark:bg-slate-100 dark:text-slate-950 dark:hover:bg-white"
                 >
-                    <span x-show="!copied">کپی</span>
-                    <span x-show="copied" x-cloak>کپی شد</span>
+                    <span x-show="!copied">Copy</span>
+                    <span x-show="copied" x-cloak>Copied</span>
                 </button>
             </div>
         </div>
@@ -94,7 +94,7 @@
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-sky-500/10 dark:text-sky-300 dark:group-hover:bg-sky-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.telegram')
                 </span>
-                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">تلگرام</span>
+                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">Telegram</span>
             </a>
 
             <a href="https://wa.me/?text={{ urlencode($product->title . ' ' . $url) }}" target="_blank"
@@ -104,7 +104,7 @@
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-emerald-50 text-emerald-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-emerald-500/10 dark:text-emerald-300 dark:group-hover:bg-emerald-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.whatsapp')
                 </span>
-                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">واتساپ</span>
+                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">WhatsApp</span>
             </a>
 
             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ urlencode($url) }}" target="_blank"
@@ -114,7 +114,7 @@
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-blue-50 text-blue-600 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-blue-500/10 dark:text-blue-300 dark:group-hover:bg-blue-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.linkedin-in')
                 </span>
-                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">لینکدین</span>
+                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">LinkedIn</span>
             </a>
 
             <button type="button" x-on:click="nativeShare()"
@@ -123,7 +123,7 @@
                     class="grid h-10 w-10 place-items-center rounded-2xl bg-brand-50 text-brand-500 transition group-hover:bg-white sm:h-11 sm:w-11 dark:bg-brand-500/10 dark:text-brand-300 dark:group-hover:bg-brand-500/15 [&_svg]:h-5 [&_svg]:w-5 sm:[&_svg]:h-6 sm:[&_svg]:w-6">
                     @include('icons.share-08')
                 </span>
-                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">اشتراک</span>
+                <span class="mt-1 text-xs font-extrabold text-slate-700 dark:text-slate-300">Subscription</span>
             </button>
         </div>
     </div>

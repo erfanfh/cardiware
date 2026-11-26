@@ -1,9 +1,10 @@
 {{--
-    صفحه لندینگ محصول — بخش‌ها به ترتیب از config رندر می‌شوند.
-    هر بخش = یک partial در front.landings.partials.{type}
-    (ساختار موتور عیناً همان است که به پروژه اصلی Cardiware منتقل می‌شود)
+    Product landing page: sections rendered in order from config are rendered.
+    Each section = One partial in front.landings.partials.{type}
+    (The engine structure is exactly the same as the main project Cardiware is transferred)
 --}}
 @extends('front.landings.master')
+@php($locale = 'en')
 
 @section('body')
     @include('front.landings.partials.navbar')

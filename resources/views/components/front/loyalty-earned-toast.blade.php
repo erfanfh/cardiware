@@ -22,7 +22,7 @@
                 @endforeach
             </div>
 
-            <div class="relative p-4 sm:p-5" dir="rtl">
+            <div class="relative p-4 sm:p-5" dir="ltr">
                 <div class="flex items-start gap-3.5">
                     <div class="loyalty-earned-icon relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-amber-300 via-amber-400 to-orange-500 text-white shadow-lg shadow-amber-500/25 [&_svg]:h-7 [&_svg]:w-7">
                         <span class="absolute -left-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-white text-amber-500 shadow-md dark:bg-slate-800 [&_svg]:h-3 [&_svg]:w-3">
@@ -34,7 +34,7 @@
                     <div class="min-w-0 flex-1 pt-0.5">
                         <div class="mb-1 flex items-center gap-2">
                             <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-black text-amber-700 ring-1 ring-inset ring-amber-200 dark:bg-amber-400/10 dark:text-amber-300 dark:ring-amber-400/20">
-                                باشگاه مخاطبان
+                                Community Club
                             </span>
                         </div>
 
@@ -46,7 +46,7 @@
                         data-loyalty-earned-close
                         type="button"
                         class="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 dark:hover:bg-slate-800 dark:hover:text-white [&_svg]:h-4 [&_svg]:w-4"
-                        aria-label="بستن پیام امتیاز"
+                        aria-label="Dismiss points message"
                     >
                         @include('icons.cancel-01')
                     </button>
@@ -55,15 +55,15 @@
                 <div class="mt-4 flex items-center gap-3 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50 to-orange-50/50 px-3.5 py-3 dark:border-amber-400/10 dark:from-amber-400/10 dark:to-orange-400/5">
                     <div class="flex min-w-0 flex-1 items-baseline gap-1.5 text-amber-700 dark:text-amber-300">
                         <span class="text-xl font-black" dir="ltr">+<span data-loyalty-earned-points></span></span>
-                        <span class="text-xs font-extrabold">امتیاز</span>
+                        <span class="text-xs font-extrabold">points</span>
                     </div>
 
                     <div class="h-8 w-px bg-amber-200/80 dark:bg-amber-400/15"></div>
 
-                    <div class="min-w-0 text-left" dir="rtl">
-                        <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400">موجودی جدید</div>
+                    <div class="min-w-0 text-left" dir="ltr">
+                        <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400">New balance</div>
                         <div class="mt-0.5 text-xs font-black text-slate-800 dark:text-slate-100">
-                            <span data-loyalty-earned-balance></span> امتیاز
+                            <span data-loyalty-earned-balance></span> points
                         </div>
                     </div>
                 </div>
@@ -73,8 +73,8 @@
                     href="{{ route('account.loyalty') }}"
                     class="mt-3 inline-flex items-center gap-1 text-xs font-black text-brand-600 transition hover:text-brand-700 focus:outline-none focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-brand-400 dark:text-brand-300 dark:hover:text-brand-200 [&_svg]:h-3.5 [&_svg]:w-3.5"
                 >
-                    مشاهده باشگاه و پاداش‌ها
-                    @include('icons.arrow-left-02')
+                    View club and rewards
+                    <x-front.arrow-right-02/>
                 </a>
             </div>
 

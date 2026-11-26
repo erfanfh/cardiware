@@ -1,5 +1,5 @@
 {{--
-    بلوک کیت سه‌بعدی — {type: kit3d, title?, texture, accent, secondary, caption?}
+    3D kit block — {type: kit3d, title?, texture, accent, secondary, caption?}
 --}}
 <div class="reveal">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])

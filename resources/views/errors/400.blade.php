@@ -1,11 +1,11 @@
 @extends('errors.layout')
 
-@section('title', 'درخواست نامعتبر | ' . (get_setting('seo', 'site_name') ?: get_setting('general', 'title')))
+@section('title', 'Invalid request | ' . (get_setting('seo', 'site_name') ?: get_setting('general', 'title')))
 
 @section('code', 400)
 
 @section('label', 'Bad Request')
 
-@section('box-title', 'درخواست قابل پردازش نیست')
+@section('box-title', 'Request cannot be processed')
 
-@section('box-subtitle', 'درخواستی که ارسال شده معتبر نیست یا به‌درستی تکمیل نشده است. لطفاً دوباره تلاش کن.')
+@section('box-subtitle', 'The request is invalid or incomplete. Please try again.')

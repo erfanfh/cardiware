@@ -7,8 +7,8 @@
 
         <div class="relative mb-3 flex items-center justify-between gap-3">
             <div>
-                <div class="text-sm font-black text-slate-900 dark:text-white">منوی حساب کاربری</div>
-                <div class="mt-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">دسترسی سریع به بخش‌ها</div>
+                <div class="text-sm font-black text-slate-900 dark:text-white">Account menu</div>
+                <div class="mt-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">Quick access to sections</div>
             </div>
 
             <span
@@ -20,20 +20,20 @@
         <div class="relative grid grid-cols-3 sm:grid-cols-5 gap-2 text-center">
             @php
                 $items = [
-                    ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12'],
-                    ['route' => 'account.notifications.index', 'label' => 'اعلان‌ها', 'icon' => 'icons.notification-01', 'badge' => $unreadNotificationCount > 0 ? ($unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount) : null],
-                    ['route' => 'account.downloads', 'label' => 'دانلودها', 'icon' => 'icons.cloud-download', 'badge' => $user->purchase_accesses_count, 'badgeColor' => 'emerald'],
-                    ['route' => 'account.orders', 'label' => 'سفارش‌ها', 'icon' => 'icons.shopping-basket-03', 'badge' => $user->paid_orders_count, 'badgeColor' => 'brand'],
-                    ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'badge' => $user->open_tickets_count, 'badgeColor' => 'cyan'],
-                    ['route' => 'account.favorites', 'label' => 'علاقه‌مندی', 'icon' => 'icons.favourite', 'badge' => $user->favorite_products_count, 'badgeColor' => 'rose'],
-                    ['route' => 'account.raffles', 'label' => 'قرعه کشی', 'icon' => 'icons.award-03'],
-                    ['route' => 'account.transactions', 'label' => 'تراکنش‌ها', 'icon' => 'icons.transaction'],
-                    ['route' => 'account.loyalty', 'label' => 'باشگاه', 'icon' => 'icons.medal-06'],
-                    ['route' => 'account.information', 'label' => 'اطلاعات', 'icon' => 'icons.user-edit-01'],
-                    ['route' => 'account.security', 'label' => 'امنیت', 'icon' => 'icons.lock-password'],
+                    ['route' => 'account.dashboard', 'label' => 'Dashboard', 'icon' => 'icons.home-12'],
+                    ['route' => 'account.notifications.index', 'label' => 'Notifications', 'icon' => 'icons.notification-01', 'badge' => $unreadNotificationCount > 0 ? ($unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount) : null],
+                    ['route' => 'account.downloads', 'label' => 'Downloads', 'icon' => 'icons.cloud-download', 'badge' => $user->purchase_accesses_count, 'badgeColor' => 'emerald'],
+                    ['route' => 'account.orders', 'label' => 'Orders', 'icon' => 'icons.shopping-basket-03', 'badge' => $user->paid_orders_count, 'badgeColor' => 'brand'],
+                    ['route' => 'account.tickets', 'label' => 'Tickets', 'icon' => 'icons.message-search-02', 'badge' => $user->open_tickets_count, 'badgeColor' => 'cyan'],
+                    ['route' => 'account.favorites', 'label' => 'Favorites', 'icon' => 'icons.favourite', 'badge' => $user->favorite_products_count, 'badgeColor' => 'rose'],
+                    ['route' => 'account.raffles', 'label' => 'Raffle', 'icon' => 'icons.award-03'],
+                    ['route' => 'account.transactions', 'label' => 'Transactions', 'icon' => 'icons.transaction'],
+                    ['route' => 'account.loyalty', 'label' => 'Club', 'icon' => 'icons.medal-06'],
+                    ['route' => 'account.information', 'label' => 'Information', 'icon' => 'icons.user-edit-01'],
+                    ['route' => 'account.security', 'label' => 'Security', 'icon' => 'icons.lock-password'],
                 ];
                 if ($hasSellerStores) {
-                    $items[] = ['route' => 'seller.dashboard', 'label' => 'فروشندگی', 'icon' => 'icons.store-01'];
+                    $items[] = ['route' => 'seller.dashboard', 'label' => 'Selling', 'icon' => 'icons.store-01'];
                 }
             @endphp
 
@@ -89,7 +89,7 @@
                     class="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-rose-600 dark:bg-slate-900/70 dark:text-rose-300 [&_svg]:h-5 [&_svg]:w-5">
                     @include('icons.logout-square-01')
                 </span>
-                <span class="text-[11px] font-extrabold">خروج</span>
+                <span class="text-[11px] font-extrabold">Sign out</span>
             </button>
         </div>
     </x-front.cart>

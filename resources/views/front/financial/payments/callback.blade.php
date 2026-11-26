@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
 
@@ -8,7 +8,7 @@
         content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
-    {{-- انتقال جایگزین در صورت اجرا نشدن JavaScript --}}
+    {{-- Fallback redirect if it does not run JavaScript --}}
     <meta
         http-equiv="refresh"
         content="4;url={{ $resultUrl }}"
@@ -16,7 +16,7 @@
 
     <meta name="robots" content="noindex, nofollow">
 
-    <title>بررسی نتیجه پرداخت</title>
+    <title>Checking payment result</title>
 
     <style>
         @font-face {
@@ -76,8 +76,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            font-family: "IRANSansX",
-            Tahoma,
+            font-family: system-ui, Tahoma,
             Arial,
             sans-serif;
             font-weight: 400;
@@ -412,11 +411,11 @@
     </div>
 
     <h1 class="payment-status__title">
-        در حال بررسی نتیجه پرداخت
+        Checking payment result
     </h1>
 
     <p class="payment-status__description">
-        لطفا چند لحظه صبر کنید تا وضعیت تراکنش شما از درگاه پرداخت دریافت و تایید شود.
+        Please wait while your transaction status is received and confirmed by the payment gateway.
     </p>
 
     <div
@@ -430,7 +429,7 @@
         class="payment-status__link"
         href="{{ $resultUrl }}"
     >
-        مشاهده نتیجه پرداخت
+        View payment result
 
         <svg
             class="payment-status__link-icon"
@@ -449,7 +448,7 @@
     </a>
 
     <p class="payment-status__hint">
-        در صورت منتقل نشدن خودکار، دکمه بالا را انتخاب کنید.
+        If you are not redirected automatically, select the button above.
     </p>
 </main>
 

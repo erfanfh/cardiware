@@ -31,14 +31,14 @@
             @if ($paginator->onFirstPage())
                 <span
                     class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 cursor-default dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
-                    {!! __('pagination.previous') !!}
+                    {!! __('pagination.previous', [], 'en') !!}
                 </span>
             @else
                 <a
                     href="{{ $previousPageUrl }}"
                     rel="prev"
                     class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:shadow-black/20 dark:hover:border-slate-600 dark:hover:bg-slate-800 dark:focus:ring-brand-500/20">
-                    {!! __('pagination.previous') !!}
+                    {!! __('pagination.previous', [], 'en') !!}
                 </a>
             @endif
 
@@ -47,12 +47,12 @@
                     href="{{ $nextPageUrl }}"
                     rel="next"
                     class="inline-flex items-center justify-center rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs text-brand-700 shadow-sm transition hover:bg-brand-100 focus:outline-none focus:ring-2 focus:ring-brand-200 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 dark:shadow-black/20 dark:hover:bg-brand-500/20 dark:focus:ring-brand-500/20">
-                    {!! __('pagination.next') !!}
+                    {!! __('pagination.next', [], 'en') !!}
                 </a>
             @else
                 <span
                     class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 cursor-default dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
-                    {!! __('pagination.next') !!}
+                    {!! __('pagination.next', [], 'en') !!}
                 </span>
             @endif
         </div>
@@ -65,7 +65,7 @@
 
                     {{-- Previous Page Link --}}
                     @if ($paginator->onFirstPage())
-                        <span aria-disabled="true" aria-label="{{ __('pagination.previous') }}">
+                        <span aria-disabled="true" aria-label="{{ __('pagination.previous', [], 'en') }}">
                             <span
                                 class="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 cursor-default dark:text-slate-600"
                                 aria-hidden="true">
@@ -81,7 +81,7 @@
                             href="{{ $previousPageUrl }}"
                             rel="prev"
                             class="cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 transition hover:bg-slate-50 focus:z-10 focus:outline-none focus:ring-2 focus:ring-brand-200 active:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus:ring-brand-500/20 dark:active:bg-slate-700"
-                            aria-label="{{ __('pagination.previous') }}">
+                            aria-label="{{ __('pagination.previous', [], 'en') }}">
                             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                       d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -116,7 +116,7 @@
                                     <a
                                         href="{{ $pageUrl((int) $page) }}"
                                         class="cursor-pointer inline-flex h-9 min-w-9 items-center justify-center rounded-xl px-2.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-50 focus:z-10 focus:outline-none focus:ring-2 focus:ring-brand-200 active:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus:ring-brand-500/20 dark:active:bg-slate-700"
-                                        aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                                        aria-label="{{ __('Go to page :page', ['page' => $page], 'en') }}">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -130,7 +130,7 @@
                             href="{{ $nextPageUrl }}"
                             rel="next"
                             class="cursor-pointer inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 transition hover:bg-brand-50 focus:z-10 focus:outline-none focus:ring-2 focus:ring-brand-200 active:bg-brand-100 dark:text-slate-300 dark:hover:bg-brand-500/10 dark:focus:ring-brand-500/20 dark:active:bg-brand-500/20"
-                            aria-label="{{ __('pagination.next') }}">
+                            aria-label="{{ __('pagination.next', [], 'en') }}">
                             <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                       d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -138,7 +138,7 @@
                             </svg>
                         </a>
                     @else
-                        <span aria-disabled="true" aria-label="{{ __('pagination.next') }}">
+                        <span aria-disabled="true" aria-label="{{ __('pagination.next', [], 'en') }}">
                             <span
                                 class="inline-flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 cursor-default dark:text-slate-600"
                                 aria-hidden="true">

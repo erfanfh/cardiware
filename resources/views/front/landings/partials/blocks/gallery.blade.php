@@ -1,7 +1,7 @@
 {{--
-    بلوک گالری — {type: gallery, title?, images: [{src, caption}]}
+    Gallery block — {type: gallery, title?, images: [{src, caption}]}
 --}}
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div class="reveal" x-data="{ active: null }">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])
 

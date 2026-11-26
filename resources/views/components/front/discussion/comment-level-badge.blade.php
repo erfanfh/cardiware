@@ -1,10 +1,10 @@
 @props(['level', 'userId' => null])
 
-{{-- سطح باشگاه نویسنده‌ی دیدگاه؛ لینک به جدول برترین‌ها --}}
+{{-- Club level of comment author; link to leaderboard --}}
 <a
     href="{{ $userId ? route('loyalty.members.show', $userId) : route('loyalty.leaderboard') }}"
-    title="سطح {{ $level->title }} در باشگاه مخاطبان"
-    aria-label="سطح {{ $level->title }} در باشگاه مخاطبان"
+    title="Level {{ $level->title }} in the Community Club"
+    aria-label="Level {{ $level->title }} in the Community Club"
     class="inline-flex h-5 shrink-0 items-center gap-1 rounded-lg border px-1.5 text-[10px] font-black leading-none transition hover:brightness-95 {{ $level->colorClasses()['chip'] }}"
 >
     @if(filled($level->badge))

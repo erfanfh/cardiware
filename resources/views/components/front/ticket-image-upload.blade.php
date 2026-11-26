@@ -52,17 +52,17 @@
                 if (duplicate) continue;
 
                 if (! this.allowedTypes.includes(file.type)) {
-                    this.clientError = 'فقط تصاویر JPG، PNG و WebP قابل ارسال هستند.';
+                    this.clientError = 'Only images JPG, PNG and WebP can be submitted.';
                     continue;
                 }
 
                 if (file.size > this.maxSizeBytes) {
-                    this.clientError = `حجم تصویر «${file.name}» بیشتر از @js($maxSizeMb) مگابایت است.`;
+                    this.clientError = `Image size «${file.name}» exceeds @js($maxSizeMb) MB.`;
                     continue;
                 }
 
                 if (combined.length >= this.maxFiles) {
-                    this.clientError = `حداکثر ${this.maxFiles} تصویر برای هر پیام قابل انتخاب است.`;
+                    this.clientError = `Maximum ${this.maxFiles} images can be selected per message.`;
                     break;
                 }
 
@@ -139,8 +139,8 @@
                 'col-start-2 row-start-1' => $usesStackedActions,
                 'dark:focus:ring-brand-500/20' => $darkMode,
             ])
-            title="افزودن تصویر"
-            aria-label="افزودن تصویر به پیام"
+            title="Add image"
+            aria-label="Add image to message"
         >
             <svg class="h-5 w-5 -rotate-45 transition group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none"
                  aria-hidden="true">
@@ -182,7 +182,7 @@
                             type="button"
                             x-on:click="removeFile(index)"
                             class="absolute left-0.5 top-0.5 grid h-[18px] w-[18px] cursor-pointer place-items-center rounded-full bg-slate-950/75 text-white backdrop-blur transition hover:bg-rose-600"
-                            aria-label="حذف تصویر"
+                            aria-label="Remove image"
                         >
                             <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2.4"
@@ -200,8 +200,8 @@
                         'grid h-12 w-12 cursor-pointer place-items-center rounded-xl border border-dashed border-slate-300 text-slate-400 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600',
                         'dark:border-slate-600 dark:hover:border-brand-500/50 dark:hover:bg-brand-500/10 dark:hover:text-brand-300' => $darkMode,
                     ])
-                    aria-label="افزودن تصویر دیگر"
-                    title="افزودن تصویر دیگر"
+                    aria-label="Add another image"
+                    title="Add another image"
                 >
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -238,21 +238,21 @@
             class="group rounded-2xl border border-dashed p-2.5 transition"
         >
             <button type="button" x-on:click="chooseFiles()"
-                    class="flex w-full cursor-pointer items-center gap-2.5 text-right">
+                    class="flex w-full cursor-pointer items-center gap-2.5 text-start">
                 <span
                     class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white text-brand-600 shadow-sm ring-1 ring-slate-200 transition group-hover:ring-brand-200 dark:bg-slate-800 dark:text-brand-300 dark:ring-slate-700 [&_svg]:h-4 [&_svg]:w-4">
                     @include('icons.image-03')
                 </span>
 
                 <span class="min-w-0 flex-1">
-                    <span class="block text-[11px] font-black text-slate-700 dark:text-slate-200">افزودن تصویر</span>
+                    <span class="block text-[11px] font-black text-slate-700 dark:text-slate-200">Add image</span>
                     <span class="mt-0.5 block text-[10px] font-bold leading-5 text-slate-400 dark:text-slate-500">
-                        حداکثر {{ $maxFiles }} تصویر، هرکدام {{ $maxSizeMb }} مگابایت
+                        Maximum {{ $maxFiles }} images, each {{ $maxSizeMb }} MB
                     </span>
                 </span>
 
                 <span
-                    class="hidden text-[10px] font-bold text-brand-600 sm:block dark:text-brand-300">انتخاب فایل</span>
+                    class="hidden text-[10px] font-bold text-brand-600 sm:block dark:text-brand-300">Choose file</span>
             </button>
         </div>
 
@@ -266,7 +266,7 @@
                         type="button"
                         x-on:click="removeFile(index)"
                         class="absolute left-1 top-1 grid h-5 w-5 cursor-pointer place-items-center rounded-full bg-slate-950/75 text-white backdrop-blur transition hover:bg-rose-600"
-                        aria-label="حذف تصویر"
+                        aria-label="Remove image"
                     >
                         <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m7 7 10 10M17 7 7 17" stroke="currentColor" stroke-width="2.4"

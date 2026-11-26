@@ -36,7 +36,7 @@ const initRelatedPostsSwiper = () => {
                 el: section.querySelector('.mwRelatedPostsPagination'),
                 clickable: true,
                 renderBullet(index, className) {
-                    return `<button type="button" aria-label="رفتن به اسلاید ${index + 1}" class="${className} !m-0 !h-1.5 !w-1.5 !rounded-full !bg-slate-300 !opacity-100 transition-all duration-300 dark:!bg-slate-600"></button>`;
+                    return `<button type="button" aria-label="Go to slide ${index + 1}" class="${className} !m-0 !h-1.5 !w-1.5 !rounded-full !bg-slate-300 !opacity-100 transition-all duration-300 dark:!bg-slate-600"></button>`;
                 },
             },
             breakpoints: {

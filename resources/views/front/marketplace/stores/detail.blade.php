@@ -24,11 +24,11 @@
                     </div>
 
                     <h3 class="mt-5 text-base font-black text-slate-950 sm:text-lg dark:text-slate-100">
-                        محصولی یافت نشد!
+                        No products found!
                     </h3>
 
                     <p class="mt-2 text-xs leading-6 text-slate-500 sm:text-sm dark:text-slate-400">
-                        این فروشنده هنوز محصولی ثبت نکرده است.
+                        This seller has not listed any products yet.
                     </p>
                 </div>
             @endforelse

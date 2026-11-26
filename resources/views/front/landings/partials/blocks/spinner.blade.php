@@ -1,5 +1,5 @@
 {{--
-    بلوک اسپینر ۳۶۰° — {type: spinner, title?, dir, frames, caption?}
+    360 viewer block° — {type: spinner, title?, dir, frames, caption?}
 --}}
 <div class="reveal">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])

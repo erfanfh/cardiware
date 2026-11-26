@@ -1,6 +1,6 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <!DOCTYPE html>
-<html lang="{{ $locale }}" dir="{{ $locale === 'en' ? 'ltr' : 'rtl' }}">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,14 +11,14 @@
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Cardiware">
-    <meta property="og:locale" content="{{ $locale === 'en' ? 'en_US' : 'fa_IR' }}">
+    <meta property="og:locale" content="en_US">
     <meta property="og:title" content="{{ $data['seo']['title'] ?? $data['product_name'] }}">
     <meta property="og:description" content="{{ $data['seo']['description'] ?? '' }}">
     <meta property="og:image" content="{{ asset('images/landings/og-default.svg') }}">
 
     @vite(['resources/css/front/landing.css', 'resources/js/front/landing.js'])
 
-    {{-- override رنگ‌های تم (اختیاری: فایل storage/app/landing-themes.json) --}}
+    {{-- override Theme colors (optional file storage/app/landing-themes.json) --}}
     @php($themeOvr = \App\Support\Landings::themeOverrides($data['theme'] ?? ''))
     @if(!empty($themeOvr['accent']) || !empty($themeOvr['bg']) || !empty($themeOvr['surface']))
         <style>

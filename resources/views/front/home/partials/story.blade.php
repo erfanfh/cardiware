@@ -1,11 +1,11 @@
 @if(count($stories) > 0)
     <section x-data="storyViewer(@js($stories))" @keydown.window="handleKeydown($event)"
-             @visibilitychange.document="visibilityChanged()" aria-label="استوری‌ها">
+             @visibilitychange.document="visibilityChanged()" aria-label="Stories">
         <div class="mx-auto max-w-7xl px-4">
             <div class="mw-stories-row flex snap-x items-start gap-4 overflow-x-auto px-1 pb-3 pt-1 sm:gap-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 @foreach($stories as $story)
                     @php
-                        // هر استوری رنگ خودش را دارد (حلقه + برچسب)؛ بعد از دیدن، حلقه خاکستری می‌شود.
+                        // Each story has its own color (ring + label); ring turns gray after viewing.
                         $palette = [
                             ['ring' => 'from-[#f97316] via-[#f43f5e] to-[#a855f7]', 'pill' => 'from-[#f97316] to-[#f43f5e]'],
                             ['ring' => 'from-[#10b981] via-[#06b6d4] to-[#3b82f6]', 'pill' => 'from-[#10b981] to-[#06b6d4]'],
@@ -15,17 +15,17 @@
                         ];
                         $colors = $palette[$loop->index % count($palette)];
                         $badgeText = trim((string) ($story['badge'] ?? ''));
-                        $isLive = mb_strpos($badgeText, 'لایو') !== false;
+                        $isLive = mb_strpos($badgeText, 'Live') !== false;
                     @endphp
 
                     <button type="button" class="group flex w-[5.5rem] shrink-0 snap-start flex-col items-center gap-2.5 text-center sm:w-24"
-                            @click="openByIndex({{ $loop->index }})" aria-haspopup="dialog" aria-label="مشاهده استوری {{ $story['title'] }}">
+                            @click="openByIndex({{ $loop->index }})" aria-haspopup="dialog" aria-label="View story {{ $story['title'] }}">
                         <span class="relative block">
-                            {{-- حلقه رنگی ضخیم + فاصله سفید؛ استوری دیده‌شده حلقه خاکستری نازک دارد --}}
+                            {{-- Thick colored ring + White gap; viewed stories have thin gray ring --}}
                             <span class="block h-[5.25rem] w-[5.25rem] rounded-full p-[3px] transition duration-300 group-hover:-translate-y-0.5 group-hover:shadow-[0_10px_24px_-10px_rgba(244,63,94,.55)] sm:h-[5.75rem] sm:w-[5.75rem]"
                                   :class="isSeen(@js($story['id'])) ? 'bg-slate-300 dark:bg-slate-700 p-[2px]' : 'bg-gradient-to-tr {{ $colors['ring'] }}'">
                                 <span class="block h-full w-full rounded-full bg-white p-[2px] dark:bg-slate-950">
-                                    {{-- کمی بزرگ‌نمایی تا لوگوهایی که حاشیه سفید دارند دایره را پر کنند --}}
+                                    {{-- Slight zoom so logos with white margins fill the circle --}}
                                     <span class="block h-full w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                                     <img src="{{ $story['thumb'] }}" alt=""
                                          class="h-full w-full scale-[1.18] object-cover transition duration-300 group-hover:scale-[1.24]"
@@ -54,12 +54,12 @@
             <div x-show="isOpen" x-transition.opacity.duration.150ms style="display:none"
                  class="fixed inset-0 z-[70] flex items-center justify-center p-3">
                 <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" @click="close()" aria-hidden="true"></div>
-                <div x-ref="dialog" role="dialog" aria-modal="true" :aria-label="current.title || 'نمایش استوری'" tabindex="-1"
+                <div x-ref="dialog" role="dialog" aria-modal="true" :aria-label="current.title || 'View story'" tabindex="-1"
                      class="relative h-[min(760px,88dvh)] w-[min(420px,94vw)] overflow-hidden rounded-3xl border border-white/10 bg-slate-900 shadow-2xl">
                     <img :src="isOpen ? current.image : null" :alt="current.title || ''" x-on:error="imageError = true" @load="imageError = false"
                          class="absolute inset-0 h-full w-full select-none object-contain" draggable="false">
                     <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/55"></div>
-                    <p x-show="imageError" class="absolute inset-0 grid place-items-center p-8 text-center text-sm text-white">بارگذاری تصویر ممکن نشد. از دکمهٔ بعدی استفاده کنید.</p>
+                    <p x-show="imageError" class="absolute inset-0 grid place-items-center p-8 text-center text-sm text-white">Image could not be loaded. Use the next button.</p>
 
                     <div class="absolute inset-x-0 top-0 z-30 p-3">
                         <div class="flex items-center gap-1.5" aria-hidden="true">
@@ -78,19 +78,19 @@
                                 </div>
                             </div>
                             <div class="flex shrink-0 gap-2">
-                                <button type="button" @click="paused ? resume() : pause()" :aria-label="paused ? 'ادامه نمایش' : 'توقف نمایش'" :aria-pressed="paused"
+                                <button type="button" @click="paused ? resume() : pause()" :aria-label="paused ? 'Resume' : 'Pause'" :aria-pressed="paused"
                                         class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-white hover:bg-white/25">
-                                    {{-- آیکون توقف: دو میلهٔ گرد استاندارد --}}
+                                    {{-- Pause icon: two standard rounded bars --}}
                                     <svg x-show="!paused" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                         <rect x="5" y="4" width="5.5" height="16" rx="2"></rect>
                                         <rect x="13.5" y="4" width="5.5" height="16" rx="2"></rect>
                                     </svg>
-                                    {{-- آیکون پخش: مثلث گرد --}}
+                                    {{-- Play icon: rounded triangle --}}
                                     <svg x-show="paused" x-cloak aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M8 5.5a2 2 0 0 1 3.09-1.67l8.09 5.6a2.36 2.36 0 0 1 0 3.88l-8.09 5.6A2 2 0 0 1 8 17.24V5.5Z"></path>
                                     </svg>
                                 </button>
-                                <button x-ref="closeButton" type="button" @click="close()" aria-label="بستن استوری"
+                                <button x-ref="closeButton" type="button" @click="close()" aria-label="Close story"
                                         class="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 text-white hover:bg-white/25">
                                     <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
                                         <path d="M6 6l12 12M18 6L6 18"></path>
@@ -108,11 +108,11 @@
                             </template>
                         </div>
                         <div class="flex items-center justify-between gap-3 text-white">
-                            <button type="button" @click="prev()" :disabled="index === 0" aria-label="استوری قبلی"
-                                    class="rounded-xl bg-white/15 px-4 py-2 text-xs font-bold hover:bg-white/25 disabled:opacity-30">قبلی</button>
+                            <button type="button" @click="prev()" :disabled="index === 0" aria-label="Previous story"
+                                    class="rounded-xl bg-white/15 px-4 py-2 text-xs font-bold hover:bg-white/25 disabled:opacity-30">Previous</button>
                             <span class="text-xs text-white/80" x-text="`${index + 1} / ${stories.length}`" aria-live="polite"></span>
-                            <button type="button" @click="next()" aria-label="استوری بعدی"
-                                    class="rounded-xl bg-white/15 px-4 py-2 text-xs font-bold hover:bg-white/25">بعدی</button>
+                            <button type="button" @click="next()" aria-label="Next story"
+                                    class="rounded-xl bg-white/15 px-4 py-2 text-xs font-bold hover:bg-white/25">Next</button>
                         </div>
                     </div>
 

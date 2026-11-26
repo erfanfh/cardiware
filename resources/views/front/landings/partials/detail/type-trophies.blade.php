@@ -1,6 +1,6 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div>
-    <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Trophy Room' : 'گالری جام‌ها' }}</h2>
+    <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Trophy Room' : 'Trophy gallery' }}</h2>
 
     <div class="mt-8 grid gap-5 sm:grid-cols-2">
         @foreach($pageData['catalog'] as $trophy)
@@ -22,21 +22,21 @@
         @endforeach
     </div>
 
-    {{-- نمای ۳۶۰° جام قهرمانان --}}
+    {{-- 360-degree view° Champions trophy --}}
     <div class="mt-20">
         <div class="mx-auto max-w-2xl text-center">
-            <h3 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'The trophy in 360°' : 'جام قهرمانان در ۳۶۰ درجه' }}</h3>
+            <h3 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'The trophy in 360°' : 'Champions trophy in 360 degrees' }}</h3>
             <p class="mt-3 text-sm leading-7 text-muted">
                 {{ $locale === 'en'
                     ? 'The real in-game 3D model — drag to inspect it from every angle.'
-                    : 'مدل سه‌بعدی واقعی داخل بازی — بکش تا از هر زاویه ببینیش.' }}
+                    : 'Actual in-game 3D model: drag to view from any angle.' }}
             </p>
         </div>
         <div class="mt-8">
             @include('front.landings.partials.spinner', ['spin' => [
                 'dir' => 'spin/trophy',
                 'frames' => 36,
-                'caption' => ['fa' => 'جام قهرمانان اروپا — مدل داخل بازی', 'en' => 'UEFA Champions League trophy — in-game model'],
+                'caption' => ['fa' => 'European Champions Trophy: in-game model', 'en' => 'UEFA Champions League trophy — in-game model'],
             ]])
         </div>
     </div>

@@ -1,11 +1,11 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <section class="overflow-hidden py-10" dir="ltr" aria-label="leagues">
     <div class="marquee">
         <div class="marquee__track">
-            {{-- آیتم‌ها دوبار تکرار می‌شوند تا حلقه بی‌درز باشد --}}
+            {{-- Items repeat twice for seamless loop --}}
             @foreach(array_merge($section['items'], $section['items']) as $item)
                 @php($logoFile = !empty($item['slug']) ? \App\Support\Landings::leagueLogo($item['slug'], $item['logo'] ?? null) : ($item['logo'] ?? null))
-                <span class="league-chip {{ !empty($logoFile) ? 'league-chip--logo' : '' }}" dir="rtl">
+                <span class="league-chip {{ !empty($logoFile) ? 'league-chip--logo' : '' }}" dir="ltr">
                     @if(!empty($logoFile))
                         <img src="{{ \App\Support\Landings::logoUrl($logoFile) }}" alt="" class="size-7 object-contain" loading="lazy">
                     @else

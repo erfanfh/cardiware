@@ -16,11 +16,11 @@
 
             <div class="min-w-0">
                 <div class="text-sm font-extrabold text-slate-900 sm:text-base dark:text-white">
-                    تیکت‌های پشتیبانی
+                    Support tickets
                 </div>
 
                 <div class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                    ارتباط مستقیم با تیم پشتیبانی Cardiware
+                    Contact our support team directly Cardiware
                 </div>
             </div>
         </div>
@@ -40,6 +40,6 @@
             />
         </svg>
 
-        ثبت تیکت جدید
+        Create ticket
     </button>
 </div>

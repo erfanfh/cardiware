@@ -14,7 +14,7 @@
             <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                 <div class="flex items-center gap-2">
                     <h2 class="text-base font-black text-slate-900 dark:text-white whitespace-nowrap">
-                        تراکنش های مالی
+                        Financial transactions
                     </h2>
 
                     <span
@@ -22,7 +22,7 @@
                                text-[10px] font-black text-slate-500
                                dark:bg-slate-800 dark:text-slate-400"
                     >
-                        {{ number_format($activities->total()) }} مورد
+                        {{ number_format($activities->total()) }} items
                     </span>
                 </div>
 
@@ -34,7 +34,7 @@
                     {{-- Type --}}
                     <div>
                         <label for="financial-activity-type" class="sr-only">
-                            نوع تراکنش
+                            Transaction type
                         </label>
 
                         <select
@@ -50,7 +50,7 @@
                                xl:min-w-40"
                         >
                             <option value="">
-                                همه تراکنش ها
+                                All transactions
                             </option>
 
                             @foreach($typeOptions as $typeOption)
@@ -64,7 +64,7 @@
                     {{-- Status --}}
                     <div>
                         <label for="financial-activity-status" class="sr-only">
-                            وضعیت تراکنش
+                            Transaction status
                         </label>
 
                         <select
@@ -80,7 +80,7 @@
                                xl:min-w-36"
                         >
                             <option value="">
-                                همه وضعیت ها
+                                All statuses
                             </option>
 
                             @foreach($statusOptions as $statusOption)
@@ -94,7 +94,7 @@
                     {{-- Direction --}}
                     <div>
                         <label for="financial-activity-direction" class="sr-only">
-                            جهت تراکنش
+                            Transaction direction
                         </label>
 
                         <select
@@ -110,7 +110,7 @@
                                xl:min-w-32"
                         >
                             <option value="">
-                                همه جهت ها
+                                All directions
                             </option>
 
                             @foreach($directionOptions as $directionOption)
@@ -124,7 +124,7 @@
                     {{-- Per page --}}
                     <div>
                         <label for="financial-activity-per-page" class="sr-only">
-                            تعداد نمایش
+                            Items per page
                         </label>
 
                         <select
@@ -141,7 +141,7 @@
                         >
                             @foreach($perPageOptions as $perPageOption)
                                 <option value="{{ $perPageOption }}">
-                                    {{ $perPageOption }} مورد
+                                    {{ $perPageOption }} items
                                 </option>
                             @endforeach
                         </select>
@@ -160,7 +160,7 @@
                            disabled:cursor-not-allowed disabled:opacity-60
                            dark:text-slate-400 dark:hover:text-brand-300"
                     >
-                        پاک کردن فیلترها
+                        Clear filters
                     </button>
                 </div>
             @endif
@@ -207,7 +207,7 @@
                 ></path>
             </svg>
 
-            در حال دریافت تراکنش‌ها...
+            Loading transactions...
         </div>
 
         {{-- Activities --}}
@@ -291,21 +291,21 @@
                         || $activity->balanceAfter !== null;
 
                     $detailLabels = [
-                        'gateway' => 'درگاه پرداخت',
-                        'payment_status' => 'وضعیت پرداخت',
-                        'tax_amount' => 'مالیات',
-                        'gateway_reference' => 'شناسه مرجع درگاه',
-                        'gateway_transaction_id' => 'شناسه تراکنش درگاه',
-                        'gateway_message' => 'پیام درگاه',
-                        'purpose' => 'نوع شارژ',
-                        'top_up_status' => 'وضعیت شارژ',
-                        'wallet_amount' => 'پرداخت از کیف پول',
-                        'gateway_amount' => 'پرداخت از درگاه',
-                        'withdrawable_amount' => 'مبلغ قابل برداشت',
-                        'failure_reason' => 'علت ناموفق بودن',
-                        'counterparty_mobile' => 'شماره طرف مقابل',
-                        'transfer_status' => 'وضعیت انتقال',
-                        'converted_points' => 'امتیاز مصرف‌شده',
+                        'gateway' => 'Payment gateway',
+                        'payment_status' => 'Payment status',
+                        'tax_amount' => 'Tax',
+                        'gateway_reference' => 'Gateway reference ID',
+                        'gateway_transaction_id' => 'Gateway transaction ID',
+                        'gateway_message' => 'Gateway message',
+                        'purpose' => 'Top-up type',
+                        'top_up_status' => 'Top-up status',
+                        'wallet_amount' => 'Paid from wallet',
+                        'gateway_amount' => 'Paid via gateway',
+                        'withdrawable_amount' => 'Withdrawable amount',
+                        'failure_reason' => 'Failure reason',
+                        'counterparty_mobile' => 'Counterparty number',
+                        'transfer_status' => 'Transfer status',
+                        'converted_points' => 'Points spent',
                     ];
 
                     $amountDetailKeys = [
@@ -481,7 +481,7 @@
                                        text-slate-400"
                                 >
                                 <span>
-                                    {{ jalali_date($activity->occurredAt) }}
+                                    {{ (($activity->occurredAt) ? \Illuminate\Support\Carbon::parse($activity->occurredAt)->format('Y/m/d H:i') : '') }}
                                 </span>
 
                                     @if($activity->referenceLabel)
@@ -535,7 +535,7 @@
                                 {{ number_format($activity->amount) }}
 
                                 <span class="text-xs font-bold">
-                                تومان
+                                Toman
                             </span>
                             </div>
 
@@ -543,9 +543,9 @@
                                 <p
                                     class="mt-1 text-[11px] font-semibold
                                        text-slate-400"
-                                    dir="rtl"
+                                    dir="ltr"
                                 >
-                                    موجودی بعد از تراکنش:
+                                    Balance after transaction:
 
                                     <span
                                         class="font-extrabold
@@ -553,7 +553,7 @@
                                         dir="ltr"
                                     >
                                     {{ number_format($activity->balanceAfter) }}
-                                    تومان
+                                    Toman
                                 </span>
                                 </p>
                             @endif
@@ -569,8 +569,8 @@
                                        dark:text-brand-300
                                        dark:hover:text-brand-200"
                                 >
-                                <span x-text="detailsOpen ? 'بستن جزئیات' : 'نمایش جزئیات'">
-                                    نمایش جزئیات
+                                <span x-text="detailsOpen ? 'Close details' : 'View details'">
+                                    View details
                                 </span>
 
                                     <svg
@@ -611,7 +611,7 @@
                                     @if($activity->trackingCode)
                                         <div>
                                             <p class="text-[10px] font-bold text-slate-400">
-                                                کد پیگیری
+                                                Tracking code
                                             </p>
 
                                             <p
@@ -627,7 +627,7 @@
                                     @if($activity->transactionCode())
                                         <div>
                                             <p class="text-[10px] font-bold text-slate-400">
-                                                کد تراکنش
+                                                Transaction code
                                             </p>
 
                                             <p
@@ -643,7 +643,7 @@
                                     @if($activity->referenceLabel)
                                         <div>
                                             <p class="text-[10px] font-bold text-slate-400">
-                                                مرجع
+                                                Reference
                                             </p>
 
                                             <p
@@ -658,7 +658,7 @@
                                     @if($activity->balanceAfter !== null)
                                         <div>
                                             <p class="text-[10px] font-bold text-slate-400">
-                                                موجودی بعد از تراکنش
+                                                Balance after transaction
                                             </p>
 
                                             <p
@@ -667,7 +667,7 @@
                                                 dir="ltr"
                                             >
                                                 {{ number_format($activity->balanceAfter) }}
-                                                تومان
+                                                Toman
                                             </p>
                                         </div>
                                     @endif
@@ -717,7 +717,7 @@
                                                     )
                                                 )
                                                     {{ number_format((int) $detailValue) }}
-                                                    تومان
+                                                    Toman
                                                 @else
                                                     {{ $detailValue }}
                                                 @endif
@@ -762,7 +762,7 @@
                         class="mt-4 text-sm font-black
                            text-slate-800 dark:text-slate-200"
                     >
-                        تراکنشی پیدا نشد
+                        No transactions found
                     </h3>
 
                     <p
@@ -770,9 +770,9 @@
                            text-slate-500 dark:text-slate-400"
                     >
                         @if($hasActiveFilters)
-                            هیچ تراکنشی با فیلترهای انتخاب شده مطابقت ندارد.
+                            No transactions match the selected filters.
                         @else
-                            بعد از انجام اولین عملیات مالی، اطلاعات آن در این بخش نمایش داده می‌شود.
+                            After your first financial transaction, its details will appear here.
                         @endif
                     </p>
 
@@ -785,7 +785,7 @@
                                transition hover:text-brand-800
                                dark:text-brand-300"
                         >
-                            نمایش همه تراکنش ها
+                            Show all transactions
                         </button>
                     @endif
                 </div>

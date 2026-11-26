@@ -15,7 +15,7 @@
         <x-front.cart id="video-gallery" class="overflow-hidden">
             <div class="flex items-start justify-between gap-4">
                 <x-front.cart-title
-                        title="گالری ویدیویی"
+                        title="Video gallery"
                         iconName="video-01"
                         class="!mb-0"
                 />
@@ -26,18 +26,18 @@
                             type="button"
                             x-ref="prev"
                             class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
-                            aria-label="ویدیوی قبلی"
+                            aria-label="Previous video"
                     >
-                        @include('icons.arrow-right-01')
+                        @include('icons.arrow-left-01')
                     </button>
 
                     <button
                             type="button"
                             x-ref="next"
                             class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
-                            aria-label="ویدیوی بعدی"
+                            aria-label="Next video"
                     >
-                        @include('icons.arrow-left-01')
+                        @include('icons.arrow-right-01')
                     </button>
                 </div>
                 <?php endif; ?>
@@ -63,8 +63,8 @@
                                     data-video-title="{{ $item->title }}"
                                     data-video-cover="{{ $item->mediaFile->url }}"
                                     @click="openFromElement($el)"
-                                    class="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-right transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-950 dark:hover:border-brand-500/30 dark:hover:shadow-black/20 dark:focus-visible:ring-offset-slate-900"
-                                    aria-label="پخش ویدیو {{ $item->title }}"
+                                    class="group flex h-full w-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white text-start transition duration-300 hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 dark:border-slate-700 dark:bg-slate-950 dark:hover:border-brand-500/30 dark:hover:shadow-black/20 dark:focus-visible:ring-offset-slate-900"
+                                    aria-label="Play video {{ $item->title }}"
                             >
                                 <div class="relative aspect-video w-full overflow-hidden bg-slate-900">
                                     <div
@@ -90,7 +90,7 @@
                                     <div class="absolute right-3 top-3">
                                             <span class="inline-flex items-center gap-1.5 rounded-xl border border-white/15 bg-slate-950/55 px-2.5 py-1 text-[10px] font-extrabold text-white backdrop-blur-md">
                                                 <span class="h-1.5 w-1.5 rounded-full {{ $isAparat ? 'bg-red-400' : 'bg-brand-400' }}"></span>
-                                                {{ $isAparat ? 'آپارات' : 'ویدیو' }}
+                                                {{ $isAparat ? 'Aparat' : 'Video' }}
                                             </span>
                                     </div>
 
@@ -102,9 +102,9 @@
 
                                     <div class="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3">
                                             <span class="inline-flex items-center gap-1.5 text-xs font-extrabold text-white">
-                                                پخش ویدیو
+                                                Play video
                                                 <span class="text-white/70 [&_svg]:h-3.5 [&_svg]:w-3.5">
-                                                    @include('icons.arrow-left-02')
+                                                    <x-front.arrow-right-02/>
                                                 </span>
                                             </span>
                                     </div>
@@ -139,7 +139,7 @@
                     class="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6"
                     role="dialog"
                     aria-modal="true"
-                    aria-label="پخش ویدیو"
+                    aria-label="Play video"
             >
                 <div
                         x-show="selectedVideo"
@@ -170,7 +170,7 @@
                                 x-if="selectedVideo && selectedVideo.playerType === 'aparat' && selectedVideo.playerUrl">
                             <iframe
                                     :src="selectedVideo.playerUrl"
-                                    :title="selectedVideo.title || 'ویدیوی آپارات'"
+                                    :title="selectedVideo.title || 'Aparat video'"
                                     class="absolute inset-0 h-full w-full border-0"
                                     allow="autoplay; fullscreen; picture-in-picture"
                                     allowfullscreen
@@ -199,10 +199,10 @@
                                 </div>
 
                                 <div class="mt-4 text-sm font-extrabold text-white sm:text-base">
-                                    پخش این لینک داخل سایت امکان‌پذیر نیست
+                                    This link cannot be played on the website
                                 </div>
                                 <div class="mt-2 max-w-md text-xs leading-6 text-slate-400 sm:text-sm">
-                                    لینک مستقیم فایل ویدیو یا لینک صفحه ویدیو در آپارات را وارد کنید.
+                                    Enter a direct video file link or an Aparat video page link.
                                 </div>
 
                                 <template x-if="selectedVideo.sourceUrl">
@@ -212,9 +212,9 @@
                                             rel="noopener noreferrer"
                                             class="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-extrabold text-slate-900 transition hover:bg-slate-100"
                                     >
-                                        باز کردن لینک ویدیو
+                                        Open video link
                                         <span class="[&_svg]:h-4 [&_svg]:w-4">
-                                            @include('icons.arrow-left-02')
+                                            <x-front.arrow-right-02/>
                                         </span>
                                     </a>
                                 </template>
@@ -226,7 +226,7 @@
                                 data-post-video-modal-close
                                 @click="closeModal()"
                                 class="absolute left-3 top-3 z-20 inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/15 bg-black/55 text-white shadow-lg backdrop-blur-md transition hover:bg-black/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:left-4 sm:top-4"
-                                aria-label="بستن ویدیو"
+                                aria-label="Close video"
                         >
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                  stroke-width="1.8"
@@ -238,16 +238,16 @@
 
                     <div class="flex items-center justify-between gap-4 border-t border-white/10 bg-slate-950 px-4 py-3.5 sm:px-5 sm:py-4">
                         <div class="min-w-0">
-                            <div class="text-[10px] font-extrabold text-brand-400">گالری ویدیویی</div>
+                            <div class="text-[10px] font-extrabold text-brand-400">Video gallery</div>
                             <h3
                                     class="mt-1 truncate text-sm font-extrabold text-white sm:text-base"
-                                    x-text="selectedVideo?.title || 'ویدیو'"
+                                    x-text="selectedVideo?.title || 'Video'"
                             ></h3>
                         </div>
 
                         <div class="hidden shrink-0 items-center gap-2 text-[11px] font-bold text-slate-400 sm:flex">
                             <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                            پخش در همین صفحه
+                            Play on this page
                         </div>
                     </div>
                 </div>

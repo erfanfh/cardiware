@@ -13,10 +13,10 @@
 
                     <div class="min-w-0">
                         <div class="text-sm font-black text-slate-900 sm:text-base dark:text-white">
-                            علاقه مندی ها
+                            Favorites
                         </div>
                         <div class="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                            محصولاتی که برای مراجعه بعدی ذخیره کرده اید
+                            Products you saved for later
                         </div>
                     </div>
                 </div>
@@ -24,7 +24,7 @@
 
             <span
                 class="inline-flex w-fit items-center rounded-xl border border-rose-100 bg-rose-50 px-2.5 py-1 text-[11px] font-extrabold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
-                {{ number_format($this->favorites->total()) }} مورد
+                {{ number_format($this->favorites->total()) }} items
             </span>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-extrabold text-slate-700 shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 <span
                     class="h-4 w-4 animate-spin rounded-full border-2 border-brand-200 border-t-brand-600 dark:border-brand-500/20 dark:border-t-brand-300"></span>
-                در حال بروزرسانی
+                Updating
             </div>
         </div>
 
@@ -56,7 +56,7 @@
                 <span class="min-w-0 flex-1">{{ $message }}</span>
                 <button type="button" x-on:click="show = false"
                         class="cursor-pointer text-current opacity-60 transition hover:opacity-100 [&_svg]:h-4 [&_svg]:w-4"
-                        aria-label="بستن پیام">
+                        aria-label="Dismiss message">
                     @include('icons.cancel-01')
                 </button>
             </div>
@@ -77,14 +77,14 @@
                             wire:loading.attr="disabled"
                             wire:target="remove({{ $product->id }})"
                             class="cursor-pointer absolute left-2.5 top-2.5 z-20 inline-flex h-9 items-center gap-1.5 rounded-xl border border-white/70 bg-white/95 px-2.5 text-[11px] font-extrabold text-rose-600 shadow-lg shadow-slate-950/10 backdrop-blur transition hover:bg-rose-50 disabled:cursor-wait disabled:opacity-70 sm:left-3 sm:top-3 dark:border-slate-700 dark:bg-slate-900/95 dark:text-rose-300 dark:hover:bg-rose-500/10 [&_svg]:h-4 [&_svg]:w-4"
-                            aria-label="حذف {{ $product->title }} از علاقه مندی ها"
+                            aria-label="Remove {{ $product->title }} from favorites"
                         >
                             <span wire:loading.remove wire:target="remove({{ $product->id }})">
                                 @include('icons.favourite')
                             </span>
                             <span wire:loading wire:target="remove({{ $product->id }})"
                                   class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-rose-200 border-t-rose-600 dark:border-rose-500/20 dark:border-t-rose-300"></span>
-                            حذف
+                            Remove
                         </button>
                     </div>
                 @endforeach
@@ -104,22 +104,22 @@
                 </div>
 
                 <div class="mt-4 text-sm font-black leading-7 text-slate-900 sm:text-base dark:text-white">
-                    هنوز محصولی ذخیره نکرده اید
+                    You have not saved any products yet
                 </div>
 
                 <p class="mx-auto mt-2 max-w-xl text-xs font-medium leading-6 text-slate-500 sm:text-sm sm:leading-7 dark:text-slate-400">
-                    در صفحه هر محصول می توانید با دکمه قلب آن را به این لیست اضافه کنید و هر زمان خواستید سریع به آن
-                    برگردید.
+                    Use the heart button on any product page to add it to this list and quickly
+                    return to it whenever needed.
                 </p>
 
                 <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
                     <span
                         class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-extrabold text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                        ذخیره برای بعد
+                        Save for later
                     </span>
                     <span
                         class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-[11px] font-extrabold text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                        دسترسی سریع از حساب کاربری
+                        Quick access from account
                     </span>
                 </div>
 
@@ -128,8 +128,8 @@
                         href="{{ route('products.list') }}"
                         class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 sm:w-auto dark:bg-brand-500 dark:hover:bg-brand-400 [&_svg]:h-4 [&_svg]:w-4"
                     >
-                        مشاهده محصولات
-                        @include('icons.arrow-left-02')
+                        View products
+                        <x-front.arrow-right-02/>
                     </a>
                 </div>
             </div>

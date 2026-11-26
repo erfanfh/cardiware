@@ -6,22 +6,22 @@
 
     <div class="relative">
         <div class="text-sm font-extrabold text-slate-900">
-            نیاز به راهنمایی قبل از خرید داری؟
+            Need help before buying?
         </div>
 
         <p class="mt-2 text-sm text-slate-600 leading-7">
-            اگر در انتخاب نسخه مناسب، روش نصب یا سازگاری محصول سوال داری...
+            If you have questions about choosing a version, installation or compatibility...
         </p>
 
         <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <a href="#"
                class="rounded-2xl bg-slate-900 text-white px-4 py-3 text-sm font-extrabold text-center">
-                ثبت تیکت
+                Create ticket
             </a>
 
             <a href="#"
                class="rounded-2xl border border-slate-200 text-brand-700 px-4 py-3 text-sm font-extrabold text-center hover:bg-brand-50">
-                پیام به فروشنده
+                Message seller
             </a>
         </div>
     </div>

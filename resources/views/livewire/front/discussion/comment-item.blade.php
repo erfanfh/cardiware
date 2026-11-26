@@ -180,9 +180,9 @@
                         type="button"
                         class="inline-flex h-10 cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
                     >
-                        <span>پاسخ</span>
+                        <span>Reply</span>
                         <span class="text-slate-400 dark:text-slate-500">
-                        @include('icons.arrow-left-double')
+                        <x-front.arrow-right-double/>
                     </span>
                     </button>
                 @endif
@@ -194,9 +194,9 @@
         @if($this->isPendingVisibleToCurrentViewer())
             <div
                 class="rounded-2xl mt-3 border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                <div class="font-extrabold">دیدگاه شما در انتظار تأیید است.</div>
+                <div class="font-extrabold">Your comment is pending approval.</div>
                 <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300/80">
-                    این دیدگاه فقط برای شما نمایش داده می‌شود و پس از بررسی منتشر خواهد شد.
+                    This comment is visible only to you and will be published after review.
                 </p>
             </div>
         @endif
@@ -219,9 +219,9 @@
                         wire:click="toggleReaction('like')"
                         wire:loading.attr="disabled"
                         wire:target="toggleReaction"
-                        aria-label="پسندیدن دیدگاه"
+                        aria-label="Like comment"
                         aria-pressed="{{ $this->viewerReactionType === 'like' ? 'true' : 'false' }}"
-                        title="پسندیدن دیدگاه"
+                        title="Like comment"
                         @class([
                             'inline-flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition active:scale-95 disabled:cursor-wait',
 
@@ -258,9 +258,9 @@
                         wire:click="toggleReaction('dislike')"
                         wire:loading.attr="disabled"
                         wire:target="toggleReaction"
-                        aria-label="نپسندیدن دیدگاه"
+                        aria-label="Dislike comment"
                         aria-pressed="{{ $this->viewerReactionType === 'dislike' ? 'true' : 'false' }}"
-                        title="نپسندیدن دیدگاه"
+                        title="Dislike comment"
                         @class([
                             'inline-flex h-7 min-w-7 cursor-pointer items-center justify-center gap-1 rounded-lg px-1.5 text-[10px] font-black transition active:scale-95 disabled:cursor-wait',
 
@@ -301,9 +301,9 @@
                 type="button"
                 class="mt-4 inline-flex h-10 w-full cursor-pointer items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-700 transition hover:border-slate-300 hover:bg-white sm:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:bg-slate-950"
             >
-                <span>پاسخ</span>
+                <span>Reply</span>
                 <span class="text-slate-400 dark:text-slate-500">
-                @include('icons.arrow-left-double')
+                <x-front.arrow-right-double/>
             </span>
             </button>
         @endif
@@ -325,21 +325,21 @@
                                     <div
                                         class="min-w-0 text-xs font-extrabold leading-6 text-slate-800 dark:text-slate-200">
                                         @if($this->approvedRepliesCount > 0 && $this->pendingVisibleRepliesCount > 0)
-                                            {{ $this->visibleRepliesCount }} پاسخ برای این دیدگاه قابل مشاهده است
+                                            {{ $this->visibleRepliesCount }} replies are visible for this comment
                                         @elseif($this->approvedRepliesCount > 0)
                                             {{ $this->approvedRepliesCount === 1
-                                                ? 'یک پاسخ برای این دیدگاه ثبت شده است'
-                                                : $this->approvedRepliesCount . ' پاسخ برای این دیدگاه ثبت شده است' }}
+                                                ? 'One reply has been posted for this comment'
+                                                : $this->approvedRepliesCount . ' replies have been posted for this comment' }}
                                         @else
                                             {{ $this->pendingVisibleRepliesCount === 1
-                                                ? 'پاسخ شما برای این دیدگاه در انتظار تأیید است'
-                                                : $this->pendingVisibleRepliesCount . ' پاسخ شما برای این دیدگاه در انتظار تأیید است' }}
+                                                ? 'Your reply to this comment is pending approval'
+                                                : $this->pendingVisibleRepliesCount . ' Your reply to this comment is pending approval' }}
                                         @endif
                                     </div>
                                 </div>
 
                                 <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                    ادامه این گفتگو را مشاهده کنید.
+                                    View the rest of this conversation.
                                 </p>
                             </div>
 
@@ -364,8 +364,8 @@
                                               stroke-linecap="round"></path>
                                     </svg>
 
-                                    <span wire:loading.remove wire:target="toggleReplies">نمایش پاسخ‌ها</span>
-                                    <span wire:loading wire:target="toggleReplies">در حال بارگذاری...</span>
+                                    <span wire:loading.remove wire:target="toggleReplies">Show replies</span>
+                                    <span wire:loading wire:target="toggleReplies">Loading...</span>
 
                                     <span
                                         class="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 text-[11px] text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -470,7 +470,7 @@
                             <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" stroke-width="4"
                                   stroke-linecap="round"></path>
                         </svg>
-                        <span class="truncate">در حال ارسال پاسخ...</span>
+                        <span class="truncate">Sending reply...</span>
                     </div>
                 </div>
 
@@ -478,7 +478,7 @@
                       wire:target="submitReply">
                     <div class="flex items-center justify-between gap-3">
                         <div class="min-w-0 text-sm font-black leading-7 text-slate-800 dark:text-slate-200">
-                            پاسخ به
+                            Reply to
                             <span class="break-words text-brand-600 dark:text-brand-300">
                             {{ $this->comment->display_name }}
                         </span>
@@ -516,7 +516,7 @@
                                     wire:target="submitReply"
                                     type="text"
                                     class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                                    placeholder="نام شما (الزامی)"
+                                    placeholder="Your name (required)"
                                 >
                                 @error('replyAuthorName')
                                 <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
@@ -530,7 +530,7 @@
                                     wire:target="submitReply"
                                     type="email"
                                     class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                                    placeholder="ایمیل شما (الزامی)"
+                                    placeholder="Your email (required)"
                                 >
                                 @error('replyAuthorEmail')
                                 <div class="mt-2 text-xs font-bold text-red-600 dark:text-red-400">{{ $message }}</div>
@@ -546,7 +546,7 @@
                         wire:target="submitReply"
                         rows="3"
                         class="mt-3 w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                        placeholder="پاسخ شما…"
+                        placeholder="Your reply…"
                     ></textarea>
 
                     @error('replyContent')
@@ -561,7 +561,7 @@
                             type="button"
                             class="inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 hover:opacity-95 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                         >
-                            لغو
+                            Cancel
                         </button>
 
                         <button
@@ -578,8 +578,8 @@
                                       stroke-linecap="round"></path>
                             </svg>
 
-                            <span wire:loading.remove wire:target="submitReply">ارسال پاسخ</span>
-                            <span wire:loading wire:target="submitReply" class="truncate">در حال ارسال...</span>
+                            <span wire:loading.remove wire:target="submitReply">Send reply</span>
+                            <span wire:loading wire:target="submitReply" class="truncate">Sending...</span>
                         </button>
                     </div>
                 </form>

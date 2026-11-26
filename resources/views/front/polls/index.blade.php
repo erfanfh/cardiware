@@ -16,20 +16,20 @@
                     />
                     <div class="mt-8 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/75 px-3 py-1.5 text-[11px] font-black text-brand-700 shadow-sm dark:border-orange-400/20 dark:bg-orange-400/10 dark:text-orange-200 dark:shadow-none">
                         <span class="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,.9)]"></span>
-                        صدای جامعه Cardiware
+                        Community voice Cardiware
                     </div>
-                    <h1 class="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-[42px]">نظرسنجی‌ها</h1>
-                    <p class="mt-4 max-w-xl text-sm leading-8 text-slate-600 dark:text-slate-300 sm:text-base">از بازی‌ها و محتواهای محبوب تا تجربه شما از سایت؛ نظر خود را ثبت کنید و در تصمیم‌های جامعه Cardiware سهیم باشید.</p>
+                    <h1 class="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-[42px]">Polls</h1>
+                    <p class="mt-4 max-w-xl text-sm leading-8 text-slate-600 dark:text-slate-300 sm:text-base">From favorite games and content to your site experience, share your opinion and help shape community decisions Cardiware be part of them.</p>
                     <a href="#poll-list" class="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-black text-white shadow-lg shadow-brand-500/20 transition hover:-translate-y-0.5 hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:focus-visible:outline-white">
-                        دیدن نظرسنجی‌ها
-                        <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                        View polls
+                        <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                     </a>
                 </div>
 
-                <div class="relative grid grid-cols-2 gap-3" aria-label="آمار نظرسنجی‌ها">
+                <div class="relative grid grid-cols-2 gap-3" aria-label="Poll statistics">
                     <div class="col-span-2 rounded-3xl border border-white/90 bg-white/75 p-5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.07] dark:shadow-none">
                         <div class="flex items-center justify-between gap-4">
-                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">نظرسنجی‌های فعال</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Active polls</span>
                             <span class="grid h-10 w-10 place-items-center rounded-2xl bg-orange-100 text-brand-600 dark:bg-orange-400/15 dark:text-orange-300 [&_svg]:h-5 [&_svg]:w-5">@include('icons.chart-03')</span>
                         </div>
                         <div class="mt-2 text-4xl font-black tabular-nums">{{ number_format($stats['active']) }}</div>
@@ -38,11 +38,11 @@
                         </div>
                     </div>
                     <div class="rounded-2xl border border-white/90 bg-white/70 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.06] dark:shadow-none">
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">در راه</div>
+                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Upcoming</div>
                         <div class="mt-2 text-2xl font-black tabular-nums">{{ number_format($stats['upcoming']) }}</div>
                     </div>
                     <div class="rounded-2xl border border-white/90 bg-white/70 p-4 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.06] dark:shadow-none">
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">کل نظرسنجی‌ها</div>
+                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Total polls</div>
                         <div class="mt-2 text-2xl font-black tabular-nums">{{ number_format($stats['all']) }}</div>
                     </div>
                 </div>
@@ -53,21 +53,21 @@
             <div class="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-5">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <h2 class="text-lg font-black text-slate-900 dark:text-white">نظرسنجی‌ها را مرور کنید</h2>
-                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">موضوع دلخواهتان را پیدا کنید و در گفتگو شرکت کنید.</p>
+                        <h2 class="text-lg font-black text-slate-900 dark:text-white">Browse polls</h2>
+                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">Find your preferred topic and join the discussion.</p>
                     </div>
                     <form action="{{ route('polls.index') }}#poll-list" method="get" role="search" class="flex w-full max-w-md gap-2">
                         @if($status !== 'all')<input type="hidden" name="status" value="{{ $status }}">@endif
-                        <label for="poll-search" class="sr-only">جست‌وجوی نظرسنجی</label>
+                        <label for="poll-search" class="sr-only">Search polls</label>
                         <div class="relative min-w-0 flex-1">
                             <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 [&_svg]:h-4 [&_svg]:w-4">@include('icons.search-01')</span>
-                            <input id="poll-search" name="search" type="search" value="{{ $search }}" placeholder="جست‌وجوی نظرسنجی..." maxlength="100" class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pr-10 pl-3 text-xs font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-brand-500">
+                            <input id="poll-search" name="search" type="search" value="{{ $search }}" placeholder="Search polls..." maxlength="100" class="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pr-10 pl-3 text-xs font-bold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-2 focus:ring-brand-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:focus:border-brand-500">
                         </div>
-                        <button type="submit" class="h-11 rounded-xl bg-slate-900 px-4 text-xs font-black text-white transition hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400">جست‌وجو</button>
+                        <button type="submit" class="h-11 rounded-xl bg-slate-900 px-4 text-xs font-black text-white transition hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400">Search</button>
                     </form>
                 </div>
-                <div class="mt-5 flex gap-2 overflow-x-auto pb-1" aria-label="فیلتر وضعیت نظرسنجی‌ها">
-                    @foreach(['all' => 'همه', 'active' => 'در حال برگزاری', 'upcoming' => 'به‌زودی', 'ended' => 'پایان‌یافته'] as $key => $label)
+                <div class="mt-5 flex gap-2 overflow-x-auto pb-1" aria-label="Poll status filter">
+                    @foreach(['all' => 'All', 'active' => 'Ongoing', 'upcoming' => 'Coming soon', 'ended' => 'Ended'] as $key => $label)
                         <a href="{{ route('polls.index', array_filter(['status' => $key === 'all' ? null : $key, 'search' => $search ?: null])) }}#poll-list" @if($status === $key) aria-current="page" @endif
                            class="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border px-3.5 text-xs font-black transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 {{ $status === $key ? 'border-brand-500 bg-brand-500 text-white shadow-sm' : 'border-slate-200 bg-slate-50 text-slate-600 hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:text-brand-300' }}">
                             {{ $label }}
@@ -92,7 +92,7 @@
                                 <div class="flex items-start justify-between gap-3">
                                     <span class="grid h-11 w-11 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-5 [&_svg]:w-5">@include('icons.chart-03')</span>
                                     <span @class(['inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-black', 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' => $active, 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300' => $upcoming, 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' => !$active && !$upcoming])>
-                                        <span class="h-1.5 w-1.5 rounded-full bg-current"></span>{{ $active ? 'در حال برگزاری' : ($upcoming ? 'به‌زودی' : 'پایان‌یافته') }}
+                                        <span class="h-1.5 w-1.5 rounded-full bg-current"></span>{{ $active ? 'Ongoing' : ($upcoming ? 'Coming soon' : 'Ended') }}
                                     </span>
                                 </div>
                                 <h3 class="mt-5 line-clamp-2 text-base font-black leading-8 text-slate-900 transition group-hover:text-brand-600 dark:text-white dark:group-hover:text-brand-300">
@@ -101,24 +101,24 @@
                                 <p class="mt-2 line-clamp-3 min-h-[72px] text-xs leading-6 text-slate-500 dark:text-slate-400">{{ $excerpt }}</p>
                                 <div class="mt-5 flex flex-wrap gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400">
                                     <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 dark:bg-slate-800">{{ $poll->audience->label() }}</span>
-                                    <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 dark:bg-slate-800">{{ number_format($poll->active_options_count) }} گزینه</span>
-                                    @if($poll->allows_multiple_selections)<span class="rounded-lg bg-violet-50 px-2.5 py-1.5 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">چندگزینه‌ای</span>@endif
+                                    <span class="rounded-lg bg-slate-100 px-2.5 py-1.5 dark:bg-slate-800">{{ number_format($poll->active_options_count) }} Option</span>
+                                    @if($poll->allows_multiple_selections)<span class="rounded-lg bg-violet-50 px-2.5 py-1.5 text-violet-700 dark:bg-violet-500/10 dark:text-violet-300">Multiple choice</span>@endif
                                 </div>
                                 <div class="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-5 dark:border-slate-800">
                                     <div class="text-[11px] font-bold text-slate-400">
                                         @if($upcoming && $poll->starts_at)
-                                            شروع: {{ jalali_date($poll->starts_at, 'Y/m/d') }}
+                                            Start: {{ (($poll->starts_at) ? \Illuminate\Support\Carbon::parse($poll->starts_at)->format('Y/m/d') : '') }}
                                         @elseif($active && $poll->ends_at)
-                                            تا {{ jalali_date($poll->ends_at, 'Y/m/d') }}
+                                            until {{ (($poll->ends_at) ? \Illuminate\Support\Carbon::parse($poll->ends_at)->format('Y/m/d') : '') }}
                                         @elseif($poll->show_response_count)
-                                            {{ number_format($poll->responses_count) }} پاسخ
+                                            {{ number_format($poll->responses_count) }} Reply
                                         @else
-                                            بدون محدودیت زمانی
+                                            No time limit
                                         @endif
                                     </div>
                                     <a href="{{ route('polls.show', $poll->slug) }}" class="inline-flex shrink-0 items-center gap-1 text-xs font-black text-brand-600 transition hover:text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:text-brand-300 dark:hover:text-brand-200">
-                                        {{ $active ? 'شرکت در نظرسنجی' : 'مشاهده' }}
-                                        <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                        {{ $active ? 'Take poll' : 'View' }}
+                                        <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                                     </a>
                                 </div>
                             </div>
@@ -128,9 +128,9 @@
             @else
                 <div class="mt-5 rounded-[24px] border border-dashed border-slate-300 bg-white px-5 py-12 text-center dark:border-slate-700 dark:bg-slate-900 sm:py-16">
                     <span class="mx-auto grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 [&_svg]:h-7 [&_svg]:w-7">@include('icons.search-01')</span>
-                    <h3 class="mt-5 text-base font-black text-slate-900 dark:text-white">نظرسنجی‌ای پیدا نشد</h3>
-                    <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-400">عبارت دیگری جست‌وجو کنید یا همه نظرسنجی‌ها را ببینید.</p>
-                    <a href="{{ route('polls.index') }}#poll-list" class="mt-5 inline-flex min-h-10 items-center rounded-xl bg-brand-500 px-4 text-xs font-black text-white transition hover:bg-brand-600">نمایش همه نظرسنجی‌ها</a>
+                    <h3 class="mt-5 text-base font-black text-slate-900 dark:text-white">No polls found</h3>
+                    <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-400">Search another term or view all polls.</p>
+                    <a href="{{ route('polls.index') }}#poll-list" class="mt-5 inline-flex min-h-10 items-center rounded-xl bg-brand-500 px-4 text-xs font-black text-white transition hover:bg-brand-600">Show all polls</a>
                 </div>
             @endif
 

@@ -7,14 +7,14 @@
         </div>
         <a href="{{ get_setting('home', 'products_all_products_url') }}"
            class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
-            مشاهده همه
+            View all
             <span class="[&_svg]:w-4 [&_svg]:h-4">
-                @include('icons.arrow-left-02')
+                <x-front.arrow-right-02/>
             </span>
         </a>
     </div>
 
-    <div class="swiper physicalSwiper relative py-10 " dir="rtl">
+    <div class="swiper physicalSwiper relative py-10 " dir="ltr">
         <div class="swiper-wrapper pb-8">
             @foreach(get_setting('home', 'products_items') as $item)
                 <div class="swiper-slide max-w-[260px]">

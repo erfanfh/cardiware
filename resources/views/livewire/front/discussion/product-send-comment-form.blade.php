@@ -18,7 +18,7 @@
         @if($generalError || $errors->any())
             <div
                 class="rounded-2xl border border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-950/30 px-4 py-3 text-xs leading-6 text-red-700 dark:text-red-300 sm:text-sm">
-                <div class="font-extrabold">لطفاً موارد زیر را بررسی کنید:</div>
+                <div class="font-extrabold">Please review the following:</div>
 
                 @if($generalError)
                     <p class="mt-2 font-medium">{{ $generalError }}</p>
@@ -38,7 +38,7 @@
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div class="min-w-0">
                     <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
-                        نام شما
+                        Your name
                     </label>
 
                     <input
@@ -52,7 +52,7 @@
 
                 <div class="min-w-0">
                     <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
-                        ایمیل شما
+                        Your email
                     </label>
 
                     <input
@@ -69,7 +69,7 @@
 
         <div class="min-w-0">
             <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">
-                متن دیدگاه
+                Comment text
             </label>
 
             <textarea
@@ -100,7 +100,7 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <div class="text-sm font-black text-slate-700 dark:text-slate-200">
-                        امتیاز شما
+                        Your rating
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@
                             wire:loading.attr="disabled"
                             wire:target="submit"
                             class="cursor-pointer rounded-xl p-1 transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60"
-                            aria-label="امتیاز {{ $n }}"
+                            aria-label="points {{ $n }}"
                         >
                             <svg
                                 viewBox="0 0 20 20"
@@ -130,7 +130,7 @@
 
                     <span
                         class="mr-1 text-xs font-extrabold text-slate-500 dark:text-slate-400 sm:mr-2"
-                        x-text="currentStars ? `${currentStars} از 5` : 'بدون امتیاز'"
+                        x-text="currentStars ? `${currentStars} of 5` : 'No rating'"
                     ></span>
                 </div>
             </div>
@@ -140,7 +140,7 @@
             class="flex flex-col-reverse gap-3 border-t border-slate-100 dark:border-slate-800 pt-4 sm:flex-row sm:items-center sm:justify-between"
         >
             <p class="text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
-                دیدگاه‌ها پس از بررسی نمایش داده می‌شوند.
+                Comments appear after review.
             </p>
 
             <div class="grid grid-cols-1 gap-2 sm:flex sm:items-center">
@@ -152,7 +152,7 @@
                     wire:target="submit"
                     class="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 text-sm font-extrabold text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                 >
-                    انصراف
+                    Cancel
                 </button>
 
                 <button
@@ -169,11 +169,11 @@
                     </svg>
 
                     <span wire:loading.remove wire:target="submit">
-                        ثبت دیدگاه
+                        Submit comment
                     </span>
 
                     <span wire:loading wire:target="submit">
-                        در حال ثبت...
+                        Submitting...
                     </span>
                 </button>
             </div>

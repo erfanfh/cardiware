@@ -8,8 +8,8 @@
     @include(
         'livewire.front.identity.user.auth.partials.shared.step-header',
         [
-            'title' => 'بازیابی رمز عبور',
-            'description' => 'کد تایید و رمز عبور جدید خود را وارد کنید',
+            'title' => 'Reset password',
+            'description' => 'Enter your verification code and new password',
             'backMethod' => 'goToPasswordLogin',
             'mobile' => $resolvedMobile,
         ]
@@ -25,7 +25,7 @@
                 for="reset-otp-code"
                 class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-                کد تایید
+                Verification code
             </label>
 
             <input
@@ -48,7 +48,7 @@
                     for="reset-password"
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
-                    رمز عبور جدید
+                    New password
                 </label>
 
                 <div class="relative">
@@ -119,7 +119,7 @@
                     for="reset-password-confirmation"
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
-                    تکرار رمز عبور
+                    Confirm password
                 </label>
 
                 <div class="relative">
@@ -157,7 +157,7 @@
                 wire:loading.remove
                 wire:target="resetPassword"
             >
-                تغییر رمز عبور
+                Change password
             </span>
 
             <svg

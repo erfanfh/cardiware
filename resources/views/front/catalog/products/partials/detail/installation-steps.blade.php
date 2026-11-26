@@ -1,8 +1,8 @@
 @if($product->installationSteps->isNotEmpty())
     <x-front.cart id="installation-steps" class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
-            title="راهنمایی"
-            subtitle="راهنمای ساده و مرحله‌ای برای استفاده از محصول"
+            title="Help"
+            subtitle="Simple step-by-step guide to using the product"
             iconName="settings-02"
         />
 

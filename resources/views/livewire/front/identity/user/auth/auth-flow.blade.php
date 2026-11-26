@@ -127,7 +127,7 @@
                         />
                     </svg>
 
-                    خطا در ارسال اطلاعات
+                    Error submitting information
                 </div>
 
                 <ul class="space-y-2 pr-5">

@@ -7,7 +7,7 @@
     $isFailed = $resultState === 'failed';
 
     $money = fn (int $amount): string =>
-        number_format($amount) . ' تومان';
+        number_format($amount) . ' Toman';
 
     $receiptCode = $payment->gateway_transaction_id
         ?? $payment->gateway_reference
@@ -33,37 +33,37 @@
 
     $mainTitle = match ($resultState) {
         'success' =>
-            'کیف پول با موفقیت شارژ شد',
+            'Wallet topped up successfully',
 
         'processing' =>
-            'پرداخت تایید شد؛ شارژ در حال تکمیل است',
+            'Payment confirmed; top-up is being completed',
 
         'pending' =>
-            'پرداخت در حال بررسی است',
+            'Payment under review',
 
         default =>
-            'شارژ کیف پول انجام نشد',
+            'Wallet top-up failed',
     };
 
     $mainDescription = match ($resultState) {
         'success' =>
-            'مبلغ پرداخت‌شده به موجودی کیف پول شما اضافه شد و اکنون برای خرید از سایت قابل استفاده است.',
+            'The paid amount has been added to your wallet and is available for purchases.',
 
         'processing' =>
-            'پرداخت شما توسط درگاه تایید شده است، اما ثبت نهایی موجودی هنوز تکمیل نشده. اطلاعات تراکنش ذخیره شده و نیازی به پرداخت دوباره نیست.',
+            'Your payment was confirmed by the gateway, but the final balance update is not complete. The transaction is saved; do not pay again.',
 
         'pending' =>
-            'نتیجه نهایی پرداخت هنوز مشخص نشده است. لطفاً چند لحظه بعد دوباره وضعیت کیف پول خود را بررسی کنید.',
+            'The final payment result is not known yet. Check your wallet status again shortly.',
 
         default =>
-            'پرداخت توسط درگاه تایید نشد و هیچ مبلغی به موجودی کیف پول شما اضافه نشده است.',
+            'The gateway did not confirm payment and no funds were added to your wallet.',
     };
 
     $statusLabel = match ($resultState) {
-        'success' => 'شارژ موفق',
-        'processing' => 'در حال تکمیل',
-        'pending' => 'در حال بررسی',
-        default => 'ناموفق',
+        'success' => 'Successful top-up',
+        'processing' => 'In progress',
+        'pending' => 'Under review',
+        default => 'Failed',
     };
 
     $statusBadgeClasses = match ($resultState) {
@@ -100,10 +100,10 @@
     };
 
     $dateTitle = match ($resultState) {
-        'success' => 'تاریخ شارژ',
-        'processing' => 'تاریخ پرداخت',
-        'pending' => 'تاریخ درخواست',
-        default => 'تاریخ تلاش',
+        'success' => 'Top-up date',
+        'processing' => 'Payment date',
+        'pending' => 'Request date',
+        default => 'Attempt date',
     };
 @endphp
 
@@ -132,11 +132,11 @@
             >
                 <div>
                     <h1 class="text-sm font-extrabold text-slate-900 sm:text-base dark:text-white">
-                        رسید شارژ کیف پول
+                        Wallet top-up receipt
                     </h1>
 
                     <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                        جزئیات پرداخت و وضعیت افزایش موجودی کیف پول
+                        Payment details and wallet top-up status
                     </p>
                 </div>
 
@@ -156,7 +156,7 @@
                 <div class="min-w-0 p-4 sm:p-7 lg:col-span-8 lg:p-9">
                     <div
                         class="flex flex-col items-center gap-4 text-center
-                               sm:flex-row sm:items-center sm:gap-5 sm:text-right"
+                               sm:flex-row sm:items-center sm:gap-5 sm:text-start"
                     >
                         <div
                             class="grid h-16 w-16 shrink-0 place-items-center
@@ -243,7 +243,7 @@
                                    dark:bg-emerald-900/20"
                         >
                             <p class="text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                                مبلغ افزوده‌شده به کیف پول
+                                Amount added to wallet
                             </p>
 
                             <div class="mt-2 flex items-end gap-2">
@@ -256,7 +256,7 @@
                                 </strong>
 
                                 <span class="pb-1 text-xs font-bold text-emerald-700 dark:text-emerald-300">
-                                    تومان
+                                    Toman
                                 </span>
                             </div>
                         </div>
@@ -271,12 +271,12 @@
                                    dark:bg-amber-900/20"
                         >
                             <h3 class="text-sm font-extrabold text-amber-900 dark:text-amber-300">
-                                پرداخت دوباره انجام ندهید
+                                Do not pay again
                             </h3>
 
                             <p class="mt-1 text-xs leading-6 text-amber-800 dark:text-amber-400">
-                                پرداخت بانکی شما تایید شده است. تراکنش برای بررسی و تکمیل
-                                موجودی در سیستم ثبت شده و نیازی به پرداخت مجدد نیست.
+                                Your bank payment is confirmed. The transaction has been recorded for review and completion of
+                                the balance update; no further payment is needed.
                             </p>
                         </div>
                     @endif
@@ -290,12 +290,12 @@
                                    dark:bg-red-900/20"
                         >
                             <h3 class="text-sm font-extrabold text-red-900 dark:text-red-300">
-                                دلیل احتمالی خطا
+                                Possible error reason
                             </h3>
 
                             <p class="mt-1 text-xs leading-6 text-red-800 dark:text-red-400">
                                 {{ $payment->gateway_message
-                                    ?: 'پرداخت توسط بانک تایید نشده، ارتباط با درگاه قطع شده یا تراکنش توسط کاربر لغو شده است.' }}
+                                    ?: 'The bank did not confirm the payment, the gateway connection was lost, or the user canceled the transaction.' }}
                             </p>
                         </div>
                     @endif
@@ -308,7 +308,7 @@
                                    dark:border-slate-700 dark:bg-slate-800/50"
                         >
                             <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
-                                موجودی فعلی کیف پول
+                                Current wallet balance
                             </p>
 
                             <p
@@ -318,7 +318,7 @@
                                 {{ number_format((int) $wallet->balance) }}
 
                                 <span class="text-xs text-slate-400">
-                                    تومان
+                                    Toman
                                 </span>
                             </p>
                         </article>
@@ -329,7 +329,7 @@
                                    dark:border-slate-700 dark:bg-slate-800/50"
                         >
                             <p class="text-xs font-bold text-slate-500 dark:text-slate-400">
-                                موجودی قابل استفاده
+                                Available balance
                             </p>
 
                             <p
@@ -339,7 +339,7 @@
                                 {{ number_format((int) $wallet->available_balance) }}
 
                                 <span class="text-xs text-slate-400">
-                                    تومان
+                                    Toman
                                 </span>
                             </p>
                         </article>
@@ -357,7 +357,7 @@
                                    text-white shadow-soft transition
                                    hover:bg-brand-600 active:bg-brand-700"
                         >
-                            مشاهده کیف پول
+                            View wallet
                         </a>
 
                         @if($isFailed)
@@ -370,7 +370,7 @@
                                        dark:border-slate-700 dark:bg-slate-900
                                        dark:text-brand-300 dark:hover:bg-slate-800"
                             >
-                                تلاش دوباره
+                                Try again
                                 <span>←</span>
                             </a>
                         @else
@@ -383,7 +383,7 @@
                                        dark:border-slate-700 dark:bg-slate-900
                                        dark:text-slate-200 dark:hover:bg-slate-800"
                             >
-                                بازگشت به فروشگاه
+                                Back to store
                             </a>
                         @endif
                     </div>
@@ -402,7 +402,7 @@
                     >
                         <div>
                             <div class="text-xs font-bold text-slate-500 dark:text-slate-400">
-                                مبلغ پرداخت
+                                Payment amount
                             </div>
 
                             <div class="mt-2 text-lg font-black text-slate-900 sm:text-xl dark:text-white">
@@ -416,11 +416,11 @@
                         >
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400">
-                                    کد درخواست شارژ
+                                    Top-up request code
                                 </span>
 
                                 <span
-                                    class="break-all text-left font-extrabold
+                                    class="break-all text-end font-extrabold
                                            text-slate-900 dark:text-white"
                                 >
                                     {{ $topUp->public_token }}
@@ -429,11 +429,11 @@
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400">
-                                    کد رسید
+                                    Receipt code
                                 </span>
 
                                 <span
-                                    class="break-all text-left font-extrabold
+                                    class="break-all text-end font-extrabold
                                            text-slate-900 dark:text-white"
                                 >
                                     {{ $receiptCode }}
@@ -442,7 +442,7 @@
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400">
-                                    درگاه
+                                    Gateway
                                 </span>
 
                                 <span class="font-extrabold text-slate-900 dark:text-white">
@@ -452,7 +452,7 @@
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400">
-                                    وضعیت پرداخت
+                                    Payment status
                                 </span>
 
                                 <span class="font-extrabold">
@@ -465,8 +465,8 @@
                                     {{ $dateTitle }}
                                 </span>
 
-                                <span class="text-left font-extrabold text-slate-900 dark:text-white">
-                                    {{ $happenedAt ? jalali_date($happenedAt) : '—' }}
+                                <span class="text-end font-extrabold text-slate-900 dark:text-white">
+                                    {{ $happenedAt ? (($happenedAt) ? \Illuminate\Support\Carbon::parse($happenedAt)->format('Y/m/d H:i') : '') : '—' }}
                                 </span>
                             </div>
                         </div>
@@ -479,11 +479,11 @@
                                        dark:bg-emerald-900/20"
                             >
                                 <h3 class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">
-                                    شارژ تایید و ثبت شد
+                                    Top-up confirmed and recorded
                                 </h3>
 
                                 <p class="mt-1 text-xs leading-6 text-emerald-800 dark:text-emerald-400">
-                                    تغییر موجودی در دفتر تراکنش‌های کیف پول شما ثبت شده است.
+                                    The balance change is recorded in your wallet ledger.
                                 </p>
                             </div>
                         @endif

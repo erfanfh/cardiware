@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.user.auth.partials.shared.step-header',
         [
-            'title' => 'تایید ورود',
-            'description' => 'کد ارسال شده به شماره موبایل را وارد کنید',
+            'title' => 'Confirm sign-in',
+            'description' => 'Enter the code sent to your mobile number',
             'backMethod' => 'goToPasswordLogin',
             'mobile' => $resolvedMobile,
         ]
@@ -19,9 +19,9 @@
                 for="login-otp-code"
                 class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-                کد تایید
+                Verification code
                 {{ (int) config('auth-flow.otp.length', 6) }}
-                رقمی
+                digits
             </label>
 
             <input
@@ -48,7 +48,7 @@
                 wire:loading.remove
                 wire:target="verifyLoginOtp"
             >
-                تایید و ورود
+                Confirm and sign in
             </span>
 
             <svg

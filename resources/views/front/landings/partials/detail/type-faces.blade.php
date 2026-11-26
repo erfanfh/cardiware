@@ -1,20 +1,20 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div class="space-y-14">
     <div>
-        <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Before / After' : 'قبل و بعد' }}</h2>
+        <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Before / After' : 'Before and after' }}</h2>
         <p class="mt-3 max-w-2xl text-sm leading-7 text-muted">
             {{ $locale === 'en'
                 ? 'Every face is rebuilt from reference photography — hair, beard, skin tone and accessories. Swipe the gallery for real examples.'
-                : 'هر چهره از روی عکس‌های مرجع بازسازی شده — مو، ریش، رنگ پوست و اکسسوری‌ها. گالری را برای نمونه‌های واقعی ببینید.' }}
+                : 'Each face is recreated from reference photos, including hair, beard, skin tone and accessories. See real examples in the gallery.' }}
         </p>
     </div>
 
-    {{-- کارت‌های بازیکن با چرخش سه‌بعدی (tilt) — با حرکت موس بچرخند --}}
+    {{-- Player cards with 3D rotation (tilt) — Rotate with mouse movement --}}
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
         @foreach([
-            ['num' => '۱۰', 'pos' => ['fa' => 'مهاجم', 'en' => 'Forward'], 'rating' => '۸۶'],
-            ['num' => '۸', 'pos' => ['fa' => 'هافبک', 'en' => 'Midfielder'], 'rating' => '۸۲'],
-            ['num' => '۱', 'pos' => ['fa' => 'دروازه‌بان', 'en' => 'Goalkeeper'], 'rating' => '۷۹'],
+            ['num' => '10', 'pos' => ['fa' => 'Forward', 'en' => 'Forward'], 'rating' => '86'],
+            ['num' => '8', 'pos' => ['fa' => 'Midfielder', 'en' => 'Midfielder'], 'rating' => '82'],
+            ['num' => '1', 'pos' => ['fa' => 'Goalkeeper', 'en' => 'Goalkeeper'], 'rating' => '79'],
         ] as $p)
             <div data-tilt="14" class="tilt-card group relative select-none rounded-3xl border border-edge/70 bg-gradient-to-b from-surface-2 to-surface/80 p-6 text-center">
                 <div data-tilt-inner>
@@ -26,7 +26,7 @@
                         @include('front.landings.partials.icon', ['name' => 'face', 'class' => 'size-12 text-muted transition-colors group-hover:text-accent'])
                     </span>
                     <p class="mt-5 text-sm font-extrabold text-ink">{{ $p['pos'][$locale === 'en' ? 'en' : 'fa'] }}</p>
-                    <p class="mt-1 text-[11px] text-muted">{{ $locale === 'en' ? 'Scanned 3D head + miniface' : 'سر سه‌بعدی اسکن‌شده + مینی‌فیس' }}</p>
+                    <p class="mt-1 text-[11px] text-muted">{{ $locale === 'en' ? 'Scanned 3D head + miniface' : 'Scanned 3D head + Miniface' }}</p>
                 </div>
             </div>
         @endforeach
@@ -52,7 +52,7 @@
     <div class="grid gap-4 sm:grid-cols-3">
         @foreach($locale === 'en'
             ? ['Scan-based 3D heads', 'Matching menu minifaces', 'Updated after every transfer window']
-            : ['سرهای سه‌بعدی اسکن‌شده', 'مینی‌فیس هماهنگ منوها', 'به‌روزرسانی بعد از هر پنجره ترنسفر'] as $point)
+            : ['Scanned 3D heads', 'Consistent menu minifaces', 'Updates after each transfer window'] as $point)
             <div class="flex items-center gap-3 rounded-2xl border border-edge/70 bg-surface/60 p-4 text-sm font-bold text-ink">
                 <span class="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/15 text-accent">
                     @include('front.landings.partials.icon', ['name' => 'check', 'class' => 'size-4'])

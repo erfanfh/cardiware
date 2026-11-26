@@ -1,6 +1,6 @@
 @php
-    // کاربر فعال VIP: منو ظاهر عادی دارد؛ تمایز فقط با لهجه‌های طلایی ملایم
-    // (تاج، آیتم فعال/هاور طلایی). استروک متحرک روی «باکس اشتراک VIP» پایین است.
+    // Active user VIP: Menu looks normal; only subtle gold accents distinguish it
+    // (Crown, gold active/hover item. Animated stroke on «subscription box VIP» below.
     $isVipUser = $user->hasActiveVipSubscription();
 @endphp
 
@@ -16,42 +16,42 @@
     @php
         $groups = [
             [
-                'title' => 'مرور کلی',
+                'title' => 'Overview',
                 'links' => [
-                    ['route' => 'account.dashboard', 'label' => 'داشبورد', 'icon' => 'icons.home-12', 'end' => 'arrow'],
-                    ['route' => 'account.notifications.index', 'label' => 'اعلان‌های من', 'icon' => 'icons.notification-01', 'end' => 'arrow', 'unreadBadge' => $unreadNotificationCount],
+                    ['route' => 'account.dashboard', 'label' => 'Dashboard', 'icon' => 'icons.home-12', 'end' => 'arrow'],
+                    ['route' => 'account.notifications.index', 'label' => 'My notifications', 'icon' => 'icons.notification-01', 'end' => 'arrow', 'unreadBadge' => $unreadNotificationCount],
                 ],
             ],
             [
-                'title' => 'خرید و دانلود',
+                'title' => 'Shopping and downloads',
                 'links' => [
-                    ['route' => 'account.downloads', 'label' => 'دانلودهای من', 'icon' => 'icons.cloud-download', 'end' => $user->purchase_accesses_count],
-                    ['route' => 'account.orders', 'label' => 'سفارش‌های من', 'icon' => 'icons.shopping-basket-03', 'end' => $user->paid_orders_count],
-                    ['route' => 'account.favorites', 'label' => 'علاقه‌مندی‌ها', 'icon' => 'icons.favourite', 'end' => $user->favorite_products_count],
-                    ['route' => 'account.transactions', 'label' => 'تراکنش‌ها', 'icon' => 'icons.transaction', 'end' => 'arrow'],
+                    ['route' => 'account.downloads', 'label' => 'My downloads', 'icon' => 'icons.cloud-download', 'end' => $user->purchase_accesses_count],
+                    ['route' => 'account.orders', 'label' => 'My orders', 'icon' => 'icons.shopping-basket-03', 'end' => $user->paid_orders_count],
+                    ['route' => 'account.favorites', 'label' => 'Favorites', 'icon' => 'icons.favourite', 'end' => $user->favorite_products_count],
+                    ['route' => 'account.transactions', 'label' => 'Transactions', 'icon' => 'icons.transaction', 'end' => 'arrow'],
                 ],
             ],
             [
-                'title' => 'پشتیبانی و باشگاه',
+                'title' => 'Support and club',
                 'links' => [
-                    ['route' => 'account.tickets', 'label' => 'تیکت‌ها', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
-                    ['route' => 'account.raffles', 'label' => 'قرعه کشی‌های من', 'icon' => 'icons.award-03', 'end' => 'arrow'],
-                    // امتیاز عمداً اینجا نمایش داده نمی‌شود؛ اعداد بزرگ استایل منو را خراب می‌کنند (عدد در خود صفحهٔ باشگاه دیده می‌شود)
-                    ['route' => 'account.loyalty', 'label' => 'باشگاه مخاطبان', 'icon' => 'icons.medal-06', 'end' => 'arrow'],
-                    ['route' => 'account.affiliate', 'label' => 'همکاری در فروش', 'icon' => 'icons.user-multiple-02', 'end' => 'arrow'],
+                    ['route' => 'account.tickets', 'label' => 'Tickets', 'icon' => 'icons.message-search-02', 'end' => $user->tickets_count],
+                    ['route' => 'account.raffles', 'label' => 'My raffles', 'icon' => 'icons.award-03', 'end' => 'arrow'],
+                    // Points intentionally hidden here; large numbers break the menu layout (shown on club page)
+                    ['route' => 'account.loyalty', 'label' => 'Community Club', 'icon' => 'icons.medal-06', 'end' => 'arrow'],
+                    ['route' => 'account.affiliate', 'label' => 'Affiliate program', 'icon' => 'icons.user-multiple-02', 'end' => 'arrow'],
                 ],
             ],
             [
-                'title' => 'حساب کاربری',
+                'title' => 'Account',
                 'links' => [
-                    ['route' => 'account.information', 'label' => 'اطلاعات حساب', 'icon' => 'icons.user-edit-01', 'end' => 'arrow'],
-                    ['route' => 'account.security', 'label' => 'تنظیمات امنیت', 'icon' => 'icons.lock-password', 'end' => 'arrow'],
+                    ['route' => 'account.information', 'label' => 'Account information', 'icon' => 'icons.user-edit-01', 'end' => 'arrow'],
+                    ['route' => 'account.security', 'label' => 'Security settings', 'icon' => 'icons.lock-password', 'end' => 'arrow'],
                 ],
             ],
         ];
 
         if ($hasSellerStores) {
-            $groups[3]['links'][] = ['route' => 'seller.dashboard', 'label' => 'پنل فروشندگان', 'icon' => 'icons.store-01', 'end' => 'arrow'];
+            $groups[3]['links'][] = ['route' => 'seller.dashboard', 'label' => 'Seller dashboard', 'icon' => 'icons.store-01', 'end' => 'arrow'];
         }
     @endphp
 
@@ -80,7 +80,7 @@
                 >
                     @if($isActive)
                         <span
-                            class="absolute inset-y-2 right-0 w-1 rounded-full bg-gradient-to-b from-brand-400 to-brand-600"></span>
+                            class="absolute inset-y-2 left-0 w-1 rounded-full bg-gradient-to-b from-brand-400 to-brand-600"></span>
                     @endif
 
                     <span class="flex items-center gap-2.5">
@@ -95,14 +95,14 @@
                         @if(($link['unreadBadge'] ?? 0) > 0)
                             <span
                                 class="mw-badge-glow inline-flex min-w-6 items-center justify-center rounded-full bg-brand-500 px-1.5 py-0.5 text-[11px] font-black text-white"
-                                aria-label="{{ $link['unreadBadge'] }} اعلان خوانده‌نشده">{{ $link['unreadBadge'] > 99 ? '99+' : $link['unreadBadge'] }}</span>
+                                aria-label="{{ $link['unreadBadge'] }} Unread notifications">{{ $link['unreadBadge'] > 99 ? '99+' : $link['unreadBadge'] }}</span>
                         @elseif($showCount)
                             <span
                                 class="inline-flex min-w-6 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-[11px] font-black text-slate-500 dark:bg-slate-800 dark:text-slate-400">{{ $endValue > 99 ? '99+' : $endValue }}</span>
                         @elseif($endValue === 'arrow')
                             <span
                                 class="text-slate-300 transition group-hover:text-brand-400 dark:text-slate-600 dark:group-hover:text-brand-300">
-                                @include('icons.arrow-left-02')
+                                <x-front.arrow-right-02/>
                             </span>
                         @endif
                     </span>
@@ -111,7 +111,7 @@
         </div>
     @endforeach
 
-    {{-- فوتر خروج: فول‌عرض و چسبیده به لبهٔ پایین کارت تا فضای مرده زیر دکمه نماند --}}
+    {{-- Logout footer: full width, attached to card bottom to avoid dead space --}}
     <div class="-mx-5 -mb-5 mt-4 rounded-b-2xl border-t border-slate-100 bg-slate-50/70 px-5 py-4 dark:border-slate-800 dark:bg-slate-950/40">
         <button
             type="button"
@@ -123,11 +123,11 @@
                 <span class="text-rose-600 dark:text-rose-300">
                     @include('icons.logout-square-01')
                 </span>
-                خروج از حساب
+                Sign out
             </span>
 
             <span class="text-rose-700 dark:text-rose-300 [&_svg]:!h-4 [&_svg]:!w-4">
-                @include('icons.arrow-left-02')
+                <x-front.arrow-right-02/>
             </span>
         </button>
     </div>
@@ -135,8 +135,8 @@
 
 <x-front.modal
     name="logout-confirm-modal"
-    title="تأیید خروج از حساب"
-    description="برای خروج از حساب کاربری، تأیید نهایی لازم است."
+    title="Confirm sign-out"
+    description="Final confirmation is required to sign out."
     maxWidth="max-w-lg"
 >
     <div class="rounded-3xl border border-rose-100 bg-rose-50 p-5 dark:border-rose-500/20 dark:bg-rose-500/10">
@@ -154,11 +154,11 @@
 
             <div>
                 <h3 class="text-sm font-black text-slate-900 dark:text-white">
-                    مطمئنی می‌خواهی خارج شوی؟
+                    Are you sure you want to sign out?
                 </h3>
 
                 <p class="mt-2 text-xs leading-6 text-slate-600 dark:text-slate-400">
-                    بعد از خروج، برای مشاهده سفارش‌ها و دانلودهای خریداری‌شده باید دوباره وارد حساب کاربری شوی.
+                    After signing out, sign in again to see your orders and purchased downloads.
                 </p>
             </div>
         </div>
@@ -172,7 +172,7 @@
                 @click="$dispatch('close-modal', 'logout-confirm-modal')"
                 class="inline-flex h-11 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
             >
-                بازگشت به حساب
+                Back to account
             </button>
 
             <form method="POST" action="{{ route('auth.logout') }}" class="w-full sm:w-auto">
@@ -190,7 +190,7 @@
                               stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
 
-                    بله، خارج شو
+                    Yes, sign out
                 </button>
             </form>
         </div>

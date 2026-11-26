@@ -29,7 +29,7 @@
                 >
                     <span
                         class="h-4 w-4 animate-spin rounded-full border-2 border-slate-200 dark:border-slate-600 border-t-brand-500"></span>
-                    <span>در حال به‌روزرسانی سبد خرید...</span>
+                    <span>Updating cart...</span>
                 </div>
             </div>
 
@@ -63,11 +63,11 @@
 
                         <div class="min-w-0">
                             <div class="text-sm font-black text-rose-900 dark:text-rose-200">
-                                ناموجود
+                                Unavailable
                             </div>
 
                             <div class="mt-1 text-xs leading-6 text-rose-700 dark:text-rose-300">
-                                در حال حاضر هیچ نسخه فعالی برای خرید این محصول وجود ندارد.
+                                There are no active versions of this product available to purchase.
                             </div>
                         </div>
 
@@ -80,11 +80,11 @@
                 <div>
                     <div class="mb-3">
                         <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                            انتخاب نسخه محصول
+                            Select product version
                         </div>
 
                         <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                            متناسب با نیاز خود یکی از نسخه‌های قابل خرید را انتخاب کنید.
+                            Choose a version that suits your needs.
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
                         <template x-for="saleItem in saleItems" :key="saleItem.id">
                             <button
                                 type="button"
-                                class="w-full transform-gpu cursor-pointer rounded-2xl border p-4 text-right transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
+                                class="w-full transform-gpu cursor-pointer rounded-2xl border p-4 text-start transition-all duration-200 ease-out disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
                                 :disabled="isSubmitting"
                                 :class="[
                                     selectedSaleItemId === Number(saleItem.id)
@@ -121,18 +121,18 @@
                                                 x-cloak
                                                 class="rounded-full bg-brand-600 px-2 py-0.5 text-[10px] font-extrabold text-white"
                                             >
-                                                انتخاب شده
+                                                Selected
                                             </span>
 
                                             <span
                                                 x-show="saleItem.vip_access_enabled"
                                                 x-cloak
                                                 class="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-extrabold text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
-                                            >با اشتراک VIP</span>
+                                            >With subscription VIP</span>
                                         </div>
                                     </div>
 
-                                    <div class="shrink-0 text-left">
+                                    <div class="shrink-0 text-end">
                                         <div
                                             x-show="saleItem.has_discount"
                                             x-cloak
@@ -140,7 +140,7 @@
                                         >
                                             <span
                                                 class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
-                                                x-text="new Intl.NumberFormat('fa-IR').format(saleItem.discount_percent) + '٪ تخفیف'"
+                                                x-text="new Intl.NumberFormat('en-US').format(saleItem.discount_percent) + '% off'"
                                             ></span>
 
                                             <span
@@ -177,23 +177,23 @@
                         <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                    قیمت محصول
+                                    Product price
                                 </div>
 
                                 <span
                                     x-show="selectedSaleItem?.has_discount"
                                     x-cloak
                                     class="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
-                                    x-text="new Intl.NumberFormat('fa-IR').format(selectedSaleItem?.discount_percent || 0) + '٪ تخفیف'"
+                                    x-text="new Intl.NumberFormat('en-US').format(selectedSaleItem?.discount_percent || 0) + '% off'"
                                 ></span>
                             </div>
 
                             <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                                بدون محاسبه گزینه‌های همراه خرید
+                                Excluding purchase add-ons
                             </div>
                         </div>
 
-                        <div class="shrink-0 text-left">
+                        <div class="shrink-0 text-end">
                             <div
                                 x-show="selectedSaleItem?.has_discount"
                                 x-cloak
@@ -215,23 +215,23 @@
                 x-data="{ claimedVipIds: @js($claimedVipSaleItemIds), ownedIds: @js($ownedSaleItemIds) }"
                 x-cloak
                 class="mt-5 rounded-2xl border border-violet-200 bg-violet-50/70 p-4 dark:border-violet-500/25 dark:bg-violet-500/5"
-                aria-label="دسترسی با اشتراک VIP"
+                aria-label="Subscription access VIP"
             >
                 <div class="flex flex-col gap-4">
-                    <div class="space-y-1.5 text-right">
-                        <div class="text-sm font-black text-violet-900 dark:text-violet-200">دسترسی با اشتراک VIP</div>
-                        <p class="text-xs leading-6 text-slate-600 dark:text-slate-400">این نسخه را بدون هزینهٔ جداگانه به دانلودهای خود اضافه کنید.</p>
+                    <div class="space-y-1.5 text-start">
+                        <div class="text-sm font-black text-violet-900 dark:text-violet-200">Subscription access VIP</div>
+                        <p class="text-xs leading-6 text-slate-600 dark:text-slate-400">Add this version to your downloads at no extra cost.</p>
                     </div>
                     @if($hasActiveVip)
                         <button type="button" x-show="!claimedVipIds.includes(Number(selectedSaleItemId)) && !ownedIds.includes(Number(selectedSaleItemId))" x-cloak x-on:click="$wire.claimVipSaleItem(Number(selectedSaleItemId))" wire:loading.attr="disabled" wire:target="claimVipSaleItem" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-violet-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-500 disabled:opacity-60">
-                            افزودن به دانلودها
+                            Add to downloads
                         </button>
                         <a x-show="claimedVipIds.includes(Number(selectedSaleItemId)) || ownedIds.includes(Number(selectedSaleItemId))" x-cloak :href="'{{ route('account.downloads') }}' + (ownedIds.includes(Number(selectedSaleItemId)) ? '' : '?vipItem=' + selectedSaleItemId)" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-extrabold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100 dark:border-violet-500/25 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-violet-500/10">
-                            مشاهده دانلودها <span aria-hidden="true">←</span>
+                            View downloads <span aria-hidden="true">←</span>
                         </a>
                     @else
                         <a href="{{ route('vip.index') }}" class="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-extrabold text-violet-800 transition hover:border-violet-300 hover:bg-violet-100 dark:border-violet-500/25 dark:bg-slate-900 dark:text-violet-200 dark:hover:bg-violet-500/10">
-                            مشاهده پلن‌های VIP <span aria-hidden="true">←</span>
+                            View plans VIP <span aria-hidden="true">←</span>
                         </a>
                     @endif
                 </div>
@@ -259,13 +259,13 @@
                                             <span class="[&_svg]:w-3 [&_svg]:h-3 text-orange-100">
                                                 @include('icons.fire')
                                             </span>
-                                            <span>پیشنهاد ویژه</span>
+                                            <span>Special offer</span>
                                         </span>
                                     </div>
 
                                     <h3
                                         class="mt-3 text-sm font-black leading-6 text-slate-900 dark:text-white"
-                                        x-text="selectedSaleItem?.special_box?.title || 'تخفیف ویژه زمان‌دار'"
+                                        x-text="selectedSaleItem?.special_box?.title || 'Limited-time special discount'"
                                     ></h3>
 
                                     <p
@@ -285,7 +285,7 @@
                             >
                                 <div class="mb-2 flex items-center justify-between gap-2">
                                     <span class="text-[10px] font-black text-slate-500 dark:text-slate-300">
-                                        زمان پایان
+                                        End time
                                     </span>
 
                                     <span
@@ -301,28 +301,28 @@
                                         class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
                                         <div class="text-sm font-black text-slate-900 dark:text-white"
                                              x-text="offerCountdown.seconds"></div>
-                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">ثانیه</div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">seconds</div>
                                     </div>
 
                                     <div
                                         class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
                                         <div class="text-sm font-black text-slate-900 dark:text-white"
                                              x-text="offerCountdown.minutes"></div>
-                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">دقیقه</div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">minutes</div>
                                     </div>
 
                                     <div
                                         class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
                                         <div class="text-sm font-black text-slate-900 dark:text-white"
                                              x-text="offerCountdown.hours"></div>
-                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">ساعت</div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">hours</div>
                                     </div>
 
                                     <div
                                         class="rounded-xl border border-slate-200 bg-slate-50 px-1 py-2 text-center dark:border-white/10 dark:bg-slate-950/70">
                                         <div class="text-sm font-black text-slate-900 dark:text-white"
                                              x-text="offerCountdown.days"></div>
-                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">روز</div>
+                                        <div class="mt-0.5 text-[9px] font-bold text-slate-400">days</div>
                                     </div>
                                 </div>
 
@@ -334,12 +334,12 @@
                                 >
                                     <div class="mb-1.5 flex items-center justify-between">
                                         <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500">
-                                            زمان باقی‌مانده از بازه تخفیف
+                                            Discount time remaining
                                         </span>
 
                                         <span
                                             class="text-[10px] font-black text-orange-600 dark:text-orange-300"
-                                            x-text="new Intl.NumberFormat('fa-IR').format(offerProgressPercent) + '٪'"
+                                            x-text="new Intl.NumberFormat('en-US').format(offerProgressPercent) + '%'"
                                         ></span>
                                     </div>
 
@@ -363,7 +363,7 @@
                                     x-cloak
                                     class="mt-2 rounded-xl border border-rose-200 bg-rose-50 px-2.5 py-2 text-center text-[11px] font-bold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300"
                                 >
-                                    زمان این پیشنهاد به پایان رسیده است.
+                                    This offer has ended.
                                 </div>
                             </div>
 
@@ -373,7 +373,7 @@
                                 x-cloak
                                 class="mt-3 rounded-2xl border border-orange-100 bg-white/70 px-3 py-2 text-xs font-bold leading-6 text-orange-700 ring-1 ring-orange-100 dark:border-orange-500/10 dark:bg-orange-500/10 dark:text-orange-300 dark:ring-orange-500/10"
                             >
-                                این پیشنهاد ویژه برای مدت محدود فعال شده است.
+                                This special offer is available for a limited time.
                             </div>
                         </div>
                     </div>
@@ -385,11 +385,11 @@
                 <div :class="(shouldShowSaleItemSelector || isSimpleProductWithAddons) ? 'mt-6' : ''">
                     <div class="mb-3">
                         <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                            گزینه‌های همراه خرید
+                            Purchase add-ons
                         </div>
 
                         <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                            این گزینه‌ها اختیاری هستند و همراه محصول اصلی به سبد خرید اضافه می‌شوند.
+                            These options are optional and are added to the cart with the main product.
                         </div>
                     </div>
 
@@ -450,7 +450,7 @@
 
                                             <div
                                                 class="shrink-0 whitespace-nowrap text-sm font-black text-brand-700 dark:text-brand-400"
-                                                x-text="addon.price === 0 ? 'رایگان' : '+ ' + formatPrice(addon.price)"
+                                                x-text="addon.price === 0 ? 'Free' : '+ ' + formatPrice(addon.price)"
                                             ></div>
                                         </div>
 
@@ -477,7 +477,7 @@
                     <div class="flex items-center justify-between gap-3">
                         <div class="min-w-0">
                             <div class="text-sm font-extrabold text-slate-800 dark:text-slate-100">
-                                مبلغ قابل پرداخت
+                                Amount due
                             </div>
                         </div>
 
@@ -495,7 +495,7 @@
                         <div
                             class="rounded-2xl bg-white p-3 ring-1 ring-slate-200 dark:bg-slate-950 dark:ring-slate-700">
                             <div class="text-[10px] font-black text-slate-400 dark:text-slate-500">
-                                قیمت اصلی
+                                Original price
                             </div>
 
                             <div
@@ -507,7 +507,7 @@
                         <div
                             class="rounded-2xl bg-emerald-50 p-3 ring-1 ring-emerald-100 dark:bg-emerald-950/20 dark:ring-emerald-900/40">
                             <div class="text-[10px] font-black text-emerald-600 dark:text-emerald-400">
-                                سود شما از خرید
+                                Your savings
                             </div>
 
                             <div
@@ -523,7 +523,7 @@
                         class="mt-3 border-t border-slate-200 dark:border-slate-700 pt-3"
                     >
                         <div class="text-xs font-bold text-slate-500 dark:text-slate-400">
-                            گزینه‌های انتخاب‌شده:
+                            Selected options:
                         </div>
 
                         <div class="mt-2 flex flex-wrap gap-1.5">
@@ -554,7 +554,7 @@
             <span
                 class="h-3 w-3 animate-spin rounded-full border-2 border-slate-200 dark:border-slate-600 border-t-brand-500"
             ></span>
-                        <span>در حال اعمال...</span>
+                        <span>Applying...</span>
                     </div>
 
                     {{-- Header --}}
@@ -575,7 +575,7 @@
 
                         <div class="min-w-0 flex-1">
                             <div class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                محصول در سبد خرید است
+                                Product is in your cart
                             </div>
                         </div>
                     </div>
@@ -587,7 +587,7 @@
                         class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 px-3 py-2.5 ring-1 ring-slate-100 dark:ring-slate-800"
                     >
                         <div class="text-xs font-black text-slate-800 dark:text-slate-200">
-                            تعداد
+                            Quantity
                         </div>
 
                         <div
@@ -604,7 +604,7 @@
 
                             <div
                                 class="flex h-8 min-w-10 items-center justify-center rounded-xl bg-white dark:bg-slate-950 px-2 text-sm font-black text-slate-900 dark:text-slate-100 ring-1 ring-slate-100 dark:ring-slate-800"
-                                x-text="new Intl.NumberFormat('fa-IR').format(quantity)"
+                                x-text="new Intl.NumberFormat('en-US').format(quantity)"
                             ></div>
 
                             <button
@@ -623,9 +623,9 @@
                         x-cloak
                         class="mt-2 text-[11px] font-bold text-slate-400 dark:text-slate-500"
                     >
-                        حداکثر تعداد مجاز برای این محصول:
-                        <span x-text="new Intl.NumberFormat('fa-IR').format(maxQuantityPerOrder)"></span>
-                        عدد
+                        Maximum allowed quantity for this product:
+                        <span x-text="new Intl.NumberFormat('en-US').format(maxQuantityPerOrder)"></span>
+                        units
                     </div>
 
                     {{-- Actions --}}
@@ -635,7 +635,7 @@
                             class="inline-flex items-center justify-center [&_svg]:w-4 [&_svg]:h-4 gap-2 rounded-2xl bg-brand-500 dark:bg-brand-600 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-brand-600 dark:hover:bg-brand-700 active:bg-brand-700"
                         >
                             @include('icons.shopping-cart-02')
-                            <span>سبد خرید</span>
+                            <span>Shopping cart</span>
                         </a>
 
                         <button
@@ -645,7 +645,7 @@
                             @click="removeFromCart()"
                         >
                             @include('icons.delete-02')
-                            <span>حذف</span>
+                            <span>Remove</span>
                         </button>
                     </div>
                 </div>
@@ -664,7 +664,7 @@
                     @click="submit(true)"
                 >
                     <span x-show="!isSubmitting" x-cloak>
-                        افزودن به سبد خرید
+                        Add to cart
                     </span>
 
                     <span
@@ -673,7 +673,7 @@
                         class="inline-flex items-center gap-2"
                     >
                         <span class="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"></span>
-                        <span>در حال افزودن...</span>
+                        <span>Adding...</span>
                     </span>
                 </button>
 
@@ -694,9 +694,9 @@
                     </div>
                     <div class="min-w-0">
                         <div class="text-xs font-black text-amber-900 dark:text-amber-200 leading-6">
-                            با خرید این محصول
+                            By purchasing this product
                             <span x-text="purchasePoints.items[selectedSaleItemId]"></span>
-                            امتیاز به باشگاه مخاطبان شما اضافه می‌شود.
+                            points will be added to your Community Club account.
                         </div>
                     </div>
                 </div>
@@ -711,9 +711,9 @@
                                 target="_blank"
                             rel="noopener noreferrer"
                             @endif
-                            class="group flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-right shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50/60 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-200 focus:ring-offset-2 focus:ring-offset-white dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/30 dark:hover:bg-brand-950/20 dark:focus:ring-brand-500/30 dark:focus:ring-offset-slate-900"
+                            class="group flex w-full items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-3 text-start shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-200 hover:bg-brand-50/60 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-brand-200 focus:ring-offset-2 focus:ring-offset-white dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/30 dark:hover:bg-brand-950/20 dark:focus:ring-brand-500/30 dark:focus:ring-offset-slate-900"
                             @if($link['open_in_new_tab'])
-                                aria-label="{{ $link['title'] }}؛ باز شدن در تب جدید"
+                                aria-label="{{ $link['title'] }}; opens in a new tab"
                             @endif
                         >
                             <span
@@ -767,8 +767,8 @@
         <x-front.modal
             name="product-cart-feedback"
             max-width="max-w-md"
-            title="وضعیت سبد خرید"
-            description="نتیجه عملیات افزودن یا به‌روزرسانی محصول در سبد خرید"
+            title="Cart status"
+            description="Result of adding or updating the product in your cart"
         >
             <div>
                 {{-- Status --}}
@@ -839,17 +839,17 @@
                         <div
                             class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-4">
                             <div class="text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
-                                تعداد آیتم‌ها
+                                Item count
                             </div>
 
                             <div class="mt-2 flex items-end gap-1">
                 <span
                     class="text-2xl font-black text-slate-900 dark:text-slate-100"
-                    x-text="new Intl.NumberFormat('fa-IR').format(modal.itemsCount)"
+                    x-text="new Intl.NumberFormat('en-US').format(modal.itemsCount)"
                 ></span>
 
                                 <span class="pb-1 text-xs font-bold text-slate-500 dark:text-slate-400">
-                    مورد
+                    items
                 </span>
                             </div>
                         </div>
@@ -857,7 +857,7 @@
                         <div
                             class="rounded-2xl border border-brand-100 dark:border-brand-900/40 bg-brand-50 dark:bg-transparent dark:bg-brand-950/30 p-4">
                             <div class="text-[11px] font-extrabold text-brand-700 dark:text-brand-400">
-                                مبلغ سبد
+                                Cart amount
                             </div>
 
                             <div
@@ -873,7 +873,7 @@
                         class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
                     >
                         <div class="text-xs font-black text-slate-700 dark:text-slate-200">
-                            گزینه‌های همراه انتخاب‌شده
+                            Selected add-on options
                         </div>
 
                         <div class="mt-3 flex flex-wrap gap-2">
@@ -893,7 +893,7 @@
                     >
                         <div class="flex items-center justify-between gap-3">
                             <div class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400">
-                                تخفیف اعمال‌شده
+                                Applied discount
                             </div>
 
                             <div
@@ -913,14 +913,14 @@
                         :href="cartUrl"
                         class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 dark:bg-brand-600 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-600 dark:hover:bg-brand-700 active:bg-brand-700"
                     >
-                        مشاهده سبد خرید
+                        View cart
                     </a>
 
                     <button
                         type="button"
                         class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-5 py-3 text-sm font-extrabold text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
                         @click="closeModal()"
-                        x-text="modal.type === 'success' ? 'ادامه مشاهده محصول' : 'متوجه شدم'"
+                        x-text="modal.type === 'success' ? 'Continue viewing product' : 'Got it'"
                     ></button>
                 </div>
             </x-slot:footer>

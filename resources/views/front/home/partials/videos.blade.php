@@ -15,9 +15,9 @@
 
             <a href="{{ $videosBlock['buttonUrl'] }}"
                class="text-sm font-semibold text-rose-600 hover:text-rose-700 inline-flex items-center gap-2 dark:text-rose-400 dark:hover:text-rose-300">
-                مشاهده همه
+                View all
                 <span class="[&_svg]:w-4 [&_svg]:h-4">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </a>
         </div>
@@ -26,7 +26,7 @@
             @foreach($videosBlock['posts'] as $post)
                 <a href="{{ front_route('contents.detail', $post) }}"
                    class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 shadow-sm transition duration-300 hover:border-rose-500/40 hover:shadow-xl hover:shadow-rose-500/10 dark:border-slate-700 dark:hover:border-rose-500/40">
-                    {{-- تصویر با اوورلی قرمز-تیره ویدیو --}}
+                    {{-- Image with dark red video overlay --}}
                     <div class="relative aspect-video overflow-hidden bg-slate-950">
                         <x-front.responsive-image
                             :media="$post->picture"
@@ -42,22 +42,22 @@
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         />
 
-                        {{-- گرادیان ویدیویی: تیره از پایین + قرمز هاور --}}
+                        {{-- Video gradient: dark from bottom + Red hover --}}
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent transition duration-300 group-hover:from-rose-950/70 group-hover:via-rose-950/10"></div>
 
-                        {{-- نشان مدت زمان / ویدیو — گوشه پایین راست --}}
+                        {{-- Duration/video badge: bottom right --}}
                         <span class="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-lg bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white/90 backdrop-blur-sm">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                            ویدیو
+                            Video
                         </span>
 
-                        {{-- دکمه پخش: قرمز اپارات با هاله روی هاور --}}
+                        {{-- Play button: Aparat red with halo on hover --}}
                         <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 grid h-12 w-12 place-items-center rounded-full bg-rose-600/95 text-white shadow-[0_0_0_6px_rgba(244,63,94,.18)] transition duration-300 group-hover:scale-115 group-hover:bg-rose-500 group-hover:shadow-[0_0_0_10px_rgba(244,63,94,.15)] [&_svg]:h-5 [&_svg]:w-5">
                             @include('icons.play')
                         </span>
                     </div>
 
-                    {{-- متن --}}
+                    {{-- Text --}}
                     <div class="relative p-4">
                         <div class="text-sm font-extrabold text-white line-clamp-2 leading-7 transition group-hover:text-rose-200">
                             {{ $post->title }}
@@ -69,14 +69,14 @@
                             </span>
 
                             <span class="inline-flex items-center gap-2 text-xs font-extrabold text-rose-400 transition group-hover:text-rose-300 group-hover:gap-2.5">
-                                مشاهده
+                                View
                                 <span class="[&_svg]:w-4 [&_svg]:h-4">
-                                    @include('icons.arrow-left-02')
+                                    <x-front.arrow-right-02/>
                                 </span>
                             </span>
                         </div>
 
-                        {{-- خط زیرین قرمز روی هاور --}}
+                        {{-- Red underline on hover --}}
                         <span class="absolute bottom-0 left-4 right-4 h-0.5 origin-right scale-x-0 rounded-full bg-gradient-to-l from-rose-500 to-rose-400 transition-transform duration-300 group-hover:scale-x-100" aria-hidden="true"></span>
                     </div>
                 </a>

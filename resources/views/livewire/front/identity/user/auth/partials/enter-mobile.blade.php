@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.user.auth.partials.shared.step-header',
         [
-            'title' => 'ورود یا ثبت نام',
-            'description' => 'برای ادامه شماره موبایل خود را وارد کنید',
+            'title' => 'Sign in or register',
+            'description' => 'Enter your mobile number to continue',
         ]
     )
 
@@ -17,7 +17,7 @@
                 for="auth-mobile"
                 class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-                شماره موبایل
+                Mobile number
             </label>
 
             <div class="relative">
@@ -64,7 +64,7 @@
                 wire:loading.remove
                 wire:target="startAuthFlow"
             >
-                ادامه
+                Continue
             </span>
 
             <svg
@@ -92,7 +92,7 @@
         </button>
 
         <p class="text-center text-[0.7rem] leading-6 text-slate-400 dark:text-slate-500">
-            در صورت نداشتن حساب کاربری، ثبت نام شما آغاز خواهد شد.
+            If you do not have an account, registration will begin.
         </p>
 
         @if(get_setting('auth', 'announcement_text'))
@@ -109,6 +109,6 @@
         wire:loading.attr="disabled"
         class="flex h-11 w-full cursor-pointer items-center justify-center rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
     >
-        ورود با ایمیل
+        Sign in with email
     </button>
 </div>

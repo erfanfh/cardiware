@@ -16,19 +16,19 @@
 
         <a href="{{ front_route('projects.list') }}"
            class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
-            مشاهده همه
+            View all
             <span class="[&_svg]:w-4 [&_svg]:h-4">
-                @include('icons.arrow-left-02')
+                <x-front.arrow-right-02/>
             </span>
         </a>
     </div>
 
     {{--
-        سه کارت در ردیف؛ کارت‌های بعدی با اسکرول افقی (بدون نوار اسکرول دیده‌شده).
-        اسکرول با درگ ماوس/لمس هم کار می‌کند؛ برای دسترسی، فوکوس با کیبورد هم
-        کارت‌ها را به دید می‌آورد.
+        Three cards per row; scroll horizontally for more without visible scrollbar).
+        Mouse/touch drag scrolling; keyboard focus also
+        brings cards into view.
     --}}
-    <div class="mw-projects-rail" dir="rtl" tabindex="0" aria-label="پروژه‌های Cardiware">
+    <div class="mw-projects-rail" dir="ltr" tabindex="0" aria-label="Projects of Cardiware">
         @foreach($projectsBlock['items'] as $project)
             <div class="mw-projects-rail-item">
                 <x-front.project.card :project="$project" :animated="false"/>

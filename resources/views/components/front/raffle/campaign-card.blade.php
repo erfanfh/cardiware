@@ -15,9 +15,9 @@
     };
 
     $countdownLabel = match ($campaign->status) {
-        DrawCampaignStatusEnum::SCHEDULED => 'تا شروع',
-        DrawCampaignStatusEnum::OPEN => 'تا پایان دریافت بلیط',
-        DrawCampaignStatusEnum::CLOSED, DrawCampaignStatusEnum::DRAWING => 'تا زمان قرعه کشی',
+        DrawCampaignStatusEnum::SCHEDULED => 'Until start',
+        DrawCampaignStatusEnum::OPEN => 'Until ticket collection ends',
+        DrawCampaignStatusEnum::CLOSED, DrawCampaignStatusEnum::DRAWING => 'Until draw',
         default => null,
     };
 @endphp
@@ -56,11 +56,11 @@
         <div class="absolute inset-x-0 bottom-0 p-4 text-white">
             <div class="flex items-end justify-between gap-3">
                 <div class="min-w-0">
-                    <div class="text-[10px] font-bold text-white/60">{{ number_format((int)($campaign->prize_units_count ?? $campaign->prizes->sum('quantity'))) }} جایزه</div>
+                    <div class="text-[10px] font-bold text-white/60">{{ number_format((int)($campaign->prize_units_count ?? $campaign->prizes->sum('quantity'))) }} Reward</div>
                     <h2 class="mt-1 line-clamp-2 text-base font-black leading-7 sm:text-lg">{{ $campaign->title }}</h2>
                 </div>
                 <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 backdrop-blur transition group-hover:bg-white/20 [&_svg]:h-5 [&_svg]:w-5">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </div>
         </div>
@@ -75,11 +75,11 @@
 
         <div class="mt-4 grid grid-cols-2 gap-2">
             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50">
-                <div class="text-[10px] font-bold text-slate-400">بلیط فعال</div>
+                <div class="text-[10px] font-bold text-slate-400">Active ticket</div>
                 <div class="mt-1 text-sm font-black text-slate-900 dark:text-white">{{ number_format($campaign->active_tickets_count) }}</div>
             </div>
             <div class="rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/50">
-                <div class="text-[10px] font-bold text-slate-400">شرکت کننده</div>
+                <div class="text-[10px] font-bold text-slate-400">Participants</div>
                 <div class="mt-1 text-sm font-black text-slate-900 dark:text-white">{{ number_format($campaign->participants_count) }}</div>
             </div>
         </div>
@@ -87,12 +87,12 @@
         @if($campaign->eligibility_rules || $campaign->vip_monthly_ticket)
             <a href="{{ route('raffles.show', $campaign->slug) }}#raffle-eligibility" class="mt-4 text-xs font-bold text-brand-700 hover:underline dark:text-brand-300">
                 @if($campaign->eligibility_rules['require_vip'] ?? false)
-                    فقط اعضای VIP
+                    Members only of VIP
                 @elseif($campaign->eligibility_rules)
-                    مشاهده شرایط شرکت
+                    View entry requirements
                 @endif
                 @if($campaign->vip_monthly_ticket)
-                    {{ $campaign->eligibility_rules ? ' · ' : '' }}هدیه ماهانه VIP
+                    {{ $campaign->eligibility_rules ? ' · ' : '' }}Monthly gift VIP
                 @endif
             </a>
         @endif
@@ -100,8 +100,8 @@
         @if($capacityPercent !== null)
             <div class="mt-4">
                 <div class="mb-2 flex items-center justify-between gap-3 text-[10px] font-bold text-slate-400">
-                    <span>ظرفیت بلیط</span>
-                    <span>{{ number_format($capacityPercent, 0) }}٪ تکمیل</span>
+                    <span>Ticket capacity</span>
+                    <span>{{ number_format($capacityPercent, 0) }}% complete</span>
                 </div>
                 <div class="h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div class="h-full rounded-full bg-gradient-to-l from-brand-500 to-orange-400" style="width: {{ $capacityPercent }}%"></div>
@@ -115,13 +115,13 @@
             </div>
         @elseif($campaign->status === DrawCampaignStatusEnum::COMPLETED)
             <div class="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 px-3 py-3 text-xs font-extrabold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
-                نتیجه این قرعه کشی نهایی شده است.
+                The raffle result is finalized.
             </div>
         @endif
 
         <a href="{{ route('raffles.show', $campaign->slug) }}" class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-sm font-extrabold text-white transition hover:bg-brand-600 dark:bg-slate-800 dark:hover:bg-brand-500">
-            مشاهده جزئیات قرعه کشی
-            <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+            View raffle details
+            <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
         </a>
     </div>
 </article>

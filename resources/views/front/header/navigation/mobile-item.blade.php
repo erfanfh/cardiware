@@ -37,7 +37,7 @@
                 x-on:click="expanded = !expanded"
                 class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-slate-50 text-slate-500 ring-1 ring-slate-100 hover:bg-slate-100 transition dark:bg-slate-800 dark:text-slate-400 dark:ring-slate-700 dark:hover:bg-slate-700"
                 :aria-expanded="expanded.toString()"
-                aria-label="باز و بسته کردن زیرمنو"
+                aria-label="Toggle submenu"
             >
                 <svg
                     class="h-4 w-4 transition-transform duration-200"

@@ -21,9 +21,9 @@
     transform: translateY(-2px);
 }
 
-/* پروژه تکمیل‌شده: استروک انیمیشنی دنباله‌دار دور کارت + تینت سبز ملایم داخل.
-   استروک با تکنیک mask فقط روی حاشیهٔ ۱.۶px رندر می‌شود و برخلاف رینگ conic قبلی
-   (inset:-130%) هرگز از کارت بیرون نمی‌زند — در تم روشن و تیره سازگار است. */
+/* Completed project: animated trailing stroke around card + Subtle green tint inside.
+   Stroke technique mask Only on the 1.6 borderpx renders unlike the ring conic Previous
+   (inset:-130%) never extends beyond card; compatible with both themes. */
 @property --sb-ring-angle {
     syntax: '<angle>';
     initial-value: 0deg;
@@ -57,7 +57,7 @@
     animation: sbRingSweep 3.6s linear infinite;
 }
 
-/* درخشش سبز ملایم داخل کارت تکمیل‌شده */
+/* Subtle green glow in completed card */
 .sb-project-card.is-done::after {
     content: '';
     position: absolute;
@@ -82,7 +82,7 @@
     to { --sb-ring-angle: 360deg; }
 }
 
-/* نوار پیشرفت با بافت متحرک */
+/* Progress bar with animated texture */
 .sb-project-bar {
     position: relative;
     height: 9px;
@@ -96,13 +96,13 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
+    left: 0;
     border-radius: 9999px;
     background: linear-gradient(90deg, #c2410c, #f97316);
     overflow: hidden;
 }
 
-/* پرشدن یکدست و صاف — بدون بافت خط‌خط */
+/* Smooth solid fill without stripes */
 .sb-project-fill::before {
     content: '';
     position: absolute;
@@ -113,10 +113,10 @@
 .sb-project-fill::after {
     content: '';
     position: absolute;
-    inset-inline-start: 0;
+    inset-inline-end: 0;
     width: 14px;
     height: 100%;
-    background: radial-gradient(circle at right, rgba(255, 255, 255, .55), transparent 70%);
+    background: radial-gradient(circle at left, rgba(255, 255, 255, .55), transparent 70%);
 }
 
 .sb-project-fill.is-done {
@@ -124,7 +124,7 @@
     box-shadow: 0 0 12px rgba(16, 185, 129, .45);
 }
 
-/* درخشش نوک نوار — رنگ از درصد پروژه (متغیر --sb-tip) */
+/* Bar tip glow, color from project progress variable --sb-tip) */
 .sb-project-tip {
     position: absolute;
     top: 50%;
@@ -135,7 +135,7 @@
     border-radius: 9999px;
     background: #fff;
     border: 2px solid var(--sb-tip, #f97316);
-    /* فال‌بک برای مرورگرهای بدون color-mix */
+    /* Fallback for browsers without color-mix */
     box-shadow: 0 0 0 4px rgba(249, 115, 22, .18), 0 0 14px rgba(249, 115, 22, .55);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--sb-tip, #f97316) 18%, transparent), 0 0 14px color-mix(in srgb, var(--sb-tip, #f97316) 55%, transparent);
     animation: sbProjectTipPulse 1.8s ease-in-out infinite;
@@ -160,7 +160,7 @@
         animation: none;
     }
 
-    /* بدون انیمیشن، استروک به‌صورت حاشیهٔ سبز ثابت دیده می‌شود */
+    /* Without animation, stroke appears as a fixed green border */
     .sb-project-card.is-done::before {
         background: conic-gradient(
             from 270deg,

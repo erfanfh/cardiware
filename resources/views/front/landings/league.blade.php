@@ -1,17 +1,17 @@
 {{--
-    صفحه اختصاصی هر لیگ — /{landing}/leagues/{league}
-    هیرو (لوگو + پرچم کشور + آمار) + توضیح + گرید تیم‌ها با لوگو
+    Dedicated league page — /{landing}/leagues/{league}
+    Hero (logo + Country flag + Statistics) + Description + Team grid with logos
 --}}
 @extends('front.landings.master')
 
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 
 @section('body')
     @include('front.landings.partials.navbar')
 
     <main class="pt-16">
-        {{-- هیروی لیگ --}}
+        {{-- League hero --}}
         <section class="relative overflow-hidden border-b border-edge/60">
             <div class="pointer-events-none absolute inset-0" aria-hidden="true">
                 <div class="absolute inset-0 bg-grid opacity-30"></div>
@@ -26,7 +26,7 @@
                     <a href="{{ $prefix }}/{{ $slug }}" class="transition-colors hover:text-accent">{{ $data['product_name'] }}</a>
                     <span class="opacity-50">/</span>
                     <a href="{{ $prefix }}/{{ $slug }}/leagues" class="transition-colors hover:text-accent">
-                        {{ $locale === 'en' ? 'Leagues' : 'لیگ‌ها' }}
+                        {{ $locale === 'en' ? 'Leagues' : 'Leagues' }}
                     </a>
                     <span class="opacity-50">/</span>
                     <span class="font-bold text-accent">{{ $league['name'] }}</span>
@@ -50,7 +50,7 @@
                         <p class="mt-2 text-sm text-muted">
                             {{ $league['country'] }}
                             <span class="opacity-50">•</span>
-                            <span class="font-num">{{ $league['teams_count'] }} {{ $locale === 'en' ? 'clubs' : 'تیم' }}</span>
+                            <span class="font-num">{{ $league['teams_count'] }} {{ $locale === 'en' ? 'clubs' : 'Team' }}</span>
                         </p>
                     </div>
                 </div>
@@ -59,16 +59,16 @@
             </div>
         </section>
 
-        {{-- گرید تیم‌ها --}}
+        {{-- Team grid --}}
         <section class="section-pad">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex items-end justify-between gap-4">
                     <h2 class="text-2xl font-black text-ink">
-                        {{ $locale === 'en' ? 'Clubs' : 'تیم‌ها' }}
+                        {{ $locale === 'en' ? 'Clubs' : 'Teams' }}
                         <span class="font-num mr-2 align-middle text-sm font-bold text-muted">({{ count($league['teams']) }})</span>
                     </h2>
                     <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary !px-5 !py-2.5 text-xs">
-                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
+                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'Buy patch') }}
                     </a>
                 </div>
 
@@ -94,7 +94,7 @@
                 <p class="mt-8 text-center text-xs text-muted">
                     {{ $locale === 'en'
                         ? 'Club crests are imported directly from the mod\'s emblem database.'
-                        : 'نشان باشگاه‌ها مستقیماً از دیتابیس نشان‌های پچ وارد شده‌اند.' }}
+                        : 'Club badges are imported directly from the patch badge database.' }}
                 </p>
             </div>
         </section>

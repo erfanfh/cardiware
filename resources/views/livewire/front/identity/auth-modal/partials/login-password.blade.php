@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'ورود به حساب',
-            'description' => 'رمز عبور حساب خود را وارد کنید.',
+            'title' => 'Sign in',
+            'description' => 'Enter your account password.',
             'backMethod' => 'goToEnterMobile',
             'mobile' => $resolvedMobile,
         ]
@@ -20,7 +20,7 @@
                     for="{{ $name }}-login-password"
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
-                    رمز عبور
+                    Password
                 </label>
 
                 <button
@@ -34,14 +34,14 @@
                         wire:loading.remove
                         wire:target="requestPasswordResetOtp"
                     >
-                        فراموشی رمز؟
+                        Forgot password?
                     </span>
 
                     <span
                         wire:loading
                         wire:target="requestPasswordResetOtp"
                     >
-                        در حال ارسال...
+                        Sending...
                     </span>
                 </button>
             </div>
@@ -60,7 +60,7 @@
                     type="button"
                     x-on:click="showPassword = !showPassword"
                     class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-[10px] font-extrabold text-slate-400 transition hover:text-brand-600 dark:text-slate-500 dark:hover:text-brand-400"
-                    aria-label="نمایش یا مخفی کردن رمز عبور"
+                    aria-label="Show or hide password"
                 >
                     <svg
                         x-show="!showPassword"
@@ -125,14 +125,14 @@
                 wire:loading.remove
                 wire:target="loginWithPassword"
             >
-                ورود و ادامه
+                Sign in and continue
             </span>
 
             <span
                 wire:loading
                 wire:target="loginWithPassword"
             >
-                در حال ورود...
+                Signing in...
             </span>
 
             <span
@@ -149,7 +149,7 @@
 
             <div class="relative flex justify-center">
                 <span class="bg-white px-3 text-[10px] font-bold text-slate-400 dark:bg-slate-900 dark:text-slate-500">
-                    یا
+                    or
                 </span>
             </div>
         </div>
@@ -165,14 +165,14 @@
                 wire:loading.remove
                 wire:target="requestLoginOtp"
             >
-                ورود با کد یکبار مصرف
+                Sign in with a one-time code
             </span>
 
             <span
                 wire:loading
                 wire:target="requestLoginOtp"
             >
-                در حال ارسال کد...
+                Sending code...
             </span>
 
             <span
@@ -187,7 +187,7 @@
             x-on:click="closeModal()"
             class="h-10 w-full cursor-pointer text-[11px] font-extrabold text-slate-400 transition hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
         >
-            انصراف
+            Cancel
         </button>
     </form>
 </div>

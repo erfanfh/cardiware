@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'تایید ورود',
-            'description' => 'کد ارسال شده به شماره موبایل را وارد کنید.',
+            'title' => 'Confirm sign-in',
+            'description' => 'Enter the code sent to your mobile number.',
             'backMethod' => 'goToPasswordLogin',
             'mobile' => $resolvedMobile,
         ]
@@ -19,7 +19,7 @@
                 for="{{ $name }}-login-otp"
                 class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
             >
-                کد تایید {{ (int) config('auth-flow.otp.length', 6) }} رقمی
+                Verification code {{ (int) config('auth-flow.otp.length', 6) }} digits
             </label>
 
             <input
@@ -51,7 +51,7 @@
                 x-on:click="closeModal()"
                 class="h-11 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-                انصراف
+                Cancel
             </button>
 
             <button
@@ -64,14 +64,14 @@
                     wire:loading.remove
                     wire:target="verifyLoginOtp"
                 >
-                    تایید و ورود
+                    Confirm and sign in
                 </span>
 
                 <span
                     wire:loading
                     wire:target="verifyLoginOtp"
                 >
-                    در حال بررسی...
+                    Under review...
                 </span>
 
                 <span

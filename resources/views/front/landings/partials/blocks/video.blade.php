@@ -1,8 +1,8 @@
 {{--
-    بلوک ویدیو — {type: video, title?, url?, poster?, caption?}
-    url خالی = جای‌گذار (پوستر + دکمه پخش به‌زودی)؛ url یوتیوب/APV = امبد
+    Video block — {type: video, title?, url?, poster?, caption?}
+    url Empty = Placeholder (poster + play button coming soon); url YouTube/APV = Embed
 --}}
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div class="reveal" x-data="{ playing: false }">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])
 
@@ -35,7 +35,7 @@
                     <span class="mx-auto grid size-16 place-items-center rounded-full bg-accent/15 text-accent">
                         @include('front.landings.partials.icon', ['name' => 'play', 'class' => 'size-7'])
                     </span>
-                    <p class="mt-4 font-bold text-ink">{{ $block['caption'] ?? ($locale === 'en' ? 'Trailer coming soon' : 'ویدیو به‌زودی') }}</p>
+                    <p class="mt-4 font-bold text-ink">{{ $block['caption'] ?? ($locale === 'en' ? 'Trailer coming soon' : 'Video coming soon') }}</p>
                 </div>
             </div>
         @endif

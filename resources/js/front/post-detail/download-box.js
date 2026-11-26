@@ -51,7 +51,7 @@ window.downloadsBlock = function () {
             }
 
             const defaultText = button.dataset.defaultText ?? label.textContent ?? '';
-            const copiedText = button.dataset.copiedText ?? 'کپی شد';
+            const copiedText = button.dataset.copiedText ?? 'Copied';
             const oldTimer = this._buttonTimers.get(button);
 
             if (oldTimer) {

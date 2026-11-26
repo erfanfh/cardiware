@@ -1,5 +1,5 @@
 {{--
-Template Name: صفحه درباره ما
+Template Name: About us page
 --}}
 
 @extends('front.master')
@@ -43,7 +43,7 @@ Template Name: صفحه درباره ما
                     link-class="font-bold transition hover:text-brand-300"
                     current-class="font-semibold text-white/90"
                     :fallback-items="[
-                        ['name' => 'خانه', 'url' => route('home')],
+                        ['name' => 'Home', 'url' => route('home')],
                         ['name' => $page->title, 'url' => null],
                     ]"
                 />
@@ -72,7 +72,7 @@ Template Name: صفحه درباره ما
                                 class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-950/20 transition hover:bg-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-300/25"
                             >
                                 {{ $aboutUs['hero_primary_button_title'] }}
-                                <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                             </a>
 
                             <a
@@ -85,7 +85,7 @@ Template Name: صفحه درباره ما
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3" aria-label="آمار Cardiware">
+                    <div class="grid grid-cols-2 gap-3" aria-label="Statistics Cardiware">
                         <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md sm:p-5">
                             <div class="text-[11px] font-extrabold leading-5 text-white/65">{{ $aboutUs['stats_in_progress_title'] }}</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ number_format($aboutUsStats['in_progress_projects']) }}</div>
@@ -96,9 +96,9 @@ Template Name: صفحه درباره ما
                             <div class="mt-2 flex items-end justify-between gap-2">
                                 <div class="text-2xl font-black text-white">
                                     {{ number_format($aboutUsStats['completed_projects']) }}
-                                    <span class="text-xs font-bold text-white/55">از {{ number_format($aboutUsStats['total_projects']) }}</span>
+                                    <span class="text-xs font-bold text-white/55">of {{ number_format($aboutUsStats['total_projects']) }}</span>
                                 </div>
-                                <span class="text-[10px] font-black text-brand-300">{{ $aboutUsStats['completion_percentage'] }}٪</span>
+                                <span class="text-[10px] font-black text-brand-300">{{ $aboutUsStats['completion_percentage'] }}%</span>
                             </div>
                             <div class="mt-3 h-1.5 overflow-hidden rounded-full bg-white/15" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $aboutUsStats['completion_percentage'] }}">
                                 <div class="h-full rounded-full bg-gradient-to-l from-brand-300 to-brand-500" style="width: {{ $aboutUsStats['completion_percentage'] }}%"></div>
@@ -165,7 +165,7 @@ Template Name: صفحه درباره ما
 
                             @if($itemUrl !== '')
                                 <a href="{{ $itemUrl }}" class="absolute inset-0 rounded-2xl focus:outline-none focus:ring-4 focus:ring-brand-200/60 dark:focus:ring-brand-500/20">
-                                    <span class="sr-only">مشاهده {{ $item['title'] ?? '' }}</span>
+                                    <span class="sr-only">View {{ $item['title'] ?? '' }}</span>
                                 </a>
                             @endif
                         </div>
@@ -190,7 +190,7 @@ Template Name: صفحه درباره ما
 
                 <a href="{{ front_route('projects.list') }}" class="inline-flex items-center gap-2 self-start text-sm font-extrabold text-brand-700 transition hover:text-brand-800 sm:self-auto dark:text-brand-300 dark:hover:text-brand-200">
                     {{ $aboutUs['projects_button_title'] }}
-                    <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                    <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                 </a>
             </div>
 
@@ -200,7 +200,7 @@ Template Name: صفحه درباره ما
                 @empty
                     <div class="rounded-[1.75rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center sm:col-span-2 lg:col-span-3 dark:border-slate-700 dark:bg-slate-900">
                         <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white text-slate-400 ring-1 ring-slate-200 [&_svg]:h-5 [&_svg]:w-5 dark:bg-slate-950 dark:ring-slate-700">@include('icons.inbox')</span>
-                        <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400">در حال حاضر پروژه‌ای برای نمایش وجود ندارد.</p>
+                        <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400">There are currently no projects to display.</p>
                     </div>
                 @endforelse
             </div>
@@ -243,7 +243,7 @@ Template Name: صفحه درباره ما
                                 />
                             @else
                                 <div class="grid h-16 w-16 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-brand-100 to-orange-50 text-lg font-black text-brand-700 ring-1 ring-brand-200 dark:from-brand-500/20 dark:to-orange-500/10 dark:text-brand-200 dark:ring-brand-500/20">
-                                    {{ $initials ?: '؟' }}
+                                    {{ $initials ?: '?' }}
                                 </div>
                             @endif
 
@@ -264,14 +264,14 @@ Template Name: صفحه درباره ما
                                 @if(filled($member->website_url))
                                     <a href="{{ $member->website_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                                         <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.link-square-02')</span>
-                                        وب‌سایت
+                                        Website
                                     </a>
                                 @endif
 
                                 @if(filled($member->email))
                                     <a href="mailto:{{ $member->email }}" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                                         <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.mail-ru')</span>
-                                        ایمیل
+                                        Email
                                     </a>
                                 @endif
                             </div>
@@ -280,7 +280,7 @@ Template Name: صفحه درباره ما
                 @empty
                     <div class="rounded-[1.75rem] border border-dashed border-slate-300 bg-slate-50 p-8 text-center sm:col-span-2 lg:col-span-3 dark:border-slate-700 dark:bg-slate-900">
                         <span class="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white text-slate-400 ring-1 ring-slate-200 [&_svg]:h-5 [&_svg]:w-5 dark:bg-slate-950 dark:ring-slate-700">@include('icons.user-multiple')</span>
-                        <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400">اطلاعات اعضای تیم هنوز ثبت نشده است.</p>
+                        <p class="mt-4 text-sm font-bold text-slate-500 dark:text-slate-400">Team member information has not been added yet.</p>
                     </div>
                 @endforelse
             </div>
@@ -311,7 +311,7 @@ Template Name: صفحه درباره ما
                                 @click="open = open === {{ $faqIndex }} ? -1 : {{ $faqIndex }}"
                                 :aria-expanded="open === {{ $faqIndex }}"
                                 aria-controls="about-faq-{{ $faqIndex }}"
-                                class="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-right transition hover:bg-slate-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand-100 sm:p-6 dark:hover:bg-slate-800/70 dark:focus-visible:ring-brand-500/10"
+                                class="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-start transition hover:bg-slate-50 focus:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-brand-100 sm:p-6 dark:hover:bg-slate-800/70 dark:focus-visible:ring-brand-500/10"
                             >
                                 <span class="text-sm font-extrabold leading-7 text-slate-900 sm:text-base dark:text-slate-100">{{ $item['title'] }}</span>
                                 <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-lg font-black text-brand-600 dark:border-slate-700 dark:bg-slate-950 dark:text-brand-300" x-text="open === {{ $faqIndex }} ? '−' : '+'"></span>
@@ -329,7 +329,7 @@ Template Name: صفحه درباره ما
                         </div>
                     </div>
                 @empty
-                    <div class="p-8 text-center text-sm font-bold text-slate-500 dark:text-slate-400">هنوز پرسشی برای این بخش ثبت نشده است.</div>
+                    <div class="p-8 text-center text-sm font-bold text-slate-500 dark:text-slate-400">No questions have been added for this section.</div>
                 @endforelse
             </div>
         </section>
@@ -347,15 +347,15 @@ Template Name: صفحه درباره ما
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                         <a href="{{ route('account.tickets') }}" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-300/25">
                             {{ $aboutUs['contact_us_button_title'] }}
-                            <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                            <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                         </a>
                         @guest
-                            <span class="text-xs leading-6 text-white/55">برای ثبت و پیگیری درخواست، وارد حساب کاربری شوید.</span>
+                            <span class="text-xs leading-6 text-white/55">Sign in to submit and track requests.</span>
                         @endguest
                     </div>
                 </article>
 
-                <aside class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 lg:col-span-5 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20" aria-label="راه‌های ارتباطی">
+                <aside class="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-7 lg:col-span-5 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20" aria-label="Contact channels">
                     <div class="flex items-center gap-3">
                         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 [&_svg]:h-5 [&_svg]:w-5 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                             @include('icons.telephone')
@@ -394,7 +394,7 @@ Template Name: صفحه درباره ما
                             </div>
                         @empty
                             <p class="rounded-2xl border border-dashed border-slate-300 p-5 text-center text-sm leading-7 text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                                راه‌های ارتباطی از پنل تنظیمات درباره ما قابل ثبت هستند.
+                                Contact channels can be configured in About Us settings.
                             </p>
                         @endforelse
                     </div>

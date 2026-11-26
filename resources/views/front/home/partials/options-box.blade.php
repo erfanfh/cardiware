@@ -13,7 +13,7 @@
                     $icon = filled($item['icon'] ?? null) ? $item['icon'] : '✨';
                     $theme = $item['theme'] ?? 'dark';
                     $isDark = $theme === 'dark';
-                    $buttonText = filled($item['button_text'] ?? null) ? $item['button_text'] : 'مشاهده';
+                    $buttonText = filled($item['button_text'] ?? null) ? $item['button_text'] : 'View';
                 @endphp
 
                 <a href="{{ $link }}"

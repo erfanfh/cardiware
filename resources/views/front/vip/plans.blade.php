@@ -1,8 +1,8 @@
 @extends('front.master')
 
 @section('head')
-    <title>اشتراک VIP | {{ get_setting('general', 'title') }}</title>
-    <meta name="description" content="پلن‌های اشتراک VIP را مقایسه کنید و پلن مناسب خود را از طریق سبد خرید تهیه کنید.">
+    <title>Subscription VIP | {{ get_setting('general', 'title') }}</title>
+    <meta name="description" content="Subscription plans VIP Compare plans and purchase the right one through the cart.">
 @endsection
 
 @section('content')
@@ -28,7 +28,7 @@
                         {{ $hero['hero_button'] }} <span aria-hidden="true">↓</span>
                     </a>
                     <a href="{{ front_route('vip.products.index') }}" class="mt-4 inline-flex items-center gap-2 rounded-2xl border border-amber-300/80 bg-white/70 px-7 py-3.5 text-sm font-black text-slate-800 transition hover:bg-white dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:mr-3 sm:mt-8">
-                        مشاهده محصولات VIP <span aria-hidden="true">←</span>
+                        View products VIP <span aria-hidden="true">←</span>
                     </a>
                 </div>
 
@@ -42,9 +42,9 @@
 
         <section id="vip-plans" class="relative mx-auto max-w-7xl scroll-mt-10 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
             <div class="mx-auto max-w-2xl text-center">
-                <div class="text-xs font-black tracking-widest text-amber-600 dark:text-amber-400">انتخاب اشتراک</div>
-                <h2 class="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">پلن مناسب شما کدام است؟</h2>
-                <p class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">همهٔ قیمت‌ها به تومان هستند و مدت اعتبار از زمان فعال شدن اشتراک محاسبه می‌شود.</p>
+                <div class="text-xs font-black tracking-widest text-amber-600 dark:text-amber-400">Choose subscription</div>
+                <h2 class="mt-3 text-3xl font-black text-slate-950 dark:text-white sm:text-4xl">Which plan suits you?</h2>
+                <p class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">All prices are in toman; validity starts upon activation.</p>
             </div>
 
             @if($vipExpiresAt)
@@ -56,20 +56,20 @@
                             <div>
                                 <span class="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/80 px-3 py-1 text-[11px] font-black text-emerald-700 dark:border-emerald-400/25 dark:bg-emerald-400/10 dark:text-emerald-300">
                                     <span class="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_0_3px_rgba(16,185,129,0.15)]"></span>
-                                    وضعیت فعال
+                                    Active status
                                 </span>
-                                <h3 class="mt-3 text-lg font-black text-slate-900 sm:text-xl dark:text-white">اشتراک VIP شما فعال است</h3>
-                                <p class="mt-2 text-xs leading-6 text-slate-600 sm:text-sm dark:text-slate-300">با انتخاب پلن جدید، روزهای آن به پایان اعتبار فعلی شما اضافه می‌شود.</p>
+                                <h3 class="mt-3 text-lg font-black text-slate-900 sm:text-xl dark:text-white">Subscription VIP is active</h3>
+                                <p class="mt-2 text-xs leading-6 text-slate-600 sm:text-sm dark:text-slate-300">A new plan extends your current expiry date by its duration.</p>
                             </div>
                         </div>
 
                         <div class="rounded-2xl border border-emerald-200/80 bg-white/80 px-5 py-4 shadow-sm sm:min-w-64 dark:border-emerald-400/20 dark:bg-white/5">
                             <div class="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-300">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                تاریخ و ساعت پایان اعتبار
+                                Expiry date and time
                             </div>
                             <time datetime="{{ $vipExpiresAt->toIso8601String() }}" class="mt-2 block text-base font-black leading-7 text-slate-900 sm:text-lg dark:text-white">
-                                {{ jalali_date($vipExpiresAt, 'j F Y') }} ساعت {{ jalali_date($vipExpiresAt, 'H:i') }}
+                                {{ (($vipExpiresAt) ? \Illuminate\Support\Carbon::parse($vipExpiresAt)->format('j F Y') : '') }} hours {{ (($vipExpiresAt) ? \Illuminate\Support\Carbon::parse($vipExpiresAt)->format('H:i') : '') }}
                             </time>
                         </div>
                     </div>
@@ -83,8 +83,8 @@
             @if($plans->isEmpty())
                 <div class="mx-auto mt-12 max-w-xl rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900">
                     <div class="text-5xl">✦</div>
-                    <h3 class="mt-5 text-xl font-black">فعلاً پلن فعالی وجود ندارد</h3>
-                    <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">پلن‌های جدید به‌زودی در همین صفحه نمایش داده می‌شوند.</p>
+                    <h3 class="mt-5 text-xl font-black">No active plans yet</h3>
+                    <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">New plans will appear here soon.</p>
                 </div>
             @else
                 <div class="mx-auto mt-12 grid max-w-6xl gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -97,23 +97,23 @@
                             <div class="flex flex-1 flex-col p-7 sm:p-8">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="grid h-12 w-12 place-items-center rounded-2xl {{ $isFeatured ? 'bg-amber-400 text-slate-950' : 'bg-amber-50 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300' }} [&_svg]:h-6 [&_svg]:w-6">@include('icons.crown-03')</div>
-                                    @if($isFeatured)<span class="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-black text-amber-200">انتخاب ویژه</span>@endif
+                                    @if($isFeatured)<span class="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-black text-amber-200">Featured choice</span>@endif
                                 </div>
                                 <h3 class="mt-7 text-2xl font-black">{{ $plan->title }}</h3>
-                                <p class="mt-3 min-h-14 whitespace-pre-line text-sm leading-7 {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">{{ $plan->description ?: 'اعتبار VIP برای تجربهٔ ویژه در Cardiware.' }}</p>
+                                <p class="mt-3 min-h-14 whitespace-pre-line text-sm leading-7 {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">{{ $plan->description ?: 'Validity VIP For an exclusive experience in Cardiware.' }}</p>
 
                                 <div class="mt-8 border-t {{ $isFeatured ? 'border-white/15' : 'border-slate-100 dark:border-slate-800' }} pt-7">
                                     <div class="flex items-end gap-2">
                                         <span class="text-4xl font-black tabular-nums sm:text-5xl">{{ number_format($plan->price_toman) }}</span>
-                                        <span class="pb-1 text-sm font-bold {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">تومان</span>
+                                        <span class="pb-1 text-sm font-bold {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">Toman</span>
                                     </div>
                                     <div class="mt-5 flex items-center gap-2 text-sm font-bold">
                                         <span class="grid h-6 w-6 place-items-center rounded-full {{ $isFeatured ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300' }}">✓</span>
-                                        {{ number_format($plan->duration_days) }} روز اعتبار VIP
+                                        {{ number_format($plan->duration_days) }} days of validity VIP
                                     </div>
                                     <div class="mt-3 flex items-center gap-2 text-sm font-bold">
                                         <span class="grid h-6 w-6 place-items-center rounded-full {{ $isFeatured ? 'bg-amber-400/15 text-amber-300' : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300' }}">✓</span>
-                                        تمدید خودکار زمان در خرید دوباره
+                                        Automatic extension on repurchase
                                     </div>
                                 </div>
 
@@ -121,12 +121,12 @@
                                     <form method="post" action="{{ route('vip.cart.add', $plan) }}" class="mt-auto pt-9">
                                         @csrf
                                         <button type="submit" class="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-black transition {{ $isFeatured ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-slate-950 text-white hover:bg-brand-600 dark:bg-white dark:text-slate-950 dark:hover:bg-amber-300' }}">
-                                            انتخاب پلن و ادامه خرید <span aria-hidden="true">←</span>
+                                            Select plan and continue <span aria-hidden="true">←</span>
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('auth.index') }}" class="mt-auto inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-black transition {{ $isFeatured ? 'bg-amber-400 text-slate-950 hover:bg-amber-300' : 'bg-slate-950 text-white hover:bg-brand-600 dark:bg-white dark:text-slate-950 dark:hover:bg-amber-300' }}">
-                                        ورود و انتخاب پلن <span aria-hidden="true">←</span>
+                                        Sign in and select a plan <span aria-hidden="true">←</span>
                                     </a>
                                 @endauth
                             </div>
@@ -135,7 +135,7 @@
                 </div>
             @endif
 
-            <p class="mx-auto mt-10 max-w-3xl text-center text-xs leading-7 text-slate-500 dark:text-slate-400">اشتراک پس از تأیید پرداخت فعال می‌شود. جزئیات خرید در سفارش‌های حساب کاربری شما ثبت خواهد شد.</p>
+            <p class="mx-auto mt-10 max-w-3xl text-center text-xs leading-7 text-slate-500 dark:text-slate-400">Subscription activates after payment confirmation. Purchase details appear in your account orders.</p>
         </section>
     </main>
 @endsection

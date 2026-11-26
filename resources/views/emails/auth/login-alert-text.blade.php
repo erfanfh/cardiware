@@ -1,11 +1,11 @@
-سلام {{ $login->name }}،
+Hello {{ $login->name }},
 
-یک ورود موفق به حساب شما در Cardiware انجام شد.
-زمان (تهران): {{ $login->time() }}
-نشانی IP: {{ $login->ip }}
-محل ورود: {{ $login->sourceLabel() }}
-مرورگر / برنامه: {{ $login->userAgent }}
+A successful sign-in to your account at Cardiware occurred.
+Time (Tehran): {{ $login->time() }}
+Address IP: {{ $login->ip }}
+Sign-in location: {{ $login->sourceLabel() }}
+Browser / App: {{ $login->userAgent }}
 
-اگر این ورود توسط شما انجام نشده است، رمز عبور حساب خود را تغییر دهید و با پشتیبانی Cardiware تماس بگیرید.
+If you did not sign in, change your account password and contact support Cardiware for assistance.
 
-این ایمیل به‌صورت خودکار ارسال شده است؛ لطفاً به آن پاسخ ندهید.
+This email was sent automatically; please do not reply.

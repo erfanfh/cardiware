@@ -18,7 +18,7 @@
 
 <x-front.cart
     class="group relative overflow-hidden !p-4 transition duration-300 hover:border-brand-200 hover:shadow-[0_9px_28px_rgba(249,115,22,0.09)] dark:hover:border-brand-900/60">
-    {{-- افکت ظریف پس زمینه --}}
+    {{-- Subtle background effect --}}
     <div
         class="pointer-events-none absolute -right-12 -top-14
                h-28 w-28 rounded-full bg-orange-100/70 blur-3xl
@@ -53,14 +53,14 @@
                         class="truncate text-sm font-black
                                text-slate-900 dark:text-white"
                     >
-                        کیف پول من
+                        My wallet
                     </h2>
 
                     <p
                         class="mt-0.5 truncate text-[10px] font-semibold
                                text-slate-500 dark:text-slate-400"
                     >
-                        موجودی و تراکنش های کیف پول
+                        Wallet balance and transactions
                     </p>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                 >
                     <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
 
-                    مسدود
+                    Blocked
                 </span>
             @endif
         </div>
@@ -110,7 +110,7 @@
                 "
             >
                 <div class="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                    موجودی قابل استفاده
+                    Available balance
                 </div>
 
                 <div
@@ -127,7 +127,7 @@
                     </strong>
 
                     <span class="shrink-0 pb-0.5 text-[10px] font-extrabold text-orange-600 dark:text-orange-300">
-                        تومان
+                        Toman
                     </span>
                 </div>
 
@@ -137,11 +137,11 @@
                     class="mt-1 text-[0.8rem] font-blacktext-slate-800 dark:text-slate-100"
                 >
                     <span x-show="hasHeldBalance">
-                        موجودی قابل استفاده ندارید!
+                        No available balance!
                     </span>
 
                     <span x-show="!hasHeldBalance">
-                        موجودی ندارید!
+                        No balance!
                     </span>
                 </div>
             </div>
@@ -160,7 +160,7 @@
                        dark:hover:bg-orange-500"
             >
                 <span>
-                    مشاهده کیف پول
+                    View wallet
                 </span>
 
                 <svg
@@ -194,7 +194,7 @@
                     class="text-[10px] font-bold
                            text-amber-800 dark:text-amber-300"
                 >
-                    موجودی رزرو شده
+                    Reserved balance
                 </span>
 
                 <span
@@ -202,7 +202,7 @@
                            text-amber-700 dark:text-amber-200"
                 >
                     {{ number_format($heldBalance) }}
-                    تومان
+                    Toman
                 </span>
             </div>
         @endif

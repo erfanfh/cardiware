@@ -13,7 +13,7 @@
             </div>
 
             <div>
-                <h4 class="text-sm font-extrabold text-ink">لینک‌ها</h4>
+                <h4 class="text-sm font-extrabold text-ink">Links</h4>
                 <ul class="mt-4 space-y-2.5">
                     @foreach($data['footer']['links'] as $link)
                         <li><a href="{{ $link['href'] }}" class="text-sm text-muted transition-colors hover:text-accent">{{ $link['label'] }}</a></li>
@@ -22,13 +22,13 @@
             </div>
 
             <div>
-                <h4 class="text-sm font-extrabold text-ink">جامعه Cardiware</h4>
+                <h4 class="text-sm font-extrabold text-ink">Community Cardiware</h4>
                 <div class="mt-4 flex flex-wrap gap-2.5">
                     @foreach($data['footer']['socials'] as $social)
                         <a href="{{ $social['href'] }}" class="rounded-xl border border-edge/70 bg-surface px-4 py-2 text-xs font-bold text-muted transition-all hover:border-accent/40 hover:text-accent">{{ $social['label'] }}</a>
                     @endforeach
                 </div>
-                <a href="{{ $data['buy_url'] }}" class="btn-primary mt-6 !px-5 !py-2.5 text-sm">{{ $data['buy_label'] ?? 'خرید پچ' }}</a>
+                <a href="{{ $data['buy_url'] }}" class="btn-primary mt-6 !px-5 !py-2.5 text-sm">{{ $data['buy_label'] ?? 'Buy patch' }}</a>
             </div>
         </div>
 

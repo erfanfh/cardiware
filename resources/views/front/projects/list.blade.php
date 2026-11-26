@@ -35,15 +35,15 @@
 
                     <div class="grid grid-cols-3 gap-3 w-full lg:w-[420px]">
                         <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
-                            <div class="text-[11px] font-extrabold text-white/70">شروع نشده</div>
+                            <div class="text-[11px] font-extrabold text-white/70">Not started</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->not_started }}</div>
                         </div>
                         <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
-                            <div class="text-[11px] font-extrabold text-white/70">در حال تکمیل</div>
+                            <div class="text-[11px] font-extrabold text-white/70">In progress</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->in_progress }}</div>
                         </div>
                         <div class="rounded-2xl bg-white/10 border border-white/10 backdrop-blur p-4">
-                            <div class="text-[11px] font-extrabold text-white/70">تکمیل</div>
+                            <div class="text-[11px] font-extrabold text-white/70">Completed</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ $stats->completed }}</div>
                         </div>
                     </div>
@@ -67,10 +67,10 @@
                             @include('icons.inbox')
                         </div>
 
-                        <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">پروژه ای یافت
-                            نشد</h3>
+                        <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">No projects found
+                            not found</h3>
                         <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                            فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                            Change the filters or search for another term.
                         </p>
                     </div>
                 @endif

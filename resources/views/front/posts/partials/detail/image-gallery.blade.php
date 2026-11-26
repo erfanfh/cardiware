@@ -6,7 +6,7 @@
               class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
               @include('icons.image-03')
           </span>
-            <h2 class="text-base font-extrabold dark:text-slate-100">گالری تصاویر</h2>
+            <h2 class="text-base font-extrabold dark:text-slate-100">Image gallery</h2>
         </div>
 
         <div class="mt-4">
@@ -56,14 +56,14 @@
                     <div
                         class="mwGalleryPrev h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800">
                         <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5 dark:text-slate-200">
-                            @include('icons.arrow-right-01')
+                            @include('icons.arrow-left-01')
                         </span>
                     </div>
                     <div class="mwGalleryPagination flex items-center gap-2"></div>
                     <div
                         class="mwGalleryNext h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-800">
                         <span class="text-slate-700 [&_svg]:w-5 [&_svg]:h-5 dark:text-slate-200">
-                            @include('icons.arrow-left-01')
+                            @include('icons.arrow-right-01')
                         </span>
                     </div>
                 </div>

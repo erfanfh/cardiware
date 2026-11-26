@@ -8,7 +8,7 @@
         ])
 
         <ol class="relative mt-16 grid gap-10 lg:grid-cols-3 lg:gap-6">
-            {{-- خط اتصال دسکتاپ --}}
+            {{-- Desktop connecting line --}}
             <div class="pointer-events-none absolute inset-x-16 top-8 hidden h-px bg-gradient-to-l from-accent/10 via-accent/40 to-accent/10 lg:block" aria-hidden="true"></div>
 
             @foreach($section['items'] as $i => $item)
@@ -26,7 +26,7 @@
         <div class="reveal mt-12 text-center">
             <a href="{{ $data['launcher_url'] }}" class="btn-primary">
                 @include('front.landings.partials.icon', ['name' => 'download', 'class' => 'size-5'])
-                دانلود MW Launcher
+                Download MW Launcher
             </a>
         </div>
     </div>

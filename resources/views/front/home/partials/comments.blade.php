@@ -30,15 +30,15 @@
 
                     <div>
                         <div class="flex items-center gap-2">
-                            <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">میانگین رضایت
-                                کاربران
+                            <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">Average satisfaction
+                                Users
                             </div>
                         </div>
                         <div class="mt-1 flex items-center gap-1 text-brand-600 dark:text-brand-400">
                             <span>★</span><span>★</span><span>★</span><span>★</span><span class="opacity-80">★</span>
                             <span class="text-xs font-bold text-slate-500 mr-2 dark:text-slate-400">
                                 {{ get_setting('home', 'testimonials_users_avg_scores') }}
-                                از 5
+                                of 5
                             </span>
                         </div>
                     </div>
@@ -53,11 +53,11 @@
                             <div
                                 class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-700 via-brand-500 to-brand-300"></div>
 
-                            {{-- نشان پیشنهاد: بالای کارت وسط، جدا از آواتار --}}
+                            {{-- Recommendation badge: above card center, separate from avatar --}}
                             <div class="mb-3">
                                 <span
                                     class="inline-flex items-center gap-1.5 rounded-xl bg-brand-50 border border-brand-100 px-2.5 py-1 text-[11px] font-black text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                    ★ پیشنهاد کاربران
+                                    ★ User recommendation
                                 </span>
                             </div>
                         @endif

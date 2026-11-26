@@ -7,7 +7,7 @@ function initHeroSwipers(scope = document) {
     const sliders = scope.querySelectorAll('.heroSwiper');
 
     sliders.forEach((sliderEl) => {
-        // جلوگیری از init شدن دوباره
+        // Prevent init again
         if (sliderEl.classList.contains('swiper-initialized')) {
             return;
         }
@@ -94,8 +94,8 @@ function syncHeroDots(swiper, dotsWrappers) {
 }
 
 function bindExtraNavButtons(swiper, nextButtons, prevButtons) {
-    // چون دکمه‌ها در هر اسلاید تکرار شده‌اند، فقط اولی را navigation رسمی می‌دهیم
-    // بقیه را دستی bind می‌کنیم
+    // Since buttons repeat in each slide, only the first gets navigation official
+    // the others manually bind are set
     nextButtons.forEach((btn, index) => {
         if (index === 0) return;
 
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroSwipers(document);
 });
 
-// اگر بعداً Livewire / Ajax / Elementor داشتی، دوباره صدا بزن:
+// If you later Livewire / Ajax / Elementor have it, call again:
 // initHeroSwipers(containerElement);
 
 export {initHeroSwipers};

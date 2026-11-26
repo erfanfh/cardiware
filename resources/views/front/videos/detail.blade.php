@@ -12,7 +12,7 @@
     $authorName = $video->author?->display_name
         ?: trim((string) $video->author?->full_name)
         ?: $video->author?->username
-        ?: 'تیم Cardiware';
+        ?: 'Team Cardiware';
     $authorInitial = mb_substr($authorName, 0, 1);
     $isAparat = $video->source_type === VideoSourceTypeEnum::APARAT && filled($video->embed_url);
     $isDirect = $video->source_type === VideoSourceTypeEnum::DIRECT && filled($video->video_url);
@@ -43,8 +43,8 @@
                 separator-class="text-slate-300 dark:text-slate-700"
                 :compact-penultimate-on-mobile="true"
                 :fallback-items="[
-                    ['name' => 'خانه', 'url' => route('home')],
-                    ['name' => 'ویدیو سنتر', 'url' => route('videos.index')],
+                    ['name' => 'Home', 'url' => route('home')],
+                    ['name' => 'Video center', 'url' => route('videos.index')],
                     ...($video->categories->first() ? [['name' => $video->categories->first()->title, 'url' => route('videos.categories', $video->categories->first()->path)]] : []),
                     ['name' => $video->title, 'url' => null],
                 ]"
@@ -53,7 +53,7 @@
             <div data-smart-sidebar-layout class="grid grid-cols-1 gap-6 lg:grid-cols-10 lg:items-start">
                 <div data-smart-sidebar-content class="min-w-0 space-y-6 lg:col-span-7">
                     <section class="overflow-hidden rounded-[1.4rem] border border-slate-800/90 bg-slate-950 shadow-2xl shadow-slate-950/15 sm:rounded-[2rem] dark:border-white/10 dark:shadow-black/50"
-                             aria-label="پخش {{ $video->title }}">
+                             aria-label="Play {{ $video->title }}">
                         <div class="relative aspect-video overflow-hidden bg-slate-950">
                             @if($isAparat)
                                 <iframe
@@ -75,7 +75,7 @@
                                     title="{{ $video->title }}"
                                 >
                                     <source src="{{ $video->video_url }}">
-                                    مرورگر شما امکان پخش این ویدیو را ندارد.
+                                    Your browser cannot play this video.
                                 </video>
                             @else
                                 @if($coverUrl)
@@ -96,8 +96,8 @@
                                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/55 to-slate-950/20"></div>
                                 <div class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center">
                                     <span class="grid h-16 w-16 place-items-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur [&_svg]:h-7 [&_svg]:w-7">@include('icons.video-01')</span>
-                                    <p class="mt-4 text-sm font-black text-white">منبع پخش این ویدیو هنوز در دسترس نیست</p>
-                                    <p class="mt-2 max-w-md text-xs font-medium leading-6 text-slate-300">اطلاعات و توضیحات ویدیو را می‌توانید در ادامه همین صفحه مشاهده کنید.</p>
+                                    <p class="mt-4 text-sm font-black text-white">The video source is not available yet</p>
+                                    <p class="mt-2 max-w-md text-xs font-medium leading-6 text-slate-300">View the video details and description below.</p>
                                 </div>
                             @endif
                         </div>
@@ -108,7 +108,7 @@
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="inline-flex items-center gap-1.5 rounded-xl border border-brand-100 bg-brand-50 px-2.5 py-1.5 text-[10px] font-black text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-3.5 [&_svg]:w-3.5">
                                     @include('icons.video-01')
-                                    ویدیو سنتر
+                                    Video center
                                 </span>
                                 @foreach($video->categories as $category)
                                     <a href="{{ route('videos.categories', $category->path) }}"
@@ -132,7 +132,7 @@
                                     @endif
                                     <div class="min-w-0">
                                         <p class="truncate text-xs font-black text-slate-800 sm:text-sm dark:text-slate-200">{{ $authorName }}</p>
-                                        <p class="mt-1 text-[10px] font-bold text-slate-400">منتشرکننده ویدیو</p>
+                                        <p class="mt-1 text-[10px] font-bold text-slate-400">Video publisher</p>
                                     </div>
                                 </div>
 
@@ -140,26 +140,26 @@
                                         x-on:click="$dispatch('open-modal', 'video-share-{{ $video->id }}')"
                                         class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">
                                     @include('icons.share-08')
-                                    اشتراک‌گذاری
+                                    Share
                                 </button>
                             </div>
 
                             <div class="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
-                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.calendar-03') تاریخ انتشار</div>
-                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ $video->published_at ? jalali_date($video->published_at, 'd F Y') : 'نامشخص' }}</div>
+                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.calendar-03') Published date</div>
+                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ $video->published_at ? (($video->published_at) ? \Illuminate\Support\Carbon::parse($video->published_at)->format('d F Y') : '') : 'Unknown' }}</div>
                                 </div>
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
-                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.view') بازدید</div>
-                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ $views ?: 0 }} بازدید</div>
+                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.view') views</div>
+                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ $views ?: 0 }} views</div>
                                 </div>
                                 <div class="rounded-2xl border border-slate-100 bg-slate-50 p-3 dark:border-slate-800 dark:bg-slate-950/60">
-                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.play') مدت ویدیو</div>
-                                    <div dir="ltr" class="mt-2 text-right text-xs font-black text-slate-700 dark:text-slate-200">{{ $video->formatted_duration ?: 'نامشخص' }}</div>
+                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.play') Video duration</div>
+                                    <div dir="ltr" class="mt-2 text-start text-xs font-black text-slate-700 dark:text-slate-200">{{ $video->formatted_duration ?: 'Unknown' }}</div>
                                 </div>
                                 <a href="#comments" class="rounded-2xl border border-slate-100 bg-slate-50 p-3 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-800 dark:bg-slate-950/60 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">
-                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.comment-01') دیدگاه‌ها</div>
-                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ number_format($video->approved_comments_count) }} دیدگاه</div>
+                                    <div class="flex items-center gap-2 text-[10px] font-black text-slate-400 [&_svg]:h-3.5 [&_svg]:w-3.5">@include('icons.comment-01') Comments</div>
+                                    <div class="mt-2 text-xs font-black text-slate-700 dark:text-slate-200">{{ number_format($video->approved_comments_count) }} Comment</div>
                                 </a>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
 
                     @if($description || $video->tags->isNotEmpty())
                         <x-front.cart class="rounded-[1.4rem] p-5 sm:rounded-[1.75rem] sm:p-7">
-                            <x-front.cart-title title="درباره این ویدیو" subtitle="توضیحات و اطلاعات تکمیلی" iconName="right-to-left-list-bullet" />
+                            <x-front.cart-title title="About this video" subtitle="Description and additional information" iconName="right-to-left-list-bullet" />
 
                             @if($description)
                                 <div class="tinymce-content text-sm leading-8 text-slate-700 dark:text-slate-200 dark:prose-invert">
@@ -197,8 +197,8 @@
                                 <div class="flex items-start gap-3">
                                     <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500 [&_svg]:h-5 [&_svg]:w-5">@include('icons.comment-01')</span>
                                     <div>
-                                        <h2 class="text-sm font-black text-slate-800 dark:text-slate-200">ارسال دیدگاه غیرفعال است</h2>
-                                        <p class="mt-1 text-xs font-medium leading-6 text-slate-500 dark:text-slate-400">در حال حاضر امکان ثبت دیدگاه جدید برای این ویدیو وجود ندارد.</p>
+                                        <h2 class="text-sm font-black text-slate-800 dark:text-slate-200">Comments disabled</h2>
+                                        <p class="mt-1 text-xs font-medium leading-6 text-slate-500 dark:text-slate-400">New comments are currently disabled for this video.</p>
                                     </div>
                                 </div>
                             </x-front.cart>
@@ -219,11 +219,11 @@
                                     <div class="flex items-center gap-3">
                                         <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.play')</span>
                                         <div>
-                                            <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">ویدیوهای مرتبط</h2>
-                                            <p class="mt-1 text-[10px] font-bold text-slate-400">پیشنهادهای بعدی برای تماشا</p>
+                                            <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">Related videos</h2>
+                                            <p class="mt-1 text-[10px] font-bold text-slate-400">Up next</p>
                                         </div>
                                     </div>
-                                    <a href="{{ route('videos.index') }}" class="shrink-0 text-[10px] font-black text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">آرشیو ←</a>
+                                    <a href="{{ route('videos.index') }}" class="shrink-0 text-[10px] font-black text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">Archive ←</a>
                                 </div>
 
                                 <div class="mt-4 space-y-2">
@@ -253,10 +253,10 @@
                                             <div class="min-w-0 flex-1 py-0.5">
                                                 <h3 class="line-clamp-2 text-xs font-black leading-6 text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">{{ $relatedVideo->title }}</h3>
                                                 <div class="mt-1.5 flex items-center gap-2 text-[9px] font-bold text-slate-400">
-                                                    <span>{{ approximate_view(public_page_views($relatedVideo)) }} بازدید</span>
+                                                    <span>{{ approximate_view(public_page_views($relatedVideo)) }} views</span>
                                                     @if($relatedVideo->published_at)
                                                         <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                                                        <span>{{ jalali_date($relatedVideo->published_at, 'Y/m/d') }}</span>
+                                                        <span>{{ (($relatedVideo->published_at) ? \Illuminate\Support\Carbon::parse($relatedVideo->published_at)->format('Y/m/d') : '') }}</span>
                                                     @endif
                                                 </div>
                                             </div>
@@ -271,8 +271,8 @@
                                 <div class="flex items-center gap-3">
                                     <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.folder-library')</span>
                                     <div>
-                                        <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">دسته‌بندی‌های ویدیو</h2>
-                                        <p class="mt-1 text-[10px] font-bold text-slate-400">موضوع مورد علاقه‌تان را انتخاب کنید</p>
+                                        <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">Video categories</h2>
+                                        <p class="mt-1 text-[10px] font-bold text-slate-400">Choose your favorite topic</p>
                                     </div>
                                 </div>
 
@@ -304,7 +304,7 @@
                                            @if(str_starts_with($followUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif
                                            class="rounded-2xl bg-brand-500 px-4 py-2.5 text-xs font-black text-white transition hover:bg-brand-600">{{ $followButtonTitle }}</a>
                                     @endif
-                                    <a href="{{ route('videos.index') }}" class="rounded-2xl border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-black text-white transition hover:bg-white/15">مشاهده آرشیو</a>
+                                    <a href="{{ route('videos.index') }}" class="rounded-2xl border border-white/10 bg-white/10 px-4 py-2.5 text-xs font-black text-white transition hover:bg-white/15">View archive</a>
                                 </div>
                             </div>
                         </section>
@@ -313,7 +313,7 @@
                             <section class="rounded-[1.4rem] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20">
                                 <div class="flex items-center gap-3">
                                     <span class="grid h-9 w-9 place-items-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">@include('icons.tag-02')</span>
-                                    <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">برچسب‌های این ویدیو</h2>
+                                    <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">Video tags</h2>
                                 </div>
                                 <div class="mt-4 flex flex-wrap gap-2">
                                     @foreach($video->tags as $tag)

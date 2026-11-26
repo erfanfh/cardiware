@@ -93,7 +93,7 @@
             x-cloak
             x-show="expirySeconds > 0"
         >
-            اعتبار کد:
+            Code validity:
 
             <span
                 dir="ltr"
@@ -107,7 +107,7 @@
             x-show="expirySeconds === 0"
             class="text-amber-600 dark:text-amber-400"
         >
-            اعتبار کد به پایان رسیده است.
+            The code has expired.
         </span>
     </div>
 
@@ -143,7 +143,7 @@
             x-cloak
             x-show="resendSeconds === 0"
         >
-            ارسال مجدد کد
+            Resend code
         </span>
 
         <span
@@ -158,7 +158,7 @@
                 x-text="formatTime(resendSeconds)"
             ></span>
 
-            <span>تا ارسال مجدد</span>
+            <span>until resend</span>
         </span>
 
         <span
@@ -170,7 +170,7 @@
                 class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-brand-300/40 border-t-brand-600"
             ></span>
 
-            در حال ارسال
+            Sending
         </span>
     </button>
 </div>

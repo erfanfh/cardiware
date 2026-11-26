@@ -3,7 +3,7 @@
         $accountAnnouncements = app(\App\Application\Notification\GetAccountAnnouncementsAction::class)->execute();
     @endphp
     @if($accountAnnouncements->isNotEmpty())
-        <section class="mb-6 space-y-3" aria-label="اطلاعیه‌های مدیریت">
+        <section class="mb-6 space-y-3" aria-label="Management announcements">
             @foreach($accountAnnouncements as $announcement)
                 @php
                     $appearance = match ($announcement->type) {
@@ -17,7 +17,7 @@
                         @include('icons.notification-01')
                     </span>
                     <div class="min-w-0 flex-1">
-                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">اطلاعیه مدیریت · {{ \App\Domain\Notification\Models\AccountAnnouncement::TYPES[$announcement->type] ?? 'اطلاع‌رسانی' }}</span>
+                        <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400">Management announcement · {{ \App\Domain\Notification\Models\AccountAnnouncement::TYPES[$announcement->type] ?? 'Announcement' }}</span>
                         <h2 id="account-announcement-{{ $announcement->id }}" class="mt-1 break-words text-sm font-extrabold leading-7 text-slate-900 dark:text-white">{{ $announcement->title }}</h2>
                         <p class="mt-1 whitespace-pre-line break-words text-sm leading-7 text-slate-700 dark:text-slate-300">{{ $announcement->body }}</p>
                     </div>

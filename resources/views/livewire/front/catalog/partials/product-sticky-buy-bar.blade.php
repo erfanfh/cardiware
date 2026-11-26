@@ -12,7 +12,7 @@
         class="fixed inset-x-0 bottom-0 z-[70] border-t border-slate-200/90 bg-white/95 shadow-[0_-12px_35px_rgba(15,23,42,0.12)] backdrop-blur-xl dark:border-slate-700/90 dark:bg-slate-950/95 dark:shadow-[0_-16px_42px_rgba(0,0,0,0.42)] sm:inset-x-4 sm:bottom-4 sm:mx-auto sm:max-w-3xl sm:rounded-3xl sm:border sm:shadow-[0_18px_60px_rgba(15,23,42,0.18)] sm:dark:shadow-[0_18px_60px_rgba(0,0,0,0.48)]"
         style="padding-bottom: env(safe-area-inset-bottom);"
         role="region"
-        aria-label="خرید سریع محصول"
+        aria-label="Quick product purchase"
     >
         <div class="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:gap-4 sm:px-4 lg:px-5">
             <button
@@ -28,7 +28,7 @@
                 <span class="min-w-0 truncate" x-text="stickyBuyActionLabel"></span>
             </button>
 
-            <div class="min-w-0 shrink-0 text-left sm:mr-auto">
+            <div class="min-w-0 shrink-0 text-end sm:mr-auto">
                 <div class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 sm:text-[11px]" x-text="stickyPriceCaption"></div>
 
                 <div

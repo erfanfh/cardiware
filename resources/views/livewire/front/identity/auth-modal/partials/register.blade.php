@@ -7,8 +7,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'تکمیل ثبت نام',
-            'description' => 'اطلاعات خود و کد تایید ارسال شده را وارد کنید.',
+            'title' => 'Complete registration',
+            'description' => 'Enter your details and the verification code.',
             'backMethod' => 'goToEnterMobile',
             'mobile' => $resolvedMobile,
         ]
@@ -26,7 +26,7 @@
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    نام
+                    Name
                 </label>
 
                 <input
@@ -49,7 +49,7 @@
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    نام خانوادگی
+                    Last name
                 </label>
 
                 <input
@@ -72,10 +72,10 @@
                 for="{{ $name }}-email"
                 class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
             >
-                ایمیل
+                Email
 
                 <span class="text-[9px] text-slate-400 dark:text-slate-500 mr-2">
-                    اختیاری
+                    Optional
                 </span>
             </label>
 
@@ -101,7 +101,7 @@
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    رمز عبور
+                    Password
                 </label>
 
                 <div class="relative mt-1.5">
@@ -118,7 +118,7 @@
                         type="button"
                         x-on:click="showPassword = !showPassword"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-[10px] font-extrabold text-slate-400 hover:text-brand-600 dark:text-slate-500 dark:hover:text-brand-400"
-                        aria-label="نمایش یا مخفی کردن رمز عبور"
+                        aria-label="Show or hide password"
                     >
                         <svg
                             x-show="!showPassword"
@@ -179,7 +179,7 @@
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    تکرار رمز عبور
+                    Confirm password
                 </label>
 
                 <div class="relative mt-1.5">
@@ -257,7 +257,7 @@
                 class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
             >
                 <span class="text-red-500">*</span>
-                کد تایید
+                Verification code
             </label>
 
             <input
@@ -289,7 +289,7 @@
                 x-on:click="closeModal()"
                 class="h-11 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-                انصراف
+                Cancel
             </button>
 
             <button
@@ -302,14 +302,14 @@
                     wire:loading.remove
                     wire:target="register"
                 >
-                    ثبت نام و ادامه
+                    Register and continue
                 </span>
 
                 <span
                     wire:loading
                     wire:target="register"
                 >
-                    در حال ساخت حساب...
+                    Creating account...
                 </span>
 
                 <span

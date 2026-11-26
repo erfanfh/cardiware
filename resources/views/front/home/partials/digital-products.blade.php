@@ -20,32 +20,32 @@
 
             @if($isSlider)
                 <div class="flex items-center gap-2">
-                    <button type="button" class="mwProductsNav inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 [&_svg]:h-4 [&_svg]:w-4" data-mw-products-prev aria-label="قبلی">
-                        @include('icons.arrow-right-01')
+                    <button type="button" class="mwProductsNav inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 [&_svg]:h-4 [&_svg]:w-4" data-mw-products-prev aria-label="Previous">
+                        @include('icons.arrow-left-01')
                     </button>
-                    <button type="button" class="mwProductsNav inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 [&_svg]:h-4 [&_svg]:w-4" data-mw-products-next aria-label="بعدی">
-                        @include('icons.arrow-left-02')
+                    <button type="button" class="mwProductsNav inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 [&_svg]:h-4 [&_svg]:w-4" data-mw-products-next aria-label="Next">
+                        <x-front.arrow-right-02/>
                     </button>
                 </div>
             @endif
 
             <a href="{{ $allUrl }}"
                class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
-                مشاهده همه
+                View all
                 <span class="[&_svg]:w-4 [&_svg]:h-4">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </a>
         </div>
 
-        {{-- حالت اسلایدر یا گرید --}}
+        {{-- Slider or grid mode --}}
         <div class="{{ $isSlider ? 'swiper mwHomeProductsSlider' : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4' }}">
             @if($isSlider)<div class="swiper-wrapper">@endif
                 @foreach($shopItems as $item)
                     <div class="{{ $isSlider ? 'swiper-slide !h-auto' : 'contents' }}">
                         <a href="{{ filled($item['link'] ?? null) ? $item['link'] : $allUrl }}"
                            class="group relative z-0 flex h-full flex-col overflow-hidden rounded-3xl border border-transparent bg-white ring-1 ring-slate-200/70 transition duration-300 hover:-translate-y-1.5 hover:z-10 hover:shadow-[0_20px_44px_-14px_rgba(15,23,42,.22)] hover:ring-brand-300/70 dark:bg-slate-900/70 dark:ring-slate-800 dark:hover:shadow-[0_20px_44px_-14px_rgba(0,0,0,.55)] dark:hover:ring-brand-700/50">
-                            {{-- تصویر با برق عبوری هاور --}}
+                            {{-- Image with hover shine --}}
                             <div class="relative aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800">
                                 <x-front.responsive-image
                                     :fallback="$item['image']['path'] ?? null"
@@ -99,11 +99,11 @@
                                     </div>
                                 @endif
 
-                                {{-- دکمهٔ دریافت: در حالت عادی محو، روی hover ظاهر می‌شود --}}
+                                {{-- Get button: hidden by default, on hover appears --}}
                                 <div class="mt-auto pt-4">
                                     <span class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-500/30 bg-brand-50/50 px-3.5 py-2 text-xs font-extrabold text-brand-700 transition duration-300 group-hover:border-brand-500 group-hover:bg-gradient-to-l group-hover:from-brand-600 group-hover:to-brand-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-brand-500/25 dark:border-brand-500/20 dark:bg-brand-500/5 dark:text-brand-300 dark:group-hover:border-brand-500 dark:group-hover:bg-gradient-to-l dark:group-hover:from-brand-600 dark:group-hover:to-brand-500 dark:group-hover:text-white [&_svg]:h-3.5 [&_svg]:w-3.5 [&_svg]:transition-transform [&_svg]:group-hover:-translate-x-0.5">
-                                        {{ ($item['button_text'] ?? '') ?: 'دریافت' }}
-                                        @include('icons.arrow-left-02')
+                                        {{ ($item['button_text'] ?? '') ?: 'Get' }}
+                                        <x-front.arrow-right-02/>
                                     </span>
                                 </div>
                             </div>

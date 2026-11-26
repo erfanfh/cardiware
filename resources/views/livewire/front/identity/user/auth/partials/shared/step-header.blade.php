@@ -13,9 +13,9 @@
                 wire:click="{{ $backMethod }}"
                 class="inline-flex cursor-pointer items-center gap-1 text-xs font-medium text-slate-500 transition-colors hover:text-brand-600 dark:text-slate-400 dark:hover:text-brand-400"
             >
-                @include('icons.arrow-left-01')
+                @include('icons.arrow-right-01')
 
-                <span>بازگشت</span>
+                <span>Back</span>
             </button>
         </div>
     @endif

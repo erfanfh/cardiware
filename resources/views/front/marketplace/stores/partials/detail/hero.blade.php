@@ -1,11 +1,11 @@
 @php
-    // مطابق طرح قبلی، نشان تایید برای فروشگاه‌های نمایش‌داده‌شده فعال است
+    // As in the previous design, verification badge is active for displayed stores
     $storeVerified = true;
     $storeActive = $store->products_count >= 3;
 @endphp
 
 <section class="mw-store-hero {{ $storeVerified ? 'is-verified' : '' }}">
-    {{-- بنر گرادیانی با لایه‌های متحرک --}}
+    {{-- Gradient banner with animated layers --}}
     <div class="mw-store-banner" aria-hidden="true">
         <span class="mw-store-banner-stripes"></span>
         <span class="mw-store-banner-glow is-a"></span>
@@ -15,7 +15,7 @@
     </div>
 
     <div class="mw-store-body">
-        {{-- هویت فروشگاه: آواتار با حلقه چرخان + عنوان + نشان‌ها --}}
+        {{-- Store identity: avatar with rotating ring + Title + Badges --}}
         <div class="mw-store-identity mw-rise d-1">
             <div class="mw-store-avatar">
                 <span class="mw-store-avatar-ring" aria-hidden="true"></span>
@@ -43,9 +43,9 @@
                 @endif
             </div>
 
-            <div class="min-w-0 flex-1 text-center sm:text-right">
+            <div class="min-w-0 flex-1 text-center sm:text-start">
                 <h1 class="mw-store-title">
-                    فروشگاه {{ $store->title }}
+                    Store {{ $store->title }}
                 </h1>
 
                 <div class="mt-2.5 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
@@ -55,14 +55,14 @@
                     @if($storeVerified)
                         <span class="mw-store-chip is-verified">
                             <span class="mw-store-chip-dot"></span>
-                            فروشنده تاییدشده
+                            Verified seller
                         </span>
                     @endif
 
                     @if($storeActive)
                         <span class="mw-store-chip is-active">
                             <span class="mw-store-chip-dot"></span>
-                            فروشنده فعال
+                            Active seller
                         </span>
                     @endif
                 </div>
@@ -78,16 +78,16 @@
         <div class="mw-rise d-3">
             <a href="#products" class="mw-store-cta">
                 <span class="relative z-10 inline-flex items-center gap-2">
-                    مشاهده همه محصولات
+                    View all products
                     <span class="[&_svg]:h-4 [&_svg]:w-4">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 </span>
                 <span class="mw-store-cta-sheen" aria-hidden="true"></span>
             </a>
         </div>
 
-        {{-- آمار فروشنده با شمارنده متحرک --}}
+        {{-- Seller statistics with animated counter --}}
         <div class="mw-store-stats">
             <div class="mw-store-stat mw-rise d-3">
                 <span class="mw-store-stat-icon" aria-hidden="true">
@@ -95,9 +95,9 @@
                 </span>
 
                 <div class="min-w-0">
-                    <div class="mw-store-stat-label">تاریخ عضویت</div>
+                    <div class="mw-store-stat-label">Joined on</div>
                     <div class="mw-store-stat-value">
-                        {{ jalali_date($store->created_at, 'd F Y') }}
+                        {{ (($store->created_at) ? \Illuminate\Support\Carbon::parse($store->created_at)->format('d F Y') : '') }}
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@
                 </span>
 
                 <div class="min-w-0">
-                    <div class="mw-store-stat-label">تعداد محصول</div>
+                    <div class="mw-store-stat-label">Product count</div>
                     <div class="mw-store-stat-value">
                         <b class="mw-count" data-count-to="{{ (int) $store->products_count }}">0</b>
                     </div>
@@ -122,7 +122,7 @@
                     </span>
 
                     <div class="min-w-0">
-                        <div class="mw-store-stat-label">تعداد فروش</div>
+                        <div class="mw-store-stat-label">Sales count</div>
                         <div class="mw-store-stat-value">
                             <b class="mw-count" data-count-to="{{ (int) $soldQuantity }}">0</b>
                         </div>

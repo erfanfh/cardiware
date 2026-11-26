@@ -27,15 +27,15 @@
                     @include('icons.user-multiple-02')
                 </span>
 
-                <h3 class="text-base font-extrabold dark:text-slate-100">تیم Cardiware</h3>
+                <h3 class="text-base font-extrabold dark:text-slate-100">Team Cardiware</h3>
             </div>
 
             <div class="flex items-center gap-2">
-                <button type="button" class="mw-team-nav" data-mw-team-prev aria-label="قبلی">
-                    @include('icons.arrow-right-01')
+                <button type="button" class="mw-team-nav" data-mw-team-prev aria-label="Previous">
+                    @include('icons.arrow-left-01')
                 </button>
-                <button type="button" class="mw-team-nav" data-mw-team-next aria-label="بعدی">
-                    @include('icons.arrow-left-02')
+                <button type="button" class="mw-team-nav" data-mw-team-next aria-label="Next">
+                    <x-front.arrow-right-02/>
                 </button>
             </div>
         </div>
@@ -51,10 +51,10 @@
                             @click="flipped = !showDetails; hovering = false"
                             :aria-expanded="showDetails"
                             aria-controls="team-member-details-{{ $member->getKey() }}"
-                            x-text="showDetails ? 'بازگشت' : 'اطلاعات بیشتر'">اطلاعات بیشتر</button>
+                            x-text="showDetails ? 'Back' : 'More information'">More information</button>
                     <div class="mw-team-flip-inner" :class="{ 'is-flipped': showDetails }">
 
-                        {{-- ═══ رو به جلو: آواتار + نام + نقش ═══ --}}
+                        {{-- ═══ Front: avatar + Name + Role ═══ --}}
                         <div :inert="showDetails" class="mw-team-flip-front flex flex-col items-center justify-center border border-slate-200 bg-white p-5 pb-9 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                             @if($member->picture?->path)
                                 <x-front.responsive-image
@@ -68,7 +68,7 @@
                                 />
                             @else
                                 <span class="grid h-20 w-20 place-items-center rounded-3xl bg-gradient-to-br from-brand-500 to-brand-700 text-2xl font-black text-white shadow-lg shadow-brand-500/20">
-                                    {{ mb_substr(trim($member->first_name ?: 'م'), 0, 1) }}
+                                    {{ mb_substr(trim($member->first_name ?: 'M'), 0, 1) }}
                                 </span>
                             @endif
 
@@ -82,7 +82,7 @@
 
                         </div>
 
-                        {{-- ═══ رو به عقب: بیوگرافی + لینک‌ها ═══ --}}
+                        {{-- ═══ Back: biography + Links ═══ --}}
                         <div id="team-member-details-{{ $member->getKey() }}" inert :inert="!showDetails"
                              class="mw-team-flip-back flex flex-col items-center justify-center border border-brand-500/30 bg-gradient-to-br from-brand-500/10 via-white to-brand-500/5 p-5 pb-9 dark:from-brand-500/15 dark:via-slate-900 dark:to-slate-900">
                             <div class="text-sm font-extrabold text-brand-700 dark:text-brand-300">
@@ -103,13 +103,13 @@
                                     @if($member->website_url)
                                         <a href="{{ $member->website_url }}" target="_blank" rel="noopener noreferrer"
                                            class="inline-flex items-center gap-1 rounded-xl border border-brand-200 bg-white/60 px-2.5 py-1 text-[10px] font-bold text-brand-700 transition hover:bg-brand-50 dark:border-brand-500/20 dark:bg-slate-900/60 dark:text-brand-300">
-                                            🌐 وب‌سایت
+                                            🌐 Website
                                         </a>
                                     @endif
                                     @if($member->email)
                                         <a href="mailto:{{ $member->email }}"
                                            class="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white/60 px-2.5 py-1 text-[10px] font-bold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300">
-                                            ✉️ تماس
+                                            ✉️ Contact
                                         </a>
                                     @endif
                                 </div>

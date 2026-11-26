@@ -36,8 +36,8 @@
                 'bio' => $member->bio,
 
                 /*
-                 * اگر آدرس تصویر در MediaFile از accessor دیگری دریافت می‌شود،
-                 * فقط همین خط را تغییر بده.
+                 * If the image URL is received in MediaFile of accessor another way,
+                 * change only this line.
                  */
                 'picture_url' => $member->picture?->url,
 
@@ -66,8 +66,8 @@
         >
             <div class="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                 <x-front.cart-title
-                    title="اعضای سازنده"
-                    subtitle="با اعضای سازنده و همکاران این محصول آشنا شوید"
+                    title="Contributors"
+                    subtitle="Meet the creators and contributors of this product"
                     iconName="user-multiple"
                 />
 
@@ -77,7 +77,7 @@
                             x-ref="previousButton"
                             type="button"
                             class="cursor-pointer flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-white dark:focus:ring-slate-600 [&.swiper-button-disabled]:pointer-events-none [&.swiper-button-disabled]:opacity-30"
-                            aria-label="عضو قبلی"
+                            aria-label="Previous member"
                         >
                             <svg
                                 class="size-5"
@@ -99,7 +99,7 @@
                             x-ref="nextButton"
                             type="button"
                             class="cursor-pointer flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition duration-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-slate-300 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-30 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-white dark:focus:ring-slate-600 [&.swiper-button-disabled]:pointer-events-none [&.swiper-button-disabled]:opacity-30"
-                            aria-label="عضو بعدی"
+                            aria-label="Next member"
                         >
                             <svg
                                 class="size-5"
@@ -123,7 +123,7 @@
             <div
                 x-ref="swiper"
                 class="swiper"
-                dir="rtl"
+                dir="ltr"
             >
                 <div class="swiper-wrapper">
                     @foreach($teamMembers as $member)
@@ -131,8 +131,8 @@
                             <button
                                 type="button"
                                 @click="openMember({{ $loop->index }}, $event)"
-                                class="cursor-pointer group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70 text-right transition duration-300 hover:border-slate-300 hover:bg-white focus:outline-none  dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-800/80"
-                                aria-label="مشاهده اطلاعات {{ $member['full_name'] }}"
+                                class="cursor-pointer group flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70 text-start transition duration-300 hover:border-slate-300 hover:bg-white focus:outline-none  dark:border-slate-800 dark:bg-slate-950/50 dark:hover:border-slate-700 dark:hover:bg-slate-800/80"
+                                aria-label="View information {{ $member['full_name'] }}"
                             >
                                 <div
                                     class="relative flex w-full items-center justify-center overflow-hidden bg-gradient-to-b from-slate-100 to-slate-50 px-5 pb-5 pt-8 dark:from-slate-800 dark:to-slate-900">
@@ -153,7 +153,7 @@
                                         @else
                                             <div
                                                 class="relative flex size-28 items-center justify-center rounded-full border-4 border-white bg-slate-200 text-3xl font-black text-slate-600 shadow-lg ring-1 ring-slate-300 dark:border-slate-800 dark:bg-slate-700 dark:text-slate-200 dark:ring-slate-600 sm:size-32">
-                                                {{ $member['initials'] ?: '؟' }}
+                                                {{ $member['initials'] ?: '?' }}
                                             </div>
                                         @endif
 
@@ -183,13 +183,13 @@
                                     </h3>
 
                                     <p class="mt-1 min-h-6 text-sm font-medium text-slate-500 dark:text-slate-400">
-                                        {{ $member['job_title'] ?: 'عضو تیم سازنده' }}
+                                        {{ $member['job_title'] ?: 'Contributor' }}
                                     </p>
 
                                     <div
                                         class="mt-3 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700/70">
                                             <span class="text-[0.8rem] font-bold text-slate-700 dark:text-slate-200">
-                                                مشاهده پروفایل
+                                                View profile
                                             </span>
 
                                         <svg
@@ -256,7 +256,7 @@
                     x-transition:leave="transition duration-200 ease-in"
                     x-transition:leave-start="translate-y-0 opacity-100 sm:scale-100"
                     x-transition:leave-end="translate-y-full opacity-0 sm:translate-y-5 sm:scale-95"
-                    class="relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-slate-200 bg-white text-right shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:max-w-2xl sm:rounded-3xl"
+                    class="relative z-10 max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-slate-200 bg-white text-start shadow-2xl dark:border-slate-700 dark:bg-slate-900 sm:max-w-2xl sm:rounded-3xl"
                     @click.stop
                 >
                     <button
@@ -264,7 +264,7 @@
                         data-team-member-close
                         @click="closeModal"
                         class="cursor-pointer absolute left-4 top-4 z-20 flex size-10 items-center justify-center rounded-full border border-white/60 bg-white/80 text-slate-700 shadow-sm backdrop-blur-md transition hover:bg-white hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-white/80 dark:border-slate-600/60 dark:bg-slate-800/80 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
-                        aria-label="بستن پنجره"
+                        aria-label="Close window"
                     >
                         <svg
                             class="size-5"
@@ -303,7 +303,7 @@
                             <template x-if="selectedMember && !selectedMember.picture_url">
                                 <div
                                     class="flex size-32 items-center justify-center rounded-full border-4 border-white bg-slate-200 text-4xl font-black text-slate-600 shadow-xl ring-1 ring-slate-300 dark:border-slate-800 dark:bg-slate-700 dark:text-slate-200 dark:ring-slate-600 sm:size-36">
-                                    <span x-text="selectedMember.initials || '؟'"></span>
+                                    <span x-text="selectedMember.initials || '?'"></span>
                                 </div>
                             </template>
 
@@ -315,7 +315,7 @@
 
                             <p
                                 class="mt-2 text-sm font-bold text-slate-500 dark:text-slate-400"
-                                x-text="selectedMember?.job_title || 'عضو تیم سازنده'"
+                                x-text="selectedMember?.job_title || 'Contributor'"
                             ></p>
                         </div>
                     </div>
@@ -346,7 +346,7 @@
                                         </span>
 
                                         <h3 class="text-sm font-black text-slate-950 dark:text-white">
-                                            درباره عضو
+                                            About member
                                         </h3>
                                     </div>
 
@@ -383,7 +383,7 @@
                                         </span>
 
                                         <h3 class="text-sm font-black text-slate-950 dark:text-white">
-                                            راه‌های ارتباطی
+                                            Contact channels
                                         </h3>
                                     </div>
 
@@ -413,7 +413,7 @@
 
                                                 <span class="min-w-0">
                                                     <span class="block text-xs text-slate-500 dark:text-slate-400">
-                                                        ایمیل
+                                                        Email
                                                     </span>
 
                                                     <span
@@ -450,7 +450,7 @@
 
                                                 <span class="min-w-0">
                                                     <span class="block text-xs text-slate-500 dark:text-slate-400">
-                                                        شماره تماس
+                                                        Phone number
                                                     </span>
 
                                                     <span
@@ -489,7 +489,7 @@
 
                                                 <span class="min-w-0">
                                                     <span class="block text-xs text-slate-500 dark:text-slate-400">
-                                                        وب‌سایت
+                                                        Website
                                                     </span>
 
                                                     <span
@@ -540,7 +540,7 @@
                                     </span>
 
                                     <p class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                                        اطلاعات بیشتری برای این عضو ثبت نشده است.
+                                        No additional information has been provided for this member.
                                     </p>
                                 </div>
                             </template>

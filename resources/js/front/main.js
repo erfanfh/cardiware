@@ -1,5 +1,5 @@
 import './lightbox-gallery.js';
-import '../localize-display-digits.js';
+import './english-display-digits.js';
 import './popups.js';
 import typingPlaceholder from './typing-placeholder.js';
 import './old-toggle-box.js';
@@ -53,7 +53,7 @@ initRecentPurchases();
             fillEl.style.width = target;
         }
 
-        // نوک فلشر همراه نوار حرکت می‌کند
+        // Tip moves with bar
         const tip = fillEl.parentElement
             ? fillEl.parentElement.querySelector(".mw-fill-tip")
             : null;
@@ -62,10 +62,10 @@ initRecentPurchases();
             const match = (target || "").match(/^([\d.]+)%$/);
 
             if (match) {
-                // نوک دقیقاً روی لبه پر شدن مرکز می‌شود (نصف عرض خودش)
+                // Tip centered on fill edge (half its width)
                 const half = tip.offsetWidth ? tip.offsetWidth / 2 : 9;
 
-                tip.style.right = `calc(${match[1]}% - ${half}px)`;
+                tip.style.left = `calc(${match[1]}% - ${half}px)`;
             }
         }
     }
@@ -85,8 +85,8 @@ initRecentPurchases();
             return;
         }
 
-        // عنصر پرشدن عرض صفر دارد و IntersectionObserver آن را نمی‌بیند؛
-        // به‌جای آن، والدِ نوار (تمام‌عرض) را زیر نظر می‌گیریم.
+        // Fill element has zero width and IntersectionObserver does not see it;
+        // Observe full-width parent instead.
         const pending = new Map(); // bar -> fill
 
         fills.forEach((el) => {
@@ -122,8 +122,8 @@ initRecentPurchases();
 
         pending.forEach((fillEl, bar) => io.observe(bar));
 
-        // تور ایمنی: اگر به هر دلیلی (تب پس‌زمینه، رندر عجیب) observer شلیک نکرد،
-        // پس از کامل شدن بارگذاری + یک ثانیه، همه را پر می‌کنیم.
+        // Safety net: if for any reason (background tab, unusual render) observer does not fire,
+        // after loading + one second, fill all bars.
         const forceRemaining = () => {
             scope.querySelectorAll(".mw-fill-anim:not([data-fill-done])").forEach((el) => {
                 el.setAttribute("data-fill-done", "1");
@@ -152,8 +152,8 @@ initRecentPurchases();
 })();
 
 /*** ==================== Entrance animations gate ==================== ***/
-/* انیمیشن‌های ورود فقط وقتی فعال می‌شوند که تب در دید باشد؛
-   در غیر این صورت (بدون JS، تب مخیدی، motion کاهش‌یافته) محتوا مرئی می‌ماند. */
+/* Entrance animations run only when tab is visible;
+   otherwise (without JS, hidden tab, motion reduced) content stays visible. */
 (function () {
     const root = document.documentElement;
 
@@ -168,7 +168,7 @@ initRecentPurchases();
     }
 })();
 
-/*** ==================== Count-up numbers (باکس درصد پیشرفت آپدیت) ==================== ***/(function () {
+/*** ==================== Count-up numbers (Update progress box) ==================== ***/(function () {
     function animateCount(el) {
         const to = parseFloat(el.getAttribute("data-count-to") || "0") || 0;
         const duration = 1300;
@@ -213,14 +213,14 @@ initRecentPurchases();
 
                 el.setAttribute("data-count-done", "1");
 
-                // هم‌زمان‌تر شدن با پر شدن نوار
+                // Synchronize with bar fill
                 setTimeout(() => animateCount(el), 150);
             });
         }, { threshold: 0.4 });
 
         counters.forEach((el) => io.observe(el));
 
-        // تور ایمنی: اگر observer شلیک نکرد، پس از لود مقدار نهایی را نشان بده
+        // Safety net: if observer does not fire, show final value after load
         const forceRemaining = () => {
             scope.querySelectorAll(".mw-count[data-count-to]:not([data-count-done])").forEach((el) => {
                 el.setAttribute("data-count-done", "1");

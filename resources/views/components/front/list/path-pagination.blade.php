@@ -27,20 +27,20 @@
 @endphp
 
 @if($model->hasPages())
-    <nav aria-label="صفحه‌بندی محصولات" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-center text-xs font-bold text-slate-500 dark:text-slate-400 sm:text-right">
-            نمایش {{ number_format($model->firstItem()) }} تا {{ number_format($model->lastItem()) }}
-            از {{ number_format($model->total()) }} محصول
+    <nav aria-label="Product pagination" class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-center text-xs font-bold text-slate-500 dark:text-slate-400 sm:text-start">
+            Show {{ number_format($model->firstItem()) }} until {{ number_format($model->lastItem()) }}
+            of {{ number_format($model->total()) }} Product
         </p>
 
         <div class="flex flex-wrap items-center justify-center gap-1.5" dir="ltr">
             @if($model->onFirstPage())
                 <span aria-disabled="true" class="grid h-10 min-w-10 cursor-not-allowed place-items-center rounded-xl border border-slate-200 bg-slate-100 px-3 text-xs font-black text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
-                    قبلی
+                    Previous
                 </span>
             @else
                 <a href="{{ $pageUrl($model->currentPage() - 1) }}" rel="prev" class="grid h-10 min-w-10 place-items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-brand-300 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-brand-600 dark:hover:text-brand-300">
-                    قبلی
+                    Previous
                 </a>
             @endif
 
@@ -54,7 +54,7 @@
                                 {{ number_format($page) }}
                             </span>
                         @else
-                            <a href="{{ $pageUrl($page) }}" aria-label="رفتن به صفحه {{ $page }}" class="grid h-10 min-w-10 place-items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-brand-300 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-brand-600 dark:hover:text-brand-300">
+                            <a href="{{ $pageUrl($page) }}" aria-label="Go to page {{ $page }}" class="grid h-10 min-w-10 place-items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-brand-300 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-brand-600 dark:hover:text-brand-300">
                                 {{ number_format($page) }}
                             </a>
                         @endif
@@ -64,11 +64,11 @@
 
             @if($model->hasMorePages())
                 <a href="{{ $pageUrl($model->currentPage() + 1) }}" rel="next" class="grid h-10 min-w-10 place-items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-brand-300 hover:text-brand-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-brand-600 dark:hover:text-brand-300">
-                    بعدی
+                    Next
                 </a>
             @else
                 <span aria-disabled="true" class="grid h-10 min-w-10 cursor-not-allowed place-items-center rounded-xl border border-slate-200 bg-slate-100 px-3 text-xs font-black text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500">
-                    بعدی
+                    Next
                 </span>
             @endif
         </div>

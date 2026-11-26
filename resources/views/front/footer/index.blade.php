@@ -10,16 +10,16 @@
         : [];
     $footerStatsBg = get_setting('footer', 'stats_bg_image')->path;
     $footerStatsAnimated = (bool) get_setting('footer', 'stats_animation_enabled', 1);
-    $footerStatsBadge = get_setting('footer', 'stats_badge') ?: 'Cardiware در یک نگاه';
-    $footerStatsTitle = get_setting('footer', 'stats_title') ?: 'یک <em class="not-italic text-brand-400">جامعه واقعی</em> از گیمر های ایران';
+    $footerStatsBadge = get_setting('footer', 'stats_badge') ?: 'Cardiware At a glance';
+    $footerStatsTitle = get_setting('footer', 'stats_title') ?: 'One <em class="not-italic text-brand-400">Real community</em> of Iranian gamers';
 
-    // آیکون هر منبع ثابت است (کلاس آیکون از پنل قابل تغییر نیست)؛ ادمین فقط
-    // برچسب، منبع و مقدار دستی هر ردیف را تعیین می‌کند.
+    // Source icons are fixed; admin only
+    // sets label, source and manual value for each row.
     $footerStatSources = [
-        'users' => ['label' => 'کاربر ثبت‌نام‌شده', 'icon' => 'icons.user-multiple-02', 'value' => $footerStats['users']],
-        'tickets' => ['label' => 'تیکت پشتیبانی', 'icon' => 'icons.message-search-02', 'value' => $footerStats['tickets']],
-        'posts' => ['label' => 'نوشته و مود', 'icon' => 'icons.file-02', 'value' => $footerStats['posts']],
-        'products' => ['label' => 'محصول در فروشگاه', 'icon' => 'icons.shop-line-duotone', 'value' => $footerStats['products']],
+        'users' => ['label' => 'Registered user', 'icon' => 'icons.user-multiple-02', 'value' => $footerStats['users']],
+        'tickets' => ['label' => 'Support ticket', 'icon' => 'icons.message-search-02', 'value' => $footerStats['tickets']],
+        'posts' => ['label' => 'Posts and mods', 'icon' => 'icons.file-02', 'value' => $footerStats['posts']],
+        'products' => ['label' => 'Products in store', 'icon' => 'icons.shop-line-duotone', 'value' => $footerStats['products']],
     ];
 
     $footerStatsRows = collect(get_setting('footer', 'stats_items', []))
@@ -39,7 +39,7 @@
             $source = $footerStatSources[$key] ?? null;
             $manual = trim((string) ($item['value'] ?? ''));
 
-            // ارقام فارسی/عربی هم پذیرفته می‌شوند تا «۱۲٬۳۰۰» دستی هم درست خوانده شود.
+            // Persian/Arabic digits are accepted so «12,300» manual values are read correctly.
             $manualDigits = preg_replace('/\D+/', '', strtr($manual, [
                 '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
                 '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
@@ -64,8 +64,8 @@
     $footerPattern = (string) get_setting('footer', 'background_pattern', 'none');
 @endphp
 
-<footer id="footer" dir="rtl" class="mw-footer-glass relative isolate overflow-hidden bg-white dark:bg-slate-950">
-    {{-- پس‌زمینه اختیاری + پترن از تنظیمات --}}
+<footer id="footer" dir="ltr" class="mw-footer-glass relative isolate overflow-hidden bg-white dark:bg-slate-950">
+    {{-- Optional background + Pattern from settings --}}
     @if($footerBgImage)
         <img src="{{ $footerBgImage }}" alt="" class="mw-footer-bg" loading="lazy">
     @endif
@@ -108,7 +108,7 @@
                                 @include($stat['icon'])
                             </span>
                             <b>
-                                <span class="mw-count-up" data-count="{{ (int) $stat['value'] }}">۰</span><small>+</small>
+                                <span class="mw-count-up" data-count="{{ (int) $stat['value'] }}">0</span><small>+</small>
                             </b>
                             <span>{{ $stat['label'] }}</span>
                         </div>
@@ -177,10 +177,6 @@
                         {!! get_setting('footer', 'store_text') !!}
                     </p>
 
-                    <a href="{{ get_setting('footer', 'store_url') }}"
-                       class="text-orange-500 font-extrabold text-sm hover:underline">
-                        ورود به فروشگاه
-                    </a>
                 </div>
 
                 <div
@@ -209,7 +205,7 @@
     <div class="mx-auto max-w-7xl px-4 pb-8">
         @if(count($footerNews) > 0)
             <section data-footer-news
-                     aria-label="{{ get_setting('footer', 'news_title', 'تیتر اخبار') ?: 'تیتر اخبار' }}"
+                     aria-label="{{ get_setting('footer', 'news_title', 'News headline') ?: 'News headline' }}"
                      class="mb-8 rounded-2xl border border-neutral-200 bg-slate-50/80 px-4 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80 sm:px-5">
                 <div class="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
                     <div class="flex shrink-0 items-center gap-2.5 sm:max-w-56">
@@ -217,7 +213,7 @@
                             <span class="h-2.5 w-2.5 rounded-full bg-current"></span>
                         </span>
                         <h3 class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                            {{ get_setting('footer', 'news_title', 'تیتر اخبار') ?: 'تیتر اخبار' }}
+                            {{ get_setting('footer', 'news_title', 'News headline') ?: 'News headline' }}
                         </h3>
                     </div>
 
@@ -241,11 +237,11 @@
                     </div>
 
                     @if(count($footerNews) > 1)
-                        <div class="flex shrink-0 flex-wrap items-center" aria-label="انتخاب خبر">
+                        <div class="flex shrink-0 flex-wrap items-center" aria-label="Select news">
                             @foreach($footerNews as $item)
                                 <button type="button"
                                         data-footer-news-control="{{ $loop->index }}"
-                                        aria-label="نمایش خبر {{ $loop->iteration }}"
+                                        aria-label="View news {{ $loop->iteration }}"
                                         aria-current="{{ $loop->first ? 'true' : 'false' }}"
                                         class="group flex h-8 w-6 cursor-pointer items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
                                     <span aria-hidden="true"
@@ -321,7 +317,7 @@
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition dark:text-slate-400">
                                 <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
 
-                                <a href="tel:{{ get_setting('footer', 'phone') }}">{{ 'شماره تماس: ' . get_setting('footer', 'phone') }}</a>
+                                <a href="tel:{{ get_setting('footer', 'phone') }}">{{ 'Phone number: ' . get_setting('footer', 'phone') }}</a>
                             </p>
                         </div>
                     </div>
@@ -334,7 +330,7 @@
                                 class="group text-sm inline-flex items-center gap-2 text-gray-500 transition dark:text-slate-400">
                                 <span class="w-1 h-1 rounded-full inline-block bg-brand-600"></span>
 
-                                <a href="mailto:{{ get_setting('footer', 'email') }}">{{ 'ایمیل: ' . get_setting('footer', 'email') }}</a>
+                                <a href="mailto:{{ get_setting('footer', 'email') }}">{{ 'Email: ' . get_setting('footer', 'email') }}</a>
                             </p>
                         </div>
                     </div>
@@ -471,7 +467,7 @@
         </div>
 
         <a href="https://avinoco.ir" target="_blank" rel="nofollow sponsored noopener">
-            طراحی و توسعه توسط Avino
+            Designed and developed by Avino
         </a>
     </div>
 
@@ -486,8 +482,8 @@
 
                 var faDigits = function (value) {
                     return String(value)
-                        .replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; })
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, '٬');
+
+                        .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
                 };
 
                 var animate = function (el) {

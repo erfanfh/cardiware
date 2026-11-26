@@ -2,13 +2,13 @@
     $activePostTab = collect($this->postTabs)->firstWhere('key', $this->activeTabKey);
     $activeTabCategory = $activePostTab['main_category'] ?? null;
 
-    // کامپوننت: پین‌شده‌ها + جدید = mainPosts (کارت‌ها) / list1Posts (لیست)
+    // Component: pinned items + New = mainPosts (Cards) / list1Posts (List)
     $heroPosts = $this->mainPosts;
     $listPosts = $this->list1Posts;
 @endphp
 
 <section id="free-mods">
-    {{-- هویت سبز = رایگان --}}
+    {{-- Green identity = Free --}}
     <div class="flex flex-wrap items-center gap-2 mb-4">
         <span class="mr-1 inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 [&_svg]:h-[1.1rem] [&_svg]:w-[1.1rem]">
             @include('icons.cloud-download')
@@ -25,9 +25,9 @@
                     ? 'border-emerald-500/60 bg-gradient-to-l from-emerald-600 to-emerald-500 text-white shadow-lg shadow-emerald-600/25'
                     : 'border-white/60 bg-white/70 text-slate-700 backdrop-blur-xl hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10' }}"
             >
-                {{-- شمارنده: پست‌های امروز (نه کل) --}}
+                {{-- Counter: today’s posts, not total) --}}
                 <span
-                    title="{{ ($postTab['today_count'] ?? 0) > 0 ? 'امروز ' . $postTab['today_count'] . ' پست جدید برای این دسته‌بندی منتشر شده' : 'امروز پست جدیدی برای این دسته‌بندی منتشر نشده است' }}"
+                    title="{{ ($postTab['today_count'] ?? 0) > 0 ? 'Today ' . $postTab['today_count'] . ' new posts published in this category' : 'No new posts published in this category today' }}"
                     class="inline-flex h-5 min-w-5 items-center justify-center rounded-lg px-1 text-[10.5px] font-black
                     {{ $postTab['key'] === $activeTabKey ? 'bg-white/25 text-white' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' }}">
                     @if(($postTab['today_count'] ?? 0) > 0)
@@ -43,17 +43,17 @@
         @if($activePostTab && $activeTabCategory)
             <a href="{{ front_route('posts.categories', $activeTabCategory) }}"
                class="mr-auto inline-flex items-center gap-2 h-10 px-4 rounded-2xl text-sm font-extrabold text-emerald-700 border border-dashed border-emerald-500/40 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10">
-                مشاهده همه
+                View all
                 <span class="[&_svg]:w-4 [&_svg]:h-4">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </a>
         @elseif($activePostTab)
             <a href="{{ front_route('posts.list') }}"
                class="mr-auto inline-flex items-center gap-2 h-10 px-4 rounded-2xl text-sm font-extrabold text-emerald-700 border border-dashed border-emerald-500/40 transition hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-500/10">
-                مشاهده همه
+                View all
                 <span class="[&_svg]:w-4 [&_svg]:h-4">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </a>
         @endif
@@ -88,7 +88,7 @@
             wire:loading.class="opacity-40 scale-[0.995]"
             wire:target="changeTab"
         >
-            {{-- ═══════ کارت‌های بزرگ (۳ پایه + پین‌شده = اسلایدر اگر >۳) ═══════ --}}
+            {{-- ═══════ Large cards (3 base + Pinned = Slider if >3) ═══════ --}}
             @if($heroPosts->isNotEmpty())
                 @php($heroActual = $heroPosts->count())
                 <div wire:key="free-hero-{{ $activeTabKey }}-{{ $heroActual }}" class="{{ $heroActual > 3 ? 'swiper mwFreeHeroCards' : 'grid grid-cols-1 md:grid-cols-3 gap-4' }}">
@@ -112,11 +112,11 @@
                                             :fetchpriority="null"
                                             sizes="(max-width: 768px) 90vw, 360px"
                                         />
-                                        <span class="absolute top-2.5 right-2.5 grid h-7 w-7 place-items-center rounded-xl bg-emerald-500/90 text-white shadow-md ring-1 ring-white/25 backdrop-blur-sm transition group-hover:scale-110 [&_svg]:h-3.5 [&_svg]:w-3.5" title="دانلود رایگان">
+                                        <span class="absolute top-2.5 right-2.5 grid h-7 w-7 place-items-center rounded-xl bg-emerald-500/90 text-white shadow-md ring-1 ring-white/25 backdrop-blur-sm transition group-hover:scale-110 [&_svg]:h-3.5 [&_svg]:w-3.5" title="Free download">
                                             @include('icons.download-01')
                                         </span>
                                         @if($post->is_pinned)
-                                            <span class="absolute top-2.5 left-2.5 grid h-7 w-7 place-items-center rounded-xl bg-amber-500/90 text-white shadow-md ring-1 ring-white/25 backdrop-blur-sm" title="نوشتهٔ پین‌شده">
+                                            <span class="absolute top-2.5 left-2.5 grid h-7 w-7 place-items-center rounded-xl bg-amber-500/90 text-white shadow-md ring-1 ring-white/25 backdrop-blur-sm" title="Pinned post">
                                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
                                                 </svg>
@@ -135,9 +135,9 @@
                                         <div class="mt-2 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
                                             <span>{{ time_ago($post->published_at) }}</span>
                                             <span class="inline-flex items-center gap-1 font-bold text-emerald-600 transition group-hover:gap-1.5 dark:text-emerald-400">
-                                                مشاهده
+                                                View
                                                 <span class="[&_svg]:h-3.5 [&_svg]:w-3.5">
-                                                    @include('icons.arrow-left-02')
+                                                    <x-front.arrow-right-02/>
                                                 </span>
                                             </span>
                                         </div>
@@ -150,7 +150,7 @@
                 </div>
             @endif
 
-            {{-- ═══════ لیست جمع‌وجور ═══════ --}}
+            {{-- ═══════ Compact list ═══════ --}}
             @if($listPosts->isNotEmpty())
                 <div class="mt-4 rounded-2xl border border-emerald-500/10 bg-white/70 dark:border-emerald-500/10 dark:bg-slate-900/50">
                     <div class="p-3">

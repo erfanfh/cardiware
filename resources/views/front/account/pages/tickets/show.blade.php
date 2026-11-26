@@ -85,7 +85,7 @@
                     <a
                         href="{{ $backUrl }}"
                         class="max-sm:hidden grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white hover:text-brand-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-brand-300"
-                        aria-label="بازگشت"
+                        aria-label="Back"
                     >
                         <svg class="h-5 w-5 rtl:rotate-180" viewBox="0 0 24 24" fill="none">
                             <path
@@ -130,11 +130,11 @@
                             <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
 
                             <span>
-                                آخرین به‌روزرسانی:
+                                Last updated:
                                 @if($ticket->last_message_at)
-                                    {{ jalali_date($ticket->last_message_at, 'Y/m/d - H:i') }}
+                                    {{ (($ticket->last_message_at) ? \Illuminate\Support\Carbon::parse($ticket->last_message_at)->format('Y/m/d - H:i') : '') }}
                                 @else
-                                    نامشخص
+                                    Unknown
                                 @endif
                             </span>
                         </div>
@@ -146,13 +146,13 @@
                         <span
                             class="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-xs font-extrabold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
                             <span class="h-2 w-2 rounded-full bg-slate-400"></span>
-                            تیکت بسته شده
+                            Ticket closed
                         </span>
                     @else
                         <span
                             class="inline-flex h-10 items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-extrabold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
                             <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-500"></span>
-                            گفتگو فعال است
+                            Conversation active
                         </span>
                     @endif
                 </div>
@@ -186,7 +186,7 @@
                                     stroke-linejoin="round"
                                 />
                             </svg>
-                            پیام شما ارسال شد
+                            Your message was sent
                         </div>
                     </div>
                 @endif
@@ -195,7 +195,7 @@
                     <div
                         class="mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 dark:border-rose-500/20 dark:bg-rose-500/10">
                         <div class="text-xs font-black text-rose-700 dark:text-rose-300">
-                            ارسال پیام انجام نشد
+                            Message could not be sent
                         </div>
 
                         <div class="mt-2 space-y-1">
@@ -214,8 +214,8 @@
 
                         $currentDate = $message->created_at?->toDateString();
 
-                        $timeLabel = jalali_date($message->created_at, 'H:i');
-                        $dateLabel = jalali_date($message->created_at, 'Y/m/d');
+                        $timeLabel = (($message->created_at) ? \Illuminate\Support\Carbon::parse($message->created_at)->format('H:i') : '');
+                        $dateLabel = (($message->created_at) ? \Illuminate\Support\Carbon::parse($message->created_at)->format('Y/m/d') : '');
                     @endphp
 
                     @if($currentDate && $lastDate !== $currentDate)
@@ -246,7 +246,7 @@
                                     class="relative rounded-[1.35rem] rounded-br-md bg-brand-600 px-4 py-3 text-sm font-bold leading-7 text-white shadow-lg shadow-brand-500/15 dark:bg-brand-500 dark:shadow-black/10">
                                     <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
 
-                                    <x-ticket.attachments :message="$message" tone="dark" />
+                                    <x-front.ticket-attachments :message="$message" tone="dark" />
                                 </div>
 
                                 <div
@@ -263,12 +263,12 @@
                                     <div
                                         class="relative rounded-[1.35rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                                         <div class="mb-1 text-[11px] font-black text-brand-600 dark:text-brand-300">
-                                            پشتیبانی Cardiware
+                                            Support Cardiware
                                         </div>
 
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>
 
-                                        <x-ticket.attachments :message="$message" thumbnail-class="dark:border-slate-600 dark:focus:ring-brand-500/20" />
+                                        <x-front.ticket-attachments :message="$message" thumbnail-class="dark:border-slate-600 dark:focus:ring-brand-500/20" />
                                     </div>
 
                                     <div
@@ -296,11 +296,11 @@
                             </div>
 
                             <div class="mt-4 text-sm font-black text-slate-900 dark:text-white">
-                                هنوز پیامی در این تیکت ثبت نشده است
+                                No messages have been posted in this ticket yet
                             </div>
 
                             <p class="mx-auto mt-2 max-w-sm text-xs font-medium leading-6 text-slate-500 dark:text-slate-400">
-                                پیام‌های شما و تیم پشتیبانی در این بخش نمایش داده می‌شود.
+                                Messages from you and the support team appear here.
                             </p>
                         </div>
                     </div>
@@ -321,11 +321,11 @@
 
                         <div>
                             <div class="text-sm font-black text-slate-800 dark:text-white">
-                                این تیکت بسته شده است
+                                This ticket is closed
                             </div>
 
                             <p class="mt-1 text-xs font-medium leading-6 text-slate-500 dark:text-slate-400">
-                                امکان ارسال پیام جدید برای این تیکت وجود ندارد. در صورت نیاز، یک تیکت جدید ثبت کنید.
+                                New messages cannot be sent to this ticket. Create a new ticket if needed.
                             </p>
                         </div>
                     </div>
@@ -334,7 +334,7 @@
                         href="{{ $backUrl }}"
                         class="inline-flex h-11 items-center justify-center rounded-2xl bg-brand-600 px-5 text-sm font-extrabold text-white transition hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400"
                     >
-                        بازگشت به تیکت‌ها
+                        Back to tickets
                     </a>
                 </div>
             @else
@@ -358,7 +358,7 @@
                                 x-on:keydown.enter.exact.prevent="submitReply()"
                                 name="message"
                                 rows="1"
-                                placeholder="پیام خود را بنویسید..."
+                                placeholder="Write your message..."
                                 class="max-h-40 min-h-[48px] w-full resize-none border-0 bg-transparent px-3 py-2 text-sm font-bold leading-7 text-slate-800 outline-none placeholder:text-slate-400 focus:ring-0 dark:text-white dark:placeholder:text-slate-500"
                             ></textarea>
                         </div>
@@ -367,7 +367,7 @@
                             type="submit"
                             :disabled="! reply.trim()"
                             class="group grid h-12 w-12 shrink-0 cursor-pointer place-items-center rounded-2xl bg-brand-600 text-white shadow-lg shadow-brand-500/20 transition hover:-translate-y-0.5 hover:bg-brand-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none dark:bg-brand-500 dark:hover:bg-brand-400 dark:disabled:bg-slate-700 dark:disabled:text-slate-500"
-                            aria-label="ارسال پیام"
+                            aria-label="Send message"
                         >
                             <svg class="h-6 w-6 transition group-hover:-translate-x-0.5 group-hover:translate-y-0.5"
                                  viewBox="0 0 24 24" fill="none">
@@ -392,5 +392,5 @@
         </div>
     </section>
 
-    <x-ticket.image-lightbox />
+    <x-front.ticket-image-lightbox />
 @endsection

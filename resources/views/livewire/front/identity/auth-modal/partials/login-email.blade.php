@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'ورود با ایمیل',
-            'description' => 'ایمیل و رمز عبور حساب خود را وارد کنید.',
+            'title' => 'Sign in with email',
+            'description' => 'Enter your account email and password.',
             'backMethod' => 'goToEnterMobile',
         ]
     )
@@ -11,7 +11,7 @@
     <form wire:submit.prevent="loginWithEmail" class="space-y-4" novalidate>
         <div>
             <label for="{{ $name }}-login-email" class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300">
-                ایمیل
+                Email
             </label>
             <input
                 id="{{ $name }}-login-email"
@@ -28,7 +28,7 @@
 
         <div>
             <label for="{{ $name }}-email-password" class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300">
-                رمز عبور
+                Password
             </label>
             <input
                 id="{{ $name }}-email-password"
@@ -47,8 +47,8 @@
             wire:target="loginWithEmail"
             class="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-xs font-extrabold text-white shadow-md shadow-brand-500/20 transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:shadow-none"
         >
-            <span wire:loading.remove wire:target="loginWithEmail">ورود و ادامه</span>
-            <span wire:loading wire:target="loginWithEmail">در حال ورود...</span>
+            <span wire:loading.remove wire:target="loginWithEmail">Sign in and continue</span>
+            <span wire:loading wire:target="loginWithEmail">Signing in...</span>
         </button>
     </form>
 </div>

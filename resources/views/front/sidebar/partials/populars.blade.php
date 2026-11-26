@@ -8,9 +8,9 @@
     iconName="view"
 >
     <div x-data="{ period: 'week' }">
-        <div role="tablist" aria-label="بازهٔ مطالب پربازدید"
+        <div role="tablist" aria-label="Most viewed posts period"
              class="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1 dark:bg-slate-800/80">
-            @foreach(['day' => 'امروز', 'week' => 'این هفته', 'month' => 'این ماه'] as $periodKey => $periodLabel)
+            @foreach(['day' => 'Today', 'week' => 'This week', 'month' => 'This month'] as $periodKey => $periodLabel)
                 <button type="button" role="tab"
                         id="popular-posts-tab-{{ $periodKey }}"
                         aria-controls="popular-posts-panel-{{ $periodKey }}"
@@ -52,13 +52,13 @@
                                 {{ $post->title }}
                             </span>
                             <span class="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
-                                {{ number_format((int) $post->total_views) }} بازدید
+                                {{ number_format((int) $post->total_views) }} views
                             </span>
                         </span>
                     </a>
                 @empty
                     <p class="px-1 py-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                        در این بازه هنوز بازدیدی برای نوشته‌ها ثبت نشده است.
+                        No post views recorded during this period yet.
                     </p>
                 @endforelse
             </div>

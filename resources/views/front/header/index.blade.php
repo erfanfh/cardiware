@@ -9,7 +9,7 @@
                 class="md:hidden cursor-pointer h-10 w-10 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                 x-data
                 x-on:click="$dispatch('open-mobile-navigation')"
-                aria-label="باز کردن منو"
+                aria-label="Open menu"
             >
                 @include('icons.menu-01')
             </button>
@@ -82,10 +82,10 @@
             >
                 <label class="relative block" @keydown.escape.window="open=false">
                     <form action="{{ front_route('search') }}" method="get">
-                        <span class="sr-only">جستجو</span>
+                        <span class="sr-only">Search</span>
 
                         <span
-                            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-slate-400 dark:text-slate-500">
+                            class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400 dark:text-slate-500">
                             @include('icons.search-01')
                         </span>
                         <div x-data="typingPlaceholder">
@@ -96,17 +96,17 @@
                                 maxlength="120"
                                 :placeholder="currentText"
                                 class="w-full rounded-2xl border border-slate-200 bg-slate-50
-                            pr-10 pl-12 py-3 text-sm outline-none
+                            pl-10 pr-12 py-3 text-sm outline-none
                             focus:bg-white focus:ring-4 focus:ring-brand-100 focus:border-brand-300
                             transition dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:bg-slate-950 dark:focus:ring-brand-500/10"
                             />
                         </div>
 
-                        <div class="absolute inset-y-0 left-2 flex items-center">
+                        <div class="absolute inset-y-0 right-2 flex items-center">
                             <button
                                 type="submit"
                                 class="h-9 w-9 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center cursor-pointer dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:hover:bg-slate-800"
-                                aria-label="جستجو"
+                                aria-label="Search"
                             >
                                 @include('icons.search-01')
                             </button>
@@ -119,8 +119,8 @@
                 <button
                     x-data="themeSwitcher()"
                     x-on:click="toggle()"
-                    :aria-label="dark ? 'حالت روشن' : 'حالت شب'"
-                    :title="dark ? 'حالت روشن' : 'حالت شب'"
+                    :aria-label="dark ? 'Light mode' : 'Dark mode'"
+                    :title="dark ? 'Light mode' : 'Dark mode'"
                     :class="dark ? 'theme-toggle is-dark' : 'theme-toggle'"
                 >
                     <span class="tt-stars" aria-hidden="true"></span>

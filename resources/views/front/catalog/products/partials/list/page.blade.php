@@ -1,5 +1,5 @@
 @php
-    $boxTitle = get_setting('products', 'first_box_title') ?: 'جدیدترین محصولات';
+    $boxTitle = get_setting('products', 'first_box_title') ?: 'Latest products';
     $boxSubtitle = get_setting('products', 'first_box_subtitle');
 
     if(isset($category)){
@@ -7,13 +7,13 @@
         $categoryDescription = trim(strip_tags(html_entity_decode((string) $category->description)));
         $boxSubtitle = $categoryDescription !== ''
             ? \Illuminate\Support\Str::limit($categoryDescription, 220)
-            : "جدیدترین محصولات دسته {$category->title}";
+            : "Latest products in category {$category->title}";
     } elseif(isset($tag)){
         $boxTitle = $tag->title;
         $tagDescription = trim(strip_tags(html_entity_decode((string) $tag->description)));
         $boxSubtitle = $tagDescription !== ''
             ? \Illuminate\Support\Str::limit($tagDescription, 220)
-            : "جدیدترین محصولات برچسب {$tag->title}";
+            : "Latest products tagged {$tag->title}";
     }
 @endphp
 
@@ -42,12 +42,12 @@
                     @include('icons.filter')
                 </span>
 
-                فیلتر محصولات
+                Product filters
             </span>
 
             <span class="rounded-xl bg-slate-100 px-2.5 py-1 text-[11px] font-extrabold text-slate-500
             dark:bg-slate-800 dark:text-slate-300">
-                باز کردن
+                Open
             </span>
         </button>
     </div>
@@ -80,11 +80,11 @@
             dark:border-slate-800">
                 <div>
                     <div class="text-base font-black text-slate-900 dark:text-slate-100">
-                        فیلتر محصولات
+                        Product filters
                     </div>
 
                     <div class="mt-1 text-xs font-medium leading-6 text-slate-500 dark:text-slate-400">
-                        دسته‌بندی، قیمت و گزینه‌های موردنظر را انتخاب کن.
+                        Choose category, price and preferred options.
                     </div>
                 </div>
 
@@ -93,7 +93,7 @@
                     @click="mobileFiltersOpen = false"
                     class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100
                     dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                    aria-label="بستن فیلترها"
+                    aria-label="Close filters"
                 >
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                         <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -118,11 +118,11 @@
             <x-front.cart class="mb-4 flex flex-col gap-3 p-4 sm:mb-5 sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0">
                     <h3 class="text-sm font-black text-slate-950 dark:text-slate-100">
-                        لیست محصولات
+                        Product list
                     </h3>
 
                     <p class="mt-1 text-xs font-medium leading-5 text-slate-400 dark:text-slate-500">
-                        مرتب‌سازی و مشاهده محصولات قابل خرید
+                        Sort and browse available products
                     </p>
                 </div>
 
@@ -140,18 +140,18 @@
                         <input type="hidden" name="priceMax" value="{{ request('priceMax') }}">
                     @endif
 
-                    {{-- تب‌های مرتب‌سازی شیشه‌ای --}}
+                    {{-- Glass sorting tabs --}}
                     @php
                         $sortOptions = [
-                            'latest' => 'جدیدترین',
-                            'oldest' => 'قدیمی‌ترین',
-                            'price_asc' => 'ارزان‌ترین',
-                            'price_desc' => 'گران‌ترین',
+                            'latest' => 'Newest',
+                            'oldest' => 'Oldest',
+                            'price_asc' => 'Lowest price',
+                            'price_desc' => 'Highest price',
                         ];
                     @endphp
 
                     <div class="flex w-full flex-wrap items-center gap-1.5 rounded-2xl border border-white/60 bg-white/70 p-1.5 shadow-sm backdrop-blur-xl sm:w-auto dark:border-white/10 dark:bg-white/5 dark:shadow-black/20">
-                        <span class="px-2 text-[11px] font-black text-slate-400 dark:text-slate-500">مرتب‌سازی</span>
+                        <span class="px-2 text-[11px] font-black text-slate-400 dark:text-slate-500">Sort</span>
 
                         @foreach($sortOptions as $value => $label)
                             <a href="{{ request()->fullUrlWithQuery(['sort' => $value, 'page' => 1]) }}"
@@ -181,11 +181,11 @@
                             </div>
 
                             <h3 class="mt-5 text-base font-black text-slate-950 sm:text-lg dark:text-slate-100">
-                                محصولی با این فیلترها پیدا نشد
+                                No products match these filters
                             </h3>
 
                             <p class="mt-2 text-xs leading-6 text-slate-500 sm:text-sm dark:text-slate-400">
-                                فیلترها را تغییر بده یا همه فیلترها را حذف کن.
+                                Change or clear the filters.
                             </p>
 
                             <a
@@ -193,7 +193,7 @@
                                 class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-brand-600 px-5 text-sm font-black text-white transition hover:bg-brand-700 sm:w-auto
                                 dark:bg-brand-500 dark:hover:bg-brand-600"
                             >
-                                حذف فیلترها
+                                Clear filters
                             </a>
                         </div>
                     @endforelse

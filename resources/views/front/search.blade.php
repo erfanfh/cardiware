@@ -16,18 +16,18 @@
                     <div class="space-y-2">
                         <h1 class="text-xl sm:text-2xl lg:text-3xl font-black leading-tight text-slate-900 dark:text-slate-100">
                             @if($searchTerm !== '')
-                                نتایج جستجو برای
+                                Search results for
                                 <span class="text-brand-600 dark:text-brand-300">"{{ $searchTerm }}"</span>
                             @else
-                                همه محتواهای سایت
+                                All site content
                             @endif
                         </h1>
 
                         <p class="text-sm text-slate-500 dark:text-slate-400">
                             @if($searchTerm !== '')
-                                نتایج مرتبط در عنوان، خلاصه و متن محتوا نمایش داده شده‌اند.
+                                Related results match titles, summaries and content.
                             @else
-                                جدیدترین نوشته‌ها، محصولات، پروژه‌ها و ویدیوها را از تب‌های زیر مشاهده کنید.
+                                Browse the latest posts, products, projects and videos in the tabs below.
                             @endif
                         </p>
                     </div>
@@ -53,7 +53,7 @@
                         {{ $postsCount }}
                     </span>
 
-                    <span>نوشته‌ها</span>
+                    <span>Posts</span>
 
                     <span class="opacity-70 group-hover:opacity-100 transition">
                         @include('icons.file-02')
@@ -73,7 +73,7 @@
                         {{ $productsCount }}
                     </span>
 
-                    <span>محصولات</span>
+                    <span>Products</span>
 
                     <span class="opacity-70 group-hover:opacity-100 transition [&_svg]:w-4 [&_svg]:h-4">
                         @include('icons.shopping-bag-03')
@@ -93,7 +93,7 @@
                         {{ $projectsCount }}
                     </span>
 
-                    <span>پروژه‌ها</span>
+                    <span>Projects</span>
 
                     <span class="opacity-70 group-hover:opacity-100 transition">
                         @include('icons.folder-management')
@@ -113,7 +113,7 @@
                         {{ $videosCount }}
                     </span>
 
-                    <span>ویدیوها</span>
+                    <span>Videos</span>
 
                     <span class="opacity-70 group-hover:opacity-100 transition [&_svg]:h-4 [&_svg]:w-4">
                         @include('icons.video-01')
@@ -169,18 +169,18 @@
                                                 <div
                                                     class="flex items-center gap-2 text-[0.7rem] text-slate-500 dark:text-slate-400">
                                                     <span class="inline-flex items-center gap-2">
-                                                        {{ jalali_date($post->created_at, 'd F Y') }}
+                                                        {{ (($post->created_at) ? \Illuminate\Support\Carbon::parse($post->created_at)->format('d F Y') : '') }}
                                                     </span>
                                                     @if($views)
                                                         <span
                                                             class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                                                        <span>{{ $views }} بازدید</span>
+                                                        <span>{{ $views }} views</span>
                                                     @endif
                                                 </div>
                                                 <span
                                                     class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-700 group-hover:text-brand-800 transition [&_svg]:w-3 [&_svg]:h-3 dark:text-brand-300 dark:group-hover:text-brand-200">
-                                                    ادامه
-                                                    @include('icons.arrow-left-double')
+                                                    Continue
+                                                    <x-front.arrow-right-double/>
                                                 </span>
                                             </div>
                                         </div>
@@ -196,10 +196,10 @@
                                     @include('icons.inbox')
                                 </div>
 
-                                <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">نوشته ای یافت
-                                    نشد!</h3>
+                                <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">No posts found
+                                    not found!</h3>
                                 <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                    فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                                    Change the filters or search for another term.
                                 </p>
                             </x-front.cart>
                         @endif
@@ -229,10 +229,10 @@
                             </div>
 
                             <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                                محصولی یافت نشد!
+                                No products found!
                             </h3>
                             <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                                Change the filters or search for another term.
                             </p>
                         </div>
                     @endif
@@ -261,10 +261,10 @@
                             </div>
 
                             <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                                پروژه ای یافت نشد!
+                                No projects found!
                             </h3>
                             <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                فیلترها را تغییر بده یا عبارت دیگری جستجو کن.
+                                Change the filters or search for another term.
                             </p>
                         </div>
                     @endif
@@ -291,10 +291,10 @@
                             </div>
 
                             <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                                ویدیویی یافت نشد!
+                                No videos found!
                             </h3>
                             <p class="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                عبارت دیگری جستجو کنید یا نتایج سایر بخش‌ها را ببینید.
+                                Search for another term or view results in other sections.
                             </p>
                         </div>
                     @endif

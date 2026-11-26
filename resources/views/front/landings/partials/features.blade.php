@@ -1,4 +1,4 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 <section id="features" class="section-pad scroll-mt-24">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

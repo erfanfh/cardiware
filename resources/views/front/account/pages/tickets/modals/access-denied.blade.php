@@ -1,7 +1,7 @@
 <x-front.modal
     name="ticket-access-denied"
-    title="امکان ثبت تیکت وجود ندارد"
-    description="دسترسی ثبت تیکت برای حساب شما فعال نیست."
+    title="Ticket submission unavailable"
+    description="Ticket submission is not enabled for your account."
     max-width="max-w-lg"
 >
     <div class="space-y-5">
@@ -20,29 +20,29 @@
 
         <div class="text-center">
             <div class="text-sm font-black leading-7 text-slate-900 dark:text-white">
-                شما در حال حاضر اجازه ارسال تیکت ندارید
+                You are not currently allowed to submit tickets
             </div>
 
             <p class="mx-auto mt-2 max-w-md text-xs font-medium leading-6 text-slate-500 sm:text-sm sm:leading-7 dark:text-slate-400">
-                ثبت تیکت پشتیبانی فقط برای کاربران VIP یا کاربرانی که حداقل یک محصول تهیه کرده‌اند فعال است.
+                Support tickets are only available to VIP or users who have purchased at least one product.
             </p>
         </div>
 
         <div
             class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/60">
             <div class="text-xs font-black text-slate-800 dark:text-slate-100">
-                راه‌های فعال شدن پشتیبانی
+                How to enable support
             </div>
 
             <div class="mt-3 space-y-2 text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
                 <div class="flex items-start gap-2">
                     <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
-                    خرید حداقل یک محصول از Cardiware
+                    Purchase at least one product from Cardiware
                 </div>
 
                 <div class="flex items-start gap-2">
                     <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
-                    فعال بودن وضعیت VIP برای حساب کاربری
+                    Active status of VIP for your account
                 </div>
             </div>
         </div>
@@ -53,7 +53,7 @@
                 x-on:click="$dispatch('close-modal', 'ticket-access-denied')"
                 class="inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
             >
-                متوجه شدم
+                Got it
             </button>
         </div>
     </div>

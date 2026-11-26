@@ -1,8 +1,8 @@
 @if($product->releases->isNotEmpty())
     <x-front.cart id="releases" class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
-            title="لیست تغییرات"
-            subtitle="ویژگی‌ها و تغییرات هر آپدیت"
+            title="Changelog"
+            subtitle="Features and changes in each update"
             iconName="reload"
         />
 
@@ -25,7 +25,7 @@
                     class="overflow-hidden rounded-2xl border border-slate-200 bg-white sm:rounded-3xl dark:border-slate-700 dark:bg-slate-800/70">
                     <button
                         type="button"
-                        class="flex w-full cursor-pointer items-center justify-between gap-3 bg-white px-4 py-4 text-right transition hover:bg-slate-50 sm:px-5 dark:bg-slate-800/70 dark:hover:bg-slate-800"
+                        class="flex w-full cursor-pointer items-center justify-between gap-3 bg-white px-4 py-4 text-start transition hover:bg-slate-50 sm:px-5 dark:bg-slate-800/70 dark:hover:bg-slate-800"
                         @click="toggleRelease({{ $i }})"
                     >
                         <div class="min-w-0">
@@ -37,7 +37,7 @@
                                 @if($release->released_at)
                                     <span
                                         class="rounded-xl border border-brand-100 bg-brand-50 px-2 py-1 text-[11px] font-extrabold text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                        {{ jalali_date($release->released_at, 'Y/m/d') }}
+                                        {{ (($release->released_at) ? \Illuminate\Support\Carbon::parse($release->released_at)->format('Y/m/d') : '') }}
                                     </span>
                                 @endif
                             </div>

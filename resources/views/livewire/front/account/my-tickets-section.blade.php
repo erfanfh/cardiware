@@ -18,7 +18,7 @@
 
                                 <span
                                     class="rounded-xl border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-extrabold text-slate-600 sm:text-[11px] dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                                    تیکت #{{ $ticket->number }}
+                                    Ticket #{{ $ticket->number }}
                                 </span>
 
                                 @if($ticket->department)
@@ -31,14 +31,14 @@
                                 @if($this->isVipMember)
                                     <span
                                         class="inline-flex items-center gap-1 rounded-xl border border-amber-300 bg-gradient-to-l from-amber-100 to-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-800 sm:text-[11px] dark:border-amber-500/40 dark:from-amber-500/20 dark:to-amber-500/5 dark:text-amber-300">
-                                        👑 پشتیبانی ویژه VIP
+                                        👑 Priority support VIP
                                     </span>
                                 @endif
 
                                 @if($ticket->isUnderReview())
                                     <span
                                         class="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-100 px-2 py-1 text-[10px] font-extrabold text-sky-800 sm:text-[11px] dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300">
-                                        🔍 در حال بررسی
+                                        🔍 Under review
                                     </span>
                                 @endif
 
@@ -84,7 +84,7 @@
                         <div class="flex items-center justify-between gap-3 lg:flex-col lg:items-end">
                             <div class="text-left">
                                 <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                                    آخرین بروزرسانی
+                                    Last updated
                                 </div>
 
                                 <div class="mt-1 text-xs font-black text-slate-700 dark:text-slate-200">
@@ -94,7 +94,7 @@
 
                             <div
                                 class="inline-flex h-10 items-center justify-center gap-1 rounded-2xl border border-brand-100 bg-brand-50 px-3 text-xs font-extrabold text-brand-700 transition group-hover:bg-brand-600 group-hover:text-white dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 dark:group-hover:bg-brand-500 dark:group-hover:text-white">
-                                ورود به گفتگو
+                                Join conversation
 
                                 <svg class="h-4 w-4 rtl:rotate-180" viewBox="0 0 24 24" fill="none">
                                     <path

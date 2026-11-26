@@ -1,8 +1,8 @@
 {{--
-    بلوک تیترهای آیکون‌دار — {type: bullets, title?, items: [{icon, title, text}]}
-    آیکون‌ها: crown | star | fire | target | medal | trophy | shield | bolt | mic | face | stadium | tv | gamepad | shirt | globe | check
+    Icon heading block — {type: bullets, title?, items: [{icon, title, text}]}
+    Icons: crown | star | fire | target | medal | trophy | shield | bolt | mic | face | stadium | tv | gamepad | shirt | globe | check
 --}}
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div class="reveal">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])
 

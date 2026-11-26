@@ -22,11 +22,11 @@
 
             <div class="min-w-0">
                 <h2 class="text-base font-extrabold text-slate-900 dark:text-slate-100">
-                    تکمیل پرداخت
+                    Complete payment
                 </h2>
 
                 <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                    روش پرداخت را انتخاب کنید و سفارش خود را تکمیل کنید.
+                    Choose a payment method and complete your order.
                 </p>
             </div>
 
@@ -35,7 +35,7 @@
                 @click="checkoutModalOpen = false"
                 class="grid h-10 w-10 shrink-0 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800
         dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
-                aria-label="بستن"
+                aria-label="Close"
             >
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                     <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -73,7 +73,7 @@
                         <div class="min-w-0 flex-1">
 
                             <div class="text-sm font-extrabold text-red-900 dark:text-red-200">
-                                پرداخت قابل انجام نیست
+                                Payment unavailable
                             </div>
 
                             <p class="mt-1 text-xs leading-6 text-red-700 dark:text-red-300">
@@ -90,11 +90,11 @@
                         dark:bg-red-700 dark:hover:bg-red-800"
                                 >
                         <span wire:loading.remove wire:target="refreshCart">
-                            به‌روزرسانی سبد خرید
+                            Update cart
                         </span>
 
                                     <span wire:loading wire:target="refreshCart">
-                            در حال به‌روزرسانی...
+                            Updating...
                         </span>
                                 </button>
                             @endif
@@ -126,7 +126,7 @@
                         <div class="min-w-0">
 
                             <div class="text-sm font-extrabold text-emerald-900 dark:text-emerald-200">
-                                سبد خرید به‌روزرسانی شد
+                                Cart updated
                             </div>
 
                             <p class="mt-1 text-xs leading-6 text-emerald-700 dark:text-emerald-300">
@@ -142,7 +142,7 @@
 
             <div>
                 <div class="mb-3 text-xs font-extrabold text-slate-700 dark:text-slate-300">
-                    روش پرداخت را انتخاب کنید
+                    Select payment method
                 </div>
 
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -183,11 +183,11 @@
                             <div class="min-w-0">
 
                                 <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                    درگاه پرداخت
+                                    Payment gateway
                                 </div>
 
                                 <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                    پرداخت آنلاین از طریق درگاه بانکی.
+                                    Online payment via bank gateway.
                                 </p>
 
                             </div>
@@ -251,9 +251,9 @@
                                 <div class="flex flex-col gap-2">
                                     <div class="text-sm font-extrabold text-slate-900 dark:text-white">
                                         @if($walletMode === 'mixed')
-                                            کیف پول + درگاه
+                                            Wallet + Gateway
                                         @else
-                                            کیف پول
+                                            Wallet
                                         @endif
                                     </div>
 
@@ -264,7 +264,7 @@
                                            dark:border-slate-700 dark:bg-slate-950/70
                                            dark:text-slate-300"
                                         >
-                                            موجودی قابل استفاده:
+                                            Available balance:
                                             {{ $this->money($this->walletAvailableBalance) }}
                                         </span>
                                     </div>
@@ -285,7 +285,7 @@
                         <div class="space-y-2 text-xs">
                             <div class="flex items-center justify-between gap-4">
                                 <span class="font-semibold text-slate-600 dark:text-slate-300">
-                                    سهم کیف پول
+                                    Wallet share
                                 </span>
 
                                 <strong class="font-extrabold text-slate-900 dark:text-white">
@@ -296,7 +296,7 @@
                             @if($this->walletShortage > 0)
                                 <div class="flex items-center justify-between gap-4">
                                     <span class="font-semibold text-slate-600 dark:text-slate-300">
-                                        مبلغ پرداخت در درگاه
+                                        Gateway payment amount
                                     </span>
 
                                     <strong class="font-extrabold text-brand-700 dark:text-brand-300">
@@ -309,7 +309,7 @@
                                 class="flex items-center justify-between gap-4 border-t border-brand-100 pt-2 dark:border-brand-500/20"
                             >
                                 <span class="font-extrabold text-slate-700 dark:text-slate-200">
-                                    مبلغ کل سفارش
+                                    Total order amount
                                 </span>
 
                                 <strong class="font-black text-slate-900 dark:text-white">
@@ -329,11 +329,11 @@
                     <div class="min-w-0">
 
             <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200">
-                مبلغ قابل پرداخت
+                Amount due
             </span>
 
                         <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                            قبل از پرداخت، سبد خرید با آخرین تغییرات محصولات بررسی می‌شود.
+                            Before payment, the cart is checked against the latest product changes.
                         </p>
 
                     </div>
@@ -357,11 +357,11 @@
                 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                         >
                 <span wire:loading.remove wire:target="refreshCart">
-                    به‌روزرسانی سبد
+                    Update cart
                 </span>
 
                             <span wire:loading wire:target="refreshCart">
-                    در حال بررسی...
+                    Under review...
                 </span>
                         </button>
 
@@ -390,7 +390,7 @@
                         class="flex items-center gap-2"
                     >
                         <span x-show="paymentMethod === 'gateway'">
-                            پرداخت با درگاه
+                            Pay via gateway
                         </span>
 
                         <span
@@ -398,11 +398,11 @@
                             x-show="paymentMethod === 'wallet'"
                         >
                             @if($this->walletPaymentMode === 'full')
-                                پرداخت با کیف پول
+                                Pay with wallet
                             @elseif($this->walletPaymentMode === 'mixed')
-                                تکمیل موجودی و پرداخت
+                                Top up and pay
                             @else
-                                ادامه پرداخت
+                                Continue to payment
                             @endif
                         </span>
                     </span>
@@ -413,7 +413,7 @@
                         class="flex items-center gap-2"
                     >
                         <span>
-                            در حال پردازش...
+                            Processing...
                         </span>
 
                         <span
@@ -429,7 +429,7 @@
                     class="inline-flex h-12 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-700 transition hover:bg-slate-50
         dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                 >
-                    انصراف
+                    Cancel
                 </button>
 
             </div>

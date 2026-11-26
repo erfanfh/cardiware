@@ -1,5 +1,5 @@
 {{--
-Template Name: صفحه معرفی تیم
+Template Name: Team page
 --}}
 
 @extends('front.master')
@@ -30,7 +30,7 @@ Template Name: صفحه معرفی تیم
                     link-class="font-bold transition hover:text-brand-300"
                     current-class="font-semibold text-white/90"
                     :fallback-items="[
-                        ['name' => 'خانه', 'url' => route('home')],
+                        ['name' => 'Home', 'url' => route('home')],
                         ['name' => $page->title, 'url' => null],
                     ]"
                 />
@@ -60,12 +60,12 @@ Template Name: صفحه معرفی تیم
 
                             <a href="#join-team" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/10 px-5 py-3 text-sm font-extrabold text-white backdrop-blur-md transition hover:bg-white/15 focus:outline-none focus:ring-4 focus:ring-white/10">
                                 {{ $teamPage['hero_secondary_button_title'] }}
-                                <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                             </a>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3" aria-label="آمار Cardiware">
+                    <div class="grid grid-cols-2 gap-3" aria-label="Statistics Cardiware">
                         <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md sm:p-5">
                             <div class="text-[11px] font-extrabold leading-5 text-white/60">{{ $teamPage['stats_members_title'] }}</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ number_format($teamStats['members']) }}</div>
@@ -140,7 +140,7 @@ Template Name: صفحه معرفی تیم
                 @if($teamMembers->isNotEmpty())
                     <span class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-extrabold text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
                         <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                        {{ number_format($teamMembers->count()) }} عضو
+                        {{ number_format($teamMembers->count()) }} Member
                     </span>
                 @endif
             </div>
@@ -171,7 +171,7 @@ Template Name: صفحه معرفی تیم
                                 />
                             @else
                                 <div class="grid h-full w-full place-items-center bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,.8),transparent_35%),linear-gradient(135deg,#ffedd5,#fff7ed)] text-5xl font-black text-brand-600 transition-transform duration-700 ease-out group-hover:scale-[1.045] motion-reduce:transform-none motion-reduce:transition-none dark:bg-[radial-gradient(circle_at_35%_25%,rgba(255,255,255,.08),transparent_35%),linear-gradient(135deg,rgba(249,115,22,.20),rgba(15,23,42,.7))] dark:text-brand-300">
-                                    {{ $initials ?: '؟' }}
+                                    {{ $initials ?: '?' }}
                                 </div>
                             @endif
 
@@ -197,14 +197,14 @@ Template Name: صفحه معرفی تیم
                                     @if(filled($member->website_url))
                                         <a href="{{ $member->website_url }}" target="_blank" rel="noopener" class="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 dark:focus:ring-brand-500/10">
                                             <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.link-square-02')</span>
-                                            وب‌سایت
+                                            Website
                                         </a>
                                     @endif
 
                                     @if(filled($member->email))
                                         <a href="mailto:{{ $member->email }}" class="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-4 focus:ring-brand-100 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 dark:focus:ring-brand-500/10">
                                             <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.mail-ru')</span>
-                                            ایمیل
+                                            Email
                                         </a>
                                     @endif
                                 </div>
@@ -241,7 +241,7 @@ Template Name: صفحه معرفی تیم
                                 <div class="flex items-center justify-between gap-3">
                                     <span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-500 text-sm font-black text-white shadow-md shadow-brand-500/20">{{ $loop->iteration }}</span>
                                     @if(!$loop->last)
-                                        <span class="hidden text-slate-300 xl:block dark:text-slate-700 [&_svg]:h-5 [&_svg]:w-5" aria-hidden="true">@include('icons.arrow-left-02')</span>
+                                        <span class="hidden text-slate-300 xl:block dark:text-slate-700 [&_svg]:h-5 [&_svg]:w-5" aria-hidden="true"><x-front.arrow-right-02/></span>
                                     @endif
                                 </div>
                                 <h3 class="mt-4 text-sm font-black text-slate-950 dark:text-white">{{ $item['title'] }}</h3>
@@ -275,7 +275,7 @@ Template Name: صفحه معرفی تیم
                             @if($teamPage['cta_primary_button_url'] && filled($teamPage['cta_primary_button_title']))
                                 <a href="{{ $teamPage['cta_primary_button_url'] }}" class="inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-brand-400 focus:outline-none focus:ring-4 focus:ring-brand-300/25">
                                     {{ $teamPage['cta_primary_button_title'] }}
-                                    <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                    <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                                 </a>
                             @endif
 

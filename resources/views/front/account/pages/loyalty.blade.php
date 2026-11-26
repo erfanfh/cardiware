@@ -52,7 +52,7 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <div
                                 class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1.5 text-xs font-extrabold text-brand-700 backdrop-blur dark:border-brand-900/60 dark:bg-slate-900/70 dark:text-brand-300">
-                                باشگاه مخاطبان Cardiware
+                                Community Club Cardiware
                             </div>
 
                             <div
@@ -63,22 +63,22 @@
                                         <span class="drop-shadow-sm">{{ $levelModel->badge }}</span>
                                     </span>
                                 @endif
-                                سطح {{ $level['number'] }} — {{ $level['title'] }}
+                                Level {{ $level['number'] }} — {{ $level['title'] }}
                             </div>
 
                             @if($level['multiplier'] > 1)
                                 <div
                                     class="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/50 bg-emerald-50/80 px-3 py-1.5 text-xs font-extrabold text-emerald-700 backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
-                                    ×{{ $multiplierLabel }} امتیاز خرید
+                                    ×{{ $multiplierLabel }} Purchase points
                                 </div>
                             @endif
                         </div>
 
                         <h1 class="mt-4 text-xl font-black leading-9 text-slate-900 sm:text-2xl dark:text-slate-100">
-                            امتیازت رو به تجربه های جذاب تبدیل کن
+                            Turn your points into exciting experiences
                         </h1>
                         <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-                            با فعالیت در Cardiware امتیاز بگیر، سطح ببر و پاداش دریافت کن.
+                            By being active on Cardiware Earn points, level up and receive rewards.
                         </p>
 
                         {{-- XP progress --}}
@@ -104,22 +104,22 @@
                                 @if($level['next'])
                                     @if($closeToNext)
                                         <span class="inline-flex items-center gap-1 animate-pulse {{ $barColors['text'] }}">
-                                            فقط {{ number_format($level['xpToNext']) }} XP تا سطح {{ $level['nextTitle'] }} — تقریبا رسیدی! 🔥
+                                            Only {{ number_format($level['xpToNext']) }} XP to level {{ $level['nextTitle'] }} — Almost there! 🔥
                                         </span>
                                     @else
                                         <span class="{{ $colors['text'] }}">{{ number_format($level['xpToNext']) }} XP</span>
-                                        تا سطح {{ $level['nextTitle'] }}
+                                        to level {{ $level['nextTitle'] }}
                                     @endif
                                 @else
-                                    <span class="text-cyan-700 dark:text-cyan-300">بالاترین سطح باشگاه؛ آفرین!</span>
+                                    <span class="text-cyan-700 dark:text-cyan-300">Highest club level; well done!</span>
                                 @endif
                             </div>
                         </div>
 
                         <a href="{{ route('loyalty.leaderboard') }}"
                            class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white shadow-lg shadow-slate-900/10 transition hover:-translate-y-0.5 hover:bg-brand-600 dark:bg-white dark:text-slate-900 dark:shadow-black/20 dark:hover:bg-brand-300">
-                            مشاهده برترین‌های باشگاه
-                            <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                            View club leaders
+                            <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                         </a>
                     </div>
 
@@ -127,7 +127,7 @@
                         <div
                             class="rounded-3xl border border-white/70 bg-white/80 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-950/60">
                             <div class="flex items-center justify-between">
-                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400">امتیاز قابل استفاده</div>
+                                <div class="text-xs font-bold text-slate-500 dark:text-slate-400">Available points</div>
                                 <span class="grid h-9 w-9 place-items-center rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 [&_svg]:h-5 [&_svg]:w-5">
                                     @include('icons.medal-06')
                                 </span>
@@ -136,26 +136,26 @@
                             <div class="mt-2 flex items-end gap-2">
                                 <div
                                     class="text-3xl font-black tracking-tight text-brand-700 dark:text-brand-300">{{ number_format($club['spendablePointBalance']) }}</div>
-                                <div class="pb-1 text-xs font-bold text-slate-400">امتیاز</div>
+                                <div class="pb-1 text-xs font-bold text-slate-400">points</div>
                             </div>
 
                             <div class="mt-3 flex flex-wrap gap-2 text-[10px] font-bold">
                                 <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                                    معادل {{ number_format((int) floor($club['spendablePointBalance'] / 100) * 2000) }} تومان اعتبار
+                                    Equivalent {{ number_format((int) floor($club['spendablePointBalance'] / 100) * 2000) }} toman credit
                                 </span>
                                 <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                                    کل کسب: {{ number_format($club['lifetimeEarned']) }}
+                                    Total earned: {{ number_format($club['lifetimeEarned']) }}
                                 </span>
                                 <span class="rounded-lg bg-slate-100 px-2 py-1 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                                    کل مصرف: {{ number_format($club['lifetimeSpent']) }}
+                                    Total spent: {{ number_format($club['lifetimeSpent']) }}
                                 </span>
                             </div>
 
                             @if($club['pointBalance'] < 0)
                                 <div
                                     class="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs leading-6 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300">
-                                    موجودی حساب شما {{ number_format(abs($club['pointBalance'])) }} امتیاز بدهکار است.
-                                    امتیازهای بعدی ابتدا این بدهی را پوشش می دهند.
+                                    Your account balance {{ number_format(abs($club['pointBalance'])) }} points in debt.
+                                    Future points will cover this debt first.
                                 </div>
                             @endif
                         </div>
@@ -174,14 +174,14 @@
             <div
                 class="flex flex-wrap gap-2 rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900 [&_button]:cursor-pointer">
                 @foreach([
-                    ['key' => 'overview', 'label' => 'نمای کلی', 'icon' => 'icons.dashboard-square-02'],
-                    ['key' => 'rewards', 'label' => 'جوایز', 'icon' => 'icons.discount'],
-                    ['key' => 'how-to-earn', 'label' => 'چطور امتیاز بگیرم؟', 'icon' => 'icons.chart-03'],
-                    ['key' => 'point-history', 'label' => 'تاریخچه امتیاز', 'icon' => 'icons.invoice-03'],
-                    ['key' => 'levels', 'label' => 'سطوح', 'icon' => 'icons.medal-06'],
-                    ['key' => 'missions', 'label' => 'مأموریت‌ها', 'icon' => 'icons.target-01'],
-                    ['key' => 'badges', 'label' => 'نشان‌ها', 'icon' => 'icons.checkmark-badge-01'],
-                    ['key' => 'invite', 'label' => 'دعوت دوستان', 'icon' => 'icons.user-multiple-02'],
+                    ['key' => 'overview', 'label' => 'Overview', 'icon' => 'icons.dashboard-square-02'],
+                    ['key' => 'rewards', 'label' => 'Prizes', 'icon' => 'icons.discount'],
+                    ['key' => 'how-to-earn', 'label' => 'How do I earn points?', 'icon' => 'icons.chart-03'],
+                    ['key' => 'point-history', 'label' => 'Points history', 'icon' => 'icons.invoice-03'],
+                    ['key' => 'levels', 'label' => 'Levels', 'icon' => 'icons.medal-06'],
+                    ['key' => 'missions', 'label' => 'Missions', 'icon' => 'icons.target-01'],
+                    ['key' => 'badges', 'label' => 'Badges', 'icon' => 'icons.checkmark-badge-01'],
+                    ['key' => 'invite', 'label' => 'Invite friends', 'icon' => 'icons.user-multiple-02'],
                 ] as $tabDef)
                     <button type="button"
                             data-loyalty-tab="{{ $tabDef['key'] }}"
@@ -191,7 +191,7 @@
                         @include($tabDef['icon'])
                         {{ $tabDef['label'] }}
                         @if(!empty($tabDef['soon']))
-                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-black text-slate-400 dark:bg-slate-800 dark:text-slate-500">به‌زودی</span>
+                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-black text-slate-400 dark:bg-slate-800 dark:text-slate-500">Coming soon</span>
                         @endif
                     </button>
                 @endforeach
@@ -218,32 +218,32 @@
                             <div>
                                 <div class="flex flex-wrap items-center gap-2">
                                     <div class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                        زنجیره ورود روزانه
+                                        Daily visit streak
                                     </div>
                                     <div class="rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-black text-amber-700 dark:text-amber-300" dir="ltr">
-                                        {{ number_format($club['streak']['currentDays']) }} روز
+                                        {{ number_format($club['streak']['currentDays']) }} days
                                     </div>
                                     @if($club['streak']['visitedToday'])
                                         <div class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
-                                            بازدید امروز ثبت شد
+                                            Today’s visit recorded
                                         </div>
                                     @endif
                                 </div>
 
                                 <div class="mt-1.5 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                                    رکورد شما: {{ number_format($club['streak']['longestDays']) }} روز
+                                    Your record: {{ number_format($club['streak']['longestDays']) }} days
                                     @if($club['streak']['nextMilestone'])
-                                        · {{ number_format($club['streak']['nextMilestone']['days'] - $club['streak']['currentDays']) }} روز تا پاداش
+                                        · {{ number_format($club['streak']['nextMilestone']['days'] - $club['streak']['currentDays']) }} days to reward
                                         @if(($club['streak']['nextMilestone']['points'] ?? 0) > 0)
-                                            +{{ number_format($club['streak']['nextMilestone']['points']) }} امتیاز
+                                            +{{ number_format($club['streak']['nextMilestone']['points']) }} points
                                         @endif
                                         @if(($club['streak']['nextMilestone']['vip_days'] ?? 0) > 0)
-                                            <span class="text-amber-600 dark:text-amber-300">+{{ number_format($club['streak']['nextMilestone']['vip_days']) }} روز VIP رایگان</span>
+                                            <span class="text-amber-600 dark:text-amber-300">+{{ number_format($club['streak']['nextMilestone']['vip_days']) }} days VIP Free</span>
                                         @endif
                                     @endif
                                 </div>
 
-                                {{-- هفت خانه هفته --}}
+                                {{-- Seven days of the week --}}
                                 <div class="mt-2.5 flex items-center gap-1.5" dir="ltr">
                                     @foreach(range(1, 7) as $day)
                                         <span
@@ -257,10 +257,10 @@
 
                 <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
                     @foreach([
-                        ['label' => 'امتیاز فعلی', 'value' => $club['pointBalance'], 'suffix' => 'امتیاز', 'icon' => 'icons.medal-06', 'tone' => 'brand'],
-                        ['label' => 'کل XP (سابقه)', 'value' => $level['xp'], 'suffix' => 'XP', 'icon' => 'icons.chart-03', 'tone' => 'emerald'],
-                        ['label' => 'کل مصرف شده', 'value' => $club['lifetimeSpent'], 'suffix' => 'امتیاز', 'icon' => 'icons.tag-02', 'tone' => 'cyan'],
-                        ['label' => 'پاداش های دریافتی', 'value' => $club['completedRewardCount'], 'suffix' => 'مورد', 'icon' => 'icons.checkmark-badge-01', 'tone' => 'rose'],
+                        ['label' => 'Current points', 'value' => $club['pointBalance'], 'suffix' => 'points', 'icon' => 'icons.medal-06', 'tone' => 'brand'],
+                        ['label' => 'Total XP (History)', 'value' => $level['xp'], 'suffix' => 'XP', 'icon' => 'icons.chart-03', 'tone' => 'emerald'],
+                        ['label' => 'Total spent', 'value' => $club['lifetimeSpent'], 'suffix' => 'points', 'icon' => 'icons.tag-02', 'tone' => 'cyan'],
+                        ['label' => 'Rewards claimed', 'value' => $club['completedRewardCount'], 'suffix' => 'items', 'icon' => 'icons.checkmark-badge-01', 'tone' => 'rose'],
                     ] as $stat)
                         <div
                             class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
@@ -296,20 +296,20 @@
                         class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                         <div class="flex items-center justify-between gap-3">
                             <div>
-                                <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">گردش امتیاز ماه‌های اخیر</h2>
+                                <h2 class="text-sm font-black text-slate-900 dark:text-slate-100">Recent monthly points activity</h2>
                                 <p class="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
-                                    مقایسه کسب و مصرف امتیاز در چهار ماه گذشته.
+                                    Compare points earned and spent over the past four months.
                                 </p>
                             </div>
 
                             <div class="flex items-center gap-3 text-[10px] font-bold">
                                 <span class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                                     <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-                                    کسب
+                                    Earned
                                 </span>
                                 <span class="flex items-center gap-1.5 text-rose-500 dark:text-rose-400">
                                     <span class="h-2 w-2 rounded-full bg-rose-500"></span>
-                                    مصرف
+                                    Spent
                                 </span>
                             </div>
                         </div>
@@ -318,12 +318,12 @@
                             @foreach($club['monthlySummary'] as $month)
                                 <div class="flex flex-col items-center gap-2">
                                     <div class="flex h-28 w-full items-end justify-center gap-1.5">
-                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="کسب: {{ number_format($month['earned']) }}">
+                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="Earned: {{ number_format($month['earned']) }}">
                                             <div
                                                 class="w-full rounded-t-lg bg-gradient-to-t from-emerald-600 to-emerald-400 transition-all duration-700"
                                                 style="height: {{ max(4, (int) round($month['earned'] / $peakMonth * 100)) }}%"></div>
                                         </div>
-                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="مصرف: {{ number_format($month['spent']) }}">
+                                        <div class="flex h-full w-5 flex-col justify-end sm:w-7" title="Spent: {{ number_format($month['spent']) }}">
                                             <div
                                                 class="w-full rounded-t-lg bg-gradient-to-t from-rose-600 to-rose-400 transition-all duration-700"
                                                 style="height: {{ max(4, (int) round($month['spent'] / $peakMonth * 100)) }}%"></div>
@@ -345,17 +345,17 @@
             {{-- ============ Tab: Rewards ============ --}}
             <section id="rewards" x-show="tab === 'rewards'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">پاداش های قابل دریافت</h2>
-                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">امتیازت را خرج کن؛ تخفیف بگیر
-                        یا شانس حضور در قرعه کشی ها را بیشتر کن.</p>
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">Available rewards</h2>
+                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">Spend points and get discounts
+                        or increase your chances in raffles.</p>
                 </div>
 
                 @if($club['rewardOffers']->isEmpty())
                     <div
                         class="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
-                        <div class="text-sm font-black text-slate-800 dark:text-slate-200">فعلا پاداش فعالی نداریم</div>
-                        <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">به زودی گزینه های جدیدی برای
-                            خرج کردن امتیاز اضافه می شود.</p>
+                        <div class="text-sm font-black text-slate-800 dark:text-slate-200">No active rewards yet</div>
+                        <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">New options for
+                            spending points will be added soon.</p>
                     </div>
                 @else
                     <div class="grid gap-4 md:grid-cols-2">
@@ -400,7 +400,7 @@
                                             class="shrink-0 rounded-2xl bg-brand-50 px-3 py-2 text-center dark:bg-brand-950/30">
                                             <div
                                                 class="text-lg font-black text-brand-700 dark:text-brand-300">{{ number_format($rewardOffer->points_cost) }}</div>
-                                            <div class="text-[9px] font-bold text-brand-500">امتیاز</div>
+                                            <div class="text-[9px] font-bold text-brand-500">points</div>
                                         </div>
                                     </div>
 
@@ -409,7 +409,7 @@
                                            class="mt-4 block rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:border-brand-200 hover:bg-brand-50/40 dark:border-slate-700 dark:bg-slate-950/50 dark:hover:border-brand-900/70">
                                             <div class="flex items-center justify-between gap-3">
                                                 <div class="min-w-0">
-                                                    <div class="text-[10px] font-bold text-slate-400">قرعه کشی مقصد</div>
+                                                    <div class="text-[10px] font-bold text-slate-400">Target raffle</div>
                                                     <div
                                                         class="mt-1 truncate text-sm font-black text-slate-800 dark:text-slate-200">{{ $campaign->title }}</div>
                                                 </div>
@@ -417,26 +417,26 @@
                                                     class="shrink-0 rounded-xl bg-white px-3 py-2 text-center shadow-sm dark:bg-slate-900">
                                                     <div
                                                         class="text-base font-black text-amber-600 dark:text-amber-400">{{ number_format($ticketQuantity) }}</div>
-                                                    <div class="text-[9px] font-bold text-slate-400">بلیط</div>
+                                                    <div class="text-[9px] font-bold text-slate-400">Ticket</div>
                                                 </div>
                                             </div>
                                         </a>
                                     @elseif(!$isRaffle)
                                         <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
                                             <div class="rounded-2xl bg-slate-50 px-3 py-3 dark:bg-slate-950/50">
-                                                <div class="text-[10px] text-slate-400">مقدار تخفیف</div>
+                                                <div class="text-[10px] text-slate-400">Discount amount</div>
                                                 <div class="mt-1 font-black text-slate-800 dark:text-slate-200">
                                                     @if($couponType === CouponTypeEnum::PERCENTAGE->value)
-                                                        {{ number_format((int)data_get($rewardOffer->config, 'coupon_value')) }}٪
+                                                        {{ number_format((int)data_get($rewardOffer->config, 'coupon_value')) }}%
                                                     @else
-                                                        {{ number_format((int)data_get($rewardOffer->config, 'coupon_value')) }} تومان
+                                                        {{ number_format((int)data_get($rewardOffer->config, 'coupon_value')) }} Toman
                                                     @endif
                                                 </div>
                                             </div>
                                             <div class="rounded-2xl bg-slate-50 px-3 py-3 dark:bg-slate-950/50">
-                                                <div class="text-[10px] text-slate-400">اعتبار</div>
+                                                <div class="text-[10px] text-slate-400">Validity</div>
                                                 <div class="mt-1 font-black text-slate-800 dark:text-slate-200">
-                                                    {{ data_get($rewardOffer->config, 'expires_after_days') ? number_format((int)data_get($rewardOffer->config, 'expires_after_days')) . ' روز' : 'بدون انقضا' }}
+                                                    {{ data_get($rewardOffer->config, 'expires_after_days') ? number_format((int)data_get($rewardOffer->config, 'expires_after_days')) . ' days' : 'No expiration' }}
                                                 </div>
                                             </div>
                                         </div>
@@ -445,7 +445,7 @@
                                     @if(!$availability?->canRedeem && $missingPoints > 0)
                                         <div class="mt-4">
                                             <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                                                <span>پیشرفت تا این پاداش</span>
+                                                <span>Progress toward this reward</span>
                                                 <span class="text-slate-700 dark:text-slate-200">
                                                     {{ number_format($club['spendablePointBalance']) }} / {{ number_format($rewardOffer->points_cost) }}
                                                 </span>
@@ -468,16 +468,16 @@
                                                        value="{{ (string) Str::uuid() }}">
                                                 <button type="submit"
                                                         class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-b from-brand-400 to-brand-600 px-4 text-xs font-extrabold text-white shadow-[0_10px_28px_-10px_rgba(249,115,22,.7)] transition hover:from-brand-300 hover:to-brand-500 active:from-brand-500 active:to-brand-700">
-                                                    {{ $isRaffle ? 'دریافت بلیط با امتیاز' : 'دریافت پاداش' }}
+                                                    {{ $isRaffle ? 'Get ticket with points' : 'Claim reward' }}
                                                 </button>
                                             </form>
                                         @else
                                             <button type="button" disabled
                                                     class="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-2xl bg-slate-100 px-4 text-xs font-extrabold text-slate-400 dark:bg-slate-800 dark:text-slate-500">
                                                 @if($missingPoints > 0)
-                                                    {{ number_format($missingPoints) }} امتیاز دیگر لازم داریم
+                                                    {{ number_format($missingPoints) }} more points needed
                                                 @else
-                                                    فعلا قابل دریافت نیست
+                                                    Not available yet
                                                 @endif
                                             </button>
                                             @if($availability?->reason && $missingPoints <= 0)
@@ -496,7 +496,7 @@
 
                 {{-- My rewards history --}}
                 <div class="mt-8">
-                    <h2 class="mb-4 text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">پاداش های من</h2>
+                    <h2 class="mb-4 text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">My rewards</h2>
 
                     <div class="space-y-3">
                         @forelse($club['rewardRedemptions'] as $redemption)
@@ -518,19 +518,19 @@
                                         </span>
                                             @if($redemption->isRegistrationGift())
                                                 <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-extrabold text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
-                                            هدیه خوش‌آمدگویی
+                                            Welcome gift
                                         </span>
                                             @endif
                                         </div>
                                         <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400">
                                             @if($redemption->isRegistrationGift())
-                                                <span class="font-bold text-emerald-600 dark:text-emerald-400">بدون کسر امتیاز</span>
+                                                <span class="font-bold text-emerald-600 dark:text-emerald-400">No points deducted</span>
                                             @else
-                                                <span>{{ number_format($redemption->points_spent) }} امتیاز</span>
+                                                <span>{{ number_format($redemption->points_spent) }} points</span>
                                             @endif
-                                            <span>{{ jalali_date($redemption->created_at, 'Y/m/d H:i') }}</span>
+                                            <span>{{ (($redemption->created_at) ? \Illuminate\Support\Carbon::parse($redemption->created_at)->format('Y/m/d H:i') : '') }}</span>
                                             @if($redemption->coupon?->expires_at)
-                                                <span>معتبر تا {{ jalali_date($redemption->coupon->expires_at, 'Y/m/d H:i') }}</span>
+                                                <span>Valid until {{ (($redemption->coupon->expires_at) ? \Illuminate\Support\Carbon::parse($redemption->coupon->expires_at)->format('Y/m/d H:i') : '') }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -543,18 +543,18 @@
                                             <button type="button"
                                                     x-on:click="navigator.clipboard.writeText(@js($redemption->coupon->code)); copied = true; setTimeout(() => copied = false, 1500)"
                                                     class="rounded-lg bg-white px-2.5 py-1.5 text-[10px] font-bold text-brand-600 shadow-sm dark:bg-slate-900 dark:text-brand-400">
-                                                <span x-show="!copied">کپی</span><span x-show="copied" x-cloak>کپی شد</span>
+                                                <span x-show="!copied">Copy</span><span x-show="copied" x-cloak>Copied</span>
                                             </button>
                                         </div>
                                     @elseif($grant)
                                         <div class="flex flex-wrap items-center gap-2">
                                             <div
                                                 class="rounded-xl bg-amber-50 px-3 py-2 text-xs font-black text-amber-700 dark:bg-amber-950/20 dark:text-amber-300">
-                                                {{ number_format($grant->quantity) }} بلیط
+                                                {{ number_format($grant->quantity) }} Ticket
                                             </div>
                                             <a href="{{ route('account.raffles') }}"
                                                class="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-extrabold text-slate-700 transition hover:border-brand-200 hover:text-brand-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-                                                مشاهده بلیط ها
+                                                View tickets
                                             </a>
                                         </div>
                                     @endif
@@ -563,17 +563,17 @@
                                 @if($isReversed)
                                     <div
                                         class="mt-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] leading-6 text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/20 dark:text-rose-300">
-                                        امتیاز این دریافت به حساب شما برگشت داده شده است.
+                                        Points from this claim have been returned to your account.
                                     </div>
                                 @endif
                             </div>
                         @empty
                             <div
                                 class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
-                                <div class="text-sm font-black text-slate-800 dark:text-slate-200">هنوز پاداشی دریافت نکردی
+                                <div class="text-sm font-black text-slate-800 dark:text-slate-200">You have not claimed any rewards yet
                                 </div>
-                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">از گزینه های بالا اولین پاداشت را
-                                    انتخاب کن.</p>
+                                <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Choose your first reward from the options above
+                                    Select.</p>
                             </div>
                         @endforelse
                     </div>
@@ -587,13 +587,13 @@
             {{-- ============ Tab: How to earn ============ --}}
             <section id="how-to-earn" x-show="tab === 'how-to-earn'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">چطور امتیاز بگیرم؟</h2>
-                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">با این فعالیت‌ها امتیاز جمع کن و
-                        سریع‌تر به پاداش و سطح بعدی برس. امتیاز خرید با ضریب سطح
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">How do I earn points?</h2>
+                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">Earn points with these activities and
+                        reach rewards and the next level faster. Purchase points use a level multiplier
                         @if($level['multiplier'] > 1)
-                            تو (×{{ $multiplierLabel }})
+                            you (×{{ $multiplierLabel }})
                         @endif
-                        محاسبه می‌شود.</p>
+                        are calculated.</p>
                 </div>
 
                 <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -628,32 +628,32 @@
                                     <div class="mt-1.5 text-xs leading-6 text-slate-500 dark:text-slate-400">
                                         @switch($rule->type)
                                             @case(EarningRuleTypeEnum::PURCHASE)
-                                                هر {{ number_format((int)($cfg['amount_step'] ?? 0)) }} تومان
-                                                خرید، {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز پایه
+                                                Each {{ number_format((int)($cfg['amount_step'] ?? 0)) }} Toman
+                                                Purchase, {{ number_format((int)($cfg['points'] ?? 0)) }} base points
                                                 @if($level['multiplier'] > 1)
-                                                    × ضریب سطح شما
+                                                    × Your level multiplier
                                                 @endif
                                                 @break
                                             @case(EarningRuleTypeEnum::COMMENT)
-                                                هر دیدگاه تایید شده {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز
+                                                Each approved comment {{ number_format((int)($cfg['points'] ?? 0)) }} points
                                                 @if(!empty($cfg['daily_limit']))
-                                                    · حداکثر {{ number_format((int)$cfg['daily_limit']) }} بار در روز
+                                                    · Maximum {{ number_format((int)$cfg['daily_limit']) }} times per day
                                                 @endif
                                                 @break
                                             @case(EarningRuleTypeEnum::DAILY_VISIT)
-                                                {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز برای اولین بازدید روزانه
+                                                {{ number_format((int)($cfg['points'] ?? 0)) }} points for first daily visit
                                                 @break
                                             @case(EarningRuleTypeEnum::REGISTRATION)
-                                                {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز هدیه عضویت
+                                                {{ number_format((int)($cfg['points'] ?? 0)) }} Welcome bonus points
                                                 @break
                                             @case(EarningRuleTypeEnum::MEMBERSHIP_ANNIVERSARY)
-                                                {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز هدیه سالگرد عضویت
+                                                {{ number_format((int)($cfg['points'] ?? 0)) }} Membership anniversary bonus points
                                                 @break
                                             @case(EarningRuleTypeEnum::TIME_SPENT)
-                                                {{ number_format((int)($cfg['points'] ?? 0)) }} امتیاز برای {{ number_format((int)($cfg['minutes'] ?? 30)) }} دقیقه فعالیت
+                                                {{ number_format((int)($cfg['points'] ?? 0)) }} points for {{ number_format((int)($cfg['minutes'] ?? 30)) }} minutes of activity
                                                 @break
                                             @default
-                                                با انجام این فعالیت امتیاز دریافت می کنی.
+                                                Earn points by completing this activity.
                                         @endswitch
                                     </div>
                                 </div>
@@ -666,11 +666,11 @@
             {{-- ============ Tab: Point history ============ --}}
             <section id="point-history" x-show="tab === 'point-history'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">تاریخچه امتیاز</h2>
-                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">تمام کسب، مصرف، برگشت و اصلاحات
-                        امتیاز حساب شما.</p>
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">Points history</h2>
+                    <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">All earnings, spending, refunds and adjustments
+                        Your account points.</p>
                     <div class="mt-3 flex flex-wrap gap-2">
-                        @foreach([null => 'همه', 'earned' => 'کسب‌شده', 'spent' => 'مصرف‌شده'] as $filterKey => $filterLabel)
+                        @foreach([null => 'All', 'earned' => 'Earned', 'spent' => 'Spent'] as $filterKey => $filterLabel)
                             <a href="{{ route('account.loyalty', $filterKey ? ['points_filter' => $filterKey] : []) }}#point-history"
                                class="rounded-xl border px-3 py-1.5 text-[11px] font-extrabold transition {{ ($club['historyFilter'] ?? null) === ($filterKey ?: null) ? 'border-brand-500 bg-brand-500 text-white' : 'border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800' }}">
                                 {{ $filterLabel }}
@@ -686,7 +686,7 @@
                     @forelse($club['pointEntries'] as $entry)
                         @php
                             $credit = $entry->direction->isCredit();
-                            $entryMonth = jalali_date($entry->occurred_at ?? $entry->created_at, 'F Y');
+                            $entryMonth = (($entry->occurred_at ?? $entry->created_at) ? \Illuminate\Support\Carbon::parse($entry->occurred_at ?? $entry->created_at)->format('F Y') : '');
                         @endphp
 
                         @if($entryMonth !== $printedMonth)
@@ -709,7 +709,7 @@
                                     @if($credit)
                                         @include('icons.arrow-down-01')
                                     @else
-                                        @include('icons.arrow-left-02')
+                                        <x-front.arrow-right-02/>
                                     @endif
                                 </span>
 
@@ -717,14 +717,14 @@
                                     <div
                                         class="truncate text-xs font-extrabold text-slate-800 dark:text-slate-200">{{ $entry->description ?: $entry->type->label() }}</div>
                                     <div class="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400">
-                                        <span>{{ jalali_date($entry->occurred_at ?? $entry->created_at, 'Y/m/d H:i') }}</span>
+                                        <span>{{ (($entry->occurred_at ?? $entry->created_at) ? \Illuminate\Support\Carbon::parse($entry->occurred_at ?? $entry->created_at)->format('Y/m/d H:i') : '') }}</span>
                                         @if($entry->type === \App\Domain\Loyalty\Enums\PointEntryTypeEnum::SPEND)
                                             <span class="rounded-md bg-rose-50 px-1.5 py-0.5 font-bold text-rose-600 dark:bg-rose-500/10 dark:text-rose-300">{{ \App\Application\Loyalty\Actions\GetAudienceClubOverviewAction::spendCategory($entry, $entry->reference instanceof \App\Domain\Loyalty\Models\RewardOffer ? $entry->reference->type : null)[1] }}</span>
                                         @elseif(data_get($entry->metadata, 'vip_bonus_percent'))
-                                            <span class="rounded-md bg-amber-50 px-1.5 py-0.5 font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">👑 +{{ number_format((int) data_get($entry->metadata, 'vip_bonus_percent')) }}٪ VIP</span>
+                                            <span class="rounded-md bg-amber-50 px-1.5 py-0.5 font-bold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">👑 +{{ number_format((int) data_get($entry->metadata, 'vip_bonus_percent')) }}% VIP</span>
                                         @endif
                                         @if($entry->reversalOf)
-                                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300">برگشت</span>
+                                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300">Refunded</span>
                                         @endif
                                     </div>
                                 </div>
@@ -737,13 +737,13 @@
                                     {{ $credit ? '+' : '-' }}{{ number_format((int)$entry->amount) }}
                                 </div>
                                 <div class="mt-1 text-[10px] text-slate-400">
-                                    مانده {{ number_format((int)$entry->balance_after) }}</div>
+                                    Balance {{ number_format((int)$entry->balance_after) }}</div>
                             </div>
                         </div>
                     @empty
                         <div
                             class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-                            هنوز گردش امتیازی ثبت نشده است.
+                            No points activity recorded yet.
                         </div>
                     @endforelse
                 </div>
@@ -756,9 +756,9 @@
             {{-- ============ Tab: Levels ============ --}}
             <section id="levels" x-show="tab === 'levels'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">سطوح باشگاه</h2>
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">Club levels</h2>
                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                        سطح فقط با XP (کل امتیاز کسب‌شده) بالا می‌رود و با خرج کردن امتیاز پایین نمی‌آید.
+                        Level only increases with XP (total points earned) and does not decrease when spending points.
                     </p>
                 </div>
 
@@ -786,17 +786,17 @@
 
                                     <div>
                                         <div class="flex flex-wrap items-center gap-2 text-sm font-black text-slate-900 dark:text-slate-100">
-                                            سطح {{ $i + 1 }} — {{ $lvl->title }}
+                                            Level {{ $i + 1 }} — {{ $lvl->title }}
                                             @if($isCurrent)
                                                 <span
-                                                    class="rounded-full bg-brand-500 px-2.5 py-1 text-[9px] font-black text-white shadow-sm">سطح فعلی تو</span>
+                                                    class="rounded-full bg-brand-500 px-2.5 py-1 text-[9px] font-black text-white shadow-sm">Your current level</span>
                                             @elseif($isReached)
                                                 <span
                                                     class="grid h-5 w-5 place-items-center rounded-full bg-emerald-500/15 text-[10px] font-black text-emerald-600 dark:text-emerald-300">✓</span>
                                             @endif
                                         </div>
                                         <div class="mt-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                                            از {{ number_format($lvl->min_xp) }} XP
+                                            of {{ number_format($lvl->min_xp) }} XP
                                         </div>
                                     </div>
                                 </div>
@@ -804,11 +804,11 @@
                                 <div class="flex flex-wrap items-center gap-2 text-[10px] font-bold">
                                     @if($lvl->reward_points > 0)
                                         <span class="rounded-lg bg-emerald-500/10 px-2.5 py-1.5 text-emerald-700 dark:text-emerald-300">
-                                            پاداش رسیدن: +{{ number_format($lvl->reward_points) }} امتیاز
+                                            Level-up reward: +{{ number_format($lvl->reward_points) }} points
                                         </span>
                                     @endif
                                     <span class="rounded-lg bg-cyan-500/10 px-2.5 py-1.5 text-cyan-700 dark:text-cyan-300">
-                                        ضریب خرید ×{{ rtrim(rtrim(number_format($lvl->purchase_multiplier, 2, '.', ''), '0'), '.') }}
+                                        Purchase multiplier ×{{ rtrim(rtrim(number_format($lvl->purchase_multiplier, 2, '.', ''), '0'), '.') }}
                                     </span>
                                 </div>
                             </div>
@@ -820,15 +820,15 @@
             {{-- ============ Tab: Missions (weekly) ============ --}}
             <section id="missions" x-show="tab === 'missions'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">مأموریت‌های این هفته</h2>
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">This week’s missions</h2>
                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                        هر هفته (از شنبه) مأموریت‌ها تازه می‌شوند؛ جایزه با رسیدن به هدف خودکار پرداخت می‌شود.
+                        Missions reset every week (on Saturday); rewards are granted automatically upon reaching the goal.
                     </p>
                 </div>
 
                 @if($club['missions']->isEmpty())
                     <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center dark:border-slate-700 dark:bg-slate-900">
-                        <div class="text-sm font-black text-slate-800 dark:text-slate-200">فعلا مأموریت فعالی وجود ندارد</div>
+                        <div class="text-sm font-black text-slate-800 dark:text-slate-200">No active missions yet</div>
                     </div>
                 @else
                     <div class="grid gap-4 md:grid-cols-2">
@@ -856,11 +856,11 @@
                                                 {{ $mission->title }}
                                                 @if($isCompleted)
                                                     <span
-                                                        class="rounded-full bg-emerald-500 px-2.5 py-1 text-[9px] font-black text-white shadow-sm">کامل شد</span>
+                                                        class="rounded-full bg-emerald-500 px-2.5 py-1 text-[9px] font-black text-white shadow-sm">Completed</span>
                                                 @endif
                                             </div>
                                             <div class="shrink-0 rounded-xl bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-700 dark:bg-brand-950/30 dark:text-brand-300">
-                                                +{{ number_format($mission->reward_points) }} امتیاز
+                                                +{{ number_format($mission->reward_points) }} points
                                             </div>
                                         </div>
                                         <div class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">{{ $mission->description }}</div>
@@ -893,10 +893,10 @@
             <section id="badges" x-show="tab === 'badges'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
                     <div>
-                        <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">نشان‌های افتخار</h2>
+                        <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">Honor badges</h2>
                         <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                            نشان‌ها با فعالیت واقعی باز می‌شوند؛ {{ number_format($club['achievements']['earnedCount']) }} از
-                            {{ number_format($club['achievements']['totalCount']) }} نشان را داری.
+                            Badges unlock through real activities; {{ number_format($club['achievements']['earnedCount']) }} of
+                            {{ number_format($club['achievements']['totalCount']) }} badges earned.
                         </p>
                     </div>
                     <div class="rounded-xl bg-slate-100 px-3 py-2 text-xs font-black text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -921,13 +921,13 @@
                             @if($achievement->reward_points > 0)
                                 <div class="mt-2 inline-block rounded-lg px-2 py-1 text-[10px] font-black
                                     {{ $isEarned ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300' : 'bg-slate-100 text-slate-400 dark:bg-slate-800' }}">
-                                    +{{ number_format($achievement->reward_points) }} امتیاز
+                                    +{{ number_format($achievement->reward_points) }} points
                                 </div>
                             @endif
 
                             @if($isEarned)
                                 <div class="mt-2 text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                                    {{ jalali_date($earnedRow->awarded_at, 'Y/m/d') }}
+                                    {{ (($earnedRow->awarded_at) ? \Illuminate\Support\Carbon::parse($earnedRow->awarded_at)->format('Y/m/d') : '') }}
                                 </div>
                             @endif
                         </div>
@@ -938,30 +938,30 @@
             {{-- ============ Tab: Invite friends ============ --}}
             <section id="invite" x-show="tab === 'invite'" class="scroll-mt-24" x-cloak>
                 <div class="mb-4">
-                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">دعوت دوستان</h2>
+                    <h2 class="text-base font-black text-slate-900 sm:text-lg dark:text-slate-100">Invite friends</h2>
                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                        لینک اختصاصی‌ات را با دوستانت به اشتراک بگذار؛ با ثبت‌نام و اولین خریدشان هدیه می‌گیری.
+                        Share your personal link with friends; receive rewards when they register and make their first purchase.
                     </p>
                 </div>
 
                 @if($affiliate === null)
                     <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
                         <div class="text-3xl">🤝</div>
-                        <div class="mt-3 text-sm font-black text-slate-800 dark:text-slate-200">دعوت دوستان فعلا غیرفعال است</div>
+                        <div class="mt-3 text-sm font-black text-slate-800 dark:text-slate-200">Friend invitations are currently disabled</div>
                         <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                            سیستم معرفی به‌زودی فعال می‌شود؛ فعال که شد از همین تب خبردار می‌شوی.
+                            The referral system will be enabled soon; check this tab for updates.
                         </p>
                     </div>
                 @else
-                    {{-- لینک دعوت --}}
+                    {{-- Invitation link --}}
                     <div class="relative overflow-hidden rounded-3xl border border-brand-200/70 bg-gradient-to-l from-brand-50 via-white to-white p-5 shadow-sm dark:border-brand-500/25 dark:from-brand-950/25 dark:via-slate-900 dark:to-slate-900">
                         <div class="mw-grid-overlay"></div>
                         <div class="pointer-events-none absolute -left-12 -top-12 h-32 w-32 rounded-full bg-brand-200/40 blur-3xl dark:bg-brand-500/10"></div>
 
                         <div class="relative">
-                            <div class="text-sm font-black text-slate-900 dark:text-slate-100">لینک اختصاصی دعوت شما</div>
+                            <div class="text-sm font-black text-slate-900 dark:text-slate-100">Your personal invitation link</div>
                             <p class="mt-1 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                                دوستانت با این لینک ثبت‌نام کنند، به شما وصل می‌شوند.
+                                Friends who register through this link are linked to you.
                             </p>
 
                             <div class="mt-3 flex flex-col gap-2 sm:flex-row" x-data="{ copied: false }">
@@ -976,47 +976,47 @@
                                             setTimeout(() => copied = false, 2000)
                                         "
                                         class="inline-flex h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">
-                                    <span x-text="copied ? 'کپی شد ✓' : 'کپی لینک'"></span>
+                                    <span x-text="copied ? 'Copied ✓' : 'Copy link'"></span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    {{-- پاداش‌های دعوت --}}
+                    {{-- Referral rewards --}}
                     <div class="mt-3 grid gap-3 sm:grid-cols-2">
                         <div class="rounded-3xl border border-emerald-200/70 bg-white p-4 dark:border-emerald-500/25 dark:bg-slate-900">
                             <div class="flex items-center gap-2">
                                 <span class="grid h-9 w-9 place-items-center rounded-full bg-emerald-500/15 text-lg">🎁</span>
-                                <div class="text-xs font-black text-slate-900 dark:text-slate-100">هدیه به تو</div>
+                                <div class="text-xs font-black text-slate-900 dark:text-slate-100">Your gift</div>
                             </div>
                             <p class="mt-2 text-[11px] font-bold leading-6 text-slate-500 dark:text-slate-400">
-                                بعد از اولین خرید هر دوستِ معرفی‌شده، پاداش امتیاز ویژه دعوت می‌گیری.
+                                Receive a special referral points bonus after each referred friend’s first purchase.
                             </p>
                         </div>
                         <div class="rounded-3xl border border-cyan-200/70 bg-white p-4 dark:border-cyan-500/25 dark:bg-slate-900">
                             <div class="flex items-center gap-2">
                                 <span class="grid h-9 w-9 place-items-center rounded-full bg-cyan-500/15 text-lg">🎉</span>
-                                <div class="text-xs font-black text-slate-900 dark:text-slate-100">هدیه به دوستت</div>
+                                <div class="text-xs font-black text-slate-900 dark:text-slate-100">Gift for your friend</div>
                             </div>
                             <p class="mt-2 text-[11px] font-bold leading-6 text-slate-500 dark:text-slate-400">
-                                دوستت هم بعد از اولین خریدش با لینک تو، امتیاز هدیه اولین خرید می‌گیرد.
+                                Your friend also earns first-purchase bonus points after buying through your link.
                             </p>
                         </div>
                     </div>
 
-                    {{-- ورود به پنل همکاری در فروش --}}
+                    {{-- Open affiliate dashboard --}}
                     <a href="{{ route('account.affiliate') }}"
                        class="mt-3 flex items-center justify-between gap-3 rounded-3xl border border-slate-200 bg-white p-4 transition hover:border-brand-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-brand-500/40">
                         <div class="flex items-center gap-3">
                             <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-brand-500/15 to-brand-500/5 text-xl">💼</span>
                             <div>
-                                <div class="text-sm font-black text-slate-900 dark:text-slate-100">پنل همکاری در فروش</div>
+                                <div class="text-sm font-black text-slate-900 dark:text-slate-100">Affiliate dashboard</div>
                                 <div class="mt-1 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                                    آمار کلیک و تبدیل، درآمد کمیسیون و درخواست برداشت — همه یکجا.
+                                    Click and conversion statistics, commission earnings and withdrawals in one place.
                                 </div>
                             </div>
                         </div>
-                        <span class="[&_svg]:h-5 [&_svg]:w-5 shrink-0 text-brand-600 dark:text-brand-400">@include('icons.arrow-left-02')</span>
+                        <span class="[&_svg]:h-5 [&_svg]:w-5 shrink-0 text-brand-600 dark:text-brand-400"><x-front.arrow-right-02/></span>
                     </a>
                 @endif
             </section>

@@ -45,7 +45,7 @@
 
         @if($post->tags->isNotEmpty())
             <div class="mt-6 border-t border-slate-200 pt-5 flex flex-wrap items-center gap-2 dark:border-slate-800">
-                <span class="text-xs text-slate-500 dark:text-slate-400">برچسب‌ها:</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">Tags:</span>
                 @foreach($post->tags as $tag)
                     <a href="{{ front_route('posts.tags', $tag) }}"
                        class="text-[0.7rem] font-extrabold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-1 rounded-xl hover:bg-slate-50 transition dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">

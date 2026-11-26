@@ -40,13 +40,13 @@
             </span>
 
                 <span class="text-sm font-extrabold text-slate-800 dark:text-slate-100">
-                {{ $this->totalComments > 0 ? 'دیدگاه ثبت شده' : 'هنوز دیدگاهی ثبت نشده' }}
+                {{ $this->totalComments > 0 ? 'Comment submitted' : 'No comments yet' }}
             </span>
             </div>
 
             <div class="flex items-center gap-2">
             <span class="shrink-0 text-xs font-bold text-slate-500 dark:text-slate-400">
-                مرتب‌سازی:
+                Sort:
             </span>
 
                 <div class="relative min-w-40 flex-1 sm:flex-none">
@@ -54,9 +54,9 @@
                         wire:model.live="sort"
                         class="h-11 w-full appearance-none rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 pr-4 pl-10 text-sm font-bold text-slate-700 dark:text-slate-200 outline-none transition focus:border-brand-300 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-brand-100"
                     >
-                        <option value="new">جدیدترین</option>
-                        <option value="top">محبوب‌ترین</option>
-                        <option value="high">بیشترین امتیاز</option>
+                        <option value="new">Newest</option>
+                        <option value="top">Most popular</option>
+                        <option value="high">Highest rated</option>
                     </select>
 
                     <span
@@ -88,22 +88,22 @@
 
                     <div>
                         <div class="text-sm font-black text-slate-900 dark:text-slate-100">
-                            هنوز دیدگاهی برای این محصول ثبت نشده است
+                            No comments have been posted for this product yet
                         </div>
 
                         <p class="mt-1 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                            اولین نفری باشید که تجربه استفاده یا خرید این محصول را با دیگران به اشتراک می‌گذارد.
+                            Be the first to share your experience using or buying this product.
                         </p>
 
                         <div class="mt-4 flex flex-wrap items-center gap-2">
                         <span
                             class="inline-flex items-center rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-600 dark:text-slate-300">
-                            منتظر اولین دیدگاه
+                            Be the first to comment
                         </span>
 
                             <span
                                 class="inline-flex items-center rounded-2xl border border-brand-100 dark:border-brand-900/40 bg-brand-50 dark:bg-brand-950/30 px-3 py-1.5 text-xs font-bold text-brand-700 dark:text-brand-400">
-                            تجربه شما ارزشمند است
+                            Your experience matters
                         </span>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                         </svg>
 
                         <span class="truncate">
-                        در حال بارگذاری دیدگاه‌ها...
+                        Loading comments...
                     </span>
                     </div>
                 </div>
@@ -189,10 +189,10 @@
 
                                 <div class="min-w-0">
                                     <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                        نظر کاربران درباره این محتوا
+                                        What users think about this content
                                     </div>
                                     <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                        تجربه نصب، کیفیت محتوا و مشکلات احتمالی را از دید کاربران بخوانید.
+                                        Read user experiences with installation, content quality and potential issues.
                                     </p>
                                 </div>
                             </div>
@@ -201,7 +201,7 @@
                                     <span
                                         class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
                                         <span class="ml-1.5 inline-block h-2 w-2 rounded-full bg-emerald-500"></span>
-                                        {{ $this->totalComments }} دیدگاه ثبت شده
+                                        {{ $this->totalComments }} Comment submitted
                                     </span>
                             </div>
                         </div>
@@ -226,8 +226,8 @@
                                           stroke-linecap="round"></path>
                                 </svg>
 
-                                <span class="max-sm:hidden">مشاهده {{ $this->totalComments }} دیدگاه</span>
-                                <span class="sm:hidden">مشاهده دیدگاه‌ها</span>
+                                <span class="max-sm:hidden">View {{ $this->totalComments }} Comment</span>
+                                <span class="sm:hidden">View comments</span>
                             </button>
                         </div>
                     </div>
@@ -245,10 +245,10 @@
 
                                 <div class="min-w-0">
                                     <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                        هنوز دیدگاهی ثبت نشده است
+                                        No comments yet
                                     </div>
                                     <p class="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
-                                        اولین نفری باشید که تجربه‌تان را درباره این محتوا ثبت می‌کند.
+                                        Be the first to share your experience with this content.
                                     </p>
                                 </div>
                             </div>
@@ -256,12 +256,12 @@
                             <div class="mt-4 flex flex-wrap items-center gap-2">
                                     <span
                                         class="inline-flex items-center rounded-2xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
-                                        منتظر اولین دیدگاه
+                                        Be the first to comment
                                     </span>
 
                                 <span
                                     class="inline-flex items-center rounded-2xl border border-brand-100 bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                        ثبت دیدگاه شما مهم است
+                                        Your feedback matters
                                     </span>
                             </div>
                         </div>
@@ -286,7 +286,7 @@
                                           stroke-linecap="round"></path>
                                 </svg>
 
-                                بررسی دیدگاه‌ها
+                                Review comments
                             </button>
                         </div>
                     </div>

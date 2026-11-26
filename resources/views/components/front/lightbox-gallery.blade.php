@@ -3,8 +3,8 @@
     x-cloak
     @lightbox:open.window="open($event.detail.items, $event.detail.index ?? 0)"
     @keydown.window.escape="if (isOpen) close()"
-    @keydown.window.right="if (isOpen) prev()"
-    @keydown.window.left="if (isOpen) next()"
+    @keydown.window.left="if (isOpen) prev()"
+    @keydown.window.right="if (isOpen) next()"
     class="fixed inset-0 z-[2000] flex items-center justify-center p-3 sm:p-6"
     :class="isOpen ? 'pointer-events-auto' : 'pointer-events-none'"
 >
@@ -31,7 +31,7 @@
                     @click="close()"
                     class="absolute cursor-pointer left-3 top-3 z-20 inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
                     :class="isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95'"
-                    aria-label="بستن"
+                    aria-label="Close"
                 >
                     <svg viewBox="0 0 24 24" class="h-5 w-5 fill-none" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6 6 18"/>
@@ -53,9 +53,9 @@
                     @click="prev()"
                     x-show="items.length > 1"
                     class="absolute cursor-pointer [&_svg]:w-6 [&_svg]:h-6 right-3 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
-                    aria-label="تصویر قبلی"
+                    aria-label="Previous image"
                 >
-                    @include('icons.arrow-right-01')
+                    @include('icons.arrow-left-01')
                 </button>
 
                 {{-- next --}}
@@ -64,9 +64,9 @@
                     @click="next()"
                     x-show="items.length > 1"
                     class="absolute cursor-pointer [&_svg]:w-6 [&_svg]:h-6 left-3 top-1/2 z-20 inline-flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-white backdrop-blur transition hover:bg-white/20"
-                    aria-label="تصویر بعدی"
+                    aria-label="Next image"
                 >
-                    @include('icons.arrow-left-01')
+                    @include('icons.arrow-right-01')
                 </button>
 
                 {{-- bottom overlay --}}
@@ -109,7 +109,7 @@
                             :class="thumbIndex === index
                                 ? 'border-white/40 ring-2 ring-white/20 opacity-100'
                                 : 'border-white/10 opacity-70 hover:opacity-100'"
-                            :aria-label="`نمایش تصویر ${thumbIndex + 1}`"
+                            :aria-label="`View image ${thumbIndex + 1}`"
                         >
                             <img
                                 :src="item.src"

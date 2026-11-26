@@ -49,11 +49,11 @@
 
                         <div class="min-w-0">
                             <h2 class="text-base font-black leading-7 text-slate-950 dark:text-white">
-                                باکس دانلود
+                                Download box
                             </h2>
 
                             <p class="mt-0.5 text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
-                                اطلاعات و ابزارهای مرتبط با دریافت این محتوا
+                                Information and tools for downloading this content
                             </p>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                                     ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25'
                                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white'"
                                 >
-                                    لینک‌های دانلود
+                                    Download links
                                 </button>
                             @endif
 
@@ -162,9 +162,9 @@
                                                 <div class="flex items-center gap-2 max-sm:grid max-sm:grid-cols-2">
                                                     <button
                                                         type="button"
-                                                        @click="copyText(@js($entry->content), $event.currentTarget, 'لینک دانلود کپی شد.')"
-                                                        data-default-text="کپی لینک"
-                                                        data-copied-text="کپی شد"
+                                                        @click="copyText(@js($entry->content), $event.currentTarget, 'Download link copied.')"
+                                                        data-default-text="Copy link"
+                                                        data-copied-text="Copied"
                                                         class="js-copy-button inline-flex gap-1.5 cursor-pointer whitespace-nowrap leading-8 text-xs items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 font-extrabold text-slate-700 transition hover:border-orange-200 hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-orange-500/30 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
                                                     >
                                                     <span class="js-copy-icon-default inline-flex items-center">
@@ -191,7 +191,7 @@
                                                         </svg>
                                                     </span>
 
-                                                        <span class="js-copy-text">کپی لینک</span>
+                                                        <span class="js-copy-text">Copy link</span>
                                                     </button>
 
                                                     <a
@@ -209,7 +209,7 @@
                                                                   d="M3 17c0 .93 0 1.395.102 1.777a3 3 0 0 0 2.121 2.121C5.605 21 6.07 21 7 21h10c.93 0 1.395 0 1.776-.102a3 3 0 0 0 2.122-2.121C21 18.395 21 17.93 21 17m-4.5-5.5S13.186 16 12 16s-4.5-4.5-4.5-4.5M12 15V3"/>
                                                         </svg>
 
-                                                        دانلود
+                                                        Download
                                                     </a>
                                                 </div>
                                             </div>
@@ -259,7 +259,7 @@
 
                                             <div class="min-w-0 text-sm leading-7">
                                             <span class="font-extrabold text-slate-600 dark:text-slate-300">
-                                                رمز فایل‌ها در صورت نیاز:
+                                                File password if needed:
                                             </span>
 
                                                 <span
@@ -273,9 +273,9 @@
 
                                         <button
                                             type="button"
-                                            @click="copyText(@js($section->password ?? ''), $event.currentTarget, 'رمز فایل کپی شد.')"
-                                            data-default-text="کپی رمز"
-                                            data-copied-text="کپی شد"
+                                            @click="copyText(@js($section->password ?? ''), $event.currentTarget, 'File password copied.')"
+                                            data-default-text="Copy password"
+                                            data-copied-text="Copied"
                                             class="js-copy-button inline-flex cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-2xl bg-white px-4 text-xs font-extrabold leading-9 text-slate-800 shadow-sm transition hover:bg-orange-50 hover:text-orange-700 max-sm:w-full dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-orange-500/10 dark:hover:text-orange-300"
                                         >
                                         <span class="js-copy-icon-default inline-flex items-center">
@@ -303,7 +303,7 @@
                                             </svg>
                                         </span>
 
-                                            <span class="js-copy-text">کپی رمز</span>
+                                            <span class="js-copy-text">Copy password</span>
                                         </button>
                                     </div>
                                 @endif

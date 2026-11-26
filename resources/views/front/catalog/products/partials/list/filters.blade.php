@@ -12,7 +12,7 @@
                     floor: {{ $availablePriceMin }},
                     ceil: {{ $availablePriceMax }},
                     format(value) {
-                        return new Intl.NumberFormat('fa-IR').format(value)
+                        return new Intl.NumberFormat('en-US').format(value)
                     },
                     minPercent() {
                         return ((this.min - this.floor) / (this.ceil - this.floor || 1)) * 100
@@ -49,7 +49,7 @@
                     <div class="flex items-center justify-between gap-3">
 
                         <h3 class="text-base font-black text-slate-950 dark:text-slate-100">
-                            فیلتر محصولات
+                            Product filters
                         </h3>
 
                         <a
@@ -57,7 +57,7 @@
                             class="cursor-pointer text-xs font-bold text-brand-600 transition hover:text-brand-700
                             dark:text-brand-400 dark:hover:text-brand-300"
                         >
-                            حذف فیلترها
+                            Clear filters
                         </a>
 
                     </div>
@@ -72,12 +72,12 @@
                         <div class="mb-5 flex items-center justify-between">
 
                             <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                محدوده قیمت
+                                Price range
                             </h4>
 
                             <span class="rounded-2xl bg-brand-50 px-3 py-1 text-[11px] font-black text-brand-600
                                 dark:bg-brand-900/30 dark:text-brand-300">
-                                تومان
+                                Toman
                             </span>
 
                         </div>
@@ -88,7 +88,7 @@
                                 dark:border-slate-700 dark:bg-slate-900/40">
 
                                 <span class="block text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                                    کمترین
+                                    Lowest
                                 </span>
 
                                 <strong
@@ -102,7 +102,7 @@
                                 dark:border-slate-700 dark:bg-slate-900/40">
 
                                 <span class="block text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                                    بیشترین
+                                    Highest
                                 </span>
 
                                 <strong
@@ -182,13 +182,13 @@
                         <div class="mb-3 flex items-center justify-between gap-3">
 
                             <h4 class="text-sm font-black text-slate-900 dark:text-slate-100">
-                                دسته‌بندی‌ها
+                                Categories
                             </h4>
 
                             @if(! empty($selectedCategories))
                                 <span class="rounded-2xl bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-600
                                     dark:bg-brand-900/30 dark:text-brand-300">
-                                    {{ count($selectedCategories) }} انتخاب
+                                    {{ count($selectedCategories) }} Select
                                 </span>
                             @endif
 
@@ -204,7 +204,7 @@
                             @empty
                                 <div
                                     class="rounded-2xl bg-slate-50 px-4 py-5 text-center text-xs font-bold text-slate-400 dark:bg-slate-800 dark:text-slate-500">
-                                    دسته‌بندی‌ای یافت نشد.
+                                    No categories found.
                                 </div>
                             @endforelse
                         </div>
@@ -218,7 +218,7 @@
                         class="cursor-pointer flex h-12 w-full items-center justify-center rounded-2xl bg-brand-600 text-sm font-black text-white transition hover:bg-brand-700
                         dark:bg-brand-700 dark:hover:bg-brand-600"
                     >
-                        اعمال فیلترها
+                        Apply filters
                     </button>
 
                 </div>

@@ -70,7 +70,7 @@
     <main class="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 py-12">
         <section
             class="bridge-card w-full rounded-3xl border border-orange-200 bg-white p-6 text-center shadow-xl sm:p-10 dark:border-orange-900/60 dark:bg-slate-900">
-            <img src="{{ asset('images/mw-launcher-icon.png') }}" alt="لانچر Cardiware"
+            <img src="{{ asset('images/mw-launcher-icon.png') }}" alt="Launcher Cardiware"
                  class="mx-auto h-16 w-16 select-none object-contain">
             <h1 class="mt-6 text-2xl font-black text-slate-900 dark:text-white">{{ $title }}</h1>
             <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $description }}</p>
@@ -79,16 +79,16 @@
                 <a id="open-launcher" href="{{ $protocolUrl }}"
                    class="relative inline-flex h-12 items-center justify-center overflow-hidden rounded-2xl bg-orange-500 px-7 text-sm font-black text-white transition hover:bg-orange-400">
                     <span class="bridge-cta-sheen" aria-hidden="true"></span>
-                    باز کردن در MW Launcher
+                    Open in MW Launcher
                 </a>
                 <a href="{{ route('launcher.landing') }}"
                    class="inline-flex h-12 items-center justify-center rounded-2xl border border-slate-300 px-7 text-sm font-extrabold text-slate-700 transition hover:border-orange-400 dark:border-slate-700 dark:text-slate-200">
-                    لانچر را ندارید؟ دانلود کنید
+                    Do not have the launcher? Download it
                 </a>
             </div>
 
             @if(filled($downloadUrl))
-                <p class="mt-5 text-xs text-slate-500">اگر پنجره لانچر باز نشد، ابتدا آن را <a class="font-bold text-orange-500" href="{{ $downloadUrl }}">دانلود و نصب</a> کنید.</p>
+                <p class="mt-5 text-xs text-slate-500">If the launcher does not open, first <a class="font-bold text-orange-500" href="{{ $downloadUrl }}">Download and install</a> do so.</p>
             @endif
         </section>
     </main>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa" dir="rtl" class="scroll-smooth">
+<html lang="en" dir="ltr" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title')</title>
     <meta name="robots" content="noindex, follow">
-    <meta name="description" content="صفحه‌ای که دنبال آن هستید پیدا نشد.">
+    <meta name="description" content="The page you are looking for was not found.">
 
     <x-favicons/>
     @include('front.scripts.dark-light')
@@ -100,7 +100,7 @@
             <div
                 class="animate-fade-up mx-auto mb-5 inline-flex items-center gap-2 rounded-2xl border border-brand-100 bg-brand-50 px-3 py-2 text-[11px] font-extrabold text-brand-800 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                 <span class="h-2 w-2 rounded-full bg-brand-500"></span>
-                خطای @yield('code')
+                Error @yield('code')
             </div>
 
             <div class="animate-fade-up delay-100 mx-auto mb-6 flex justify-center">
@@ -153,13 +153,13 @@
             <div class="animate-fade-up delay-300 mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <a href="{{ route('home') }}"
                    class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 py-3 text-sm font-extrabold text-white shadow-lg transition hover:bg-brand-600 active:bg-brand-700 sm:w-auto dark:shadow-black/20 dark:hover:bg-brand-400">
-                    بازگشت به صفحه اصلی
+                    Back to home
                     <span>←</span>
                 </a>
 
                 <a href="{{ front_route('posts.list') }}"
                    class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 sm:w-auto dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">
-                    مشاهده نوشته‌ها
+                    View posts
                 </a>
             </div>
 

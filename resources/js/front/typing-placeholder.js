@@ -1,13 +1,13 @@
 export default function typingPlaceholder() {
     return {
         texts: [
-            "دنبال چی می‌گردی؟",
-            "دنبال پچ های لیگ ایران هستی؟",
-            "فیس پک تیم های فوتبال رو میخوای؟",
-            "میخوای بازی هاتو آپدیت کنی؟",
-            "دنبال آموزش های فنی هستی؟",
-            "کرک بازی های جدید رو میخوای؟",
-            "تو Cardiware همه چیز پیدا میشه!",
+            "What are you looking for?",
+            "Looking for Iranian league patches?",
+            "Want football team face packs?",
+            "Want to update your games?",
+            "Looking for technical tutorials?",
+            "Looking for game cracks?",
+            "you Cardiware Find everything here!",
         ],
 
         currentText: "",

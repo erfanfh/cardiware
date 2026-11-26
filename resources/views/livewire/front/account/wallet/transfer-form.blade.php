@@ -80,11 +80,11 @@
         <div class="flex items-center justify-between gap-4">
             <div>
                 <h2 class="text-sm font-black text-slate-900 sm:text-base dark:text-white">
-                    انتقال موجودی
+                    Transfer balance
                 </h2>
 
                 <p class="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
-                    موجودی قابل برداشت خود را به کیف پول کاربر دیگری انتقال دهید.
+                    Transfer your withdrawable balance to another user’s wallet.
                 </p>
             </div>
 
@@ -123,7 +123,7 @@
                    dark:border-slate-700 dark:bg-slate-950"
         >
             <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                موجودی قابل انتقال
+                Transferable balance
             </span>
 
             <strong
@@ -132,7 +132,7 @@
                 {{ number_format($availableWithdrawableBalance) }}
 
                 <span class="font-semibold text-slate-400">
-                    تومان
+                    Toman
                 </span>
             </strong>
         </div>
@@ -199,7 +199,7 @@
                        dark:border-amber-900/60 dark:bg-amber-950/30
                        dark:text-amber-300"
             >
-                کیف پول شما برای انتقال موجودی فعال نیست.
+                Your wallet is not enabled for transfers.
             </div>
         @endunless
 
@@ -216,7 +216,7 @@
                         for="wallet-transfer-mobile"
                         class="block text-xs font-bold text-slate-700 dark:text-slate-300"
                     >
-                        شماره موبایل مقصد
+                        Recipient mobile number
                     </label>
 
                     <div class="relative mt-2">
@@ -287,11 +287,11 @@
                             for="wallet-transfer-amount"
                             class="text-xs font-bold text-slate-700 dark:text-slate-300"
                         >
-                            مبلغ انتقال
+                            Transfer amount
                         </label>
 
                         <span class="text-[10px] text-slate-400">
-                            حداقل {{ number_format($minimumAmount) }} تومان
+                            Minimum {{ number_format($minimumAmount) }} Toman
                         </span>
                     </div>
 
@@ -327,7 +327,7 @@
                             class="pointer-events-none absolute inset-y-0 left-4
                                    flex items-center text-[11px] font-bold text-slate-400"
                         >
-                            تومان
+                            Toman
                         </span>
                     </div>
 
@@ -358,7 +358,7 @@
                         {{ number_format($suggestedAmount) }}
 
                         <span class="text-[10px] font-semibold">
-                            تومان
+                            Toman
                         </span>
                     </button>
                 @endforeach
@@ -372,11 +372,11 @@
             >
                 <div>
                     <p class="text-[11px] font-semibold leading-5 text-slate-500 dark:text-slate-400">
-                        انتقال فقط از موجودی قابل برداشت انجام می‌شود.
+                        Transfers are made only from withdrawable balance.
                     </p>
 
                     <p class="mt-0.5 text-[10px] leading-5 text-slate-400">
-                        شماره موبایل مقصد را با دقت بررسی کنید؛ انتقال پس از انجام قابل بازگشت نیست.
+                        Check the recipient mobile number carefully; transfers cannot be reversed.
                     </p>
                 </div>
 
@@ -400,7 +400,7 @@
                         wire:target="submit"
                         class="flex items-center gap-2"
                     >
-                        انتقال موجودی
+                        Transfer balance
 
                         <svg
                             class="h-4 w-4"
@@ -443,7 +443,7 @@
                             ></path>
                         </svg>
 
-                        در حال انتقال
+                        Transferring
                     </span>
                 </button>
             </div>

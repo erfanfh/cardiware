@@ -1,4 +1,4 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 <section id="leagues" class="section-pad scroll-mt-24 bg-surface/30">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -37,7 +37,7 @@
                             @include('front.landings.partials.icon', ['name' => 'globe', 'class' => 'size-3.5'])
                             {{ $entry['country'] ?? '' }}
                         </span>
-                        <span class="font-num">{{ $item['teams'] }} {{ $locale === 'en' ? 'clubs' : 'تیم' }}</span>
+                        <span class="font-num">{{ $item['teams'] }} {{ $locale === 'en' ? 'clubs' : 'Team' }}</span>
                     </div>
                 </a>
             @endforeach
@@ -45,7 +45,7 @@
 
         <div class="reveal mt-10 text-center">
             <a href="{{ $prefix }}/{{ $slug }}/leagues" class="btn-ghost !px-6 !py-3 text-sm">
-                {{ $locale === 'en' ? 'Browse all leagues' : 'مشاهده همه لیگ‌ها' }}
+                {{ $locale === 'en' ? 'Browse all leagues' : 'View all leagues' }}
                 @include('front.landings.partials.icon', ['name' => 'arrow', 'class' => 'size-4'])
             </a>
         </div>

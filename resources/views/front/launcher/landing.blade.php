@@ -1,9 +1,9 @@
 @extends('front.master')
 
 @section('head')
-    <title>{{ get_setting('launcher', 'subtitle', 'دانلود MW Launcher') }} | {{ get_setting('general', 'title') }}</title>
+    <title>{{ get_setting('launcher', 'subtitle', 'Download MW Launcher') }} | {{ get_setting('general', 'title') }}</title>
     <meta name="description"
-          content="دانلود لانچر رسمی Cardiware برای نصب محصولات، مدیریت مادها، دریافت آپدیت و پشتیبانی آنلاین.">
+          content="Download official launcher Cardiware Install products, manage mods, receive updates and get online support.">
 @endsection
 
 @push('styles')
@@ -269,12 +269,12 @@
 @push('scripts')
     <script>
         /*
-         * پس‌زمینه‌ی هیرو: شبکه‌ی نوری «زمین بازی» با جاروی نور آرام.
+         * Hero background: light grid «Playing field» with a slow light sweep.
          *
-         * جای افکت بارانی ماتریکس قبلی (کاراکترهای در حال سقوط + موج کلیک) که
-         * شلوغ و در موبایل سنگین بود. این نسخه ساده و کم‌مصرف است: فقط چند خط
-         * شبکه با یک باند نور که آرام رد می‌شود، بدون هیچ واکنش به کلیک.
-         * اگر کاربر prefers-reduced-motion داشته باشد، یک فریم ثابت رسم و متوقف می‌شود.
+         * Replaces previous matrix rain effect (falling characters + click ripple) which
+         * was busy and heavy on mobile. This version is lightweight: only a few lines
+         * of grid with a slow light band, no click response.
+         * If the user prefers-reduced-motion has it enabled, draw a static frame and stop.
          */
         (function () {
             var canvas = document.getElementById('mwl-matrix');
@@ -312,7 +312,7 @@
             function drawGrid(glowProgress) {
                 ctx.clearRect(0, 0, width, height);
 
-                // باند نور: از پایین-راست به بالا-چپ حرکت می‌کند.
+                // Light band: moves from bottom right to top left.
                 var bandWidth = Math.max(width, height) * 0.45;
                 var travel = width + height + bandWidth * 2;
                 var bandCenter = travel * glowProgress - bandWidth;
@@ -326,7 +326,7 @@
                         var crossX = x === 0 || Math.abs(x - width) < 1;
                         var crossY = y === 0 || Math.abs(y - height) < 1;
 
-                        // خطوط شبکه: پایه‌ی بسیار کم‌رنگ + هاله در مسیر باند نور.
+                        // Grid lines: very faint base + Halo along the light band.
                         ctx.strokeStyle = 'rgba(148, 163, 184, ' + (0.05 + intensity * 0.10).toFixed(3) + ')';
                         ctx.lineWidth = 1;
                         ctx.beginPath();
@@ -340,7 +340,7 @@
                         }
                         ctx.stroke();
 
-                        // نقطه‌ی تقاطع: در مسیر نور روشن‌تر و بزرگ‌تر.
+                        // Intersection: brighter and larger along the light path.
                         var dotAlpha = 0.10 + intensity * 0.55;
                         var dotRadius = 1 + intensity * 1.8;
                         var color = intensity > 0.55 ? brand : cool;
@@ -368,7 +368,7 @@
                 return;
             }
 
-            // وقتی تب پنهان است انیمیشن را نگه می‌داریم تا CPU/باتری مصرف نکند.
+            // Pause animation when tab is hidden to CPU/save battery.
             var visible = !document.hidden;
             document.addEventListener('visibilitychange', function () {
                 visible = !document.hidden;
@@ -401,11 +401,11 @@
                 <div class="mwl-orb -top-24 -right-24 h-80 w-80 bg-brand-500/20"></div>
                 <div class="mwl-orb -bottom-24 -left-24 h-96 w-96 bg-indigo-500/15" style="animation-delay: 1.4s"></div>
 
-                {{-- نورافکن‌های متحرک استادیومی --}}
+                {{-- Animated stadium lights --}}
                 <span class="mwl-beam mwl-beam-1" aria-hidden="true"></span>
                 <span class="mwl-beam mwl-beam-2" aria-hidden="true"></span>
 
-                {{-- ذرات شناور --}}
+                {{-- Floating particles --}}
                 <span class="mwl-particle" style="right:12%; width:5px; height:5px; animation-duration:9s;" aria-hidden="true"></span>
                 <span class="mwl-particle blue" style="right:28%; width:4px; height:4px; animation-duration:12s; animation-delay:2s;" aria-hidden="true"></span>
                 <span class="mwl-particle" style="right:47%; width:6px; height:6px; animation-duration:10s; animation-delay:4s;" aria-hidden="true"></span>
@@ -430,11 +430,11 @@
                 @endif
 
                 <h1 class="mwl-title-glow mwl-fade-up mwl-delay-100 m-0 select-none text-xl font-black leading-tight text-white sm:text-2xl md:text-3xl lg:text-4xl">
-                    {{ get_setting('launcher', 'title', 'لانچر اختصاصی Cardiware') }}
+                    {{ get_setting('launcher', 'title', 'Dedicated launcher Cardiware') }}
                 </h1>
 
                 <p class="mwl-fade-up mwl-delay-200 m-0 select-none text-base font-extrabold text-brand-400 sm:text-lg md:text-xl">
-                    {{ get_setting('launcher', 'subtitle', 'دانلود و نصب MW Launcher') }}
+                    {{ get_setting('launcher', 'subtitle', 'Download and install MW Launcher') }}
                 </p>
 
                 @if(get_setting('launcher', 'description'))
@@ -447,19 +447,19 @@
                     @if(filled($downloadUrl))
                         <a href="{{ $downloadUrl }}"
                            class="mwl-cta-ring relative inline-flex items-center justify-center gap-2 rounded-full bg-brand-500 px-7 py-3 text-sm font-extrabold text-white shadow-lg shadow-brand-500/30 transition hover:bg-brand-600 active:bg-brand-700 sm:px-8 sm:py-3.5 sm:text-base">
-                            <span class="relative z-10">{{ get_setting('launcher', 'download_button_text', 'دانلود لانچر ویندوز') }}</span>
+                            <span class="relative z-10">{{ get_setting('launcher', 'download_button_text', 'Download Windows launcher') }}</span>
                             <span class="relative z-10" aria-hidden="true">↓</span>
                             <span class="mwl-cta-sheen" aria-hidden="true"></span>
                         </a>
                     @else
                         <span class="inline-flex cursor-not-allowed items-center justify-center rounded-full border border-slate-600 bg-slate-800/80 px-7 py-3 text-sm font-bold text-slate-400 sm:px-8 sm:py-3.5 sm:text-base">
-                            لینک دانلود هنوز فعال نشده است
+                            Download link is not active yet
                         </span>
                     @endif
 
                     <a href="{{ url('/') }}"
                        class="inline-flex items-center justify-center gap-2 rounded-full border border-slate-600 bg-slate-900/70 px-6 py-3 text-sm font-bold text-slate-200 transition hover:border-brand-500 hover:text-brand-300 sm:px-7 sm:py-3.5 sm:text-base">
-                        {{ get_setting('launcher', 'back_button_text', 'بازگشت به سایت') }}
+                        {{ get_setting('launcher', 'back_button_text', 'Back to website') }}
                         <span aria-hidden="true">←</span>
                     </a>
                 </div>
@@ -482,7 +482,7 @@
                     <section class="mt-12 w-full max-w-5xl">
                         <div class="mb-4 flex items-center justify-center gap-3">
                             <span class="h-px w-10 bg-gradient-to-l from-transparent to-brand-500/60"></span>
-                            <h2 class="mwl-section-title">{{ get_setting('launcher', 'previews_title', 'نگاهی به داخل لانچر') }}</h2>
+                            <h2 class="mwl-section-title">{{ get_setting('launcher', 'previews_title', 'A look inside the launcher') }}</h2>
                             <span class="h-px w-10 bg-gradient-to-r from-transparent to-brand-500/60"></span>
                         </div>
 
@@ -495,7 +495,7 @@
                                     data-title="{{ $preview['title'] ?? '' }}"
                                     role="button"
                                     tabindex="0"
-                                    aria-label="{{ filled($preview['title'] ?? null) ? $preview['title'] : 'نمایش تصویر' }}"
+                                    aria-label="{{ filled($preview['title'] ?? null) ? $preview['title'] : 'View image' }}"
                                 >
                                     <img src="{{ $preview['image']['path'] }}" alt="{{ $preview['title'] ?? '' }}" loading="lazy">
                                     @if(filled($preview['title'] ?? null))
@@ -511,7 +511,7 @@
                     <section class="mt-12 w-full max-w-4xl">
                         <div class="mb-4 flex items-center justify-center gap-3">
                             <span class="h-px w-10 bg-gradient-to-l from-transparent to-brand-500/60"></span>
-                            <h2 class="mwl-section-title">{{ get_setting('launcher', 'tutorial_title', 'چطور شروع کنم؟') }}</h2>
+                            <h2 class="mwl-section-title">{{ get_setting('launcher', 'tutorial_title', 'How do I get started?') }}</h2>
                             <span class="h-px w-10 bg-gradient-to-r from-transparent to-brand-500/60"></span>
                         </div>
 
@@ -524,7 +524,7 @@
                         @if(filled(get_setting('launcher', 'tutorial_video_url')))
                             <div class="mx-auto mb-6 aspect-video w-full max-w-2xl overflow-hidden rounded-2xl border border-white/15 shadow-2xl shadow-black/40">
                                 <iframe src="{{ get_setting('launcher', 'tutorial_video_url') }}"
-                                        title="آموزش لانچر"
+                                        title="Launcher tutorial"
                                         class="h-full w-full"
                                         frameborder="0"
                                         allowfullscreen
@@ -536,7 +536,7 @@
                             @foreach($launcherSteps->take(3) as $index => $step)
                                 <div class="mwl-step">
                                     <span class="mwl-step-num">{{ $index + 1 }}</span>
-                                    <div class="min-w-0 text-right">
+                                    <div class="min-w-0 text-start">
                                         <div class="mwl-step-title">{{ $step['title'] }}</div>
                                         @if(filled($step['description'] ?? null))
                                             <div class="mwl-step-desc">{{ $step['description'] }}</div>

@@ -25,7 +25,7 @@
     box-shadow: 0 16px 36px rgba(249, 115, 22, .12);
 }
 
-/* برق عبوری هنگام هاور */
+/* Hover shine */
 .mw-prj-sheen {
     position: absolute;
     inset: 0;
@@ -47,8 +47,8 @@
     to { transform: translateX(-60%); }
 }
 
-/* پروژه تکمیل‌شده: به‌جای هاله‌ی چرخان، یک نوار سبز ثابت و آرام در لبه‌ی کارت.
-   (هاله‌ی conic-gradient قبلی روی کارت‌های کوچک شلوغ و پرتحرک بود.) */
+/* Completed project: a steady green strip on the card edge instead of a rotating halo.
+   (Halo conic-gradient previously too busy on small cards.) */
 .mw-prj-card.is-done {
     border-color: rgba(16, 185, 129, .35);
 }
@@ -107,7 +107,7 @@
     50% { opacity: .5; transform: scale(.75); }
 }
 
-/* نوار پیشرفت — بافت از راست به چپ در جهت فلش */
+/* Progress bar: texture moves along the arrow */
 .mw-prj-bar {
     position: relative;
     height: 12px;
@@ -125,7 +125,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
+    left: 0;
     border-radius: 9999px;
     overflow: hidden;
     box-shadow: 0 0 12px rgba(249, 115, 22, .25);
@@ -136,7 +136,7 @@
     box-shadow: 0 0 14px rgba(16, 185, 129, .4);
 }
 
-/* پرشدن یکدست و صاف — بدون بافت خط‌خط */
+/* Smooth solid fill without stripes */
 .mw-prj-fill::before {
     content: '';
     position: absolute;
@@ -144,7 +144,7 @@
     background: linear-gradient(to left, rgba(255, 255, 255, .22), transparent 55%);
 }
 
-/* نوک فلشرِ نوار */
+/* Progress bar tip */
 .mw-prj-tip {
     position: absolute;
     top: 50%;
@@ -181,11 +181,11 @@
     50% { transform: translateY(-50%) scale(.85); }
 }
 
-/* پرچم پایان برای پروژه تکمیل‌شده */
+/* Finish flag for completed project */
 .mw-prj-flag {
     position: absolute;
     top: 50%;
-    left: -4px;
+    right: -4px;
     z-index: 3;
     display: grid;
     place-items: center;
@@ -218,7 +218,7 @@
     }
 }
 
-/* پر شدن نرم هنگام دیده‌شدن + حرکت نوک همراه نوار */
+/* Smooth fill on visibility + Tip moves with bar */
 .mw-fill-anim {
     transition: width 1.1s cubic-bezier(.22, 1, .36, 1);
 }
@@ -247,12 +247,12 @@
     animation: none;
 }
 
-/* ===== ریل افقی پروژه‌های صفحه اصلی =====
-   سه کارت در یک ردیف؛ بقیه با اسکرول افقی (scroll-snap) و بدون نوار اسکرول دیده‌شده. */
+/* ===== Horizontal homepage projects rail =====
+   Three cards per row; scroll horizontally for more (scroll-snap) without a visible scrollbar. */
 .mw-projects-rail {
     display: grid;
     grid-auto-flow: column;
-    /* دقیقاً سه کارت هم‌عرض در عرض قابل مشاهده (منهای دو فاصله‌ی ۱۶px). */
+    /* Exactly three equal cards in view (minus two gaps of 16px). */
     grid-auto-columns: calc((100% - 32px) / 3);
     gap: 16px;
     overflow-x: auto;
@@ -260,7 +260,7 @@
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     padding-bottom: 4px;
-    /* نوار اسکرول پنهان می‌شود، ولی اسکرول با چرخ ماوس/لمس/کیبورد باقی می‌ماند. */
+    /* Hide scrollbar but retain mouse, touch and keyboard scrolling. */
     scrollbar-width: none;
     -ms-overflow-style: none;
     overscroll-behavior-x: contain;
@@ -282,7 +282,7 @@
     scroll-snap-align: start;
 }
 
-/* زیر ۱۰۲۴ پیکسل: هر کارت تقریباً تمام عرض، تا محتوا فشرده نشود. */
+/* Below 1024px: each card nearly full width. */
 @media (max-width: 1023px) {
     .mw-projects-rail {
         grid-auto-columns: 86%;

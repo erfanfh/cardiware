@@ -4,8 +4,8 @@ import {Autoplay, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-// کاروسل کارت‌های بزرگ: فقط وقتی بیش از ۳ کارت هست (پین‌شده + جدید)
-// الگوی .mwFreeHeroCards در Blade شرطی render شده.
+// Large card carousel: only when more than 3 cards (pinned + New)
+// Pattern .mwFreeHeroCards in Blade Conditional render completed.
 function initFreeHeroCardsSwiper() {
     document.querySelectorAll('.mwFreeHeroCards').forEach((element) => {
         if (element.swiper) {

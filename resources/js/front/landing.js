@@ -8,9 +8,9 @@ import 'swiper/css/pagination';
 window.Alpine = Alpine;
 Alpine.plugin(collapse);
 
-// فرمت اعداد بر اساس زبان صفحه (فارسی/انگلیسی)
+// Number format based on page language (Persian/English)
 const pageLocale = document.documentElement.lang === 'en' ? 'en' : 'fa';
-const numFmt = new Intl.NumberFormat(pageLocale === 'en' ? 'en-US' : 'fa-IR');
+const numFmt = new Intl.NumberFormat('en-US');
 
 function initGalleries() {
     document.querySelectorAll('[data-gallery]').forEach((el) => {
@@ -39,7 +39,7 @@ function animateCount(el) {
     const duration = 1600;
     const start = performance.now();
 
-    // setInterval (نه rAF) — در محیط‌هایی که rAF throttled است هم روان می‌ماند
+    // setInterval (not rAF) — In environments where rAF throttled also remains smooth
     const timer = setInterval(() => {
         const p = Math.min((performance.now() - start) / duration, 1);
         const eased = 1 - Math.pow(1 - p, 3);
@@ -51,7 +51,7 @@ function animateCount(el) {
 function initScrollObservers() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // شمارنده‌های آمار
+    // Stat counters
     const counterIO = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
@@ -70,7 +70,7 @@ function initScrollObservers() {
 
     if (reduced) return;
 
-    // ظهور بخش‌ها
+    // Section reveals
     const revealIO = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
@@ -83,7 +83,7 @@ function initScrollObservers() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  اسپینر ۳۶۰° — چرخش با درگ (فریم‌های تصویری از بازی واقعی)           */
+/*  360-degree viewer° — Drag rotation (actual game image frames)           */
 /* ------------------------------------------------------------------ */
 
 function initSpinners() {
@@ -102,13 +102,13 @@ function initSpinners() {
             img.src = url(current);
         };
 
-        // پیش‌بارگذاری همه فریم‌ها
+        // Preload all frames
         for (let i = 0; i < frames; i++) {
             const pre = new Image();
             pre.src = url(i);
         }
 
-        // چرخش خودکار آرام تا اولین تعامل کاربر
+        // Slow auto-rotation until first interaction
         let auto = true;
         let autoTimer = null;
         const stopAuto = () => {
@@ -122,7 +122,7 @@ function initSpinners() {
         }, 140);
         el.dataset.state = 'auto';
 
-        // درگ با Pointer Events (ماوس + لمس)
+        // Drag with Pointer Events (Mouse + Touch)
         let dragging = false;
         let startX = 0;
         let startFrame = 0;
@@ -147,14 +147,14 @@ function initSpinners() {
         el.addEventListener('pointerup', endDrag);
         el.addEventListener('pointercancel', endDrag);
         el.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') { stopAuto(); show(current + 1); }
-            if (e.key === 'ArrowRight') { stopAuto(); show(current - 1); }
+            if (e.key === 'ArrowRight') { stopAuto(); show(current + 1); }
+            if (e.key === 'ArrowLeft') { stopAuto(); show(current - 1); }
         });
     });
 }
 
 /* ------------------------------------------------------------------ */
-/*  کارت‌های tilt سه‌بعدی (حرکت موس → چرخش + برق)                       */
+/*  Cards tilt 3D (mouse movement → Rotation + Shine)                       */
 /* ------------------------------------------------------------------ */
 
 function initTilt() {
@@ -179,13 +179,13 @@ function initTilt() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  افکت‌های ماوس — دنباله نوری + پخش حروف m o d d i n g w a y . i r    */
+/*  Mouse effects: light trail + Letter particles m o d d i n g w a y . i r    */
 /* ------------------------------------------------------------------ */
 
 function initCursorFx() {
     if (window.matchMedia('(pointer: coarse)').matches) return;
 
-    // دنباله نوری ساده
+    // Simple light trail
     const dot = document.createElement('div');
     dot.className = 'cursor-glow';
     document.body.appendChild(dot);
@@ -200,8 +200,8 @@ function initCursorFx() {
     };
     requestAnimationFrame(trailLoop);
 
-    // پخش حروف آدرس سایت به سبک ماتریکس (WAAPI — مستقل از rAF)
-    // تراکم بالا + سرعت کمتر: ۲۶ حرف، فاصله فشرده، حرکت آرام‌تر
+    // Matrix-style site address letters (WAAPI — Independent of rAF)
+    // High density + Slower speed: 26 letters, tight spacing, slower motion
     const LETTERS = 'Cardiware.ir'.split('');
     window.addEventListener('pointerdown', (e) => {
         const burstCount = 26;
@@ -218,7 +218,7 @@ function initCursorFx() {
             const angle = (Math.PI * 2 * i) / burstCount + (Math.random() - 0.5) * 0.35;
             const dist = 38 + Math.random() * 58;
             const tx = Math.cos(angle) * dist;
-            const ty = Math.sin(angle) * dist * 0.8 + 26; // سقوط آرام
+            const ty = Math.sin(angle) * dist * 0.8 + 26; // Slow fall
             const rot = Math.random() * 110 - 55;
 
             s.animate(
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCursorFx();
     Alpine.start();
 
-    // پیراهن سه‌بعدی — فقط در صفحاتی که هست، به‌صورت chunk جدا لود می‌شود
+    // 3D kit: only on relevant pages, loaded chunk separately
     if (document.querySelector('[data-kit3d]')) {
         import('./kit-viewer.js')
             .then((m) => m.default())

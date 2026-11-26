@@ -1,30 +1,30 @@
 {{--
-    بلوک ترکیب تیم از دیتابیس بازیکنان پچ — {type: squad}
-    دیتا از GetPglSquadAction می‌آید (تزریق خودکار وقتی pgl_team_id در کاتالوگ ست شده باشد).
-    squad / changes (groupBy pid) / newPids / latestImport — نام‌ها دوزبانه (name_fa/name).
+    Team squad block from patch player database — {type: squad}
+    Data from GetPglSquadAction comes (automatically injected when pgl_team_id is set in catalog).
+    squad / changes (groupBy pid) / newPids / latestImport — Bilingual names (name_fa/name).
 --}}
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($isFa = $locale !== 'en')
 <div class="reveal">
     <div class="mx-auto mb-8 max-w-2xl text-center">
-        <h3 class="text-2xl font-black text-ink">{{ $isFa ? 'ترکیب تیم در پچ' : 'Squad in the patch' }}</h3>
+        <h3 class="text-2xl font-black text-ink">{{ $isFa ? 'Team squad in patch' : 'Squad in the patch' }}</h3>
         <p class="mt-3 text-sm leading-7 text-muted">
-            {{ $isFa ? 'مستقیم از دیتابیس پچ؛ با هر آپدیت، انتقال‌ها و تغییر اورال/پست خودکار اعمال می‌شود.' : 'Straight from the patch database; transfers and rating/position changes apply automatically with every update.' }}
+            {{ $isFa ? 'Direct from patch database; transfers and rating/position changes apply automatically with each update.' : 'Straight from the patch database; transfers and rating/position changes apply automatically with every update.' }}
             @if(!empty($block['latestImport']))
-                {{ $isFa ? 'آخرین به‌روزرسانی:' : 'Last update:' }}
+                {{ $isFa ? 'Last updated:' : 'Last update:' }}
                 <span class="font-bold text-accent">{{ $block['latestImport']->label ?: ('#'.$block['latestImport']->id) }}</span>
             @endif
         </p>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-edge/60 bg-surface/50">
-        {{-- هدر جدول --}}
+        {{-- Table header --}}
         <div class="hidden grid-cols-[3rem_1fr_5.5rem_5rem_4.5rem] gap-2 border-b border-edge/60 bg-surface px-4 py-3 text-[11px] font-extrabold uppercase tracking-wider text-muted sm:grid">
             <span>#</span>
-            <span>{{ $isFa ? 'بازیکن' : 'Player' }}</span>
-            <span>{{ $isFa ? 'پست' : 'Pos' }}</span>
-            <span class="text-center">{{ $isFa ? 'اورال' : 'OVR' }}</span>
-            <span class="text-center">{{ $isFa ? 'سن' : 'Age' }}</span>
+            <span>{{ $isFa ? 'Player' : 'Player' }}</span>
+            <span>{{ $isFa ? 'Post' : 'Pos' }}</span>
+            <span class="text-center">{{ $isFa ? 'Overall rating' : 'OVR' }}</span>
+            <span class="text-center">{{ $isFa ? 'Age' : 'Age' }}</span>
         </div>
 
         @foreach($block['squad'] as $p)
@@ -42,7 +42,7 @@
                             <span class="truncate text-[11px] text-muted/70">{{ $p->name }}</span>
                         @endif
                         @if(isset($block['newPids'][$p->pid]))
-                            <span class="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-black text-accent">{{ $isFa ? 'جدید' : 'NEW' }}</span>
+                            <span class="rounded-md bg-accent/15 px-1.5 py-0.5 text-[10px] font-black text-accent">{{ $isFa ? 'New' : 'NEW' }}</span>
                         @endif
                     </span>
                     <span class="mt-1 flex flex-wrap items-center gap-1.5">
@@ -53,10 +53,10 @@
                                     {{ $from }} {{ $to > $from ? '▲' : '▼' }} {{ $to }}
                                 </span>
                             @elseif($c->type === 'transfer')
-                                <span class="rounded-md bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-accent">{{ $isFa ? 'انتقال' : 'TRANSFER' }}</span>
+                                <span class="rounded-md bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold text-accent">{{ $isFa ? 'Transfer' : 'TRANSFER' }}</span>
                             @elseif($c->type === 'position')
                                 <span class="rounded-md bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-bold text-sky-400">
-                                    {{ $isFa ? 'پست' : 'POS' }} {{ $c->payload['position'][0] }} → {{ $c->payload['position'][1] }}
+                                    {{ $isFa ? 'Post' : 'POS' }} {{ $c->payload['position'][0] }} → {{ $c->payload['position'][1] }}
                                 </span>
                             @endif
                         @endforeach
@@ -77,6 +77,6 @@
     </div>
 
     <p class="mt-4 text-center text-xs text-muted">
-        {{ $isFa ? 'برای آمار کامل و تاریخچه‌ی تغییرات هر بازیکن، روی نامش کلیک کنید.' : 'Click a player for full stats and change history.' }}
+        {{ $isFa ? 'Click a player name for full stats and change history.' : 'Click a player for full stats and change history.' }}
     </p>
 </div>

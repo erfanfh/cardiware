@@ -52,11 +52,11 @@
 
                         <div>
                             <p class="text-xs font-bold text-slate-400">
-                                موجودی قابل استفاده
+                                Available balance
                             </p>
 
                             <p class="mt-1 text-xs text-slate-500">
-                                مبلغ در دسترس برای خرید و پرداخت
+                                Amount available for purchases and payments
                             </p>
                         </div>
                     </div>
@@ -71,7 +71,7 @@
                         </strong>
 
                         <span class="pb-1 text-sm font-bold text-slate-300 sm:text-base">
-                    تومان
+                    Toman
                 </span>
                     </div>
 
@@ -97,13 +97,13 @@
                             </svg>
 
                             <p class="text-xs leading-6 text-amber-100">
-                                مبلغ
+                                Amount
 
                                 <span class="font-black" dir="ltr">
                             {{ number_format($wallet->held_balance) }}
                         </span>
 
-                                تومان از موجودی شما موقتا رزرو شده است.
+                                toman of your balance is temporarily reserved.
                             </p>
                         </div>
                     @endif
@@ -137,12 +137,12 @@
                                 />
                             </svg>
 
-                            افزایش موجودی
+                            Top up balance
                         </a>
 
                         {{-- Withdrawal button --}}
                         <a href="{{ get_setting('financial', 'withdrawal_enabled', false) ? '#wallet-withdrawal' : '#wallet-withdrawal-history' }}" class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:bg-emerald-400/20 focus:outline-none focus:ring-4 focus:ring-emerald-400/10">
-                            {{ get_setting('financial', 'withdrawal_enabled', false) ? 'برداشت وجه' : 'سوابق برداشت' }}
+                            {{ get_setting('financial', 'withdrawal_enabled', false) ? 'Withdraw funds' : 'Withdrawal history' }}
                         </a>
 
                         {{-- Transfer button --}}
@@ -175,7 +175,7 @@
                                 />
                             </svg>
 
-                            انتقال پول
+                            Transfer funds
                         </a>
 
                         @if(get_setting('loyalty', 'point_conversion_enabled', false))
@@ -184,13 +184,13 @@
                                 class="group flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-5 py-3.5 text-sm font-black text-emerald-100 transition hover:border-emerald-300/30 hover:bg-emerald-400/15 focus:outline-none focus:ring-4 focus:ring-emerald-400/10"
                             >
                                 <span class="[&_svg]:h-5 [&_svg]:w-5">@include('icons.award-03')</span>
-                                تبدیل امتیاز به موجودی
+                                Convert points to balance
                             </a>
                         @endif
                     </div>
 
                     <p class="mt-3 text-center text-xs leading-6 text-slate-500">
-                        افزایش موجودی، انتقال اعتبار و بررسی درخواست‌های برداشت
+                        Top up, transfer credit and review withdrawal requests
                     </p>
                 </div>
             </div>
@@ -231,11 +231,11 @@
 
                 <div>
                     <p class="text-sm font-black text-amber-900 dark:text-amber-200">
-                        بخشی از موجودی شما رزرو شده است
+                        Part of your balance is reserved
                     </p>
 
                     <p class="mt-1 text-xs leading-6 text-amber-700 dark:text-amber-300/80">
-                        موجودی رزرو شده ممکن است مربوط به پرداخت، سفارش یا درخواست برداشت در حال بررسی باشد و پس از تعیین وضعیت نهایی، آزاد یا مصرف خواهد شد.
+                        Reserved funds may relate to pending payments, orders or withdrawals and will be released or used after final resolution.
                     </p>
                 </div>
             </section>

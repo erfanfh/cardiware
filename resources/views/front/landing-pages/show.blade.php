@@ -49,7 +49,7 @@
 
         @if($isPreview)
             <div class="sticky top-0 z-30 bg-amber-400 px-4 py-2 text-center text-xs font-black text-slate-950">
-                پیش‌نمایش مدیر — {{ $page->isPubliclyVisible() ? 'این صفحه منتشر شده است' : 'این صفحه هنوز برای کاربران نمایش داده نمی‌شود' }}
+                Admin preview — {{ $page->isPubliclyVisible() ? 'This page is published' : 'This page is not yet visible to users' }}
             </div>
         @endif
 
@@ -73,7 +73,7 @@
                 <div class="mx-auto max-w-6xl px-4">
                     @if($type === 'hero')
                         <div class="grid items-center gap-10 {{ $bImage ? 'lg:grid-cols-2' : '' }}">
-                            <div class="{{ $bImage ? 'text-center lg:text-right' : 'mx-auto max-w-3xl text-center' }}">
+                            <div class="{{ $bImage ? 'text-center lg:text-start' : 'mx-auto max-w-3xl text-center' }}">
                                 @if($bSubtitle !== '')
                                     <span class="inline-flex rounded-full border px-4 py-1.5 text-xs font-black lp-accent" style="border-color: var(--lp-accent);">{{ $bSubtitle }}</span>
                                 @endif
@@ -143,7 +143,7 @@
                         @include('front.landing-pages.partials.heading')
                         @if($embed = LandingPage::videoEmbedUrl($block['video_url'] ?? null))
                             <div class="mx-auto mt-8 aspect-video max-w-4xl overflow-hidden rounded-3xl shadow-2xl">
-                                <iframe src="{{ $embed }}" class="h-full w-full" allowfullscreen loading="lazy" title="{{ $bTitle ?: 'ویدیو' }}"></iframe>
+                                <iframe src="{{ $embed }}" class="h-full w-full" allowfullscreen loading="lazy" title="{{ $bTitle ?: 'Video' }}"></iframe>
                             </div>
                         @endif
 
@@ -159,12 +159,12 @@
 
                     @elseif($type === 'coupon')
                         <div class="mx-auto max-w-2xl rounded-3xl border-2 border-dashed p-8 text-center" style="border-color: var(--lp-primary);">
-                            <h2 class="text-2xl font-black">{{ $bTitle ?: 'کد تخفیف ویژه' }}</h2>
+                            <h2 class="text-2xl font-black">{{ $bTitle ?: 'Special discount code' }}</h2>
                             @if($bBody !== '')<p class="mt-3 text-sm leading-7 {{ $sectionMuted }}">{{ $bBody }}</p>@endif
                             @if(filled($block['coupon_code'] ?? null))
                                 <div class="mt-6 inline-flex items-stretch overflow-hidden rounded-2xl" dir="ltr">
                                     <span class="px-6 py-3 font-mono text-xl font-black tracking-widest {{ $dark ? 'bg-white text-slate-950' : 'bg-slate-900 text-white' }}">{{ $block['coupon_code'] }}</span>
-                                    <button type="button" class="lp-btn px-5 text-sm font-black" data-lp-copy="{{ $block['coupon_code'] }}">کپی</button>
+                                    <button type="button" class="lp-btn px-5 text-sm font-black" data-lp-copy="{{ $block['coupon_code'] }}">Copy</button>
                                 </div>
                             @endif
                             @include('front.landing-pages.partials.buttons', ['center' => true])
@@ -213,13 +213,13 @@
 @push('scripts')
     <script>
         (() => {
-            const digits = (n) => String(n).padStart(2, '0').replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
+            const digits = (n) => String(n).padStart(2, '0');
             document.querySelectorAll('[data-lp-countdown]').forEach((box) => {
                 const target = new Date(box.dataset.lpCountdown).getTime();
                 const render = () => {
                     const left = Math.max(0, target - Date.now());
-                    const parts = [[Math.floor(left / 864e5), 'روز'], [Math.floor(left / 36e5) % 24, 'ساعت'], [Math.floor(left / 6e4) % 60, 'دقیقه'], [Math.floor(left / 1e3) % 60, 'ثانیه']];
-                    box.innerHTML = '<div class="flex justify-center gap-3" dir="rtl">' + parts.map(([v, l]) =>
+                    const parts = [[Math.floor(left / 864e5), 'days'], [Math.floor(left / 36e5) % 24, 'hours'], [Math.floor(left / 6e4) % 60, 'minutes'], [Math.floor(left / 1e3) % 60, 'seconds']];
+                    box.innerHTML = '<div class="flex justify-center gap-3" dir="ltr">' + parts.map(([v, l]) =>
                         '<div class="min-w-16 rounded-2xl px-3 py-2" style="background: var(--lp-primary); color: #fff"><div class="text-2xl font-black">' + digits(v) + '</div><div class="text-[10px] font-bold opacity-80">' + l + '</div></div>'
                     ).join('') + '</div>';
                 };
@@ -227,7 +227,7 @@
                 setInterval(render, 1000);
             });
             document.querySelectorAll('[data-lp-copy]').forEach((button) => button.addEventListener('click', async () => {
-                try { await navigator.clipboard.writeText(button.dataset.lpCopy); button.textContent = 'کپی شد ✓'; } catch (e) {}
+                try { await navigator.clipboard.writeText(button.dataset.lpCopy); button.textContent = 'Copied ✓'; } catch (e) {}
             }));
         })();
     </script>

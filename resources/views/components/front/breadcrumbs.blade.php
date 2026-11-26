@@ -15,7 +15,7 @@
 @endphp
 
 @if(count($breadcrumbItems) > 1)
-    <nav aria-label="مسیر صفحه" {{ $attributes->class([$navClass]) }}>
+    <nav aria-label="Page path" {{ $attributes->class([$navClass]) }}>
         @foreach($breadcrumbItems as $breadcrumbItem)
             @php
                 $hideOnMobile = $compactPenultimateOnMobile
@@ -24,7 +24,7 @@
             @endphp
             @unless($loop->first)
                 <span aria-hidden="true" class="{{ $hideOnMobile ? 'hidden sm:inline-flex' : 'inline-flex' }} items-center justify-center [&_svg]:h-3 [&_svg]:w-3 {{ $separatorClass }}">
-                    @include('icons.arrow-left-01')
+                    @include('icons.arrow-right-01')
                 </span>
             @endunless
 

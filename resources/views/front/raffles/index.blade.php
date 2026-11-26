@@ -1,7 +1,7 @@
 @extends('front.master')
 
 @section('head')
-    <title>قرعه کشی ها | {{ get_setting('general', 'title') }}</title>
+    <title>Raffles | {{ get_setting('general', 'title') }}</title>
 @endsection
 
 @section('content')
@@ -22,42 +22,42 @@
                     <div class="max-w-2xl">
                         <span class="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-extrabold text-white/80 backdrop-blur">
                             <span class="h-2 w-2 rounded-full bg-brand-400 shadow-[0_0_18px_rgba(249,115,22,.8)]"></span>
-                            شانس های واقعی، نتیجه های شفاف
+                            Real chances, transparent results
                         </span>
 
                         <h1 class="mt-4 text-2xl font-black leading-tight text-white sm:text-3xl lg:text-4xl">
-                            قرعه کشی های Cardiware
+                            Raffles of Cardiware
                         </h1>
 
                         <p class="mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
-                            قرعه کشی های فعال و آینده را ببین، جوایز را بررسی کن و بلیط هایی که برای هر کمپین داری یکجا دنبال کن.
-                            نتیجه قرعه کشی های تکمیل شده هم در صورت انتشار عمومی قابل مشاهده است.
+                            Browse active and upcoming raffles, explore prizes and track your tickets in one place.
+                            Completed raffle results are visible when publicly released.
                         </p>
 
                         <div class="mt-5 flex flex-wrap gap-2">
                             @auth
                                 <a href="{{ route('account.raffles') }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-400">
-                                    بلیط های من
-                                    <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                    My tickets
+                                    <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                                 </a>
                             @else
                                 <a href="{{ route('auth.index') }}" class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-sm font-extrabold text-white transition hover:bg-brand-400">
-                                    ورود به حساب
+                                    Sign in
                                 </a>
                             @endauth
 
                             <a href="#campaigns" class="inline-flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4 text-sm font-extrabold text-white/85 backdrop-blur transition hover:bg-white/10">
-                                مشاهده قرعه کشی ها
+                                View raffles
                             </a>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
                         @foreach([
-                            ['label' => 'در حال برگزاری', 'value' => $stats['open_campaigns']],
-                            ['label' => 'به زودی', 'value' => $stats['upcoming_campaigns']],
-                            ['label' => 'تکمیل شده', 'value' => $stats['completed_campaigns']],
-                            ['label' => 'بلیط فعال', 'value' => $stats['active_tickets']],
+                            ['label' => 'Ongoing', 'value' => $stats['open_campaigns']],
+                            ['label' => 'Coming soon', 'value' => $stats['upcoming_campaigns']],
+                            ['label' => 'Completed', 'value' => $stats['completed_campaigns']],
+                            ['label' => 'Active ticket', 'value' => $stats['active_tickets']],
                         ] as $stat)
                             <div class="rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur-md">
                                 <div class="text-[10px] font-extrabold text-white/55 sm:text-[11px]">{{ $stat['label'] }}</div>
@@ -69,12 +69,12 @@
             </div>
         </section>
 
-        {{-- متن راهنمای کسب امتیاز برای قرعه‌کشی --}}
+        {{-- Raffle points earning guide --}}
     <div class="mb-5 flex items-center gap-3 rounded-2xl border border-brand-500/25 bg-brand-500/5 px-4 py-3.5">
         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-500/10 text-lg">💡</span>
         <p class="text-xs font-bold leading-6 text-brand-700 dark:text-brand-300">
-            با کسب امتیاز از فعالیت‌های روزانه Cardiware — بازدید، دیدگاه، ارسال رسانه و خرید — شانس خود را برای بردن جوایز قرعه‌کشی افزایش دهید.
-            <a href="{{ route('account.loyalty') }}#ways-to-earn" class="font-black text-brand-600 hover:text-brand-700 dark:text-brand-400">راهنمای کسب امتیاز ←</a>
+            Earn points through daily activities Cardiware — visits, comments, media submissions and purchases to increase your chances of winning.
+            <a href="{{ route('account.loyalty') }}#ways-to-earn" class="font-black text-brand-600 hover:text-brand-700 dark:text-brand-400">How to earn points ←</a>
         </p>
     </div>
 
@@ -83,16 +83,16 @@
             <x-front.cart class="!p-3 sm:!p-4">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <h2 class="text-base font-black text-slate-900 dark:text-white sm:text-lg">همه قرعه کشی ها</h2>
-                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">براساس وضعیت، کمپین مورد نظرت را سریع تر پیدا کن.</p>
+                        <h2 class="text-base font-black text-slate-900 dark:text-white sm:text-lg">All raffles</h2>
+                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">Find your campaign faster by status.</p>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
                         @foreach([
-                            'all' => 'همه',
-                            'open' => 'در حال برگزاری',
-                            'upcoming' => 'به زودی',
-                            'finished' => 'پایان یافته',
+                            'all' => 'All',
+                            'open' => 'Ongoing',
+                            'upcoming' => 'Coming soon',
+                            'finished' => 'Ended',
                         ] as $key => $label)
                             <a
                                 href="{{ route('raffles.index', $key === 'all' ? [] : ['status' => $key]) }}#campaigns"
@@ -119,9 +119,9 @@
                     <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 [&_svg]:h-7 [&_svg]:w-7">
                         @include('icons.award-03')
                     </div>
-                    <h3 class="mt-4 text-sm font-black text-slate-800 dark:text-slate-200">قرعه کشی ای در این بخش نیست</h3>
+                    <h3 class="mt-4 text-sm font-black text-slate-800 dark:text-slate-200">No raffles in this section</h3>
                     <p class="mx-auto mt-2 max-w-md text-xs leading-6 text-slate-500 dark:text-slate-400">
-                        وضعیت دیگری را انتخاب کن یا بعدا دوباره این صفحه را بررسی کن.
+                        Select another status or check back later.
                     </p>
                 </div>
             @endif

@@ -1,11 +1,11 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 <section class="relative overflow-hidden border-b border-edge/60">
-    {{-- تصویر پس‌زمینه هیرو (اختیاری — از config صفحه) --}}
+    {{-- Hero background image (optional from config page) --}}
     @if(!empty($pageData['hero_image']))
         <div class="absolute inset-0" aria-hidden="true">
             <img src="{{ asset($pageData['hero_image']) }}" alt="" class="size-full object-cover object-center" loading="eager">
-            {{-- پوشش تیره برای خوانایی متن (سمت متن پررنگ‌تر) --}}
+            {{-- Dark overlay for text readability (stronger on text side) --}}
             <div class="absolute inset-0 bg-gradient-to-l from-page via-page/85 to-page/40"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-page via-transparent to-page/60"></div>
         </div>
@@ -29,7 +29,7 @@
             <p class="mt-5 text-base leading-8 text-muted">{{ $pageData['intro'] }}</p>
         </div>
 
-        {{-- متا --}}
+        {{-- Meta --}}
         <div class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:max-w-3xl">
             @foreach($pageData['meta'] as $meta)
                 <div class="rounded-2xl border border-edge/70 bg-surface/60 px-4 py-4 text-center backdrop-blur-sm">

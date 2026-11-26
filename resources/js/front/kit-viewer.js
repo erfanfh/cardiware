@@ -1,7 +1,7 @@
 /**
- * Kit Viewer — پیراهن سه‌بعدی رویه‌ای (procedural) با Three.js
- * کامپوننت: [data-kit3d] با data-texture / data-accent / data-secondary
- * چرخش خودکار تا اولین درگ؛ درگ با Pointer Events.
+ * Kit Viewer — 3D kit surface (procedural) with Three.js
+ * Component: [data-kit3d] with data-texture / data-accent / data-secondary
+ * Auto-rotate until first drag; drag with Pointer Events.
  */
 import * as THREE from 'three';
 
@@ -32,7 +32,7 @@ function buildViewer(el) {
     camera.position.set(0, 0.35, 6.4);
     camera.lookAt(0, 0.1, 0);
 
-    // نورپردازی: محیطی + اصلی + ریم رنگ تأکیدی از پشت
+    // Lighting: ambient + main + Accent rim from behind
     scene.add(new THREE.HemisphereLight(0xffffff, 0x1c2420, 1.35));
     const key = new THREE.DirectionalLight(0xffffff, 1.7);
     key.position.set(3.2, 4.5, 4);
@@ -41,9 +41,9 @@ function buildViewer(el) {
     rim.position.set(-4, 1.5, -3.5);
     scene.add(rim);
 
-    // ---------- پیراهن procedural ----------
+    // ---------- Kit procedural ----------
     const shirt = new THREE.Group();
-    const flat = 0.6; // ضخامت بدنه (نسبت z)
+    const flat = 0.6; // Body thickness (ratio z)
 
     const loader = new THREE.TextureLoader();
     const map = loader.load(textureUrl);
@@ -53,24 +53,24 @@ function buildViewer(el) {
     const bodyMat = new THREE.MeshStandardMaterial({ map, roughness: 0.82, metalness: 0.02 });
     const plainMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(secondary), roughness: 0.85 });
 
-    // بالاتنه: استوانه با بافت کیت (u=0.5 باید رو به دوربین شود)
+    // Torso: cylinder with kit texture (u=0.5 must face camera)
     const torso = new THREE.Mesh(
         new THREE.CylinderGeometry(0.98, 0.86, 2.15, 30, 1, true),
         bodyMat,
     );
     torso.material.side = THREE.DoubleSide;
     torso.scale.z = flat;
-    torso.rotation.y = Math.PI; // وسط تکسچر رو به دوربین
+    torso.rotation.y = Math.PI; // Texture center faces camera
     shirt.add(torso);
 
-    // یوقه
+    // Yoke
     const collar = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 12, 28), plainMat);
     collar.rotation.x = Math.PI / 2;
     collar.scale.z = flat * 1.25;
     collar.position.y = 1.12;
     shirt.add(collar);
 
-    // شانه‌ها (کلاهک بالای بالاتنه)
+    // Shoulders (torso cap)
     const cap = new THREE.Mesh(
         new THREE.SphereGeometry(0.98, 26, 12, 0, Math.PI * 2, 0, Math.PI / 2),
         plainMat,
@@ -79,7 +79,7 @@ function buildViewer(el) {
     cap.position.y = 1.06;
     shirt.add(cap);
 
-    // آستین‌ها
+    // Sleeves
     [-1, 1].forEach((side) => {
         const sleeve = new THREE.Mesh(
             new THREE.CylinderGeometry(0.34, 0.3, 0.95, 18),
@@ -98,7 +98,7 @@ function buildViewer(el) {
         shirt.add(cuff);
     });
 
-    // لبه پایین
+    // Bottom hem
     const hem = new THREE.Mesh(new THREE.TorusGeometry(0.87, 0.045, 10, 28), plainMat);
     hem.rotation.x = Math.PI / 2;
     hem.scale.z = flat * 1.15;
@@ -107,14 +107,14 @@ function buildViewer(el) {
 
     scene.add(shirt);
 
-    // هوک دیباگ/تست: چرخش داخلی قابل خواندن باشد
+    // Debug/test hook: expose internal rotation
     el.__kitViewer = {
         get rotationY() { return shirt.rotation.y; },
         get rotationX() { return shirt.rotation.x; },
         get autoSpin() { return autoSpin; },
     };
 
-    // ---------- تعامل: درگ + چرخش خودکار ----------
+    // ---------- Interaction: drag + Auto-rotation ----------
     let autoSpin = true;
     let dragging = false;
     let lastX = 0;
@@ -147,7 +147,7 @@ function buildViewer(el) {
     el.addEventListener('pointerup', endDrag);
     el.addEventListener('pointercancel', endDrag);
 
-    // ---------- اندازه و حلقه رندر ----------
+    // ---------- Resize and render loop ----------
     const resize = () => {
         const w = el.clientWidth;
         const h = el.clientHeight;
@@ -164,7 +164,7 @@ function buildViewer(el) {
             if (autoSpin) {
                 shirt.rotation.y += 0.0045;
             } else {
-                // اینرسی بعد از رها کردن
+                // Inertia after release
                 shirt.rotation.y += velY;
                 velY *= 0.94;
             }

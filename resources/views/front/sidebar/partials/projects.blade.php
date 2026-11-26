@@ -46,7 +46,7 @@
 
                             @if($sbProjectProgress > 2 && $sbProjectProgress < 98)
                                 <span class="sb-project-tip mw-fill-tip" data-fill-target="{{ $sbProjectProgress }}%"
-                                      style="right: calc(0% - 8px); --sb-tip: hsl({{ $sbHue }} 80% 45%);"
+                                      style="left: calc(0% - 8px); --sb-tip: hsl({{ $sbHue }} 80% 45%);"
                                       aria-hidden="true"></span>
                             @endif
                         </div>

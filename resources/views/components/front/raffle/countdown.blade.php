@@ -1,6 +1,6 @@
 @props([
     'target',
-    'label' => 'زمان باقی مانده',
+    'label' => 'Time remaining',
     'compact' => false,
 ])
 
@@ -35,16 +35,16 @@
                 x-cloak
                 class="rounded-lg px-2 py-1 text-[10px] font-black {{ $compact ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' : 'bg-white/10 text-white/80' }}"
             >
-                پایان یافته
+                Ended
             </span>
         </div>
 
         <div class="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2" dir="ltr">
             @foreach([
-                ['key' => 'days', 'label' => 'روز'],
-                ['key' => 'hours', 'label' => 'ساعت'],
-                ['key' => 'minutes', 'label' => 'دقیقه'],
-                ['key' => 'seconds', 'label' => 'ثانیه'],
+                ['key' => 'days', 'label' => 'days'],
+                ['key' => 'hours', 'label' => 'hours'],
+                ['key' => 'minutes', 'label' => 'minutes'],
+                ['key' => 'seconds', 'label' => 'seconds'],
             ] as $part)
                 <div class="rounded-2xl border px-1.5 py-2 text-center {{ $compact ? 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/70' : 'border-white/10 bg-slate-950/15' }}">
                     <div

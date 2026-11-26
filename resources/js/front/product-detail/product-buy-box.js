@@ -41,10 +41,10 @@ export default function productBuyBox(config) {
         offerTimerInterval: null,
 
         offerCountdown: {
-            days: '۰۰',
-            hours: '۰۰',
-            minutes: '۰۰',
-            seconds: '۰۰',
+            days: '00',
+            hours: '00',
+            minutes: '00',
+            seconds: '00',
         },
 
         offerProgressPercent: 100,
@@ -153,15 +153,15 @@ export default function productBuyBox(config) {
         },
 
         get stickyBuyActionLabel() {
-            return this.inCart ? 'مشاهده و ویرایش خرید' : 'افزودن به سبد خرید';
+            return this.inCart ? 'View and edit purchase' : 'Add to cart';
         },
 
         get stickyPriceCaption() {
             if (this.inCart || this.selectedAddonIds.length > 0 || Number(this.quantity) > 1) {
-                return 'مبلغ انتخاب فعلی';
+                return 'Current selection amount';
             }
 
-            return this.shouldShowSaleItemSelector ? 'مبلغ نسخه انتخاب شده' : 'مبلغ محصول';
+            return this.shouldShowSaleItemSelector ? 'Selected version amount' : 'Product amount';
         },
 
         initStickyBuyBar() {
@@ -367,18 +367,18 @@ export default function productBuyBox(config) {
 
         async submit(showModal = true) {
             if (!this.hasAvailableSaleItems) {
-                this.openErrorModal('این محصول در حال حاضر ناموجود است.');
+                this.openErrorModal('This product is currently unavailable.');
 
                 return {
                     success: false,
-                    message: 'این محصول در حال حاضر ناموجود است.',
+                    message: 'This product is currently unavailable.',
                 };
             }
 
             if (!this.selectedSaleItemId || this.isSubmitting) {
                 return {
                     success: false,
-                    message: 'درخواست معتبر نیست.',
+                    message: 'Invalid request.',
                 };
             }
 
@@ -394,7 +394,7 @@ export default function productBuyBox(config) {
                 );
 
                 if (!result?.success) {
-                    this.openErrorModal(result?.message ?? 'به‌روزرسانی سبد خرید ناموفق بود.');
+                    this.openErrorModal(result?.message ?? 'Could not update cart.');
 
                     return result;
                 }
@@ -412,7 +412,7 @@ export default function productBuyBox(config) {
             } catch (error) {
                 const result = {
                     success: false,
-                    message: 'خطایی هنگام به‌روزرسانی سبد خرید رخ داد.',
+                    message: 'An error occurred while updating the cart.',
                 };
 
                 this.openErrorModal(result.message);
@@ -434,14 +434,14 @@ export default function productBuyBox(config) {
                 const result = await this.$wire.removeFromCart();
 
                 if (!result?.success) {
-                    this.openErrorModal(result?.message ?? 'حذف محصول از سبد خرید ناموفق بود.');
+                    this.openErrorModal(result?.message ?? 'Could not remove product from cart.');
 
                     return;
                 }
 
                 this.applyPurchaseState(result.state);
             } catch (error) {
-                this.openErrorModal('خطایی هنگام حذف محصول از سبد خرید رخ داد.');
+                this.openErrorModal('An error occurred while removing product from cart.');
             } finally {
                 this.isSubmitting = false;
             }
@@ -552,8 +552,8 @@ export default function productBuyBox(config) {
 
             this.modal = {
                 type: 'success',
-                title: 'محصول به سبد خرید اضافه شد',
-                message: result.message ?? 'انتخاب شما با موفقیت در سبد خرید ذخیره شد.',
+                title: 'Product added to cart',
+                message: result.message ?? 'Your selection was saved to the cart.',
                 itemsCount: result.cart?.items_count ?? 0,
                 subtotalAmount,
                 discountAmount,
@@ -567,7 +567,7 @@ export default function productBuyBox(config) {
         openErrorModal(message) {
             this.modal = {
                 type: 'error',
-                title: 'عملیات ناموفق بود',
+                title: 'Operation failed',
                 message,
                 itemsCount: 0,
                 subtotalAmount: 0,
@@ -587,10 +587,10 @@ export default function productBuyBox(config) {
             const normalizedPrice = Number(price || 0);
 
             if (normalizedPrice <= 0) {
-                return 'رایگان';
+                return 'Free';
             }
 
-            return new Intl.NumberFormat('fa-IR').format(normalizedPrice) + ' تومان';
+            return new Intl.NumberFormat('en-US').format(normalizedPrice) + ' Toman';
         },
 
         startExternalSync() {
@@ -672,13 +672,13 @@ export default function productBuyBox(config) {
             if (diff <= 0) {
                 this.offerExpired = true;
                 this.offerCountdown = {
-                    days: '۰۰',
-                    hours: '۰۰',
-                    minutes: '۰۰',
-                    seconds: '۰۰',
+                    days: '00',
+                    hours: '00',
+                    minutes: '00',
+                    seconds: '00',
                 };
                 this.offerProgressPercent = 0;
-                this.offerUrgencyText = 'این تخفیف به پایان رسیده است.';
+                this.offerUrgencyText = 'This discount has ended.';
                 this.stopSpecialOfferTimer();
                 return;
             }
@@ -692,10 +692,10 @@ export default function productBuyBox(config) {
             const seconds = totalSeconds % 60;
 
             this.offerCountdown = {
-                days: this.toFaDigits(String(days).padStart(2, '0')),
-                hours: this.toFaDigits(String(hours).padStart(2, '0')),
-                minutes: this.toFaDigits(String(minutes).padStart(2, '0')),
-                seconds: this.toFaDigits(String(seconds).padStart(2, '0')),
+                days: this.toDisplayDigits(String(days).padStart(2, '0')),
+                hours: this.toDisplayDigits(String(hours).padStart(2, '0')),
+                minutes: this.toDisplayDigits(String(minutes).padStart(2, '0')),
+                seconds: this.toDisplayDigits(String(seconds).padStart(2, '0')),
             };
 
             if (this.shouldShowSpecialOfferProgress) {
@@ -725,12 +725,12 @@ export default function productBuyBox(config) {
 
         updateOfferUrgencyText(totalSeconds) {
             if (totalSeconds <= 3600) {
-                this.offerUrgencyText = 'کمتر از یک ساعت تا پایان تخفیف باقی مانده.';
+                this.offerUrgencyText = 'Less than one hour left for this discount.';
                 return;
             }
 
             if (totalSeconds <= 86400) {
-                this.offerUrgencyText = 'کمتر از یک روز تا پایان این پیشنهاد فرصت دارید.';
+                this.offerUrgencyText = 'Less than one day left for this offer.';
                 return;
             }
 
@@ -742,15 +742,15 @@ export default function productBuyBox(config) {
             this.offerProgressPercent = 100;
             this.offerUrgencyText = '';
             this.offerCountdown = {
-                days: '۰۰',
-                hours: '۰۰',
-                minutes: '۰۰',
-                seconds: '۰۰',
+                days: '00',
+                hours: '00',
+                minutes: '00',
+                seconds: '00',
             };
         },
 
-        toFaDigits(value) {
-            return String(value).replace(/\d/g, (digit) => '۰۱۲۳۴۵۶۷۸۹'[digit]);
+        toDisplayDigits(value) {
+            return String(value);
         },
     };
 }

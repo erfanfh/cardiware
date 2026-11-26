@@ -22,8 +22,8 @@
 
 <x-front.modal
     name="create-ticket"
-    title="ثبت تیکت جدید"
-    description="درخواست خود را با جزئیات کافی برای تیم پشتیبانی ارسال کنید."
+    title="Create ticket"
+    description="Send your request to the support team with sufficient detail."
     max-width="max-w-2xl"
 >
     <form
@@ -106,11 +106,11 @@
 
                         <div class="min-w-0 flex-1">
                             <h3 class="text-sm font-black text-slate-800 dark:text-white">
-                                پیش از ارسال تیکت توجه کنید
+                                Before submitting a ticket
                             </h3>
 
                             <p class="mt-1 text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
-                                رعایت نکات زیر باعث می‌شود درخواست شما سریع‌تر و دقیق‌تر بررسی شود.
+                                Following these tips helps us review your request faster and more accurately.
                             </p>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
             <div>
                 <label for="ticket-title"
                        class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                    عنوان تیکت
+                    Ticket subject
                 </label>
 
                 <input
@@ -168,7 +168,7 @@
             <div>
                 <label for="ticket-department-id"
                        class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                    دپارتمان
+                    Department
                 </label>
 
                 <select
@@ -177,7 +177,7 @@
                     x-model="selectedDepartmentId"
                     class="cursor-pointer h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
                 >
-                    <option value="">انتخاب دپارتمان</option>
+                    <option value="">Select department</option>
 
                     @foreach($ticketDepartments as $department)
                         <option
@@ -206,12 +206,12 @@
             <div class="mb-2 flex flex-wrap items-center gap-2">
                 <label for="ticket-product-id"
                        class="block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                    محصول مرتبط
+                    Related product
                 </label>
 
                 <span x-show="isVip"
                       class="inline-flex items-center gap-1 rounded-lg border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-extrabold text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
-                    👑 ویژه VIP: انتخاب محصول اختیاری است
+                    👑 Exclusive VIP: Product selection is optional
                 </span>
             </div>
 
@@ -222,7 +222,7 @@
                 x-bind:required="requiresProduct()"
                 class="cursor-pointer h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-brand-400 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
             >
-                <option value="">انتخاب محصول</option>
+                <option value="">Select product</option>
 
                 @foreach($ticketProducts as $product)
                     <option
@@ -243,21 +243,21 @@
                 x-collapse
                 class="mt-2 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold leading-6 text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
             >
-                شما هنوز محصولی تهیه نکرده اید.
+                You have not purchased any products yet.
             </div>
         </div>
 
         <div>
             <label for="ticket-message"
                    class="mb-2 block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                متن پیام
+                Message
             </label>
 
             <textarea
                 id="ticket-message"
                 name="message"
                 rows="5"
-                placeholder="لطفاً مشکل یا درخواست خود را کامل توضیح دهید..."
+                placeholder="Please describe your issue or request fully..."
                 class="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-brand-400 dark:focus:ring-brand-500/20"
             >{{ old('message') }}</textarea>
 
@@ -277,7 +277,7 @@
                 x-on:click="$dispatch('close-modal', 'create-ticket')"
                 class="inline-flex h-11 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
             >
-                انصراف
+                Cancel
             </button>
 
             <button
@@ -294,7 +294,7 @@
                     />
                 </svg>
 
-                ارسال تیکت
+                Submit ticket
             </button>
         </div>
     </form>

@@ -104,11 +104,11 @@ window.productTeamMembersSlider = function (
 
                     a11y: {
                         enabled: true,
-                        prevSlideMessage: 'نمایش عضو قبلی',
-                        nextSlideMessage: 'نمایش عضو بعدی',
-                        firstSlideMessage: 'این اولین عضو است',
-                        lastSlideMessage: 'این آخرین عضو است',
-                        paginationBulletMessage: 'رفتن به عضو شماره {{index}}',
+                        prevSlideMessage: 'Show previous member',
+                        nextSlideMessage: 'Show next member',
+                        firstSlideMessage: 'This is the first member',
+                        lastSlideMessage: 'This is the last member',
+                        paginationBulletMessage: 'Go to member number {{index}}',
                     },
 
                     breakpoints: {

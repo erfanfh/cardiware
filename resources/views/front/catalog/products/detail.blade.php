@@ -37,11 +37,11 @@
                     @if($product->isPresale() || $product->isComingSoon())
                         <x-front.cart>
                             <h2 class="text-sm font-black text-brand-700 dark:text-brand-300">
-                                {{ $product->isPresale() ? 'پیش‌فروش' : 'به‌زودی' }}
+                                {{ $product->isPresale() ? 'Pre-order' : 'Coming soon' }}
                             </h2>
                             @if($product->release_at?->isFuture())
                                 <div class="mt-3">
-                                    <x-front.raffle.countdown :target="$product->release_at" label="تا انتشار محصول" compact />
+                                    <x-front.raffle.countdown :target="$product->release_at" label="Until product release" compact />
                                 </div>
                             @endif
                         </x-front.cart>

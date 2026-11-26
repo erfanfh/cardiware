@@ -1,8 +1,8 @@
 @if($product->imageGallery->isNotEmpty())
     <x-front.cart class="relative overflow-hidden border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
-            title="گالری تصاویر"
-            subtitle="نمونه تصاویر، شات‌ها و خروجی نهایی"
+            title="Image gallery"
+            subtitle="Sample images, shots and final output"
             iconName="image-03"
         />
 
@@ -54,14 +54,14 @@
             <div id="product-image-gallery-pagination-prev"
                  class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
                 <span class="[&_svg]:h-5 [&_svg]:w-5">
-                    @include('icons.arrow-right-01')
+                    @include('icons.arrow-left-01')
                 </span>
             </div>
 
             <div id="product-image-gallery-pagination-next"
                  class="grid h-9 w-9 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 sm:h-10 sm:w-10 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
                 <span class="[&_svg]:h-5 [&_svg]:w-5">
-                    @include('icons.arrow-left-01')
+                    @include('icons.arrow-right-01')
                 </span>
             </div>
         </div>

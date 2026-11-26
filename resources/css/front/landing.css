@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------ */
-/*  فونت‌ها (کپی از پروژه اصلی Cardiware)                             */
+/*  Fonts (copied from main project Cardiware)                             */
 /* ------------------------------------------------------------------ */
 
 @font-face {
@@ -34,13 +34,13 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  پل رنگی Tailwind ↔ متغیرهای تم                                     */
-/*  هر تم فقط متغیرها را عوض می‌کند و همه‌ی کلاسها دنبالش می‌روند       */
+/*  Color bridge Tailwind ↔ Theme variables                                     */
+/*  Each theme changes variables only; all classes follow       */
 /* ------------------------------------------------------------------ */
 
 @theme inline {
-    --font-landing: 'IRANSansX', 'Segoe UI', Tahoma, sans-serif;
-    --font-num: 'IRANSansXFaNum', 'IRANSansX', 'Segoe UI', Tahoma, sans-serif;
+    --font-landing: 'Segoe UI', system-ui, Arial, sans-serif;
+    --font-num: 'Segoe UI', system-ui, Arial, sans-serif;
 
     --color-page: var(--landing-bg);
     --color-surface: var(--landing-surface);
@@ -54,10 +54,10 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  تم‌های محصول                                                       */
+/*  Product themes                                                       */
 /* ------------------------------------------------------------------ */
 
-/* PGL Ultimate — پالت رسمی (سبز نئون) */
+/* PGL Ultimate — Official palette (neon green) */
 .landing--pgl-ultimate,
 .landing--hub {
     --landing-accent: #00FF7A;
@@ -73,7 +73,7 @@
     --landing-on-accent: #04110B;
 }
 
-/* PGL FIFA 23 — برند نارنجی Cardiware */
+/* PGL FIFA 23 — Orange brand Cardiware */
 .landing--pgl-fifa-23 {
     --landing-accent: #F97316;
     --landing-accent-2: #FBBF24;
@@ -89,7 +89,7 @@
 }
 
 /* ------------------------------------------------------------------ */
-/*  پایه                                                               */
+/*  Base                                                               */
 /* ------------------------------------------------------------------ */
 
 .landing {
@@ -126,7 +126,7 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
-/*  اجزای مشترک                                                        */
+/*  Shared components                                                        */
 /* ------------------------------------------------------------------ */
 
 .section-pad {
@@ -192,7 +192,7 @@ html {
     transform: translateY(-2px);
 }
 
-/* شبکه‌ی نقطه‌چین پس‌زمینه */
+/* Dotted background grid */
 .bg-grid {
     background-image:
         linear-gradient(color-mix(in srgb, var(--landing-border) 55%, transparent) 1px, transparent 1px),
@@ -207,14 +207,14 @@ html {
         var(--landing-bg);
 }
 
-/* قاب درخشان هیرو */
+/* Glowing hero frame */
 .glow-frame {
     box-shadow:
         0 0 90px -20px var(--landing-accent),
         inset 0 0 0 1px color-mix(in srgb, var(--landing-accent) 12%, transparent);
 }
 
-/* چیپ‌های شناور هیرو */
+/* Floating hero chips */
 .float-chip {
     animation: float 6s ease-in-out infinite;
 }
@@ -224,7 +224,7 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
-/*  marquee لیگ‌ها                                                      */
+/*  marquee Leagues                                                      */
 /* ------------------------------------------------------------------ */
 
 .marquee {
@@ -259,7 +259,7 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Swiper (گالری)                                                     */
+/*  Swiper (Gallery)                                                     */
 /* ------------------------------------------------------------------ */
 
 .swiper-pagination-bullet {
@@ -275,7 +275,7 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
-/*  انیمیشن ظهور                                                       */
+/*  Entrance animation                                                       */
 /* ------------------------------------------------------------------ */
 
 .reveal {
@@ -296,7 +296,7 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
-/*  زبان انگلیسی (LTR) — فونت لاتین برای بدنه                          */
+/*  English (LTR) — Latin body font                          */
 /* ------------------------------------------------------------------ */
 
 .font-landing-ltr,
@@ -308,7 +308,7 @@ html[dir="ltr"] .font-num {
 }
 
 /* ------------------------------------------------------------------ */
-/*  صفحات جزئیات                                                       */
+/*  Detail pages                                                       */
 /* ------------------------------------------------------------------ */
 
 .crest-fallback {
@@ -319,7 +319,7 @@ html[dir="ltr"] .font-num {
 }
 
 /* ------------------------------------------------------------------ */
-/*  اسپینر ۳۶۰°                                                        */
+/*  360-degree viewer°                                                        */
 /* ------------------------------------------------------------------ */
 
 .spinner {
@@ -342,7 +342,7 @@ html[dir="ltr"] .font-num {
 }
 
 /* ------------------------------------------------------------------ */
-/*  کارت‌های tilt سه‌بعدی                                               */
+/*  Cards tilt 3D                                               */
 /* ------------------------------------------------------------------ */
 
 .tilt-card {
@@ -368,7 +368,7 @@ html[dir="ltr"] .font-num {
 }
 
 /* ------------------------------------------------------------------ */
-/*  افکت‌های ماوس                                                       */
+/*  Mouse effects                                                       */
 /* ------------------------------------------------------------------ */
 
 .cursor-glow {
@@ -402,13 +402,13 @@ html[dir="ltr"] .cursor-glow { opacity: 0.65; }
     .cursor-glow { display: none; }
 }
 
-/* چیپ marquee با لوگو */
+/* Chip marquee with logo */
 .league-chip--logo {
     gap: 0.55rem;
     padding-block: 0.35rem;
 }
 
-/* پنل کره */
+/* Globe panel */
 .globe-panel--open {
     border-color: color-mix(in srgb, var(--landing-accent) 35%, transparent);
     box-shadow: 0 0 50px -18px var(--landing-accent);

@@ -7,8 +7,8 @@
     <x-front.cart id="related-posts" class="overflow-hidden">
         <div class="flex items-start justify-between gap-4">
             <x-front.cart-title
-                title="نوشته‌های مرتبط"
-                subtitle="مطالبی که احتمالا برای شما کاربردی هستند"
+                title="Related posts"
+                subtitle="Content you may find useful"
                 iconName="arrow-reload-horizontal"
                 class="!mb-0"
             />
@@ -18,17 +18,17 @@
                     <button
                         type="button"
                         class="mwRelatedPostsPrev inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
-                        aria-label="نوشته‌های قبلی"
+                        aria-label="Previous posts"
                     >
-                        @include('icons.arrow-right-01')
+                        @include('icons.arrow-left-01')
                     </button>
 
                     <button
                         type="button"
                         class="mwRelatedPostsNext inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700 disabled:pointer-events-none disabled:opacity-35 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10 dark:hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4"
-                        aria-label="نوشته‌های بعدی"
+                        aria-label="Next posts"
                     >
-                        @include('icons.arrow-left-01')
+                        @include('icons.arrow-right-01')
                     </button>
                 </div>
             @endif
@@ -70,7 +70,7 @@
 
                                 <div class="flex flex-1 flex-col p-4">
                                     <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                                        <span>{{ jalali_date($relatedPost->published_at, 'd F Y') }}</span>
+                                        <span>{{ (($relatedPost->published_at) ? \Illuminate\Support\Carbon::parse($relatedPost->published_at)->format('d F Y') : '') }}</span>
                                         @if($relatedPost->tags->isNotEmpty())
                                             <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                                             <span class="truncate">{{ $relatedPost->tags->first()->title }}</span>
@@ -86,8 +86,8 @@
                                     </p>
 
                                     <div class="mt-auto flex items-center gap-1.5 pt-4 text-xs font-extrabold text-brand-700 dark:text-brand-300 [&_svg]:h-3.5 [&_svg]:w-3.5">
-                                        مشاهده نوشته
-                                        @include('icons.arrow-left-02')
+                                        View post
+                                        <x-front.arrow-right-02/>
                                     </div>
                                 </div>
                             </a>
@@ -105,10 +105,10 @@
             <div class="mt-5 border-t border-slate-100 pt-5 dark:border-slate-800">
                 <div class="mb-3 flex items-center justify-between gap-3">
                     <h3 class="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                        مطالب مرتبط بیشتر
+                        More related content
                     </h3>
                     <span class="text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                        {{ $relatedCompactPosts->count() }} نوشته دیگر
+                        {{ $relatedCompactPosts->count() }} Other posts
                     </span>
                 </div>
 
@@ -125,7 +125,7 @@
                                     {{ $relatedPost->title }}
                                 </div>
                                 <div class="mt-1 flex items-center gap-2 text-[11px] text-slate-400 dark:text-slate-500">
-                                    <span>{{ jalali_date($relatedPost->published_at, 'd F Y') }}</span>
+                                    <span>{{ (($relatedPost->published_at) ? \Illuminate\Support\Carbon::parse($relatedPost->published_at)->format('d F Y') : '') }}</span>
                                     @if($relatedPost->categories->isNotEmpty())
                                         <span class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
                                         <span class="truncate">{{ $relatedPost->categories->first()->title }}</span>
@@ -134,7 +134,7 @@
                             </div>
 
                             <span class="mt-1 shrink-0 text-slate-300 transition group-hover:-translate-x-0.5 group-hover:text-brand-600 dark:text-slate-600 dark:group-hover:text-brand-300 [&_svg]:h-4 [&_svg]:w-4">
-                                @include('icons.arrow-left-01')
+                                @include('icons.arrow-right-01')
                             </span>
                         </a>
                     @endforeach

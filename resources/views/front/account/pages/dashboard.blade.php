@@ -11,41 +11,41 @@
                         'route' => 'account.downloads',
                         'border' => 'emerald',
                         'icon' => 'icons.cloud-download',
-                        'badge' => 'آماده دریافت',
-                        'title' => 'دانلودهای آماده',
-                        'desc' => 'فایل‌های قابل دریافت',
+                        'badge' => 'Ready to claim',
+                        'title' => 'Available downloads',
+                        'desc' => 'Downloadable files',
                         'value' => $user->purchase_accesses_count,
-                        'action' => 'مشاهده',
+                        'action' => 'View',
                     ],
                     [
                         'route' => 'account.orders',
                         'border' => 'brand',
                         'icon' => 'icons.shopping-basket-03',
-                        'badge' => 'پرداخت موفق',
-                        'title' => 'سفارش‌های تکمیل شده',
-                        'desc' => 'سفارش‌های موفق فروشگاه',
+                        'badge' => 'Successful payment',
+                        'title' => 'Completed orders',
+                        'desc' => 'Successful store orders',
                         'value' => $user->paid_orders_count,
-                        'action' => 'مشاهده',
+                        'action' => 'View',
                     ],
                     [
                         'route' => 'account.tickets',
                         'border' => 'cyan',
                         'icon' => 'icons.message-search-02',
-                        'badge' => 'نیازمند پیگیری',
-                        'title' => 'تیکت‌های فعال',
-                        'desc' => 'در انتظار پاسخ یا پیگیری',
+                        'badge' => 'Needs follow-up',
+                        'title' => 'Active tickets',
+                        'desc' => 'Awaiting response or follow-up',
                         'value' => $user->open_tickets_count,
-                        'action' => 'پیگیری',
+                        'action' => 'Follow up',
                     ],
                     [
                         'route' => 'account.favorites',
                         'border' => 'rose',
                         'icon' => 'icons.favourite',
-                        'badge' => 'ذخیره‌شده',
-                        'title' => 'علاقه‌مندی‌ها',
-                        'desc' => 'محصولات ذخیره‌شده برای بعد',
+                        'badge' => 'Saved',
+                        'title' => 'Favorites',
+                        'desc' => 'Products saved for later',
                         'value' => $user->favorite_products_count,
-                        'action' => 'مشاهده',
+                        'action' => 'View',
                     ],
                 ];
             @endphp
@@ -53,7 +53,7 @@
             @foreach($cards as $card)
                 <a
                     href="{{ route($card['route']) }}"
-                    class="group relative block overflow-hidden rounded-2xl border bg-white p-4 text-right shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-soft sm:rounded-3xl sm:p-5 dark:bg-slate-900/90 dark:shadow-black/20
+                    class="group relative block overflow-hidden rounded-2xl border bg-white p-4 text-start shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-soft sm:rounded-3xl sm:p-5 dark:bg-slate-900/90 dark:shadow-black/20
                     @if($card['border'] === 'emerald') border-emerald-100 dark:border-emerald-500/20
                     @elseif($card['border'] === 'brand') border-brand-100 dark:border-brand-500/20
                     @elseif($card['border'] === 'cyan') border-cyan-100 dark:border-cyan-500/20
@@ -112,7 +112,7 @@
                                 @endif"
                             >
                                 {{ $card['action'] }}
-                                @include('icons.arrow-left-02')
+                                <x-front.arrow-right-02/>
                             </div>
                         </div>
                     </div>
@@ -128,11 +128,11 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-sm font-extrabold text-slate-900 sm:text-base dark:text-white">
-                            پربازدیدهای دیروز
+                            Yesterday’s most viewed
                         </div>
 
                         <div class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                            نوشته‌هایی که دیروز بیشتر دیده شدند
+                            Posts viewed most yesterday
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
 
                                         <div
                                             class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                                            {{ $post->excerpt ?? 'یکی از نوشته‌های پربازدید Cardiware در روز گذشته' }}
+                                            {{ $post->excerpt ?? 'One of the most viewed posts Cardiware yesterday' }}
                                         </div>
                                     </div>
 
@@ -166,7 +166,7 @@
                                         </div>
 
                                         <div class="mt-0.5 text-[10px] font-bold text-slate-400 dark:text-slate-500">
-                                            بازدید
+                                            views
                                         </div>
                                     </div>
                                 </div>
@@ -175,7 +175,7 @@
                     @empty
                         <div
                             class="rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center text-xs text-slate-500 sm:rounded-3xl dark:border-slate-700 dark:bg-slate-800/70 dark:text-slate-400">
-                            نوشته‌ای یافت نشد!
+                            No posts found!
                         </div>
                     @endforelse
                 </div>
@@ -184,19 +184,19 @@
             <div
                 class="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 dark:border-slate-800 dark:bg-slate-900/90 dark:shadow-black/20">
                 <div class="text-sm font-extrabold text-slate-900 sm:text-base dark:text-white">
-                    میانبرهای سریع
+                    Quick shortcuts
                 </div>
 
                 <div class="mt-4 grid grid-cols-1 gap-3 sm:mt-5 sm:grid-cols-2">
                     @foreach([
-                        ['route' => 'account.downloads', 'title' => 'رفتن به دانلودها', 'desc' => 'مشاهده فایل‌های خریداری شده'],
-                        ['route' => 'account.orders', 'title' => 'مدیریت سفارش‌ها', 'desc' => 'فاکتورها و جزئیات سفارش'],
-                        ['route' => 'account.tickets', 'title' => 'پشتیبانی', 'desc' => 'ثبت یا پیگیری تیکت'],
-                        ['route' => 'account.security', 'title' => 'امنیت حساب', 'desc' => 'رمز عبور و تاییدیه'],
+                        ['route' => 'account.downloads', 'title' => 'Go to downloads', 'desc' => 'View purchased files'],
+                        ['route' => 'account.orders', 'title' => 'Manage orders', 'desc' => 'Invoices and order details'],
+                        ['route' => 'account.tickets', 'title' => 'Support', 'desc' => 'Create or track tickets'],
+                        ['route' => 'account.security', 'title' => 'Account security', 'desc' => 'Password and verification'],
                     ] as $shortcut)
                         <a
                             href="{{ route($shortcut['route']) }}"
-                            class="block rounded-2xl border border-slate-200 bg-slate-50 p-4 text-right transition hover:bg-white hover:shadow-sm dark:border-slate-700 dark:bg-slate-800/70 dark:hover:bg-slate-800"
+                            class="block rounded-2xl border border-slate-200 bg-slate-50 p-4 text-start transition hover:bg-white hover:shadow-sm dark:border-slate-700 dark:bg-slate-800/70 dark:hover:bg-slate-800"
                         >
                             <div class="text-sm font-extrabold text-slate-900 dark:text-white">
                                 {{ $shortcut['title'] }}

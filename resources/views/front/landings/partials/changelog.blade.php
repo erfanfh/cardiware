@@ -7,13 +7,13 @@
         ])
 
         @php
-            // آیکون‌های مجاز تغییرات — قابل استفاده با توکن [fire]، [heart] و… در ابتدای هر خط
+            // Allowed change icons: usable with token [fire], [heart] etc. at the start of each line
             $changelogIcons = [
                 'heart', 'fire', 'sparkles', 'star', 'rocket', 'zap',
                 'bug', 'shield-check', 'gift', 'refresh', 'thumb-up', 'surprise', 'flame2',
             ];
 
-            // هر note می‌تواند رشته (با توکن ابتدای خط) یا آرایه {icon, text} باشد
+            // Each note Can be a string with leading token or an array {icon, text} be
             $parseNote = function (mixed $note) use ($changelogIcons): array {
                 if (is_array($note)) {
                     $icon = in_array($note['icon'] ?? '', $changelogIcons, true) ? $note['icon'] : null;
@@ -32,7 +32,7 @@
         @endphp
 
         <div class="relative mt-14 pr-6">
-            {{-- خط تایم‌لاین --}}
+            {{-- Timeline line --}}
             <div class="absolute inset-y-2 right-2 w-px bg-gradient-to-b from-accent/60 via-edge to-transparent" aria-hidden="true"></div>
 
             <div class="space-y-10">

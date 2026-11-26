@@ -30,7 +30,7 @@
         </svg>
     </a>
 
-    <div class="absolute right-0 top-full z-40 w-[min(1080px,92vw)] pt-3
+    <div class="absolute left-0 top-full z-40 w-[min(1080px,92vw)] pt-3
         opacity-0 invisible translate-y-2 scale-[0.98] pointer-events-none
         group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto
         transition-all duration-200 ease-out">
@@ -79,7 +79,7 @@
                     <div
                         class="col-span-12 border-t border-slate-200 bg-slate-50/80 p-6 lg:col-span-3 lg:border-r lg:border-t-0 dark:border-slate-700 dark:bg-slate-950/60">
                         <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                            دسترسی سریع
+                            Quick access
                         </div>
 
                         <div class="mt-4 space-y-2">

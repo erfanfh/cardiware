@@ -129,7 +129,7 @@
             <div class="absolute top-6 left-6 z-20 hidden items-center gap-2 sm:flex">
                 <button
                     class="heroPrev cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-brand-500 transition grid place-items-center"
-                    aria-label="قبلی" type="button">
+                    aria-label="Previous" type="button">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M10 7l5 5-5 5" stroke="currentColor" stroke-width="2"
                               stroke-linecap="round" stroke-linejoin="round"/>
@@ -137,7 +137,7 @@
                 </button>
                 <button
                     class="heroNext cursor-pointer h-10 w-10 rounded-2xl bg-white/10 text-white hover:bg-brand-500 transition grid place-items-center"
-                    aria-label="بعدی" type="button">
+                    aria-label="Next" type="button">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M14 7l-5 5 5 5" stroke="currentColor" stroke-width="2"
                               stroke-linecap="round" stroke-linejoin="round"/>

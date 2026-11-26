@@ -61,7 +61,7 @@
                             type="button"
                             @click="open = false"
                             class="grid h-9 w-9 shrink-0 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white hover:text-red-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-rose-300"
-                            aria-label="بستن"
+                            aria-label="Close"
                         >
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
                                 <path

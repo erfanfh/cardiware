@@ -1,8 +1,8 @@
 @if(isset($averageRating) && $averageRating !== null && ($ratingCount ?? 0) > 0)
     <span
         class="inline-flex h-6 w-fit shrink-0 items-center gap-1 rounded-lg border border-amber-200/80 bg-amber-50 px-2 text-[0.625rem] font-extrabold leading-none text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
-        aria-label="میانگین امتیاز {{ number_format($averageRating, 2) }} از ۵، بر اساس {{ number_format($ratingCount) }} امتیاز"
-        title="میانگین امتیاز کاربران"
+        aria-label="Average rating {{ number_format($averageRating, 2) }} out of 5, based on {{ number_format($ratingCount) }} points"
+        title="Average user rating"
     >
         <svg viewBox="0 0 20 20" class="h-3 w-3 text-amber-400" aria-hidden="true">
             <path
@@ -13,6 +13,6 @@
 
         <span dir="ltr">{{ number_format($averageRating, 2) }} / 5</span>
         <span aria-hidden="true">·</span>
-        <span>{{ number_format($ratingCount) }} امتیاز</span>
+        <span>{{ number_format($ratingCount) }} points</span>
     </span>
 @endif

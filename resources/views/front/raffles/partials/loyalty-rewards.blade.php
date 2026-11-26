@@ -7,12 +7,12 @@
             <div class="relative p-4 sm:p-5">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <div class="text-[10px] font-extrabold text-amber-600 dark:text-amber-300">باشگاه مخاطبان</div>
-                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white sm:text-lg">با امتیازت بلیط بگیر</h2>
-                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">برای این قرعه کشی پاداش امتیازی فعال وجود دارد. بلیط ها بعد از دریافت مستقیما به نام حساب تو صادر می شوند.</p>
+                        <div class="text-[10px] font-extrabold text-amber-600 dark:text-amber-300">Community Club</div>
+                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white sm:text-lg">Get a ticket with your points</h2>
+                        <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">A points reward is available for this raffle. Tickets are issued directly to your account after claiming.</p>
                     </div>
                     @auth
-                        <a href="{{ route('account.loyalty') }}#rewards" class="text-[11px] font-extrabold text-brand-600 dark:text-brand-300">مشاهده باشگاه مخاطبان</a>
+                        <a href="{{ route('account.loyalty') }}#rewards" class="text-[11px] font-extrabold text-brand-600 dark:text-brand-300">View Community Club</a>
                     @endauth
                 </div>
 
@@ -33,19 +33,19 @@
                                 </div>
                                 <div class="shrink-0 rounded-xl bg-amber-50 px-3 py-2 text-center dark:bg-amber-500/10">
                                     <div class="text-base font-black text-amber-700 dark:text-amber-300">{{ number_format($quantity) }}</div>
-                                    <div class="text-[9px] font-bold text-amber-500">بلیط</div>
+                                    <div class="text-[9px] font-bold text-amber-500">Ticket</div>
                                 </div>
                             </div>
 
                             <div class="mt-3 flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-900">
-                                <span class="text-[10px] font-bold text-slate-400">هزینه دریافت</span>
-                                <span class="text-xs font-black text-brand-700 dark:text-brand-300">{{ number_format($offer->points_cost) }} امتیاز</span>
+                                <span class="text-[10px] font-bold text-slate-400">Claim cost</span>
+                                <span class="text-xs font-black text-brand-700 dark:text-brand-300">{{ number_format($offer->points_cost) }} points</span>
                             </div>
 
                             <div class="mt-3">
                                 @guest
                                     <a href="{{ route('auth.index') }}" class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-500 px-4 text-[11px] font-extrabold text-white transition hover:bg-brand-600 dark:bg-brand-600 dark:hover:bg-brand-500">
-                                        ورود و دریافت بلیط
+                                        Sign in and claim ticket
                                     </a>
                                 @else
                                     @if($availability?->canRedeem)
@@ -53,11 +53,11 @@
                                             @csrf
                                             <input type="hidden" name="idempotency_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
                                             <button type="submit" class="inline-flex h-10 w-full items-center justify-center rounded-xl bg-brand-500 px-4 text-[11px] font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-600 dark:hover:bg-brand-500">
-                                                دریافت {{ number_format($quantity) }} بلیط
+                                                Get {{ number_format($quantity) }} Ticket
                                             </button>
                                         </form>
                                     @else
-                                        <button type="button" disabled class="inline-flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-100 px-4 text-[11px] font-extrabold text-slate-400 dark:bg-slate-800 dark:text-slate-500">فعلا قابل دریافت نیست</button>
+                                        <button type="button" disabled class="inline-flex h-10 w-full cursor-not-allowed items-center justify-center rounded-xl bg-slate-100 px-4 text-[11px] font-extrabold text-slate-400 dark:bg-slate-800 dark:text-slate-500">Not available yet</button>
                                         @if($availability?->reason)
                                             <div class="mt-2 text-[10px] leading-5 text-amber-700 dark:text-amber-300">{{ $availability->reason }}</div>
                                         @endif

@@ -2,8 +2,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'ورود یا ثبت نام',
-            'description' => 'شماره موبایل خود را وارد کنید تا ادامه مسیر مشخص شود.',
+            'title' => 'Sign in or register',
+            'description' => 'Enter your mobile number to determine the next step.',
         ]
     )
 
@@ -17,7 +17,7 @@
                 for="{{ $name }}-mobile"
                 class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
             >
-                شماره موبایل
+                Mobile number
             </label>
 
             <div class="relative mt-1.5">
@@ -60,7 +60,7 @@
         </div>
 
         <p class="text-center text-[10px] font-bold leading-5 text-slate-400 dark:text-slate-500">
-            اگر قبلا حساب ساخته باشید وارد صفحه ورود می‌شوید؛ در غیر این صورت ثبت نام آغاز خواهد شد.
+            If you already have an account, you will sign in; otherwise registration will begin.
         </p>
 
         <div class="grid grid-cols-1 gap-2 sm:flex sm:items-center sm:justify-end">
@@ -69,7 +69,7 @@
                 x-on:click="closeModal()"
                 class="h-11 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-                انصراف
+                Cancel
             </button>
 
             <button
@@ -82,14 +82,14 @@
                     wire:loading.remove
                     wire:target="startAuthFlow"
                 >
-                    ادامه
+                    Continue
                 </span>
 
                 <span
                     wire:loading
                     wire:target="startAuthFlow"
                 >
-                    در حال بررسی...
+                    Under review...
                 </span>
 
                 <span
@@ -107,6 +107,6 @@
         wire:loading.attr="disabled"
         class="mt-4 inline-flex h-11 w-full cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-xs font-extrabold text-slate-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
     >
-        ورود با ایمیل
+        Sign in with email
     </button>
 </div>

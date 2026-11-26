@@ -1,30 +1,30 @@
 @extends('front.master')
 
 @section('head')
-    <title>تالار افتخار باشگاه | {{ get_setting('general', 'title') }}</title>
+    <title>Club Hall of Fame | {{ get_setting('general', 'title') }}</title>
 @endsection
 
 @section('content')
     @php
         $nameFor = static function ($member): string {
-            // نام نمایشی یا نام کاربری؛ نام واقعی (full_name) در صفحه عمومی نمایش داده نمی‌شود.
+            // Display name or username; real name (full_name) is not shown on the public page.
             foreach ([$member?->display_name, $member?->username] as $candidate) {
                 if (trim((string) $candidate) !== '') {
                     return trim((string) $candidate);
                 }
             }
 
-            return 'عضو باشگاه';
+            return 'Club member';
         };
-        $place = [1 => 'نفر اول', 2 => 'نفر دوم', 3 => 'نفر سوم'];
+        $place = [1 => 'First place', 2 => 'Second place', 3 => 'Third place'];
         $medal = [1 => '🏆', 2 => '🥈', 3 => '🥉'];
         $race = $yearRace;
         $progressRow = static fn (int $value, int $target): int => $target > 0 ? (int) min(100, round($value * 100 / $target)) : 100;
         $prizeLine = static function (array $row): string {
             $parts = [];
-            if ($row['points'] > 0) $parts[] = persian_number($row['points']) . ' امتیاز';
-            if ($row['coupon_percent'] > 0) $parts[] = 'کد تخفیف ' . $row['coupon_percent'] . '٪';
-            if ($row['raffle_tickets'] > 0) $parts[] = persian_number($row['raffle_tickets']) . ' کد قرعه‌کشی';
+            if ($row['points'] > 0) $parts[] = number_format($row['points']) . ' points';
+            if ($row['coupon_percent'] > 0) $parts[] = 'Discount code ' . $row['coupon_percent'] . '%';
+            if ($row['raffle_tickets'] > 0) $parts[] = number_format($row['raffle_tickets']) . ' Raffle code';
 
             return implode(' + ', $parts) ?: '—';
         };
@@ -38,42 +38,42 @@
             <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="max-w-2xl">
                     <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-white/10 px-3 py-1.5 text-[11px] font-extrabold text-amber-200">
-                        👑 تالار افتخار Cardiware
+                        👑 Hall of Fame Cardiware
                     </div>
-                    <h1 class="mt-4 text-2xl font-black leading-10 sm:text-4xl">قهرمانان باشگاه</h1>
+                    <h1 class="mt-4 text-2xl font-black leading-10 sm:text-4xl">Club champions</h1>
                     <p class="mt-3 text-sm leading-7 text-slate-300">
-                        هر ماه، هر فصل و هر سال، سه عضو برتر باشگاه با بیشترین XP انتخاب می‌شوند و جایزه می‌گیرند:
-                        امتیاز، کد تخفیف شخصی و کد قرعه‌کشی. خرید محصولات، اشتراک ویژه و فروش با لینک همکاری بیشترین XP را می‌دهند.
+                        Every month, season and year, three club members with the most XP are selected and receive prizes:
+                        points, personal discount codes and raffle codes. Purchases, premium subscriptions and affiliate sales earn the most XP are provided.
                     </p>
                     <div class="mt-5 flex flex-wrap gap-2">
-                        <a href="{{ route('loyalty.leaderboard') }}" class="inline-flex h-11 items-center rounded-2xl bg-amber-400 px-5 text-xs font-black text-slate-950 transition hover:bg-amber-300">رقابت این ماه</a>
-                        <a href="{{ auth()->check() ? route('account.loyalty') : route('login') }}" class="inline-flex h-11 items-center rounded-2xl border border-white/20 bg-white/10 px-5 text-xs font-black text-white transition hover:bg-white/20">{{ auth()->check() ? 'باشگاه من' : 'ورود و شروع رقابت' }}</a>
+                        <a href="{{ route('loyalty.leaderboard') }}" class="inline-flex h-11 items-center rounded-2xl bg-amber-400 px-5 text-xs font-black text-slate-950 transition hover:bg-amber-300">Monthly competition</a>
+                        <a href="{{ auth()->check() ? route('account.loyalty') : route('login') }}" class="inline-flex h-11 items-center rounded-2xl border border-white/20 bg-white/10 px-5 text-xs font-black text-white transition hover:bg-white/20">{{ auth()->check() ? 'My club' : 'Sign in and start competing' }}</a>
                     </div>
                 </div>
 
                 {{-- Year race --}}
                 <div class="w-full rounded-3xl border border-amber-300/30 bg-white/10 p-5 backdrop-blur lg:max-w-md">
-                    <div class="text-[11px] font-extrabold text-amber-200">رقابت کاربر برتر {{ $race['period']->label }}</div>
+                    <div class="text-[11px] font-extrabold text-amber-200">Top member competition {{ $race['period']->label }}</div>
                     <div class="mt-2 text-lg font-black">
-                        {{ $race['grandPrize'] !== '' ? '🎁 جایزه ویژه نفر اول: ' . $race['grandPrize'] : 'جایزه ویژه نفر اول به‌زودی اعلام می‌شود' }}
+                        {{ $race['grandPrize'] !== '' ? '🎁 First place prize: ' . $race['grandPrize'] : 'The first place prize will be announced soon' }}
                     </div>
                     <p class="mt-2 text-[11px] leading-6 text-slate-300">
-                        حد نصاب شرکت در رقابت سال: حداقل {{ persian_number($race['minXp']) }} XP،
-                        {{ persian_number($race['minMissions']) }} مأموریت کامل‌شده و {{ persian_number($race['minOrders']) }} خرید در طول سال.
+                        Annual competition eligibility: at least {{ number_format($race['minXp']) }} XP,
+                        {{ number_format($race['minMissions']) }} completed missions and {{ number_format($race['minOrders']) }} purchases during the year.
                     </p>
 
                     @if($race['me'])
                         <div class="mt-4 space-y-2.5">
                             @foreach([
-                                ['XP امسال', $race['me']['xp'], $race['minXp']],
-                                ['مأموریت‌های امسال', $race['me']['missions'], $race['minMissions']],
-                                ['خریدهای امسال', $race['me']['orders'], $race['minOrders']],
+                                ['XP This year', $race['me']['xp'], $race['minXp']],
+                                ['Missions this year', $race['me']['missions'], $race['minMissions']],
+                                ['Purchases this year', $race['me']['orders'], $race['minOrders']],
                             ] as [$label, $value, $target])
                                 @php($percent = $progressRow((int) $value, (int) $target))
                                 <div>
                                     <div class="flex justify-between text-[10px] font-bold text-slate-300">
                                         <span>{{ $label }}</span>
-                                        <span>{{ persian_number($value) }} / {{ persian_number($target) }} {{ $percent >= 100 ? '✓' : '' }}</span>
+                                        <span>{{ number_format($value) }} / {{ number_format($target) }} {{ $percent >= 100 ? '✓' : '' }}</span>
                                     </div>
                                     <div class="mt-1 h-1.5 overflow-hidden rounded-full bg-white/10">
                                         <div class="h-full rounded-full {{ $percent >= 100 ? 'bg-emerald-400' : 'bg-amber-400' }}" style="width: {{ $percent }}%"></div>
@@ -84,12 +84,12 @@
                     @endif
 
                     @if($race['leaders']->isNotEmpty())
-                        <div class="mt-4 border-t border-white/10 pt-3 text-[11px] font-bold text-slate-300">پیشتازان امسال</div>
+                        <div class="mt-4 border-t border-white/10 pt-3 text-[11px] font-bold text-slate-300">Annual leaders</div>
                         <ol class="mt-2 space-y-1.5">
                             @foreach($race['leaders'] as $account)
                                 <li class="flex items-center justify-between gap-2 text-xs">
                                     <a href="{{ route('loyalty.members.show', $account->user_id) }}" class="truncate font-black hover:text-amber-200">{{ $medal[$account->leaderboard_rank] ?? '' }} {{ $nameFor($account->user) }}</a>
-                                    <span class="shrink-0 text-amber-200">{{ persian_number($account->leaderboard_score) }} XP</span>
+                                    <span class="shrink-0 text-amber-200">{{ number_format($account->leaderboard_score) }} XP</span>
                                 </li>
                             @endforeach
                         </ol>
@@ -100,9 +100,9 @@
 
         {{-- Prizes per rank --}}
         <section class="grid gap-3 md:grid-cols-3">
-            @foreach(['month' => 'برترین‌های ماه', 'season' => 'برترین‌های فصل', 'year' => 'برترین‌های سال'] as $type => $label)
+            @foreach(['month' => 'Monthly leaders', 'season' => 'Seasonal leaders', 'year' => 'Annual winners'] as $type => $label)
                 <article class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <h2 class="text-sm font-black text-slate-900 dark:text-white">جوایز {{ $label }}</h2>
+                    <h2 class="text-sm font-black text-slate-900 dark:text-white">Prizes {{ $label }}</h2>
                     <ul class="mt-3 space-y-2">
                         @foreach($prizes[$type] as $index => $row)
                             <li class="flex items-start gap-2 text-xs leading-6 text-slate-600 dark:text-slate-300">
@@ -121,9 +121,9 @@
 
         {{-- Winners --}}
         @foreach([
-            ['title' => 'کاربران برتر سال', 'items' => $years, 'empty' => 'اولین کاربر برتر سال، پایان امسال معرفی می‌شود.'],
-            ['title' => 'برترین‌های فصل', 'items' => $seasons, 'empty' => 'برترین‌های فصل، پایان هر فصل اینجا ثبت می‌شوند.'],
-            ['title' => 'برترین‌های ماه', 'items' => $months, 'empty' => 'برترین‌های ماه، پایان هر ماه اینجا ثبت می‌شوند.'],
+            ['title' => 'Top users of the year', 'items' => $years, 'empty' => 'The first annual winner will be announced at the end of this year.'],
+            ['title' => 'Seasonal leaders', 'items' => $seasons, 'empty' => 'Seasonal leaders are recorded here at the end of each season.'],
+            ['title' => 'Monthly leaders', 'items' => $months, 'empty' => 'Monthly leaders are recorded here at the end of each month.'],
         ] as $group)
             <section>
                 <h2 class="mb-3 text-lg font-black text-slate-950 dark:text-white">{{ $group['title'] }}</h2>
@@ -141,7 +141,7 @@
                                             <img src="{{ $champion->user?->profileAvatarUrl() ?: asset('img/user-avatar.png') }}" alt="" class="h-9 w-9 rounded-xl object-cover">
                                             <div class="min-w-0 flex-1">
                                                 <a href="{{ route('loyalty.members.show', $champion->user_id) }}" class="block truncate text-sm font-black text-slate-900 hover:text-brand-600 dark:text-white">{{ $nameFor($champion->user) }}</a>
-                                                <div class="text-[10px] font-bold text-slate-400">{{ persian_number($champion->score) }} XP</div>
+                                                <div class="text-[10px] font-bold text-slate-400">{{ number_format($champion->score) }} XP</div>
                                             </div>
                                             @if($champion->grand_prize)
                                                 <span class="rounded-lg bg-amber-400 px-2 py-1 text-[9px] font-black text-slate-950">🎁 {{ $champion->grand_prize }}</span>
@@ -161,15 +161,15 @@
             <section id="elite" class="relative overflow-hidden rounded-3xl border border-violet-200 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-6 dark:border-violet-500/20 dark:from-violet-500/10 dark:via-slate-900 dark:to-fuchsia-500/10">
                 <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div>
-                        <div class="text-[11px] font-extrabold text-violet-700 dark:text-violet-300">💎 کانون نخبگان باشگاه</div>
-                        <h2 class="mt-1 text-lg font-black text-slate-950 dark:text-white">در ساخت محصولات آینده نظر بده</h2>
+                        <div class="text-[11px] font-extrabold text-violet-700 dark:text-violet-300">💎 Club Elite Circle</div>
+                        <h2 class="mt-1 text-lg font-black text-slate-950 dark:text-white">Help shape future products</h2>
                         <p class="mt-2 max-w-2xl text-xs leading-7 text-slate-600 dark:text-slate-300">
-                            اعضای سطح «{{ $eliteLevel->badge }} {{ $eliteLevel->title }}» به بالا عضو کانون نخبگان‌اند: در نظرسنجی‌های ویژه
-                            درباره‌ی پچ‌ها و مادهای بعدی رأی می‌دهند و نشان کانون روی پروفایلشان دیده می‌شود.
+                            Members at level «{{ $eliteLevel->badge }} {{ $eliteLevel->title }}» and above belong to the Elite Circle: in exclusive polls
+                            they vote on future patches and mods and receive a profile badge.
                         </p>
                     </div>
                     <span class="shrink-0 rounded-2xl px-4 py-2 text-xs font-black {{ $isEliteMember ? 'bg-violet-600 text-white' : 'bg-white text-violet-700 ring-1 ring-violet-200 dark:bg-slate-900 dark:text-violet-300 dark:ring-violet-500/30' }}">
-                        {{ $isEliteMember ? 'شما عضو کانون هستید ✓' : 'از سطح ' . $eliteLevel->title . ' عضو می‌شوید' }}
+                        {{ $isEliteMember ? 'You are a circle member ✓' : 'From level ' . $eliteLevel->title . ' you become a member' }}
                     </span>
                 </div>
                 @if($elitePolls->isNotEmpty())

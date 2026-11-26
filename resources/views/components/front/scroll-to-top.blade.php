@@ -1,7 +1,7 @@
 <button
     id="scrollToTopBtn"
     type="button"
-    aria-label="پرش به بالای صفحه"
+    aria-label="Back to top"
     class="
         cursor-pointer
         group fixed bottom-5 left-5 z-[9999]
@@ -40,7 +40,7 @@
         md:bottom-6 md:left-6 md:h-14 md:w-14
     "
 >
-    {{-- لایه داخلی برای خروج از حالت مربع ساده --}}
+    {{-- Inner layer to avoid a plain square --}}
     <span
         class="
             pointer-events-none absolute inset-[5px]
@@ -55,7 +55,7 @@
         "
     ></span>
 
-    {{-- هایلایت گوشه‌ای خیلی ملایم --}}
+    {{-- Very subtle corner highlight --}}
     <span
         class="
             pointer-events-none absolute -top-5 -left-5

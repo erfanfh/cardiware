@@ -25,11 +25,11 @@
         </div>
     </div>
 
-    {{-- لایت‌باکس --}}
+    {{-- Lightbox --}}
     <div x-show="active" x-cloak x-transition.opacity class="fixed inset-0 z-[60] grid place-items-center bg-black/90 p-4 backdrop-blur" @click.self="active = null" @keydown.escape.window="active = null">
         <div class="relative max-w-5xl">
             <img :src="active" alt="" class="w-full rounded-2xl border border-edge">
-            <button @click="active = null" class="absolute -top-12 left-0 grid size-9 place-items-center rounded-full border border-edge bg-surface text-ink" aria-label="بستن">
+            <button @click="active = null" class="absolute -top-12 left-0 grid size-9 place-items-center rounded-full border border-edge bg-surface text-ink" aria-label="Close">
                 @include('front.landings.partials.icon', ['name' => 'x', 'class' => 'size-4'])
             </button>
         </div>

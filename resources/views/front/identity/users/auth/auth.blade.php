@@ -33,7 +33,7 @@
             100% { transform: translateY(-52vh) scale(.5); opacity: 0; }
         }
 
-        /* کل صفحه ورود همیشه تیره و یکدست است */
+        /* The sign-in page is always dark and consistent */
         .auth-page {
             background:
                 radial-gradient(60% 80% at 85% 0%, rgba(249, 115, 22, .10), transparent 55%),
@@ -103,7 +103,7 @@
             animation: authStepIn .45s cubic-bezier(.16, 1, .3, 1) both;
         }
 
-        /* ورودی‌ها و برچسب‌های فرم روی زمینهٔ تیره */
+        /* Inputs and labels on dark background */
         .auth-dark-scope,
         .auth-dark-scope * {
             color-scheme: dark;
@@ -153,7 +153,7 @@
 
 @section('content')
     <main class="auth-page auth-dark-scope relative min-h-screen w-full overflow-hidden text-slate-100">
-        {{-- پس‌زمینهٔ متحرک کل صفحه --}}
+        {{-- Animated full-page background --}}
         <div class="auth-panel-grid pointer-events-none absolute inset-0" aria-hidden="true"></div>
         <div class="auth-orb -top-24 -left-24 h-80 w-80 bg-brand-500/25" aria-hidden="true"></div>
         <div class="auth-orb -bottom-28 -right-28 h-96 w-96 bg-indigo-500/20" style="animation-delay: 1.4s" aria-hidden="true"></div>
@@ -166,7 +166,7 @@
         <span class="auth-particle" style="right:82%; width:5px; height:5px; animation-duration:12s; animation-delay:5s;" aria-hidden="true"></span>
 
         <div class="relative z-10 flex min-h-screen w-full">
-            {{-- پنل معرفی (دسکتاپ) --}}
+            {{-- Intro panel (desktop) --}}
             <section class="relative hidden lg:flex flex-1 items-center justify-center overflow-hidden px-10">
                 @if(get_setting('auth', 'image')->path)
                     <img
@@ -199,7 +199,7 @@
                        hover:bg-brand-600 active:bg-brand-700 transition hover:-translate-y-0.5">
                                 {{ get_setting('auth', 'button_title') }}
                                 <span class="[&_svg]:h-4 [&_svg]:w-4">
-                                    @include('icons.arrow-left-02')
+                                    <x-front.arrow-right-02/>
                                 </span>
                             </a>
                         </div>
@@ -207,7 +207,7 @@
                 </div>
             </section>
 
-            {{-- کارت ورود --}}
+            {{-- Sign-in card --}}
             <aside class="relative flex w-full items-center justify-center px-4 py-10 md:px-10 lg:w-[42%]">
                 <div class="w-full max-w-lg">
                     <div class="mb-4 flex justify-end">
@@ -218,7 +218,7 @@
                             <span class="opacity-80 transition-transform duration-200 group-hover:-translate-x-0.5 [&_svg]:h-3.5 [&_svg]:w-3.5">
                                 @include('icons.home-12')
                             </span>
-                            <span>بازگشت به صفحه اصلی</span>
+                            <span>Back to home</span>
                         </a>
                     </div>
 

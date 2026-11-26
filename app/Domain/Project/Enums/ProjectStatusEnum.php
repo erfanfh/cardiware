@@ -14,4 +14,12 @@ enum ProjectStatusEnum: string
             self::INACTIVE => 'غیرفعال'
         };
     }
+
+    public function enLabel(): string
+    {
+        return match ($this) {
+            self::ACTIVE => 'Active',
+            self::INACTIVE => 'Inactive'
+        };
+    }
 }

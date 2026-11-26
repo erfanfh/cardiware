@@ -20,7 +20,7 @@
         type="button"
         @click="open = !open"
         class="relative cursor-pointer h-10 w-10 [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition grid place-items-center dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-        aria-label="اعلان‌ها"
+        aria-label="Notifications"
     >
         @include('icons.notification-01')
 
@@ -53,12 +53,12 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
         x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-        class="absolute top-full left-0 z-[100] mt-3 w-[24rem] max-w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl max-sm:right-auto max-sm:left-0 max-sm:mt-2 max-sm:w-[calc(100vw-8rem)] max-sm:max-w-none dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
+        class="absolute top-full right-0 z-[100] mt-3 w-[24rem] max-w-[calc(100vw-1rem)] overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl max-sm:left-auto max-sm:right-0 max-sm:mt-2 max-sm:w-[calc(100vw-8rem)] max-sm:max-w-none dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
     >
         <div class="border-b border-slate-100 px-4 py-3 dark:border-slate-800">
-            <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">اعلان‌ها</div>
+            <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">Notifications</div>
             <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {{ count($notifications) }} اعلان
+                {{ count($notifications) }} Notification
             </div>
         </div>
 
@@ -73,12 +73,12 @@
                 @if(!empty($notification['id']))
                     <form method="post" action="{{ route('account.notifications.read', $notification['id']) }}" class="border-b border-slate-100 last:border-b-0 dark:border-slate-800">
                         @csrf
-                        <button type="submit" class="group flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-right transition hover:bg-slate-50 dark:hover:bg-slate-800/70 {{ $isUnread ? 'bg-brand-50/50 dark:bg-brand-500/10' : 'bg-slate-50/70 dark:bg-slate-800/30' }}">
+                        <button type="submit" class="group flex w-full cursor-pointer items-start gap-3 px-4 py-4 text-start transition hover:bg-slate-50 dark:hover:bg-slate-800/70 {{ $isUnread ? 'bg-brand-50/50 dark:bg-brand-500/10' : 'bg-slate-50/70 dark:bg-slate-800/30' }}">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border {{ $isUnread ? 'border-brand-100 bg-brand-50 text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-slate-50 text-slate-400 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-500' }}">@include('icons.notification-01')</span>
                             <span class="min-w-0 flex-1">
                                 <span class="block text-sm leading-6 {{ $isUnread ? 'font-semibold text-slate-700 dark:text-slate-300' : 'font-medium text-slate-500 dark:text-slate-400' }}">{{ $notification['title'] }}</span>
                                 @if($hasSubtitle)<span class="mt-1 block text-[0.7rem] {{ $isUnread ? 'text-slate-500 dark:text-slate-400' : 'text-slate-400 dark:text-slate-500' }}">{{ $notification['subtitle'] }}</span>@endif
-                                @if(!$isUnread)<span class="mt-1 block text-[0.65rem] text-slate-400 dark:text-slate-500">خوانده‌شده</span>@endif
+                                @if(!$isUnread)<span class="mt-1 block text-[0.65rem] text-slate-400 dark:text-slate-500">Read</span>@endif
                             </span>
                         </button>
                     </form>
@@ -115,17 +115,17 @@
                     </div>
 
                     <div class="mt-4 text-sm font-bold text-slate-700 dark:text-slate-200">
-                        اعلانی وجود ندارد
+                        No notifications
                     </div>
 
                     <p class="mt-1 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                        فعلاً اعلان جدیدی برای نمایش ندارید.
+                        No new notifications to display.
                     </p>
                 </div>
             @endforelse
         </div>
         @auth
-            <a href="{{ route('account.notifications.index') }}" class="block cursor-pointer border-t border-slate-100 px-4 py-3 text-center text-sm font-bold text-brand-600 dark:border-slate-800">مشاهده همه اعلان‌های من</a>
+            <a href="{{ route('account.notifications.index') }}" class="block cursor-pointer border-t border-slate-100 px-4 py-3 text-center text-sm font-bold text-brand-600 dark:border-slate-800">View all my notifications</a>
         @endauth
     </div>
 </div>

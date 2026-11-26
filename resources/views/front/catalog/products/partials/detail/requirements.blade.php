@@ -2,8 +2,8 @@
     <div
         class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900 p-4 sm:mt-6 sm:rounded-3xl sm:p-5">
         <x-front.cart-title
-            title="سیستم موردنیاز"
-            subtitle="پیشنهاد شده برای اجرای روان محصول"
+            title="System requirements"
+            subtitle="Recommended for smooth operation"
             iconName="computer-check"
             class="[&_h2]:text-sm [&_span]:border [&_span]:border-slate-200 [&_span]:bg-white dark:[&_span]:bg-slate-800 dark:[&_span]:border-slate-700 [&_svg]:text-blue-500"
         />

@@ -1,4 +1,4 @@
-/* ===== Festival landing (لندینگ جشنواره‌های مناسبتی) ===== */
+/* ===== Festival landing (Seasonal festival landing) ===== */
 
 .mw-festival {
     background:
@@ -20,7 +20,7 @@
 
 .dark .mw-festival-bg { opacity: .16; }
 
-/* پترن با کلاس مشترک mw-footer-pattern رندر می‌شود؛ اینجا فقط z-index پشت محتوا تثبیت می‌شود */
+/* Pattern with shared class mw-footer-pattern renders; here only z-index fixed behind content */
 .mw-festival-pattern {
     z-index: -1;
     opacity: .45;

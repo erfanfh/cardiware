@@ -1,4 +1,4 @@
-{{-- آیکون خطی داخلی — $name : نام آیکون، $class : کلاس اضافه --}}
+{{-- Internal line icon — $name : Icon name, $class : extra class --}}
 @switch($name ?? '')
     @case('check')
         <svg {!! $attributes ?? '' !!} class="{{ $class ?? 'size-5' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
@@ -49,7 +49,7 @@
         <svg {!! $attributes ?? '' !!} class="{{ $class ?? 'size-5' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         @break
     @case('arrow')
-        <svg {!! $attributes ?? '' !!} class="{{ $class ?? 'size-5' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <svg {!! $attributes ?? '' !!} class="{{ $class ?? 'size-5' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         @break
     @case('crown')
         <svg {!! $attributes ?? '' !!} class="{{ $class ?? 'size-5' }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8Z"/><path d="M6 19h12"/></svg>

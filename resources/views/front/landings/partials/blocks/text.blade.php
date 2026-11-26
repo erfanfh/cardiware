@@ -1,5 +1,5 @@
 {{--
-    بلوک متن — {type: text, title?, subtitle?, text}
+    Text block — {type: text, title?, subtitle?, text}
 --}}
 <div class="reveal">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])

@@ -28,7 +28,7 @@ import './free-posts.js';
     // default
     setActive("fc");
 
-    // اسلایدر محصولات فیزیکی در physical-products.js مقداردهی می‌شود.
+    // Physical product slider is initialized in physical-products.js is initialized.
 })();
 
 /*** ==================== Team slider ==================== ***/

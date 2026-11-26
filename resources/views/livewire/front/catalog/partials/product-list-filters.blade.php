@@ -4,7 +4,7 @@
             <div class="border-b border-slate-100 px-5 py-4">
                 <div class="flex items-center justify-between gap-3">
                     <h3 class="text-base font-black text-slate-950">
-                        فیلتر محصولات
+                        Product filters
                     </h3>
 
                     <button
@@ -12,7 +12,7 @@
                         wire:click="resetFilters"
                         class="cursor-pointer text-xs font-bold text-brand-600 transition hover:text-brand-700"
                     >
-                        حذف فیلترها
+                        Clear filters
                     </button>
                 </div>
             </div>
@@ -26,7 +26,7 @@
                         floor: {{ $availablePriceMin }},
                         ceil: {{ $availablePriceMax }},
                         format(value) {
-                            return new Intl.NumberFormat('fa-IR').format(value)
+                            return new Intl.NumberFormat('en-US').format(value)
                         },
                         minPercent() {
                             return ((this.min - this.floor) / (this.ceil - this.floor || 1)) * 100
@@ -62,19 +62,19 @@
                     <div class="mb-5 flex items-center justify-between">
                         <div>
                             <h4 class="text-sm font-black text-slate-900">
-                                محدوده قیمت
+                                Price range
                             </h4>
                         </div>
 
                         <span class="rounded-2xl bg-brand-50 px-3 py-1 text-[11px] font-black text-brand-600">
-                            تومان
+                            Toman
                         </span>
                     </div>
 
                     <div class="mb-5 grid grid-cols-2 gap-3">
                         <div class="rounded-2xl border border-slate-200 bg-white px-3 py-3">
                             <span class="block text-[11px] font-bold text-slate-400">
-                                کمترین
+                                Lowest
                             </span>
 
                             <strong
@@ -85,7 +85,7 @@
 
                         <div class="rounded-2xl border border-slate-200 bg-white px-3 py-3">
                             <span class="block text-[11px] font-bold text-slate-400">
-                                بیشترین
+                                Highest
                             </span>
 
                             <strong
@@ -133,12 +133,12 @@
                 <div>
                     <div class="mb-3 flex items-center justify-between gap-3">
                         <h4 class="text-sm font-black text-slate-900">
-                            دسته‌بندی‌ها
+                            Categories
                         </h4>
 
                         @if(! empty($selectedCategories))
                             <span class="rounded-2xl bg-brand-50 px-2.5 py-1 text-[11px] font-black text-brand-600">
-                                {{ count($selectedCategories) }} انتخاب
+                                {{ count($selectedCategories) }} Select
                             </span>
                         @endif
                     </div>
@@ -152,7 +152,7 @@
                             ])
                         @empty
                             <div class="rounded-2xl bg-slate-50 px-4 py-5 text-center text-xs font-bold text-slate-400">
-                                دسته‌بندی‌ای یافت نشد.
+                                No categories found.
                             </div>
                         @endforelse
                     </div>

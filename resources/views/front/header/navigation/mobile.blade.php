@@ -14,12 +14,12 @@
     <aside
         x-show="open"
         x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="translate-x-full opacity-0"
+        x-transition:enter-start="-translate-x-full opacity-0"
         x-transition:enter-end="translate-x-0 opacity-100"
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="translate-x-0 opacity-100"
-        x-transition:leave-end="translate-x-full opacity-0"
-        class="fixed inset-y-0 right-0 z-50 flex w-[min(88vw,380px)] flex-col overflow-hidden rounded-l-[2rem] border-l border-slate-200 bg-white shadow-2xl md:hidden dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
+        x-transition:leave-end="-translate-x-full opacity-0"
+        class="fixed inset-y-0 left-0 z-50 flex w-[min(88vw,380px)] flex-col overflow-hidden rounded-r-[2rem] border-r border-slate-200 bg-white shadow-2xl md:hidden dark:border-slate-700 dark:bg-slate-900 dark:shadow-black/30"
     >
         <div class="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-4 dark:border-slate-800">
             <div class="flex items-center gap-2">

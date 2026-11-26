@@ -4,8 +4,8 @@ import {Autoplay, Navigation, Pagination} from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-// اسلایدر محصولات دانلودی صفحهٔ اصلی — فقط وقتی کلاس .mwHomeProductsSlider render شده
-// (تنظیمات ادمین: download_products_slider = true) فعال می‌شود.
+// Homepage digital products slider: only when class .mwHomeProductsSlider render completed
+// (Admin settings: download_products_slider = true) is enabled.
 function initHomeProductsSlider() {
     document.querySelectorAll('.mwHomeProductsSlider').forEach((element) => {
         if (element.swiper) return;

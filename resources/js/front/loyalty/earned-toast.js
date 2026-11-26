@@ -2,7 +2,7 @@ const DISPLAY_DURATION = 7200;
 const SEEN_STORAGE_KEY = 'loyalty-earned-toast-seen';
 const MAX_SEEN_ITEMS = 30;
 
-const numberFormatter = new Intl.NumberFormat('fa-IR');
+const numberFormatter = new Intl.NumberFormat('en-US');
 
 function loadSeenIds() {
     try {
@@ -33,12 +33,12 @@ function buildMessage(notification) {
     const points = numberFormatter.format(notification.points);
 
     if (notification.type === 'daily_visit') {
-        return `به‌خاطر اولین ورود امروز، ${points} امتیاز به حسابت اضافه شد.`;
+        return `For your first sign-in today, ${points} points added to your account.`;
     }
 
     const seconds = numberFormatter.format(notification.required_seconds || 1);
 
-    return `برای ${notification.action_label} به مدت ${seconds} ثانیه، ${points} امتیاز به حسابت اضافه شد.`;
+    return `for ${notification.action_label} for ${seconds} seconds, ${points} points added to your account.`;
 }
 
 function isValidNotification(notification) {

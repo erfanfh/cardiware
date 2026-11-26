@@ -1,17 +1,17 @@
 {{--
-    صفحه اختصاصی هر تیم — /{landing}/leagues/{league}/{team}
-    نشان + اطلاعات (چهره‌ها، استادیوم، مربی) + گالری اسکرین‌شات + صحنه‌ها
+    Dedicated team page — /{landing}/leagues/{league}/{team}
+    Badge + Information (faces, stadium, coach) + Screenshot gallery + Scenes
 --}}
 @extends('front.landings.master')
 
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 
 @section('body')
     @include('front.landings.partials.navbar')
 
     <main class="pt-16">
-        {{-- هیروی تیم --}}
+        {{-- Team hero --}}
         <section class="relative overflow-hidden border-b border-edge/60">
             @if(!empty($team['hero_image']))
                 <div class="absolute inset-0" aria-hidden="true">
@@ -29,7 +29,7 @@
                 <nav class="flex flex-wrap items-center gap-2 text-xs text-muted" aria-label="breadcrumb">
                     <a href="{{ $prefix }}/{{ $slug }}" class="transition-colors hover:text-accent">{{ $data['product_name'] }}</a>
                     <span class="opacity-50">/</span>
-                    <a href="{{ $prefix }}/{{ $slug }}/leagues" class="transition-colors hover:text-accent">{{ $locale === 'en' ? 'Leagues' : 'لیگ‌ها' }}</a>
+                    <a href="{{ $prefix }}/{{ $slug }}/leagues" class="transition-colors hover:text-accent">{{ $locale === 'en' ? 'Leagues' : 'Leagues' }}</a>
                     <span class="opacity-50">/</span>
                     <a href="{{ $prefix }}/{{ $slug }}/leagues/{{ $leagueSlug }}" class="transition-colors hover:text-accent">{{ $league['name'] }}</a>
                     <span class="opacity-50">/</span>
@@ -57,7 +57,7 @@
                     </div>
                 </div>
 
-                {{-- بج‌های وضعیت پچ برای این تیم --}}
+                {{-- Patch status badges for this team --}}
                 <div class="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-3 lg:max-w-3xl">
                     @foreach($team['stats'] as $stat)
                         <div class="flex items-center gap-3 rounded-2xl border border-edge/70 bg-surface/60 px-4 py-3.5 backdrop-blur-sm">
@@ -74,7 +74,7 @@
             </div>
         </section>
 
-        {{-- توضیح + بلوک‌های محتوایی (ترتیب و ترکیب از config) --}}
+        {{-- Description + Content blocks (order and combination from config) --}}
         <section class="section-pad">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 @if(!empty($team['description']))
@@ -87,7 +87,7 @@
                     @endforeach
                 </div>
 
-                {{-- تگ‌های صحنه --}}
+                {{-- Scene tags --}}
                 <div class="mt-12 flex flex-wrap items-center justify-center gap-2.5">
                     @foreach($team['tags'] as $tag)
                         <span class="rounded-full border border-edge/70 bg-surface/60 px-4 py-2 text-xs font-bold text-muted">
@@ -96,14 +96,14 @@
                     @endforeach
                 </div>
 
-                {{-- لینک‌های پایانی --}}
+                {{-- Footer links --}}
                 <div class="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
                     <a href="{{ $prefix }}/{{ $slug }}/leagues/{{ $leagueSlug }}" class="btn-ghost">
                         @include('front.landings.partials.icon', ['name' => 'arrow', 'class' => 'size-4'])
-                        {{ $locale === 'en' ? 'Back to '.$league['name'] : 'بازگشت به '.$league['name'] }}
+                        {{ $locale === 'en' ? 'Back to '.$league['name'] : 'Back to '.$league['name'] }}
                     </a>
                     <a href="{{ $prefix }}/{{ $slug }}#pricing" class="btn-primary">
-                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'خرید پچ') }}
+                        {{ $data['buy_label'] ?? ($locale === 'en' ? 'Buy the mod' : 'Buy patch') }}
                     </a>
                 </div>
             </div>

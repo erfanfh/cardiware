@@ -59,7 +59,7 @@
                 x-data
                 x-on:click="$dispatch('open-modal', 'product-share-{{ $product->id }}')"
                 class="grid h-10 w-10 cursor-pointer place-items-center rounded-2xl border border-white/15 bg-black/25 text-white shadow-lg shadow-black/10 backdrop-blur-md transition hover:bg-black/35 [&_svg]:h-5 [&_svg]:w-5"
-                aria-label="اشتراک‌گذاری"
+                aria-label="Share"
             >
                 @include('icons.share-08')
             </button>

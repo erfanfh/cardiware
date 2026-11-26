@@ -14,8 +14,8 @@
             }
 
             /*
-             * روش انتخاب شده در همین لحظه snapshot می‌شود
-             * و همراه همان درخواست checkout ارسال می‌شود.
+             * The selected method at this moment snapshot is set
+             * and with the same request checkout is sent.
              */
             const selectedPaymentMethod = this.paymentMethod;
 
@@ -52,18 +52,18 @@
                             </div>
 
                             <div class="mt-4 text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                                سبد خرید شما خالی است.
+                                Your cart is empty.
                             </div>
 
                             <p class="mt-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
-                                هنوز محصولی به سبد خرید اضافه نکرده‌اید.
+                                You have not added any products to your cart yet.
                             </p>
 
                             <a
                                 href="{{ route('products.list') }}"
                                 class="mt-5 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 dark:bg-slate-100 px-5 text-xs font-extrabold text-white dark:text-slate-900 transition hover:bg-slate-800 dark:hover:bg-slate-200 sm:w-auto"
                             >
-                                مشاهده محصولات
+                                View products
                             </a>
                         </div>
                     @endforelse

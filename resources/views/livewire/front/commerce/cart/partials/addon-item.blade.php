@@ -9,7 +9,7 @@
                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
                     <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                خدمت افزوده
+                Add-on service
             </span>
 
             <span class="line-clamp-1 text-xs font-extrabold text-slate-900">
@@ -36,7 +36,7 @@
             wire:loading.attr="disabled"
             wire:target="removeItem({{ $addonItem->id }})"
             class="inline-flex h-7 w-7 cursor-pointer items-center justify-center rounded-xl border border-red-100 bg-red-50 text-red-500 shadow-sm transition hover:border-red-200 hover:bg-red-100 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-60"
-            aria-label="حذف خدمت افزوده"
+            aria-label="Remove add-on service"
         >
             <svg wire:loading.remove wire:target="removeItem({{ $addonItem->id }})" class="h-3.5 w-3.5"
                  viewBox="0 0 24 24" fill="none">

@@ -27,13 +27,13 @@
 
         <div class="absolute right-3 top-3">
             <span class="inline-flex items-center rounded-xl border border-white/20 bg-slate-950/35 px-2.5 py-1.5 text-[11px] font-black text-white backdrop-blur-md">
-                {{ number_format($prize->quantity) }} برنده
+                {{ number_format($prize->quantity) }} Winner
             </span>
         </div>
 
         @if($prize->estimated_value)
             <div class="absolute bottom-3 right-3 text-xs font-extrabold text-white">
-                ارزش تقریبی {{ number_format($prize->estimated_value) }} تومان
+                Approximate value {{ number_format($prize->estimated_value) }} Toman
             </div>
         @endif
     </div>
@@ -41,7 +41,7 @@
     <div class="p-4 sm:p-5">
         <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-                <div class="text-[10px] font-black uppercase tracking-wider text-brand-500 dark:text-brand-300">جایزه قرعه کشی</div>
+                <div class="text-[10px] font-black uppercase tracking-wider text-brand-500 dark:text-brand-300">Raffle prize</div>
                 <h3 class="mt-1.5 text-base font-black leading-7 text-slate-900 dark:text-white">{{ $prize->title }}</h3>
             </div>
 

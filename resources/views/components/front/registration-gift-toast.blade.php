@@ -16,7 +16,7 @@
         class="fixed inset-x-3 bottom-4 z-[100001] mx-auto w-auto max-w-[28rem] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:mx-0 sm:w-[28rem]"
         role="status"
         aria-live="polite"
-        dir="rtl"
+        dir="ltr"
     >
         <div class="relative overflow-hidden rounded-[1.75rem] border border-emerald-200/80 bg-white/95 p-5 shadow-2xl shadow-emerald-950/20 backdrop-blur-xl dark:border-emerald-400/20 dark:bg-slate-900/95">
             <div class="pointer-events-none absolute -left-12 -top-16 h-40 w-40 rounded-full bg-emerald-300/25 blur-3xl"></div>
@@ -29,13 +29,13 @@
 
                 <div class="min-w-0 flex-1">
                     <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-700 ring-1 ring-inset ring-emerald-200 dark:bg-emerald-400/10 dark:text-emerald-300 dark:ring-emerald-400/20">
-                        هدیه عضویت
+                        Membership gift
                     </span>
                     <h2 class="mt-2 text-base font-black leading-7 text-slate-950 dark:text-white">
-                        خوش اومدی! 🎉
+                        Welcome! 🎉
                     </h2>
                     <p class="mt-1 text-xs font-semibold leading-6 text-slate-600 dark:text-slate-300">
-                        پاداش «{{ $gift['title'] ?? 'هدیه ثبت‌نام' }}» همین الان برای حسابت فعال شد.
+                        Reward «{{ $gift['title'] ?? 'Registration gift' }}» has just been activated for your account.
                     </p>
                 </div>
 
@@ -43,7 +43,7 @@
                     type="button"
                     x-on:click="open = false"
                     class="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white [&_svg]:h-4 [&_svg]:w-4"
-                    aria-label="بستن پیام هدیه"
+                    aria-label="Dismiss gift message"
                 >
                     @include('icons.cancel-01')
                 </button>
@@ -52,7 +52,7 @@
             @if(filled($gift['coupon_code'] ?? null))
                 <div class="relative mt-4 flex items-center justify-between gap-3 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/80 px-3.5 py-3 dark:border-emerald-400/20 dark:bg-emerald-400/10">
                     <div>
-                        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">کد تخفیف اختصاصی تو</div>
+                        <div class="text-[10px] font-bold text-emerald-700 dark:text-emerald-300">Your personal discount code</div>
                         <code class="mt-1 block text-sm font-black tracking-wide text-slate-900 dark:text-white" dir="ltr">{{ $gift['coupon_code'] }}</code>
                     </div>
                     <button
@@ -60,14 +60,14 @@
                         x-on:click="navigator.clipboard.writeText(@js($gift['coupon_code'])); copied = true; setTimeout(() => copied = false, 1800)"
                         class="rounded-xl bg-white px-3 py-2 text-[11px] font-black text-emerald-700 shadow-sm dark:bg-slate-800 dark:text-emerald-300"
                     >
-                        <span x-show="!copied">کپی کد</span>
-                        <span x-show="copied" x-cloak>کپی شد ✓</span>
+                        <span x-show="!copied">Copy code</span>
+                        <span x-show="copied" x-cloak>Copied ✓</span>
                     </button>
                 </div>
             @endif
 
             <a href="{{ route('account.loyalty') }}" class="relative mt-4 inline-flex text-xs font-black text-brand-600 dark:text-brand-300">
-                مشاهده جزئیات در باشگاه
+                View details in club
             </a>
         </div>
     </div>

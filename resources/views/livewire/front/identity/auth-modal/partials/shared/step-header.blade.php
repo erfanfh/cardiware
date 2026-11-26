@@ -14,9 +14,9 @@
                 wire:loading.attr="disabled"
                 class="inline-flex cursor-pointer items-center gap-1 text-[11px] font-extrabold text-slate-500 transition hover:text-brand-600 disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-400 dark:hover:text-brand-400"
             >
-                @include('icons.arrow-left-01')
+                @include('icons.arrow-right-01')
 
-                <span>بازگشت</span>
+                <span>Back</span>
             </button>
         </div>
     @endif

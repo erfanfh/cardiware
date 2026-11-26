@@ -475,7 +475,7 @@
     }
 }
 
-/* ===== سوئیچ تم روز/شب — خورشید و ابر ↔ ماه و ستاره ===== */
+/* ===== Day/night switch: sun and cloud ↔ moon and stars ===== */
 
 .theme-toggle {
     position: relative;
@@ -486,21 +486,21 @@
     border-radius: 999px;
     overflow: hidden;
     cursor: pointer;
-    /* حالت روز: آسمان آبی */
+    /* Day: blue sky */
     background: linear-gradient(180deg, #85c7ff, #4da3ff);
     border: 1px solid rgba(37, 99, 235, .28);
     box-shadow: inset 0 1px 3px rgba(30, 64, 175, .28);
     transition: background-color .45s ease, border-color .45s ease, box-shadow .45s ease;
 }
 
-/* حالت شب: آسمان تیره با هالهٔ آبی */
+/* Night: dark sky with blue halo */
 .theme-toggle.is-dark {
     background: linear-gradient(180deg, #1b2230, #0f141d);
     border-color: rgba(96, 165, 250, .3);
     box-shadow: inset 0 1px 5px rgba(0, 0, 0, .6), 0 0 0 1px rgba(96, 165, 250, .1);
 }
 
-/* ستاره‌ها — فقط شب */
+/* Stars: night only */
 .tt-stars {
     position: absolute;
     inset: 0;
@@ -525,7 +525,7 @@
     to { opacity: .95; }
 }
 
-/* دستگیره — روز: راست / شب: چپ */
+/* Handle: day right / night left */
 .tt-knob {
     position: absolute;
     top: 3px;
@@ -540,7 +540,7 @@
     transform: translateX(-29px);
 }
 
-/* خورشید */
+/* Sun */
 .tt-knob::before {
     content: '';
     position: absolute;
@@ -551,7 +551,7 @@
     transition: opacity .3s ease, transform .4s ease;
 }
 
-/* ابر کنار خورشید */
+/* Cloud next to sun */
 .tt-cloud {
     position: absolute;
     right: -3px;
@@ -575,7 +575,7 @@
 .tt-cloud::before { top: -4px; left: 2.5px; width: 8px; height: 8px; }
 .tt-cloud::after { top: -2.5px; right: 3px; width: 6px; height: 6px; }
 
-/* ماه با دهانه‌ها */
+/* Moon with craters */
 .tt-moon {
     position: absolute;
     inset: 0;
@@ -598,7 +598,7 @@
         radial-gradient(circle at 57% 29%, rgba(100, 116, 139, .38) 2.1px, transparent 3px);
 }
 
-/* تعویض محتوای دستگیره بین روز و شب */
+/* Swap handle content between day and night */
 .theme-toggle.is-dark .tt-knob::before { opacity: 0; transform: scale(.5); }
 .theme-toggle.is-dark .tt-cloud { opacity: 0; transform: translateY(7px) scale(.6); }
 .theme-toggle.is-dark .tt-moon { opacity: 1; transform: scale(1); }
@@ -616,7 +616,7 @@
     }
 }
 
-/* درخشش آرام روی کاور پروفایل عضو VIP */
+/* Subtle shine on member profile cover VIP */
 @keyframes mwMemberShine {
     0%   { transform: translateX(-40%) skewX(-18deg); opacity: 0; }
     15%  { opacity: 1; }
@@ -633,13 +633,13 @@
     .mw-member-shine { animation: none; opacity: 0; }
 }
 
-/* ═══ سایدبار اکانت کاربران VIP ═══
-   ظاهر منو در هر دو تم عادی می‌ماند؛ تمایز با لهجه‌های طلایی:
-   نوار بالایی + نشان تاج (در blade) + آیتم فعال/هاور طلایی +
-   استروک طلایی متحرک فقط در تم تیره. از --sb-ring-angle تعریف‌شده
-   در sidebar-projects.css استفاده می‌کند. */
+/* ═══ User account sidebar VIP ═══
+   Menu looks normal in both themes; gold accents distinguish it:
+   Top bar + Crown badge (in blade) + Gold active/hover item +
+   Animated gold stroke only in dark theme. From --sb-ring-angle defined
+   in sidebar-projects.css uses. */
 
-/* عنوان گروه‌ها در سایدبار VIP */
+/* Sidebar group headings VIP */
 .mw-vip-sidebar .text-\[10px\] {
     color: rgb(180 127 21) !important;
 }
@@ -648,7 +648,7 @@
     color: rgb(251 191 36 / .75) !important;
 }
 
-/* آیتم فعال و هاور: ته‌رنگ طلایی ملایم */
+/* Active and hover: subtle gold tint */
 .mw-vip-sidebar a:hover {
     background: rgb(254 243 199 / .55);
 }
@@ -657,7 +657,7 @@
     background: rgb(251 191 36 / .08);
 }
 
-/* آیتم فعال سایدبار VIP: به‌جای نارنجی، گرادیان طلایی */
+/* Active sidebar item VIP: Gold gradient instead of orange */
 .mw-vip-sidebar a.bg-gradient-to-l {
     background-image: linear-gradient(to left, rgb(251 191 36 / .22), rgb(251 191 36 / .06));
     border-color: rgb(217 119 6 / .3);
@@ -670,12 +670,12 @@
     box-shadow: 0 8px 24px -12px rgba(245, 158, 11, .35);
 }
 
-/* میلهٔ کنار آیتم فعال: طلایی */
+/* Active item side bar: gold */
 .mw-vip-sidebar a.bg-gradient-to-l > span.bg-gradient-to-b {
     background-image: linear-gradient(to bottom, #fde68a, #d97706);
 }
 
-/* هالهٔ بسیار ملایم طلایی (فقط تم روشن) */
+/* Very subtle gold halo (light theme only) */
 .mw-vip-sidebar {
     box-shadow: 0 10px 30px -18px rgba(217, 119, 6, .35);
 }
@@ -684,7 +684,7 @@
     display: none;
 }
 
-/* استروک طلایی متحرک — فقط تم تیره */
+/* Animated gold stroke: dark theme only */
 .dark .mw-vip-sidebar-stroke {
     display: block;
     position: absolute;
@@ -717,3 +717,7 @@
         background: conic-gradient(from 270deg, rgba(245, 158, 11, .4) 0deg, rgba(245, 158, 11, .4) 360deg);
     }
 }
+
+/* English storefront typography; shared application CSS remains unchanged. */
+html[lang="en"] body { font-family: system-ui, "Segoe UI", Arial, sans-serif; }
+html[lang="en"] .font-sans { font-family: system-ui, "Segoe UI", Arial, sans-serif; }

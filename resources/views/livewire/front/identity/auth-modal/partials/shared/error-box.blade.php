@@ -27,7 +27,7 @@
 
             <div class="min-w-0 flex-1">
                 <div class="text-xs font-black text-red-900 dark:text-red-300">
-                    عملیات ناموفق بود
+                    Operation failed
                 </div>
 
                 <ul class="mt-1.5 space-y-1">

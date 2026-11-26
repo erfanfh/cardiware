@@ -1,7 +1,7 @@
 @extends('front.master')
 
 @section('head')
-    <title>حساب کاربری | {{ get_setting('general', 'title') }}</title>
+    <title>Account | {{ get_setting('general', 'title') }}</title>
 @endsection
 
 @section('content')

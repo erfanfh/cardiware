@@ -1,4 +1,4 @@
-{{-- سربرگ اختیاری بلوک — $block['title'] دوزبانه --}}
+{{-- Optional block header — $block['title'] Bilingual --}}
 @if(!empty($block['title']))
     <div class="mx-auto mb-8 max-w-2xl text-center">
         <h3 class="text-2xl font-black text-ink">{{ $block['title'] }}</h3>

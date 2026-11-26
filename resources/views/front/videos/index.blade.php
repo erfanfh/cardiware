@@ -90,7 +90,7 @@
 
                         <div class="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
                             <div class="rounded-2xl border border-white/10 bg-white/[.08] p-3.5 backdrop-blur">
-                                <div class="text-[10px] font-black text-slate-400">کل ویدیوها</div>
+                                <div class="text-[10px] font-black text-slate-400">All videos</div>
                                 <div class="mt-2 text-xl font-black text-white">{{ number_format($totalVideos) }}</div>
                             </div>
                             @foreach($categories->take(3) as $heroCategory)
@@ -153,8 +153,8 @@
                                     @endif
                                     <div
                                         class="mt-auto flex items-center justify-between gap-3 pt-4 text-[10px] font-bold text-slate-400">
-                                        <span>{{ approximate_view(public_page_views($displayFeatured)) }} بازدید</span>
-                                        <span class="font-black text-brand-200">مشاهده ویدیو ←</span>
+                                        <span>{{ approximate_view(public_page_views($displayFeatured)) }} views</span>
+                                        <span class="font-black text-brand-200">Watch video ←</span>
                                     </div>
                                 </div>
                             </a>
@@ -204,10 +204,10 @@
                                             <h3 class="line-clamp-2 text-xs font-black leading-6 text-slate-800 transition group-hover:text-brand-700 dark:text-slate-200 dark:group-hover:text-brand-300">{{ $trending->title }}</h3>
                                             <div
                                                 class="mt-1.5 flex items-center gap-2 text-[9px] font-bold text-slate-400">
-                                                <span>{{ approximate_view(public_page_views($trending)) }} بازدید</span>
+                                                <span>{{ approximate_view(public_page_views($trending)) }} views</span>
                                                 <span
                                                     class="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                                                <span>{{ jalali_date($trending->published_at, 'Y/m/d') }}</span>
+                                                <span>{{ (($trending->published_at) ? \Illuminate\Support\Carbon::parse($trending->published_at)->format('Y/m/d') : '') }}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -254,9 +254,9 @@
 
                             <div class="flex items-center gap-2">
                                 <a href="{{ $sortUrl('latest') }}#video-archive"
-                                   class="rounded-xl border px-3 py-2 text-[10px] font-black transition sm:text-xs {{ $sort === 'latest' ? 'border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800' }}">جدیدترین</a>
+                                   class="rounded-xl border px-3 py-2 text-[10px] font-black transition sm:text-xs {{ $sort === 'latest' ? 'border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800' }}">Newest</a>
                                 <a href="{{ $sortUrl('popular') }}#video-archive"
-                                   class="rounded-xl border px-3 py-2 text-[10px] font-black transition sm:text-xs {{ $sort === 'popular' ? 'border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800' }}">پربازدیدترین</a>
+                                   class="rounded-xl border px-3 py-2 text-[10px] font-black transition sm:text-xs {{ $sort === 'popular' ? 'border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300' : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800' }}">Most viewed</a>
                             </div>
                         </div>
                     </div>
@@ -295,8 +295,8 @@
                                        rel="noopener noreferrer" @endif>{{ $followButtonTitle }}</a>
                                 @endif
                                 <a href="{{ route('videos.index') }}"
-                                   class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">آرشیو
-                                    کامل</a>
+                                   class="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">Archive
+                                    Complete</a>
                             </div>
                         </div>
                     </div>

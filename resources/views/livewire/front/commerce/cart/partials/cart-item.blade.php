@@ -75,7 +75,7 @@
     dark:text-slate-400">
                         @if($hasDiscount)
                             <span class="inline-flex flex-wrap items-center gap-1.5">
-                                <span>قیمت واحد:</span>
+                                <span>Unit price:</span>
 
                                 <span
                                     class="text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500">
@@ -87,12 +87,12 @@
                                 </span>
                             </span>
                         @else
-                            <span>قیمت واحد: {{ $this->money($unitPrice) }}</span>
+                            <span>Unit price: {{ $this->money($unitPrice) }}</span>
                         @endif
 
                         @if($quantity > 1)
                             <span class="text-slate-300 dark:text-slate-600">•</span>
-                            <span>تعداد: {{ $quantity }}</span>
+                            <span>Quantity: {{ $quantity }}</span>
                         @endif
                     </div>
                 </div>
@@ -100,9 +100,9 @@
 
             <div class="flex shrink-0 flex-col gap-3 border-t border-slate-100 pt-3 md:items-end md:border-t-0 md:pt-0
                 dark:border-slate-800">
-                <div class="flex items-center justify-between gap-3 md:block md:text-left">
+                <div class="flex items-center justify-between gap-3 md:block md:text-end">
                     <div class="text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                        مبلغ این آیتم
+                        Item amount
                     </div>
 
                     <div
@@ -208,7 +208,7 @@
             <div class="border-t border-slate-100 bg-slate-50/70 px-3 py-3 sm:px-4
                 dark:border-slate-800 dark:bg-slate-900/50">
                 <div class="mb-2 text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
-                    خدمات افزوده انتخاب‌شده
+                    Selected add-on services
                 </div>
 
                 <div class="space-y-2">
@@ -271,8 +271,8 @@
                             <div wire:key="remove-addon-modal-wrapper-{{ $addonItem->id }}">
                                 <x-front.modal
                                     :name="$removeAddonModalName"
-                                    title="حذف خدمت افزوده"
-                                    description="آیا مطمئن هستید که می‌خواهید این خدمت افزوده را از سبد خرید حذف کنید؟"
+                                    title="Remove add-on service"
+                                    description="Are you sure you want to remove this add-on from your cart?"
                                     maxWidth="max-w-md"
                                 >
                                     <div class="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3
@@ -282,7 +282,7 @@
                                         </div>
 
                                         <p class="mt-1 text-xs leading-6 text-rose-600 dark:text-rose-400">
-                                            این مورد از سبد خرید شما حذف می‌شود.
+                                            This item will be removed from your cart.
                                         </p>
                                     </div>
 
@@ -294,7 +294,7 @@
                                                 class="h-10 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50
                                                 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300"
                                             >
-                                                انصراف
+                                                Cancel
                                             </button>
 
                                             <button
@@ -306,7 +306,7 @@
                                             >
                                                 <span wire:loading.remove
                                                       wire:target="removeItem({{ $addonItem->id }})">
-                                                    حذف شود
+                                                    will be removed
                                                 </span>
 
                                                 <span
@@ -329,8 +329,8 @@
     <div wire:key="remove-main-modal-wrapper-{{ $cartItem->id }}">
         <x-front.modal
             :name="$removeMainModalName"
-            title="حذف محصول از سبد خرید"
-            description="آیا مطمئن هستید که می‌خواهید این محصول را از سبد خرید حذف کنید؟"
+            title="Remove product from cart"
+            description="Are you sure you want to remove this product from your cart?"
             maxWidth="max-w-md"
         >
             <div class="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3
@@ -358,7 +358,7 @@
                     </div>
 
                     <p class="mt-1 text-xs leading-6 text-rose-600 dark:text-rose-400">
-                        با حذف این محصول، خدمات افزوده مرتبط با آن هم از سبد خرید حذف می‌شود.
+                        Removing this product will also remove its related add-ons from your cart.
                     </p>
                 </div>
             </div>
@@ -371,7 +371,7 @@
                         class="h-10 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50
                         dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800 dark:text-slate-300"
                     >
-                        انصراف
+                        Cancel
                     </button>
 
                     <button
@@ -382,7 +382,7 @@
                         class="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-rose-600 px-4 text-xs font-extrabold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         <span wire:loading.remove wire:target="removeItem({{ $cartItem->id }})">
-                            حذف شود
+                            will be removed
                         </span>
 
                         <span

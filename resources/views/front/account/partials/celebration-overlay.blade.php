@@ -1,4 +1,4 @@
-{{-- اورلی جشن هنگام دریافت موفق پاداش؛ فقط وقتی session('celebration') ست شده باشد رندر می‌شود. --}}
+{{-- Celebration overlay on successful reward; only when session('celebration') is set. --}}
 @if(session('celebration'))
     <div id="mw-celebration"
          x-data="{ open: true }"
@@ -20,15 +20,15 @@
                 <span class="drop-shadow-md">🎉</span>
             </div>
 
-            <h3 class="relative mt-4 text-lg font-black text-slate-900 dark:text-white">آفرین! پاداش فعال شد</h3>
+            <h3 class="relative mt-4 text-lg font-black text-slate-900 dark:text-white">Well done! Reward activated</h3>
             <p class="relative mt-2 text-xs font-bold leading-6 text-slate-500 dark:text-slate-300">
-                پاداش «{{ session('celebration') }}» با موفقیت دریافت شد.
+                Reward «{{ session('celebration') }}» Successfully claimed.
             </p>
 
             <button type="button"
                     @click="open = false"
                     class="relative mt-5 inline-flex h-10 w-full cursor-pointer items-center justify-center rounded-2xl bg-gradient-to-l from-brand-500 to-brand-600 px-4 text-xs font-extrabold text-white shadow-lg shadow-brand-500/25 transition hover:-translate-y-0.5">
-                عالیه!
+                Great!
             </button>
         </div>
     </div>

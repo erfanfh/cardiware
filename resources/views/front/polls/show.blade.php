@@ -10,8 +10,8 @@
         && !$eliteBlocked
         && (!$hasVoted || $poll->allow_vote_changes);
     $statusLabel = !$poll->acceptsVotesAt()
-        ? ($poll->starts_at?->isFuture() ? 'به‌زودی آغاز می‌شود' : 'پایان یافته')
-        : 'در حال برگزاری';
+        ? ($poll->starts_at?->isFuture() ? 'Starting soon' : 'Ended')
+        : 'Ongoing';
 @endphp
 
 @section('content')
@@ -42,7 +42,7 @@
                                 class="rounded-full bg-white/80 px-3 py-1.5 text-[11px] font-bold text-slate-500 ring-1 ring-slate-200 dark:bg-slate-800/80 dark:text-slate-300 dark:ring-slate-700">{{ $poll->audience->label() }}</span>
                             @if($poll->allows_multiple_selections)
                                 <span
-                                    class="rounded-full bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:ring-violet-500/20">چندگزینه‌ای</span>
+                                    class="rounded-full bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-700 ring-1 ring-violet-200 dark:bg-violet-500/10 dark:text-violet-300 dark:ring-violet-500/20">Multiple choice</span>
                             @endif
                         </div>
                         <h1 class="mt-5 text-2xl font-black leading-[1.9] text-slate-900 dark:text-white sm:text-3xl">{{ $poll->title }}</h1>
@@ -72,15 +72,15 @@
                         @if($canSubmit)
                             <form method="post" action="{{ route('polls.vote', $poll->slug) }}"
                                   x-data="{ selected: @js(array_map('intval', $selectedIds)), multiple: @js($poll->allows_multiple_selections), max: {{ $poll->max_selections }} }"
-                                  @submit="if (!selected.length) { $event.preventDefault(); alert('لطفاً یک گزینه را انتخاب کنید.'); }">
+                                  @submit="if (!selected.length) { $event.preventDefault(); alert('Please select an option.'); }">
                                 @csrf
                                 <div class="mb-4 flex items-center justify-between gap-3"><h2
-                                        class="text-sm font-black text-slate-900 dark:text-white">انتخاب
-                                        شما</h2>@if($poll->allows_multiple_selections)
-                                        <span class="text-[11px] font-bold text-slate-400">حداقل {{ $poll->min_selections }} و حداکثر {{ $poll->max_selections }} گزینه</span>
+                                        class="text-sm font-black text-slate-900 dark:text-white">Select
+                                        You</h2>@if($poll->allows_multiple_selections)
+                                        <span class="text-[11px] font-bold text-slate-400">Minimum {{ $poll->min_selections }} and maximum {{ $poll->max_selections }} Option</span>
                                     @else
                                         <span
-                                            class="text-[11px] font-bold text-slate-400">یک گزینه را انتخاب کنید</span>
+                                            class="text-[11px] font-bold text-slate-400">Select an option</span>
                                     @endif</div>
                                 <div class="space-y-3">
                                     @foreach($options as $option)
@@ -108,18 +108,18 @@
                                     @endforeach
                                 </div>
                                 <button type="submit"
-                                        class="cursor-pointer mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-brand-500 to-orange-500 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-orange-200/60 transition hover:-translate-y-0.5 dark:shadow-none">{{ $hasVoted ? 'به‌روزرسانی رأی' : 'ثبت رأی' }}
+                                        class="cursor-pointer mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-brand-500 to-orange-500 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-orange-200/60 transition hover:-translate-y-0.5 dark:shadow-none">{{ $hasVoted ? 'Update vote' : 'Submit vote' }}
                                     <span aria-hidden="true">←</span></button>
                             </form>
                         @elseif($eliteBlocked)
                             <div class="rounded-3xl border border-violet-200 bg-violet-50 p-6 text-center dark:border-violet-500/20 dark:bg-violet-500/10">
                                 <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-2xl text-white">💎</div>
-                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">ویژه کانون نخبگان باشگاه</h2>
+                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">Exclusive to the Club Elite Circle</h2>
                                 <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">
-                                    در این نظرسنجی فقط اعضای سطح «{{ $eliteMembership->level()?->title ?? 'ویژه' }}» به بالا درباره‌ی محصولات آینده نظر می‌دهند.
-                                    با خرید، اشتراک ویژه و فعالیت در سایت XP بگیر و عضو کانون شو.
+                                    Only members at level «{{ $eliteMembership->level()?->title ?? 'Exclusive' }}» and above vote on future products in this poll.
+                                    Through purchases, premium subscriptions and site activities XP earn points and join the circle.
                                 </p>
-                                <a href="{{ route('loyalty.hall-of-fame') }}#elite" class="mt-4 inline-flex rounded-2xl bg-violet-600 px-6 py-3 text-xs font-black text-white transition hover:bg-violet-700">کانون نخبگان چیست؟</a>
+                                <a href="{{ route('loyalty.hall-of-fame') }}#elite" class="mt-4 inline-flex rounded-2xl bg-violet-600 px-6 py-3 text-xs font-black text-white transition hover:bg-violet-700">What is the Elite Circle?</a>
                             </div>
                         @elseif($poll->audience === PollAudienceEnum::MEMBERS && !auth()->check())
                             <div
@@ -128,12 +128,12 @@
                                     class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500 text-2xl text-white">
                                     👤
                                 </div>
-                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">ویژه اعضای
+                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">Exclusive to members of
                                     Cardiware</h2>
-                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">برای ثبت رأی، ابتدا
-                                    وارد حساب کاربری خود شوید.</p><a href="{{ route('login') }}"
-                                                                     class="mt-4 inline-flex rounded-2xl bg-sky-600 px-6 py-3 text-xs font-black text-white transition hover:bg-sky-700">ورود
-                                    به حساب کاربری</a></div>
+                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">To vote, first
+                                    sign in to your account.</p><a href="{{ route('login') }}"
+                                                                     class="mt-4 inline-flex rounded-2xl bg-sky-600 px-6 py-3 text-xs font-black text-white transition hover:bg-sky-700">Sign in
+                                    to your account</a></div>
                         @elseif($hasVoted && !$poll->allow_vote_changes)
                             <div
                                 class="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-500/20 dark:bg-emerald-500/10">
@@ -141,31 +141,31 @@
                                     class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500 text-2xl font-black text-white">
                                     ✓
                                 </div>
-                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">رأی شما ثبت شده
-                                    است</h2>
-                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">از وقتی که برای
-                                    مشارکت در این نظرسنجی گذاشتید ممنونیم.</p></div>
+                                <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">Your vote has been recorded
+                                    is</h2>
+                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">Thank you for
+                                    taking part in this poll.</p></div>
                         @else
                             <div
                                 class="rounded-3xl border border-slate-200 bg-slate-50 p-6 text-center dark:border-slate-700 dark:bg-slate-800/50">
                                 <div class="text-3xl">⌛</div>
-                                <h2 class="mt-3 text-base font-black text-slate-900 dark:text-white">امکان ثبت رأی وجود
-                                    ندارد</h2>
-                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">{{ $poll->starts_at?->isFuture() ? 'این نظرسنجی هنوز شروع نشده است.' : 'مهلت شرکت در این نظرسنجی به پایان رسیده است.' }}</p>
+                                <h2 class="mt-3 text-base font-black text-slate-900 dark:text-white">Voting is
+                                    unavailable</h2>
+                                <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">{{ $poll->starts_at?->isFuture() ? 'This poll has not started yet.' : 'Voting for this poll has ended.' }}</p>
                             </div>
                         @endif
 
                         @if($showResults && $results)
                             <section class="mt-8 border-t border-slate-100 pt-7 dark:border-slate-800">
                                 <div class="mb-5 flex items-end justify-between gap-4">
-                                    <div><h2 class="text-base font-black text-slate-900 dark:text-white">نتایج
-                                            لحظه‌ای</h2>
-                                        <p class="mt-1 text-[11px] text-slate-400">درصد بر اساس تعداد پاسخ‌دهندگان</p>
+                                    <div><h2 class="text-base font-black text-slate-900 dark:text-white">Results
+                                            Live</h2>
+                                        <p class="mt-1 text-[11px] text-slate-400">Percentage based on respondents</p>
                                     </div>@if($poll->show_response_count)
                                         <div class="text-left">
                                             <div
                                                 class="text-xl font-black text-brand-600 dark:text-brand-400">{{ number_format($results['responses']) }}</div>
-                                            <div class="text-[10px] text-slate-400">پاسخ معتبر</div>
+                                            <div class="text-[10px] text-slate-400">valid responses</div>
                                         </div>
                                     @endif</div>
                                 <div class="space-y-5">
@@ -176,11 +176,11 @@
                                                 <div
                                                     class="text-sm font-extrabold text-slate-700 dark:text-slate-200">{{ $result['label'] }} @if($isMine)
                                                         <span
-                                                            class="mr-1 text-[10px] text-brand-600 dark:text-brand-400">انتخاب شما</span>
+                                                            class="mr-1 text-[10px] text-brand-600 dark:text-brand-400">Your selection</span>
                                                     @endif</div>
                                                 <div
                                                     class="shrink-0 text-xs font-black text-slate-600 dark:text-slate-300">{{ number_format($result['respondent_percentage'], 1) }}
-                                                    ٪ @if($poll->show_response_count)
+                                                    % @if($poll->show_response_count)
                                                         <span class="font-normal text-slate-400">({{ number_format($result['count']) }})</span>
                                                     @endif</div>
                                             </div>
@@ -198,13 +198,13 @@
 
                     <aside
                         class="border-t border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800 dark:bg-slate-950/35 lg:border-r lg:border-t-0 sm:p-6">
-                        <h2 class="text-xs font-black text-slate-900 dark:text-white">اطلاعات نظرسنجی</h2>
+                        <h2 class="text-xs font-black text-slate-900 dark:text-white">Poll information</h2>
                         <div class="mt-4 divide-y divide-slate-200/70 text-xs dark:divide-slate-800">
                             @foreach([
-                                ['label' => 'شروع', 'value' => $poll->starts_at ? jalali_date($poll->starts_at, 'Y/m/d H:i') : 'از زمان انتشار'],
-                                ['label' => 'پایان', 'value' => $poll->ends_at ? jalali_date($poll->ends_at, 'Y/m/d H:i') : 'بدون محدودیت'],
-                                ['label' => 'نوع انتخاب', 'value' => $poll->allows_multiple_selections ? 'چندگزینه‌ای' : 'تک‌گزینه‌ای'],
-                                ['label' => 'مخاطب', 'value' => $poll->audience->label()],
+                                ['label' => 'Start', 'value' => $poll->starts_at ? (($poll->starts_at) ? \Illuminate\Support\Carbon::parse($poll->starts_at)->format('Y/m/d H:i') : '') : 'Since publication'],
+                                ['label' => 'End', 'value' => $poll->ends_at ? (($poll->ends_at) ? \Illuminate\Support\Carbon::parse($poll->ends_at)->format('Y/m/d H:i') : '') : 'Unlimited'],
+                                ['label' => 'Selection type', 'value' => $poll->allows_multiple_selections ? 'Multiple choice' : 'Single choice'],
+                                ['label' => 'Audience', 'value' => $poll->audience->label()],
                             ] as $item)
                                 <div class="flex items-center justify-between gap-3 py-3"><span
                                         class="text-slate-400">{{ $item['label'] }}</span><span

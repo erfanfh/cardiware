@@ -1,6 +1,6 @@
 @if($product->tags)
     <x-front.cart class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
-        <div class="mb-4 text-sm font-extrabold text-slate-900 dark:text-white">برچسب‌ها</div>
+        <div class="mb-4 text-sm font-extrabold text-slate-900 dark:text-white">Tags</div>
 
         <div class="flex flex-wrap gap-2">
             @foreach($product->tags as $tag)

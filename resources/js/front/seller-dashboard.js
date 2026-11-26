@@ -21,7 +21,7 @@ if (element) {
                 backgroundColor: dark ? '#1e293b' : '#fff',
                 borderColor: dark ? '#334155' : '#e2e8f0',
                 textStyle: { color: dark ? '#f8fafc' : '#0f172a', fontFamily: 'inherit' },
-                formatter: (items) => `${items[0].axisValue}<br/><strong>${Number(items[0].value).toLocaleString('fa-IR')} تومان</strong>`,
+                formatter: (items) => `${items[0].axisValue}<br/><strong>${Number(items[0].value).toLocaleString('en-US')} Toman</strong>`,
             },
             xAxis: {
                 type: 'category', data: data.labels || [], boundaryGap: false,
@@ -32,7 +32,7 @@ if (element) {
             yAxis: {
                 type: 'value', min: 0,
                 splitLine: { lineStyle: { color: dark ? '#273449' : '#f1f5f9' } },
-                axisLabel: { color: dark ? '#94a3b8' : '#64748b', formatter: (value) => Number(value).toLocaleString('fa-IR') },
+                axisLabel: { color: dark ? '#94a3b8' : '#64748b', formatter: (value) => Number(value).toLocaleString('en-US') },
             },
             series: [{
                 type: 'line', data: data.values || [], smooth: 0.3, symbol: 'circle', symbolSize: 6,

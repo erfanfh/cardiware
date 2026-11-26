@@ -9,7 +9,7 @@
 
         $isPublished = $progress >= 100;
 
-        // رنگ پیوسته: ۰٪ قرمز → ۵۰٪ نارنجی/زرد → ۱۰۰٪ سبز (هماهنگ با کارت پروژه‌ها)
+        // Continuous color: 0% red → 50% orange/yellow → 100% green (consistent with project cards)
         $hue = $isPublished ? 152 : (int) round($progress * 1.42);
         $hueEnd = min(160, $hue + 16);
 
@@ -20,11 +20,11 @@
         $barGradient = "linear-gradient(to left, hsl({$hueEnd} 83% 47%), hsl({$hue} 88% 53%))";
 
         $startedAt = $update->started_at
-            ? jalali_date($update->started_at, 'Y/m/d')
+            ? (($update->started_at) ? \Illuminate\Support\Carbon::parse($update->started_at)->format('Y/m/d') : '')
             : null;
 
         $releaseAt = $update->release_at
-            ? jalali_date($update->release_at, 'Y/m/d')
+            ? (($update->release_at) ? \Illuminate\Support\Carbon::parse($update->release_at)->format('Y/m/d') : '')
             : null;
     @endphp
 
@@ -53,24 +53,24 @@
 
             <span class="mw-upbox-badge {{ $isPublished ? 'is-done' : '' }}">
                 <span class="mw-upbox-badge-dot"></span>
-                {{ $isPublished ? 'منتشر شد' : 'در حال آماده‌سازی' }}
+                {{ $isPublished ? 'Published' : 'Preparing' }}
             </span>
         </div>
 
-        {{-- درصد درشت با شمارنده متحرک --}}
+        {{-- Large percentage with animated counter --}}
         <div class="mw-upbox-stage">
             <div class="mw-upbox-count">
                 <b class="mw-count" data-count-to="{{ $progress }}">0</b>
-                <span class="mw-upbox-count-unit">٪</span>
+                <span class="mw-upbox-count-unit">%</span>
             </div>
 
             <div class="mw-upbox-count-label">
-                تکمیل شده
-                <span>از ۱۰۰٪</span>
+                Completed
+                <span>out of 100%</span>
             </div>
         </div>
 
-        {{-- نوار پیشرفت: پر شدن خودکار هنگام دیده‌شدن + بافت متحرک + نوک فلشر --}}
+        {{-- Progress bar: auto-fill on visibility + Animated texture + Moving tip --}}
         <div
                 class="mw-upbox-bar"
                 role="progressbar"
@@ -87,9 +87,9 @@
 
             @if($progress > 3 && $progress < 97)
                 <span class="mw-upbox-tip mw-fill-tip" data-fill-target="{{ $progress }}%"
-                      style="right: calc(0% - 9px);"
+                      style="left: calc(0% - 9px);"
                       aria-hidden="true">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             @endif
 
@@ -107,7 +107,7 @@
                         @include('icons.calendar-03')
                     </span>
 
-                    <span class="mw-upbox-date-label">شروع توسعه</span>
+                    <span class="mw-upbox-date-label">Development started</span>
 
                     <b>{{ $startedAt }}</b>
                 </div>
@@ -119,7 +119,7 @@
                         @include('icons.calendar-03')
                     </span>
 
-                    <span class="mw-upbox-date-label">تاریخ انتشار</span>
+                    <span class="mw-upbox-date-label">Published date</span>
 
                     <b>{{ $releaseAt }}</b>
                 </div>
@@ -132,13 +132,13 @@
                     @include('icons.checkmark-badge-01')
                 </span>
 
-                آپدیت منتشر شد
+                Update released
             @else
                 <span class="mw-upbox-dots" aria-hidden="true">
                     <i></i><i></i><i></i>
                 </span>
 
-                آپدیت در مسیر انتشار
+                Update on the way
             @endif
         </div>
     </section>

@@ -2,8 +2,8 @@
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0">
             <x-front.cart-title
-                title="دیدگاه‌ها"
-                subtitle="کاربران درباره این محصول چه می‌گویند"
+                title="Comments"
+                subtitle="What users say about this product"
                 iconName="comment-add-01"
             />
 
@@ -31,7 +31,7 @@
                 />
             </svg>
 
-            ارسال دیدگاه
+            Submit comment
         </button>
     </div>
 
@@ -45,8 +45,8 @@
 
 <x-front.modal
     name="product-send-comment-modal"
-    title="ثبت دیدگاه برای محصول"
-    description="تجربه، نظر یا امتیاز خود را درباره این محصول بنویسید."
+    title="Review product"
+    description="Share your experience, opinion or rating of this product."
     maxWidth="max-w-2xl"
 >
     <livewire:front.discussion.product-send-comment-form

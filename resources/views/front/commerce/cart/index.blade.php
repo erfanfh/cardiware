@@ -1,10 +1,10 @@
 @extends('front.master')
 
 @section('head')
-    <title>سبد خرید | {{ get_setting('general', 'title') }}</title>
+    <title>Shopping cart | {{ get_setting('general', 'title') }}</title>
     <meta name="robots" content="noindex, nofollow">
     <meta name="description"
-          content="مشاهده و مدیریت محصولات انتخاب‌شده در سبد خرید {{ get_setting('general', 'title') }}">
+          content="View and manage selected products in your cart {{ get_setting('general', 'title') }}">
 @endsection
 
 @section('content')

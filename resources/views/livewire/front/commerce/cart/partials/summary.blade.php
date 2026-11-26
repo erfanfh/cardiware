@@ -8,7 +8,7 @@
             >
                 <div class="flex items-start justify-between gap-3">
                     <div>
-                        <div class="text-xs font-bold text-slate-500 dark:text-slate-400">مبلغ قابل پرداخت</div>
+                        <div class="text-xs font-bold text-slate-500 dark:text-slate-400">Amount due</div>
 
                         <div
                             class="mt-2 text-xl font-black text-slate-900 dark:text-slate-100 transition"
@@ -36,20 +36,20 @@
 
                 <div class="mt-4 space-y-2.5 border-t border-slate-100 dark:border-slate-800 pt-4">
                     <div class="flex items-center justify-between gap-3 text-xs">
-                        <span class="text-slate-500 dark:text-slate-400">تعداد محصولات</span>
+                        <span class="text-slate-500 dark:text-slate-400">Number of products</span>
                         <span
-                            class="font-extrabold text-slate-900 dark:text-slate-100">{{ $this->itemsCount }} محصول</span>
+                            class="font-extrabold text-slate-900 dark:text-slate-100">{{ $this->itemsCount }} Product</span>
                     </div>
 
                     <div class="flex items-center justify-between gap-3 text-xs">
-                        <span class="text-slate-500 dark:text-slate-400">جمع محصولات</span>
+                        <span class="text-slate-500 dark:text-slate-400">Products total</span>
                         <span
                             class="font-extrabold text-slate-900 dark:text-slate-100">{{ $this->money($this->cartSubtotal) }}</span>
                     </div>
 
                     <div class="flex items-center justify-between gap-3 text-xs">
                         <span class="text-slate-500 dark:text-slate-400">
-                            تخفیف
+                            Discount
                             @if($this->vipDiscountLabel)
                                 <span class="mr-1 rounded-lg bg-amber-50 px-1.5 py-0.5 text-[10px] font-black text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">👑 {{ $this->vipDiscountLabel }}</span>
                             @endif
@@ -61,7 +61,7 @@
                     @if((int) ($this->cart?->tax_rate_basis_points ?? 0) > 0)
                         <div class="flex items-center justify-between gap-3 text-xs">
                             <span class="text-slate-500 dark:text-slate-400">
-                                مالیات ({{ $this->cartTaxRateLabel() }}٪)
+                                Tax ({{ $this->cartTaxRateLabel() }}%)
                             </span>
                             <span class="font-extrabold text-amber-700 dark:text-amber-400">
                                 {{ $this->money($this->cartTax) }}
@@ -72,7 +72,7 @@
                     <div class="my-3 border-t border-slate-100 dark:border-slate-800"></div>
 
                     <div class="flex items-center justify-between gap-3">
-                        <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200">مبلغ نهایی</span>
+                        <span class="text-sm font-extrabold text-slate-700 dark:text-slate-200">Final amount</span>
 
                         <span
                             class="text-base font-black text-slate-900 dark:text-slate-100 transition"
@@ -86,10 +86,10 @@
                     @if($this->potentialPurchasePoints > 0)
                         <div class="mt-2 flex items-center justify-between gap-3 rounded-xl border border-amber-200/60 bg-amber-50/60 px-3 py-2 dark:border-amber-500/20 dark:bg-amber-500/5">
                             <span class="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">
-                                ⭐ امتیاز باشگاه از این خرید:
+                                ⭐ Club points from this purchase:
                             </span>
                             <span class="text-[11px] font-black text-amber-600 dark:text-amber-400">
-                                +{{ persian_number($this->potentialPurchasePoints) }} امتیاز
+                                +{{ number_format($this->potentialPurchasePoints) }} points
                             </span>
                         </div>
                     @endif
@@ -98,7 +98,7 @@
                 <div class="mt-4 border-t border-slate-100 pt-4 dark:border-slate-800">
                     <form wire:submit.prevent="applyCoupon" class="space-y-3">
                         <label class="block text-xs font-extrabold text-slate-700 dark:text-slate-200">
-                            کدتخفیف
+                            Discount code
                         </label>
 
                         <div class="flex gap-2">
@@ -119,7 +119,7 @@
                                 wire:target="applyCoupon"
                                 @disabled($this->mainCartItems->isEmpty() || $cartNeedsRefresh)
                             >
-                                <span wire:loading.remove wire:target="applyCoupon">اعمال</span>
+                                <span wire:loading.remove wire:target="applyCoupon">Apply</span>
                                 <span wire:loading wire:target="applyCoupon">...</span>
                             </button>
                         </div>
@@ -133,7 +133,7 @@
                         >
                             <div class="min-w-0">
                                 <div class="font-extrabold text-emerald-700 dark:text-emerald-300">
-                                    کدتخفیف اعمال شده
+                                    Applied discount code
                                 </div>
 
                                 <div
@@ -157,7 +157,7 @@
                                 wire:target="removeCoupon"
                                 class="cursor-pointer shrink-0 text-xs font-extrabold text-rose-600 transition hover:text-rose-700 disabled:opacity-50"
                             >
-                                حذف
+                                Remove
                             </button>
                         </div>
                     @endforeach
@@ -188,7 +188,7 @@
                         />
 
                         <span>
-                            با
+                            with
                             @if($this->checkoutTermsUrl)
                                 <a
                                     href="{{ $this->checkoutTermsUrl }}"
@@ -197,12 +197,12 @@
                                     class="font-extrabold text-brand-700 underline decoration-brand-300 underline-offset-4 hover:text-brand-800 dark:text-brand-400 dark:hover:text-brand-300"
                                     @click.stop
                                 >
-                                    قوانین و مقررات سایت
+                                    Terms and conditions
                                 </a>
                             @else
-                                <span class="font-extrabold text-slate-800 dark:text-slate-100">قوانین و مقررات سایت</span>
+                                <span class="font-extrabold text-slate-800 dark:text-slate-100">Terms and conditions</span>
                             @endif
-                            موافقم.
+                            I agree.
                         </span>
                     </label>
                 @endif
@@ -219,9 +219,9 @@
                     dark:shadow-none dark:hover:bg-brand-600"
                 >
                     @auth
-                        ادامه فرآیند پرداخت
+                        Continue checkout
                     @else
-                        ورود و ادامه پرداخت
+                        Sign in and continue checkout
                     @endauth
 
                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
@@ -239,10 +239,10 @@
                     class="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50
                     dark:border-slate-700 dark:bg-slate-900 dark:text-brand-400 dark:hover:bg-slate-800 dark:hover:border-slate-600"
                 >
-                    بازگشت به فروشگاه
+                    Back to store
 
                     <span class="[&_svg]:h-3.5 [&_svg]:w-3.5">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 </a>
             </div>

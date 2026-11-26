@@ -8,8 +8,8 @@
     @include(
         'livewire.front.identity.user.auth.partials.shared.step-header',
         [
-            'title' => 'تکمیل ثبت نام',
-            'description' => 'اطلاعات خود و کد تایید ارسال شده را وارد کنید',
+            'title' => 'Complete registration',
+            'description' => 'Enter your details and the verification code',
             'backMethod' => 'goToEnterMobile',
             'mobile' => $resolvedMobile,
         ]
@@ -27,7 +27,7 @@
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    نام
+                    Name
                 </label>
 
                 <input
@@ -45,7 +45,7 @@
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    نام خانوادگی
+                    Last name
                 </label>
 
                 <input
@@ -63,10 +63,10 @@
                 for="register-email"
                 class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
-                ایمیل
+                Email
 
                 <span class="text-[0.7rem] font-normal text-slate-400 dark:text-slate-500">
-                    اختیاری
+                    Optional
                 </span>
             </label>
 
@@ -87,7 +87,7 @@
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    رمز عبور
+                    Password
                 </label>
 
                 <div class="relative">
@@ -159,7 +159,7 @@
                     class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
                 >
                     <span class="text-red-500">*</span>
-                    تکرار رمز عبور
+                    Confirm password
                 </label>
 
                 <div class="relative">
@@ -232,7 +232,7 @@
                 class="block text-xs font-semibold text-slate-700 dark:text-slate-300"
             >
                 <span class="text-red-500">*</span>
-                کد تایید
+                Verification code
             </label>
 
             <input
@@ -263,7 +263,7 @@
                 wire:loading.remove
                 wire:target="register"
             >
-                ایجاد حساب کاربری
+                Create account
             </span>
 
             <svg

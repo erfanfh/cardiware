@@ -37,7 +37,7 @@
             <div class="absolute top-6 left-6 z-20 hidden items-center gap-2 sm:flex">
                 <button
                     class="heroPrev grid h-10 w-10 cursor-pointer place-items-center rounded-2xl bg-white/10 text-white transition hover:bg-white/15"
-                    aria-label="قبلی"
+                    aria-label="Previous"
                     type="button"
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -48,7 +48,7 @@
 
                 <button
                     class="heroNext grid h-10 w-10 cursor-pointer place-items-center rounded-2xl bg-white/10 text-white transition hover:bg-white/15"
-                    aria-label="بعدی"
+                    aria-label="Next"
                     type="button"
                 >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">

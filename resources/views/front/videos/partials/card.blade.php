@@ -6,7 +6,7 @@
 <article
     class="group flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-500/10 dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:border-brand-500/30">
     <a href="{{ $video->url }}" class="relative block aspect-video overflow-hidden bg-slate-950"
-       aria-label="تماشای {{ $video->title }}">
+       aria-label="Watch {{ $video->title }}">
         @if($video->cover?->url)
             <x-front.responsive-image
                 :media="$video->cover"
@@ -45,7 +45,7 @@
             @endforeach
             @if(!$primaryCategory)
                 <span
-                    class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">Cardiware تی‌وی</span>
+                    class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">Cardiware TV</span>
             @endif
         </div>
 
@@ -60,12 +60,12 @@
         <div
             class="mt-auto flex items-center justify-between gap-3 pt-4 text-[10px] font-bold text-slate-500 dark:text-slate-400">
             <div class="flex min-w-0 items-center gap-2">
-                <span class="shrink-0">{{ jalali_date($video->published_at, 'Y/m/d') }}</span>
+                <span class="shrink-0">{{ (($video->published_at) ? \Illuminate\Support\Carbon::parse($video->published_at)->format('Y/m/d') : '') }}</span>
                 <span class="h-1 w-1 shrink-0 rounded-full bg-slate-300 dark:bg-slate-600"></span>
-                <span class="truncate">{{ approximate_view(public_page_views($video)) }} بازدید</span>
+                <span class="truncate">{{ approximate_view(public_page_views($video)) }} views</span>
             </div>
             <a href="{{ $video->url }}"
-               class="shrink-0 font-black text-brand-700 transition group-hover:text-brand-800 dark:text-brand-300 dark:group-hover:text-brand-200">تماشا
+               class="shrink-0 font-black text-brand-700 transition group-hover:text-brand-800 dark:text-brand-300 dark:group-hover:text-brand-200">Watch
                 ←</a>
         </div>
     </div>

@@ -1,4 +1,4 @@
-{{-- سرتیتر مشترک بخش‌ها — $eyebrow / $title / $subtitle --}}
+{{-- Shared section heading — $eyebrow / $title / $subtitle --}}
 <div class="reveal mx-auto max-w-2xl text-center">
     @if(!empty($eyebrow))
         <span class="eyebrow">{{ $eyebrow }}</span>

@@ -1,10 +1,10 @@
-/* ===== Footer glass (سبک شیشه‌ای + پس‌زمینه/پترن از تنظیمات) ===== */
+/* ===== Footer glass (Glass style + Background/pattern from settings) ===== */
 
 .mw-footer-glass {
     isolation: isolate;
 }
 
-/* تصویر پس‌زمینه اختیاری — با شفافیت کم پشت محتوا */
+/* Optional background image with low opacity behind content */
 .mw-footer-bg {
     position: absolute;
     inset: 0;
@@ -21,7 +21,7 @@
     opacity: .18;
 }
 
-/* پترن‌های نقطه‌ای/شبکه‌ای/مورب — بسیار کم‌رنگ با ته‌رنگ برند */
+/* Dot/grid/diagonal patterns with subtle brand tint */
 .mw-footer-pattern {
     position: absolute;
     inset: 0;
@@ -54,7 +54,7 @@
     opacity: .35;
 }
 
-/* کارت‌های شیشه‌ای فوتر */
+/* Glass footer cards */
 .mw-glass-card {
     background: rgba(255, 255, 255, .68);
     border: 1px solid rgba(255, 255, 255, .85);

@@ -5,8 +5,8 @@
                                 <span
                                     class="inline-flex h-9 w-9 rounded-2xl bg-brand-50 border border-brand-100 text-brand-700 items-center justify-center">👥</span>
             <div>
-                <h2 class="text-base font-extrabold">اعضای سازنده</h2>
-                <p class="text-xs text-slate-500 mt-1">برای دیدن اطلاعات هر عضو کلیک کنید</p>
+                <h2 class="text-base font-extrabold">Contributors</h2>
+                <p class="text-xs text-slate-500 mt-1">Click a member to see their information</p>
             </div>
         </div>
     </div>
@@ -16,7 +16,7 @@
             <button
                 type="button"
                 @click="openMember(member)"
-                class="rounded-3xl border border-slate-200 bg-white p-4 text-right hover:shadow-soft transition"
+                class="rounded-3xl border border-slate-200 bg-white p-4 text-start hover:shadow-soft transition"
             >
                 <img :src="member.avatar" alt="" class="h-20 w-20 rounded-2xl object-cover mx-auto">
                 <div class="mt-4 text-sm font-extrabold text-slate-900 text-center"

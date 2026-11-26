@@ -9,9 +9,9 @@
             'border-rose-300/40 bg-rose-500 text-white hover:bg-rose-600 dark:border-rose-400/30 dark:bg-rose-500 dark:hover:bg-rose-400' => $isFavorite,
             'border-white/15 bg-black/25 text-white hover:bg-black/35' => !$isFavorite,
         ])
-        aria-label="{{ $isFavorite ? 'حذف از علاقه مندی ها' : 'افزودن به علاقه مندی ها' }}"
+        aria-label="{{ $isFavorite ? 'Remove from favorites' : 'Add to favorites' }}"
         aria-pressed="{{ $isFavorite ? 'true' : 'false' }}"
-        title="{{ $isFavorite ? 'حذف از علاقه مندی ها' : 'افزودن به علاقه مندی ها' }}"
+        title="{{ $isFavorite ? 'Remove from favorites' : 'Add to favorites' }}"
     >
         <span wire:loading.remove wire:target="toggle" class="transition-transform duration-200 group-hover/favorite:scale-110">
             @include('icons.favourite')
@@ -61,7 +61,7 @@
                     'border-slate-200 dark:border-slate-700': type === 'info',
                 }"
             >
-                <div class="flex items-start gap-3 p-3.5 sm:p-4" dir="rtl">
+                <div class="flex items-start gap-3 p-3.5 sm:p-4" dir="ltr">
                     <div
                         class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl [&_svg]:h-5 [&_svg]:w-5"
                         :class="{
@@ -82,7 +82,7 @@
                     <div class="min-w-0 flex-1 pt-0.5">
                         <div
                             class="text-sm font-black text-slate-900 dark:text-white"
-                            x-text="type === 'warning' ? 'ورود به حساب کاربری' : 'لیست علاقه مندی ها'"
+                            x-text="type === 'warning' ? 'Sign in' : 'Favorites list'"
                         ></div>
 
                         <p
@@ -95,8 +95,8 @@
                             href="{{ front_route('auth.index') }}"
                             class="mt-2.5 inline-flex items-center gap-1 text-xs font-extrabold text-brand-600 transition hover:text-brand-700 dark:text-brand-300 dark:hover:text-brand-200 [&_svg]:h-3.5 [&_svg]:w-3.5"
                         >
-                            ورود / عضویت
-                            @include('icons.arrow-left-02')
+                            Sign in / Register
+                            <x-front.arrow-right-02/>
                         </a>
                     </div>
 
@@ -104,7 +104,7 @@
                         type="button"
                         x-on:click="show = false"
                         class="grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-white [&_svg]:h-4 [&_svg]:w-4"
-                        aria-label="بستن پیام"
+                        aria-label="Dismiss message"
                     >
                         @include('icons.cancel-01')
                     </button>

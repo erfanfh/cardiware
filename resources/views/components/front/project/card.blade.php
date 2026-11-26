@@ -4,8 +4,8 @@
     $progress = max(0, min(100, (int) ($project->progress_percent ?? 0)));
     $isDone = $progress >= 100;
 
-    // رنگ پیوسته: ۰٪ قرمز → ۵۰٪ نارنجی/زرد → ۱۰۰٪ سبز
-    $hue = (int) round($progress * 1.42); // 0 → 0deg (قرمز)، 100 → 142deg (سبز)
+    // Continuous color: 0% red → 50% orange/yellow → 100% green
+    $hue = (int) round($progress * 1.42); // 0 → 0deg (red), 100 → 142deg (Green)
     $hueEnd = min(160, $hue + 16);
     $barGradient = "linear-gradient(to left, hsl({$hueEnd} 82% 46%), hsl({$hue} 84% 52%))";
     $barGlow = "hsl({$hue} 84% 52% / .45)";
@@ -17,7 +17,7 @@
         $tipColor = 'hsl(152 78% 40%)';
     }
 
-    $statusLabel = $isDone ? 'تکمیل شده' : 'در حال توسعه';
+    $statusLabel = $isDone ? 'Completed' : 'In development';
 @endphp
 
 <article x-data
@@ -51,12 +51,12 @@
             </p>
         @endif
 
-        {{-- نوار پیشرفت با رنگ پیوسته قرمز→سبز --}}
+        {{-- Progress bar with continuous red color→Green --}}
         <div class="mt-auto pt-5">
             <div class="mb-2 flex items-center justify-between">
-                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">پیشرفت پروژه</span>
+                <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Project progress</span>
                 <b class="text-xs font-black" style="color: {{ $isDone ? 'rgb(16 185 129)' : $tipColor }};">
-                    {{ $progress }}٪
+                    {{ $progress }}%
                 </b>
             </div>
 
@@ -68,9 +68,9 @@
                 @if($progress > 3 && $progress < 97)
                     <span class="mw-prj-tip {{ $animated ? 'mw-fill-tip' : '' }}"
                           @if($animated) data-fill-target="{{ $progress }}%" @endif
-                          style="right: calc({{ $animated ? 0 : $progress }}% - {{ $animated ? 9 : 11 }}px); color: {{ $tipColor }}; border-color: {{ $tipColor }}; box-shadow: 0 0 0 4px {{ $barGlow }}, 0 0 14px {{ $barGlow }};"
+                          style="left: calc({{ $animated ? 0 : $progress }}% - {{ $animated ? 9 : 11 }}px); color: {{ $tipColor }}; border-color: {{ $tipColor }}; box-shadow: 0 0 0 4px {{ $barGlow }}, 0 0 14px {{ $barGlow }};"
                           aria-hidden="true">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 @endif
 
@@ -85,15 +85,15 @@
         <div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-3 dark:border-slate-800">
             <a href="{{ front_route('projects.detail', $project) }}"
                class="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-brand-500/20 {{ $animated ? 'transition' : '' }} hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-400">
-                اطلاعات پروژه
+                Project information
                 <span class="[&_svg]:h-3.5 [&_svg]:w-3.5">
-                    @include('icons.arrow-left-02')
+                    <x-front.arrow-right-02/>
                 </span>
             </a>
 
             @if($project->last_updated_at)
                 <span class="text-[10.5px] font-semibold text-slate-400 dark:text-slate-500">
-                    بروزرسانی: {{ time_ago($project->last_updated_at) }}
+                    Update: {{ time_ago($project->last_updated_at) }}
                 </span>
             @endif
         </div>

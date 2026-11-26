@@ -1,6 +1,6 @@
 <section id="hero" class="relative overflow-hidden" x-data="{ video: false }">
 
-    {{-- لایه‌های پس‌زمینه --}}
+    {{-- Background layers --}}
     <div class="pointer-events-none absolute inset-0" aria-hidden="true">
         <div class="absolute inset-0 bg-grid opacity-40"></div>
         <div class="absolute -top-48 left-1/2 h-[38rem] w-[76rem] -translate-x-1/2 rounded-full blur-3xl"
@@ -10,7 +10,7 @@
 
     <div class="relative mx-auto max-w-7xl px-4 pb-16 pt-32 text-center sm:px-6 lg:px-8 lg:pt-40">
 
-        {{-- بج منتشر شدن --}}
+        {{-- Published badge --}}
         <div class="reveal mx-auto inline-flex items-center gap-2.5 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 text-sm font-semibold text-accent backdrop-blur">
             <span class="relative flex size-2">
                 <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60"></span>
@@ -19,7 +19,7 @@
             {{ $section['badge'] }}
         </div>
 
-        {{-- عنوان --}}
+        {{-- Title --}}
         <h1 class="reveal mt-7 text-4xl font-black leading-[1.15] text-ink sm:text-6xl lg:text-7xl">
             {{ $section['title'] }}
             <span class="text-gradient block sm:inline">{{ $section['highlight'] }}</span>
@@ -29,19 +29,19 @@
             {{ $section['subtitle'] }}
         </p>
 
-        {{-- دکمه‌های CTA --}}
+        {{-- Buttons CTA --}}
         <div class="reveal mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a href="{{ $data['buy_url'] }}" class="btn-primary">
                 @include('front.landings.partials.icon', ['name' => 'bolt', 'class' => 'size-5'])
-                خرید و دانلود پچ
+                Buy and download patch
             </a>
             <a href="{{ $data['launcher_url'] }}" class="btn-ghost">
                 @include('front.landings.partials.icon', ['name' => 'download', 'class' => 'size-5'])
-                دانلود MW Launcher
+                Download MW Launcher
             </a>
         </div>
 
-        {{-- بولت‌های اعتماد --}}
+        {{-- Trust bullets --}}
         <div class="reveal mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted">
             @foreach($section['bullets'] as $bullet)
                 <span class="inline-flex items-center gap-2">
@@ -51,12 +51,12 @@
             @endforeach
         </div>
 
-        {{-- آرت هیرو + تریلر --}}
+        {{-- Hero artwork + Trailer --}}
         <div class="reveal relative mx-auto mt-16 max-w-5xl">
             <div class="glow-frame relative overflow-hidden rounded-2xl border border-edge/80">
                 <img src="{{ asset($section['image']) }}" alt="{{ $data['product_name'] }}" class="w-full" loading="eager">
 
-                {{-- دکمه پخش تریلر --}}
+                {{-- Play trailer --}}
                 <button @click="video = true" class="group absolute inset-0 grid place-items-center bg-black/25 transition-colors hover:bg-black/40" aria-label="{{ $section['video_title'] }}">
                     <span class="grid size-20 place-items-center rounded-full bg-accent/90 text-base shadow-[0_0_60px_-10px_var(--landing-accent)] transition-transform duration-300 group-hover:scale-110">
                         @include('front.landings.partials.icon', ['name' => 'play', 'class' => 'size-8 ltr:ml-1 rtl:mr-1'])
@@ -64,7 +64,7 @@
                 </button>
             </div>
 
-            {{-- چیپ‌های شناور --}}
+            {{-- Floating chips --}}
             @foreach($section['chips'] as $i => $chip)
                 <div class="float-chip absolute hidden items-center gap-2.5 rounded-xl border border-edge bg-surface/90 px-4 py-2.5 text-sm font-bold text-ink shadow-xl backdrop-blur xl:flex"
                      style="{{ $i === 0 ? 'top:-8%; right:-6%;' : ($i === 1 ? 'top:46%; left:-9%;' : 'bottom:-7%; right:8%;') }} animation-delay: {{ $i * 0.8 }}s">
@@ -76,7 +76,7 @@
             @endforeach
         </div>
 
-        {{-- مودال تریلر (جا‌گذار — ویدیو واقعی بعداً وصل می‌شود) --}}
+        {{-- Trailer modal (placeholder; real video connected later) --}}
         <div x-show="video" x-cloak class="fixed inset-0 z-[60] grid place-items-center bg-black/85 p-4 backdrop-blur" @click.self="video = false" @keydown.escape.window="video = false">
             <div class="relative w-full max-w-4xl">
                 <div class="grid aspect-video place-items-center rounded-2xl border border-edge bg-surface-2">
@@ -85,10 +85,10 @@
                             @include('front.landings.partials.icon', ['name' => 'play', 'class' => 'size-7'])
                         </span>
                         <p class="mt-4 font-bold text-ink">{{ $section['video_title'] }}</p>
-                        <p class="mt-1 text-sm text-muted">جای‌گذار ویدیو — تریلر به‌زودی</p>
+                        <p class="mt-1 text-sm text-muted">Video placeholder: trailer coming soon</p>
                     </div>
                 </div>
-                <button @click="video = false" class="absolute -top-12 left-0 grid size-9 place-items-center rounded-full border border-edge bg-surface text-ink" aria-label="بستن">
+                <button @click="video = false" class="absolute -top-12 left-0 grid size-9 place-items-center rounded-full border border-edge bg-surface text-ink" aria-label="Close">
                     @include('front.landings.partials.icon', ['name' => 'x', 'class' => 'size-4'])
                 </button>
             </div>

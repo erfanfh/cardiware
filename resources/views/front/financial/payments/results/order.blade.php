@@ -9,7 +9,7 @@
 
     $isFreePayment = (int) $payment->amount === 0;
 
-    $money = fn (int $amount): string => number_format($amount) . ' تومان';
+    $money = fn (int $amount): string => number_format($amount) . ' Toman';
 
     $happenedAt = $isPaid
         ? ($payment->paid_at?->format('Y/m/d H:i') ?? now()->format('Y/m/d H:i'))
@@ -31,7 +31,7 @@
 
     $itemTitle = fn ($item): string => data_get($item->snapshot, 'type') === 'vip_plan'
         ? \App\Domain\Vip\Models\VipPlan::titleFromSnapshot($item->snapshot ?? [])
-        : (data_get($item->snapshot, 'title') ?? 'آیتم سفارش');
+        : (data_get($item->snapshot, 'title') ?? 'Order item');
 
     $statusBadgeClasses = $isPaid
         ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300'
@@ -46,38 +46,38 @@
         : 'failed-pulse border-red-200 bg-red-50 text-red-600 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300';
 
     $mainTitle = match (true) {
-        $isFreePayment => 'سفارش رایگان با موفقیت ثبت شد',
-        $isPaid => 'پرداخت با موفقیت انجام شد',
-        default => 'پرداخت شما انجام نشد',
+        $isFreePayment => 'Free order placed successfully',
+        $isPaid => 'Payment completed successfully',
+        default => 'Your payment failed',
     };
 
     $mainDescription = match (true) {
-        $isFreePayment && $hasVipItems && !$hasProductItems => 'سفارش شما تایید شد و اعتبار اشتراک VIP در حساب کاربری فعال شده است.',
-        $isFreePayment => 'سفارش شما بدون نیاز به پرداخت تایید شد و دسترسی‌های خریداری‌شده فعال شده است.',
-        $isPaid && $hasVipItems && !$hasProductItems => 'پرداخت تایید شد و اعتبار اشتراک VIP در حساب کاربری فعال شده است.',
-        $isPaid && $hasVipItems => 'پرداخت تایید شد و اشتراک VIP و دسترسی به محصولات خریداری‌شده فعال شده‌اند.',
-        $isPaid => 'سفارش شما تایید شد و دسترسی به محصولات خریداری‌شده فعال شده است. فایل‌ها از بخش دانلودهای حساب کاربری قابل دریافت هستند.',
-        default => 'تراکنش شما تایید نشد و مبلغی برای این سفارش ثبت نشده است. می‌توانید دوباره پرداخت را انجام دهید یا به سبد خرید برگردید.',
+        $isFreePayment && $hasVipItems && !$hasProductItems => 'Your order was confirmed and your VIP subscription has been activated.',
+        $isFreePayment => 'Your order was confirmed without payment and purchased access has been activated.',
+        $isPaid && $hasVipItems && !$hasProductItems => 'Payment confirmed. Your VIP subscription has been activated.',
+        $isPaid && $hasVipItems => 'Payment confirmed. Your VIP subscription and access to purchased products have been activated.',
+        $isPaid => 'Your order was confirmed and access to purchased products is active. Files are available in your account downloads.',
+        default => 'Your transaction was not confirmed and no payment was recorded for this order. Try paying again or return to the cart.',
     };
 
     $paymentStatusLabel = match (true) {
-        $isFreePayment => 'سفارش رایگان تایید شد',
-        $isPaid => 'پرداخت تایید شد',
-        default => 'پرداخت ناموفق بود',
+        $isFreePayment => 'Free order confirmed',
+        $isPaid => 'Payment confirmed',
+        default => 'Payment failed',
     };
 
-    $itemsTitle = $isPaid ? 'آیتم‌های خریداری‌شده' : 'آیتم‌های سفارش';
+    $itemsTitle = $isPaid ? 'Purchased items' : 'Order items';
 
     $amountTitle = match (true) {
-        $isFreePayment => 'مبلغ قابل پرداخت',
-        $isPaid => 'مبلغ پرداخت‌شده',
-        default => 'مبلغ پرداخت‌نشده',
+        $isFreePayment => 'Amount due',
+        $isPaid => 'Amount paid',
+        default => 'Unpaid amount',
     };
 
     $dateTitle = match (true) {
-        $isFreePayment => 'تاریخ ثبت سفارش',
-        $isPaid => 'تاریخ پرداخت',
-        default => 'تاریخ تلاش',
+        $isFreePayment => 'Order date',
+        $isPaid => 'Payment date',
+        default => 'Attempt date',
     };
 
     $receiptCode = $payment->gateway_transaction_id
@@ -112,11 +112,11 @@
             >
                 <div class="min-w-0">
                     <h1 class="text-sm font-extrabold text-slate-900 sm:text-base dark:text-slate-100">
-                        رسید پرداخت سفارش
+                        Order payment receipt
                     </h1>
 
                     <p class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                        {{ $isPaid ? 'جزئیات پرداخت موفق و آیتم‌های خریداری‌شده' : 'جزئیات پرداخت ناموفق و وضعیت سفارش' }}
+                        {{ $isPaid ? 'Successful payment details and purchased items' : 'Failed payment details and order status' }}
                     </p>
                 </div>
 
@@ -131,7 +131,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-12">
                 <div class="min-w-0 p-4 sm:p-7 lg:col-span-8 lg:p-9">
                     <div
-                        class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-right"
+                        class="flex flex-col items-center gap-4 text-center sm:flex-row sm:items-center sm:gap-5 sm:text-start"
                     >
                         <div
                             class="grid h-16 w-16 shrink-0 place-items-center rounded-3xl border sm:h-20 sm:w-20 {{ $iconBoxClasses }}
@@ -185,10 +185,10 @@
                                 </div>
 
                                 <div class="min-w-0">
-                                    <h3 class="text-sm font-extrabold text-red-900 dark:text-red-300">دلیل احتمالی
-                                        خطا</h3>
+                                    <h3 class="text-sm font-extrabold text-red-900 dark:text-red-300">Possible reason
+                                        Error</h3>
                                     <p class="mt-1 text-xs leading-6 text-red-800 dark:text-red-400">
-                                        {{ $payment->gateway_message ?: 'پرداخت توسط بانک تایید نشده، ارتباط با درگاه قطع شده یا تراکنش توسط کاربر لغو شده است.' }}
+                                        {{ $payment->gateway_message ?: 'The bank did not confirm the payment, the gateway connection was lost, or the user canceled the transaction.' }}
                                     </p>
                                 </div>
                             </div>
@@ -201,7 +201,7 @@
 
                             <span
                                 class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[11px] font-extrabold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
-            {{ $rootItems->count() }} آیتم
+            {{ $rootItems->count() }} Item
         </span>
                         </div>
 
@@ -238,23 +238,23 @@
                                             @if($isPaid)
                                                 <span
                                                     class="rounded-xl border border-emerald-200 bg-emerald-50 px-2 py-1 text-[10px] font-extrabold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-900/20 dark:text-emerald-300">
-                                {{ data_get($item->snapshot, 'type') === 'vip_plan' ? 'اعتبار ثبت شد' : 'فعال' }}
+                                {{ data_get($item->snapshot, 'type') === 'vip_plan' ? 'Credit recorded' : 'Active' }}
                             </span>
                                             @else
                                                 <span
                                                     class="rounded-xl border border-amber-200 bg-amber-50 px-2 py-1 text-[10px] font-extrabold text-amber-700 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300">
-                                در انتظار پرداخت
+                                Awaiting payment
                             </span>
                                             @endif
                                         </div>
 
                                         <p class="mt-1 line-clamp-2 text-xs leading-6 text-slate-500 dark:text-slate-400">
                                             @if($hasVipItems && data_get($item->snapshot, 'type') === 'vip_plan')
-                                                {{ number_format((int) data_get($item->snapshot, 'duration_days')) }} روز اعتبار VIP {{ $isPaid ? 'به حساب شما اضافه شد.' : 'پس از پرداخت به حساب شما اضافه می‌شود.' }}
+                                                {{ number_format((int) data_get($item->snapshot, 'duration_days')) }} days of VIP access {{ $isPaid ? 'added to your account.' : 'will be added to your account after payment.' }}
                                             @elseif($isPaid)
-                                                فایل محصول و راهنمای نصب برای دانلود آماده است.
+                                                Product files and installation guide are ready to download.
                                             @else
-                                                بعد از پرداخت موفق، دسترسی دانلود این محصول فعال می‌شود.
+                                                Download access will activate after successful payment.
                                             @endif
                                         </p>
 
@@ -264,7 +264,7 @@
                                             >
                                                 <div
                                                     class="text-[11px] font-extrabold text-brand-800 dark:text-brand-300">
-                                                    خدمات افزوده خریداری‌شده
+                                                    Purchased add-ons
                                                 </div>
 
                                                 <div class="space-y-1.5">
@@ -272,7 +272,7 @@
                                                         <div
                                                             class="flex items-center justify-between gap-3 text-[11px]">
                                         <span class="line-clamp-1 font-bold text-brand-800 dark:text-brand-300">
-                                            {{ data_get($child->snapshot, 'title', 'خدمت افزوده') }}
+                                            {{ data_get($child->snapshot, 'title', 'Add-on service') }}
                                         </span>
 
                                                             <span
@@ -288,7 +288,7 @@
                                         <div
                                             class="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-2.5 text-[11px] sm:hidden dark:border-slate-700 dark:bg-slate-800">
                                             <div class="flex items-center justify-between gap-3">
-                                                <span class="text-slate-500 dark:text-slate-400">قیمت محصول</span>
+                                                <span class="text-slate-500 dark:text-slate-400">Product price</span>
                                                 <span class="font-extrabold text-slate-900 dark:text-slate-100">
                                 {{ $money((int) $item->total_amount) }}
                             </span>
@@ -296,7 +296,7 @@
 
                                             @if($childrenTotal > 0)
                                                 <div class="mt-1.5 flex items-center justify-between gap-3">
-                                                    <span class="text-slate-500 dark:text-slate-400">خدمات افزوده</span>
+                                                    <span class="text-slate-500 dark:text-slate-400">Add-on services</span>
                                                     <span class="font-extrabold text-brand-700 dark:text-brand-300">
                                     {{ $money((int) $childrenTotal) }}
                                 </span>
@@ -304,7 +304,7 @@
 
                                                 <div
                                                     class="mt-2 flex items-center justify-between gap-3 border-t border-slate-200 pt-2 dark:border-slate-700">
-                                                    <span class="font-extrabold text-slate-700 dark:text-slate-300">جمع این محصول</span>
+                                                    <span class="font-extrabold text-slate-700 dark:text-slate-300">Product total</span>
                                                     <span class="font-black text-slate-900 dark:text-slate-100">
                                     {{ $money($itemGrandTotal) }}
                                 </span>
@@ -313,10 +313,10 @@
                                         </div>
                                     </div>
 
-                                    <div class="hidden shrink-0 text-left sm:block">
+                                    <div class="hidden shrink-0 text-end sm:block">
                                         <div class="space-y-1 text-xs">
                                             <div class="flex items-center justify-end gap-2">
-                                                <span class="text-slate-500 dark:text-slate-400">محصول:</span>
+                                                <span class="text-slate-500 dark:text-slate-400">Product:</span>
                                                 <span class="font-black text-slate-900 dark:text-slate-100">
                                 {{ $money((int) $item->total_amount) }}
                             </span>
@@ -325,7 +325,7 @@
                                             @if($childrenTotal > 0)
                                                 <div class="flex items-center justify-end gap-2">
                                                     <span
-                                                        class="text-slate-500 dark:text-slate-400">خدمات افزوده:</span>
+                                                        class="text-slate-500 dark:text-slate-400">Add-on services:</span>
                                                     <span class="font-black text-brand-700 dark:text-brand-300">
                                     {{ $money((int) $childrenTotal) }}
                                 </span>
@@ -344,18 +344,18 @@
                                                 @if($item->purchasable instanceof \App\Domain\Catalog\Models\ProductSaleItem && $item->purchasable->launcher_enabled)
                                                     <a href="{{ route('launcher.open-product', ['saleItem' => $item->purchasable->getKey()]) }}"
                                                        class="inline-flex text-xs font-extrabold text-orange-600 transition hover:text-orange-500">
-                                                        باز کردن در لانچر ←
+                                                        Open in launcher ←
                                                     </a>
                                                 @endif
                                                 <a href="{{ $downloadsUrl }}"
                                                    class="inline-flex text-xs font-extrabold text-brand-700 transition hover:text-brand-800 dark:text-brand-300 dark:hover:text-brand-200">
-                                                    دانلود ←
+                                                    Download ←
                                                 </a>
                                             </div>
                                         @else
                                             <span
                                                 class="mt-2 inline-flex text-xs font-extrabold text-slate-400 dark:text-slate-500">
-                            غیرفعال
+                            Inactive
                         </span>
                                         @endif
                                     </div>
@@ -363,7 +363,7 @@
                             @empty
                                 <div
                                     class="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-500 sm:rounded-3xl dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
-                                    آیتمی برای این سفارش یافت نشد.
+                                    No items found for this order.
                                 </div>
                             @endforelse
                         </div>
@@ -374,38 +374,38 @@
                             @if($launcherSaleItems->count() === 1)
                                 <a href="{{ route('launcher.open-product', ['saleItem' => $launcherSaleItems->first()->getKey()]) }}"
                                    class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-orange-400">
-                                    باز کردن محصول در MW Launcher
+                                    Open product in MW Launcher
                                 </a>
                             @endif
                             @if($hasProductItems)
                                 <a href="{{ $downloadsUrl }}"
                                    class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-extrabold text-white shadow-soft transition hover:bg-brand-600 active:bg-brand-700">
-                                    مشاهده دانلودها
+                                    View downloads
                                 </a>
                             @endif
 
                             @if($hasVipItems)
                                 <a href="{{ route('vip.index') }}"
                                    class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-amber-400 px-5 text-sm font-extrabold text-slate-950 transition hover:bg-amber-300">
-                                    مشاهده اشتراک VIP
+                                    View VIP subscription
                                 </a>
                             @endif
 
                             <a href="{{ $productsUrl }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800">
-                                بازگشت به فروشگاه
+                                Back to store
                                 <span>←</span>
                             </a>
                         @else
                             <a href="{{ route('cart.index') }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-brand-700 transition hover:border-brand-200 hover:bg-brand-50 dark:border-slate-700 dark:bg-slate-900 dark:text-brand-300 dark:hover:bg-slate-800">
-                                بازگشت به سبد خرید
+                                Back to cart
                                 <span>←</span>
                             </a>
 
                             <a href="{{ $productsUrl }}"
                                class="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-extrabold text-slate-800 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800">
-                                بازگشت به فروشگاه
+                                Back to store
                             </a>
                         @endif
                     </div>
@@ -429,27 +429,27 @@
 
                         <div class="mt-4 space-y-2.5 border-t border-slate-100 pt-4 dark:border-slate-700">
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">شماره سفارش</span>
+                                <span class="text-slate-500 dark:text-slate-400">Order number</span>
                                 <span
-                                    class="text-left font-extrabold text-slate-900 dark:text-slate-100">{{ $order->order_number }}</span>
+                                    class="text-end font-extrabold text-slate-900 dark:text-slate-100">{{ $order->order_number }}</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">کد رسید</span>
+                                <span class="text-slate-500 dark:text-slate-400">Receipt code</span>
                                 <span
-                                    class="break-all text-left font-extrabold text-slate-900 dark:text-slate-100">{{ $receiptCode }}</span>
+                                    class="break-all text-end font-extrabold text-slate-900 dark:text-slate-100">{{ $receiptCode }}</span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">جمع آیتم‌ها</span>
-                                <span class="text-left font-extrabold text-slate-900 dark:text-slate-100">
+                                <span class="text-slate-500 dark:text-slate-400">Items total</span>
+                                <span class="text-end font-extrabold text-slate-900 dark:text-slate-100">
                     {{ $money((int) $order->subtotal_amount) }}
                 </span>
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">تخفیف</span>
-                                <span class="text-left font-extrabold text-emerald-700 dark:text-emerald-400">
+                                <span class="text-slate-500 dark:text-slate-400">Discount</span>
+                                <span class="text-end font-extrabold text-emerald-700 dark:text-emerald-400">
                     {{ $money((int) $order->discount_amount) }}
                 </span>
                             </div>
@@ -457,28 +457,28 @@
                             @if((int) $order->tax_amount > 0)
                                 <div class="flex items-center justify-between gap-3 text-xs">
                                     <span class="text-slate-500 dark:text-slate-400">
-                                        مالیات ({{ rtrim(rtrim(number_format($order->tax_rate_basis_points / 100, 2, '.', ''), '0'), '.') }}٪)
+                                        Tax ({{ rtrim(rtrim(number_format($order->tax_rate_basis_points / 100, 2, '.', ''), '0'), '.') }}%)
                                     </span>
-                                    <span class="text-left font-extrabold text-amber-700 dark:text-amber-400">
+                                    <span class="text-end font-extrabold text-amber-700 dark:text-amber-400">
                                         {{ $money((int) $order->tax_amount) }}
                                     </span>
                                 </div>
                             @endif
 
                             <div class="flex items-center justify-between gap-3 text-xs">
-                                <span class="text-slate-500 dark:text-slate-400">وضعیت پرداخت</span>
+                                <span class="text-slate-500 dark:text-slate-400">Payment status</span>
 
                                 @if($isPaid)
-                                    <span class="font-extrabold text-emerald-700 dark:text-emerald-400">موفق</span>
+                                    <span class="font-extrabold text-emerald-700 dark:text-emerald-400">Successful</span>
                                 @else
-                                    <span class="font-extrabold text-red-700 dark:text-red-400">ناموفق</span>
+                                    <span class="font-extrabold text-red-700 dark:text-red-400">Failed</span>
                                 @endif
                             </div>
 
                             <div class="flex items-center justify-between gap-3 text-xs">
                                 <span class="text-slate-500 dark:text-slate-400">{{ $dateTitle }}</span>
-                                <span class="text-left font-extrabold text-slate-900 dark:text-slate-100">
-                    {{ jalali_date($happenedAt) }}
+                                <span class="text-end font-extrabold text-slate-900 dark:text-slate-100">
+                    {{ (($happenedAt) ? \Illuminate\Support\Carbon::parse($happenedAt)->format('Y/m/d H:i') : '') }}
                 </span>
                             </div>
                         </div>
@@ -488,10 +488,10 @@
                                 class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900/40 dark:bg-emerald-900/20">
                                 <div class="flex gap-3">
                                     <div>
-                                        <h3 class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">پرداخت
-                                            امن و تاییدشده</h3>
+                                        <h3 class="text-xs font-extrabold text-emerald-900 dark:text-emerald-300">Payment
+                                            Secure and verified</h3>
                                         <p class="mt-1 text-xs leading-6 text-emerald-800 dark:text-emerald-400">
-                                            اطلاعات تراکنش در حساب کاربری شما ذخیره شده است.
+                                            Transaction information is saved in your account.
                                         </p>
                                     </div>
                                 </div>
@@ -499,10 +499,10 @@
                         @else
                             <div
                                 class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-3 dark:border-red-900/40 dark:bg-red-900/20">
-                                <h3 class="text-xs font-extrabold text-red-900 dark:text-red-300">سفارش هنوز پرداخت نشده
-                                    است</h3>
+                                <h3 class="text-xs font-extrabold text-red-900 dark:text-red-300">Order is not paid yet
+                                    is</h3>
                                 <p class="mt-1 text-xs leading-6 text-red-800 dark:text-red-400">
-                                    برای فعال شدن آیتم‌های سفارش، پرداخت را دوباره انجام دهید.
+                                    Pay again to activate order items.
                                 </p>
                             </div>
                         @endif

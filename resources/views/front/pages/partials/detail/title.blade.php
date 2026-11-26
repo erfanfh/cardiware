@@ -10,7 +10,7 @@
             link-class="hover:text-brand-700 dark:hover:text-brand-400 font-bold transition"
             current-class="text-slate-600 dark:text-slate-300 font-semibold"
             :fallback-items="[
-                ['name' => 'خانه', 'url' => route('home')],
+                ['name' => 'Home', 'url' => route('home')],
                 ['name' => $page->title, 'url' => null],
             ]"
         />
@@ -21,7 +21,7 @@
             </h1>
 
             <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                <span>{{ jalali_date($page->published_at, 'd F Y') }}</span>
+                <span>{{ (($page->published_at) ? \Illuminate\Support\Carbon::parse($page->published_at)->format('d F Y') : '') }}</span>
                 <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
                 <span>{{ $page->author->display_name }}</span>
             </div>

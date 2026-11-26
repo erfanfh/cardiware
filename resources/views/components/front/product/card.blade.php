@@ -4,7 +4,7 @@
 
 @php
     $categories = $product->categories->take(2);
-    $storeTitle = $product->store?->title ?? 'فروشنده Cardiware';
+    $storeTitle = $product->store?->title ?? 'Seller Cardiware';
 
     $saleItems = $product->relationLoaded('saleItems')
         ? $product->saleItems
@@ -161,14 +161,14 @@
 
                         <div class="mb-1 flex items-center gap-1.5">
                             <span class="block text-[11px] font-bold text-slate-400 dark:text-slate-500">
-                                قیمت محصول
+                                Product price
                             </span>
 
                             @if($hasDiscountForDisplay && $discountPercentForDisplay > 0)
                                 <span
                                     class="rounded-full bg-brand-50 px-1.5 py-0.5 text-[9px] font-black text-brand-600 ring-1 ring-brand-100 dark:bg-brand-900/30 dark:text-brand-300 dark:ring-brand-900/40"
                                 >
-                                    {{ number_format($discountPercentForDisplay) }}٪
+                                    {{ number_format($discountPercentForDisplay) }}%
                                 </span>
                             @endif
                         </div>
@@ -179,11 +179,11 @@
                                     class="mb-0.5 whitespace-nowrap text-[11px] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
                                 >
                                     @if($isPriceRange)
-                                        <span>از</span>
+                                        <span>of</span>
                                     @endif
 
                                     {{ number_format($regularPriceForDisplay) }}
-                                    <span class="text-[10px]">تومان</span>
+                                    <span class="text-[10px]">Toman</span>
                                 </div>
                             @endif
 
@@ -193,24 +193,24 @@
                                     : 'text-slate-950 dark:text-slate-100' }}"
                             >
                                 @if($isFreeForDisplay)
-                                    رایگان!
+                                    Free!
                                 @else
                                     @if($isPriceRange)
                                         <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                                            از
+                                            of
                                         </span>
                                     @endif
 
                                     {{ number_format($minPrice) }}
 
                                     <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                                        تومان
+                                        Toman
                                     </span>
                                 @endif
                             </div>
                         @else
                             <span class="text-sm font-black text-slate-400 dark:text-slate-500">
-                                نامشخص
+                                Unknown
                             </span>
                         @endif
 
@@ -220,7 +220,7 @@
                         class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200 transition group-hover:bg-brand-600 group-hover:text-white group-hover:ring-brand-600
                         dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700"
                     >
-                        @include('icons.arrow-left-01')
+                        @include('icons.arrow-right-01')
                     </div>
 
                 </div>

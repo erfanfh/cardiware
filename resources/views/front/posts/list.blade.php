@@ -2,17 +2,17 @@
 
 @section('content')
     @php
-        $boxTitle = get_setting('posts', 'first_box_title') ?: 'آخرین نوشته ها';
+        $boxTitle = get_setting('posts', 'first_box_title') ?: 'Latest posts';
         $boxSubtitle = get_setting('posts', 'first_box_subtitle');
         if(request()->routeIs('posts.categories') and isset($category)){
             $boxTitle = $category->title;
-            $boxSubtitle = "آخرین نوشته های دسته $category->title";
+            $boxSubtitle = "Latest posts in category $category->title";
         }elseif(request()->routeIs('posts.tags') and isset($tag)){
             $boxTitle = $tag->title;
-            $boxSubtitle = "آخرین نوشته های برچسب $tag->title";
+            $boxSubtitle = "Latest posts tagged $tag->title";
         }elseif(request()->routeIs('author') and isset($author)){
             $boxTitle = $author->display_name;
-            $boxSubtitle = "آخرین نوشته های $author->display_name";
+            $boxSubtitle = "Latest posts for $author->display_name";
         }
     @endphp
 
@@ -92,17 +92,17 @@
                                         <div
                                             class="flex items-center gap-2 text-[0.7rem] text-slate-500 dark:text-slate-400">
                                             <span class="inline-flex items-center gap-2">
-                                                {{ jalali_date($post->published_at, 'd F Y') }}
+                                                {{ (($post->published_at) ? \Illuminate\Support\Carbon::parse($post->published_at)->format('d F Y') : '') }}
                                             </span>
                                             @if($views)
                                                 <span class="h-1 w-1 rounded bg-slate-300 dark:bg-slate-600"></span>
-                                                <span>{{ $views }} بازدید</span>
+                                                <span>{{ $views }} views</span>
                                             @endif
                                         </div>
                                         <span
                                             class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-700 group-hover:text-brand-800 transition [&_svg]:w-3 [&_svg]:h-3 dark:text-brand-300 dark:group-hover:text-brand-200">
-                                            ادامه
-                                            @include('icons.arrow-left-double')
+                                            Continue
+                                            <x-front.arrow-right-double/>
                                         </span>
                                     </div>
                                 </div>
@@ -115,8 +115,8 @@
                                 @include('icons.inbox')
                             </div>
 
-                            <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">نوشته ای یافت
-                                نشد!</h3>
+                            <h3 class="mt-4 text-sm font-extrabold text-slate-800 dark:text-slate-200">No posts found
+                                not found!</h3>
                         </x-front.cart>
                     @endforelse
                 </div>

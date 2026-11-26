@@ -18,8 +18,8 @@
                     link-class="hover:text-brand-300 font-bold transition"
                     current-class="text-white/90 font-semibold"
                     :fallback-items="[
-                        ['name' => 'خانه', 'url' => route('home')],
-                        ['name' => 'پروژه‌ها', 'url' => front_route('projects.list')],
+                        ['name' => 'Home', 'url' => route('home')],
+                        ['name' => 'Projects', 'url' => front_route('projects.list')],
                         ['name' => $project->title, 'url' => null],
                     ]"
                 />
@@ -48,9 +48,9 @@
                                 <span
                                     class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
                                     <span class="h-2 w-2 rounded bg-brand-400"></span>
-                                    <span>آخرین آپدیت:</span>
+                                    <span>Latest update:</span>
                                     <span class="font-extrabold text-white">
-                                        {{ jalali_date($project->last_updated_at, 'd F Y') }}
+                                        {{ (($project->last_updated_at) ? \Illuminate\Support\Carbon::parse($project->last_updated_at)->format('d F Y') : '') }}
                                     </span>
                                 </span>
                             @endif
@@ -58,7 +58,7 @@
                             @if($project->current_version)
                                 <span
                                     class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
-                                    <span>نسخه فعلی:</span>
+                                    <span>Current version:</span>
                                     <span class="font-extrabold text-white">{{ $project->current_version }}</span>
                                 </span>
                             @endif
@@ -67,7 +67,7 @@
                                 class="inline-flex items-center gap-2 rounded-2xl bg-white/10 border border-white/10 px-3 py-2 backdrop-blur">
                                 <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.view')</span>
                                 <span class="font-extrabold text-white">
-                                    {{ number_format(public_page_views($project)) }} بازدید
+                                    {{ number_format(public_page_views($project)) }} views
                                 </span>
                             </span>
                         </div>
@@ -75,7 +75,7 @@
 
                     <div class="w-full lg:w-[420px] rounded-3xl bg-white/10 border border-white/10 backdrop-blur p-5">
                         <div class="flex items-center justify-between">
-                            <div class="text-white/80 text-sm font-extrabold">درصد پیشرفت</div>
+                            <div class="text-white/80 text-sm font-extrabold">Progress percentage</div>
                             <div class="text-2xl font-black text-white">{{ $project->progress_percent }}%</div>
                         </div>
                         <div class="mt-3 h-2 rounded-full bg-white/15 overflow-hidden">
@@ -86,15 +86,15 @@
 
                         <div class="mt-4 grid grid-cols-3 gap-3">
                             <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
-                                <div class="text-[11px] font-extrabold text-white/70">تسک‌ها</div>
+                                <div class="text-[11px] font-extrabold text-white/70">Tasks</div>
                                 <div class="mt-1 text-white font-black">{{ $project->roadmapItems->count() }}</div>
                             </div>
                             <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
-                                <div class="text-[11px] font-extrabold text-white/70">آپدیت‌ها</div>
+                                <div class="text-[11px] font-extrabold text-white/70">Updates</div>
                                 <div class="mt-1 text-white font-black">{{ $project->changelogs->count() }}</div>
                             </div>
                             <div class="rounded-2xl bg-white/10 border border-white/10 p-3">
-                                <div class="text-[11px] font-extrabold text-white/70">ویژگی‌ها</div>
+                                <div class="text-[11px] font-extrabold text-white/70">Features</div>
                                 <div class="mt-1 text-white font-black">{{ $project->features->count() }}</div>
                             </div>
                         </div>
@@ -121,9 +121,9 @@
                         </span>
 
                         <div>
-                            <h2 class="text-base font-extrabold dark:text-slate-100">معرفی پروژه</h2>
-                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">چه چیزی در این پروژه ساخته
-                                می‌شود؟
+                            <h2 class="text-base font-extrabold dark:text-slate-100">Project overview</h2>
+                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">What is being built in this project
+                                ?
                             </div>
                         </div>
                     </div>
@@ -161,9 +161,9 @@
                                 </span>
 
                                 <div>
-                                    <h2 class="text-base font-extrabold dark:text-slate-100">نقشه راه</h2>
-                                    <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">مرحله‌ها و وضعیت هر
-                                        مرحله
+                                    <h2 class="text-base font-extrabold dark:text-slate-100">Roadmap</h2>
+                                    <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Stages and status of each
+                                        Stage
                                     </div>
                                 </div>
                             </div>
@@ -171,8 +171,8 @@
                             @if($project->last_updated_at)
                                 <span
                                     class="text-[11px] font-extrabold text-brand-800 bg-brand-50 border border-brand-100 px-2 py-1 rounded-xl dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
-                                <span>به‌روزرسانی:</span>
-                                <span>{{ jalali_date($project->last_updated_at, 'd F Y') }}</span>
+                                <span>Update:</span>
+                                <span>{{ (($project->last_updated_at) ? \Illuminate\Support\Carbon::parse($project->last_updated_at)->format('d F Y') : '') }}</span>
                             </span>
                             @endif
                         </div>
@@ -206,7 +206,7 @@
                                     <div class="mt-4">
                                         <div
                                             class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                            <span>پیشرفت مرحله</span>
+                                            <span>Stage progress</span>
                                             <span class="font-extrabold text-slate-700 dark:text-slate-200">
                                                 {{ $item->progress_percent }}%
                                             </span>
@@ -239,8 +239,8 @@
                             </span>
 
                             <div>
-                                <h2 class="text-base font-extrabold dark:text-slate-100">آپدیت‌ها و تغییرات</h2>
-                                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">تازه‌ترین اتفاقات پروژه
+                                <h2 class="text-base font-extrabold dark:text-slate-100">Updates and changes</h2>
+                                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Latest project activity
                                 </div>
                             </div>
                         </div>
@@ -298,53 +298,53 @@
                             </svg>
                         </span>
                         <div>
-                            <h2 class="text-base font-extrabold dark:text-slate-100">جزئیات پروژه</h2>
-                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">اطلاعات مهم پروژه</div>
+                            <h2 class="text-base font-extrabold dark:text-slate-100">Project details</h2>
+                            <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">Key project information</div>
                         </div>
                     </div>
 
                     <div class="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">وضعیت</span>
+                            <span class="text-slate-500 dark:text-slate-400">Status</span>
                             <span class="font-extrabold"
                                   :class="project.status==='done' ? 'text-emerald-700 dark:text-emerald-300' : 'text-brand-700 dark:text-brand-300'"
-                            >{{ \App\Domain\Project\Enums\ProjectStatusEnum::from($project->status->value)->label() }}</span>
+                            >{{ \App\Domain\Project\Enums\ProjectStatusEnum::from($project->status->value)->enLabel() }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">پیشرفت</span>
+                            <span class="text-slate-500 dark:text-slate-400">Progress</span>
                             <span class="font-extrabold">{{ $project->progress_percent . '%' }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">نسخه فعلی</span>
+                            <span class="text-slate-500 dark:text-slate-400">Current version</span>
                             <span class="font-extrabold">{{ $project->current_version }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">سازنده</span>
+                            <span class="text-slate-500 dark:text-slate-400">Creator</span>
                             <span class="font-extrabold">{{ $project->creator_name }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">پلتفرم</span>
+                            <span class="text-slate-500 dark:text-slate-400">Platform</span>
                             <span class="font-extrabold">{{ $project->platform }}</span>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <span class="text-slate-500 dark:text-slate-400">آخـرین آپدیت</span>
-                            <span class="font-extrabold">{{ jalali_date($project->last_updated_at, 'd F Y') }}</span>
+                            <span class="text-slate-500 dark:text-slate-400">Latest update</span>
+                            <span class="font-extrabold">{{ (($project->last_updated_at) ? \Illuminate\Support\Carbon::parse($project->last_updated_at)->format('d F Y') : '') }}</span>
                         </div>
                     </div>
 
                     <div class="mt-5 grid grid-cols-2 gap-3">
                         <a href="#updates"
                            class="rounded-2xl bg-brand-500 px-4 py-3 text-sm font-extrabold text-white shadow-lg hover:bg-brand-600 active:bg-brand-700 transition text-center dark:shadow-black/20 dark:hover:bg-brand-400">
-                            مشاهده آپدیت‌ها
+                            View updates
                         </a>
                         <a href="#roadmap"
                            class="rounded-2xl bg-white border border-slate-200 text-brand-700 px-4 py-3 text-sm font-extrabold hover:bg-brand-50 hover:border-brand-200 transition text-center dark:border-slate-700 dark:bg-slate-950 dark:text-brand-300 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10">
-                            نقشه راه
+                            Roadmap
                         </a>
                     </div>
                 </div>

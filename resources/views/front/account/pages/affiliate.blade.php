@@ -23,19 +23,19 @@
             </div>
         @endif
 
-        {{-- اطلاعیهٔ افزایش کمیسیون برای تولیدکنندگان محتوا --}}
+        {{-- Commission increase announcement for content creators --}}
         <div class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/25 dark:bg-amber-500/10">
             <div class="flex items-start gap-3">
                 <span class="mt-0.5 shrink-0 text-lg">📢</span>
                 <p class="text-xs font-bold leading-6 text-amber-900 dark:text-amber-200">
-                    <b class="font-black">تولیدکنندهٔ محتوا هستید یا جامعهٔ کاربری بزرگی دارید؟</b>
-                    درصد کمیسیون شما ثابت نیست؛ با رشد فروش می‌توانید کمیسیون بالاتری بگیرید.
-                    کافیست از بخش پشتیبانی، تیکتی با موضوع «درخواست افزایش کمیسیون همکاری در فروش» ارسال کنید تا پس از بررسی، درصد شما افزایش یابد.
+                    <b class="font-black">Are you a content creator or do you have a large community?</b>
+                    Your commission rate is not fixed; you can earn more as sales grow.
+                    Submit a support ticket with the subject «Affiliate commission increase request» so your rate can be increased after review.
                 </p>
             </div>
             <a href="{{ route('account.tickets') }}"
                class="shrink-0 self-start rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-black text-white transition hover:bg-amber-600 sm:self-auto">
-                ارسال تیکت به پشتیبانی
+                Send support ticket
             </a>
         </div>
 
@@ -49,7 +49,7 @@
             <div class="relative p-5 sm:p-6 lg:p-8">
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1.5 text-xs font-extrabold text-brand-700 backdrop-blur dark:border-brand-900/60 dark:bg-slate-900/70 dark:text-brand-300">
-                        پنل همکاری در فروش
+                        Affiliate dashboard
                     </div>
                     @php
                         $affiliateSettings = app(\App\Infrastructure\Services\Setting\Groups\AffiliateSettings::class);
@@ -57,31 +57,31 @@
                     @endphp
                     @if($affiliateSettings->referralBonusEnabled() && $referralBonusPoints > 0)
                         <div class="inline-flex items-center gap-1.5 rounded-full border border-amber-300/50 bg-amber-50/80 px-3 py-1.5 text-xs font-extrabold text-amber-700 backdrop-blur dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
-                            🎁 {{ persian_number($referralBonusPoints) }} امتیاز باشگاه پس از اولین خرید دوست دعوت‌شده
+                            🎁 {{ number_format($referralBonusPoints) }} club points after invited friend’s first purchase
                         </div>
                     @endif
                     @if($commissionPercent)
                         <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/50 bg-emerald-50/80 px-3 py-1.5 text-xs font-extrabold text-emerald-700 backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
-                            کمیسیون {{ $commissionPercent }}٪ از هر سفارش
+                            Commission {{ $commissionPercent }}% of each order
                         </div>
                     @else
                         <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/50 bg-emerald-50/80 px-3 py-1.5 text-xs font-extrabold text-emerald-700 backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
-                            کمیسیون {{ number_format((int) $affiliate->commission_value) }} تومان از هر سفارش
+                            Commission {{ number_format((int) $affiliate->commission_value) }} toman per order
                         </div>
                     @endif
                 </div>
 
                 <h1 class="mt-4 text-xl font-black leading-9 text-slate-900 sm:text-2xl dark:text-slate-100">
-                    از هر معرفی، درآمد بساز
+                    Earn income from every referral
                 </h1>
                 <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-                    لینک یا کد تخفیف {{ $affiliate->code }} را معرفی کن؛ سفارش‌هایی که با آنها ثبت شود به حساب تو منتسب می‌شود و کمیسیونش بلافاصله به موجودی‌ات اضافه می‌شود.
+                    Share your link or discount code {{ $affiliate->code }} and orders placed with them will be attributed to your account, with commission added immediately to your balance.
                 </p>
 
-                {{-- لینک + کد --}}
+                {{-- Link + Code --}}
                 <div class="mt-5 grid gap-3 lg:grid-cols-2">
                     <div class="rounded-2xl border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-950/60" x-data="{ copied: false }">
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">لینک معرفی</div>
+                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Referral link</div>
                         <div class="mt-2 flex items-center gap-2">
                             <div dir="ltr" class="h-10 min-w-0 flex-1 overflow-x-auto rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-bold leading-10 text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                                 {{ $referralUrl }}
@@ -89,13 +89,13 @@
                             <button type="button"
                                     @click="navigator.clipboard.writeText('{{ $referralUrl }}'); copied = true; setTimeout(() => copied = false, 2000)"
                                     class="h-10 shrink-0 rounded-xl bg-slate-900 px-3 text-[11px] font-extrabold text-white transition hover:-translate-y-0.5 dark:bg-white dark:text-slate-900">
-                                <span x-text="copied ? 'کپی ✓' : 'کپی'"></span>
+                                <span x-text="copied ? 'Copy ✓' : 'Copy'"></span>
                             </button>
                         </div>
                     </div>
 
                     <div class="rounded-2xl border border-white/70 bg-white/80 p-4 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-950/60" x-data="{ copied: false }">
-                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">کد تخفیف همکار (برای صفحه پرداخت)</div>
+                        <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Affiliate discount code (for checkout)</div>
                         <div class="mt-2 flex items-center gap-2">
                             <div dir="ltr" class="h-10 min-w-0 flex-1 overflow-x-auto rounded-xl border border-dashed border-brand-300 bg-brand-50/50 px-3 text-sm font-black leading-10 tracking-widest text-brand-700 dark:border-brand-500/40 dark:bg-brand-950/20 dark:text-brand-300">
                                 {{ $affiliate->code }}
@@ -103,7 +103,7 @@
                             <button type="button"
                                     @click="navigator.clipboard.writeText('{{ $affiliate->code }}'); copied = true; setTimeout(() => copied = false, 2000)"
                                     class="h-10 shrink-0 rounded-xl bg-brand-500 px-3 text-[11px] font-extrabold text-white transition hover:-translate-y-0.5">
-                                <span x-text="copied ? 'کپی ✓' : 'کپی'"></span>
+                                <span x-text="copied ? 'Copy ✓' : 'Copy'"></span>
                             </button>
                         </div>
                     </div>
@@ -114,60 +114,60 @@
         {{-- ===================== Balance ===================== --}}
         <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <div class="rounded-3xl border border-emerald-200/70 bg-gradient-to-l from-emerald-50 to-white p-4 shadow-sm dark:border-emerald-500/25 dark:from-emerald-950/25 dark:to-slate-900">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">قابل برداشت</div>
-                <div class="mt-1.5 text-xl font-black text-emerald-700 dark:text-emerald-300">{{ number_format($overview['availableBalance']) }} <span class="text-[10px]">تومان</span></div>
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Withdrawable</div>
+                <div class="mt-1.5 text-xl font-black text-emerald-700 dark:text-emerald-300">{{ number_format($overview['availableBalance']) }} <span class="text-[10px]">Toman</span></div>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">کل کمیسیون فعال</div>
-                <div class="mt-1.5 text-xl font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['totalCommission']) }} <span class="text-[10px]">تومان</span></div>
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Total active commission</div>
+                <div class="mt-1.5 text-xl font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['totalCommission']) }} <span class="text-[10px]">Toman</span></div>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">پرداخت‌شده</div>
-                <div class="mt-1.5 text-xl font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['paidOut']) }} <span class="text-[10px]">تومان</span></div>
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Paid</div>
+                <div class="mt-1.5 text-xl font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['paidOut']) }} <span class="text-[10px]">Toman</span></div>
             </div>
             <div class="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">در انتظار بررسی</div>
-                <div class="mt-1.5 text-xl font-black text-amber-600 dark:text-amber-300">{{ number_format($overview['pendingWithdrawalAmount']) }} <span class="text-[10px]">تومان</span></div>
+                <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400">Pending review</div>
+                <div class="mt-1.5 text-xl font-black text-amber-600 dark:text-amber-300">{{ number_format($overview['pendingWithdrawalAmount']) }} <span class="text-[10px]">Toman</span></div>
             </div>
         </div>
 
         {{-- ===================== Stats ===================== --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <div class="text-sm font-black text-slate-900 dark:text-slate-100">عملکرد لینک شما</div>
+            <div class="text-sm font-black text-slate-900 dark:text-slate-100">Your link performance</div>
 
             <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
                     <div class="text-lg font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['clicksCount']) }}</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">کلیک</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Clicks</div>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
                     <div class="text-lg font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['signupsCount']) }}</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">ثبت‌نام</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Registrations</div>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
                     <div class="text-lg font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['buyersCount']) }}</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">خریدار</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Buyers</div>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
                     <div class="text-lg font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['ordersCount']) }}</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">سفارش</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Order</div>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
-                    <div class="text-lg font-black text-brand-600 dark:text-brand-300">{{ rtrim(rtrim(number_format($overview['conversionPercent'], 1), '0'), '.') }}٪</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">نرخ تبدیل</div>
+                    <div class="text-lg font-black text-brand-600 dark:text-brand-300">{{ rtrim(rtrim(number_format($overview['conversionPercent'], 1), '0'), '.') }}%</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Conversion rate</div>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-3 text-center dark:bg-slate-950/50">
                     <div class="text-lg font-black text-slate-900 dark:text-slate-100">{{ number_format($overview['revenue']) }}</div>
-                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">گردش خرید (تومان)</div>
+                    <div class="mt-1 text-[10px] font-bold text-slate-500 dark:text-slate-400">Purchase turnover (toman)</div>
                 </div>
             </div>
         </div>
 
         {{-- ===================== Orders + Withdrawal ===================== --}}
         <div class="grid gap-4 lg:grid-cols-5">
-            {{-- سفارش‌های منتسب --}}
+            {{-- Attributed orders --}}
             <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-3 dark:border-slate-700 dark:bg-slate-900">
-                <div class="text-sm font-black text-slate-900 dark:text-slate-100">سفارش‌های منتسب به شما</div>
+                <div class="text-sm font-black text-slate-900 dark:text-slate-100">Orders attributed to you</div>
 
                 <div class="mt-4 space-y-2">
                     @forelse($overview['recentOrders'] as $affiliateOrder)
@@ -178,70 +178,70 @@
                                     <span class="mr-1 text-[10px] font-bold text-slate-400" dir="ltr">#{{ $affiliateOrder->order?->order_number ?? $affiliateOrder->order_id }}</span>
                                 </div>
                                 <div class="mt-1 flex items-center gap-2 text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                                    <span>{{ number_format($affiliateOrder->order_amount) }} تومان</span>
+                                    <span>{{ number_format($affiliateOrder->order_amount) }} Toman</span>
                                     <span>·</span>
                                     <span>{{ $affiliateOrder->source->label() }}</span>
                                     <span>·</span>
-                                    <span>{{ jalali_date($affiliateOrder->created_at) }}</span>
+                                    <span>{{ (($affiliateOrder->created_at) ? \Illuminate\Support\Carbon::parse($affiliateOrder->created_at)->format('Y/m/d H:i') : '') }}</span>
                                 </div>
                             </div>
                             <div class="shrink-0 text-left">
                                 @if($affiliateOrder->status->value === 'active')
-                                    <div class="text-xs font-black text-emerald-600 dark:text-emerald-300">+{{ number_format($affiliateOrder->commission_amount) }} ت</div>
+                                    <div class="text-xs font-black text-emerald-600 dark:text-emerald-300">+{{ number_format($affiliateOrder->commission_amount) }} T</div>
                                 @else
-                                    <div class="text-[10px] font-black text-rose-500">برگشت خورد</div>
+                                    <div class="text-[10px] font-black text-rose-500">Refunded</div>
                                 @endif
                             </div>
                         </div>
                     @empty
                         <div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                            هنوز سفارشی به لینک شما منتسب نشده است.
+                            No orders have been attributed to your link yet.
                         </div>
                     @endforelse
                 </div>
             </div>
 
-            {{-- برداشت --}}
+            {{-- Withdrawal --}}
             <div class="space-y-4 lg:col-span-2">
                 <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">درخواست برداشت</div>
+                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">Withdrawal request</div>
                     <p class="mt-1 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                        حداقل برداشت: {{ number_format($affiliate->min_withdrawal_amount) }} تومان
+                        Minimum withdrawal: {{ number_format($affiliate->min_withdrawal_amount) }} Toman
                     </p>
 
                     @if($overview['pendingWithdrawalAmount'] > 0)
                         <div class="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-bold leading-5 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
-                            یک درخواست در انتظار بررسی داری؛ پس از تعیین تکلیفش می‌توانی درخواست بعدی بدهی.
+                            You have a pending request; submit another after it is resolved.
                         </div>
                     @elseif($canWithdraw)
                         <form action="{{ route('account.affiliate.withdrawals.store') }}" method="POST" class="mt-3 space-y-2.5">
                             @csrf
                             <input type="number" name="amount" min="{{ $affiliate->min_withdrawal_amount }}" max="{{ $overview['availableBalance'] }}" required
-                                   placeholder="مبلغ به تومان"
+                                   placeholder="Amount in toman"
                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-800 outline-none transition focus:border-brand-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
-                            <input type="text" name="destination" placeholder="شماره کارت / شبا (اختیاری)"
+                            <input type="text" name="destination" placeholder="Card number / IBAN (optional)"
                                    class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-800 outline-none transition focus:border-brand-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
                             <button type="submit"
                                     class="h-11 w-full rounded-2xl bg-gradient-to-l from-brand-500 to-brand-600 text-xs font-extrabold text-white shadow-lg shadow-brand-500/25 transition hover:-translate-y-0.5">
-                                ثبت درخواست برداشت
+                                Submit withdrawal request
                             </button>
                         </form>
                     @else
                         <div class="mt-3 rounded-2xl border border-dashed border-slate-300 px-3 py-3 text-center text-[11px] font-bold leading-5 text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                            موجودی قابل برداشت فعلی {{ number_format($overview['availableBalance']) }} تومان است؛
-                            به حداقل {{ number_format($affiliate->min_withdrawal_amount) }} تومان که برسی می‌توانی برداشت درخواست کنی.
+                            Current withdrawable balance {{ number_format($overview['availableBalance']) }} toman;
+                            upon reaching the minimum of {{ number_format($affiliate->min_withdrawal_amount) }} toman you can request a withdrawal.
                         </div>
                     @endif
                 </div>
 
                 <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">تاریخچه برداشت</div>
+                    <div class="text-sm font-black text-slate-900 dark:text-slate-100">Withdrawal history</div>
                     <div class="mt-3 space-y-2">
                         @forelse($overview['withdrawals'] as $withdrawal)
                             <div class="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 px-3 py-2.5 dark:border-slate-700">
                                 <div>
-                                    <div class="text-xs font-black text-slate-800 dark:text-slate-200">{{ number_format($withdrawal->amount) }} تومان</div>
-                                    <div class="mt-0.5 text-[10px] font-bold text-slate-500 dark:text-slate-400">{{ jalali_date($withdrawal->requested_at) }}</div>
+                                    <div class="text-xs font-black text-slate-800 dark:text-slate-200">{{ number_format($withdrawal->amount) }} Toman</div>
+                                    <div class="mt-0.5 text-[10px] font-bold text-slate-500 dark:text-slate-400">{{ (($withdrawal->requested_at) ? \Illuminate\Support\Carbon::parse($withdrawal->requested_at)->format('Y/m/d H:i') : '') }}</div>
                                 </div>
                                 <div class="text-[10px] font-black
                                     {{ $withdrawal->status->value === 'approved' ? 'text-emerald-600 dark:text-emerald-300' : ($withdrawal->status->value === 'rejected' ? 'text-rose-500' : 'text-amber-600 dark:text-amber-300') }}">
@@ -250,7 +250,7 @@
                             </div>
                         @empty
                             <div class="rounded-2xl border border-dashed border-slate-300 px-3 py-4 text-center text-[11px] text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                                هنوز درخواست برداشتی نداری.
+                                No withdrawal requests yet.
                             </div>
                         @endforelse
                     </div>
@@ -260,27 +260,27 @@
 
         {{-- ===================== How it works ===================== --}}
         <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-            <div class="text-sm font-black text-slate-900 dark:text-slate-100">همکاری در فروش چطور کار می‌کند؟</div>
+            <div class="text-sm font-black text-slate-900 dark:text-slate-100">How does the affiliate program work?</div>
             <div class="mt-4 grid gap-3 md:grid-cols-3">
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/50">
-                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">۱</div>
-                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">لینک یا کد را معرفی کن</div>
+                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">1</div>
+                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">Share the link or code</div>
                     <p class="mt-1.5 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                        لینک اختصاصی‌ات را در شبکه‌های اجتماعی بگذار یا کد تخفیف را به خریداران بده.
+                        Post your personal link on social media or give buyers the discount code.
                     </p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/50">
-                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">۲</div>
-                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">سفارش به تو منتسب می‌شود</div>
+                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">2</div>
+                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">The order is attributed to you</div>
                     <p class="mt-1.5 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                        ثبت‌نام با لینک تا {{ $affiliate->attribution_days }} روز و خرید با کدت مستقیماً به حساب تو ثبت می‌شود.
+                        Registration through your link within {{ $affiliate->attribution_days }} days and purchases using your code are directly attributed to your account.
                     </p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 p-4 dark:bg-slate-950/50">
-                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">۳</div>
-                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">کمیسیون بگیر</div>
+                    <div class="grid h-8 w-8 place-items-center rounded-full bg-brand-500/15 text-xs font-black text-brand-700 dark:text-brand-300">3</div>
+                    <div class="mt-2 text-xs font-black text-slate-900 dark:text-slate-100">Earn commission</div>
                     <p class="mt-1.5 text-[11px] font-bold leading-5 text-slate-500 dark:text-slate-400">
-                        کمیسیون هر سفارش پرداخت‌شده بلافاصله به موجودی‌ات اضافه می‌شود و بعد از رسیدن به حداقل، برداشت کن.
+                        Commission from every paid order is immediately added to your balance; withdraw after reaching the minimum.
                     </p>
                 </div>
             </div>

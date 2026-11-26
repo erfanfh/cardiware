@@ -7,8 +7,8 @@
     @include(
         'livewire.front.identity.auth-modal.partials.shared.step-header',
         [
-            'title' => 'بازیابی رمز عبور',
-            'description' => 'کد تایید و رمز عبور جدید را وارد کنید.',
+            'title' => 'Reset password',
+            'description' => 'Enter verification code and new password.',
             'backMethod' => 'goToPasswordLogin',
             'mobile' => $resolvedMobile,
         ]
@@ -24,7 +24,7 @@
                 for="{{ $name }}-reset-otp"
                 class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
             >
-                کد تایید
+                Verification code
             </label>
 
             <input
@@ -52,7 +52,7 @@
                     for="{{ $name }}-new-password"
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
-                    رمز عبور جدید
+                    New password
                 </label>
 
                 <div class="relative mt-1.5">
@@ -69,7 +69,7 @@
                         type="button"
                         x-on:click="showPassword = !showPassword"
                         class="absolute left-3.5 top-1/2 -translate-y-1/2 cursor-pointer text-[10px] font-extrabold text-slate-400 hover:text-brand-600 dark:text-slate-500 dark:hover:text-brand-400"
-                        aria-label="نمایش یا مخفی کردن رمز عبور"
+                        aria-label="Show or hide password"
                     >
                         <svg
                             x-show="!showPassword"
@@ -129,7 +129,7 @@
                     for="{{ $name }}-new-password-confirmation"
                     class="text-[11px] font-extrabold text-slate-600 dark:text-slate-300"
                 >
-                    تکرار رمز عبور
+                    Confirm password
                 </label>
 
                 <div class="relative mt-1.5">
@@ -211,7 +211,7 @@
                 x-on:click="closeModal()"
                 class="h-11 cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-xs font-extrabold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
             >
-                انصراف
+                Cancel
             </button>
 
             <button
@@ -224,14 +224,14 @@
                     wire:loading.remove
                     wire:target="resetPassword"
                 >
-                    تغییر رمز و ادامه
+                    Change password and continue
                 </span>
 
                 <span
                     wire:loading
                     wire:target="resetPassword"
                 >
-                    در حال تغییر رمز...
+                    Changing password...
                 </span>
 
                 <span

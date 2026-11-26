@@ -14,10 +14,10 @@
                 <section role="dialog" aria-modal="true" @if($imageOnly) aria-label="{{ $popup->title }}" @else aria-labelledby="popup-title-{{ $popup->id }}" @endif tabindex="-1"
                          class="relative my-auto w-full max-w-xl translate-y-4 scale-95 overflow-hidden rounded-[1.75rem] border border-white/70 bg-white opacity-0 shadow-2xl shadow-slate-950/30 transition-all duration-200 ease-out motion-reduce:transition-none dark:border-slate-700 dark:bg-slate-900">
                     <div class="absolute left-3 top-3 z-10 flex gap-2">
-                        <button type="button" data-popup-dismiss="later" aria-label="بستن" title="بستن" class="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white/95 text-slate-700 shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-slate-600 dark:bg-slate-900/95 dark:text-slate-100 dark:hover:bg-slate-800">
+                        <button type="button" data-popup-dismiss="later" aria-label="Close" title="Close" class="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white/95 text-slate-700 shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-slate-600 dark:bg-slate-900/95 dark:text-slate-100 dark:hover:bg-slate-800">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
                         </button>
-                        <button type="button" data-popup-dismiss="long" aria-label="دیگر نمایش نده" title="دیگر نمایش نده" class="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white/95 text-slate-700 shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-slate-600 dark:bg-slate-900/95 dark:text-slate-100 dark:hover:bg-slate-800">
+                        <button type="button" data-popup-dismiss="long" aria-label="Do not show again" title="Do not show again" class="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white/95 text-slate-700 shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-500 dark:border-slate-600 dark:bg-slate-900/95 dark:text-slate-100 dark:hover:bg-slate-800">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.2A11 11 0 0 1 12 5c6 0 10 7 10 7a18 18 0 0 1-3.2 3.9M6.2 6.2A19 19 0 0 0 2 12s4 7 10 7a11 11 0 0 0 5.8-1.8"/></svg>
                         </button>
                     </div>
@@ -32,7 +32,7 @@
                     @unless($imageOnly)
                         <div @class(['p-6 sm:p-8', 'pt-16 sm:pt-16' => !$popup->image?->url])>
                             <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700 dark:bg-orange-500/10 dark:text-orange-300">
-                                <span class="h-2 w-2 rounded-full bg-orange-500"></span> اطلاع‌رسانی
+                                <span class="h-2 w-2 rounded-full bg-orange-500"></span> Announcement
                             </div>
                             <h2 id="popup-title-{{ $popup->id }}" class="text-xl font-black leading-8 text-slate-900 sm:text-2xl dark:text-white">{{ $popup->title }}</h2>
                             @if($popup->body)

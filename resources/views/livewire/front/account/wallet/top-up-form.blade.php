@@ -45,11 +45,11 @@
         <div class="flex items-center justify-between gap-4">
             <div>
                 <h2 class="text-sm font-black text-slate-900 sm:text-base dark:text-white">
-                    افزایش موجودی
+                    Top up balance
                 </h2>
 
                 <p class="mt-1 text-[11px] leading-5 text-slate-500 dark:text-slate-400">
-                    مبلغ مورد نظر را وارد کرده و پرداخت را انجام دهید.
+                    Enter the desired amount and complete payment.
                 </p>
             </div>
 
@@ -106,7 +106,7 @@
                        px-3 py-2.5 text-xs font-semibold leading-6 text-amber-700
                        dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300"
             >
-                درگاه پیشفرض پرداخت تنظیم نشده یا برای پرداخت آنلاین معتبر نیست.
+                Default payment gateway is not configured or is invalid for online payments.
             </div>
         @endunless
 
@@ -119,11 +119,11 @@
             <div>
                 <div class="flex items-center justify-between gap-3">
                     <label class="text-xs font-bold text-slate-700 dark:text-slate-300">
-                        مبلغ شارژ
+                        Top-up amount
                     </label>
 
                     <span class="text-[10px] text-slate-400">
-                        حداقل {{ number_format($minimumAmount) }} تومان
+                        Minimum {{ number_format($minimumAmount) }} Toman
                     </span>
                 </div>
 
@@ -142,7 +142,7 @@
                             {{ number_format($suggestedAmount) }}
 
                             <span class="text-[10px] font-semibold">
-                                تومان
+                                Toman
                             </span>
                         </button>
                     @endforeach
@@ -184,7 +184,7 @@
                             class="pointer-events-none absolute inset-y-0 left-4
                                    flex items-center text-[11px] font-bold text-slate-400"
                         >
-                            تومان
+                            Toman
                         </span>
                     </div>
                 </div>
@@ -204,7 +204,7 @@
                         wire:target="submit"
                         class="flex items-center gap-2 [&_svg]:w-5 [&_svg]:h-5"
                     >
-                        پرداخت
+                        Payment
 
                         @include('icons.credit-card')
                     </span>
@@ -235,7 +235,7 @@
                             ></path>
                         </svg>
 
-                        در حال اتصال
+                        Connecting
                     </span>
                 </button>
             </div>
@@ -251,13 +251,13 @@
                        sm:flex-row sm:items-center sm:justify-between"
             >
                 <p>
-                    پرداخت از طریق درگاه امن سیستم انجام می شود.
+                    Payment is processed through the secure payment gateway.
                 </p>
 
                 <p>
-                    حداکثر مبلغ:
+                    Maximum amount:
                     <span class="font-bold text-slate-500 dark:text-slate-300">
-                        {{ number_format($maximumAmount) }} تومان
+                        {{ number_format($maximumAmount) }} Toman
                     </span>
                 </p>
             </div>

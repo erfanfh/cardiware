@@ -11,14 +11,14 @@ export default function productTabs(commentsCount = 0) {
         isAdminBarVisible: false,
 
         sections: [
-            {id: 'product-content', label: 'توضیحات'},
-            {id: 'installation-steps', label: 'راهنمای نصب'},
-            {id: 'faqs', label: 'سوالات متداول'},
-            {id: 'releases', label: 'تغییرات'},
-            {id: 'file-size', label: 'حجم فایل ها'},
-            {id: 'video-gallery', label: 'ویدیوها'},
-            {id: 'team-members', label: 'اعضای تیم'},
-            {id: 'comments', label: 'دیدگاه‌ها'},
+            {id: 'product-content', label: 'Description'},
+            {id: 'installation-steps', label: 'Installation guide'},
+            {id: 'faqs', label: 'FAQs'},
+            {id: 'releases', label: 'Changes'},
+            {id: 'file-size', label: 'File sizes'},
+            {id: 'video-gallery', label: 'Videos'},
+            {id: 'team-members', label: 'Team members'},
+            {id: 'comments', label: 'Comments'},
         ],
 
         init() {
@@ -43,12 +43,12 @@ export default function productTabs(commentsCount = 0) {
             const value = Number(count) || 0;
 
             if (value < 1000) {
-                return new Intl.NumberFormat('fa-IR').format(value);
+                return new Intl.NumberFormat('en-US').format(value);
             }
 
             const compactValue = value / 1000;
 
-            return `${new Intl.NumberFormat('fa-IR', {
+            return `${new Intl.NumberFormat('en-US', {
                 maximumFractionDigits: 1,
             }).format(compactValue)}K`;
         },

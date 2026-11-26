@@ -1,33 +1,33 @@
 Cardiware | Cardiware
-فاکتور سفارش {{ $receipt->orderNumber }}
-پرداخت موفق
+Order invoice {{ $receipt->orderNumber }}
+Successful payment
 
-سلام {{ $receipt->customerName }}،
-از خرید شما متشکریم. سفارش شما با موفقیت پرداخت شد.
+Hello {{ $receipt->customerName }},
+Thank you for your purchase. Your order was paid successfully.
 
-شماره سفارش: {{ $receipt->orderNumber }}
-تاریخ پرداخت (تهران): {{ $receipt->paidAt }}
-روش پرداخت: {{ $receipt->paymentMethod }}
+Order number: {{ $receipt->orderNumber }}
+Payment date (Tehran): {{ $receipt->paidAt }}
+Payment method: {{ $receipt->paymentMethod }}
 @if($receipt->trackingCode)
-کد پیگیری پرداخت: {{ $receipt->trackingCode }}
+Payment tracking code: {{ $receipt->trackingCode }}
 @endif
 
-جزئیات سفارش (تمام مبالغ به تومان):
+Order details (all amounts in toman):
 @foreach($receipt->items as $item)
-- {{ $item['title'] }}@if($item['parent_title']) (افزونهٔ {{ $item['parent_title'] }})@endif
+- {{ $item['title'] }}@if($item['parent_title']) (Add-on {{ $item['parent_title'] }})@endif
 
-  تعداد: {{ $item['quantity'] }} | قیمت واحد: {{ $receipt->money($item['unit_price']) }} | تخفیف: {{ $receipt->money($item['discount']) }} | مبلغ نهایی: {{ $receipt->money($item['total']) }}
+  Quantity: {{ $item['quantity'] }} | Unit price: {{ $receipt->money($item['unit_price']) }} | Discount: {{ $receipt->money($item['discount']) }} | Final amount: {{ $receipt->money($item['total']) }}
 @endforeach
 
-جمع اقلام: {{ $receipt->money($receipt->subtotal) }}
-تخفیف محصولات: {{ $receipt->money($receipt->productDiscount) }}
-تخفیف کدهای خرید: {{ $receipt->money($receipt->couponDiscount) }}@if($receipt->couponCodes) ({{ implode(' + ', $receipt->couponCodes) }})@endif
+Items subtotal: {{ $receipt->money($receipt->subtotal) }}
+Product discounts: {{ $receipt->money($receipt->productDiscount) }}
+Coupon discounts: {{ $receipt->money($receipt->couponDiscount) }}@if($receipt->couponCodes) ({{ implode(' + ', $receipt->couponCodes) }})@endif
 
-مالیات ({{ $receipt->taxRate }}٪): {{ $receipt->money($receipt->tax) }}
-مبلغ پرداخت‌شده: {{ $receipt->money($receipt->total) }}
+Tax ({{ $receipt->taxRate }}%): {{ $receipt->money($receipt->tax) }}
+Amount paid: {{ $receipt->money($receipt->total) }}
 
-مشاهده سفارش‌های من:
+View my orders:
 {{ $receipt->ordersUrl }}
 
-برای پیگیری خرید، از بخش پشتیبانی حساب کاربری اقدام کنید و شماره سفارش را همراه داشته باشید.
-این ایمیل به‌صورت خودکار ارسال شده است؛ لطفاً به آن پاسخ ندهید.
+To follow up on your purchase, contact support in your account and have your order number ready.
+This email was sent automatically; please do not reply.

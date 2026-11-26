@@ -32,11 +32,11 @@ export default function storyViewer(stories = []) {
             if (id === undefined || this.seen[id]) return;
             this.seen = { ...this.seen, [id]: Date.now() };
             try {
-                // فقط آخرین ۲۰۰ استوری دیده‌شده نگه داشته می‌شود.
+                // Keep only the last 200 viewed stories.
                 const recent = Object.entries(this.seen).sort((a, b) => b[1] - a[1]).slice(0, 200);
                 localStorage.setItem('mw:stories-seen', JSON.stringify(Object.fromEntries(recent)));
             } catch (e) {
-                // حالت خصوصی مرورگر: فقط در همین صفحه یادش می‌ماند.
+                // Private browsing: remembered only on this page.
             }
         },
 
@@ -151,8 +151,8 @@ export default function storyViewer(stories = []) {
                 if (event.key === ' ' && event.target?.closest('button, a')) return;
                 event.preventDefault();
                 if (event.key === 'Escape') this.close();
-                if (event.key === 'ArrowRight') this.prev();
-                if (event.key === 'ArrowLeft') this.next();
+                if (event.key === 'ArrowLeft') this.prev();
+                if (event.key === 'ArrowRight') this.next();
                 if (event.key === ' ') this.paused ? this.resume() : this.pause();
             }
             if (event.key !== 'Tab') return;

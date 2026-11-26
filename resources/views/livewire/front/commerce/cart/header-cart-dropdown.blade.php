@@ -15,7 +15,7 @@
         "
         wire:loading.class="opacity-70"
         class="relative grid h-10 w-10 cursor-pointer place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800 [&_svg]:h-[1.125rem] [&_svg]:w-[1.125rem]"
-        aria-label="سبد خرید"
+        aria-label="Shopping cart"
     >
         @include('icons.shopping-basket-03')
 
@@ -59,11 +59,11 @@
                 <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
                         <div class="text-sm font-extrabold text-slate-900 dark:text-slate-100">
-                            سبد خرید
+                            Shopping cart
                         </div>
 
                         <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                            {{ $summary['items_count'] }} آیتم در سبد خرید شما
+                            {{ $summary['items_count'] }} items in your cart
                         </div>
                     </div>
 
@@ -72,7 +72,7 @@
                             type="button"
                             wire:click="reloadCart"
                             class="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-slate-600 transition hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-950 dark:hover:text-slate-100"
-                            aria-label="به‌روزرسانی سبد خرید"
+                            aria-label="Update cart"
                         >
                             <svg wire:loading.class="animate-spin" wire:target="reloadCart,toggle"
                                  xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24">
@@ -86,7 +86,7 @@
                             type="button"
                             @click="open = false"
                             class="grid h-9 w-9 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800 sm:hidden dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                            aria-label="بستن"
+                            aria-label="Close"
                         >
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
                                 <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" stroke-width="2"
@@ -110,7 +110,7 @@
                             <path d="M20 12a8 8 0 1 1-2.34-5.66" stroke="currentColor" stroke-width="1.8"
                                   stroke-linecap="round"/>
                         </svg>
-                        در حال به‌روزرسانی...
+                        Updating...
                     </div>
                 </div>
 
@@ -166,7 +166,7 @@
 
                                                         <span
                                                             class="shrink-0 font-bold text-slate-600 dark:text-slate-300">
-                                                            {{ number_format($child['total_amount']) }} تومان
+                                                            {{ number_format($child['total_amount']) }} Toman
                                                         </span>
                                                     </div>
                                                 @endforeach
@@ -182,7 +182,7 @@
                                                     x-on:click="$dispatch('product-buy-box-sync-started')"
                                                     wire:click="decrease({{ $item['id'] }})"
                                                     class="grid h-8 w-8 cursor-pointer place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-                                                    aria-label="کم کردن تعداد"
+                                                    aria-label="Decrease quantity"
                                                 >
                                                     −
                                                 </button>
@@ -197,34 +197,34 @@
                                                     wire:click="increase({{ $item['id'] }})"
                                                     x-on:click="$dispatch('product-buy-box-sync-started')"
                                                     @disabled(! $item['can_increase'])
-                                                    title="{{ ! $item['can_increase'] ? 'حداکثر تعداد مجاز برای این آیتم انتخاب شده است.' : '' }}"
+                                                    title="{{ ! $item['can_increase'] ? 'Maximum allowed quantity for this item has been selected.' : '' }}"
                                                     class="grid h-8 w-8 cursor-pointer place-items-center text-slate-500 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-slate-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-                                                    aria-label="زیاد کردن تعداد"
+                                                    aria-label="Increase quantity"
                                                 >
                                                     +
                                                 </button>
                                             </div>
 
-                                            <div class="text-left">
+                                            <div class="text-end">
                                                 @if($item['has_discount'])
                                                     <div
                                                         class="mb-0.5 whitespace-nowrap text-[0.7rem] font-bold text-slate-400 line-through decoration-brand-400/70 decoration-2 dark:text-slate-500"
                                                     >
                                                         {{ number_format($item['regular_total_amount']) }}
-                                                        <span class="text-[0.6rem]">تومان</span>
+                                                        <span class="text-[0.6rem]">Toman</span>
                                                     </div>
 
                                                     <div
                                                         class="whitespace-nowrap text-sm font-black text-brand-600 dark:text-brand-400">
                                                         {{ number_format($item['total_amount']) }}
                                                         <span
-                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">Toman</span>
                                                     </div>
 
                                                     @if($item['quantity'] > 1)
                                                         <div
                                                             class="mt-0.5 text-[0.65rem] text-slate-400 dark:text-slate-500">
-                                                            هر عدد
+                                                            per unit
                                                             <span
                                                                 class="line-through decoration-brand-400/70 decoration-2">
                                                                 {{ number_format($item['regular_unit_price']) }}
@@ -238,13 +238,13 @@
                                                     <div class="text-sm font-black text-slate-900 dark:text-slate-100">
                                                         {{ number_format($item['total_amount']) }}
                                                         <span
-                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                                            class="text-[0.65rem] font-bold text-slate-500 dark:text-slate-400">Toman</span>
                                                     </div>
 
                                                     @if($item['quantity'] > 1)
                                                         <div
                                                             class="mt-0.5 text-[0.65rem] text-slate-400 dark:text-slate-500">
-                                                            هر عدد {{ number_format($item['unit_price']) }}
+                                                            per unit {{ number_format($item['unit_price']) }}
                                                         </div>
                                                     @endif
                                                 @endif
@@ -257,7 +257,7 @@
                                         x-on:click="$dispatch('product-buy-box-sync-started')"
                                         wire:click="remove({{ $item['id'] }})"
                                         class="h-9 w-9 shrink-0 cursor-pointer rounded-2xl border border-rose-100 bg-rose-50 text-rose-500 transition hover:bg-rose-100 hover:text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20 [&_svg]:mx-auto [&_svg]:h-4 [&_svg]:w-4"
-                                        aria-label="حذف از سبد خرید"
+                                        aria-label="Remove from cart"
                                     >
                                         @include('icons.delete-02')
                                     </button>
@@ -270,18 +270,18 @@
                         class="border-t border-slate-100 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/40">
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                <span>جمع جزء</span>
+                                <span>Subtotal</span>
                                 <span class="font-bold text-slate-700 dark:text-slate-300">
-                                    {{ number_format($summary['subtotal_amount']) }} تومان
+                                    {{ number_format($summary['subtotal_amount']) }} Toman
                                 </span>
                             </div>
 
                             @if($summary['discount_amount'] > 0)
                                 <div
                                     class="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400">
-                                    <span>تخفیف</span>
+                                    <span>Discount</span>
                                     <span class="font-bold">
-                                        {{ number_format($summary['discount_amount']) }} تومان
+                                        {{ number_format($summary['discount_amount']) }} Toman
                                     </span>
                                 </div>
                             @endif
@@ -289,10 +289,10 @@
                             @if(($summary['tax_rate_basis_points'] ?? 0) > 0)
                                 <div class="flex items-center justify-between gap-3 text-xs">
                                     <span class="text-slate-500 dark:text-slate-400">
-                                        مالیات ({{ rtrim(rtrim(number_format($summary['tax_rate_basis_points'] / 100, 2, '.', ''), '0'), '.') }}٪)
+                                        Tax ({{ rtrim(rtrim(number_format($summary['tax_rate_basis_points'] / 100, 2, '.', ''), '0'), '.') }}%)
                                     </span>
                                     <span class="font-extrabold text-amber-700 dark:text-amber-400">
-                                        {{ number_format($summary['tax_amount']) }} تومان
+                                        {{ number_format($summary['tax_amount']) }} Toman
                                     </span>
                                 </div>
                             @endif
@@ -300,13 +300,13 @@
                             <div
                                 class="flex items-center justify-between border-t border-slate-200 pt-3 dark:border-slate-800">
                                 <span class="text-sm font-extrabold text-slate-800 dark:text-slate-100">
-                                    مبلغ قابل پرداخت
+                                    Amount due
                                 </span>
 
                                 <span class="text-base font-black text-slate-950 dark:text-white">
                                     {{ number_format($summary['total_amount']) }}
                                     <span
-                                        class="text-[0.7rem] font-bold text-slate-500 dark:text-slate-400">تومان</span>
+                                        class="text-[0.7rem] font-bold text-slate-500 dark:text-slate-400">Toman</span>
                                 </span>
                             </div>
                         </div>
@@ -316,14 +316,14 @@
                                 href="{{ $this->cartUrl }}"
                                 class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-3 text-xs font-extrabold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
                             >
-                                مشاهده سبد
+                                View cart
                             </a>
 
                             <a
                                 href="{{ $this->checkoutUrl }}"
                                 class="inline-flex h-11 items-center justify-center rounded-2xl bg-brand-500 px-3 text-xs font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400"
                             >
-                                ادامه پرداخت
+                                Continue to payment
                             </a>
                         </div>
                     </div>
@@ -341,18 +341,18 @@
                         </div>
 
                         <div class="mt-4 text-sm font-black text-slate-800 dark:text-slate-100">
-                            سبد خریدت خالیه
+                            Your cart is empty
                         </div>
 
                         <p class="mx-auto mt-1 max-w-[17rem] text-xs leading-6 text-slate-500 dark:text-slate-400">
-                            محصولات و فایل‌هایی که انتخاب می‌کنی اینجا نمایش داده می‌شوند.
+                            Products and files you select appear here.
                         </p>
 
                         <a
                             href="{{ Route::has('products.list') ? route('products.list') : '#' }}"
                             class="mt-5 inline-flex h-10 items-center justify-center rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 active:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-400"
                         >
-                            مشاهده محصولات
+                            View products
                         </a>
                     </div>
                 @endif

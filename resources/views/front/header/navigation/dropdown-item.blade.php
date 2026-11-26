@@ -25,7 +25,7 @@
         </svg>
     </a>
 
-    <div class="absolute right-0 top-full z-40 min-w-64 pt-3
+    <div class="absolute left-0 top-full z-40 min-w-64 pt-3
         opacity-0 invisible translate-y-2 scale-[0.98] pointer-events-none
         group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:scale-100 group-hover:pointer-events-auto
         transition-all duration-200 ease-out">

@@ -195,7 +195,7 @@ document.addEventListener('click', (event) => {
     openLightboxFromElement(trigger);
 });
 
-// دسترسی با کیبورد: هر عنصر [data-lightbox] که tabindex دارد با Enter/Space هم باز می‌شود.
+// Keyboard access: any element [data-lightbox] that tabindex has it opens with Enter/Space also.
 document.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' && event.key !== ' ') {
         return;

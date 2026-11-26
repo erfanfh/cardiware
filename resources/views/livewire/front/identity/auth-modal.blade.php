@@ -1,7 +1,7 @@
 <x-front.modal
     :name="$name"
-    title="ورود یا ساخت حساب"
-    description="برای ادامه، مراحل ورود یا ثبت نام را تکمیل کنید."
+    title="Sign in or create account"
+    description="Complete sign-in or registration to continue."
     :maxWidth="$step === \App\Domain\Identity\Enums\AuthFlowStepEnum::REGISTER
         ? 'max-w-2xl'
         : 'max-w-md'"
@@ -136,7 +136,7 @@
 
                     <div class="min-w-0">
                         <div class="text-xs font-black text-emerald-900 dark:text-emerald-300">
-                            عملیات موفق بود
+                            Operation successful
                         </div>
 
                         <p class="mt-1 text-[11px] font-bold leading-5 text-emerald-700 dark:text-emerald-400">

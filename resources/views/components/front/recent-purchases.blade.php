@@ -21,17 +21,17 @@
                 <div class="min-w-0 flex-1 text-xs leading-6">
                     <span class="mb-1 inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
                         <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
-                        خرید موفق
+                        Successful purchase
                     </span>
                     <p class="text-slate-600 dark:text-slate-300">
                         <b data-purchase-buyer class="font-bold text-slate-900 dark:text-white"></b>
-                        محصول
+                        Product
                         <a data-purchase-product class="font-bold text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-400"></a>
-                        را خریداری کرد.
+                        purchased.
                     </p>
                     <p data-purchase-time class="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400"></p>
                 </div>
-                <button data-purchase-close type="button" class="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 dark:hover:bg-emerald-400/10 dark:hover:text-emerald-400 [&_svg]:h-4 [&_svg]:w-4" aria-label="بستن اعلان خریدهای اخیر">
+                <button data-purchase-close type="button" class="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-full text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-500 dark:hover:bg-emerald-400/10 dark:hover:text-emerald-400 [&_svg]:h-4 [&_svg]:w-4" aria-label="Close recent purchases notification">
                     @include('icons.cancel-01')
                 </button>
             </div>

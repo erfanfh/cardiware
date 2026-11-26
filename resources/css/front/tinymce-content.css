@@ -4,7 +4,7 @@
     unicode-bidi: plaintext;
     line-height: 1.75rem;
     font-size: 0.9rem;
-    font-family: 'main-font', 'IRANSansX', 'IRANSans', 'sans-serif';
+    font-family: system-ui, 'Segoe UI', Arial, sans-serif;
 }
 
 /* Spacing base */
@@ -66,7 +66,7 @@
 /* Lists */
 .tinymce-content ul,
 .tinymce-content ol {
-    padding-right: 1.25rem;
+    padding-inline-start: 1.25rem;
     margin-bottom: 1rem;
 }
 
@@ -75,7 +75,7 @@
 }
 
 .tinymce-content ul li {
-    padding-right: 1rem;
+    padding-inline-start: 1rem;
     position: relative;
     list-style: none;
 }
@@ -109,7 +109,7 @@
 .tinymce-content.comment-content ul,
 .tinymce-content.comment-content ol {
     margin: 0.5rem 0;
-    padding-right: 1.25rem;
+    padding-inline-start: 1.25rem;
 }
 
 .tinymce-content.comment-content li {
@@ -135,7 +135,7 @@
     margin-bottom: 1rem;
     padding: 0.75rem 1rem;
     border-right: 4px solid #dc2626;
-    background: #fff7ed; /* گرم و ملایم */
+    background: #fff7ed; /* Warm and subtle */
     border-radius: 12px;
 }
 

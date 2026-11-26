@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // پیش‌فرض بسته
+    // Closed by default
     document.querySelectorAll('.sh313_toggle_box_content, .properties_dl_box_content')
         .forEach(el => el.style.display = 'none');
 

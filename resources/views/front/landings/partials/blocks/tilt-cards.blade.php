@@ -1,7 +1,7 @@
 {{--
-    بلوک کارت‌های سه‌بعدی tilt — {type: tilt-cards, title?, cards: [{num, pos:[fa,en], rating}]}
+    3D cards block tilt — {type: tilt-cards, title?, cards: [{num, pos:[fa,en], rating}]}
 --}}
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 <div class="reveal">
     @include('front.landings.partials.blocks.block-head', ['block' => $block])
 

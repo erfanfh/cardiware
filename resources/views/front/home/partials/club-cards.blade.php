@@ -4,7 +4,7 @@
         ? route('vip.index')
         : $clubCards['vip']['button_url'];
 
-    // چیدمان بر اساس تعداد کارت‌های فعال: با یک یا دو کارت، ستون خالی نمی‌ماند.
+    // Layout based on active card count; no empty columns with one or two cards.
     $clubVisible = [
         'vip' => $clubCards['cards']['show_vip'],
         'projects' => $clubCards['cards']['show_projects'],
@@ -22,7 +22,7 @@
 <section class="mw-club-cards">
     <div class="grid {{ $clubGridClass }} gap-4 items-stretch">
 
-        {{-- اشتراک ویژه (طلایی) --}}
+        {{-- Premium subscription (gold) --}}
         @if($clubVisible['vip'])
         <a href="{{ $vipUrl }}" class="mw-club-vip group">
             <span class="mw-club-vip-ring" aria-hidden="true"></span>
@@ -38,7 +38,7 @@
                             {{ $clubCards['vip']['title'] }}
                         </div>
                         <div class="text-[11px] font-bold text-amber-600/70 dark:text-amber-200/60">
-                            {{ $clubCards['vip']['badge'] ?: 'دسترسی نامحدود به همه پچ‌ها' }}
+                            {{ $clubCards['vip']['badge'] ?: 'Unlimited access to all patches' }}
                         </div>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                     {{ $clubCards['vip']['subtitle'] }}
                 </p>
 
-                {{-- تصویر اختیاری کارت --}}
+                {{-- Optional card image --}}
                 @if(!empty($clubCards['vip']['image_path']))
                     <div class="relative mt-3 overflow-hidden rounded-2xl ring-1 ring-amber-500/20">
                         <img src="{{ $clubCards['vip']['image_path'] }}" alt="{{ $clubCards['vip']['title'] }}"
@@ -57,7 +57,7 @@
                     </div>
                 @endif
 
-                {{-- توضیح کامل؛ وسط کارت خالی نمی‌ماند --}}
+                {{-- Full description; center of card does not remain empty --}}
                 @if(!empty($clubCards['vip']['description']))
                     <div class="mt-3 rounded-2xl border border-amber-500/15 bg-amber-50/60 px-3.5 py-3 text-[11.5px] leading-6 whitespace-pre-line text-slate-700 dark:border-amber-500/15 dark:bg-amber-500/5 dark:text-slate-300">
                         {{ $clubCards['vip']['description'] }}
@@ -67,14 +67,14 @@
                 <span class="mt-auto pt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-amber-400 to-yellow-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-amber-500/30 transition group-hover:shadow-amber-500/50 group-hover:brightness-110">
                     {{ $clubCards['vip']['button_title'] }}
                     <span class="[&_svg]:h-4 [&_svg]:w-4">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 </span>
             </div>
         </a>
         @endif
 
-        {{-- پروژه‌ها (کارت ثابت بدون نوار پیشرفت) --}}
+        {{-- Projects (static card without progress bar) --}}
         @if($clubVisible['projects'])
         <div class="mw-club-projects">
             <div class="flex items-center justify-between gap-3 mb-4">
@@ -87,9 +87,9 @@
 
                 <a href="{{ front_route('projects.list') }}"
                    class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-2 dark:text-brand-300 dark:hover:text-brand-200">
-                    مشاهده همه
+                    View all
                     <span class="[&_svg]:w-4 [&_svg]:h-4">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 </a>
             </div>
@@ -119,7 +119,7 @@
                             </span>
 
                             <span class="shrink-0 text-[11px] font-black {{ $projectDone ? 'text-emerald-600 dark:text-emerald-400' : 'text-brand-600 dark:text-brand-400' }}">
-                                {{ $clubProgress }}٪
+                                {{ $clubProgress }}%
                             </span>
                         </span>
 
@@ -129,7 +129,7 @@
                             </span>
                         @endif
 
-                        {{-- نوار پیشرفت مینی‌مال هم‌رنگ درصد --}}
+                        {{-- Minimal progress bar matching percentage color --}}
                         <span class="mt-2 block h-1.5 overflow-hidden rounded-full bg-slate-200/80 dark:bg-slate-800" aria-hidden="true">
                             <span class="block h-full rounded-full transition-all duration-700"
                                   style="width: {{ $clubProgress }}%; background: linear-gradient(to left, hsl({{ min(160, $clubHue + 16) }} 82% 46%), hsl({{ $projectDone ? 152 : $clubHue }} 84% 52%));"></span>
@@ -137,14 +137,14 @@
                     </a>
                 @empty
                     <div class="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-                        پروژه‌ای برای نمایش انتخاب نشده است.
+                        No project selected for display.
                     </div>
                 @endforelse
             </div>
         </div>
         @endif
 
-        {{-- کاربران برتر هفته (هاله طلایی چرخان) --}}
+        {{-- Weekly leaders (rotating gold halo) --}}
         @if($clubVisible['leaders'])
         <a href="{{ route('loyalty.leaderboard') }}" class="mw-club-top-users group">
             <span class="mw-club-gold-ring" aria-hidden="true"></span>
@@ -157,7 +157,7 @@
                         </span>
                         <div>
                             <h3 class="text-sm font-extrabold dark:text-slate-100">{{ $clubCards['leadersTitle'] }}</h3>
-                            <div class="text-[10.5px] text-slate-500 dark:text-slate-400">{{ $clubCards['leadersSubtitle'] ?: 'فعال‌ترین اعضای باشگاه مخاطبان' }}</div>
+                            <div class="text-[10.5px] text-slate-500 dark:text-slate-400">{{ $clubCards['leadersSubtitle'] ?: 'Most active Community Club members' }}</div>
                         </div>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                     @forelse($clubCards['topUsers'] as $index => $leader)
                         @php
                             $leaderUser = $leader->user;
-                            $initial = mb_substr(trim($leaderUser?->first_name ?: $leaderUser?->last_name ?: '؟'), 0, 1);
+                            $initial = mb_substr(trim($leaderUser?->first_name ?: $leaderUser?->last_name ?: '?'), 0, 1);
                         @endphp
                         <div class="flex items-center gap-3 rounded-xl px-2 py-1.5 transition group-hover:bg-white/40 dark:group-hover:bg-slate-900/40">
                             <span class="mw-top-rank mw-top-rank-{{ $index + 1 }}">{{ $index + 1 }}</span>
@@ -177,26 +177,26 @@
 
                             <span class="min-w-0 flex-1">
                                 <span class="block truncate text-xs font-bold text-slate-800 dark:text-slate-200">
-                                    {{ trim(($leaderUser?->first_name ?? '') . ' ' . ($leaderUser?->last_name ?? '')) ?: 'کاربر Cardiware' }}
+                                    {{ trim(($leaderUser?->first_name ?? '') . ' ' . ($leaderUser?->last_name ?? '')) ?: 'User Cardiware' }}
                                 </span>
                             </span>
 
-                            <span class="shrink-0 text-left">
+                            <span class="shrink-0 text-end">
                                 <b class="block text-xs font-black text-brand-600 dark:text-brand-400">{{ number_format($leader->balance) }}</b>
-                                <span class="block text-[9.5px] font-semibold text-slate-400">امتیاز</span>
+                                <span class="block text-[9.5px] font-semibold text-slate-400">points</span>
                             </span>
                         </div>
                     @empty
                         <div class="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 px-4 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-                            هنوز امتیازی ثبت نشده است.
+                            No points recorded yet.
                         </div>
                     @endforelse
                 </div>
 
                 <span class="mt-auto pt-3 inline-flex items-center justify-center gap-2 border-t border-slate-200 pt-3 text-xs font-extrabold text-brand-700 transition group-hover:text-brand-800 dark:border-slate-700/70 dark:text-brand-300">
-                    مشاهده صفحه کاربران برتر
+                    View leaderboard
                     <span class="[&_svg]:h-4 [&_svg]:w-4">
-                        @include('icons.arrow-left-02')
+                        <x-front.arrow-right-02/>
                     </span>
                 </span>
             </div>

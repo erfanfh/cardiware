@@ -13,7 +13,7 @@
                class="block rounded-2xl border border-slate-200 p-3 hover:bg-slate-50 transition dark:border-slate-700 dark:hover:bg-slate-800">
                 <div class="flex items-center justify-between gap-3">
                     <div class="text-sm font-extrabold truncate dark:text-slate-100">
-                        کاربر: {{ $comment->user?->display_name ?? $comment->author_name }}
+                        User: {{ $comment->user?->display_name ?? $comment->author_name }}
                     </div>
 
                     <div class="text-xs text-slate-500 dark:text-slate-400">

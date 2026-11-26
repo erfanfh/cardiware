@@ -5,12 +5,12 @@
 @section('content')
     @php
         $accent = $festival['themeColor'];
-        $accentSoft = $accent . '24'; // 14% آلفا
+        $accentSoft = $accent . '24'; // 14% Alpha
         $hasCountdown = $festival['countdownEnabled'] && filled($festival['countdownEndsAt']) && strtotime($festival['countdownEndsAt']) > time();
     @endphp
 
     <main class="mw-festival relative isolate overflow-hidden" style="--festival-accent: {{ $accent }}; --festival-accent-soft: {{ $accentSoft }};">
-        {{-- پس‌زمینه اختیاری + پترن --}}
+        {{-- Optional background + Pattern --}}
         @if($festival['bgImage'])
             <img src="{{ $festival['bgImage'] }}" alt="" class="mw-festival-bg" loading="lazy">
         @endif
@@ -19,11 +19,11 @@
             <span class="mw-footer-pattern is-{{ $festival['bgPattern'] }} mw-festival-pattern" aria-hidden="true"></span>
         @endif
 
-        {{-- هدر جشنواره --}}
+        {{-- Festival header --}}
         <section class="mw-festival-hero relative">
             <div class="mx-auto max-w-6xl px-4 py-14 sm:py-20">
                 <div class="grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
-                    <div class="text-center lg:text-right">
+                    <div class="text-center lg:text-start">
                         @if($festival['badge'] !== '')
                             <span class="mw-rise d-1 inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-xs font-black backdrop-blur"
                                   style="border-color: var(--festival-accent); background: var(--festival-accent-soft); color: var(--festival-accent);">
@@ -51,14 +51,14 @@
                         @if($festival['discountText'] !== '')
                             <div class="mw-rise d-3 mt-6 inline-flex items-stretch overflow-hidden rounded-2xl shadow-xl"
                                  style="box-shadow: 0 14px 34px -12px var(--festival-accent);">
-                                <span class="grid place-items-center px-5 py-3 text-sm font-black text-white" style="background: var(--festival-accent);">تا</span>
+                                <span class="grid place-items-center px-5 py-3 text-sm font-black text-white" style="background: var(--festival-accent);">until</span>
                                 <span class="grid place-items-center bg-white px-6 py-3 text-2xl font-black text-slate-950 dark:bg-slate-900 dark:text-white">
                                     {{ $festival['discountText'] }}
                                 </span>
                             </div>
                         @endif
 
-                        {{-- شمارش معکوس --}}
+                        {{-- Countdown --}}
                         @if($hasCountdown)
                             <div class="mw-rise d-4 mt-7 flex items-center justify-center gap-2.5 lg:justify-start"
                                  x-data="{
@@ -71,30 +71,30 @@
                                     get parts() {
                                         const s = this.remaining;
                                         return {
-                                            d: String(Math.floor(s / 86400)).padStart(2, '۰'),
-                                            h: String(Math.floor((s % 86400) / 3600)).padStart(2, '۰'),
-                                            m: String(Math.floor((s % 3600) / 60)).padStart(2, '۰'),
-                                            s: String(s % 60).padStart(2, '۰'),
+                                            d: String(Math.floor(s / 86400)).padStart(2, '0'),
+                                            h: String(Math.floor((s % 86400) / 3600)).padStart(2, '0'),
+                                            m: String(Math.floor((s % 3600) / 60)).padStart(2, '0'),
+                                            s: String(s % 60).padStart(2, '0'),
                                         };
                                     }
                                  }"
                                  x-init="tick()">
-                                <template x-for="(label, key) in {d: 'روز', h: 'ساعت', m: 'دقیقه', s: 'ثانیه'}" :key="key">
+                                <template x-for="(label, key) in {d: 'days', h: 'hours', m: 'minutes', s: 'seconds'}" :key="key">
                                     <div class="grid w-[4.4rem] place-items-center rounded-2xl border bg-white/80 py-2.5 backdrop-blur-xl dark:bg-slate-900/70"
                                          style="border-color: var(--festival-accent-soft);">
-                                        <b class="text-xl font-black tabular-nums text-slate-950 dark:text-white" x-text="parts[key]">۰۰</b>
+                                        <b class="text-xl font-black tabular-nums text-slate-950 dark:text-white" x-text="parts[key]">00</b>
                                         <span class="text-[10px] font-bold text-slate-500 dark:text-slate-400" x-text="label"></span>
                                     </div>
                                 </template>
                             </div>
                         @endif
 
-                        {{-- کد تخفیف --}}
+                        {{-- Discount code --}}
                         @if($festival['couponCode'] !== '')
                             <div class="mw-rise d-4 mt-7" x-data="{ copied: false }">
                                 <div class="inline-flex flex-wrap items-center gap-3 rounded-2xl border border-dashed p-2.5 pl-4"
                                      style="border-color: var(--festival-accent); background: var(--festival-accent-soft);">
-                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">کد تخفیف:</span>
+                                    <span class="text-xs font-bold text-slate-600 dark:text-slate-300">Discount code:</span>
 
                                     <code class="rounded-xl bg-white px-3 py-1.5 text-sm font-black tracking-widest text-slate-950 dark:bg-slate-900 dark:text-white" dir="ltr">{{ $festival['couponCode'] }}</code>
 
@@ -102,7 +102,7 @@
                                             class="cursor-pointer rounded-xl px-3.5 py-1.5 text-xs font-extrabold text-white transition active:scale-95"
                                             style="background: var(--festival-accent);"
                                             @click="navigator.clipboard?.writeText(@js($festival['couponCode'])).then(() => { copied = true; setTimeout(() => copied = false, 1800) })">
-                                        <span x-text="copied ? 'کپی شد ✓' : 'کپی کد'"></span>
+                                        <span x-text="copied ? 'Copied ✓' : 'Copy code'"></span>
                                     </button>
                                 </div>
 
@@ -119,7 +119,7 @@
                                    style="background: var(--festival-accent); box-shadow: 0 16px 34px -12px var(--festival-accent);">
                                     {{ $festival['buttonText'] }}
                                     <span class="[&_svg]:h-4 [&_svg]:w-4">
-                                        @include('icons.arrow-left-02')
+                                        <x-front.arrow-right-02/>
                                     </span>
                                 </a>
                             </div>
@@ -138,7 +138,7 @@
             </div>
         </section>
 
-        {{-- پیشنهادهای جشنواره --}}
+        {{-- Festival offers --}}
         @if($festival['deals']->isNotEmpty())
             <section class="relative mx-auto max-w-6xl px-4 pb-16">
                 <h2 class="text-xl font-black text-slate-950 sm:text-2xl dark:text-white">
@@ -189,7 +189,7 @@
                                 <div class="mt-auto pt-4">
                                     <span class="inline-flex w-full items-center justify-center rounded-2xl px-3.5 py-2.5 text-xs font-extrabold text-white transition group-hover:brightness-110"
                                           style="background: var(--festival-accent);">
-                                        {{ $item['button_text'] ?? 'مشاهده و خرید' }}
+                                        {{ $item['button_text'] ?? 'View and buy' }}
                                     </span>
                                 </div>
                             </div>

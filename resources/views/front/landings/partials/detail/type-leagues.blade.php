@@ -1,7 +1,7 @@
-@php($locale = $locale ?? 'fa')
+@php($locale = 'en')
 @php($prefix = $locale === 'en' ? '/en' : '')
 <div>
-    <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Leagues & Cups' : 'لیگ‌ها و جام‌ها' }}</h2>
+    <h2 class="text-2xl font-black text-ink">{{ $locale === 'en' ? 'Leagues & Cups' : 'Leagues and cups' }}</h2>
 
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
         @foreach($pageData['catalog'] as $leagueSlug => $league)
@@ -22,7 +22,7 @@
                     <span class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                         <span>{{ $league['country'] }}</span>
                         <span class="opacity-50">•</span>
-                        <span class="font-num">{{ $league['teams_count'] }} {{ $locale === 'en' ? 'clubs' : 'تیم' }}</span>
+                        <span class="font-num">{{ $league['teams_count'] }} {{ $locale === 'en' ? 'clubs' : 'Team' }}</span>
                         <span class="opacity-50">•</span>
                         <span>{{ $league['level'] }}</span>
                     </span>

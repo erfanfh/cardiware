@@ -12,8 +12,8 @@
             type="button"
             x-data
             x-on:click="$dispatch('open-modal', 'post-share-{{ $post->id }}')"
-            aria-label="اشتراک‌گذاری نوشته"
-            title="اشتراک‌گذاری نوشته"
+            aria-label="Share post"
+            title="Share post"
             class="group absolute top-4 left-4 z-10 inline-flex h-9 items-center justify-center
                    gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-2.5 cursor-pointer
                    text-xs font-extrabold text-slate-600 shadow-sm backdrop-blur-md transition
@@ -25,15 +25,15 @@
             @include('icons.share-08')
 
             <span class="hidden sm:inline">
-                اشتراک‌گذاری
+                Share
             </span>
         </button>
 
         <x-front.breadcrumbs
             nav-class="flex flex-wrap items-center gap-1.5 pl-11 text-xs text-slate-500 dark:text-slate-400"
             :fallback-items="[
-                ['name' => 'خانه', 'url' => route('home')],
-                ['name' => 'نوشته‌ها', 'url' => front_route('posts.list')],
+                ['name' => 'Home', 'url' => route('home')],
+                ['name' => 'Posts', 'url' => front_route('posts.list')],
                 ['name' => $post->title, 'url' => null],
             ]"
         />
@@ -48,7 +48,7 @@
 
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-brand-600"></span>
 
-                        ویژه
+                        Exclusive
                     </div>
                 @endif
 
@@ -72,7 +72,7 @@
 
                         <span class="inline-block h-1.5 w-1.5 rounded-full bg-green-600"></span>
 
-                        آپدیت شد
+                        Updated
                     </div>
                 @endif
             </div>
@@ -89,7 +89,7 @@
                     @include('icons.calendar-03')
 
                     <span>
-                        {{ jalali_date($post->published_at, 'd F Y') }}
+                        {{ (($post->published_at) ? \Illuminate\Support\Carbon::parse($post->published_at)->format('d F Y') : '') }}
                     </span>
                 </div>
 
@@ -105,7 +105,7 @@
                     @include('icons.view')
 
                     <span>
-                        {{ number_format(public_page_views($post)) }} بازدید
+                        {{ number_format(public_page_views($post)) }} views
                     </span>
                 </div>
 
@@ -113,7 +113,7 @@
                     @include('icons.comment-01')
 
                     <span>
-                        {{ $post->approved_comments_count }} دیدگاه
+                        {{ $post->approved_comments_count }} Comment
                     </span>
                 </div>
 
@@ -125,7 +125,7 @@
                            transition hover:text-brand-800
                            dark:text-brand-300 dark:hover:text-brand-200">
 
-                    رفتن به دیدگاه‌ها
+                    Go to comments
 
                     <span class="font-black">←</span>
                 </a>

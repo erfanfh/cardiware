@@ -1,4 +1,4 @@
-/* ===== Store hero (صفحه فروشگاه فروشنده) ===== */
+/* ===== Store hero (Seller storefront) ===== */
 
 .mw-store-hero {
     position: relative;
@@ -16,7 +16,7 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
 }
 
-/* ---------- بنر گرادیانی ---------- */
+/* ---------- Gradient banner ---------- */
 
 .mw-store-banner {
     position: relative;
@@ -33,7 +33,7 @@
         linear-gradient(to left, rgb(124 45 18), rgb(194 65 12) 52%, rgb(28 25 23));
 }
 
-/* بافت خط‌خط مورب که آرام حرکت می‌کند */
+/* Slowly moving diagonal stripes */
 .mw-store-banner-stripes {
     position: absolute;
     inset: 0;
@@ -51,7 +51,7 @@
     to { background-position: -240px 0; }
 }
 
-/* دو هاله نور که آرام جابه‌جا می‌شوند */
+/* Two slowly moving light halos */
 .mw-store-banner-glow {
     position: absolute;
     border-radius: 9999px;
@@ -91,7 +91,7 @@
     to { transform: translateX(-52px) scale(1.08); }
 }
 
-/* حلقه تزیینی بزرگ سمت راست بنر */
+/* Large decorative ring on right of banner */
 .mw-store-banner-ring {
     position: absolute;
     top: -55px;
@@ -118,7 +118,7 @@
     box-shadow: 0 0 0 6px rgba(255, 255, 255, .18);
 }
 
-/* ---------- بدنه و هویت ---------- */
+/* ---------- Body and identity ---------- */
 
 .mw-store-body {
     position: relative;
@@ -155,7 +155,7 @@
     .mw-store-avatar { width: 116px; height: 116px; }
 }
 
-/* حلقه کونیک چرخان دور آواتار */
+/* Rotating conic avatar ring */
 .mw-store-avatar-ring {
     position: absolute;
     inset: -6px;
@@ -187,7 +187,7 @@
     border-color: rgb(2 6 23);
 }
 
-/* نشان تیک آبی تایید روی آواتار */
+/* Blue verification badge on avatar */
 .mw-store-avatar-badge {
     position: absolute;
     bottom: 2px;
@@ -226,7 +226,7 @@
 
 .dark .mw-store-title { color: rgb(241 245 249); }
 
-/* چیپ‌های وضعیت */
+/* Status chips */
 .mw-store-chip {
     display: inline-flex;
     align-items: center;
@@ -274,7 +274,7 @@
     50% { opacity: .45; transform: scale(.72); }
 }
 
-/* ---------- توضیح و دکمه ---------- */
+/* ---------- Description and button ---------- */
 
 .mw-store-desc {
     max-width: 72rem;
@@ -286,7 +286,7 @@
 }
 
 @media (min-width: 640px) {
-    .mw-store-desc { text-align: right; }
+    .mw-store-desc { text-align: start; }
 }
 
 .dark .mw-store-desc { color: rgb(203 213 225); }
@@ -317,7 +317,7 @@
 
 .mw-store-cta:active { transform: translateY(0); }
 
-/* برق عبوری هنگام هاور */
+/* Hover shine */
 .mw-store-cta-sheen {
     position: absolute;
     inset: 0;
@@ -329,7 +329,7 @@
 
 .mw-store-cta:hover .mw-store-cta-sheen { transform: translateX(-70%); }
 
-/* ---------- کاشی‌های آمار ---------- */
+/* ---------- Stat tiles ---------- */
 
 .mw-store-stats {
     display: grid;
@@ -406,9 +406,9 @@
 
 .dark .mw-store-stat-value { color: rgb(241 245 249); }
 
-/* ---------- ورود پله‌ای عناصر ----------
-   حالت پایه مرئی است؛ انیمیشن فقط وقتی فعال می‌شود که تب در دید باشد
-   (کلاس mw-anim-ready از JS روی <html> گذاشته می‌شود) تا هیچ حالتی محتوا را نامرئی رها نکند. */
+/* ---------- Staggered entrance ----------
+   Base visible; animate only when tab is visible
+   (Class mw-anim-ready of JS on <html> is applied) so content never remains invisible. */
 
 .mw-anim-ready .mw-rise {
     animation: mwStoreRise .75s cubic-bezier(.22, 1, .36, 1) backwards;

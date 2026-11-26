@@ -36,7 +36,7 @@
         min-height: clamp(430px, 118vw, 560px);
     }
 
-    /* تصویر پس‌زمینهٔ کامل اسلاید می‌شود تا پایینش کات نشود و نوار تیرهٔ خالی نماند */
+    /* Full slide background image prevents cropping and empty dark strip */
     .heroSwiper .home-hero-image {
         position: absolute;
         inset: 0;
@@ -96,15 +96,15 @@
         flex: none;
     }
 
-    /* چیپ‌های آمار روی دکمه‌ها می‌افتادند؛ زیر ۱۲۸۰ نمایش داده نمی‌شوند */
+    /* Stat chips overlap buttons; hidden below 1280px */
     .hero-slider .home-hero-stats {
         display: none;
     }
 }
 
-/* ═══ موبایل: اسلاید کامل بدون انیمیشن ═══ */
+/* ═══ Mobile: full slide without animation ═══ */
 @media (max-width: 640px) {
-    /* بدون ken-burns و zoom-in — اسلاید کامل و فوری رندر می‌شود */
+    /* without ken-burns and zoom-in — Full slide renders immediately */
     .heroSwiper .home-hero-image {
         animation: none !important;
         transform: none !important;
@@ -120,7 +120,7 @@
         transform: none !important;
     }
 
-    /* ارتفاع مناسب موبایل: تصویر کامل + متن روی آن */
+    /* Mobile height: full image + text over it */
     .heroSwiper .home-hero-slide {
         min-height: auto;
     }
@@ -208,7 +208,7 @@
     will-change: transform;
 }
 
-/* ورود عنصرها با زوم (سبک دمو): هر لایه از مقیاس بزرگ‌تر به اندازه واقعی می‌رسد */
+/* Zoom entrance: each layer scales down to actual size */
 @keyframes mwHeroZoomIn {
     from {
         opacity: 0;
@@ -422,7 +422,7 @@
     box-shadow: 0 0 0 4px rgba(16, 185, 129, .14);
 }
 
-/* اسکرول بدون نوار: جعبهٔ پروژه‌ها و کاربران برتر هفته */
+/* Scrollbar-free projects and weekly leaders */
 .mw-club-scroll {
     -ms-overflow-style: none; /* IE / Legacy Edge */
     scrollbar-width: none; /* Firefox */
@@ -639,8 +639,8 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, .3);
 }
 
-/* ═══ استروک انیمیشنی بنر گالری روی hover ═══
-   از همان --sb-ring-angle استفاده می‌کند (comet stroke). */
+/* ═══ Animated gallery banner stroke on hover ═══
+   from same --sb-ring-angle uses (comet stroke). */
 .mw-gallery-cta {
     position: relative;
 }
@@ -686,7 +686,7 @@
     }
 }
 
-/* ═══ پایان استروک بنر گالری ═══ */
+/* ═══ End gallery banner stroke ═══ */
 
 .mw-gallery-cta-link:hover {
     box-shadow: 0 14px 34px rgba(245, 158, 11, .22);

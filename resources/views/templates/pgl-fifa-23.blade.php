@@ -1,4 +1,4 @@
 {{--
-Template Name: لندینگ PGL FIFA 23
+Template Name: Landing page PGL FIFA 23
 --}}
 @extends('front.landings.page')

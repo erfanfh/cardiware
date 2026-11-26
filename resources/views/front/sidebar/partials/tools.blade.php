@@ -51,7 +51,7 @@
                 @if($hasDescription)
                     <button
                         type="button"
-                        aria-label="توضیحات {{ $item['title'] }}"
+                        aria-label="Description {{ $item['title'] }}"
                         :aria-describedby="$id('tool-description')"
                         :aria-expanded="open.toString()"
                         @click.stop="open = true"
@@ -80,8 +80,8 @@
                             'left-0' => $loop->even,
                         ])
                     >
-                        <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-right shadow-xl shadow-slate-900/15 ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-800 dark:shadow-black/40 dark:ring-white/5">
-                            {{-- سربرگ پاپ‌آپ: تصویر + عنوان ابزار --}}
+                        <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white text-start shadow-xl shadow-slate-900/15 ring-1 ring-black/5 dark:border-slate-700 dark:bg-slate-800 dark:shadow-black/40 dark:ring-white/5">
+                            {{-- Popup header: image + Tool title --}}
                             <div class="flex items-center gap-2.5 border-b border-slate-100 bg-slate-50/70 px-3 py-2.5 dark:border-slate-700/70 dark:bg-slate-900/60">
                                 <span class="grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-950">
                                     <x-front.responsive-image
@@ -102,7 +102,7 @@
                                     @endif
                                 </span>
                             </div>
-                            {{-- توضیح کامل ابزار --}}
+                            {{-- Full tool description --}}
                             <p class="max-h-44 overflow-y-auto px-3.5 py-2.5 text-xs leading-6 break-words text-slate-600 dark:text-slate-300">{{ $item['description'] }}</p>
                             <span
                                 aria-hidden="true"

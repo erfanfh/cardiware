@@ -1,6 +1,6 @@
 @php
     /*
-     * این رابطه باید در Query صفحه محصول eager load شده باشد:
+     * This relation should be Query product page eager load defined:
      *
      * activeMedals.picture
      */
@@ -15,7 +15,7 @@
         <div
             class="flex flex-wrap justify-center gap-3"
             role="list"
-            aria-label="مدال‌های محصول"
+            aria-label="Product medals"
         >
             @foreach($productMedals as $medal)
                 <div

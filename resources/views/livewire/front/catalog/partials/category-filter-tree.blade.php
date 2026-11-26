@@ -33,7 +33,7 @@
                         type="button"
                         x-on:click="open = ! open"
                         class="grid h-7 w-7 shrink-0 cursor-pointer place-items-center rounded-xl bg-white text-xs font-black text-slate-500 transition hover:bg-brand-100 hover:text-brand-700"
-                        aria-label="باز کردن زیر دسته‌ها"
+                        aria-label="Expand subcategories"
                     >
                         <span x-show="! open">+</span>
                         <span x-show="open">−</span>

@@ -18,24 +18,24 @@
                     <div class="max-w-xl">
                         <div class="inline-flex items-center gap-2 rounded-xl border border-brand-100 bg-white/70 px-2.5 py-1.5 text-[10px] font-extrabold text-brand-700 dark:border-brand-500/20 dark:bg-slate-800/70 dark:text-brand-300">
                             <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
-                            قرعه کشی های من
+                            My raffles
                         </div>
-                        <h1 class="mt-3 text-lg font-black text-slate-900 dark:text-white sm:text-xl">بلیط ها و شانس های تو، یکجا</h1>
+                        <h1 class="mt-3 text-lg font-black text-slate-900 dark:text-white sm:text-xl">Your tickets and chances, in one place</h1>
                         <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-400 sm:text-sm">
-                            وضعیت قرعه کشی هایی که در آن ها بلیط داری، کد تمام بلیط ها و بردهای ثبت شده را از این صفحه دنبال کن.
+                            Track raffles you have tickets for, all ticket codes and recorded wins here.
                         </p>
                         <a href="{{ route('raffles.index') }}" class="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 dark:hover:bg-brand-400">
-                            مشاهده همه قرعه کشی ها
-                            <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                            View all raffles
+                            <span class="[&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                         </a>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:w-[430px]">
                         @foreach([
-                            ['label' => 'قرعه کشی', 'value' => $stats['campaigns_count']],
-                            ['label' => 'بلیط فعال', 'value' => $stats['active_tickets_count']],
-                            ['label' => 'کل بلیط', 'value' => $stats['total_tickets_count']],
-                            ['label' => 'برد من', 'value' => $stats['winning_positions_count']],
+                            ['label' => 'Raffle', 'value' => $stats['campaigns_count']],
+                            ['label' => 'Active ticket', 'value' => $stats['active_tickets_count']],
+                            ['label' => 'Total tickets', 'value' => $stats['total_tickets_count']],
+                            ['label' => 'My win', 'value' => $stats['winning_positions_count']],
                         ] as $stat)
                             <div class="rounded-2xl border border-slate-200/80 bg-white/80 p-3 text-center shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-800/75">
                                 <div class="text-[10px] font-extrabold text-slate-400">{{ $stat['label'] }}</div>
@@ -51,10 +51,10 @@
             <section id="my-wins" class="scroll-mt-24">
                 <div class="mb-3 flex items-center justify-between gap-3">
                     <div>
-                        <div class="text-[10px] font-extrabold text-amber-600 dark:text-amber-300">خبر خوب</div>
-                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">بردهای من</h2>
+                        <div class="text-[10px] font-extrabold text-amber-600 dark:text-amber-300">Good news</div>
+                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">My wins</h2>
                     </div>
-                    <span class="rounded-xl bg-amber-50 px-2.5 py-1.5 text-[10px] font-extrabold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{{ number_format($winningRecords->count()) }} مورد</span>
+                    <span class="rounded-xl bg-amber-50 px-2.5 py-1.5 text-[10px] font-extrabold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{{ number_format($winningRecords->count()) }} items</span>
                 </div>
 
                 <div class="grid grid-cols-1 gap-3 xl:grid-cols-2">
@@ -87,7 +87,7 @@
                                     @endif
                                     @if($winner->confirmation_deadline_at && $winner->status === DrawWinnerStatusEnum::PENDING)
                                         <div class="mt-2 text-[10px] font-bold text-amber-700 dark:text-amber-300">
-                                            مهلت تایید: {{ jalali_date($winner->confirmation_deadline_at, 'Y/m/d H:i') }}
+                                            Confirmation deadline: {{ (($winner->confirmation_deadline_at) ? \Illuminate\Support\Carbon::parse($winner->confirmation_deadline_at)->format('Y/m/d H:i') : '') }}
                                         </div>
                                     @endif
                                     @include('front.raffles.partials.winner-claim-actions', ['winner' => $winner])
@@ -102,10 +102,10 @@
         <section id="my-raffles" class="scroll-mt-24">
             <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <div class="text-[10px] font-extrabold text-brand-500 dark:text-brand-300">کمپین های شرکت کرده</div>
-                    <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">قرعه کشی های من</h2>
+                    <div class="text-[10px] font-extrabold text-brand-500 dark:text-brand-300">Participating campaigns</div>
+                    <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">My raffles</h2>
                 </div>
-                <div class="text-[11px] text-slate-400">آخرین قرعه کشی هایی که برای آن ها بلیط داری.</div>
+                <div class="text-[11px] text-slate-400">Latest raffles you have tickets for.</div>
             </div>
 
             @if($campaigns->isNotEmpty())
@@ -147,28 +147,28 @@
                                                 <div class="mt-2 line-clamp-2 text-sm font-black leading-6 text-slate-900 dark:text-white">{{ $campaign->title }}</div>
                                             @endif
                                         </div>
-                                        <span class="text-slate-300 dark:text-slate-600 [&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>
+                                        <span class="text-slate-300 dark:text-slate-600 [&_svg]:h-4 [&_svg]:w-4"><x-front.arrow-right-02/></span>
                                     </div>
 
                                     <div class="mt-3 grid grid-cols-2 gap-2">
                                         <div class="rounded-xl bg-emerald-50 px-3 py-2 dark:bg-emerald-500/10">
-                                            <div class="text-[9px] font-bold text-emerald-600 dark:text-emerald-300">بلیط فعال من</div>
+                                            <div class="text-[9px] font-bold text-emerald-600 dark:text-emerald-300">My active tickets</div>
                                             <div class="mt-0.5 text-sm font-black text-emerald-700 dark:text-emerald-200">{{ number_format($campaign->my_active_tickets_count) }}</div>
                                         </div>
                                         <div class="rounded-xl bg-slate-50 px-3 py-2 dark:bg-slate-800/70">
-                                            <div class="text-[9px] font-bold text-slate-400">کل بلیط من</div>
+                                            <div class="text-[9px] font-bold text-slate-400">My total tickets</div>
                                             <div class="mt-0.5 text-sm font-black text-slate-800 dark:text-slate-200">{{ number_format($campaign->my_total_tickets_count) }}</div>
                                         </div>
                                     </div>
 
                                     <div class="mt-3 flex flex-wrap gap-2">
                                         <a href="{{ route('account.raffles', ['campaign' => $campaign->public_token]) }}#my-tickets" class="inline-flex items-center gap-1.5 rounded-xl bg-brand-50 px-2.5 py-1.5 text-[10px] font-extrabold text-brand-700 transition hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-300 dark:hover:bg-brand-500/15">
-                                            بلیط های این قرعه کشی
+                                            Tickets for this raffle
                                         </a>
                                         @if($campaign->isPubliclyVisible())
-                                            <a href="{{ route('raffles.show', $campaign->slug) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">جزئیات</a>
+                                            <a href="{{ route('raffles.show', $campaign->slug) }}" class="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 transition hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">Details</a>
                                         @elseif($campaign->status->value === 'cancelled')
-                                            <span class="inline-flex items-center rounded-xl bg-red-50 px-2.5 py-1.5 text-[10px] font-extrabold text-red-600 dark:bg-red-500/10 dark:text-red-300">لغوشده؛ بلیط‌ها از اعتبار خارج شده‌اند</span>
+                                            <span class="inline-flex items-center rounded-xl bg-red-50 px-2.5 py-1.5 text-[10px] font-extrabold text-red-600 dark:bg-red-500/10 dark:text-red-300">Canceled; tickets are no longer valid</span>
                                         @endif
                                     </div>
                                 </div>
@@ -185,9 +185,9 @@
             @else
                 <div class="rounded-3xl border border-dashed border-slate-200 bg-white p-7 text-center dark:border-slate-700 dark:bg-slate-900">
                     <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800 [&_svg]:h-6 [&_svg]:w-6">@include('icons.award-03')</div>
-                    <div class="mt-3 text-sm font-black text-slate-800 dark:text-slate-200">هنوز در قرعه کشی ای بلیط نداری</div>
-                    <p class="mx-auto mt-2 max-w-md text-xs leading-6 text-slate-400">بعد از صدور اولین بلیط، قرعه کشی و کد شانس های تو اینجا اضافه می شوند.</p>
-                    <a href="{{ route('raffles.index') }}" class="mt-4 inline-flex h-10 items-center justify-center rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600">مشاهده قرعه کشی ها</a>
+                    <div class="mt-3 text-sm font-black text-slate-800 dark:text-slate-200">You have no raffle tickets yet</div>
+                    <p class="mx-auto mt-2 max-w-md text-xs leading-6 text-slate-400">After the first ticket is issued, your raffles and entry codes will appear here.</p>
+                    <a href="{{ route('raffles.index') }}" class="mt-4 inline-flex h-10 items-center justify-center rounded-2xl bg-brand-500 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600">View raffles</a>
                 </div>
             @endif
         </section>
@@ -196,25 +196,25 @@
             <x-front.cart class="!p-4 sm:!p-5">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
-                        <div class="text-[10px] font-extrabold text-sky-500 dark:text-sky-300">کدهای شانس</div>
-                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">همه بلیط های من</h2>
+                        <div class="text-[10px] font-extrabold text-sky-500 dark:text-sky-300">Entry codes</div>
+                        <h2 class="mt-1 text-base font-black text-slate-900 dark:text-white">All my tickets</h2>
                         <p class="mt-1 text-[11px] leading-6 text-slate-400">
                             @if($selectedCampaign)
-                                فیلتر شده برای «{{ $selectedCampaign->title }}»
+                                Filtered for «{{ $selectedCampaign->title }}»
                             @else
-                                تمام بلیط های صادر شده برای حساب کاربری تو
+                                All tickets issued to your account
                             @endif
                         </p>
                     </div>
 
                     <form method="get" action="{{ route('account.raffles') }}#my-tickets" class="flex w-full gap-2 lg:w-auto">
                         <select name="campaign" class="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:focus:border-brand-500 dark:focus:ring-brand-500/10 lg:w-64">
-                            <option value="">همه قرعه کشی ها</option>
+                            <option value="">All raffles</option>
                             @foreach($filterCampaigns as $filterCampaign)
                                 <option value="{{ $filterCampaign->public_token }}" @selected(request('campaign') === $filterCampaign->public_token)>{{ $filterCampaign->title }}</option>
                             @endforeach
                         </select>
-                        <button type="submit" class="h-10 shrink-0 rounded-xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 dark:bg-slate-700 dark:hover:bg-brand-500">فیلتر</button>
+                        <button type="submit" class="h-10 shrink-0 rounded-xl bg-slate-900 px-4 text-xs font-extrabold text-white transition hover:bg-brand-600 dark:bg-slate-700 dark:hover:bg-brand-500">Filter</button>
                     </form>
                 </div>
 
@@ -234,7 +234,7 @@
                                     <span class="rounded-lg px-2 py-1 text-[9px] font-extrabold {{ $ticket->status === DrawTicketStatusEnum::ACTIVE ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-200 text-slate-500 dark:bg-slate-700 dark:text-slate-400' }}">{{ $ticket->status->label() }}</span>
                                 </div>
                                 <div class="mt-3 flex items-center justify-between gap-3 text-[10px] text-slate-400">
-                                    <span>{{ jalali_date($ticket->issued_at, 'Y/m/d H:i') }}</span>
+                                    <span>{{ (($ticket->issued_at) ? \Illuminate\Support\Carbon::parse($ticket->issued_at)->format('Y/m/d H:i') : '') }}</span>
                                     @include('front.raffles.partials.ticket-result', ['ticket' => $ticket])
                                 </div>
                             </article>
@@ -242,14 +242,14 @@
                     </div>
 
                     <div class="mt-4 hidden overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 xl:block">
-                        <table class="w-full text-right text-xs">
+                        <table class="w-full text-start text-xs">
                             <thead class="bg-slate-50 text-[10px] font-extrabold text-slate-400 dark:bg-slate-800/70">
                                 <tr>
-                                    <th class="px-4 py-3">قرعه کشی</th>
-                                    <th class="px-4 py-3">کد بلیط</th>
-                                    <th class="px-4 py-3">وضعیت</th>
-                                    <th class="px-4 py-3">زمان صدور</th>
-                                    <th class="px-4 py-3">نتیجه</th>
+                                    <th class="px-4 py-3">Raffle</th>
+                                    <th class="px-4 py-3">Ticket code</th>
+                                    <th class="px-4 py-3">Status</th>
+                                    <th class="px-4 py-3">Issue time</th>
+                                    <th class="px-4 py-3">Result</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 bg-white dark:divide-slate-800 dark:bg-slate-900">
@@ -266,7 +266,7 @@
                                         <td class="px-4 py-3">
                                             <span class="rounded-lg px-2 py-1 text-[9px] font-extrabold {{ $ticket->status === DrawTicketStatusEnum::ACTIVE ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' }}">{{ $ticket->status->label() }}</span>
                                         </td>
-                                        <td class="px-4 py-3 text-slate-400">{{ jalali_date($ticket->issued_at, 'Y/m/d H:i') }}</td>
+                                        <td class="px-4 py-3 text-slate-400">{{ (($ticket->issued_at) ? \Illuminate\Support\Carbon::parse($ticket->issued_at)->format('Y/m/d H:i') : '') }}</td>
                                         <td class="px-4 py-3">
                                             @include('front.raffles.partials.ticket-result', ['ticket' => $ticket])
                                         </td>
@@ -283,7 +283,7 @@
                     @endif
                 @else
                     <div class="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-xs leading-7 text-slate-400 dark:border-slate-700 dark:bg-slate-800/50">
-                        بلیطی با فیلتر انتخاب شده پیدا نشد.
+                        No tickets match the selected filter.
                     </div>
                 @endif
             </x-front.cart>

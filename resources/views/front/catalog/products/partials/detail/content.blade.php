@@ -1,7 +1,7 @@
 <x-front.cart id="product-content" class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
     <x-front.cart-title
-        title="توضیحات کلی"
-        subtitle="معرفی کامل محصول و امکانات اصلی"
+        title="Overview"
+        subtitle="Full product overview and key features"
         iconName="pencil-edit-02"
     />
 

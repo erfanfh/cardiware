@@ -1,5 +1,5 @@
 <x-front.cart id="send-comment-form" class="scroll-mt-40">
-    <x-front.cart-title title="ارسال دیدگاه" iconName="comment-add-01"/>
+    <x-front.cart-title title="Submit comment" iconName="comment-add-01"/>
 
     <div
         x-data
@@ -30,7 +30,7 @@
             @if($generalError || $errors->any())
                 <div
                     class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300">
-                    <div class="font-extrabold">لطفاً موارد زیر را بررسی کنید:</div>
+                    <div class="font-extrabold">Please review the following:</div>
 
                     @if($generalError)
                         <p class="mt-2 font-medium">{{ $generalError }}</p>
@@ -49,40 +49,40 @@
             @guest
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                        <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">نام شما</label>
+                        <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">Your name</label>
                         <input
                             type="text"
                             wire:model.defer="authorName"
                             wire:loading.attr="disabled"
                             wire:target="submit"
                             class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                            placeholder="نام شما (الزامی)"
+                            placeholder="Your name (required)"
                         >
                     </div>
 
                     <div>
-                        <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">ایمیل شما</label>
+                        <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">Your email</label>
                         <input
                             type="email"
                             wire:model.defer="authorEmail"
                             wire:loading.attr="disabled"
                             wire:target="submit"
                             class="h-11 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                            placeholder="ایمیل شما (الزامی)"
+                            placeholder="Your email (required)"
                         >
                     </div>
                 </div>
             @endguest
 
             <div>
-                <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">متن دیدگاه</label>
+                <label class="mb-2 block text-xs font-bold text-slate-600 dark:text-slate-300">Comment text</label>
                 <textarea
                     rows="4"
                     wire:model.defer="content"
                     wire:loading.attr="disabled"
                     wire:target="submit"
                     class="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-7 outline-none transition focus:border-brand-300 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-brand-500/60 dark:focus:ring-brand-500/10 dark:disabled:bg-slate-800"
-                    placeholder="متن دیدگاه خود را بنویسید…"
+                    placeholder="Write your comment…"
                 ></textarea>
             </div>
 
@@ -111,7 +111,7 @@
                             wire:loading.attr="disabled"
                             wire:target="submit"
                             class="cursor-pointer rounded-xl p-1 transition duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-brand-100 disabled:cursor-not-allowed disabled:opacity-60 dark:focus:ring-brand-500/10"
-                            aria-label="امتیاز {{ $n }}"
+                            aria-label="points {{ $n }}"
                         >
                             <svg
                                 viewBox="0 0 20 20"
@@ -127,7 +127,7 @@
                     @endfor
 
                     <span class="mr-2 text-xs font-bold text-slate-500 dark:text-slate-400"
-                          x-text="currentStars ? `${currentStars} از 5` : 'بدون امتیاز'"></span>
+                          x-text="currentStars ? `${currentStars} of 5` : 'No rating'"></span>
                 </div>
 
                 <button
@@ -143,8 +143,8 @@
                               stroke-linecap="round"></path>
                     </svg>
 
-                    <span wire:loading.remove wire:target="submit">ارسال دیدگاه</span>
-                    <span wire:loading wire:target="submit">در حال ارسال...</span>
+                    <span wire:loading.remove wire:target="submit">Submit comment</span>
+                    <span wire:loading wire:target="submit">Sending...</span>
                 </button>
             </div>
         </form>

@@ -1,7 +1,7 @@
 @if($product->hasFileSizeContent())
     <x-front.cart id="file-size" class="border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900/90">
         <x-front.cart-title
-            title="حجم فایل ها"
+            title="File sizes"
             iconName="file-02"
         />
 
