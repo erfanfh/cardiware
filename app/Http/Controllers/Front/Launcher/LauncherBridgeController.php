@@ -18,7 +18,7 @@ class LauncherBridgeController extends Controller
             ->firstOrFail();
 
         return $this->render(
-            title: $item->launcher_title ?: ($item->title ?: ($item->product?->title ?: 'محصول مودینگ‌وی')),
+            title: $item->launcher_title ?: ($item->title ?: ($item->product?->title ?: 'محصول Cardiware')),
             description: 'برای ادامه دانلود و نصب، این محصول را در MW Launcher باز کنید.',
             protocolUrl: 'mwlauncher://product/' . $item->getKey() . '?refresh=1',
         );

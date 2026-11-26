@@ -263,7 +263,7 @@
                                     <div
                                         class="relative rounded-[1.35rem] rounded-bl-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                                         <div class="mb-1 text-[11px] font-black text-brand-600 dark:text-brand-300">
-                                            پشتیبانی مودینگ وی
+                                            پشتیبانی Cardiware
                                         </div>
 
                                         <div class="whitespace-pre-line break-words">{{ $message->body }}</div>

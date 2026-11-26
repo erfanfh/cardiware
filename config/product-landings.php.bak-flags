@@ -23,7 +23,7 @@ return [
         */
         'pgl-ultimate' => [
             'product_name' => ['fa' => 'PGL Ultimate 27', 'en' => 'PGL Ultimate 27'],
-            'brand' => 'MODDINGWAY',
+            'brand' => 'Cardiware',
             'theme' => 'pgl-ultimate',
             'game' => 'EA SPORTS FC™ 27',
 
@@ -176,7 +176,7 @@ return [
                     'title' => ['fa' => '۳ قدم تا اولین بازی', 'en' => 'Three steps to kickoff'],
                     'subtitle' => ['fa' => 'بدون فایل زیپ و کپی دستی — همه چیز خودکار.', 'en' => 'No zips, no manual copies — everything is automated.'],
                     'items' => [
-                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Moddingway را دانلود و نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Download the official Moddingway launcher; your account is your license.']],
+                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Cardiware را دانلود و نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Download the official Cardiware launcher; your account is your license.']],
                         ['icon' => 'shield', 'title' => ['fa' => 'خرید و فعال‌سازی', 'en' => 'Buy & activate'], 'desc' => ['fa' => 'پچ را از فروشگاه خریداری کنید؛ لایسنس به صورت خودکار به حساب شما متصل می‌شود.', 'en' => 'Purchase from the store; the license links to your account automatically.']],
                         ['icon' => 'bolt', 'title' => ['fa' => 'یک کلیک، تمام', 'en' => 'One click, done'], 'desc' => ['fa' => 'دکمه «نصب» را بزنید؛ لانچر پچ را دانلود، نصب و همیشه به‌روز نگه می‌دارد.', 'en' => 'Hit Install; the launcher downloads, installs and keeps the mod up to date.']],
                     ],
@@ -204,7 +204,7 @@ return [
                             'cta' => ['fa' => 'همین حالا خرید کن', 'en' => 'Get it now'],
                         ],
                     ],
-                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی moddingway.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official moddingway.ir gateways — instant activation.'],
+                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی Cardiware.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official Cardiware.ir gateways — instant activation.'],
                 ],
 
                 [
@@ -264,8 +264,8 @@ return [
 
             'footer' => [
                 'about' => [
-                    'fa' => 'Moddingway از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL Ultimate پرچم‌دار ما برای نسل جدید بازی‌های فوتبال است.',
-                    'en' => 'Since 2019, Moddingway has been Iran\'s largest football modding hub; PGL Ultimate is our flagship for the new generation of football games.',
+                    'fa' => 'Cardiware از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL Ultimate پرچم‌دار ما برای نسل جدید بازی‌های فوتبال است.',
+                    'en' => 'Since 2019, Cardiware has been Iran\'s largest football modding hub; PGL Ultimate is our flagship for the new generation of football games.',
                 ],
                 'links' => [
                     ['label' => ['fa' => 'وبلاگ', 'en' => 'Blog'], 'href' => '#'],
@@ -280,21 +280,21 @@ return [
                     ['label' => 'Discord', 'href' => '#'],
                 ],
                 'disclaimer' => [
-                    'fa' => 'PGL Ultimate یک محصول مستقل از Moddingway است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports، FIFA یا هر لیگ و باشگاهی ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
-                    'en' => 'PGL Ultimate is an independent Moddingway product and is not affiliated with or endorsed by EA Sports, FIFA or any league or club. All trademarks belong to their respective owners.',
+                    'fa' => 'PGL Ultimate یک محصول مستقل از Cardiware است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports، FIFA یا هر لیگ و باشگاهی ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
+                    'en' => 'PGL Ultimate is an independent Cardiware product and is not affiliated with or endorsed by EA Sports, FIFA or any league or club. All trademarks belong to their respective owners.',
                 ],
-                'copyright' => ['fa' => '© ۱۴۰۵ Moddingway — تمامی حقوق محفوظ است.', 'en' => '© 2026 Moddingway — All rights reserved.'],
+                'copyright' => ['fa' => '© ۱۴۰۵ Cardiware — تمامی حقوق محفوظ است.', 'en' => '© 2026 Cardiware — All rights reserved.'],
             ],
         ],
 
         /*
         |--------------------------------------------------------------
-        | PGL FIFA 23 — تم نارنجی برند Moddingway (نمونه محصول دوم)
+        | PGL FIFA 23 — تم نارنجی برند Cardiware (نمونه محصول دوم)
         |--------------------------------------------------------------
         */
         'pgl-fifa-23' => [
             'product_name' => ['fa' => 'PGL FIFA 23', 'en' => 'PGL FIFA 23'],
-            'brand' => 'MODDINGWAY',
+            'brand' => 'Cardiware',
             'theme' => 'pgl-fifa-23',
             'game' => 'EA SPORTS™ FIFA 23',
 
@@ -334,8 +334,8 @@ return [
                     'title' => ['fa' => 'FIFA 23،', 'en' => 'FIFA 23,'],
                     'highlight' => ['fa' => 'مثل همیشه بهتر', 'en' => 'better than ever'],
                     'subtitle' => [
-                        'fa' => 'PGL FIFA 23 پرچم‌دار Moddingway؛ کامل‌ترین پچ فارسی FIFA 23 با پوشش کامل لیگ برتر خلیج فارس، گزارش فارسی و صدها چهره واقعی — روی پایدارترین نسخه سری FIFA.',
-                        'en' => 'The Moddingway flagship: the most complete Persian mod for FIFA 23 — full Persian Gulf Pro League coverage, Persian commentary and hundreds of real faces on the most stable FIFA engine.',
+                        'fa' => 'PGL FIFA 23 پرچم‌دار Cardiware؛ کامل‌ترین پچ فارسی FIFA 23 با پوشش کامل لیگ برتر خلیج فارس، گزارش فارسی و صدها چهره واقعی — روی پایدارترین نسخه سری FIFA.',
+                        'en' => 'The Cardiware flagship: the most complete Persian mod for FIFA 23 — full Persian Gulf Pro League coverage, Persian commentary and hundreds of real faces on the most stable FIFA engine.',
                     ],
                     'bullets' => [
                         ['fa' => 'نصب خودکار با MW Launcher', 'en' => 'One-click install via MW Launcher'],
@@ -443,7 +443,7 @@ return [
                     'title' => ['fa' => '۳ قدم تا اولین بازی', 'en' => 'Three steps to kickoff'],
                     'subtitle' => ['fa' => 'بدون فایل زیپ و کپی دستی — همه چیز خودکار.', 'en' => 'No zips, no manual copies — everything is automated.'],
                     'items' => [
-                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Moddingway را نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Install the official launcher; your account is your license.']],
+                        ['icon' => 'download', 'title' => ['fa' => 'MW Launcher را نصب کن', 'en' => 'Install MW Launcher'], 'desc' => ['fa' => 'لانچر رسمی Cardiware را نصب کنید؛ حساب کاربری‌تان همان حساب خرید است.', 'en' => 'Install the official launcher; your account is your license.']],
                         ['icon' => 'shield', 'title' => ['fa' => 'خرید و فعال‌سازی', 'en' => 'Buy & activate'], 'desc' => ['fa' => 'پچ را بخرید؛ لایسنس خودکار متصل می‌شود.', 'en' => 'Purchase; the license links automatically.']],
                         ['icon' => 'bolt', 'title' => ['fa' => 'یک کلیک، تمام', 'en' => 'One click, done'], 'desc' => ['fa' => 'دکمه نصب را بزنید؛ لانچر بقیه را انجام می‌دهد.', 'en' => 'Hit Install; the launcher does the rest.']],
                     ],
@@ -471,7 +471,7 @@ return [
                             'cta' => ['fa' => 'همین حالا خرید کن', 'en' => 'Get it now'],
                         ],
                     ],
-                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی moddingway.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official gateways — instant activation.'],
+                    'note' => ['fa' => 'پرداخت امن از طریق درگاه‌های رسمی Cardiware.ir — فعال‌سازی آنی پس از پرداخت.', 'en' => 'Secure payment via official gateways — instant activation.'],
                 ],
 
                 [
@@ -531,8 +531,8 @@ return [
 
             'footer' => [
                 'about' => [
-                    'fa' => 'Moddingway از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL FIFA 23 پرچم‌دار ما برای محبوب‌ترین نسخه سری FIFA است.',
-                    'en' => 'Since 2019, Moddingway has been Iran\'s largest football modding hub; PGL FIFA 23 is our flagship for the best-loved FIFA engine.',
+                    'fa' => 'Cardiware از سال ۱۳۹۸ بزرگ‌ترین مرجع پچ و ابزار مدینگ فوتبال در ایران است؛ PGL FIFA 23 پرچم‌دار ما برای محبوب‌ترین نسخه سری FIFA است.',
+                    'en' => 'Since 2019, Cardiware has been Iran\'s largest football modding hub; PGL FIFA 23 is our flagship for the best-loved FIFA engine.',
                 ],
                 'links' => [
                     ['label' => ['fa' => 'وبلاگ', 'en' => 'Blog'], 'href' => '#'],
@@ -547,10 +547,10 @@ return [
                     ['label' => 'Discord', 'href' => '#'],
                 ],
                 'disclaimer' => [
-                    'fa' => 'PGL FIFA 23 یک محصول مستقل از Moddingway است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports یا FIFA ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
-                    'en' => 'PGL FIFA 23 is an independent Moddingway product, not affiliated with EA Sports or FIFA. All trademarks belong to their respective owners.',
+                    'fa' => 'PGL FIFA 23 یک محصول مستقل از Cardiware است و هیچ‌گونه وابستگی یا تاییدی از سوی EA Sports یا FIFA ندارد. تمام علائم تجاری متعلق به مالکان آن‌هاست.',
+                    'en' => 'PGL FIFA 23 is an independent Cardiware product, not affiliated with EA Sports or FIFA. All trademarks belong to their respective owners.',
                 ],
-                'copyright' => ['fa' => '© ۱۴۰۵ Moddingway — تمامی حقوق محفوظ است.', 'en' => '© 2026 Moddingway — All rights reserved.'],
+                'copyright' => ['fa' => '© ۱۴۰۵ Cardiware — تمامی حقوق محفوظ است.', 'en' => '© 2026 Cardiware — All rights reserved.'],
             ],
         ],
     ],

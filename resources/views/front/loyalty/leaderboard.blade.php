@@ -42,7 +42,7 @@
                 <div class="xl:col-span-7">
                     <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/75 px-3 py-1.5 text-[11px] font-extrabold text-amber-700 shadow-sm backdrop-blur dark:border-amber-500/20 dark:bg-slate-900/70 dark:text-amber-300">
                         <span class="text-amber-500 [&_svg]:h-4 [&_svg]:w-4">@include('icons.crown-03')</span>
-                        تالار افتخار مودینگ‌وی
+                        تالار افتخار Cardiware
                     </div>
 
                     <h1 class="mt-4 text-2xl font-black leading-10 text-slate-950 sm:text-3xl dark:text-white">

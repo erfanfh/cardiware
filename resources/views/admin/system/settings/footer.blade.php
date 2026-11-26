@@ -41,7 +41,7 @@
                             <x-admin.form.input
                                 name="stats_badge"
                                 value="{{ get_setting('footer', 'stats_badge') }}"
-                                placeholder="مودینگ‌وی در یک نگاه"
+                                placeholder="Cardiware در یک نگاه"
                                 maxlength="120"
                             />
                         </x-admin.field>

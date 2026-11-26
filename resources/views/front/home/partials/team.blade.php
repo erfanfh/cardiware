@@ -27,7 +27,7 @@
                     @include('icons.user-multiple-02')
                 </span>
 
-                <h3 class="text-base font-extrabold dark:text-slate-100">تیم مودینگ‌وی</h3>
+                <h3 class="text-base font-extrabold dark:text-slate-100">تیم Cardiware</h3>
             </div>
 
             <div class="flex items-center gap-2">

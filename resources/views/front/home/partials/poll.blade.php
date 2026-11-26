@@ -1,7 +1,7 @@
 <div
     class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-lg transition dark:border-slate-800 dark:bg-slate-900 dark:shadow-black/20 dark:hover:shadow-black/30"
     x-data="{
-        storageKey: 'moddingway_platform_poll_voted',
+        storageKey: 'Cardiware_platform_poll_voted',
         voted: false,
         selected: 'great',
 
@@ -21,7 +21,7 @@
     </div>
 
     <p class="mt-2 text-sm text-slate-600 leading-7 dark:text-slate-300">
-        نظر شما درباره پلتفرم جدید مودینگ‌وی چیه؟ دوست داریم تجربه شما رو بهتر کنیم.
+        نظر شما درباره پلتفرم جدید Cardiware چیه؟ دوست داریم تجربه شما رو بهتر کنیم.
     </p>
 
     {{-- Form --}}
@@ -91,7 +91,7 @@
         </div>
 
         <p class="mt-2 text-sm leading-7 text-slate-600 dark:text-slate-300">
-            نظر شما ثبت شد و به ما کمک می‌کنه مودینگ‌وی رو بهتر و کاربردی‌تر کنیم.
+            نظر شما ثبت شد و به ما کمک می‌کنه Cardiware رو بهتر و کاربردی‌تر کنیم.
         </p>
     </div>
 </div>

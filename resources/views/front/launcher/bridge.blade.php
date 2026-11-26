@@ -70,7 +70,7 @@
     <main class="mx-auto flex min-h-[60vh] max-w-3xl items-center justify-center px-4 py-12">
         <section
             class="bridge-card w-full rounded-3xl border border-orange-200 bg-white p-6 text-center shadow-xl sm:p-10 dark:border-orange-900/60 dark:bg-slate-900">
-            <img src="{{ asset('images/mw-launcher-icon.png') }}" alt="لانچر مودینگ‌وی"
+            <img src="{{ asset('images/mw-launcher-icon.png') }}" alt="لانچر Cardiware"
                  class="mx-auto h-16 w-16 select-none object-contain">
             <h1 class="mt-6 text-2xl font-black text-slate-900 dark:text-white">{{ $title }}</h1>
             <p class="mx-auto mt-3 max-w-xl text-sm leading-7 text-slate-600 dark:text-slate-300">{{ $description }}</p>

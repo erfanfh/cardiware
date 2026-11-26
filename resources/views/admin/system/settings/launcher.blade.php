@@ -11,14 +11,14 @@
                         <x-admin.field label="متن نشان (Badge)">
                             <x-admin.form.input
                                 name="badge_text"
-                                value="{{ old('badge_text', get_setting('launcher', 'badge_text', 'نسخه رسمی مودینگ‌وی')) }}"
+                                value="{{ old('badge_text', get_setting('launcher', 'badge_text', 'نسخه رسمی Cardiware')) }}"
                             />
                         </x-admin.field>
 
                         <x-admin.field label="عنوان اصلی">
                             <x-admin.form.input
                                 name="title"
-                                value="{{ old('title', get_setting('launcher', 'title', 'لانچر اختصاصی مودینگ‌وی')) }}"
+                                value="{{ old('title', get_setting('launcher', 'title', 'لانچر اختصاصی Cardiware')) }}"
                             />
                         </x-admin.field>
 
@@ -64,7 +64,7 @@
                         <x-admin.field label="حروف انیمیشن (به انگلیسی)">
                             <x-admin.form.input
                                 name="matrix_letters"
-                                value="{{ old('matrix_letters', get_setting('launcher', 'matrix_letters', 'MODDINGWAYLAUNCHER')) }}"
+                                value="{{ old('matrix_letters', get_setting('launcher', 'matrix_letters', 'CardiwareLAUNCHER')) }}"
                                 class="direction-ltr"
                             />
                         </x-admin.field>

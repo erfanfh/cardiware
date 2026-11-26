@@ -27,7 +27,7 @@
             <div class="relative mt-5">
                 <span class="inline-flex items-center gap-2 rounded-2xl bg-brand-50 border border-brand-100 px-3 py-1.5 text-[11px] font-extrabold text-brand-700 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300 [&_svg]:h-3.5 [&_svg]:w-3.5">
                     @include('icons.image-03')
-                    از جامعه مودینگ‌وی
+                    از جامعه Cardiware
                 </span>
 
                 <h1 class="mt-3 text-2xl font-black leading-relaxed text-slate-900 sm:text-3xl dark:text-white">

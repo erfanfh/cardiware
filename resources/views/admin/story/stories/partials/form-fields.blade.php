@@ -64,7 +64,7 @@
             <x-admin.field label="آدرس لینک" :error="$errors->first('link_url')"
                            hint="آدرس کامل با http:// یا https://؛ در صورت خالی بودن، دکمه نمایش داده نمی‌شود.">
                 <x-admin.form.input name="link_url" type="url" dir="ltr" :value="old('link_url', $story?->link_url)"
-                                    maxlength="2048" placeholder="https://moddingway.ir/..."/>
+                                    maxlength="2048" placeholder="https://Cardiware.ir/..."/>
             </x-admin.field>
             <x-admin.field label="متن دکمه" :error="$errors->first('link_label')" hint="پیش‌فرض: مشاهده جزئیات">
                 <x-admin.form.input name="link_label" :value="old('link_label', $story?->link_label)" maxlength="100"/>

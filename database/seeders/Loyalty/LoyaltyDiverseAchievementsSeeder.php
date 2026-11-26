@@ -18,7 +18,7 @@ class LoyaltyDiverseAchievementsSeeder extends Seeder
             [
                 'code' => 'polls_5',
                 'title' => 'رأی‌دهندهٔ فعال',
-                'description' => 'در ۵ نظرسنجی سایت شرکت کرده‌اید؛ نظر شما شکل‌دهندهٔ آیندهٔ مودینگ‌وی است.',
+                'description' => 'در ۵ نظرسنجی سایت شرکت کرده‌اید؛ نظر شما شکل‌دهندهٔ آیندهٔ Cardiware است.',
                 'badge' => '🗳️',
                 'metric' => AchievementMetricEnum::POLL_VOTES_COUNT,
                 'threshold' => 5,
@@ -48,7 +48,7 @@ class LoyaltyDiverseAchievementsSeeder extends Seeder
             [
                 'code' => 'visits_100',
                 'title' => 'حضور طلایی',
-                'description' => '۱۰۰ روز بازدید روزانه؛ شما بخشی از خانوادهٔ مودینگ‌وی هستید.',
+                'description' => '۱۰۰ روز بازدید روزانه؛ شما بخشی از خانوادهٔ Cardiware هستید.',
                 'badge' => '🏅',
                 'metric' => AchievementMetricEnum::DAILY_VISIT_DAYS,
                 'threshold' => 100,
@@ -58,7 +58,7 @@ class LoyaltyDiverseAchievementsSeeder extends Seeder
             [
                 'code' => 'products_5',
                 'title' => 'کلکسیونر',
-                'description' => 'مالک ۵ محصول مختلف مودینگ‌وی هستید.',
+                'description' => 'مالک ۵ محصول مختلف Cardiware هستید.',
                 'badge' => '🎮',
                 'metric' => AchievementMetricEnum::PRODUCTS_OWNED,
                 'threshold' => 5,

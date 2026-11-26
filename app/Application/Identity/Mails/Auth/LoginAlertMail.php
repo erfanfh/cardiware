@@ -13,7 +13,7 @@ final class LoginAlertMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'اعلان ورود به حساب مودینگ‌وی');
+        return new Envelope(subject: 'اعلان ورود به حساب Cardiware');
     }
 
     public function content(): Content

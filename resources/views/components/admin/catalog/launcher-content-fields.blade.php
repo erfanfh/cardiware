@@ -126,7 +126,7 @@
                                 x-bind:name="`sale_items[{{ $indexToken }}][launcher_support_url]`"
                                 x-model="{{ $item }}.launcher_support_url"
                                 x-bind:required="{{ $item }}.launcher_support_enabled"
-                                placeholder="https://moddingway.ir/..."
+                                placeholder="https://Cardiware.ir/..."
                                 class="text-left"
                             />
                         </x-admin.field>
@@ -167,7 +167,7 @@
                                 x-bind:name="`sale_items[{{ $indexToken }}][launcher_usage_guide_content]`"
                                 x-model="{{ $item }}.launcher_usage_guide_content"
                                 x-bind:required="{{ $item }}.launcher_usage_guide_enabled"
-                                placeholder="مثال: [b]نصب Sider[/b]&#10;برای نصب صحیح، ابتدا [color=#FF8A1C]پوشه محصول[/color] را باز کنید...&#10;[url=https://moddingway.ir/download/tool]دانلود ابزار جانبی[/url]"
+                                placeholder="مثال: [b]نصب Sider[/b]&#10;برای نصب صحیح، ابتدا [color=#FF8A1C]پوشه محصول[/color] را باز کنید...&#10;[url=https://Cardiware.ir/download/tool]دانلود ابزار جانبی[/url]"
                             />
                         </x-admin.field>
                     </div>

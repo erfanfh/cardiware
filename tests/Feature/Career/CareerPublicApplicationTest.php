@@ -35,7 +35,7 @@ class CareerPublicApplicationTest extends TestCase
 
     private function fakeResumeStorage(): void
     {
-        $this->careerStorageRoot = sys_get_temp_dir().DIRECTORY_SEPARATOR.'moddingway-career-'.bin2hex(random_bytes(8));
+        $this->careerStorageRoot = sys_get_temp_dir().DIRECTORY_SEPARATOR.'Cardiware-career-'.bin2hex(random_bytes(8));
         Storage::set('local', Storage::build([
             'driver' => 'local',
             'root' => $this->careerStorageRoot,
@@ -47,7 +47,7 @@ class CareerPublicApplicationTest extends TestCase
     {
         return CareerPosition::create([
             'title' => $title, 'slug' => 'job-'.uniqid(),
-            'summary' => 'همکاری در تیم مودینگ وی', 'status' => $status,
+            'summary' => 'همکاری در تیم Cardiware', 'status' => $status,
             'department' => 'محتوا',
         ]);
     }
@@ -60,8 +60,8 @@ class CareerPublicApplicationTest extends TestCase
 
         $this->careerPage = Page::create([
             'author_id' => User::factory()->create()->id,
-            'title' => 'همکاری با مودینگ وی',
-            'slug' => 'join-moddingway',
+            'title' => 'همکاری با Cardiware',
+            'slug' => 'join-Cardiware',
             'body' => '',
             'status' => 'active',
             'template' => 'careers',

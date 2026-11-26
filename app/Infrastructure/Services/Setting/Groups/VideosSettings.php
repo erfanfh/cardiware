@@ -11,14 +11,14 @@ class VideosSettings extends BaseSettings
     public static function defaults(): array
     {
         return [
-            'hero_badge' => 'مودینگ تی‌وی',
+            'hero_badge' => 'Cardiware تی‌وی',
             'hero_title' => 'مرجع ویدیوهای آموزشی، معرفی پچ‌ها و تازه‌های دنیای گیم',
             'hero_description' => 'جدیدترین آموزش‌های مادینگ، معرفی پچ‌ها، تریلرها، بررسی‌ها و ویدیوهای تخصصی بازی را یک‌جا تماشا کنید.',
             'hero_primary_button_title' => 'مشاهده ویدیوها',
             'hero_secondary_button_title' => 'محبوب‌ترین ویدیوها',
             'featured_badge' => 'پیشنهاد ویژه',
             'archive_title' => 'آرشیو ویدیوها',
-            'archive_description' => 'آخرین آموزش‌ها، معرفی‌ها و ویدیوهای جدید مودینگ‌وی',
+            'archive_description' => 'آخرین آموزش‌ها، معرفی‌ها و ویدیوهای جدید Cardiware',
             'trending_title' => 'ویدیوهای ترند',
             'categories_title' => 'دسته‌بندی‌های ویدیو',
             'follow_title' => 'ویدیو جدیدی منتشر شد؟',

@@ -13,7 +13,7 @@ final class OrderReceiptMail extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'فاکتور سفارش '.$this->receipt->orderNumber.' | مودینگ‌وی');
+        return new Envelope(subject: 'فاکتور سفارش '.$this->receipt->orderNumber.' | Cardiware');
     }
 
     public function content(): Content

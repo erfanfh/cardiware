@@ -16,10 +16,10 @@
                     />
                     <div class="mt-8 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/75 px-3 py-1.5 text-[11px] font-black text-brand-700 shadow-sm dark:border-orange-400/20 dark:bg-orange-400/10 dark:text-orange-200 dark:shadow-none">
                         <span class="h-1.5 w-1.5 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,.9)]"></span>
-                        صدای جامعه مودینگ‌وی
+                        صدای جامعه Cardiware
                     </div>
                     <h1 class="mt-4 text-3xl font-black leading-tight sm:text-4xl lg:text-[42px]">نظرسنجی‌ها</h1>
-                    <p class="mt-4 max-w-xl text-sm leading-8 text-slate-600 dark:text-slate-300 sm:text-base">از بازی‌ها و محتواهای محبوب تا تجربه شما از سایت؛ نظر خود را ثبت کنید و در تصمیم‌های جامعه مودینگ‌وی سهیم باشید.</p>
+                    <p class="mt-4 max-w-xl text-sm leading-8 text-slate-600 dark:text-slate-300 sm:text-base">از بازی‌ها و محتواهای محبوب تا تجربه شما از سایت؛ نظر خود را ثبت کنید و در تصمیم‌های جامعه Cardiware سهیم باشید.</p>
                     <a href="#poll-list" class="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-brand-500 px-5 text-sm font-black text-white shadow-lg shadow-brand-500/20 transition hover:-translate-y-0.5 hover:bg-brand-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600 dark:focus-visible:outline-white">
                         دیدن نظرسنجی‌ها
                         <span class="[&_svg]:h-4 [&_svg]:w-4">@include('icons.arrow-left-02')</span>

@@ -85,7 +85,7 @@ Template Name: صفحه درباره ما
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3" aria-label="آمار مودینگ‌وی">
+                    <div class="grid grid-cols-2 gap-3" aria-label="آمار Cardiware">
                         <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-md sm:p-5">
                             <div class="text-[11px] font-extrabold leading-5 text-white/65">{{ $aboutUs['stats_in_progress_title'] }}</div>
                             <div class="mt-2 text-2xl font-black text-white">{{ number_format($aboutUsStats['in_progress_projects']) }}</div>

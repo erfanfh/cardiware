@@ -53,7 +53,7 @@ class UserMediaSubmission extends Model
         $user = $this->user;
 
         return trim(($user?->first_name ?? '') . ' ' . ($user?->last_name ?? ''))
-            ?: ($user?->display_name ?: 'کاربر مودینگ‌وی');
+            ?: ($user?->display_name ?: 'کاربر Cardiware');
     }
 
     /**

@@ -37,9 +37,9 @@ class CareersSettings extends BaseSettings
     public static function defaults(): array
     {
         return [
-            'hero_badge' => 'فرصت همکاری با مودینگ وی',
+            'hero_badge' => 'فرصت همکاری با Cardiware',
             'hero_title' => 'اگر به دنیای بازی، مادینگ، تولید محتوا و ساخت یک برند حرفه‌ای علاقه‌مندی، جای تو اینجاست.',
-            'hero_description' => 'در این صفحه هم می‌توانی موقعیت‌های شغلی فعال مودینگ وی را ببینی و هم اگر فکر می‌کنی مهارت و انگیزه همکاری با ما را داری، درخواستت را ارسال کنی تا بررسی شود.',
+            'hero_description' => 'در این صفحه هم می‌توانی موقعیت‌های شغلی فعال Cardiware را ببینی و هم اگر فکر می‌کنی مهارت و انگیزه همکاری با ما را داری، درخواستت را ارسال کنی تا بررسی شود.',
             'hero_primary_button' => 'مشاهده فرصت‌های شغلی',
             'hero_secondary_button' => 'ارسال درخواست همکاری',
             'stats_positions_title' => 'فرصت فعال',
@@ -48,14 +48,14 @@ class CareersSettings extends BaseSettings
             'stats_cooperation_value' => 'حضوری / ریموت',
             'stats_review_title' => 'بررسی رزومه',
             'stats_review_value' => 'سریع و مرحله‌ای',
-            'why_title' => 'چرا همکاری با مودینگ وی؟',
+            'why_title' => 'چرا همکاری با Cardiware؟',
             'why_subtitle' => 'محیط پویا، تخصصی و رو‌به‌رشد',
             'why_items' => [
                 ['title' => 'کار روی پروژه‌های واقعی', 'description' => 'از تولید پچ و محصول گیمینگ تا فروشگاه، محتوا و تجربه کاربری.'],
                 ['title' => 'فرصت رشد مهارتی', 'description' => 'مناسب برای افراد باانگیزه‌ای که می‌خواهند در یک مسیر تخصصی رشد کنند.'],
                 ['title' => 'همکاری منعطف', 'description' => 'بسته به نقش، امکان همکاری پروژه‌ای، پاره‌وقت یا تمام‌وقت وجود دارد.'],
             ],
-            'benefits_title' => 'آنچه در مودینگ وی تجربه می‌کنی',
+            'benefits_title' => 'آنچه در Cardiware تجربه می‌کنی',
             'benefits_subtitle' => 'فرهنگ کاری و مزیت‌های همکاری',
             'benefits_items' => [
                 ['icon' => '🎮', 'title' => 'فضای تخصصی گیمینگ', 'description' => 'همکاری در اکوسیستمی که موضوع اصلی آن بازی، ماد و محصولات مرتبط است.'],
@@ -95,7 +95,7 @@ class CareersSettings extends BaseSettings
                 ['title' => 'ارتباط با متقاضی', 'description' => 'پس از تایید'],
             ],
             'general_cta_title' => 'همکاری عمومی هم داریم',
-            'general_cta_description' => 'حتی اگر موقعیت مرتبط پیدا نکردی اما فکر می‌کنی می‌توانی به مودینگ وی کمک کنی، فرم را برای ما بفرست.',
+            'general_cta_description' => 'حتی اگر موقعیت مرتبط پیدا نکردی اما فکر می‌کنی می‌توانی به Cardiware کمک کنی، فرم را برای ما بفرست.',
             'faq_title' => 'سوالات متداول همکاری',
             'faq_subtitle' => 'چند پاسخ سریع برای متقاضیان',
             'faq_items' => [

@@ -129,7 +129,7 @@
                                     👤
                                 </div>
                                 <h2 class="mt-4 text-base font-black text-slate-900 dark:text-white">ویژه اعضای
-                                    مودینگ‌وی</h2>
+                                    Cardiware</h2>
                                 <p class="mt-2 text-xs leading-7 text-slate-500 dark:text-slate-300">برای ثبت رأی، ابتدا
                                     وارد حساب کاربری خود شوید.</p><a href="{{ route('login') }}"
                                                                      class="mt-4 inline-flex rounded-2xl bg-sky-600 px-6 py-3 text-xs font-black text-white transition hover:bg-sky-700">ورود

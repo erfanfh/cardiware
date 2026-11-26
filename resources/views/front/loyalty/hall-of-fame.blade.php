@@ -38,7 +38,7 @@
             <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                 <div class="max-w-2xl">
                     <div class="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-white/10 px-3 py-1.5 text-[11px] font-extrabold text-amber-200">
-                        👑 تالار افتخار مودینگ‌وی
+                        👑 تالار افتخار Cardiware
                     </div>
                     <h1 class="mt-4 text-2xl font-black leading-10 sm:text-4xl">قهرمانان باشگاه</h1>
                     <p class="mt-3 text-sm leading-7 text-slate-300">

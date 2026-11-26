@@ -430,7 +430,7 @@ window.commerceAnalyticsChart = function (initialPayload) {
             }
 
             const link = document.createElement('a');
-            link.download = `moddingway-analytics-${this.mode}.png`;
+            link.download = `Cardiware-analytics-${this.mode}.png`;
             link.href = this.chart.getDataURL({
                 type: 'png',
                 pixelRatio: 2,

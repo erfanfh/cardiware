@@ -23,7 +23,7 @@ class PublicDrawWinnerPresenter
         $displayName = trim((string)$user->display_name);
 
         if ($displayName === '') {
-            return 'کاربر مودینگ وی';
+            return 'کاربر Cardiware';
         }
 
         return Str::substr($displayName, 0, 2) . '***';

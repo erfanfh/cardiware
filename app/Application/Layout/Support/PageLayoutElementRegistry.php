@@ -143,7 +143,7 @@ class PageLayoutElementRegistry
             ],
             'team' => [
                 'type' => 'team',
-                'type_label' => 'تیم مودینگ‌وی',
+                'type_label' => 'تیم Cardiware',
                 'type_color' => 'blue',
                 'allowed_areas' => [
                     'header_primary',

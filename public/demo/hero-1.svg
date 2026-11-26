@@ -16,5 +16,5 @@
   <path d="M0 560 Q 1280/4 560/2 1280/2 560 T 1280 560/2" stroke="#f97316" stroke-width="3" fill="none" opacity="0.25"/>
   <rect x="1280/24" y="560/2" width="1280/5" height="10" rx="5" fill="url(#ahero-1)"/>
   <text x="1280/24" y="560/2.6" fill="#f8fafc" font-family="Vazirmatn, Tahoma, sans-serif" font-size="71" font-weight="900">MW Launcher</text>
-  <text x="1280/24" y="560/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="32">دانلودگر اختصاصی مودینگ‌وی</text>
+  <text x="1280/24" y="560/2.25" fill="#94a3b8" font-family="Vazirmatn, Tahoma, sans-serif" font-size="32">دانلودگر اختصاصی Cardiware</text>
 </svg>

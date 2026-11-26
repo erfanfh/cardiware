@@ -26,7 +26,7 @@
                         </span>
 
                         <h1 class="mt-4 text-2xl font-black leading-tight text-white sm:text-3xl lg:text-4xl">
-                            قرعه کشی های مودینگ وی
+                            قرعه کشی های Cardiware
                         </h1>
 
                         <p class="mt-4 max-w-xl text-sm leading-7 text-slate-300 sm:text-base sm:leading-8">
@@ -73,7 +73,7 @@
     <div class="mb-5 flex items-center gap-3 rounded-2xl border border-brand-500/25 bg-brand-500/5 px-4 py-3.5">
         <span class="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-brand-500/10 text-lg">💡</span>
         <p class="text-xs font-bold leading-6 text-brand-700 dark:text-brand-300">
-            با کسب امتیاز از فعالیت‌های روزانه مودینگ‌وی — بازدید، دیدگاه، ارسال رسانه و خرید — شانس خود را برای بردن جوایز قرعه‌کشی افزایش دهید.
+            با کسب امتیاز از فعالیت‌های روزانه Cardiware — بازدید، دیدگاه، ارسال رسانه و خرید — شانس خود را برای بردن جوایز قرعه‌کشی افزایش دهید.
             <a href="{{ route('account.loyalty') }}#ways-to-earn" class="font-black text-brand-600 hover:text-brand-700 dark:text-brand-400">راهنمای کسب امتیاز ←</a>
         </p>
     </div>

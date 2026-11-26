@@ -135,7 +135,7 @@
             <div>
                 <div class="inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
                     <span class="h-2 w-2 rounded-full bg-orange-500"></span>
-                    مرکز تحلیل مودینگ وی
+                    مرکز تحلیل Cardiware
                 </div>
 
                 <h1 class="mt-4 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">

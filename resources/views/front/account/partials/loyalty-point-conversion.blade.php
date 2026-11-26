@@ -49,7 +49,7 @@
 
                     <h2 class="mt-4 text-lg font-black leading-8 sm:text-xl">امتیازت را به اعتبار خرید تبدیل کن</h2>
                     <p class="mt-2 text-xs font-medium leading-6 text-emerald-50/90">
-                        اعتبار بلافاصله به کیف پولت اضافه می‌شود و می‌توانی برای خریدهای مودینگ‌وی از آن استفاده کنی.
+                        اعتبار بلافاصله به کیف پولت اضافه می‌شود و می‌توانی برای خریدهای Cardiware از آن استفاده کنی.
                     </p>
 
                     <div class="mt-5 rounded-2xl border border-white/15 bg-black/10 p-4 backdrop-blur-sm">

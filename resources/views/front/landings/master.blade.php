@@ -10,7 +10,7 @@
     <meta name="description" content="{{ $data['seo']['description'] ?? '' }}">
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Moddingway">
+    <meta property="og:site_name" content="Cardiware">
     <meta property="og:locale" content="{{ $locale === 'en' ? 'en_US' : 'fa_IR' }}">
     <meta property="og:title" content="{{ $data['seo']['title'] ?? $data['product_name'] }}">
     <meta property="og:description" content="{{ $data['seo']['description'] ?? '' }}">

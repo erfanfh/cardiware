@@ -131,7 +131,7 @@
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="پروژه‌های مودینگ‌وی">
+                <x-admin.metabox title="پروژه‌های Cardiware">
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                         <x-admin.field label="عنوان بخش">
                             <x-admin.form.input name="projects_box_title" :value="old('projects_box_title', $aboutUs['projects_box_title'])"/>
@@ -161,7 +161,7 @@
                     </div>
                 </x-admin.metabox>
 
-                <x-admin.metabox title="تیم مودینگ‌وی">
+                <x-admin.metabox title="تیم Cardiware">
                     <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                         <x-admin.field label="عنوان بخش">
                             <x-admin.form.input name="our_team_box_title" :value="old('our_team_box_title', $aboutUs['our_team_box_title'])"/>

@@ -22,7 +22,7 @@
             </div>
 
             <div>
-                <h4 class="text-sm font-extrabold text-ink">جامعه Moddingway</h4>
+                <h4 class="text-sm font-extrabold text-ink">جامعه Cardiware</h4>
                 <div class="mt-4 flex flex-wrap gap-2.5">
                     @foreach($data['footer']['socials'] as $social)
                         <a href="{{ $social['href'] }}" class="rounded-xl border border-edge/70 bg-surface px-4 py-2 text-xs font-bold text-muted transition-all hover:border-accent/40 hover:text-accent">{{ $social['label'] }}</a>
@@ -36,7 +36,7 @@
 
         <div class="mt-4 flex flex-col items-center justify-between gap-2 text-xs text-muted sm:flex-row">
             <span class="font-num">{{ $data['footer']['copyright'] }}</span>
-            <span class="font-num tracking-widest">MODDINGWAY.IR</span>
+            <span class="font-num tracking-widest">Cardiware.IR</span>
         </div>
     </div>
 </footer>

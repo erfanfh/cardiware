@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Moddingway - Namad</title>
+    <title>Cardiware - Namad</title>
 </head>
 <body>
 {!! get_setting('footer', 'namad_code') !!}

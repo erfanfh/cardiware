@@ -3,7 +3,7 @@
 return [
     'enabled' => true,
 
-    'base_url' => env('APP_URL', 'https://moddingway.ir'),
+    'base_url' => env('APP_URL', 'https://Cardiware.ir'),
 
     'chunk_size' => 1000,
 

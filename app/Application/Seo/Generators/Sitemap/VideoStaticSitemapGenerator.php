@@ -55,7 +55,7 @@ class VideoStaticSitemapGenerator extends AbstractStaticSitemapGenerator
         $hasValidPlayback = filter_var($playbackUrl, FILTER_VALIDATE_URL)
             && Str::startsWith($playbackUrl, ['http://', 'https://']);
         $description = Str::limit(
-            trim(strip_tags((string) $model->excerpt)) ?: 'تماشای ویدیوی «'.$model->title.'» در مودینگ‌وی.',
+            trim(strip_tags((string) $model->excerpt)) ?: 'تماشای ویدیوی «'.$model->title.'» در Cardiware.',
             2048,
             '…',
         );

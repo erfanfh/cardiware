@@ -24,7 +24,7 @@
                     </x-admin.field>
 
                     <x-admin.field label="عنوان اصلی">
-                        <x-admin.form.input name="title" :value="old('title', get_setting('festival', 'title'))" placeholder="مثلا: یلدای مودینگ‌وی"/>
+                        <x-admin.form.input name="title" :value="old('title', get_setting('festival', 'title'))" placeholder="مثلا: یلدای Cardiware"/>
                     </x-admin.field>
 
                     <x-admin.field label="زیرعنوان رنگی">

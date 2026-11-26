@@ -100,7 +100,7 @@ final class ResolveVideoSeoPayloadAction
 
         return filled($text)
             ? Str::limit($text, 160, '…')
-            : Str::limit('تماشای ویدیوی «'.$headline.'» در مرکز ویدیوی گیمینگ مودینگ‌وی.', 160, '…');
+            : Str::limit('تماشای ویدیوی «'.$headline.'» در مرکز ویدیوی گیمینگ Cardiware.', 160, '…');
     }
 
     private function modifiedTime(Video $video, ?string $published): ?string

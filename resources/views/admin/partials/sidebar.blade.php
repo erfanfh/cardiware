@@ -42,7 +42,7 @@
        class="flex min-w-0 flex-1 items-center gap-[10px] pt-[8px] pb-[4px] px-[10px] mb-[4px] transition hover:opacity-70">
         <img src="{{ url('img/logo.webp') }}" alt="لوگو" width="42" height="42">
         <div class="flex flex-col gap-[2px]">
-            <div class="text-[0.9rem] font-bold">مودینگ وی</div>
+            <div class="text-[0.9rem] font-bold">Cardiware</div>
             <div class="text-[11px] opacity-75">پنل مدیریت پلتفرم</div>
         </div>
     </a>

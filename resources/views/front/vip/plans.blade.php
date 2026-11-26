@@ -100,7 +100,7 @@
                                     @if($isFeatured)<span class="rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1.5 text-[11px] font-black text-amber-200">انتخاب ویژه</span>@endif
                                 </div>
                                 <h3 class="mt-7 text-2xl font-black">{{ $plan->title }}</h3>
-                                <p class="mt-3 min-h-14 whitespace-pre-line text-sm leading-7 {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">{{ $plan->description ?: 'اعتبار VIP برای تجربهٔ ویژه در مودینگ‌وی.' }}</p>
+                                <p class="mt-3 min-h-14 whitespace-pre-line text-sm leading-7 {{ $isFeatured ? 'text-slate-300' : 'text-slate-500 dark:text-slate-400' }}">{{ $plan->description ?: 'اعتبار VIP برای تجربهٔ ویژه در Cardiware.' }}</p>
 
                                 <div class="mt-8 border-t {{ $isFeatured ? 'border-white/15' : 'border-slate-100 dark:border-slate-800' }} pt-7">
                                     <div class="flex items-end gap-2">

@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ------------------------------------------------------------------ */
-/*  فونت‌ها (کپی از پروژه اصلی moddingway)                             */
+/*  فونت‌ها (کپی از پروژه اصلی Cardiware)                             */
 /* ------------------------------------------------------------------ */
 
 @font-face {
@@ -73,7 +73,7 @@
     --landing-on-accent: #04110B;
 }
 
-/* PGL FIFA 23 — برند نارنجی Moddingway */
+/* PGL FIFA 23 — برند نارنجی Cardiware */
 .landing--pgl-fifa-23 {
     --landing-accent: #F97316;
     --landing-accent-2: #FBBF24;

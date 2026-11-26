@@ -1,7 +1,7 @@
 <?php
 
 return [
-    // Public installer used by moddingway.ir/launcher. Keep this separate
+    // Public installer used by Cardiware.ir/launcher. Keep this separate
     // from LAUNCHER_DOWNLOAD_URL which points to an updater package.
     'public_download_url' => env('LAUNCHER_PUBLIC_DOWNLOAD_URL'),
 

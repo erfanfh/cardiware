@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="mt-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                    ارتباط مستقیم با تیم پشتیبانی مودینگ وی
+                    ارتباط مستقیم با تیم پشتیبانی Cardiware
                 </div>
             </div>
         </div>

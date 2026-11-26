@@ -6,7 +6,7 @@ use App\Domain\Loyalty\Models\LoyaltyLevel;
 use Illuminate\Database\Seeder;
 
 /**
- * سطوح هفت‌گانه باشگاه مخاطبان مودینگ‌وی.
+ * سطوح هفت‌گانه باشگاه مخاطبان Cardiware.
  * جزو DatabaseSeeder اصلی نیست تا نصب پروداکشن مقادیر خودش را از پنل تنظیم کند؛
  * این سیدر فقط سطوح پیش‌فرض پیشنهادی را می‌سازد (idempotent با firstOrCreate).
  */

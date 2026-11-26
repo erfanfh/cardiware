@@ -338,11 +338,11 @@ class PostsImporter
     {
         $url = trim($url);
 
-        if (str_starts_with($url, 'dl.moddingway.ir/')) {
+        if (str_starts_with($url, 'dl.Cardiware.ir/')) {
             $url = 'https://' . $url;
         }
 
-        if (str_starts_with($url, 'http://dl.moddingway.ir/')) {
+        if (str_starts_with($url, 'http://dl.Cardiware.ir/')) {
             $url = 'https://' . substr($url, strlen('http://'));
         }
 

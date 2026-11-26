@@ -116,13 +116,6 @@
             </div>
 
             <div class="flex shrink-0 items-center gap-2 max-sm:gap-1.5">
-                @include('front.header.notifications')
-
-                @if(!request()->routeIs('cart.index'))
-                    <livewire:front.commerce.cart.header-cart-dropdown/>
-                @endif
-
-                {{-- سوئیچ روز/شب: خورشید و ابر ↔ ماه و ستاره‌ها --}}
                 <button
                     x-data="themeSwitcher()"
                     x-on:click="toggle()"
@@ -144,12 +137,12 @@
                         <span class="header-account-icon" aria-hidden="true">
                             @include('icons.user')
                         </span>
-                        <span>حساب کاربری</span>
+                        <span>Account</span>
                     </a>
 
                     <a href="{{ route('account.dashboard') }}"
                        class="header-account-action sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
-                       aria-label="حساب کاربری">
+                       aria-label="Account">
                         <span class="header-account-icon" aria-hidden="true">
                             @include('icons.user')
                         </span>
@@ -161,12 +154,12 @@
                         <span class="header-account-icon" aria-hidden="true">
                             @include('icons.login-square-01')
                         </span>
-                        <span>ورود / عضویت</span>
+                        <span>Login / Signup</span>
                     </a>
 
                     <a href="{{ front_route('auth.index') }}"
                        class="header-account-action sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition [&_svg]:w-[1.125rem] [&_svg]:h-[1.125rem] dark:bg-brand-500 dark:hover:bg-brand-400 dark:shadow-black/20"
-                       aria-label="ورود / عضویت">
+                       aria-label="Login / Signup">
                         <span class="header-account-icon" aria-hidden="true">
                             @include('icons.login-square-01')
                         </span>

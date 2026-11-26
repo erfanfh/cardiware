@@ -15,7 +15,7 @@
                     dir="ltr"
                     name="download_products_all_url"
                     :value="old('download_products_all_url', get_setting('home', 'download_products_all_url'))"
-                    placeholder="https://moddingway.ir/products"
+                    placeholder="https://Cardiware.ir/products"
                 />
             </x-admin.field>
 

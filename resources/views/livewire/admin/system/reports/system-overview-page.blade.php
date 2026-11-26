@@ -112,7 +112,7 @@
                 <div
                     class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-xs font-bold text-violet-700">
                     <span class="h-2 w-2 rounded-full bg-violet-500"></span>
-                    مرکز گزارش‌های عمومی مودینگ وی
+                    مرکز گزارش‌های عمومی Cardiware
                 </div>
 
                 <h1 class="mt-4 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">

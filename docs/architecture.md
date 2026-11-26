@@ -5,7 +5,7 @@
 ### 1.1 Purpose of Document
 
 This document describes the architectural structure, modules,
-development guidelines, and conventions used in the Moddingway platform. It
+development guidelines, and conventions used in the Cardiware platform. It
 ensures:
 
 - Clear modular boundaries

@@ -45,7 +45,7 @@
                 type="button"
                 x-on:click="open = false"
                 class="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-slate-600 hover:bg-slate-200 transition dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
-                aria-label="بستن منو"
+                aria-label="close"
             >
                 ✕
             </button>
@@ -71,7 +71,7 @@
                     <span class="header-account-icon" aria-hidden="true">
                         @include('icons.user')
                     </span>
-                    <span>حساب کاربری</span>
+                    <span>Account</span>
                 </a>
             @else
                 <a href="{{ front_route('auth.index') }}"
@@ -79,7 +79,7 @@
                     <span class="header-account-icon" aria-hidden="true">
                         @include('icons.login-square-01')
                     </span>
-                    <span>ورود / عضویت</span>
+                    <span>Login / Signup</span>
                 </a>
             @endif
         </div>

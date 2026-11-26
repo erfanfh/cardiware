@@ -7,7 +7,7 @@ use App\Infrastructure\Services\Setting\BaseSettings;
 class VipSettings extends BaseSettings
 {
     public const DEFAULT_HERO = [
-        'hero_badge' => 'اشتراک ویژه مودینگ‌وی',
+        'hero_badge' => 'اشتراک ویژه Cardiware',
         'hero_title' => 'تجربه‌ای ویژه،',
         'hero_highlight' => 'با زمان‌بندی دلخواه شما',
         'hero_description' => 'پلن مناسب خود را انتخاب کنید. پس از پرداخت موفق، اعتبار VIP شما فعال می‌شود و اگر از قبل اشتراک داشته باشید، مدت پلن جدید به انتهای اعتبار فعلی اضافه می‌شود.',

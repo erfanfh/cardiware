@@ -14,8 +14,8 @@ php artisan config:cache
 ```dotenv
 MAIL_MAILER=sendmail
 MAIL_SENDMAIL_PATH="/usr/sbin/sendmail -bs -i"
-MAIL_FROM_ADDRESS=no-reply@moddingway.ir
-MAIL_FROM_NAME="ModdingWay"
+MAIL_FROM_ADDRESS=no-reply@Cardiware.ir
+MAIL_FROM_NAME="Cardiware"
 QUEUE_CONNECTION=redis
 ```
 

@@ -78,7 +78,7 @@ return [
     ],
 
     [
-        'label' => 'مودینگ تی‌وی',
+        'label' => 'Cardiware تی‌وی',
         'route' => 'admin.videos.index',
         'icon' => 'icons.video-01',
         'children' => [

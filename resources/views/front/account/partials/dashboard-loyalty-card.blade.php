@@ -40,7 +40,7 @@
                     امتیازهات رو به پاداش‌های واقعی تبدیل کن
                 </h2>
                 <p class="mt-1 max-w-2xl text-xs font-medium leading-6 text-slate-600 sm:text-sm dark:text-slate-300">
-                    با فعالیت در مودینگ‌وی امتیاز بگیر، رتبه‌ات را بالا ببر و پاداش‌های اختصاصی دریافت کن.
+                    با فعالیت در Cardiware امتیاز بگیر، رتبه‌ات را بالا ببر و پاداش‌های اختصاصی دریافت کن.
                 </p>
 
                 <div class="mt-4 flex flex-wrap items-center gap-2.5">

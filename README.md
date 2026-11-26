@@ -1,8 +1,8 @@
-# ModdingWay | مودینگ‌وی
+# Cardiware | Cardiware
 
 **پلتفرم فارسی مدیریت محتوای بازی، فروش محصولات دیجیتال و ارائه خدمات MW Launcher.**
 
-مودینگ‌وی یک برنامه Laravel با معماری یکپارچه و ماژولار است. وب‌سایت عمومی، پنل مدیریت، حساب کاربری، فروشگاه و API نسخه‌بندی‌شده لانچر در همین پروژه قرار دارند. رابط کاربری با Blade، Livewire و Tailwind CSS ساخته شده و امکانات نمایش راست‌به‌چپ، ترجمه فارسی و تاریخ شمسی دارد.
+Cardiware یک برنامه Laravel با معماری یکپارچه و ماژولار است. وب‌سایت عمومی، پنل مدیریت، حساب کاربری، فروشگاه و API نسخه‌بندی‌شده لانچر در همین پروژه قرار دارند. رابط کاربری با Blade، Livewire و Tailwind CSS ساخته شده و امکانات نمایش راست‌به‌چپ، ترجمه فارسی و تاریخ شمسی دارد.
 
 این مخزن شامل بک‌اند و صفحات وب مرتبط با **MW Launcher** است؛ سورس برنامه دسکتاپ ویندوزی لانچر در این مخزن قرار ندارد.
 
@@ -94,7 +94,7 @@ php -r "file_exists('.env') || copy('.env.example', '.env');"
 یک دیتابیس MySQL یا MariaDB خالی با پشتیبانی `utf8mb4` بسازید و اتصال واقعی را در `.env` قرار دهید. نمونه تنظیمات توسعه:
 
 ```dotenv
-APP_NAME=ModdingWay
+APP_NAME=Cardiware
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://127.0.0.1:8000
@@ -104,7 +104,7 @@ APP_FALLBACK_LOCALE=en
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=moddingway
+DB_DATABASE=Cardiware
 DB_USERNAME=your_database_user
 DB_PASSWORD=your_database_password
 
@@ -120,7 +120,7 @@ REDIS_PASSWORD=null
 MAIL_MAILER=log
 ```
 
-نام دیتابیس بالا باید با دیتابیس ساخته‌شده یکسان باشد؛ مقدار فعلی `.env.example` برابر `moddingwayy` است. زمان برنامه در `config/app.php` روی `Asia/Tehran` تنظیم شده است.
+نام دیتابیس بالا باید با دیتابیس ساخته‌شده یکسان باشد؛ مقدار فعلی `.env.example` برابر `Cardiwarey` است. زمان برنامه در `config/app.php` روی `Asia/Tehran` تنظیم شده است.
 
 **Redis را پیش از مراحل بعد روشن کنید.** کد مجوزها و چند بخش دیگر از `Cache::tags()` استفاده می‌کنند؛ مقدار پیش‌فرض `CACHE_STORE=database` در فایل نمونه برای اجرای کامل مناسب نیست. تنظیمات بالا این تفاوت را اصلاح می‌کند.
 
@@ -348,7 +348,7 @@ php artisan schedule:list
 روی Linux، cron هر دقیقه اجرا شود؛ مسیر نمونه را جایگزین کنید:
 
 ```cron
-* * * * * cd /path/to/moddingway && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /path/to/Cardiware && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 در استقرار چندسروری، cache مشترک برای قفل‌های `onOneServer()` و `withoutOverlapping()` لازم است.
@@ -504,7 +504,7 @@ php artisan help wp:import-posts
 | `This cache store does not support tagging` | `CACHE_STORE=redis`، اتصال Redis و اجرای `php artisan config:clear` را کنترل کنید. |
 | خطای `ext-pcntl` یا `ext-posix` | محیط نصب Horizon را به Linux یا WSL2 منتقل و `composer check-platform-reqs` را اجرا کنید. |
 | خطای PHP با وجود `^8.2` در manifest | وابستگی‌های قفل‌شده PHP 8.3 می‌خواهند؛ نسخه CLI و PHP وب‌سرور را بررسی کنید. |
-| دیتابیس ناموجود | نام واقعی و `DB_DATABASE` را تطبیق دهید؛ مقدار فایل نمونه `moddingwayy` است. |
+| دیتابیس ناموجود | نام واقعی و `DB_DATABASE` را تطبیق دهید؛ مقدار فایل نمونه `Cardiwarey` است. |
 | `Vite manifest not found` یا ظاهر ناقص | `npm ci` و `npm run build` را اجرا کنید؛ در توسعه فعال‌بودن Vite را کنترل کنید. |
 | تصویر آپلودشده نمایش داده نمی‌شود | لینک `public/storage`، `APP_URL` و دسترسی storage را بررسی کنید. |
 | پس از seed مدیر ندارید | Seeder کاربر نمی‌سازد؛ بخش ساخت اولین مدیر را اجرا کنید. |

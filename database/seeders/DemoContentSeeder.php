@@ -35,8 +35,8 @@ class DemoContentSeeder extends Seeder
         app(\App\Infrastructure\Services\Setting\Groups\GeneralSettings::class)
             ->set('default_sms_provider', \App\Infrastructure\Services\Sms\Providers\LogSmsProvider::class);
 
-        $admin = User::query()->where('email', 'admin@moddingway.ir')->firstOrFail();
-        $user = User::query()->where('email', 'user@moddingway.ir')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@Cardiware.ir')->firstOrFail();
+        $user = User::query()->where('email', 'user@Cardiware.ir')->firstOrFail();
 
         $this->seedDemoMobiles($admin, $user);
         $this->call([
@@ -154,7 +154,7 @@ class DemoContentSeeder extends Seeder
                 'slug' => 'launcher-tournament-video',
                 'cat' => 'videos',
                 'img' => 'post-5',
-                'excerpt' => 'در این ویدیو ساخت و مدیریت تورنمنت اختصاصی با لانچر مودینگ‌وی را یاد می‌گیرید.',
+                'excerpt' => 'در این ویدیو ساخت و مدیریت تورنمنت اختصاصی با لانچر Cardiware را یاد می‌گیرید.',
             ],
         ];
 
@@ -215,7 +215,7 @@ class DemoContentSeeder extends Seeder
                     'status' => 'active',
                     'progress_percent' => $data['progress'],
                     'current_version' => $data['version'],
-                    'creator_name' => 'تیم مودینگ‌وی',
+                    'creator_name' => 'تیم Cardiware',
                     'platform' => 'PC (Windows)',
                     'excerpt' => $data['excerpt'],
                     'body' => '<p>' . $data['excerpt'] . '</p>',
@@ -237,7 +237,7 @@ class DemoContentSeeder extends Seeder
                 'image' => ['path' => 'demo/hero-1.svg'],
                 'top_label_text' => 'جدیدترین نسخه',
                 'square_label_text' => 'MW',
-                'subtitle' => 'لانچر اختصاصی مودینگ‌وی',
+                'subtitle' => 'لانچر اختصاصی Cardiware',
                 'title' => 'MW Launcher برای ویندوز منتشر شد',
                 'description' => "همه پچ‌ها، مادها و آپدیت‌ها را یک‌جا مدیریت کنید.\nدانلود امن، نصب خودکار و به‌روزرسانی لحظه‌ای.",
                 'primary_button_text' => 'دانلود لانچر',
@@ -350,7 +350,7 @@ class DemoContentSeeder extends Seeder
             ],
         ]);
 
-        $home->set('subscription_title', 'اشتراک ویژه مودینگ‌وی');
+        $home->set('subscription_title', 'اشتراک ویژه Cardiware');
         $home->set('subscription_subtitle', 'دانلود نامحدود، پشتیبانی اختصاصی و تخفیف‌های اعضا');
         $home->set('subscription_button_title', 'عضویت در باشگاه VIP');
         $home->set('subscription_button_url', '/vip');
@@ -367,7 +367,7 @@ class DemoContentSeeder extends Seeder
                 'image' => ['path' => 'demo/product-2.svg'],
             ],
             [
-                'title' => 'ماوس‌پد XL مودینگ‌وی',
+                'title' => 'ماوس‌پد XL Cardiware',
                 'short_description' => 'سطح کنترل‌شده، لبه دوخت‌خورده',
                 'url' => '#',
                 'button_title' => 'مشاهده و خرید',
@@ -375,7 +375,7 @@ class DemoContentSeeder extends Seeder
                 'image' => ['path' => 'demo/product-3.svg'],
             ],
             [
-                'title' => 'پیراهن رسمی تیم مودینگ‌وی',
+                'title' => 'پیراهن رسمی تیم Cardiware',
                 'short_description' => 'طراحی اختصاصی، سایزبندی کامل',
                 'url' => '#',
                 'button_title' => 'مشاهده و خرید',
@@ -439,7 +439,7 @@ class DemoContentSeeder extends Seeder
     private function seedGeneralSettings(): void
     {
         $general = app(GeneralSettings::class);
-        $general->set('title', 'مودینگ‌وی');
+        $general->set('title', 'Cardiware');
         $general->set('subtitle', 'مرجع پچ و ماد بازی‌های فوتبال');
         $general->set('default_payment_gateway', 'wallet');
         // ارائه‌دهنده پیامکِ محیط توسعه؛ OTP در لاگ ثبت و در باکس «کد آزمایشی» نمایش داده می‌شود.
@@ -605,7 +605,7 @@ class DemoContentSeeder extends Seeder
                 'scope' => \App\Domain\Promotion\Enums\CouponScopeEnum::ORDER,
                 'status' => \App\Domain\Promotion\Enums\CouponStatusEnum::ACTIVE,
                 'applies_to_all_users' => true,
-                'created_by_user_id' => User::query()->where('email', 'admin@moddingway.ir')->value('id'),
+                'created_by_user_id' => User::query()->where('email', 'admin@Cardiware.ir')->value('id'),
             ],
         );
     }

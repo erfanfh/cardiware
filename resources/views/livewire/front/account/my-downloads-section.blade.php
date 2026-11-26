@@ -230,7 +230,7 @@
                         @if($launcherEnabled)
                             <div
                                 class="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-6 text-amber-800 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
-                                <span>دسترسی به این محصول فقط از طریق لانچر رسمی مودینگ وی امکان پذیر می باشد.</span>
+                                <span>دسترسی به این محصول فقط از طریق لانچر رسمی Cardiware امکان پذیر می باشد.</span>
                                 <a href="{{ route('launcher.open-product', ['saleItem' => $access->productSaleItem->getKey()]) }}"
                                    class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-2xl bg-orange-500 px-4 text-xs font-extrabold text-white shadow-soft transition hover:bg-orange-400">
                                     باز کردن محصول در لانچر

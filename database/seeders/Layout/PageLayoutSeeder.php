@@ -180,7 +180,7 @@ class PageLayoutSeeder extends Seeder
                                     [
                                         'key' => 'team',
                                         'type' => 'team',
-                                        'title' => 'تیم مودینگ‌وی',
+                                        'title' => 'تیم Cardiware',
                                         'description' => 'اسلایدر اعضای تیم',
                                         'is_active' => true,
                                         'sort_order' => 9,

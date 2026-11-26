@@ -3,7 +3,7 @@
 @section('head')
     <title>{{ get_setting('launcher', 'subtitle', 'دانلود MW Launcher') }} | {{ get_setting('general', 'title') }}</title>
     <meta name="description"
-          content="دانلود لانچر رسمی مودینگ‌وی برای نصب محصولات، مدیریت مادها، دریافت آپدیت و پشتیبانی آنلاین.">
+          content="دانلود لانچر رسمی Cardiware برای نصب محصولات، مدیریت مادها، دریافت آپدیت و پشتیبانی آنلاین.">
 @endsection
 
 @push('styles')
@@ -415,7 +415,7 @@
             </div>
 
             @if($launcherMatrix)
-                <!-- Matrix rain (MODDINGWAY LAUNCHER) -->
+                <!-- Matrix rain (Cardiware LAUNCHER) -->
                 <canvas id="mwl-matrix" class="fixed inset-0 z-0 h-full w-full opacity-70"></canvas>
             @endif
 
@@ -430,7 +430,7 @@
                 @endif
 
                 <h1 class="mwl-title-glow mwl-fade-up mwl-delay-100 m-0 select-none text-xl font-black leading-tight text-white sm:text-2xl md:text-3xl lg:text-4xl">
-                    {{ get_setting('launcher', 'title', 'لانچر اختصاصی مودینگ‌وی') }}
+                    {{ get_setting('launcher', 'title', 'لانچر اختصاصی Cardiware') }}
                 </h1>
 
                 <p class="mwl-fade-up mwl-delay-200 m-0 select-none text-base font-extrabold text-brand-400 sm:text-lg md:text-xl">

@@ -174,12 +174,12 @@ class LoginAlertsTest extends TestCase
     {
         Queue::fake();
         $user = $this->user(true, true);
-        $request = Request::create('/api/v1/auth/login', server: ['REMOTE_ADDR' => '203.0.113.9', 'HTTP_USER_AGENT' => 'ModdingWay Launcher/1.0']);
+        $request = Request::create('/api/v1/auth/login', server: ['REMOTE_ADDR' => '203.0.113.9', 'HTTP_USER_AGENT' => 'Cardiware Launcher/1.0']);
         app(QueueLoginAlertsAction::class)->execute($user, $request, 'launcher');
 
         Queue::assertPushed(SendEmailJob::class, fn ($job) => $job->message->login->ip === '203.0.113.9'
             && $job->message->login->sourceLabel() === 'لانچر'
-            && $job->message->login->userAgent === 'ModdingWay Launcher/1.0');
+            && $job->message->login->userAgent === 'Cardiware Launcher/1.0');
     }
 
     public function test_sms_send_failure_does_not_prevent_email_or_successful_authentication(): void

@@ -84,7 +84,7 @@ final class ResolveProductTagSeoPayloadAction
             return Str::limit($description, 170, '');
         }
 
-        return 'جدیدترین محصولات مرتبط با برچسب «'.$tag->title.'» را در مودینگ‌وی مشاهده، مقایسه و انتخاب کنید.';
+        return 'جدیدترین محصولات مرتبط با برچسب «'.$tag->title.'» را در Cardiware مشاهده، مقایسه و انتخاب کنید.';
     }
 
     private function resolveFallbackImage(TaxonomyTerm $tag): ?MediaFile

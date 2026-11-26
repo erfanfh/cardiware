@@ -35,13 +35,13 @@ class SyncDefaultSettingsCommand extends Command
     {
         return [
             'general' => [
-                'title' => 'مودینگ وی',
+                'title' => 'Cardiware',
                 'subtitle' => 'دانلود پچ و ماد بازی ها',
                 'select_related_content_settings' => 'category',
             ],
 
             'seo' => [
-                'site_name' => 'مودینگ وی',
+                'site_name' => 'Cardiware',
                 'site_alternate_name' => 'مرجع رسمی ویرایش بازیهای رایانه ای PES و FIFA در ایران',
                 'site_description' => 'مرجع رسمی ویرایش بازیهای رایانه ای PES و FIFA در ایران',
                 'separator' => '|',
@@ -51,15 +51,15 @@ class SyncDefaultSettingsCommand extends Command
                 'google_site_verification' => 'umZbYry44M0JcTM-Hy1yEagRVouf4KiJur6wOILDw-A',
                 'bing_site_verification' => '9EA065DF711ED89F1DA8619597ACCB8A',
                 'schema_language' => 'fa-IR',
-                'organization_name' => 'مودینگ وی',
-                'organization_alternate_name' => 'ModdingWay Farsi',
-                'organization_email' => 'moddingway.ir@gmail.com',
+                'organization_name' => 'Cardiware',
+                'organization_alternate_name' => 'Cardiware Farsi',
+                'organization_email' => 'Cardiware.ir@gmail.com',
                 'organization_phone' => '00983142772860',
                 'organization_founding_date' => '2015-05-05',
-                'organization_legal_name' => 'moddingway',
+                'organization_legal_name' => 'Cardiware',
                 'organization_number_of_employees' => '11-50',
-                'organization_same_as' => 'https://instagram.com/moddingwayir/',
-                'home_title' => 'مودینگ وی | مرجع دانلود PES, دانلود FIFA, دانلود پچ PES, پچ لیگ ایران',
+                'organization_same_as' => 'https://instagram.com/Cardiwareir/',
+                'home_title' => 'Cardiware | مرجع دانلود PES, دانلود FIFA, دانلود پچ PES, پچ لیگ ایران',
                 'home_description' => 'بروزترین سایت دانلود PES و دانلود FIFA برای کامپیوتر و اندروید و PS4 با پچ لیگ ایران، ادیت PES و ادیت FIFA, آموزش PES و FIFA',
                 'post_seo_title' => '{post_title} {separator} {site_title}',
                 'post_social_seo_title' => '{post_title}',
@@ -77,20 +77,20 @@ class SyncDefaultSettingsCommand extends Command
             ],
 
             'footer' => [
-                'about' => 'ما در مجموعه بزرگ مودینگ وی از سال 1396 رسما فعالیت خود را در حوزه ادیت بازیهای FIFA و PES شروع کرده ایم و همچنان با قدرت در این حوزه فعالیت خواهیم کرد. در سالیان اخیر شما شاهد عرضه بهترین پچ های بروزرسانی تاریخ لیگ ایران با عنوان PGL Patch بوده و خواهید بود. محصولات مجموعه مودینگ وی در دو فروشگاه زیرمجموعه با اسم های ادیت سیتی(محصولات دانلودی) و مودینگ استور (محصولات فیزیکی) عرضه میشوند.',
-                'copyright' => 'کلی حقوق مادی و معنوی متعلق به مجموعه مودینگ وی میباشد',
+                'about' => 'ما در مجموعه بزرگ Cardiware از سال 1396 رسما فعالیت خود را در حوزه ادیت بازیهای FIFA و PES شروع کرده ایم و همچنان با قدرت در این حوزه فعالیت خواهیم کرد. در سالیان اخیر شما شاهد عرضه بهترین پچ های بروزرسانی تاریخ لیگ ایران با عنوان PGL Patch بوده و خواهید بود. محصولات مجموعه Cardiware در دو فروشگاه زیرمجموعه با اسم های ادیت سیتی(محصولات دانلودی) و Cardiware استور (محصولات فیزیکی) عرضه میشوند.',
+                'copyright' => 'کلی حقوق مادی و معنوی متعلق به مجموعه Cardiware میباشد',
                 'quality_title' => 'هدف و کیفیت',
                 'quality_text' => 'تولید پچ‌های تخصصی لیگ برتر ایران برای FIFA و PES با تمام جزئیات کامل برای PC و کنسول‌های نسل جدید.',
                 'commitment_title' => 'تعهد ما به شما',
                 'commitment_text' => 'تمامی خدمات ما مطابق با نیاز کاربران و نهایت کیفیت ارائه می شود و هدف ما همیشه رضایت کامل کاربران بوده است.',
-                'store_title' => 'مودینگ استور',
+                'store_title' => 'Cardiware استور',
                 'store_url' => 'https://moddingstore.ir/',
                 'store_text' => 'محصولات فیزیکی و پکیج‌های گیمینگ',
             ],
 
             'posts' => [
-                'first_box_title' => 'آخرین نوشته های مودینگ وی',
-                'first_box_subtitle' => 'آخرین نوشته ها درباره پچ ها، پیشرفت پروژه ها و آموزش های مودینگ وی',
+                'first_box_title' => 'آخرین نوشته های Cardiware',
+                'first_box_subtitle' => 'آخرین نوشته ها درباره پچ ها، پیشرفت پروژه ها و آموزش های Cardiware',
                 'first_box_label' => 'صفحه آرشیو',
                 'posts_per_page' => 12,
             ],
@@ -98,7 +98,7 @@ class SyncDefaultSettingsCommand extends Command
             'projects' => [
                 'first_box_title' => 'لیست پروژه ها + درصد پیشرفت + وضعیت هر پروژه',
                 'first_box_subtitle' => 'اینجا میتونی پروژه های فعال، در حال توسعه یا تکمیل شده رو ببینی، از جزئیاتشون رو دنبال کنی و از آخرین آپدیت ها باخبر بشی.',
-                'first_box_label' => 'پروژه های مودینگ وی',
+                'first_box_label' => 'پروژه های Cardiware',
             ],
         ];
     }

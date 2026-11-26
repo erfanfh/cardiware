@@ -18,7 +18,7 @@
                     <div
                         class="inline-flex items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
                         <span class="inline-block h-2 w-2 rounded-full bg-orange-500"></span>
-                        داشبورد مدیریت مودینگ وی
+                        داشبورد مدیریت Cardiware
                     </div>
 
                     <h1 class="mt-4 text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
@@ -233,7 +233,7 @@
                     <div>
                         <h2 class="text-base font-black text-slate-900">دسترسی سریع به ماژول‌ها</h2>
                         <p class="mt-1 text-sm text-slate-500">
-                            مسیرهای پرتکرار مدیریت مودینگ‌وی برای کار روزانه
+                            مسیرهای پرتکرار مدیریت Cardiware برای کار روزانه
                         </p>
                     </div>
                 </div>

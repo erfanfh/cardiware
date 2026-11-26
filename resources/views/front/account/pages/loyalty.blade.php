@@ -52,7 +52,7 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <div
                                 class="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white/80 px-3 py-1.5 text-xs font-extrabold text-brand-700 backdrop-blur dark:border-brand-900/60 dark:bg-slate-900/70 dark:text-brand-300">
-                                باشگاه مخاطبان مودینگ وی
+                                باشگاه مخاطبان Cardiware
                             </div>
 
                             <div
@@ -78,7 +78,7 @@
                             امتیازت رو به تجربه های جذاب تبدیل کن
                         </h1>
                         <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-600 dark:text-slate-300">
-                            با فعالیت در مودینگ وی امتیاز بگیر، سطح ببر و پاداش دریافت کن.
+                            با فعالیت در Cardiware امتیاز بگیر، سطح ببر و پاداش دریافت کن.
                         </p>
 
                         {{-- XP progress --}}

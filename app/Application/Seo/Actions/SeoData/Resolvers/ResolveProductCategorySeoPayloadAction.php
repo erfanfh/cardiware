@@ -84,7 +84,7 @@ final class ResolveProductCategorySeoPayloadAction
             return Str::limit($description, 170, '');
         }
 
-        return 'جدیدترین محصولات دسته «'.$category->title.'» را در مودینگ‌وی مشاهده، مقایسه و انتخاب کنید.';
+        return 'جدیدترین محصولات دسته «'.$category->title.'» را در Cardiware مشاهده، مقایسه و انتخاب کنید.';
     }
 
     private function resolveFallbackImage(TaxonomyTerm $category): ?MediaFile

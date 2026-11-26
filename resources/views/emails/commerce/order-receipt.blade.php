@@ -3,7 +3,7 @@
 @section('title', 'فاکتور سفارش ' . $receipt->orderNumber)
 
 @section('content')
-    <div style="display:none;font-size:1px;line-height:1px;color:#fff;max-height:0;max-width:0;opacity:0;overflow:hidden">پرداخت سفارش {{ $receipt->orderNumber }} موفق بود. فاکتور و جزئیات خرید شما از مودینگ‌وی.</div>
+    <div style="display:none;font-size:1px;line-height:1px;color:#fff;max-height:0;max-width:0;opacity:0;overflow:hidden">پرداخت سفارش {{ $receipt->orderNumber }} موفق بود. فاکتور و جزئیات خرید شما از Cardiware.</div>
     <span style="display:inline-block;padding:4px 14px;border-radius:20px;background:#dcfce7;color:#166534;font-size:12px;font-weight:bold">پرداخت موفق</span>
     <h1 style="margin:16px 0 8px;font-size:23px;line-height:1.6;color:#0f172a">ممنون از خرید شما!</h1>
     <p style="margin:0 0 20px;font-size:14px">سلام {{ $receipt->customerName }}،<br>سفارش شما با موفقیت پرداخت شد. فاکتور و جزئیات خریدتان را در ادامه می‌بینید.</p>

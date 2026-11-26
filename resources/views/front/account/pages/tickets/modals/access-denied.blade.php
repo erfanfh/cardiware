@@ -37,7 +37,7 @@
             <div class="mt-3 space-y-2 text-xs font-bold leading-6 text-slate-500 dark:text-slate-400">
                 <div class="flex items-start gap-2">
                     <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>
-                    خرید حداقل یک محصول از مودینگ وی
+                    خرید حداقل یک محصول از Cardiware
                 </div>
 
                 <div class="flex items-start gap-2">

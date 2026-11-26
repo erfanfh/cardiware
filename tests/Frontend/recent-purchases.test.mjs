@@ -3,7 +3,7 @@ import test from 'node:test';
 import { setImmediate } from 'node:timers/promises';
 import initRecentPurchases, { purchaseTime, validPurchase } from '../../resources/js/front/recent-purchases.js';
 
-const origin = 'https://moddingway.test';
+const origin = 'https://Cardiware.test';
 const now = Date.parse('2026-10-19T12:00:00Z');
 const purchase = (id = 'a') => ({
     id: id.repeat(64), buyer: 'علیرضا محمدی', product: 'پچ فیفا', url: `${origin}/products/fifa/`,

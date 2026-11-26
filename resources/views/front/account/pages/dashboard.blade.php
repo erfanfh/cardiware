@@ -155,7 +155,7 @@
 
                                         <div
                                             class="mt-1 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                                            {{ $post->excerpt ?? 'یکی از نوشته‌های پربازدید مودینگ‌وی در روز گذشته' }}
+                                            {{ $post->excerpt ?? 'یکی از نوشته‌های پربازدید Cardiware در روز گذشته' }}
                                         </div>
                                     </div>
 

@@ -84,7 +84,7 @@ final class PollSeoResolver implements SeoResolverInterface
     {
         $defaults = $this->defaultsAction->execute();
         $title = 'نظرسنجی‌ها | '.$defaults['site_name'];
-        $description = 'نظرسنجی‌های مودینگ‌وی را ببینید، در موضوعات مورد علاقه خود رأی دهید و نظر جامعه را دنبال کنید.';
+        $description = 'نظرسنجی‌های Cardiware را ببینید، در موضوعات مورد علاقه خود رأی دهید و نظر جامعه را دنبال کنید.';
         $url = $this->canonicalUrlAction->execute(fallbackUrl: route('polls.index'));
         $image = $defaults['organization_logo']?->url;
 

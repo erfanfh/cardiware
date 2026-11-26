@@ -25,9 +25,9 @@ class LandingPageBuilderTest extends TestCase
             'slug' => 'yalda-1405',
             'status' => 'published',
             'theme' => ['preset' => 'custom', 'primary' => '#123456', 'accent' => '#abcdef', 'mode' => 'light', 'pattern' => 'dots'],
-            'seo' => ['meta_title' => 'یلدا با مودینگ‌وی', 'meta_description' => 'تخفیف ویژه', 'noindex' => '0'],
+            'seo' => ['meta_title' => 'یلدا با Cardiware', 'meta_description' => 'تخفیف ویژه', 'noindex' => '0'],
             'blocks' => [
-                ['type' => 'hero', 'title' => 'یلدای مودینگ‌وی', 'subtitle' => 'فقط سه روز', 'body' => 'تا ۵۰٪ تخفیف', 'button_text' => 'خرید', 'button_link' => '/products/'],
+                ['type' => 'hero', 'title' => 'یلدای Cardiware', 'subtitle' => 'فقط سه روز', 'body' => 'تا ۵۰٪ تخفیف', 'button_text' => 'خرید', 'button_link' => '/products/'],
                 ['type' => 'features', 'title' => 'چرا ما', 'items_text' => "🚀 | نصب سریع | با لانچر\n🛡️ | پشتیبانی | همیشه"],
                 ['type' => 'video', 'title' => 'تریلر', 'video_url' => 'https://www.aparat.com/v/abc123'],
                 ['type' => 'coupon', 'title' => 'کد شما', 'coupon_code' => 'YALDA50'],
@@ -50,7 +50,7 @@ class LandingPageBuilderTest extends TestCase
 
         $html = $this->get(route('landing-pages.show', 'yalda-1405'))
             ->assertSuccessful()
-            ->assertSee('یلدای مودینگ‌وی')
+            ->assertSee('یلدای Cardiware')
             ->assertSee('--lp-primary: #123456', false)
             ->assertSee('YALDA50')
             ->assertSee('https://www.aparat.com/video/video/embed/videohash/abc123/vt/frame', false)

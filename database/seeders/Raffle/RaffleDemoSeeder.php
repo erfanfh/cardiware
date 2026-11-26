@@ -34,8 +34,8 @@ class RaffleDemoSeeder extends Seeder
             return;
         }
 
-        $admin = User::query()->where('email', 'admin@moddingway.ir')->firstOrFail();
-        $user = User::query()->where('email', 'user@moddingway.ir')->firstOrFail();
+        $admin = User::query()->where('email', 'admin@Cardiware.ir')->firstOrFail();
+        $user = User::query()->where('email', 'user@Cardiware.ir')->firstOrFail();
 
         // قرعه‌کشی خودکار در زمان مقرر برای همه کمپین‌ها فعال شود.
         app(RaffleSettings::class)->set('auto_start_draw_enabled', true);
@@ -49,7 +49,7 @@ class RaffleDemoSeeder extends Seeder
         $campaign = app(CreateDrawCampaignAction::class)->execute([
             'title' => 'قرعه کشی ویژه پچ FC27',
             'short_description' => 'سه جایزه ارزشمند بین دارندگان بلیط این کمپین توزیع می‌شود.',
-            'body' => 'با امتیازهای باشگاه مخاطبان می‌توانی برای این قرعه‌کشی بلیط بگیری. هر بلیط یک شانس است و برندگان با الگوریتم شفاف و اثبات‌پذیر مودینگ‌وی انتخاب می‌شوند.',
+            'body' => 'با امتیازهای باشگاه مخاطبان می‌توانی برای این قرعه‌کشی بلیط بگیری. هر بلیط یک شانس است و برندگان با الگوریتم شفاف و اثبات‌پذیر Cardiware انتخاب می‌شوند.',
             'rules' => "هر کاربر حداکثر ۵ بلیط می‌تواند داشته باشد.\nبلیط‌ها فقط تا پیش از بسته شدن کمپین قابل دریافت هستند.\nنتیجه با seed اثبات‌پذیر منتشر می‌شود.",
             'starts_at' => now()->subDays(2)->toDateTimeString(),
             'closes_at' => now()->addDays(5)->toDateTimeString(),
@@ -100,7 +100,7 @@ class RaffleDemoSeeder extends Seeder
 
         // شرکت‌کنندگان واقعی برای قرعه‌کشی معنادار — بلیط‌ها باید در حالت OPEN صادر شوند
         $participants = [$user, $admin];
-        foreach (['rahl1@moddingway.ir', 'rahl2@moddingway.ir', 'rahl3@moddingway.ir', 'rahl4@moddingway.ir'] as $index => $email) {
+        foreach (['rahl1@Cardiware.ir', 'rahl2@Cardiware.ir', 'rahl3@Cardiware.ir', 'rahl4@Cardiware.ir'] as $index => $email) {
             $participants[] = User::query()->where('email', $email)->first()
                 ?? User::factory()->create([
                     'email' => $email,

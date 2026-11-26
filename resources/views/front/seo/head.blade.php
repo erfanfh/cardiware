@@ -1,7 +1,7 @@
 @php
     /** @var \App\Application\Seo\DTOs\SeoDataDTO $seoData */
 
-    $tags = ['<!-- Moddingway.ir SEO Module -->'];
+    $tags = ['<!-- Cardiware.ir SEO Module -->'];
 
     if (filled($seoData->title)) {
         $tags[] = '<title>' . e($seoData->title) . '</title>';
@@ -53,7 +53,7 @@
         }
     }
 
-    $tags[] = '<!-- Moddingway.ir SEO Module -->';
+    $tags[] = '<!-- Cardiware.ir SEO Module -->';
 @endphp
 
 {!! implode("\n\t", $tags) !!}

@@ -28,7 +28,7 @@
         اسکرول با درگ ماوس/لمس هم کار می‌کند؛ برای دسترسی، فوکوس با کیبورد هم
         کارت‌ها را به دید می‌آورد.
     --}}
-    <div class="mw-projects-rail" dir="rtl" tabindex="0" aria-label="پروژه‌های مودینگ‌وی">
+    <div class="mw-projects-rail" dir="rtl" tabindex="0" aria-label="پروژه‌های Cardiware">
         @foreach($projectsBlock['items'] as $project)
             <div class="mw-projects-rail-item">
                 <x-front.project.card :project="$project" :animated="false"/>

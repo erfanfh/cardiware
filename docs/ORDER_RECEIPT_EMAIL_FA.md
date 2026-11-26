@@ -20,7 +20,7 @@ php artisan horizon:terminate
 MAIL_MAILER=sendmail
 MAIL_SENDMAIL_PATH="/usr/sbin/sendmail -bs -i"
 MAIL_FROM_ADDRESS="your-real-sender@example.com"
-MAIL_FROM_NAME="ModdingWay"
+MAIL_FROM_NAME="Cardiware"
 MAIL_TIMEOUT=20
 QUEUE_CONNECTION=redis
 ```

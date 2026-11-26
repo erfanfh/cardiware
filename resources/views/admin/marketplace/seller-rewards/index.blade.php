@@ -150,7 +150,7 @@
 
                     <p class="mt-2 text-[11px] leading-5 text-slate-500">
                         با Ctrl (یا Cmd) چند فروشگاه را هم‌زمان انتخاب کنید. فروشگاه اصلی معمولاً
-                        <code dir="ltr">moddingway</code> است.
+                        <code dir="ltr">Cardiware</code> است.
                     </p>
                 </x-admin.field>
                 <div class="overflow-x-auto">

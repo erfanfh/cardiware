@@ -13,9 +13,9 @@ class TeamSettings extends BaseSettings
     public static function defaults(): array
     {
         return [
-            'hero_badge' => 'تیم اصلی مودینگ‌وی',
-            'hero_title' => 'آدم‌هایی که پشت تجربه مودینگ‌وی هستند',
-            'hero_description' => 'از توسعه پچ و طراحی محصول تا تولید محتوا و پشتیبانی؛ هر خروجی مودینگ‌وی نتیجه همکاری یک تیم تخصصی و متعهد است.',
+            'hero_badge' => 'تیم اصلی Cardiware',
+            'hero_title' => 'آدم‌هایی که پشت تجربه Cardiware هستند',
+            'hero_description' => 'از توسعه پچ و طراحی محصول تا تولید محتوا و پشتیبانی؛ هر خروجی Cardiware نتیجه همکاری یک تیم تخصصی و متعهد است.',
             'hero_primary_button_title' => 'آشنایی با اعضا',
             'hero_secondary_button_title' => 'همکاری با ما',
             'stats_members_title' => 'عضو منتخب',
@@ -39,8 +39,8 @@ class TeamSettings extends BaseSettings
                     'description' => 'پیش از انتشار، خروجی‌ها از نظر نصب، اجرا و تجربه کاربری با دقت بررسی می‌شوند.',
                 ],
             ],
-            'members_title' => 'اعضای تیم مودینگ‌وی',
-            'members_description' => 'با کسانی آشنا شوید که هر روز برای توسعه، محتوا و پشتیبانی مودینگ‌وی تلاش می‌کنند.',
+            'members_title' => 'اعضای تیم Cardiware',
+            'members_description' => 'با کسانی آشنا شوید که هر روز برای توسعه، محتوا و پشتیبانی Cardiware تلاش می‌کنند.',
             'members_empty_title' => 'هنوز عضوی برای نمایش در این صفحه انتخاب نشده است.',
             'member_ids' => [],
             'process_title' => 'مسیر ساخت یک خروجی باکیفیت',
@@ -64,7 +64,7 @@ class TeamSettings extends BaseSettings
                 ],
             ],
             'cta_badge' => 'فرصت همکاری',
-            'cta_title' => 'می‌خواهی بخشی از مسیر مودینگ‌وی باشی؟',
+            'cta_title' => 'می‌خواهی بخشی از مسیر Cardiware باشی؟',
             'cta_description' => 'اگر در توسعه، تولید محتوا، طراحی یا پشتیبانی تجربه داری، خوشحال می‌شویم بیشتر با تو آشنا شویم.',
             'cta_primary_button_title' => 'ارسال درخواست همکاری',
             'cta_primary_button_url' => '',

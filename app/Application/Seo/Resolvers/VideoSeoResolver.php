@@ -48,11 +48,11 @@ final class VideoSeoResolver implements SeoResolverInterface
         $term = $context->request->attributes->get('video_taxonomy_term');
         $term = $term instanceof TaxonomyTerm ? $term : null;
         $meta = $term?->seoMeta;
-        $label = $term?->title ?: 'مودینگ تی‌وی';
+        $label = $term?->title ?: 'Cardiware تی‌وی';
         $title = $meta?->title ?: $label.' | '.$defaults['site_name'];
         $description = $meta?->description ?: ($term && filled($term->description)
             ? Str::limit(trim(strip_tags($term->description)), 160, '…')
-            : 'مرکز ویدیوهای گیمینگ، آموزش مادینگ، تریلر و گیم‌پلی در مودینگ‌وی.');
+            : 'مرکز ویدیوهای گیمینگ، آموزش مادینگ، تریلر و گیم‌پلی در Cardiware.');
         $baseUrl = $term
             ? route($term->taxonomy->archiveRouteName(), $term->path)
             : route('videos.index');

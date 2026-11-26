@@ -41,7 +41,7 @@ class SellerRewardsTest extends TestCase
         $at = $lastWeek->startsAt->copy()->addDay();
         [$big, $bigProduct] = $this->storeWithProduct('Big store', 7000);
         [$small, $smallProduct] = $this->storeWithProduct('Small store', 7000);
-        [$site, $siteProduct] = $this->storeWithProduct('Moddingway', 0);
+        [$site, $siteProduct] = $this->storeWithProduct('Cardiware', 0);
 
         $this->sale($big, $bigProduct, 3000000, $at);
         $this->sale($small, $smallProduct, 1000000, $at);

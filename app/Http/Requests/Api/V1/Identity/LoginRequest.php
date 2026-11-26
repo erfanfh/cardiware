@@ -63,7 +63,7 @@ class LoginRequest extends FormRequest
         return [
             'login' => [
                 'description' => 'The user email address or mobile number.',
-                'example' => 'launcher-test@moddingway.ir',
+                'example' => 'launcher-test@Cardiware.ir',
             ],
 
             'password' => [

@@ -12,7 +12,7 @@
     $authorName = $video->author?->display_name
         ?: trim((string) $video->author?->full_name)
         ?: $video->author?->username
-        ?: 'تیم مودینگ وی';
+        ?: 'تیم Cardiware';
     $authorInitial = mb_substr($authorName, 0, 1);
     $isAparat = $video->source_type === VideoSourceTypeEnum::APARAT && filled($video->embed_url);
     $isDirect = $video->source_type === VideoSourceTypeEnum::DIRECT && filled($video->video_url);

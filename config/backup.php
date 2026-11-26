@@ -7,7 +7,7 @@ use Spatie\Backup\Tasks\Monitor\HealthChecks\MaximumStorageInMegabytes;
 
 return [
     'backup' => [
-        'name' => env('APP_NAME', 'moddingway'),
+        'name' => env('APP_NAME', 'Cardiware'),
         'source' => [
             'files' => [
                 'include' => [base_path()],
@@ -56,7 +56,7 @@ return [
             'to' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
             'from' => [
                 'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-                'name' => env('MAIL_FROM_NAME', 'ModdingWay'),
+                'name' => env('MAIL_FROM_NAME', 'Cardiware'),
             ],
         ],
         'slack' => ['webhook_url' => '', 'channel' => null, 'username' => null, 'icon' => null],
@@ -66,7 +66,7 @@ return [
 
     'monitor_backups' => [
         [
-            'name' => env('APP_NAME', 'moddingway'),
+            'name' => env('APP_NAME', 'Cardiware'),
             'disks' => ['parspack_backup'],
             'health_checks' => [
                 MaximumAgeInDays::class => 2,

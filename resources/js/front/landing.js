@@ -202,7 +202,7 @@ function initCursorFx() {
 
     // پخش حروف آدرس سایت به سبک ماتریکس (WAAPI — مستقل از rAF)
     // تراکم بالا + سرعت کمتر: ۲۶ حرف، فاصله فشرده، حرکت آرام‌تر
-    const LETTERS = 'moddingway.ir'.split('');
+    const LETTERS = 'Cardiware.ir'.split('');
     window.addEventListener('pointerdown', (e) => {
         const burstCount = 26;
         for (let i = 0; i < burstCount; i++) {

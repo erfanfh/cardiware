@@ -28,7 +28,7 @@
                         <x-admin.field label="زیرعنوان برگه" class="lg:col-span-2">
                             <x-admin.form.input
                                 name="page_subtitle"
-                                value="{{ old('page_subtitle', get_setting('gallery', 'page_subtitle', 'گیم‌پلی‌ها و تصاویری که کاربران مودینگ‌وی فرستاده‌اند')) }}"
+                                value="{{ old('page_subtitle', get_setting('gallery', 'page_subtitle', 'گیم‌پلی‌ها و تصاویری که کاربران Cardiware فرستاده‌اند')) }}"
                             />
                         </x-admin.field>
 

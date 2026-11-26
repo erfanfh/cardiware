@@ -4,7 +4,7 @@
 
 @php
     $categories = $product->categories->take(2);
-    $storeTitle = $product->store?->title ?? 'فروشنده مودینگ وی';
+    $storeTitle = $product->store?->title ?? 'فروشنده Cardiware';
 
     $saleItems = $product->relationLoaded('saleItems')
         ? $product->saleItems

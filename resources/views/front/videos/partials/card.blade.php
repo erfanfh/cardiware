@@ -45,7 +45,7 @@
             @endforeach
             @if(!$primaryCategory)
                 <span
-                    class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">مودینگ تی‌وی</span>
+                    class="rounded-xl border border-slate-200 bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">Cardiware تی‌وی</span>
             @endif
         </div>
 

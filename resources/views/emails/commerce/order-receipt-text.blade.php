@@ -1,4 +1,4 @@
-مودینگ‌وی | ModdingWay
+Cardiware | Cardiware
 فاکتور سفارش {{ $receipt->orderNumber }}
 پرداخت موفق
 

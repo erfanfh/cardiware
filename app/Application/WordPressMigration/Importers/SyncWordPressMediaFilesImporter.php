@@ -16,7 +16,7 @@ use Throwable;
 
 class SyncWordPressMediaFilesImporter
 {
-    private string $baseUrl = 'https://moddingway.ir/wp-content/uploads/';
+    private string $baseUrl = 'https://Cardiware.ir/wp-content/uploads/';
 
     private int $processed = 0;
     private int $missingMap = 0;

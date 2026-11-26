@@ -7,12 +7,12 @@ use function Knuckles\Scribe\Config\configureStrategy;
 // Only the most common configs are shown. See the https://scribe.knuckles.wtf/laravel/reference/config for all.
 
 return [
-    'title' => 'ModdingWay Launcher API',
+    'title' => 'Cardiware Launcher API',
 
-    'description' => 'API documentation for integrating the ModdingWay Windows launcher with the Laravel platform.',
+    'description' => 'API documentation for integrating the Cardiware Windows launcher with the Laravel platform.',
 
     'intro_text' => <<<'INTRO'
-        The ModdingWay Launcher API provides authentication, launcher configuration,
+        The Cardiware Launcher API provides authentication, launcher configuration,
         user library access, and secure download preparation for the Windows application.
 
         All requests and responses use JSON.
